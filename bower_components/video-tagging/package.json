@@ -1,0 +1,27 @@
+{
+  "name": "videotaggingcontrol",
+  "version": "1.0.0",
+  "description": "A control for video tagging",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "express": "^4.13.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CatalystCode/VideoTaggingControl.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CatalystCode/VideoTaggingControl/issues"
+  },
+  "homepage": "https://github.com/CatalystCode/VideoTaggingControl#readme"
+}

@@ -1,0 +1,131 @@
+<!--
+   Demo html page for an example of hosting the 
+       video-tagging control.
+-->
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>Video Tagging Demo</title>
+    <!-- Insert this line above script imports for jquery -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script  src="https://code.jquery.com/jquery-3.1.1.slim.min.js"  integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+    <script src="./bower_components/webcomponentsjs/webcomponents.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" />
+    <link rel="import" href="./bower_components/video-tagging/video-tagging.html">
+<link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+
+  <div id ="centerdiv" >
+    <div id="container" class="well row" >
+
+        <div id ='load-message'>
+            Please load a video!
+        </div>
+        <div id ='load-form-container' style ="display: none">
+          <h2>Video Configuration</h2>
+          <div class="form-group">
+            <label for="exampleTextarea">Video Framerate</label>
+            <select id="framerate" class="form-control" id="text">
+                  <option selected="selected">25</option>
+                  <option>60</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="exampleTextarea">Region Type</label>
+            <select id="regiontype" class="form-control" id="text">
+                  <option selected="selected">Rectangle</option>
+                  <option>Point</option>
+                  <option>Square</option>
+            </select>
+
+            <label for="exampleTextarea">Region Size</label>
+            <input class="form-control" type="text" value="25" id="regionsize">
+
+            <div class="form-check">
+              <label class="form-check-label">
+                <input id="MultiRegions" type="checkbox" class="form-check-input">
+                  MultiRegions:
+              </label>
+            </div>
+          <div class="form-group">
+            <label for="Tags"> Tags (Comma Seperated)</label>
+            <input id="inputtags" class="form-control" type="text" value="" data-role="tagsinput" />
+          </div>
+
+          </div>
+
+          <div  id="loadButton" class="btn btn-primary">Submit</div>
+        </div>
+        <div id='video-tagging-container' style="display: none">
+            <video-tagging id='video-tagging'></video-tagging>
+        </div>
+    </div>
+    
+    <div id="controlDiv" class="row">
+      <button id="openFile" class="btn" onclick="fileSelcted();">Load Video</button>
+      <button id="saveFile" class="btn" onclick="save();">Save Video</button>
+      <button id="export" class="btn" onclick="export();">Export to CNTK</button>
+      <br>
+    </div>
+ </div>
+   <script>
+    var remote = require('electron').remote; 
+    var dialog = remote.require('electron').dialog; 
+    
+    function fileSelcted() { 
+      document.getElementById('video-tagging-container').style.display = "none";
+
+      dialog.showOpenDialog(function (fileName) {
+          console.log(fileName);
+          document.getElementById('load-message').style.display = "none";
+          document.getElementById('load-form-container').style.display = "block";
+
+          document.getElementById('loadButton').addEventListener('click', function (e) {
+            var videotagging = document.getElementById('video-tagging');
+
+            videotagging.framerate = document.getElementById('framerate').value;
+
+            videotagging.regiontype = document.getElementById('regiontype').value;
+            videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
+            videotagging.regionsize = document.getElementById('regionsize').value;
+            videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
+
+            videotagging.video.currentTime = 0;
+            //temp hack
+            try{
+              videotagging.inputframes = require(`${fileName}.json`);
+            } catch(err){
+                  videotagging.inputframes = {};
+            }
+
+            document.getElementById('load-form-container').style.display = "none";
+            document.getElementById('video-tagging-container').style.display = "block";
+            videotagging.src = fileName;//load
+            
+        });
+      }); 
+  
+    }
+
+    function save() { 
+       var videotagging = document.getElementById('video-tagging');
+       console.log(frames);
+        require('fs').writeFile(`${videotagging.src}.json`, JSON.stringify(videotagging.frames), function (err) {
+                if (err) return console.error(`Save Error ${err.message}`);
+                
+            }
+        );
+
+  }
+
+   </script>
+  </body>
+</html>
