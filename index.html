@@ -170,14 +170,14 @@
         //if last frame removeEventListener 
         if (videotagging.video.currentTime >= videotagging.video.duration)videotagging.video.removeEventListener("timeupdate", saveFrames);
         
+        var frameId = videotagging.frameText.innerText;
+
         //set default writepath to the negative folder
-        var writePath = `${framesPath}/negative/my_frame_${videotagging.video.videoWidth}x${videotagging.video.videoHeight}_${videotagging.video.currentTime}.jpg`;
-        console.log('saving file', writePath);
+        var writePath = `${framesPath}/negative/my_frame_${videotagging.video.videoWidth}x${videotagging.video.videoHeight}_${frameId}.jpg`;
         
         //If frame contains tags generate the metadata and save it in the positive directory
-        var frameId = (videotagging.video.currentTime-1).toString();
         if (videotagging.frames.hasOwnProperty(frameId)){
-           writePath = `${framesPath}/positive/my_frame_${videotagging.video.videoWidth}x${videotagging.video.videoHeight}_${videotagging.video.currentTime}.jpg`;
+           writePath = `${framesPath}/positive/my_frame_${videotagging.video.videoWidth}x${videotagging.video.videoHeight}_${frameId}.jpg`;
            videotagging.frames[frameId].map(function(tag){
                   var stanW = videotagging.video.videoWidth/tag.width;
                   var stanH = videotagging.video.videoHeight/tag.height;
@@ -193,6 +193,7 @@
         var buf = new Buffer(data, 'base64');
         
         //write canvas to file and change frame
+        console.log('saving file', writePath);
         fs.writeFileSync(writePath, buf);             
         videotagging.stepFwdClicked();
         
