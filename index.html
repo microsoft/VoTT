@@ -11,13 +11,13 @@
     <title>Video Tagging Demo</title>
     <!-- Insert this line above script imports for jquery -->
     <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
-    <script  src="https://code.jquery.com/jquery-3.1.1.slim.min.js"  integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+    <script src="./public/js/jquery-3.1.1.slim.min.js"></script>
+    <script src="./public/js//bootstrap.min.js"></script>
+    <script src="./public/js/bootstrap-tagsinput.min.js"></script>
     <script src="./bower_components/webcomponentsjs/webcomponents.min.js"></script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" />
+    <link rel="stylesheet" href="./public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./public/css/bootstrap-tagsinput.css" />
     <link rel="import" href="./bower_components/video-tagging/video-tagging.html">
 <link rel="stylesheet" href="styles.css">
   </head>
@@ -33,10 +33,8 @@
           <h2>Video Configuration</h2>
           <div class="form-group">
             <label for="exampleTextarea">Video Framerate</label>
-            <select id="framerate" class="form-control" id="text">
-                  <option selected="selected">25</option>
-                  <option>60</option>
-            </select>
+            <input id="framerate" type="number" min="1" value="1" class="form-control" />
+
           </div>
           <div class="form-group">
             <label for="exampleTextarea">Region Type</label>
@@ -51,18 +49,18 @@
 
             <div class="form-check">
               <label class="form-check-label">
-                <input id="MultiRegions" type="checkbox" class="form-check-input">
+                <input id="MultiRegions" type="checkbox" checked class="form-check-input">
                   MultiRegions:
               </label>
             </div>
           <div class="form-group">
             <label for="Tags"> Tags (Comma Seperated)</label>
-            <input id="inputtags" class="form-control" type="text" value="" data-role="tagsinput" />
+            <input id="inputtags" class="form-control" type="text"  data-role="tagsinput" />
           </div>
 
           </div>
 
-          <div  id="loadButton" class="btn btn-primary">Submit</div>
+          <div  id="loadButton" class="btn btn-primary">Continue</div>
         </div>
         <div id='video-tagging-container' style="display: none">
             <video-tagging id='video-tagging'></video-tagging>
@@ -72,23 +70,37 @@
     <div id="controlDiv" class="row">
       <button id="openFile" class="btn" onclick="fileSelcted();">Load Video</button>
       <button id="saveFile" class="btn" onclick="save();">Save Video</button>
-      <button id="export" class="btn" onclick="export();">Export to CNTK</button>
+      <button id="exportCNTK" class="btn" onclick="exportCNTK();" style ="display: none">Export to CNTK</button>
       <br>
     </div>
  </div>
    <script>
     var remote = require('electron').remote; 
+    var basepath = remote.app.getAppPath();
     var dialog = remote.require('electron').dialog; 
+    var path = require('path');
+    var fs = require('fs');
     
     function fileSelcted() { 
       document.getElementById('video-tagging-container').style.display = "none";
+      document.getElementById('exportCNTK').style.display = "none";
 
       dialog.showOpenDialog(function (fileName) {
           console.log(fileName);
+          var config;
+
           document.getElementById('load-message').style.display = "none";
           document.getElementById('load-form-container').style.display = "block";
-
+          try{
+            config = require(`${fileName}.json`);
+            document.getElementById('inputtags').value = config.inputTags;
+            document.getElementById('MultiRegions').checked = config.multiRegions;
+          } 
+          catch (e){
+            console.log("No config file found");
+          }
           document.getElementById('loadButton').addEventListener('click', function (e) {
+          
             var videotagging = document.getElementById('video-tagging');
 
             videotagging.framerate = document.getElementById('framerate').value;
@@ -99,15 +111,14 @@
             videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
 
             videotagging.video.currentTime = 0;
-            //temp hack
-            try{
-              videotagging.inputframes = require(`${fileName}.json`);
-            } catch(err){
-                  videotagging.inputframes = {};
-            }
+
+           if(config) videotagging.inputframes = config.frames;
+           else videotagging.inputframes = {};
 
             document.getElementById('load-form-container').style.display = "none";
             document.getElementById('video-tagging-container').style.display = "block";
+            document.getElementById('exportCNTK').style.display = "inline";
+
             videotagging.src = fileName;//load
             
         });
@@ -117,14 +128,78 @@
 
     function save() { 
        var videotagging = document.getElementById('video-tagging');
+       var saveObject = {
+         "frames" : videotagging.frames,
+         "inputTags": document.getElementById('inputtags').value,
+         "multiRegions": document.getElementById('MultiRegions').checked
+       }
+        
        console.log(frames);
-        require('fs').writeFile(`${videotagging.src}.json`, JSON.stringify(videotagging.frames), function (err) {
-                if (err) return console.error(`Save Error ${err.message}`);
-                
+        require('fs').writeFile(`${videotagging.src}.json`, JSON.stringify(saveObject), function (err) {
+                if (err) return console.error(`Save Error ${err.message}`);             
             }
         );
 
-  }
+    }
+
+    function exportCNTK() { 
+      
+      var videotagging = document.getElementById('video-tagging');
+      
+      //make sure paths exist
+      if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
+      var framesPath = `${basepath}/cntk/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frames`;
+
+      if (!fs.existsSync(framesPath)) fs.mkdirSync(framesPath);
+      if (!fs.existsSync(`${framesPath}/positive`)) fs.mkdirSync(`${framesPath}/positive`);
+      if (!fs.existsSync(`${framesPath}/negative`)) fs.mkdirSync(`${framesPath}/negative`);
+
+      //init canvas buffer 
+      var frameCanvas = document.createElement("canvas");
+      frameCanvas.width = videotagging.video.videoWidth;
+      frameCanvas.height = videotagging.video.videoHeight;
+      var canvasContext = frameCanvas.getContext("2d");
+      
+      // start exporting frames using the timeupdate eventListener 
+      videotagging.video.addEventListener("timeupdate", saveFrames);
+      videotagging.video.currentTime = 0;
+      videotagging.playingCallback();
+
+      function saveFrames(){
+
+        //if last frame removeEventListener 
+        if (videotagging.video.currentTime >= videotagging.video.duration)videotagging.video.removeEventListener("timeupdate", saveFrames);
+        
+        //set default writepath to the negative folder
+        var writePath = `${framesPath}/negative/my_frame_${videotagging.video.videoWidth}x${videotagging.video.videoHeight}_${videotagging.video.currentTime}.jpg`;
+        console.log('saving file', writePath);
+        
+        //If frame contains tags generate the metadata and save it in the positive directory
+        var frameId = (videotagging.video.currentTime-1).toString();
+        if (videotagging.frames.hasOwnProperty(frameId)){
+           writePath = `${framesPath}/positive/my_frame_${videotagging.video.videoWidth}x${videotagging.video.videoHeight}_${videotagging.video.currentTime}.jpg`;
+           videotagging.frames[frameId].map(function(tag){
+                  var stanW = videotagging.video.videoWidth/tag.width;
+                  var stanH = videotagging.video.videoHeight/tag.height;
+                  fs.appendFile(writePath.replace('.jpg', '.bboxes.labels.tsv'), `${tag.tags[tag.tags.length-1]}\n`, function (err) {});
+                  fs.appendFile(writePath.replace('.jpg', '.bboxes.tsv'), `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`, function (err) {});                 
+            });
+
+        }
+
+        //draw the frame to the canvas
+        canvasContext.drawImage(videotagging.video, 0, 0);
+        var data = frameCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
+        var buf = new Buffer(data, 'base64');
+        
+        //write canvas to file and change frame
+        fs.writeFileSync(writePath, buf);             
+        videotagging.stepFwdClicked();
+        
+      }
+    }
+
+
 
    </script>
   </body>

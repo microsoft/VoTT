@@ -181,6 +181,7 @@
       }, false );
 
      $(window).resize( function(){
+         if (self.video.offsetWidth){
             //get transform ratio
             var transformWidth =  self.video.offsetWidth/self.overlay.width;
             var transformHeight = self.video.offsetHeight/self.overlay.height;
@@ -200,7 +201,8 @@
 
             //reposition selectedRegion Label
             var selectedDiv = $('.regionCanvasSelected')[0];
-            self.positionRegionNameLabel(selectedDiv);
+         self.positionRegionNameLabel(selectedDiv);
+        }
 
       });
 
@@ -314,15 +316,16 @@
        */
     //Regions management
     positionRegionNameLabel: function(div) {
-
-        this.regionLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.regionLabelDiv.style.width, 10)) + "px";
-        this.regionLabelDiv.style.top = (div.offsetTop - parseFloat(this.regionLabelDiv.style.height, 10)) + "px" ;
-        //Out of bounds top - move it below div
-        if(parseFloat(this.regionLabelDiv.style.top) < 0) {
-             this.regionLabelDiv.style.top = (div.offsetTop + parseFloat(div.style.height, 10)) + "px" ;
+        if (div){
+            this.regionLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.regionLabelDiv.style.width, 10)) + "px";
+            this.regionLabelDiv.style.top = (div.offsetTop - parseFloat(this.regionLabelDiv.style.height, 10)) + "px" ;
+            //Out of bounds top - move it below div
+            if(parseFloat(this.regionLabelDiv.style.top) < 0) {
+                this.regionLabelDiv.style.top = (div.offsetTop + parseFloat(div.style.height, 10)) + "px" ;
+            }
+            this.regionLabelSpan.innerHTML = div.id;
+            this.regionLabelDiv.style.display = "block";
         }
-        this.regionLabelSpan.innerHTML = div.id;
-        this.regionLabelDiv.style.display = "block";
     },
     createRegion: function(x1, y1, x2, y2) {
 
@@ -658,7 +661,6 @@
           this.video.paused?this.playState():this.pauseState();
     },
     stepFwdClicked: function() {
-          
           if(!this.video.paused) {
               this.pauseState();
           }
@@ -712,7 +714,6 @@
             this.optionalTags.toggleEnableButtons(false);  
     },
     playingCallback: function() {
-            
             this.frameText.innerHTML = this.getCurrentFrame();
             this.displayVideoTime();
             if(!this.seeking){
