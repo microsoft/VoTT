@@ -11,14 +11,14 @@
     <title>Video Tagging Demo</title>
     <!-- Insert this line above script imports for jquery -->
     <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
-    <script src="./public/js/jquery-3.1.1.slim.min.js"></script>
+    <script src="./bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <link rel="import" href="./bower_components/video-tagging/video-tagging.html">
+
     <script src="./public/js//bootstrap.min.js"></script>
     <script src="./public/js/bootstrap-tagsinput.min.js"></script>
-    <script src="./bower_components/webcomponentsjs/webcomponents.min.js"></script>
 
     <link rel="stylesheet" href="./public/css/bootstrap.min.css">
     <link rel="stylesheet" href="./public/css/bootstrap-tagsinput.css" />
-    <link rel="import" href="./bower_components/video-tagging/video-tagging.html">
 <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -93,8 +93,12 @@
           document.getElementById('load-form-container').style.display = "block";
           try{
             config = require(`${fileName}.json`);
-            document.getElementById('inputtags').value = config.inputTags;
             document.getElementById('MultiRegions').checked = config.multiRegions;
+            //add tags
+            config.inputTags.split(",").forEach(function(tag) {
+               $("#inputtags").tagsinput('add',tag);
+            });
+
           } 
           catch (e){
             console.log("No config file found");
@@ -135,10 +139,7 @@
        }
         
        console.log(frames);
-        require('fs').writeFile(`${videotagging.src}.json`, JSON.stringify(saveObject), function (err) {
-                if (err) return console.error(`Save Error ${err.message}`);             
-            }
-        );
+       fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
 
     }
 
@@ -199,8 +200,6 @@
         
       }
     }
-
-
 
    </script>
   </body>
