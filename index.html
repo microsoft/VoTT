@@ -69,7 +69,7 @@
     
     <div id="controlDiv" class="row">
       <button id="openFile" class="btn" onclick="fileSelcted();">Load Video</button>
-      <button id="saveFile" class="btn" onclick="save();">Save Video</button>
+      <button id="saveFile" class="btn" onclick="save();" style ="display: none">Save Video</button>
       <button id="exportCNTK" class="btn" onclick="exportCNTK();" style ="display: none">Export to CNTK</button>
       <br>
     </div>
@@ -84,6 +84,7 @@
     function fileSelcted() { 
       document.getElementById('video-tagging-container').style.display = "none";
       document.getElementById('exportCNTK').style.display = "none";
+      document.getElementById('saveFile').style.display = "none";
 
       dialog.showOpenDialog(function (fileName) {
           console.log(fileName);
@@ -91,17 +92,19 @@
 
           document.getElementById('load-message').style.display = "none";
           document.getElementById('load-form-container').style.display = "block";
+          $('#inputtags').tagsinput('removeAll');
+
           try{
             config = require(`${fileName}.json`);
             document.getElementById('MultiRegions').checked = config.multiRegions;
-            //add tags
+            //restore tags
             config.inputTags.split(",").forEach(function(tag) {
                $("#inputtags").tagsinput('add',tag);
             });
 
           } 
           catch (e){
-            console.log("No config file found");
+            console.log(`Error loading save file ${e.message}`);
           }
           document.getElementById('loadButton').addEventListener('click', function (e) {
           
@@ -121,8 +124,9 @@
 
             document.getElementById('load-form-container').style.display = "none";
             document.getElementById('video-tagging-container').style.display = "block";
+            document.getElementById('saveFile').style.display = "inline";
             document.getElementById('exportCNTK').style.display = "inline";
-
+            
             videotagging.src = fileName;//load
             
         });
