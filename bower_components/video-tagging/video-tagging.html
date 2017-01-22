@@ -14,8 +14,11 @@
   <template>
     <style include="video-taggingstyles"></style>
     <link rel="stylesheet" href="css/sliders.css" />
+    <link rel="stylesheet" href="../jquery-ui/themes/base/resizable.css">
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
     <link rel="stylesheet" href="assets/icons/style.css">
+    
+
     
     <div id="controlWrapper" class="controlWrapper">
       <playback-control id="playSpeedControl" class="playSpeedControl"></playback-control>
@@ -410,6 +413,10 @@
                   var tags = this.frames[this.getCurrentFrame()][this.selectedRegionId - 1].tags;
                   this.optionalTags.displaySelectedTags(tags);
               }
+              
+              //make tags resizable and draggable
+              $('#'+divId).draggable();
+              $('#'+divId).resizable();
     },
     deleteRegion: function(e) {
           
@@ -741,4 +748,5 @@
 <script src="../jquery/dist/jquery.min.js"></script>
 <script src="../moment/moment.js"></script>
 <script src="js/jquery.imgareaselect.js"></script>
+<script src="../jquery-ui/jquery-ui.min.js"></script>
 </dom-module>
