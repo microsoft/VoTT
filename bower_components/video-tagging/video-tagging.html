@@ -418,10 +418,27 @@
                   }
               }
 
-              //make region resizable and draggable
-              $('#'+divId).draggable();
-              $('#'+divId).resizable();
+             function updateRegionFromDiv(div){
+                 var region = regions[(divId-1).toString()];
+                 region.width = $('#vid').width();
+                 region.height = $('#vid').height();
+                 region.x1 = parseInt(div.style.left);
+                 region.y1 = parseInt(div.style.top);
+                 region.x2 = region.x1 + parseInt(div.style.width);
+                 region.y2 = region.y1 + parseInt(div.style.height);
+             }
 
+              //make region resizable and draggable 
+              $('#'+divId).draggable({
+                  stop: function(event, ui) {
+                     updateRegionFromDiv(this);                 
+                  }
+              });
+              $('#'+divId).resizable({
+                  stop: function(event, ui) {
+                      updateRegionFromDiv(this);   
+                  }
+              });   
 
     },
     deleteRegion: function(e) {
@@ -500,8 +517,10 @@
           //Remove selected style
           var regionCanvases = Polymer.dom(this.root).querySelectorAll('.regionCanvas');
           for (var i=0;i<regionCanvases.length;i++) {
-            regionCanvases[i].classList.remove('regionCanvasSelected')
+            regionCanvases[i].classList.remove('regionCanvasSelected');
           };
+
+
           //reset
           this.selectedRegionId = 0;
           this.optionalTags.toggleEnableButtons(false);
@@ -577,7 +596,6 @@
             }
             return region; 
     },
-    
     /**
        * All functions related to frames management
        * 
@@ -677,7 +695,8 @@
           if(!this.video.paused) {
               this.pauseState();
           }
-          
+
+          //this is wrong !!!! you should take the frame number and jump to the index it represents           
           this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
           this.playingCallback();
     },
