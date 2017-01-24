@@ -412,11 +412,17 @@
               if(regions) {
                   var tags = this.frames[this.getCurrentFrame()][this.selectedRegionId - 1].tags;
                   this.optionalTags.displaySelectedTags(tags);
+                  //if there is only one tag enable it  by default
+                  if ($(`#${this.optionalTags.id}`).find('.tagButtons').size() == 1){
+                      $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
+                  }
               }
-              
-              //make tags resizable and draggable
+
+              //make region resizable and draggable
               $('#'+divId).draggable();
               $('#'+divId).resizable();
+
+
     },
     deleteRegion: function(e) {
           
