@@ -432,7 +432,8 @@
               $('#'+divId).draggable({
                   stop: function(event, ui) {
                      updateRegionFromDiv(this);                 
-                  }
+                  },
+                  containment: $("#overlay")[0]
               });
               $('#'+divId).resizable({
                   stop: function(event, ui) {
@@ -519,7 +520,6 @@
           for (var i=0;i<regionCanvases.length;i++) {
             regionCanvases[i].classList.remove('regionCanvasSelected');
           };
-
 
           //reset
           this.selectedRegionId = 0;
