@@ -342,6 +342,15 @@
        * @param {div} The region div
        */
     //Regions management
+
+    updateRegionZIndices: function(){
+        $('.regionCanvas').sort(function (e1, e2) {
+            return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
+        }).each(function(idx,e) { 
+            e.style.zIndex =(idx+200).toString();
+        }); 
+    },
+
     positionRegionNameLabel: function(div) {
         if (div){
             this.regionLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.regionLabelDiv.style.width, 10)) + "px";
@@ -376,6 +385,7 @@
                   setTimeout(function(){ self.stepFwdClicked(); }, 500);
             }
         }
+
         this.emitRegionToHost();//Persist
     },
     addTagsToRegion: function(selectedTagsArray) {
@@ -461,7 +471,13 @@
               });
               $('#'+divId).resizable({
                   stop: function(event, ui) {
-                      updateRegionFromDiv(this);   
+                      updateRegionFromDiv(this);  
+                      // find a way to reuse the updateRegionZIndices function i already wrote for now use this hack
+                      $('.regionCanvas').sort(function (e1, e2) {
+                        return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
+                      }).each(function(idx,e) { 
+                        e.style.zIndex =(idx+200).toString();
+                      });  
                   },
                    handles: 'n,s,e, w'
               });   
@@ -584,6 +600,8 @@
                   if(regions.length === 1) {
                       this.regionSelected(region.name)
                   }
+                  this.updateRegionZIndices();
+
               }
             }
     },
