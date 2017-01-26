@@ -18,9 +18,8 @@
     <script src="./public/js/bootstrap-tagsinput.min.js"></script>
     <script src="./public/js/camshift.js"></script>
 
-    <link rel="stylesheet" href="./public/css/bootstrap.min.css">
     <link rel="stylesheet" href="./public/css/bootstrap-tagsinput.css" />
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="./public/css/styles.css">
   </head>
   <body>
   <div id ="centerdiv" >
@@ -32,7 +31,7 @@
         <div id ='load-form-container' style ="display: none">
           <h2>Video Configuration</h2>
           <div class="form-group">
-            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Skip Rate</label>
+            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate</label>
             <input id="framerate" type="number" min="1" value="1" class="form-control" />
           </div>
           <div class="form-group">
@@ -83,6 +82,7 @@
     function fileSelcted() { 
       document.getElementById('video-tagging-container').style.display = "none";
       document.getElementById('exportCNTK').style.display = "none";
+      document.getElementById('openFile').style.display = "none";
       document.getElementById('saveFile').style.display = "none";
 
       dialog.showOpenDialog(function (fileName) {
@@ -91,6 +91,7 @@
 
           document.getElementById('load-message').style.display = "none";
           document.getElementById('load-form-container').style.display = "block";
+
           $('#inputtags').tagsinput('removeAll');
 
           try{
@@ -124,10 +125,12 @@
 
             document.getElementById('load-form-container').style.display = "none";
             document.getElementById('video-tagging-container').style.display = "block";
+            document.getElementById('openFile').style.display = "inline";
             document.getElementById('saveFile').style.display = "inline";
             document.getElementById('exportCNTK').style.display = "inline";
             
             videotagging.src = fileName;//load
+            
             
         });
       }); 
@@ -148,6 +151,8 @@
     }
 
     function exportCNTK() { 
+
+      $("<div class=\"loader\"></div>").appendTo($("#video-tagging-container").css("position", "relative"));
       
       var videotagging = document.getElementById('video-tagging');
       
@@ -172,14 +177,16 @@
 
       function saveFrames(){
 
-        //if last frame removeEventListener 
-        if (videotagging.video.currentTime >= videotagging.video.duration)videotagging.video.removeEventListener("timeupdate", saveFrames);
+        //if last frame removeEventListener and loader
+        if (videotagging.video.currentTime >= videotagging.video.duration){
+          videotagging.video.removeEventListener("timeupdate", saveFrames);
+          $(".loader").remove();
+        }
         
         var frameId = videotagging.frameText.innerText;
 
         //set default writepath to the negative folder
         var writePath = `${framesPath}/negative/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${frameId}.jpg`;
-        
 
         //If frame contains tags generate the metadata and save it in the positive directory
         if (videotagging.frames.hasOwnProperty(frameId)){       
