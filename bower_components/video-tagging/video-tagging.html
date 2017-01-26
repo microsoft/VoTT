@@ -35,14 +35,14 @@
               </video>
       </div>
       <div id="videoControls" class="videoControls">
-        <input id="seekBar" class="seek clickableControl" type="range" min='0' value="0" step="any" required />
+        <input id="seekBar" class="seek clickableControl" type="range" min='0' value="0" step="any" style ="display: none" required />
           <table id="videoControlsTable" class="videoControlsTable">
             
             <tr>
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepBwdClicked'></span>
               </td>
-              <td class="videoControlCell simpleControl clickableControl">
+              <td class="videoControlCell simpleControl clickableControl" style ="display: none">
                 <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked'></span>
               </td>
               <td class="videoControlCell simpleControl clickableControl">
@@ -657,6 +657,8 @@
       this.indicateEmptyFrame(false);
     },
     getCurrentFrame: function() {
+
+      //this math is wrong
       return this.video.currentTime === 0 ? 1 : Math.round((this.video.currentTime * this.framerate)) + 1;
     },
     indicateEmptyFrame : function(selected) {
@@ -803,6 +805,7 @@
             this.timeSpan.innerHTML = currentTime + "  /  " + remainingtTime;
     },
     updateSeekBar: function() {
+        //
             this.seekBar.value = this.video.currentTime;
             var perc =  100 * this.seekBar.value / this.seekBar.max;
             this.seekStyle.textContent =  '.seek::-webkit-slider-runnable-track{background-size:'+perc+'% 100%}';
