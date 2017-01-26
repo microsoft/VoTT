@@ -369,6 +369,7 @@
 
         var region = this.addRegion(x1, y1, x2, y2);//Add to in-memory collection
         this.addDivToRegion(x1, y1, x2 , y2, region.name);//add frame
+        this.updateRegionZIndices();//update region z indecies
         this.regionSelected(region.name);//Select it by default
 
         //if there is only one tag enable it  by default
