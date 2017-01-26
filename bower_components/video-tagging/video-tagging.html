@@ -16,9 +16,8 @@
     <link rel="stylesheet" href="css/sliders.css" />
     <link rel="stylesheet" href="../jquery-ui/themes/base/resizable.css">
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
+    <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="assets/icons/style.css">
-    
-
     
     <div id="controlWrapper" class="controlWrapper">
       <playback-control id="playSpeedControl" class="playSpeedControl"></playback-control>
@@ -51,19 +50,22 @@
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="nextuntagged"  title="first untagged frame" class="icon-next2 taggingControls" on-click='nextUntaggedClicked'></span>
               </td>
+              <td class="videoControlCell simpleControl clickableControl">
+                <span id="clearRegions"  title="clear tags" class="glyphicon glyphicon-ban-circle taggingControls" on-click='clearRegions'></span>
+              </td>
               <td class="videoControlCell frameNumber">
                 <span id='frameText' class="textElements" title="frame#"></span>
               </td>
-              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl">
+              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" style ="display: none">
                 <span id="playbackSpan"  class="textElements" on-click="playbackSpeedClicked">x 1.0</span>
               </td>
               <td nowrap="nowrap" class="videoControlCell simpleControl">
                 <span id="timeSpan" class="textElements"></span>
               </td>
-              <td class ="videoControlCell simpleControl clickableControl">
+              <td class ="videoControlCell simpleControl clickableControl" style ="display: none">
                 <span id="mute" title="Mute" class="icon-volume-mute2 taggingControls" on-click='muteClicked'></span>
               </td>
-              <td class="volumeControlCell longControl">
+              <td class="volumeControlCell longControl" style ="display: none">
                   <input id="volumeSlider" class="volume clickableControl" type="range" min=0 max = 1 value=.5 step= .1 required />
               </td>
             </tr>
@@ -76,8 +78,8 @@
             </div>
           </div>
           <div class="labelControls">
-              <span id="emptyFrame" title="empty frame"  class="icon-share taggingControls controlOff" on-click='emptyFrameClicked'></span>
-              <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff"  on-click='lockTagsClicked'></span>
+              <span id="emptyFrame" title="empty frame"  class="icon-share taggingControls controlOff" on-click='emptyFrameClicked' ></span>
+              <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff"  on-click='lockTagsClicked' ></span>
           </div>
           <div style="clear: both">
           </div>
@@ -498,6 +500,13 @@
           this.showAllRegions();
           this.emitRegionToHost();
     },
+
+    clearRegions: function(e) {   
+          var regions = this.frames[this.getCurrentFrame()]=[];
+          this.showAllRegions();
+          this.emitRegionToHost();
+    },
+    
     /**
        * @method emitRegionToHost
        * Fires an event to send the array of regions.
