@@ -212,7 +212,7 @@
           return function(e) {
             if (!canMove) return false;
             canMove = false;
-            setTimeout(function() { canMove = true; }, 290);
+            setTimeout(function() { canMove = true; }, 200);
             switch (e.keyCode) {
                 case 37:  // left
                 self.stepBwdClicked();
@@ -369,6 +369,11 @@
         this.addDivToRegion(x1, y1, x2 , y2, region.name);//add frame
         this.regionSelected(region.name);//Select it by default
 
+        //if there is only one tag enable it  by default
+        if ($(`#${this.optionalTags.id}`).find('.tagButtons').size() == 1){
+            $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
+        }
+
         if(this.lockTagsEnabled) {   
             //Get all selected tags and add them to current region automatically
             //this.selectedTags was populated in this.lockTagsClicked
@@ -446,10 +451,6 @@
               if(regions) {
                   var tags = this.frames[this.getCurrentFrame()][this.selectedRegionId - 1].tags;
                   this.optionalTags.displaySelectedTags(tags);
-                  //if there is only one tag enable it  by default
-                  if ($(`#${this.optionalTags.id}`).find('.tagButtons').size() == 1){
-                      $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
-                  }
               }
 
              function updateRegionFromDiv(div){
