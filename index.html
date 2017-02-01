@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <title>Video Tagging Demo</title>
+    <title>Video Tagging Tool</title>
     <!-- Insert this line above script imports for jquery -->
     <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
     <script src="./bower_components/webcomponentsjs/webcomponents.min.js"></script>
@@ -20,11 +20,12 @@
     <script src="./index.js"></script>
 
     <link rel="stylesheet" href="./public/css/bootstrap-tagsinput.css" />
-<link rel="stylesheet" href="./public/css/styles.css">
+    <link rel="stylesheet" href="./public/css/styles.css">
   </head>
   <body>
   <div id ="centerdiv" >
-    <div id="container" class="well row" >
+
+    <div id="container" class="well" >
 
         <div id ='load-message'>
             Please load a video!
@@ -62,11 +63,11 @@
           <div  id="loadButton" class="btn btn-primary">Continue</div>
         </div>
         <div id='video-tagging-container' style="display: none">
-            <video-tagging id='video-tagging'></video-tagging>
+            <video-tagging id='video-tagging' ></video-tagging>
         </div>
     </div>
 
-    <div id="controlDiv" class="row">
+    <div id="controlDiv">
       <button id="openFile" class="btn" onclick="fileSelcted();">Load Video</button>
       <button id="saveFile" class="btn" onclick="save();" style ="display: none">Save Video</button>
       <button id="exportCNTK" class="btn" onclick="exportCNTK();" style ="display: none">Export to CNTK</button>
