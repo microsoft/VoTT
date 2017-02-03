@@ -22,9 +22,7 @@
     <link rel="stylesheet" href="./public/css/styles.css">
   </head>
   <body>
-  <div id ="centerdiv" >
-
-    <div id="container" class="well" >
+    <div id="container">
 
         <div id ='load-message'>
             Please load a video!
@@ -72,8 +70,6 @@
       <button id="exportCNTK" class="btn" onclick="exportCNTK();" style ="display: none">Export to CNTK</button>
       <br>
     </div>
-
- </div>
    <script>
     var remote = require('electron').remote; 
     var basepath = remote.app.getAppPath();
@@ -131,7 +127,7 @@
 
             if(config) videotagging.inputframes = config.frames;
             else videotagging.inputframes = {};
-
+            
             document.getElementById('load-form-container').style.display = "none";
             document.getElementById('video-tagging-container').style.display = "block";
             document.getElementById('openFile').style.display = "inline";

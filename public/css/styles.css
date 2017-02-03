@@ -1,14 +1,26 @@
 html, body {
-    height: 100%;
-    width: 100%;
+    margin: 0;
+    padding: 0;
 
 }
-#centerdiv{
-  top: 20px;
-  left: 20px;
-  bottom: 20px;
-  right: 20px;
 
+#controlDiv {
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+}
+
+#video-tagging {
+    margin: 0 auto;
+}
+
+#video-tagging-container {
+    position:absolute;
+    top: 0;
+    bottom: 54px;
+    left: 0;
+    right: 0;
+    background-color: #000;
 }
 
 
