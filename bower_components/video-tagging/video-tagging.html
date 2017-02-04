@@ -152,6 +152,8 @@
 
       this.playing = null;
       this.ctx = this.overlay.getContext("2d");
+      this.aspect = 0;
+      this.snapWidth = 0;
     },
     
      /**
@@ -167,10 +169,7 @@
       this.video.addEventListener( "loadedmetadata", function (e) {
 
             self.controlWrapper.style.display = "block";
-
-            //Size canvas as video
-            self.overlay.width = self.video.offsetWidth;
-            self.overlay.height = self.video.offsetHeight;
+           
             
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
@@ -183,10 +182,19 @@
             self.seekBar.max = self.video.duration;
             self.playingCallback();
 
+             
+            //Take the raw video aspect ratio
+            self.aspect = self.video.offsetWidth / self.video.offsetHeight;
+            self.snapToAspectRatio();
+
+           //Size canvas as video
+            self.overlay.width = self.video.offsetWidth;
+            self.overlay.height = self.video.offsetHeight;
       }, false );
 
      $(window).resize( function(){
-         if (self.video.offsetWidth){
+         if (self.video.offsetWidth != undefined){
+            self.snapToAspectRatio();
             //get transform ratio
             var transformWidth =  self.video.offsetWidth/self.overlay.width;
             var transformHeight = self.video.offsetHeight/self.overlay.height;
@@ -285,7 +293,23 @@
               this.emitRegionToHost();
           });
     },
-    
+
+    snapToAspectRatio: function()
+    {
+        // -5 accounts for rounding errors during rendering to ensure
+        // we never redraw larger than the parent container.
+
+        // We need to offset for the non-scaling parts of the video controls
+        this.snapWidth = 
+            ($('#video-tagging').parent().height()
+            - $('#videoControls').innerHeight()
+            - $('#videoTagControls').innerHeight()
+            - 5)*this.aspect;
+        if(this.snapWidth > $('#video-tagging').parent().width())
+            $('#video-tagging').width($('#video-tagging').parent().width());
+        else
+            $('#video-tagging').width(this.snapWidth);
+    },
 
     /**
        * JQuery Area selector
@@ -483,7 +507,8 @@
                         e.style.zIndex =(idx+200).toString();
                       });  
                   },
-                   handles: 'n,s,e, w'
+                  containment: $("#overlay")[0],
+                  handles: 'n,s,e, w'
               });   
 
     },

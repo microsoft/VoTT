@@ -22,9 +22,7 @@
     <link rel="stylesheet" href="./public/css/styles.css">
   </head>
   <body>
-  <div id ="centerdiv" >
-
-    <div id="container" class="well" >
+    <div id="container">
 
         <div id ='load-message'>
             Please load a video!
@@ -32,8 +30,8 @@
         <div id ='load-form-container' style ="display: none">
           <h2>Video Configuration</h2>
           <div class="form-group">
-            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate</label>
-            <input id="framerate" type="number" min="1" value="1" class="form-control" />
+            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per video second)</label>
+            <input id="framerate" type="number" min="1" max="999" value="1" maxlength="3" size="3" class="form-control" />
           </div>
           <div class="form-group">
             <label for="exampleTextarea" title="(Type of region selector to tag frames)">Region Type</label>
@@ -42,10 +40,10 @@
                   <option>Point</option>
                   <option>Square</option>
             </select>
-
+          </div>
+          <div class="form-group">
             <label for="exampleTextarea" title="(Region Size for point selector!)">Point Region Size</label>
             <input class="form-control" type="text" value="25" id="regionsize">
-
             <div class="form-check">
               <label class="form-check-label">
                 <input id="MultiRegions" type="checkbox" checked class="form-check-input" title="(Enable multiple regions on one frame.)">
@@ -72,8 +70,6 @@
       <button id="exportCNTK" class="btn" onclick="exportCNTK();" style ="display: none">Export to CNTK</button>
       <br>
     </div>
-
- </div>
    <script>
     var remote = require('electron').remote; 
     var basepath = remote.app.getAppPath();
@@ -131,7 +127,7 @@
 
             if(config) videotagging.inputframes = config.frames;
             else videotagging.inputframes = {};
-
+            
             document.getElementById('load-form-container').style.display = "none";
             document.getElementById('video-tagging-container').style.display = "block";
             document.getElementById('openFile').style.display = "inline";
@@ -164,7 +160,7 @@
 
     function exportCNTK() { 
 
-      $("<div class=\"loader\"></div>").appendTo($("#video-tagging-container").css("position", "relative"));
+      $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
       
       var videotagging = document.getElementById('video-tagging');
       
