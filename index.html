@@ -271,14 +271,7 @@
         canvasContext.drawImage(videotagging.video, 0, 0);
         cstracker.track(frameCanvas);
         var trackedObject = cstracker.getTrackObj();   
-
-
-        //debug canvas
-        canvasContext.putImageData(cstracker.getBackProjectionImg(),0,0);
-        canvasContext.rect(trackedObject.x/2,trackedObject.y/2,trackedObject.width,trackedObject.height );
-        canvasContext.strokeStyle="#FF0000";
-        canvasContext.stroke();
-
+        
         console.log(trackedObject);
         //break if picture disapears
         if (trackedObject.width == 0 || trackedObject.height == 0 ){
@@ -290,7 +283,13 @@
         stanW = videotagging.video.offsetWidth / frameCanvas.width;
         stanH = videotagging.video.offsetHeight /frameCanvas.height;
 
-        videotagging.createRegion( Math.floor(trackedObject.x/2 * stanW), Math.floor(trackedObject.y/2 * stanH), Math.floor((trackedObject.width + trackedObject.x/2) * stanW) , Math.floor((trackedObject.height + trackedObject.y)*stanH));
+        var tx1 = Math.floor((trackedObject.x - trackedObject.width/2)  * stanW);
+        var ty1 = Math.floor((trackedObject.y - trackedObject.height/2) * stanH);
+        var tx2 = Math.floor((trackedObject.width * stanW + tx1));
+        var ty2 = Math.floor((trackedObject.height * stanH + ty1));
+         
+        videotagging.createRegion( tx1,ty1,tx2,ty2);
+
         nFrames--;
         videotagging.stepFwdClicked();
 
