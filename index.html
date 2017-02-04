@@ -30,8 +30,8 @@
         <div id ='load-form-container' style ="display: none">
           <h2>Video Configuration</h2>
           <div class="form-group">
-            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate</label>
-            <input id="framerate" type="number" min="1" value="1" class="form-control" />
+            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per video second)</label>
+            <input id="framerate" type="number" min="1" max="999" value="1" maxlength="3" size="3" class="form-control" />
           </div>
           <div class="form-group">
             <label for="exampleTextarea" title="(Type of region selector to tag frames)">Region Type</label>
@@ -40,10 +40,10 @@
                   <option>Point</option>
                   <option>Square</option>
             </select>
-
+          </div>
+          <div class="form-group">
             <label for="exampleTextarea" title="(Region Size for point selector!)">Point Region Size</label>
             <input class="form-control" type="text" value="25" id="regionsize">
-
             <div class="form-check">
               <label class="form-check-label">
                 <input id="MultiRegions" type="checkbox" checked class="form-check-input" title="(Enable multiple regions on one frame.)">
@@ -160,7 +160,7 @@
 
     function exportCNTK() { 
 
-      $("<div class=\"loader\"></div>").appendTo($("#video-tagging-container").css("position", "relative"));
+      $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
       
       var videotagging = document.getElementById('video-tagging');
       

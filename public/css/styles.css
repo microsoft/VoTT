@@ -4,6 +4,10 @@ html, body {
 
 }
 
+#load-form-container {
+    padding: 0 20px;
+}
+
 #controlDiv {
     padding: 10px;
     position: absolute;
@@ -23,6 +27,10 @@ html, body {
     background-color: #000;
 }
 
+.bootstrap-tagsinput {
+    display: block;
+}
+
 
 .loader {
     border: 16px solid #f3f3f3; /* Light grey */
@@ -33,8 +41,8 @@ html, body {
     animation: spin 2s linear infinite;
     position: absolute;
     z-index: 999;
-    top: 50%;
-    left:50%;
+    top: calc(50% - 60px);
+    left: calc(50% - 60px);
     -webkit-transform: translateY(-30%);
     transform: translateY(-30%);
     -webkit-transform: translateX(-50%);

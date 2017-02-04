@@ -169,10 +169,7 @@
       this.video.addEventListener( "loadedmetadata", function (e) {
 
             self.controlWrapper.style.display = "block";
-            
-           //Size canvas as video
-            self.overlay.width = self.video.offsetWidth;
-            self.overlay.height = self.video.offsetHeight;
+           
             
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
@@ -185,14 +182,18 @@
             self.seekBar.max = self.video.duration;
             self.playingCallback();
 
+             
             //Take the raw video aspect ratio
             self.aspect = self.video.offsetWidth / self.video.offsetHeight;
-            
             self.snapToAspectRatio();
+
+           //Size canvas as video
+            self.overlay.width = self.video.offsetWidth;
+            self.overlay.height = self.video.offsetHeight;
       }, false );
 
      $(window).resize( function(){
-         if (self.video.offsetWidth){
+         if (self.video.offsetWidth != undefined){
             self.snapToAspectRatio();
             //get transform ratio
             var transformWidth =  self.video.offsetWidth/self.overlay.width;
@@ -506,7 +507,8 @@
                         e.style.zIndex =(idx+200).toString();
                       });  
                   },
-                   handles: 'n,s,e, w'
+                  containment: $("#overlay")[0],
+                  handles: 'n,s,e, w'
               });   
 
     },
