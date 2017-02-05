@@ -87,7 +87,7 @@
 
     function exportCNTK() {
 
-      $("<div class=\"loader\"></div>").appendTo($("#video-tagging-container").css("position", "relative"));
+      $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
 
       var videotagging = document.getElementById('video-tagging');
 
@@ -148,63 +148,5 @@
         fs.writeFileSync(writePath, buf);
         videotagging.stepFwdClicked();
 
-      }
-    }
-
-    function trackSelectedRegion(){
-      var videotagging = document.getElementById('video-tagging');
-
-      //init canvas buffer
-      var frameCanvas = document.createElement("canvas");
-      frameCanvas.width = videotagging.video.videoWidth;
-      frameCanvas.height = videotagging.video.videoHeight;
-      var canvasContext = frameCanvas.getContext("2d");
-
-
-      var w = parseInt($('.regionCanvasSelected')[0].style.width);
-      var h = parseInt($('.regionCanvasSelected')[0].style.height);
-      var y = parseInt($('.regionCanvasSelected')[0].style.top);
-      var x = parseInt($('.regionCanvasSelected')[0].style.left);
-
-      var stanW = frameCanvas.width/videotagging.video.offsetWidth;
-      var stanH = frameCanvas.height/videotagging.video.offsetHeight;
-
-      var cstracker = new regiontrackr.camshift.Tracker({whitebalancing : false,calcAngles:false});
-      cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(parseInt(x * stanW),parseInt(y * stanH),parseInt((x+w)*stanW),parseInt((y+h)*stanH)));
-      //init event listner and increment frame here
-      var frameId = videotagging.frameText.innerText;
-      videotagging.video.addEventListener("timeupdate", tagRemainingFrames);
-      videotagging.stepFwdClicked();
-
-      function tagRemainingFrames(){
-
-        //if last frame removeEventListener
-        if (videotagging.video.currentTime >= videotagging.video.duration)
-        {
-          videotagging.video.removeEventListener("timeupdate", tagRemainingFrames);
-          videotagging.video.currentTime = parseInt(frameId);
-          videotagging.playingCallback();
-        }
-
-        //apply camshift here
-        canvasContext.drawImage(videotagging.video, 0, 0);
-        cstracker.track(frameCanvas);
-        var trackedObject = cstracker.getTrackObj();
-        console.log(trackedObject);
-        //break if picture disapears
-        if (trackedObject.width == 0 || trackedObject.height == 0 ){
-          videotagging.video.removeEventListener("timeupdate", tagRemainingFrames);
-          videotagging.video.currentTime = parseInt(frameId);
-          videotagging.playingCallback();
-        }
-        else {
-        stanW = videotagging.video.offsetWidth / frameCanvas.width;
-        stanH = videotagging.video.offsetHeight /frameCanvas.height;
-
-        videotagging.createRegion( trackedObject.x * stanW, trackedObject.y * stanH, (trackedObject.width + trackedObject.x) * stanW , (trackedObject.height + trackedObject.y)*stanH);
-        videotagging.stepFwdClicked();
-
-        }
-         console.log(trackedObject);
       }
     }
