@@ -169,7 +169,6 @@
       this.video.addEventListener( "loadedmetadata", function (e) {
 
             self.controlWrapper.style.display = "block";
-           
             
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
@@ -182,7 +181,6 @@
             self.seekBar.max = self.video.duration;
             self.playingCallback();
 
-             
             //Take the raw video aspect ratio
             self.aspect = self.video.offsetWidth / self.video.offsetHeight;
             self.snapToAspectRatio();
@@ -769,23 +767,43 @@
     playPauseClicked: function() {
           this.video.paused?this.playState():this.pauseState();
     },
+
+    checkRegionLabels: function(){
+          var regions = this.frames[this.getCurrentFrame()];
+          if (regions != undefined){
+            var unlabledTags = regions.map(function(region,index){
+                if (!region.tags.length > 0) return index + 1;
+            }).filter(Number.isInteger);
+
+            if (unlabledTags.length > 0){
+                alert(`Cannot move to the next frame until all tags are labeled. Please label the following tags [${unlabledTags}] on the displayed frame.`);
+                return false;
+            }
+          }
+          return true;
+
+    },
+
     stepFwdClicked: function() {
           if(!this.video.paused) {
               this.pauseState();
           }
 
-          //this is wrong !!!! you should take the frame number and jump to the index it represents           
-          this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
-          this.playingCallback();
+          //if there are no unlabled tags move to next frame
+          if (this.checkRegionLabels()){
+            this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
+            this.playingCallback();
+          }
     },
-    stepBwdClicked: function() {
-          
+    stepBwdClicked: function() {   
           if (this.video.currentTime > 0) {
               if(!this.video.paused) {
                   this.pauseState();
               }
-              this.video.currentTime -= this.frameTime;
-              this.playingCallback();
+              if (this.checkRegionLabels()){
+                this.video.currentTime -= this.frameTime;
+                this.playingCallback();
+              }
           }
     },
     videoSrcChanged: function(newValue, oldValue) { 
