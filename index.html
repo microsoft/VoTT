@@ -24,7 +24,7 @@
     <div id="container">
 
         <div id ='load-message'>
-            Please load a video!
+            <img id="vidImage" src ="./public/images/Wikiversity-Mooc-Icon-Video.svg.png"></img>
         </div>
         <div id ='load-form-container' style ="display: none">
           <h2>Video Configuration</h2>
@@ -198,6 +198,7 @@
         //If frame contains tags generate the metadata and save it in the positive directory
         if (videotagging.frames.hasOwnProperty(frameId)){       
            videotagging.frames[frameId].map(function(tag){
+                  //if there are no labels don't save the tag 
                   if (!tag.tags[tag.tags.length-1]) {
                     console.log(`frame ${frameId} region ${tag.name} has no label`);
                     return;
