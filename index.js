@@ -7,6 +7,7 @@ const ipcRenderer = require('electron').ipcRenderer;
 
 function fileSelcted() {
 
+  document.getElementById('openFile').style.display = "none";
   dialog.showOpenDialog(function (fileName) {
 
       if (fileName){
@@ -15,15 +16,12 @@ function fileSelcted() {
 
       document.getElementById('video-tagging-container').style.display = "none";
       document.getElementById('exportCNTK').style.display = "none";
-      document.getElementById('openFile').style.display = "none";
       document.getElementById('saveFile').style.display = "none";
       document.getElementById('load-message').style.display = "none";
       document.getElementById('load-form-container').style.display = "block";
 
-
       //set title indicator
-        $('title').text(`Video Tagging Job Configuration: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
-
+       $('title').text(`Video Tagging Job Configuration: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
 
       $('#inputtags').tagsinput('removeAll');
 
@@ -45,7 +43,6 @@ function fileSelcted() {
         var videotagging = document.getElementById('video-tagging');
 
         videotagging.framerate = document.getElementById('framerate').value;
-
         videotagging.regiontype = document.getElementById('regiontype').value;
         videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
         videotagging.regionsize = document.getElementById('regionsize').value;
@@ -69,6 +66,9 @@ function fileSelcted() {
         $('title').text(`Video Tagging Job: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
 
       });
+    }
+    else {
+      document.getElementById('openFile').style.display = "inline";
     }
   });
 
@@ -151,4 +151,5 @@ function exportCNTK() {
     videotagging.stepFwdClicked();
 
   }
+  
 }
