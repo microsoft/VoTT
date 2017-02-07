@@ -17,6 +17,7 @@
     <script src="./public/js/bootstrap.min.js"></script>
     <script src="./public/js/bootstrap-tagsinput.min.js"></script>
     <script src="./public/js/camshift.js"></script>
+    <script src="./public/js/scene-change-detector.js"></script>
 
     <link rel="stylesheet" href="./public/css/bootstrap-tagsinput.css" />
     <link rel="stylesheet" href="./public/css/styles.css">
@@ -25,7 +26,7 @@
     <div id="container">
 
         <div id ='load-message'>
-            Please load a video!
+            <img id="vidImage" src ="./public/images/Wikiversity-Mooc-Icon-Video.svg.png"></img>
         </div>
         <div id ='load-form-container' style ="display: none">
           <h2>Video Configuration</h2>
@@ -68,7 +69,7 @@
       <button id="openFile" class="btn" onclick="fileSelcted();">Load Video</button>
       <button id="saveFile" class="btn" onclick="save();" style ="display: none">Save Video</button>
       <button id="exportCNTK" class="btn" onclick="exportCNTK();" style ="display: none">Export to CNTK</button>
-      <button id="suggestTags" class="btn" onclick="trackSelectedRegion();" title = "Suggests Region Tags For Next 10 Frames" style ="display: none">Suggest Region Tags (Alpha)</button>
+      <button id="suggestTags" class="btn" onclick="trackSelectedRegion();" title = "Suggests Region Tags Until Next Scene" style ="display: none">Suggest Region Tags (Alpha)</button>
       <br>
     </div>
    <script>
@@ -79,7 +80,8 @@
     var fs = require('fs');
     
     function fileSelcted() { 
-      
+      document.getElementById('openFile').style.display = "none";
+
       dialog.showOpenDialog(function (fileName) {
 
           if (fileName){
@@ -89,7 +91,6 @@
           document.getElementById('video-tagging-container').style.display = "none";
           document.getElementById('exportCNTK').style.display = "none";
           document.getElementById('suggestTags').style.display = "none";
-          document.getElementById('openFile').style.display = "none";
           document.getElementById('saveFile').style.display = "none";
           document.getElementById('load-message').style.display = "none";
           document.getElementById('load-form-container').style.display = "block";
@@ -143,6 +144,9 @@
             $('title').text(`Video Tagging Job: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
             
           });
+        }
+        else{
+          document.getElementById('openFile').style.display = "inline";
         }
       }); 
   
@@ -237,7 +241,6 @@
       var canvasContext = frameCanvas.getContext("2d");
       canvasContext.drawImage(videotagging.video, 0, 0);
       
-
       var w = parseInt($('.regionCanvasSelected')[0].style.width);
       var h = parseInt($('.regionCanvasSelected')[0].style.height);
       var y = parseInt($('.regionCanvasSelected')[0].style.top);
@@ -246,19 +249,23 @@
       var stanW = frameCanvas.width/videotagging.video.offsetWidth;
       var stanH = frameCanvas.height/videotagging.video.offsetHeight;
       
-
       var cstracker = new regiontrackr.camshift.Tracker({whitebalancing : false,calcAngles:false});
       cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(Math.floor(x * stanW),Math.floor(y * stanH),Math.floor(w*stanW),Math.floor(h*stanH)));
+      
+      //get current frame image data and init scene-change-detector
+      var lastImage = canvasContext.getImageData(0, 0, 50,50).data;
+      var curImage;
+      var scd = new SceneChangeDetector(options={threshold:50});
+      
       //init event listner and increment frame here
       var frameId = videotagging.frameText.innerText;
       videotagging.video.addEventListener("timeupdate", tagRemainingFrames);
-      var nFrames = 10;
       videotagging.stepFwdClicked();
 
       function tagRemainingFrames(){
 
         //if last frame removeEventListener 
-        if ((nFrames<=0)||(videotagging.video.currentTime >= videotagging.video.duration))
+        if ((videotagging.video.currentTime >= videotagging.video.duration))
         {
           videotagging.video.removeEventListener("timeupdate", tagRemainingFrames);
           videotagging.video.currentTime = parseInt(frameId);
@@ -267,30 +274,35 @@
         }
      
         //apply camshift here 
-        setTimeout(200);//hack to see if this is the bug
+        setTimeout(200);//hack to see if this is the bug this needs to be fixed
         canvasContext.drawImage(videotagging.video, 0, 0);
         cstracker.track(frameCanvas);
         var trackedObject = cstracker.getTrackObj();   
         
         console.log(trackedObject);
-        //break if picture disapears
-        if (trackedObject.width == 0 || trackedObject.height == 0 ){
+
+        //break if scenechanges   
+        curImage = canvasContext.getImageData(0, 0, 50,50).data;
+
+        //break if picture disapears or scene changes
+        if ((scd.detectSceneChange(lastImage,curImage))||(trackedObject.width == 0 || trackedObject.height == 0 )){
           videotagging.video.removeEventListener("timeupdate", tagRemainingFrames);
           videotagging.video.currentTime = parseInt(frameId);
           videotagging.playingCallback();
         }
         else {  
+        lastImage = curImage;// update image data for scene detection
+
         stanW = videotagging.video.offsetWidth / frameCanvas.width;
         stanH = videotagging.video.offsetHeight /frameCanvas.height;
 
         var tx1 = Math.floor((trackedObject.x - trackedObject.width/2)  * stanW);
         var ty1 = Math.floor((trackedObject.y - trackedObject.height/2) * stanH);
-        var tx2 = Math.floor((trackedObject.width * stanW + tx1));
-        var ty2 = Math.floor((trackedObject.height * stanH + ty1));
+        var tx2 = Math.min(Math.floor((trackedObject.width * stanW + tx1)), videotagging.video.offsetWidth);
+        var ty2 = Math.min(Math.floor((trackedObject.height * stanH + ty1)), videotagging.video.offsetHeight);
          
         videotagging.createRegion( tx1,ty1,tx2,ty2);
 
-        nFrames--;
         videotagging.stepFwdClicked();
 
         }
