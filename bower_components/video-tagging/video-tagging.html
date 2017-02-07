@@ -242,8 +242,6 @@
           };
       })(true), false);
 
-      
-
       this.video.onended = function(){
            
            self.pauseState();
@@ -768,20 +766,24 @@
           this.video.paused?this.playState():this.pauseState();
     },
 
-    checkRegionLabels: function(){
-          var regions = this.frames[this.getCurrentFrame()];
-          if (regions != undefined){
-            var unlabledTags = regions.map(function(region,index){
+    getUnlabeledRegionTags: function(regionId){
+         var regions = this.frames[regionId];
+         var unlabledTags = [];
+         if (regions != undefined){
+            unlabledTags = regions.map(function(region,index){
                 if (!region.tags.length > 0) return index + 1;
-            }).filter(Number.isInteger);
+         }).filter(Number.isInteger);
+        }
+        return unlabledTags;
+    },
 
-            if (unlabledTags.length > 0){
-                alert(`Cannot move to the next frame until all tags are labeled. Please label the following tags [${unlabledTags}] on the displayed frame.`);
-                return false;
-            }
-          }
-          return true;
-
+    checkRegionLabels: function(){
+        var unlabledTags = this.getUnlabeledRegionTags(this.getCurrentFrame());
+        if (this.getUnlabeledRegionTags().length > 0){
+            alert(`Cannot move to the next frame until all tags are labeled. Please label the following tags [${unlabledTags}] on the displayed frame.`);
+            return false;
+        }
+        return true;
     },
 
     stepFwdClicked: function() {
