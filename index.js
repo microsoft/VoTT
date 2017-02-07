@@ -143,8 +143,13 @@ function exportCNTK() {
         //clear metadata if image exists from last run
         if(fs.existsSync(writePath))fs.unlinkSync(writePath);
         if(fs.existsSync(positiveWritePath)){
-          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
-          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
+          // checking to see if no tags were saved from last run
+          if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'))) {
+            fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
+          }
+          if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) {
+            fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
+          }
         }
         //genereate metadata from tags
         videotagging.frames[frameId].map(function(tag){
