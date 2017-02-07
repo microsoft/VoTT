@@ -125,7 +125,7 @@ function exportCNTK() {
 
     var frameId = videotagging.getCurrentFrame();
     //if last frame removeEventListener and loader
-    if (( frameId >= furthestVisitedFrame) ) { //|| (videotagging.video.currentTime >= videotagging.video.duration)
+    if (( frameId >= furthestVisitedFrame) ) { 
       videotagging.video.removeEventListener("timeupdate", saveFrames);
       videotagging.video.addEventListener("timeupdate", updateFurthestVisitedFrame);
       $(".loader").remove();
