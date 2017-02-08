@@ -4,7 +4,6 @@
        * Main file of the video-tagging module.
 -->
 
-
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="video-taggingstyles.html">
 <link rel="import" href="optional-tags.html">
@@ -41,7 +40,7 @@
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepBwdClicked'></span>
               </td>
-              <td class="videoControlCell simpleControl clickableControl" style ="display: none">
+              <td class="videoControlCell simpleControl clickableControl">
                 <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked'></span>
               </td>
               <td class="videoControlCell simpleControl clickableControl">
@@ -56,16 +55,16 @@
               <td class="videoControlCell frameNumber">
                 <span id='frameText' class="textElements" title="frame#"></span>
               </td>
-              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" style ="display: none">
+              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" >
                 <span id="playbackSpan"  class="textElements" on-click="playbackSpeedClicked">x 1.0</span>
               </td>
               <td nowrap="nowrap" class="videoControlCell simpleControl">
                 <span id="timeSpan" class="textElements"></span>
               </td>
-              <td class ="videoControlCell simpleControl clickableControl" style ="display: none">
-                <span id="mute" title="Mute" class="icon-volume-mute2 taggingControls" on-click='muteClicked'></span>
+              <td class ="videoControlCell simpleControl clickableControl" >
+                <span id="mute" title="Mute" class="icon-volume-medium taggingControls" on-click='muteClicked'></span>
               </td>
-              <td class="volumeControlCell longControl" style ="display: none">
+              <td class="volumeControlCell longControl" >
                   <input id="volumeSlider" class="volume clickableControl" type="range" min=0 max = 1 value=.5 step= .1 required />
               </td>
             </tr>
@@ -207,7 +206,6 @@
                 this.style.top = (parseFloat(this.style.top) * transformHeight) + "px";
                 this.style.width = (parseFloat(this.style.width) * transformWidth) + "px";
                 this.style.height = (parseFloat(this.style.height) * transformHeight) + "px";
-
             });
 
             //reposition selectedRegion Label
@@ -735,8 +733,8 @@
        *
        */
     muteClicked: function() {
-          this.mute.classList.toggle("icon-volume-medium", !this.video.muted);
-          this.mute.classList.toggle("icon-volume-mute2", this.video.muted);
+          this.mute.classList.toggle("icon-volume-mute2", !this.video.muted);
+          this.mute.classList.toggle("icon-volume-medium", this.video.muted);
           this.video.muted = !this.video.muted;
     },
     /**
@@ -827,7 +825,8 @@
         //Reset lock tags to off
         this.lockTagsEnabled = true;
         this.lockTagsClicked();
-        this.optionalTags.toggleEnableButtons(false);
+        this.optionalTags.toggleEnableButtons(false);        
+        $('canvas#overlay').imgAreaSelect({disable: true});//disable canvas 
         var self = this;
         this.playing = setInterval(function() {
             self.playingCallback();
@@ -836,9 +835,12 @@
     pauseState: function() {
             this.video.pause();
             clearInterval(this.playing);
-            this.stepFwdClicked();
+            //this.stepFwdClicked();
+            this.video.currentTime =  Math.floor(this.video.currentTime/this.frameTime) * this.frameTime;//keep the frame in sync
+            this.playingCallback();
             this.playButton.classList.toggle("icon-pause2", !this.video.paused);
             this.optionalTags.toggleEnableButtons(false);  
+            $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas 
     },
     playingCallback: function() {
             this.frameText.innerHTML = this.getCurrentFrame();
