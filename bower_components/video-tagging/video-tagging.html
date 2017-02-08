@@ -483,17 +483,17 @@
                  region.y2 = region.y1 + parseInt(div.style.height);
              }
 
-              //make region resizable and draggable 
+              //make region  draggable 
               $('#'+divId).draggable({
                   stop: function(event, ui) {
                      updateRegionFromDiv(this);                 
                   },
                   containment: $("#overlay")[0]
               });
+              //make region resizable
               $('#'+divId).resizable({
                   stop: function(event, ui) {
                       updateRegionFromDiv(this);  
-                      // find a way to reuse the updateRegionZIndices function i already wrote for now use this hack
                       $('.regionCanvas').sort(function (e1, e2) {
                         return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
                       }).each(function(idx,e) { 
@@ -835,7 +835,6 @@
     pauseState: function() {
             this.video.pause();
             clearInterval(this.playing);
-            //this.stepFwdClicked();
             this.video.currentTime =  Math.floor(this.video.currentTime/this.frameTime) * this.frameTime;//keep the frame in sync
             this.playingCallback();
             this.playButton.classList.toggle("icon-pause2", !this.video.paused);
@@ -860,7 +859,6 @@
             this.timeSpan.innerHTML = currentTime + "  /  " + remainingtTime;
     },
     updateSeekBar: function() {
-        //
             this.seekBar.value = this.video.currentTime;
             var perc =  100 * this.seekBar.value / this.seekBar.max;
             this.seekStyle.textContent =  '.seek::-webkit-slider-runnable-track{background-size:'+perc+'% 100%}';
