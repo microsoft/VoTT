@@ -31,10 +31,3 @@ function SceneChangeDetector(options={}) {
     }
 
 }
-
-
-
-
-
-
-

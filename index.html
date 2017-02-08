@@ -1,8 +1,3 @@
-<!--
-   Demo html page for an example of hosting the 
-       video-tagging control.
--->
-
 <!doctype html>
 <html>
   <head>
@@ -72,6 +67,7 @@
       <button id="suggestTags" class="btn" onclick="trackSelectedRegion();" title = "Suggests Region Tags Until Next Scene" style ="display: none">Suggest Region Tags (Alpha)</button>
       <br>
     </div>
+
    <script>
     var remote = require('electron').remote; 
     var basepath = remote.app.getAppPath();
@@ -81,27 +77,21 @@
     
     function fileSelcted() { 
       document.getElementById('openFile').style.display = "none";
-
       dialog.showOpenDialog(function (fileName) {
-
           if (fileName){
           
           var config;
-
           document.getElementById('video-tagging-container').style.display = "none";
           document.getElementById('exportCNTK').style.display = "none";
           document.getElementById('suggestTags').style.display = "none";
           document.getElementById('saveFile').style.display = "none";
           document.getElementById('load-message').style.display = "none";
           document.getElementById('load-form-container').style.display = "block";
-
-
           //set title indicator
           $('title').text(`Video Tagging Job Configuration: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
           
           //remove any tags from previous videos
           $('#inputtags').tagsinput('removeAll');
-
           try{
             config = require(`${fileName}.json`);
             document.getElementById('MultiRegions').checked = config.multiRegions;
@@ -110,7 +100,6 @@
             config.inputTags.split(",").forEach(function(tag) {
                $("#inputtags").tagsinput('add',tag);
             });
-
           } 
           catch (e){
             console.log(`Error loading save file ${e.message}`);
@@ -118,16 +107,12 @@
           document.getElementById('loadButton').addEventListener('click', function (e) {
           
             var videotagging = document.getElementById('video-tagging');
-
             videotagging.framerate = document.getElementById('framerate').value;
-
             videotagging.regiontype = document.getElementById('regiontype').value;
             videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
             videotagging.regionsize = document.getElementById('regionsize').value;
             videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
-
             videotagging.video.currentTime = 0;
-
             if(config) videotagging.inputframes = config.frames;
             else videotagging.inputframes = {};
             
@@ -139,7 +124,6 @@
             document.getElementById('exportCNTK').style.display = "inline";
             
             videotagging.src = fileName;//load
-
             //set title indicator
             $('title').text(`Video Tagging Job: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
             
@@ -151,7 +135,6 @@
       }); 
   
     }
-
     function save() { 
        var videotagging = document.getElementById('video-tagging');
        var saveObject = {
@@ -162,11 +145,8 @@
         
        console.log(frames);
        fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
-
     }
-
     function exportCNTK() { 
-
       $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
       
       var videotagging = document.getElementById('video-tagging');
@@ -174,11 +154,9 @@
       //make sure paths exist
       if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
       var framesPath = `${basepath}/cntk/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frames`;
-
       if (!fs.existsSync(framesPath)) fs.mkdirSync(framesPath);
       if (!fs.existsSync(`${framesPath}/positive`)) fs.mkdirSync(`${framesPath}/positive`);
       if (!fs.existsSync(`${framesPath}/negative`)) fs.mkdirSync(`${framesPath}/negative`);
-
       //init canvas buffer 
       var frameCanvas = document.createElement("canvas");
       frameCanvas.width = videotagging.video.videoWidth;
@@ -189,35 +167,30 @@
       videotagging.video.addEventListener("timeupdate", saveFrames);
       videotagging.video.currentTime = 0;
       videotagging.playingCallback();
-
       function saveFrames(){
-
         //if last frame removeEventListener and loader
         if (videotagging.video.currentTime >= videotagging.video.duration){
           videotagging.video.removeEventListener("timeupdate", saveFrames);
           $(".loader").remove();
         }
         
-        var frameId = videotagging.frameText.innerText;
-
+        var startFrameId = videotagging.frameText.innerText;
         //set default writepath to the negative folder
-        var writePath = `${framesPath}/negative/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${frameId}.jpg`;
-
+        var writePath = `${framesPath}/negative/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${startFrameId}.jpg`;
         //If frame contains tags generate the metadata and save it in the positive directory
-        if (videotagging.frames.hasOwnProperty(frameId)){       
-           videotagging.frames[frameId].map(function(tag){
+        if (videotagging.frames.hasOwnProperty(startFrameId)){       
+           videotagging.frames[startFrameId].map(function(tag){
                   if (!tag.tags[tag.tags.length-1]) {
-                    console.log(`frame ${frameId} region ${tag.name} has no label`);
+                    console.log(`frame ${startFrameId} region ${tag.name} has no label`);
                     return;
                   }
-                  writePath = `${framesPath}/positive/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${frameId}.jpg`;
+                  writePath = `${framesPath}/positive/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${startFrameId}.jpg`;
                   var stanW = videotagging.video.videoWidth/tag.width;
                   var stanH = videotagging.video.videoHeight/tag.height;
                   fs.appendFile(writePath.replace('.jpg', '.bboxes.labels.tsv'), `${tag.tags[tag.tags.length-1]}\n`, function (err) {});
                   fs.appendFile(writePath.replace('.jpg', '.bboxes.tsv'), `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`, function (err) {});                 
             }); 
         }
-
         //draw the frame to the canvas
         canvasContext.drawImage(videotagging.video, 0, 0);
         var data = frameCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
@@ -230,10 +203,8 @@
         
       }
     }
-
      function trackSelectedRegion(){
       var videotagging = document.getElementById('video-tagging');
-
       //init canvas buffer 
       var frameCanvas = document.createElement("canvas");
       frameCanvas.width = videotagging.video.videoWidth;
@@ -245,10 +216,14 @@
       var h = parseInt($('.regionCanvasSelected')[0].style.height);
       var y = parseInt($('.regionCanvasSelected')[0].style.top);
       var x = parseInt($('.regionCanvasSelected')[0].style.left);
-
       var stanW = frameCanvas.width/videotagging.video.offsetWidth;
       var stanH = frameCanvas.height/videotagging.video.offsetHeight;
+
+      //store selected frames tags
+      var startFrameId = videotagging.getCurrentFrame();
+      var selectedTags = $.grep(videotagging.frames[startFrameId], function(e){ return e.name == $('.regionCanvasSelected')[0].id; })[0].tags;
       
+      //init camshift tracker
       var cstracker = new regiontrackr.camshift.Tracker({whitebalancing : false,calcAngles:false});
       cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(Math.floor(x * stanW),Math.floor(y * stanH),Math.floor(w*stanW),Math.floor(h*stanH)));
       
@@ -258,59 +233,53 @@
       var scd = new SceneChangeDetector(options={threshold:50});
       
       //init event listner and increment frame here
-      var frameId = videotagging.frameText.innerText;
-      videotagging.video.addEventListener("timeupdate", tagRemainingFrames);
+      videotagging.video.addEventListener("canplaythrough", tagRemainingFrames);
       videotagging.stepFwdClicked();
 
       function tagRemainingFrames(){
-
         //if last frame removeEventListener 
-        if ((videotagging.video.currentTime >= videotagging.video.duration))
+        if (videotagging.video.currentTime >= videotagging.video.duration)
         {
-          videotagging.video.removeEventListener("timeupdate", tagRemainingFrames);
-          videotagging.video.currentTime = parseInt(frameId);
+          videotagging.video.removeEventListener("canplaythrough", tagRemainingFrames);
+          videotagging.video.currentTime = parseInt(startFrameId);
           videotagging.playingCallback();
           return;
         }
      
         //apply camshift here 
-        setTimeout(200);//hack to see if this is the bug this needs to be fixed
         canvasContext.drawImage(videotagging.video, 0, 0);
         cstracker.track(frameCanvas);
         var trackedObject = cstracker.getTrackObj();   
         
-        console.log(trackedObject);
-
-        //break if scenechanges   
-        curImage = canvasContext.getImageData(0, 0, 50,50).data;
-
         //break if picture disapears or scene changes
+        curImage = canvasContext.getImageData(0, 0, 50,50).data;
         if ((scd.detectSceneChange(lastImage,curImage))||(trackedObject.width == 0 || trackedObject.height == 0 )){
-          videotagging.video.removeEventListener("timeupdate", tagRemainingFrames);
-          videotagging.video.currentTime = parseInt(frameId);
+          videotagging.video.removeEventListener("canplaythrough", tagRemainingFrames);
+          videotagging.video.currentTime = parseInt(startFrameId);
           videotagging.playingCallback();
+          return;
         }
-        else {  
         lastImage = curImage;// update image data for scene detection
 
+        //convert canvas scale to image 
         stanW = videotagging.video.offsetWidth / frameCanvas.width;
         stanH = videotagging.video.offsetHeight /frameCanvas.height;
-
-        var tx1 = Math.floor((trackedObject.x - trackedObject.width/2)  * stanW);
-        var ty1 = Math.floor((trackedObject.y - trackedObject.height/2) * stanH);
+        var tx1 = Math.max(Math.floor((trackedObject.x - trackedObject.width/2)  * stanW), 0);
+        var ty1 = Math.max(Math.floor((trackedObject.y - trackedObject.height/2) * stanH), 0);
         var tx2 = Math.min(Math.floor((trackedObject.width * stanW + tx1)), videotagging.video.offsetWidth);
         var ty2 = Math.min(Math.floor((trackedObject.height * stanH + ty1)), videotagging.video.offsetHeight);
-         
-        videotagging.createRegion( tx1,ty1,tx2,ty2);
 
+        // create new tag
+        videotagging.createRegion( tx1,ty1,tx2,ty2);   
+        var currentFrameId = videotagging.getCurrentFrame();     
+        videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].tags = selectedTags;//set tags to original region tags debug this
+        
         videotagging.stepFwdClicked();
 
-        }
-         console.log(trackedObject); 
+        console.log(trackedObject); 
       }
-
-
     }
+
    </script>
   </body>
 </html>

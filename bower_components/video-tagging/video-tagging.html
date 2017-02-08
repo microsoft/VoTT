@@ -281,7 +281,6 @@
               this.emitRegionToHost();//Persist
           });
       this.addEventListener("ontagdeleted", function(e) {
-            
               var regionId = this.selectedRegionId -1;//Revert to zero-based array
               var region = this.frames[this.getCurrentFrame()][regionId];
               for(var index = 0;index < region.tags.length;index++){
