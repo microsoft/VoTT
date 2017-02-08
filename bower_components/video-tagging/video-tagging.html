@@ -779,7 +779,7 @@
 
     checkRegionLabels: function(){
         var unlabledTags = this.getUnlabeledRegionTags(this.getCurrentFrame());
-        if (this.getUnlabeledRegionTags().length > 0){
+        if (unlabledTags.length > 0){
             alert(`Cannot move to the next frame until all tags are labeled. Please label the following tags [${unlabledTags}] on the displayed frame.`);
             return false;
         }
