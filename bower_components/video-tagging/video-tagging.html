@@ -34,7 +34,7 @@
               </video>
       </div>
       <div id="videoControls" class="videoControls">
-        <input id="seekBar" class="seek clickableControl" type="range" min='0' value="0" step="any" style ="display: none" required />
+        <input id="seekBar" class="seek clickableControl" type="range" min='0' value="0" step="any" onkeydown="return false;"  required />
           <table id="videoControlsTable" class="videoControlsTable">
             
             <tr>
@@ -257,8 +257,7 @@
           });
       this.seekBar.addEventListener("change", function() {
             self.seeking = false;
-            self.video.currentTime = self.seekBar.value;
-            self.video.currentTime = Math.min(self.video.duration, self.video.currentTime + self.frameTime);
+            self.video.currentTime =  Math.floor(self.seekBar.value/self.frameTime) * self.frameTime;//keep the frame in sync
             self.playingCallback();
           });
       this.volumeSlider.addEventListener("change", function() {
@@ -689,9 +688,7 @@
       this.indicateEmptyFrame(false);
     },
     getCurrentFrame: function() {
-
-      //this math is wrong
-      return this.video.currentTime === 0 ? 1 : Math.round((this.video.currentTime * this.framerate)) + 1;
+      return this.video.currentTime === 0 ? 1 : Math.floor((this.video.currentTime * this.framerate)) + 1;;
     },
     indicateEmptyFrame : function(selected) {
         if(selected) {
