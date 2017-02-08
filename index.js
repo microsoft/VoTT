@@ -11,7 +11,7 @@ const ipcRenderer = require('electron').ipcRenderer;
 
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
-    if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;            
+    if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
 }
 
 function fileSelcted() {
@@ -40,7 +40,6 @@ function fileSelcted() {
         config.inputTags.split(",").forEach(function(tag) {
             $("#inputtags").tagsinput('add',tag);
         });
-
       }
       catch (e){
         console.log(`Error loading save file ${e.message}`);
@@ -73,8 +72,8 @@ function fileSelcted() {
 
         //track furthestVisitedFrame
         furthestVisitedFrame = 1;
-        videotagging.video.removeEventListener("timeupdate", updateFurthestVisitedFrame); //remove old listener
-        videotagging.video.addEventListener("timeupdate",updateFurthestVisitedFrame);
+        videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
+        videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
 
       });
     }
@@ -95,6 +94,9 @@ function save() {
     console.log(frames);
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
 
+    let notification = new Notification('Offline Video Tagger', {
+      body: 'Successfully saved metadata in ' + `${videotagging.src}.json`
+    });
 }
 
 function exportCNTK() {
@@ -115,9 +117,9 @@ function exportCNTK() {
   frameCanvas.height = videotagging.video.videoHeight;
   var canvasContext = frameCanvas.getContext("2d");
 
-  // start exporting frames using the timeupdate eventListener
-  videotagging.video.removeEventListener("timeupdate", updateFurthestVisitedFrame); //stop recording frame movment
-  videotagging.video.addEventListener("timeupdate", saveFrames);
+  // start exporting frames using the canplaythrough eventListener
+  videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //stop recording frame movment
+  videotagging.video.addEventListener("canplaythrough", saveFrames);
   videotagging.video.currentTime = 0;
   videotagging.playingCallback();
 
@@ -125,9 +127,9 @@ function exportCNTK() {
 
     var frameId = videotagging.getCurrentFrame();
     //if last frame removeEventListener and loader
-    if (( frameId >= furthestVisitedFrame) ) { 
-      videotagging.video.removeEventListener("timeupdate", saveFrames);
-      videotagging.video.addEventListener("timeupdate", updateFurthestVisitedFrame);
+    if (( frameId >= furthestVisitedFrame) ) {
+      videotagging.video.removeEventListener("canplaythrough", saveFrames);
+      videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
       $(".loader").remove();
     }
 
@@ -136,13 +138,17 @@ function exportCNTK() {
     var positiveWritePath = `${framesPath}/positive/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${frameId}.jpg`;
     //If frame contains tags generate the metadata and save it in the positive directory
     var frameIsTagged = videotagging.frames.hasOwnProperty(frameId) && (videotagging.frames[frameId].length > 0);
-    var frameContainsLabels = (videotagging.getUnlabeledRegionTags(frameId).length != videotagging.frames[frameId].length);
-    if (frameIsTagged && frameContainsLabels){
+    if (frameIsTagged && (videotagging.getUnlabeledRegionTags(frameId).length != videotagging.frames[frameId].length)){
         //clear metadata if image exists from last run
         if(fs.existsSync(writePath))fs.unlinkSync(writePath);
         if(fs.existsSync(positiveWritePath)){
-          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
-          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
+          // checking to see if no tags were saved from last run
+          if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'))) {
+            fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
+          }
+          if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) {
+            fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
+          }
         }
         //genereate metadata from tags
         videotagging.frames[frameId].map(function(tag){
@@ -170,9 +176,13 @@ function exportCNTK() {
 
     //write canvas to file and change frame
     console.log('saving file', writePath);
-    if(!fs.existsSync(writePath))fs.writeFileSync(writePath, buf);
+    if(!fs.existsSync(writePath)) {
+      fs.writeFileSync(writePath, buf);
+
+      let notification = new Notification('Offline Video Tagger', {
+        body: 'Successfully exported CNTK files.'
+      });
+    }
     if (frameId < furthestVisitedFrame) videotagging.stepFwdClicked();
-
   }
-
 }
