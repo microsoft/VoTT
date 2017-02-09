@@ -11,12 +11,13 @@ const url = require('url');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let ipcMain = require('electron').ipcMain;
 
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-      width: 800, 
-      height: 600, 
+      width: 800,
+      height: 600,
       minHeight: 480,
       minWidth: 480,
       icon: __dirname + '/icon.png'});
@@ -27,7 +28,11 @@ function createWindow () {
     protocol: 'file:',
     slashes: true
   }));
- 
+
+  ipcMain.on('setFilePath', function (event, arg) {
+    mainWindow.setRepresentedFilename(arg);
+  });
+
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows

@@ -4,7 +4,6 @@
        * Main file of the video-tagging module.
 -->
 
-
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="video-taggingstyles.html">
 <link rel="import" href="optional-tags.html">
@@ -18,7 +17,7 @@
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
     <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="assets/icons/style.css">
-    
+
     <div id="controlWrapper" class="controlWrapper">
       <playback-control id="playSpeedControl" class="playSpeedControl"></playback-control>
       <div id='videoWrapper' class="relativeDiv">
@@ -34,14 +33,14 @@
               </video>
       </div>
       <div id="videoControls" class="videoControls">
-        <input id="seekBar" class="seek clickableControl" type="range" min='0' value="0" step="any" style ="display: none" required />
+        <input id="seekBar" class="seek clickableControl" type="range" min='0' value="0" step="any" onkeydown="return false;"  required />
           <table id="videoControlsTable" class="videoControlsTable">
-            
+
             <tr>
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepBwdClicked'></span>
               </td>
-              <td class="videoControlCell simpleControl clickableControl" style ="display: none">
+              <td class="videoControlCell simpleControl clickableControl">
                 <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked'></span>
               </td>
               <td class="videoControlCell simpleControl clickableControl">
@@ -56,16 +55,16 @@
               <td class="videoControlCell frameNumber">
                 <span id='frameText' class="textElements" title="frame#"></span>
               </td>
-              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" style ="display: none">
+              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" >
                 <span id="playbackSpan"  class="textElements" on-click="playbackSpeedClicked">x 1.0</span>
               </td>
               <td nowrap="nowrap" class="videoControlCell simpleControl">
                 <span id="timeSpan" class="textElements"></span>
               </td>
-              <td class ="videoControlCell simpleControl clickableControl" style ="display: none">
-                <span id="mute" title="Mute" class="icon-volume-mute2 taggingControls" on-click='muteClicked'></span>
+              <td class ="videoControlCell simpleControl clickableControl" >
+                <span id="mute" title="Mute" class="icon-volume-medium taggingControls" on-click='muteClicked'></span>
               </td>
-              <td class="volumeControlCell longControl" style ="display: none">
+              <td class="volumeControlCell longControl" >
                   <input id="volumeSlider" class="volume clickableControl" type="range" min=0 max = 1 value=.5 step= .1 required />
               </td>
             </tr>
@@ -83,8 +82,8 @@
           </div>
           <div style="clear: both">
           </div>
-      </div> 
-</div> 
+      </div>
+</div>
 </template>
 <script>
 
@@ -100,9 +99,9 @@
       videoheight: Number,
       regiontype: String,
       multiregions: Number,
-      regionsize: Number, 
-      inputtagsarray:Object, 
-      inputframes: Object,   
+      regionsize: Number,
+      inputtagsarray:Object,
+      inputframes: Object,
       src: {
         type: String,
         value: '',
@@ -139,7 +138,7 @@
       this.mute = this.$$('#mute');
       this.emptyFrame = this.$$("#emptyFrame");
       this.nextuntagged = this.$$("#nextuntagged");
-      
+
       // Sliders
       this.seekBar = this.$$("#seekBar");
       this.volumeSlider = this.$$("#volumeSlider");
@@ -155,7 +154,7 @@
       this.aspect = 0;
       this.snapWidth = 0;
     },
-    
+
      /**
        * Events registration and handling
        *
@@ -169,23 +168,21 @@
       this.video.addEventListener( "loadedmetadata", function (e) {
 
             self.controlWrapper.style.display = "block";
-           
-            
+
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
             self.frameTime = 1/self.framerate;
             self.enableAreaSelect(self);
             self.optionalTags.createTagControls(self.inputtagsarray);
 
+            //Take the raw video aspect ratio
+            self.aspect = self.video.offsetWidth / self.video.offsetHeight;
+            self.snapToAspectRatio();
+
             //Init sliders
             self.volumeSlider.value = .5;
             self.seekBar.max = self.video.duration;
             self.playingCallback();
-
-             
-            //Take the raw video aspect ratio
-            self.aspect = self.video.offsetWidth / self.video.offsetHeight;
-            self.snapToAspectRatio();
 
            //Size canvas as video
             self.overlay.width = self.video.offsetWidth;
@@ -199,9 +196,9 @@
             var transformWidth =  self.video.offsetWidth/self.overlay.width;
             var transformHeight = self.video.offsetHeight/self.overlay.height;
 
-            //resize the overlay            
+            //resize the overlay
             self.overlay.width = self.video.offsetWidth;
-            self.overlay.height = self.video.offsetHeight;            
+            self.overlay.height = self.video.offsetHeight;
 
             //resize the region boxes
             $('.regionCanvas').each(function() {
@@ -209,7 +206,6 @@
                 this.style.top = (parseFloat(this.style.top) * transformHeight) + "px";
                 this.style.width = (parseFloat(this.style.width) * transformWidth) + "px";
                 this.style.height = (parseFloat(this.style.height) * transformHeight) + "px";
-
             });
 
             //reposition selectedRegion Label
@@ -244,25 +240,22 @@
           };
       })(true), false);
 
-      
-
       this.video.onended = function(){
-           
+
            self.pauseState();
       }
 
       this.seekBar.addEventListener("mousedown", function() {
-            
+
             self.seeking = true;
           });
       this.seekBar.addEventListener("mouseup", function() {
-            
+
             self.seeking = false;
           });
       this.seekBar.addEventListener("change", function() {
             self.seeking = false;
-            self.video.currentTime = self.seekBar.value;
-            self.video.currentTime = Math.min(self.video.duration, self.video.currentTime + self.frameTime);
+            self.video.currentTime =  Math.floor(self.seekBar.value/self.frameTime) * self.frameTime;//keep the frame in sync
             self.playingCallback();
           });
       this.volumeSlider.addEventListener("change", function() {
@@ -281,6 +274,7 @@
               this.emitRegionToHost();//Persist
           });
       this.addEventListener("ontagdeleted", function(e) {
+
               var regionId = this.selectedRegionId -1;//Revert to zero-based array
               var region = this.frames[this.getCurrentFrame()][regionId];
               for(var index = 0;index < region.tags.length;index++){
@@ -299,7 +293,7 @@
         // we never redraw larger than the parent container.
 
         // We need to offset for the non-scaling parts of the video controls
-        this.snapWidth = 
+        this.snapWidth =
             ($('#video-tagging').parent().height()
             - $('#videoControls').innerHeight()
             - $('#videoTagControls').innerHeight()
@@ -314,13 +308,13 @@
        * JQuery Area selector
        * Based on JQuery plugin imgareaselect
        * http://odyniec.net/projects/imgareaselect/usage.html
-       * 
+       *
        * Allows selection of a rectangle
        */
     clearArea: function()
     {
         $('canvas#overlay').imgAreaSelect({
-                 
+
                   show:false,
                   hide:true
             });
@@ -333,35 +327,35 @@
       });
       if((this.regiontype.toLowerCase() === "square") || (this.regiontype.toLowerCase() === "rectangle")) {
           var areaSelected = false;
-          
+
           $('canvas#overlay').imgAreaSelect({
-                        disable: false, //enable/disable 
+                        disable: false, //enable/disable
                         handles: true, //grab handles when selecting the area
                         aspectRatio: '1:1',
-                        maxWidth: self.overlay.offsetWidth, 
+                        maxWidth: self.overlay.offsetWidth,
                         maxHeight: self.overlay.offsetHeight,
                         minWidth:10,
                         fadeSpeed: 200,
                         square: (this.regiontype.toLowerCase() === "square"),
-                        
+
                         onSelectEnd: function(img, selection){
-                      
+
                               if (selection.width !== 0 && selection.height !== 0) {
                                 self.areaSelected = true;
                                 self.createRegion(selection.x1, selection.y1, selection.x2, selection.y2);
-                                self.clearArea(); 
+                                self.clearArea();
                               }
                          },
                          onSelectStart: function(img, selection){
 
                               self.cleanSelectedElements();
                          },
-                      }); 
+                      });
           }
     },
     /**
        * All functions related to regions management
-       * 
+       *
        * @method positionRegionNameLabel
        * Positions the div with the region number next to the region div.
        * @param {div} The region div
@@ -371,9 +365,9 @@
     updateRegionZIndices: function(){
         $('.regionCanvas').sort(function (e1, e2) {
             return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
-        }).each(function(idx,e) { 
+        }).each(function(idx,e) {
             e.style.zIndex =(idx+200).toString();
-        }); 
+        });
     },
 
     positionRegionNameLabel: function(div) {
@@ -400,12 +394,12 @@
             $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
         }
 
-        if(this.lockTagsEnabled) {   
+        if(this.lockTagsEnabled) {
             //Get all selected tags and add them to current region automatically
             //this.selectedTags was populated in this.lockTagsClicked
             var arr = [];
             for (var i=0; i<this.selectedTags.length;i++) {
-              
+
               this.optionalTags.setSelected(this.selectedTags[i]);
               arr.push(this.selectedTags[i].id)
             }
@@ -420,11 +414,11 @@
         this.emitRegionToHost();//Persist
     },
     addTagsToRegion: function(selectedTagsArray) {
-          
+
           var regionId = this.selectedRegionId -1;//Revert to zero-based array
           var region = this.frames[this.getCurrentFrame()][regionId];
           for (var i = 0; i < selectedTagsArray.length; i++) {
-                    
+
                   region.tags.push(selectedTagsArray[i]);
             }
     },
@@ -441,7 +435,7 @@
                       }
                       this.video.currentTime += (this.frameTime * framesForward);
                       this.playingCallback();
-                      break; 
+                      break;
                 }
                 framesForward++;
             }
@@ -489,33 +483,33 @@
                  region.y2 = region.y1 + parseInt(div.style.height);
              }
 
-              //make region resizable and draggable 
+              //make region  draggable
               $('#'+divId).draggable({
                   stop: function(event, ui) {
-                     updateRegionFromDiv(this);                 
+                     updateRegionFromDiv(this);
                   },
                   containment: $("#overlay")[0]
               });
+              //make region resizable
               $('#'+divId).resizable({
                   stop: function(event, ui) {
-                      updateRegionFromDiv(this);  
-                      // find a way to reuse the updateRegionZIndices function i already wrote for now use this hack
+                      updateRegionFromDiv(this);
                       $('.regionCanvas').sort(function (e1, e2) {
                         return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
-                      }).each(function(idx,e) { 
+                      }).each(function(idx,e) {
                         e.style.zIndex =(idx+200).toString();
-                      });  
+                      });
                   },
                   containment: $("#overlay")[0],
                   handles: 'n,s,e, w'
-              });   
+              });
 
     },
     deleteRegion: function(e) {
-          
+
           var regions = this.frames[this.getCurrentFrame()];
           regions.splice(this.selectedRegionId - 1, 1);
-          //Shift array left to cover removed item - Rename all regions which are higher than the deleted one,  
+          //Shift array left to cover removed item - Rename all regions which are higher than the deleted one,
           for (var i=0;i<regions.length;i++) {
               var id = Number(regions[i].name)
               if(id > this.selectedRegionId){
@@ -526,12 +520,12 @@
           this.emitRegionToHost();
     },
 
-    clearRegions: function(e) {   
+    clearRegions: function(e) {
           var regions = this.frames[this.getCurrentFrame()]=[];
           this.showAllRegions();
           this.emitRegionToHost();
     },
-    
+
     /**
        * @method emitRegionToHost
        * Fires an event to send the array of regions.
@@ -573,7 +567,7 @@
                       })
             $( div )
                       .mouseenter(function(e) {
-                          
+
                           self.positionRegionNameLabel(this);
                       })
                       .mouseleave(function() {
@@ -584,7 +578,7 @@
                         }
                       });
 
-            Polymer.dom(this.$.videoWrapper).appendChild(div); 
+            Polymer.dom(this.$.videoWrapper).appendChild(div);
     },
     /**
        * @method cleanSelectedElements
@@ -607,7 +601,7 @@
             this.cleanSelectedElements();//Clear selected regions
             var frameIndex = this.getCurrentFrame();
             var regions = this.frames[frameIndex];
-            
+
             if(regions && regions.length > 0) {
               //Draw all regions for this frame
               for (var i=0; i<regions.length;i++) {
@@ -618,7 +612,7 @@
                       this.indicateEmptyFrame(true);
                       continue;
                   }
-                  //Calculate x, y relative to current width and height          
+                  //Calculate x, y relative to current width and height
                   var widthRatio =  $('#vid').width() / region.width;
                   var heightRatio =  $('#vid').height() / region.height ;
                   var x1 = (region.x1 * widthRatio);
@@ -640,13 +634,13 @@
               }
             }
     },
-    /** 
+    /**
        * @method addRegion
        * Adds a region to the array of regions per current frame.
        * @params {x1, y1, x2, y2} region coordinates.
        */
     addRegion: function(x1, y1, x2, y2) {
-            
+
             this.resetEmptyFrame();//Clear empty frame logic
 
             var region = {};
@@ -658,8 +652,8 @@
             region.height = $('#vid').height();
             region.type = this.regiontype;
             region.tags = [];
-            
-            var frameIndex = this.getCurrentFrame();      
+
+            var frameIndex = this.getCurrentFrame();
             var regions = this.frames[frameIndex];
             //The array is populated and can contain multiple regions
             if(this.multiregions == 1 && regions) {
@@ -672,11 +666,11 @@
                 this.frames[frameIndex] = [];
                 this.frames[frameIndex].push(region);
             }
-            return region; 
+            return region;
     },
     /**
        * All functions related to frames management
-       * 
+       *
        * @method clearFrameElements
        * Clears all drawings and divs from the video area and resets tag controls.
        */
@@ -692,9 +686,7 @@
       this.indicateEmptyFrame(false);
     },
     getCurrentFrame: function() {
-
-      //this math is wrong
-      return this.video.currentTime === 0 ? 1 : Math.round((this.video.currentTime * this.framerate)) + 1;
+      return this.video.currentTime === 0 ? 1 : Math.floor((this.video.currentTime * this.framerate)) + 1;;
     },
     indicateEmptyFrame : function(selected) {
         if(selected) {
@@ -706,12 +698,12 @@
             this.emptyFrame.classList.add("controlOff");
         }
     },
-    /** 
+    /**
        * @method emptyFrameClicked
        * Creates an empty region array for the current frame, meaning that the frame is not tagged, but has been reviewed.
        */
     emptyFrameClicked: function() {
-        var frameIndex = this.getCurrentFrame();      
+        var frameIndex = this.getCurrentFrame();
         var regions = this.frames[frameIndex];
         if(!regions || regions.length === 0) {
             this.frames[frameIndex] = [{}];
@@ -722,7 +714,7 @@
             }
         }
     },
-    /** 
+    /**
        * @method resetEmptyFrame
        * If the frame has been marked as empty - reset that.
        */
@@ -741,8 +733,8 @@
        *
        */
     muteClicked: function() {
-          this.mute.classList.toggle("icon-volume-medium", !this.video.muted);
-          this.mute.classList.toggle("icon-volume-mute2", this.video.muted);
+          this.mute.classList.toggle("icon-volume-mute2", !this.video.muted);
+          this.mute.classList.toggle("icon-volume-medium", this.video.muted);
           this.video.muted = !this.video.muted;
     },
     /**
@@ -768,26 +760,50 @@
     playPauseClicked: function() {
           this.video.paused?this.playState():this.pauseState();
     },
+
+    getUnlabeledRegionTags: function(regionId){
+         var regions = this.frames[regionId];
+         var unlabledTags = [];
+         if (regions != undefined){
+            unlabledTags = regions.map(function(region,index){
+                if (!region.tags.length > 0) return index + 1;
+         }).filter(Number.isInteger);
+        }
+        return unlabledTags;
+    },
+
+    checkRegionLabels: function(){
+        var unlabledTags = this.getUnlabeledRegionTags(this.getCurrentFrame());
+        if (unlabledTags.length > 0){
+            alert(`Cannot move to the next frame until all tags are labeled. Please label the following tags [${unlabledTags}] on the displayed frame.`);
+            return false;
+        }
+        return true;
+    },
+
     stepFwdClicked: function() {
           if(!this.video.paused) {
               this.pauseState();
           }
 
-          //this is wrong !!!! you should take the frame number and jump to the index it represents           
-          this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
-          this.playingCallback();
+          //if there are no unlabled tags move to next frame
+          if (this.checkRegionLabels()){
+            this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
+            this.playingCallback();
+          }
     },
     stepBwdClicked: function() {
-          
           if (this.video.currentTime > 0) {
               if(!this.video.paused) {
                   this.pauseState();
               }
-              this.video.currentTime -= this.frameTime;
-              this.playingCallback();
+              if (this.checkRegionLabels()){
+                this.video.currentTime -= this.frameTime;
+                this.playingCallback();
+              }
           }
     },
-    videoSrcChanged: function(newValue, oldValue) { 
+    videoSrcChanged: function(newValue, oldValue) {
 
           if(this.video){
               this.video.src = newValue;
@@ -801,7 +817,7 @@
                 var x1 = (e.clientX-rect.left)/(rect.right-rect.left)*this.overlay.width;
                 var y1 = (e.clientY-rect.top)/(rect.bottom-rect.top)*this.overlay.height;
                 this.createRegion(x1, y1, null, null);
-            }            
+            }
     },
     playState: function() {
         this.video.play();
@@ -810,6 +826,7 @@
         this.lockTagsEnabled = true;
         this.lockTagsClicked();
         this.optionalTags.toggleEnableButtons(false);
+        $('canvas#overlay').imgAreaSelect({disable: true});//disable canvas
         var self = this;
         this.playing = setInterval(function() {
             self.playingCallback();
@@ -818,9 +835,11 @@
     pauseState: function() {
             this.video.pause();
             clearInterval(this.playing);
-            this.stepFwdClicked();
+            this.video.currentTime =  Math.floor(this.video.currentTime/this.frameTime) * this.frameTime;//keep the frame in sync
+            this.playingCallback();
             this.playButton.classList.toggle("icon-pause2", !this.video.paused);
-            this.optionalTags.toggleEnableButtons(false);  
+            this.optionalTags.toggleEnableButtons(false);
+            $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
     },
     playingCallback: function() {
             this.frameText.innerHTML = this.getCurrentFrame();
@@ -840,7 +859,6 @@
             this.timeSpan.innerHTML = currentTime + "  /  " + remainingtTime;
     },
     updateSeekBar: function() {
-        //
             this.seekBar.value = this.video.currentTime;
             var perc =  100 * this.seekBar.value / this.seekBar.max;
             this.seekStyle.textContent =  '.seek::-webkit-slider-runnable-track{background-size:'+perc+'% 100%}';

@@ -1,7 +1,16 @@
-//detects scene change based on the median color diference between franes
+/*
+Detects scene change based on the median color diference between detectionRegions on frames begining from 0,0 
+Defaults at w:50, 50
+*/
+
 function SceneChangeDetector(options={}) {  
     this._threshold = options.threshold || 110.418238983; // 25 * Math.sqrt(255 * 255 * 3) / 100
-    this._canvasContextImageDataLength = options.canvasContextImageDataLength || 10000;// (50*50*4) The length of the canvas context imageData object. Used to speed up calculation.
+    this._detectionRegion = options.detectionRegion || {w:50,h:50};
+    this._canvasContextImageDataLength =  (this._detectionRegion.w * this._detectionRegion.h *4);// The length of the canvas context imageData object. Used to speed up calculation.
+
+    this.getDetectionRegion = function (){
+        return this._detectionRegion;
+    }
 
     this.detectSceneChange = function(lastImgData, currentImgData) {
         var diff = this.computeDifferences(lastImgData, currentImgData);
@@ -14,7 +23,6 @@ function SceneChangeDetector(options={}) {
         for (var i = 0; i < this._canvasContextImageDataLength; i = i + 4) {
             colorDiffs.push(this.getColorDistance(colorsA[i], colorsA[i + 1], colorsA[i + 2], colorsB[i], colorsB[i + 1], colorsB[i + 2]));
         }
-
         return this.getMedian(colorDiffs);
     }
 

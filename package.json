@@ -1,21 +1,21 @@
 {
-  "name": "electron-quick-start",
+  "name": "offline-video-tagger",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "An offline port of the video-tagging-tool for electron.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/CatalystCode/offline-video-tagger/",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
+    "Video-Tagging",
+    "CNTK",
     "tutorial",
     "demo"
   ],
   "author": "GitHub",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^1.4.1",
     "bower": "^1.7.2"
