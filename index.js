@@ -115,6 +115,19 @@ function fileSelected(filePath) {
           videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
           videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
 
+          //keep track whether the frame is suggested or notification
+          $('#video-tagging').on("canvasRegionSelected",function(el,divId){
+              var suggestedBy = videotagging.frames[videotagging.getCurrentFrame()][divId-1].suggestedBy;
+              if (suggestedBy) {
+                document.getElementById('suggestTags').title ="Re-suggest Remaining Region Tags From Selected Region (Alpha)";
+                document.getElementById('suggestTags').innerText ="Re-suggest Region Tags (Alpha)";
+              }
+              else{
+                 document.getElementById('suggestTags').innerText ="Suggest Region Tags (Alpha)";
+
+              }
+          });
+
         });
     }
     else {
@@ -239,6 +252,7 @@ function trackSelectedRegion(){
       var canvasContext = frameCanvas.getContext("2d");
       canvasContext.drawImage(videotagging.video, 0, 0);
 
+      var startId = $('.regionCanvasSelected')[0].id;
       var w = parseInt($('.regionCanvasSelected')[0].style.width);
       var h = parseInt($('.regionCanvasSelected')[0].style.height);
       var y = parseInt($('.regionCanvasSelected')[0].style.top);
@@ -286,11 +300,23 @@ function trackSelectedRegion(){
         var tx2 = Math.min(Math.floor((trackedObject.width * stanW + tx1)), videotagging.video.offsetWidth);
         var ty2 = Math.min(Math.floor((trackedObject.height * stanH + ty1)), videotagging.video.offsetHeight);
 
+
+        //if a tag existis that shares the same previouslySuggested tag as the start Id tag remove existing tag before creating a new one
+        var currentFrameId = videotagging.getCurrentFrame();     
+        var suggestedBy = videotagging.frames[startFrameId][parseInt(startId)-1].suggestedBy;
+        if (suggestedBy){
+          var existingSuggestion = $.grep(videotagging.frames[currentFrameId], function(e){ 
+            return ((e.suggestedBy.frameId == suggestedBy.frameId) && (e.suggestedBy.tagId == suggestedBy.tagId)); 
+          });
+          if (existingSuggestion){
+            videotagging.deleteRegion($("#"+existingSuggestion[0].name));
+          }
+        }
+
         // create new tag
         videotagging.createRegion( tx1,ty1,tx2,ty2);   
-        var currentFrameId = videotagging.getCurrentFrame();     
         videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].tags = selectedTags;//set tags to original region tags debug this
-        
+        videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].suggestedBy = {frameId:startFrameId, tagId:startId};
         videotagging.stepFwdClicked();
       }
 

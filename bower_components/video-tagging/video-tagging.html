@@ -504,6 +504,9 @@
                   handles: 'n,s,e, w'
               });
 
+              //raise regionSelectedEvent
+             $('#video-tagging').trigger('canvasRegionSelected',[divId]); 
+
     },
     deleteRegion: function(e) {
 
