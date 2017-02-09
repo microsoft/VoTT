@@ -315,9 +315,10 @@ function trackSelectedRegion(){
         var suggestedBy = videotagging.frames[startFrameId][parseInt(startId)-1].suggestedBy;
         if (suggestedBy){
           var existingSuggestion = $.grep(videotagging.frames[currentFrameId], function(e){ 
+            if (!e) return undefined;
             return ((e.suggestedBy.frameId == suggestedBy.frameId) && (e.suggestedBy.tagId == suggestedBy.tagId)); 
           });
-          if (existingSuggestion){
+          if (existingSuggestion && existingSuggestion.length>0){
             videotagging.deleteRegion($("#"+existingSuggestion[0].name));
           }
         }
