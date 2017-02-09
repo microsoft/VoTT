@@ -15,7 +15,7 @@ function updateFurthestVisitedFrame(){
 }
 
 ipcRenderer.on('openVideo', function(event, message) {
-  fileSelcted();
+  fileSelected();
 });
 
 ipcRenderer.on('saveVideo', function(event, message) {
@@ -26,9 +26,9 @@ ipcRenderer.on('exportCNTK', function(event, message) {
   exportCNTK();
 });
 
-function fileSelcted() {
+function fileSelected() {
 
-  document.getElementById('load-message').style.display = "none";
+  document.getElementById('openFile').style.display = "none";
 
   dialog.showOpenDialog(function (fileName) {
 
@@ -37,6 +37,8 @@ function fileSelcted() {
       var config;
 
       document.getElementById('video-tagging-container').style.display = "none";
+      document.getElementById('exportCNTK').style.display = "none";
+      document.getElementById('saveFile').style.display = "none";
       document.getElementById('load-message').style.display = "none";
       document.getElementById('load-form-container').style.display = "block";
 
@@ -71,6 +73,9 @@ function fileSelcted() {
 
         document.getElementById('load-form-container').style.display = "none";
         document.getElementById('video-tagging-container').style.display = "block";
+        document.getElementById('openFile').style.display = "inline";
+        document.getElementById('saveFile').style.display = "inline";
+        document.getElementById('exportCNTK').style.display = "inline";
 
         videotagging.src = fileName;//load
         ipcRenderer.send('setFilePath', fileName[0])
@@ -84,10 +89,12 @@ function fileSelcted() {
         videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
 
       });
-    } else {
-      document.getElementById('load-message').style.display = "inline";
+    }
+    else {
+      document.getElementById('openFile').style.display = "inline";
     }
   });
+
 }
 
 function save() {
