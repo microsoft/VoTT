@@ -38,6 +38,18 @@ function updateFurthestVisitedFrame(){
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
 }
 
+ipcRenderer.on('openVideo', function(event, message) {
+  fileSelected();
+});
+
+ipcRenderer.on('saveVideo', function(event, message) {
+  save();
+});
+
+ipcRenderer.on('exportCNTK', function(event, message) {
+  exportCNTK();
+});
+
 function fileSelected(filePath) {
   document.getElementById('openFile').style.display = "none";
 
