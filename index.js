@@ -11,7 +11,6 @@ var videotagging;
 document.addEventListener('drop', function (e) {
     e.preventDefault();
     e.stopPropagation();
-    e.dataTransfer.effectAllowed = "copy";
     if(e.dataTransfer.files[0].type == "video/mp4") {
       fileSelected(e.dataTransfer.files[0]);
     }
@@ -20,13 +19,17 @@ document.addEventListener('drop', function (e) {
 
 document.addEventListener('dragover', function (e) {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "copy";
+    if(e.dataTransfer.files[0].type == "video/mp4") {
+      e.dataTransfer.dropEffect = "copy";
+    }
     e.stopPropagation();
 });
 
 document.addEventListener('dragstart', function (e) {
     e.preventDefault();
-    e.dataTransfer.effectAllowed = "copy";
+    if(e.dataTransfer.files[0].type == "video/mp4") {
+      e.dataTransfer.effectAllowed = "copy";
+    }
     e.stopPropagation();
 });
 
