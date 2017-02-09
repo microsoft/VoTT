@@ -8,6 +8,10 @@ html, body {
     padding: 0 20px;
 }
 
+.regionGroup {
+    margin-left: 10px;
+}
+
 #load-message{
     position: absolute;
     top: 0;

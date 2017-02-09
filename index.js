@@ -38,6 +38,15 @@ function updateFurthestVisitedFrame(){
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
 }
 
+function checkPointRegion() {
+    if (document.getElementById('regiontype').value != "Point") {
+      document.getElementById('regionPointGroup').style.display = "none";
+    }
+    else {
+      document.getElementById('regionPointGroup').style.display = "inline";
+    }
+}
+
 function fileSelected(filePath) {
   document.getElementById('openFile').style.display = "none";
 
