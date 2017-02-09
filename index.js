@@ -1,86 +1,124 @@
-var remote = require('electron').remote;
-var basepath = remote.app.getAppPath();
-var dialog = remote.require('electron').dialog;
-var path = require('path');
-var fs = require('fs');
+const remote = require('electron').remote;
+const basepath = remote.app.getAppPath();
+const dialog = remote.require('electron').dialog;
+const path = require('path');
+const fs = require('fs');
+const ipcRenderer = require('electron').ipcRenderer;
 
 var furthestVisitedFrame; //keep track of the furthest visited frame
 var videotagging;
 
-const ipcRenderer = require('electron').ipcRenderer;
+document.addEventListener('drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.dataTransfer.files[0].type == "video/mp4") {
+      fileSelected(e.dataTransfer.files[0]);
+    }
+    return false;
+});
+
+document.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    if(e.dataTransfer.files[0].type == "video/mp4") {
+      e.dataTransfer.dropEffect = "copy";
+    }
+    e.stopPropagation();
+});
+
+document.addEventListener('dragstart', function (e) {
+    e.preventDefault();
+    if(e.dataTransfer.files[0].type == "video/mp4") {
+      e.dataTransfer.effectAllowed = "copy";
+    }
+    e.stopPropagation();
+});
 
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
 }
 
-function fileSelcted() {
-
+function fileSelected(filePath) {
   document.getElementById('openFile').style.display = "none";
-  dialog.showOpenDialog(function (fileName) {
 
-      if (fileName){
+  if(filePath) {  //checking if a video is dropped
+    let fileName = [filePath.path];
+    openFile(fileName);
+  } else { // showing system open dialog
+    dialog.showOpenDialog({
+      filters: [{ name: 'Videos', extensions: ['mp4']}],
+      properties: ['openFile']
+    },
+    function (fileName) {
+      openFile(fileName);
+    });
+  }
 
-      var config;
+  function openFile(fileName) {
+    if (fileName) {
+        var config;
 
-      document.getElementById('video-tagging-container').style.display = "none";
-      document.getElementById('exportCNTK').style.display = "none";
-      document.getElementById('saveFile').style.display = "none";
-      document.getElementById('load-message').style.display = "none";
-      document.getElementById('load-form-container').style.display = "block";
+        document.getElementById('video-tagging-container').style.display = "none";
+        document.getElementById('exportCNTK').style.display = "none";
+        document.getElementById('saveFile').style.display = "none";
+        document.getElementById('load-message').style.display = "none";
+        document.getElementById('load-form-container').style.display = "block";
 
-      $('title').text(`Video Tagging Job Configuration: ${path.basename(fileName[0], path.extname(fileName[0]))}`);      //set title indicator
-      $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
+        $('title').text(`Video Tagging Job Configuration: ${path.basename(fileName[0], path.extname(fileName[0]))}`);      //set title indicator
+        $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
-      try{
-        config = require(`${fileName}.json`);
-        document.getElementById('MultiRegions').checked = config.multiRegions;
-        //restore tags
-        document.getElementById('inputtags').value = config.inputTags;
-        config.inputTags.split(",").forEach(function(tag) {
-            $("#inputtags").tagsinput('add',tag);
+        try{
+          config = require(`${fileName}.json`);
+          document.getElementById('MultiRegions').checked = config.multiRegions;
+          //restore tags
+          document.getElementById('inputtags').value = config.inputTags;
+          config.inputTags.split(",").forEach(function(tag) {
+              $("#inputtags").tagsinput('add',tag);
+          });
+        }
+        catch (e){
+          console.log(`Error loading save file ${e.message}`);
+        }
+        document.getElementById('loadButton').addEventListener('click', function (e) {
+
+          videotagging = document.getElementById('video-tagging');
+          videotagging.framerate = document.getElementById('framerate').value;
+          videotagging.regiontype = document.getElementById('regiontype').value;
+          videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
+          videotagging.regionsize = document.getElementById('regionsize').value;
+          videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
+
+          videotagging.video.currentTime = 0;
+
+          if(config) videotagging.inputframes = config.frames;
+          else videotagging.inputframes = {};
+
+          document.getElementById('load-form-container').style.display = "none";
+          document.getElementById('video-tagging-container').style.display = "block";
+          document.getElementById('openFile').style.display = "inline";
+          document.getElementById('saveFile').style.display = "inline";
+          document.getElementById('exportCNTK').style.display = "inline";
+
+          videotagging.src = fileName;//load
+
+          console.log(fileName);
+
+          ipcRenderer.send('setFilePath', fileName[0])
+
+          //set title indicator
+          $('title').text(`Video Tagging Job: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
+
+          //track furthestVisitedFrame
+          furthestVisitedFrame = 1;
+          videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
+          videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
+
         });
-      }
-      catch (e){
-        console.log(`Error loading save file ${e.message}`);
-      }
-      document.getElementById('loadButton').addEventListener('click', function (e) {
-
-        videotagging = document.getElementById('video-tagging');
-        videotagging.framerate = document.getElementById('framerate').value;
-        videotagging.regiontype = document.getElementById('regiontype').value;
-        videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
-        videotagging.regionsize = document.getElementById('regionsize').value;
-        videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
-
-        videotagging.video.currentTime = 0;
-
-        if(config) videotagging.inputframes = config.frames;
-        else videotagging.inputframes = {};
-
-        document.getElementById('load-form-container').style.display = "none";
-        document.getElementById('video-tagging-container').style.display = "block";
-        document.getElementById('openFile').style.display = "inline";
-        document.getElementById('saveFile').style.display = "inline";
-        document.getElementById('exportCNTK').style.display = "inline";
-
-        videotagging.src = fileName;//load
-        ipcRenderer.send('setFilePath', fileName[0])
-
-        //set title indicator
-        $('title').text(`Video Tagging Job: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
-
-        //track furthestVisitedFrame
-        furthestVisitedFrame = 1;
-        videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
-        videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
-
-      });
     }
     else {
       document.getElementById('openFile').style.display = "inline";
     }
-  });
+  }
 
 }
 
@@ -178,11 +216,13 @@ function exportCNTK() {
     console.log('saving file', writePath);
     if(!fs.existsSync(writePath)) {
       fs.writeFileSync(writePath, buf);
-
+    }
+    if (frameId < furthestVisitedFrame) {
+      videotagging.stepFwdClicked();
+    } else {
       let notification = new Notification('Offline Video Tagger', {
-        body: 'Successfully exported CNTK files.'
+          body: 'Successfully exported CNTK files.'
       });
     }
-    if (frameId < furthestVisitedFrame) videotagging.stepFwdClicked();
   }
 }
