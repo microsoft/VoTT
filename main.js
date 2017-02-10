@@ -39,6 +39,14 @@ function createWindow () {
     menu.items[p].submenu.items[3].enabled = true;
   });
 
+  ipcMain.on('setProgressBar', function (event, arg, arg2) {
+    if(arg2 == 'paused'){ // paused
+      mainWindow.setProgressBar(arg, {mode: arg2});
+    } else { // playing
+      mainWindow.setProgressBar(arg);
+    }
+  });
+
   mainWindow.on('ready-to-show', function() {
       mainWindow.show();
       mainWindow.focus();

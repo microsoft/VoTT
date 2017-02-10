@@ -153,6 +153,8 @@
       this.ctx = this.overlay.getContext("2d");
       this.aspect = 0;
       this.snapWidth = 0;
+
+      const ipcRenderer = require('electron').ipcRenderer;
     },
 
      /**
@@ -791,6 +793,9 @@
             this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
             this.playingCallback();
           }
+
+        ipcRenderer.send('setProgressBar', time, 'paused');
+
     },
     stepBwdClicked: function() {
           if (this.video.currentTime > 0) {
@@ -840,6 +845,9 @@
             this.playButton.classList.toggle("icon-pause2", !this.video.paused);
             this.optionalTags.toggleEnableButtons(false);
             $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
+
+            var time =  this.seekBar.value / this.seekBar.max;
+            ipcRenderer.send('setProgressBar', time, 'paused');
     },
     playingCallback: function() {
             this.frameText.innerHTML = this.getCurrentFrame();
@@ -863,6 +871,8 @@
             var perc =  100 * this.seekBar.value / this.seekBar.max;
             this.seekStyle.textContent =  '.seek::-webkit-slider-runnable-track{background-size:'+perc+'% 100%}';
             this.seekStyle.textContent += '.seek::-moz-range-track{background-size:'+perc+'% 100%}';
+
+            ipcRenderer.send('setProgressBar', perc/100);
     },
 });
 </script>
