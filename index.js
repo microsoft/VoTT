@@ -147,6 +147,8 @@ function save() {
     let notification = new Notification('Offline Video Tagger', {
       body: 'Successfully saved metadata in ' + `${videotagging.src}.json`
     });
+
+    ipcRenderer.send('regionChanged', 'save');
 }
 
 function exportCNTK() {
