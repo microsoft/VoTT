@@ -274,7 +274,6 @@
               this.emitRegionToHost();//Persist
           });
       this.addEventListener("ontagdeleted", function(e) {
-
               var regionId = this.selectedRegionId -1;//Revert to zero-based array
               var region = this.frames[this.getCurrentFrame()][regionId];
               for(var index = 0;index < region.tags.length;index++){
@@ -418,9 +417,8 @@
           var regionId = this.selectedRegionId -1;//Revert to zero-based array
           var region = this.frames[this.getCurrentFrame()][regionId];
           for (var i = 0; i < selectedTagsArray.length; i++) {
-
                   region.tags.push(selectedTagsArray[i]);
-            }
+          }
     },
     nextUntaggedClicked :function() {
           var frameIndex = this.getCurrentFrame();
@@ -637,6 +635,17 @@
               }
             }
     },
+
+    generateFrameUUID: function() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (d + Math.random()*16)%16 | 0;
+            d = Math.floor(d/16);
+            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+        });
+        return uuid;
+    },
+
     /**
        * @method addRegion
        * Adds a region to the array of regions per current frame.
@@ -651,6 +660,7 @@
             region.y1 = y1;
             region.x2 = x2;
             region.y2 = y2;
+            region.id = this.generateFrameUUID();
             region.width = $('#vid').width();
             region.height = $('#vid').height();
             region.type = this.regiontype;

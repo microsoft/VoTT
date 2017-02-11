@@ -258,12 +258,10 @@ function initRegionTracking() {
 
     $('#video-tagging').on("stepFwdClicked-BeforeStep",function() {
 
-      if ($('.regionCanvas').length > 0) { 
-        canvasContext.drawImage(videotagging.video, 0, 0);
-
+      if ($('.regionCanvas').length > 0) {         
         //init store imagedata for scene detection
-        prevFrameId = videotagging.getCurrentFrame();
-        
+        canvasContext.drawImage(videotagging.video, 0, 0);
+        prevFrameId = videotagging.getCurrentFrame();    
         prevImage = canvasContext.getImageData(0, 0, frameCanvas.width, frameCanvas.height).data;
 
         $.map($('.regionCanvas'), function(regionCanvas) {  
@@ -271,12 +269,11 @@ function initRegionTracking() {
           var h = parseInt(regionCanvas.style.height);
           var y = parseInt(regionCanvas.style.top);
           var x = parseInt(regionCanvas.style.left);
-          //init camshift tracker
+          //init and push the region tracker
           var cstracker = new regiontrackr.camshift.Tracker({whitebalancing : false,calcAngles:false});
           cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(x,y,w,h));
-          
-          prevLabels = $.grep(videotagging.frames[prevFrameId], function(e){ return e.name == regionCanvas.id;})[0].tags;
-          trackersStack.push({cstracker: cstracker, prevTags: prevLabels, prevRegionId: regionCanvas.id});
+          var prevRegion = $.grep(videotagging.frames[prevFrameId], function(e){ return e.name == regionCanvas.id;})[0];
+          trackersStack.push({cstracker: cstracker, prevTags: prevRegion.tags, prevRegionId: prevRegion.id});
         });
       }
     });
@@ -299,11 +296,9 @@ function initRegionTracking() {
           var data = getDataUrlFromArr(curImage, frameCanvas.width, frameCanvas.height).replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
           var buf = new Buffer(data, 'base64');
           fs.writeFileSync('curImage-debug.jpg', buf);
-
           data = getDataUrlFromArr(prevImage, frameCanvas.width, frameCanvas.height).replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
           buf = new Buffer(data, 'base64');
           fs.writeFileSync('prevImage-debug.jpg', buf);
-          
           //break if scene changes
           if (scd.detectSceneChange(prevImage, curImage)) break;
           //apply camshift here 
@@ -322,23 +317,16 @@ function initRegionTracking() {
           if (videotagging.frames[currentFrameId]){
             var existingSuggestion = $.grep(videotagging.frames[currentFrameId], function(e) { 
               if (!e.suggestedBy) return undefined;
-              return ((e.suggestedBy.frameId == prevFrameId) && (e.suggestedBy.regionId == tracker.prevRegionId)); 
+              return e.suggestedBy.regionId == tracker.prevRegionId; 
             }); 
-            var suggestorExists = (videotagging.frames[prevFrameId][tracker.prevRegionId-1] != undefined);
-            if (suggestorExists) {
-              suggestorExists = (videotagging.frames[prevFrameId][tracker.prevRegionId-1].suggesteor != undefined);
-            }
-            if (existingSuggestion && suggestorExists && existingSuggestion.length > 0) {
+            if (existingSuggestion && existingSuggestion.length > 0) {
               continue;
             }
           }
-
           //create new region
           videotagging.createRegion( tx1,ty1,tx2,ty2);   
           videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].tags = tracker.prevTags;
-          videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].suggestedBy = {frameId:prevFrameId, regionId:tracker.prevRegionId};
-          videotagging.frames[prevFrameId][tracker.prevRegionId - 1].suggesteor = true;
-                   
+          videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].suggestedBy = {frameId:prevFrameId, regionId:tracker.prevRegionId};                   
         }
 
         prevImage = prevFrameId = undefined;
@@ -346,7 +334,6 @@ function initRegionTracking() {
     }            
 
 }
-
 
 //For debuging canvas frames
 function getDataUrlFromArr(arr, w, h) {
@@ -366,4 +353,3 @@ function getDataUrlFromArr(arr, w, h) {
 
   return canvas.toDataURL();
 }
-
