@@ -8,6 +8,10 @@ html, body {
     padding: 0 20px;
 }
 
+.regionGroup {
+    margin-left: 10px;
+}
+
 #load-message{
     position: absolute;
     top: 0;
@@ -49,7 +53,6 @@ html, body {
 .bootstrap-tagsinput {
     display: block;
 }
-
 
 .loader {
     border: 16px solid #f3f3f3; /* Light grey */

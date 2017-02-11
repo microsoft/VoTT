@@ -274,7 +274,6 @@
               this.emitRegionToHost();//Persist
           });
       this.addEventListener("ontagdeleted", function(e) {
-
               var regionId = this.selectedRegionId -1;//Revert to zero-based array
               var region = this.frames[this.getCurrentFrame()][regionId];
               for(var index = 0;index < region.tags.length;index++){
@@ -418,9 +417,8 @@
           var regionId = this.selectedRegionId -1;//Revert to zero-based array
           var region = this.frames[this.getCurrentFrame()][regionId];
           for (var i = 0; i < selectedTagsArray.length; i++) {
-
-                  region.tags.push(selectedTagsArray[i]);
-            }
+               region.tags.push(selectedTagsArray[i]);
+          }
     },
     nextUntaggedClicked :function() {
           var frameIndex = this.getCurrentFrame();
@@ -503,6 +501,8 @@
                   containment: $("#overlay")[0],
                   handles: 'n,s,e, w'
               });
+              //raise regionSelectedEvent
+             $('#video-tagging').trigger('canvasRegionSelected',[divId]); 
 
     },
     deleteRegion: function(e) {
@@ -634,6 +634,16 @@
               }
             }
     },
+    generateFrameUUID: function() {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (d + Math.random()*16)%16 | 0;
+            d = Math.floor(d/16);
+            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+        });
+        return uuid;
+    },
+    
     /**
        * @method addRegion
        * Adds a region to the array of regions per current frame.
@@ -648,6 +658,7 @@
             region.y1 = y1;
             region.x2 = x2;
             region.y2 = y2;
+            region.id = this.generateFrameUUID();
             region.width = $('#vid').width();
             region.height = $('#vid').height();
             region.type = this.regiontype;
@@ -781,16 +792,21 @@
         return true;
     },
 
-    stepFwdClicked: function() {
-          if(!this.video.paused) {
-              this.pauseState();
-          }
-
-          //if there are no unlabled tags move to next frame
-          if (this.checkRegionLabels()){
-            this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
+    stepFwdClicked: function(fireEvents = true) {
+        if(!this.video.paused) this.pauseState();
+        if ((this.video.currentTime + this.frameTime) > this.video.duration ){
+            this.video.currentTime = this.video.duration;
+            return;
+        } 
+        //raise before next frame
+        if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+        //if there are no unlabled tags move to next frame
+        if (this.checkRegionLabels()){
+            this.video.currentTime = this.video.currentTime + this.frameTime;
             this.playingCallback();
-          }
+        }
+        //raise after next frame
+        if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep'); 
     },
     stepBwdClicked: function() {
           if (this.video.currentTime > 0) {
