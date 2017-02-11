@@ -38,8 +38,6 @@ function updateFurthestVisitedFrame(){
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
 }
 
-
-
 function checkPointRegion() {
     if (document.getElementById('regiontype').value != "Point") {
       document.getElementById('regionPointGroup').style.display = "none";
@@ -48,6 +46,19 @@ function checkPointRegion() {
       document.getElementById('regionPointGroup').style.display = "inline";
     }
 }
+
+ipcRenderer.on('openVideo', function(event, message) {
+  fileSelected();
+});
+
+ipcRenderer.on('saveVideo', function(event, message) {
+  save();
+});
+
+ipcRenderer.on('exportCNTK', function(event, message) {
+  exportCNTK();
+});
+
 
 function fileSelected(filePath) {
   document.getElementById('openFile').style.display = "none";
@@ -126,7 +137,6 @@ function fileSelected(filePath) {
 
           //init region tracking
           videotagging.video.addEventListener("canplaythrough",  initRegionTracking);
-
         });
     }
     else {
@@ -141,10 +151,9 @@ function save() {
       "frames" : videotagging.frames,
       "inputTags": document.getElementById('inputtags').value,
       "multiRegions": document.getElementById('MultiRegions').checked,
-      furthestVisitedFrame: furthestVisitedFrame
+      "furthestVisitedFrame": furthestVisitedFrame
     }
-
-    console.log(frames);
+    
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
 
     let notification = new Notification('Offline Video Tagger', {
@@ -234,6 +243,7 @@ function exportCNTK() {
     }
     if (frameId < furthestVisitedFrame) {
       videotagging.stepFwdClicked(false);
+
     } else {
       let notification = new Notification('Offline Video Tagger', {
           body: 'Successfully exported CNTK files.'
@@ -287,18 +297,9 @@ function initRegionTracking() {
 
       //to do pop the stack make the reccomendations
         while(trackersStack.length > 0 && prevImage) {
-
           //caputure new frame
           canvasContext.drawImage(videotagging.video, 0, 0);
           var curImage = canvasContext.getImageData(0, 0, frameCanvas.width, frameCanvas.height).data;
-          
-          //debug
-          var data = getDataUrlFromArr(curImage, frameCanvas.width, frameCanvas.height).replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
-          var buf = new Buffer(data, 'base64');
-          fs.writeFileSync('curImage-debug.jpg', buf);
-          data = getDataUrlFromArr(prevImage, frameCanvas.width, frameCanvas.height).replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
-          buf = new Buffer(data, 'base64');
-          fs.writeFileSync('prevImage-debug.jpg', buf);
           //break if scene changes
           if (scd.detectSceneChange(prevImage, curImage)) break;
           //apply camshift here 
@@ -333,23 +334,4 @@ function initRegionTracking() {
         trackerStack = []; 
     }            
 
-}
-
-//For debuging canvas frames
-function getDataUrlFromArr(arr, w, h) {
-  if(typeof w === 'undefined' || typeof h === 'undefined') {
-    w = h = Math.sqrt(arr.length / 4);
-  }
-
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-
-  canvas.width = w;
-  canvas.height = h;
-
-  const imgData = ctx.createImageData(w, h);
-  imgData.data.set(arr);
-  ctx.putImageData(imgData, 0, 0);
-
-  return canvas.toDataURL();
 }

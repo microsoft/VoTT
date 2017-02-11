@@ -3,8 +3,7 @@ const electron = require('electron');
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
-
-
+const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
 
@@ -14,13 +13,25 @@ let mainWindow;
 let ipcMain = require('electron').ipcMain;
 
 function createWindow () {
+
+  let mainWindowState = windowStateKeeper({
+    defaultWidth: 800,
+    defaultHeight: 600
+  });
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      width: mainWindowState.width,
+      height: mainWindowState.height,
+      x: mainWindowState.x,
+      y: mainWindowState.y,
       minHeight: 480,
       minWidth: 480,
-      icon: __dirname + '/icon.png'});
+      icon: __dirname + '/icon.png',
+      show: false
+  });
+
+  mainWindowState.manage(mainWindow);
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -31,6 +42,16 @@ function createWindow () {
 
   ipcMain.on('setFilePath', function (event, arg) {
     mainWindow.setRepresentedFilename(arg);
+
+    // opened a file, enabling save and export to CNTK menu items
+    let p = (process.platform === 'darwin') ? 1 : 0;
+    menu.items[p].submenu.items[1].enabled = true;
+    menu.items[p].submenu.items[3].enabled = true;
+  });
+
+  mainWindow.on('ready-to-show', function() {
+      mainWindow.show();
+      mainWindow.focus();
   });
 
   // Emitted when the window is closed.
@@ -40,6 +61,82 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   });
+
+  const {app, Menu} = require('electron');
+  const template = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Open...',
+          accelerator: 'CmdOrCtrl+O',
+          click () { mainWindow.webContents.send('openVideo'); }
+        },
+        {
+          label: 'Save',
+          accelerator: 'CmdOrCtrl+S',
+          enabled: false,
+          click () { mainWindow.webContents.send('saveVideo'); }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Export to CNTK',
+          accelerator: 'CmdOrCtrl+E',
+          enabled: false,
+          click () { mainWindow.webContents.send('exportCNTK'); }
+        }
+      ]
+    },
+    {
+      label: 'Debug',
+      submenu: [
+        {
+          label: 'Toggle Developer Tools',
+          accelerator: 'CmdOrCtrl+T',
+          click () { mainWindow.webContents.toggleDevTools(); }
+        }
+      ]
+    }
+  ]
+
+if (process.platform === 'darwin') {
+    template.unshift({
+      label: app.getName(),
+      submenu: [
+        {
+          role: 'about'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          role: 'hide'
+        },
+        {
+          role: 'hideothers'
+        },
+        {
+          role: 'unhide'
+        },
+        {
+          type: 'separator'
+        },
+        {
+          role: 'quit'
+        }
+      ]
+    })
+    template[1].submenu.push();
+    template[2].submenu.push();
+  }
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished

@@ -417,7 +417,7 @@
           var regionId = this.selectedRegionId -1;//Revert to zero-based array
           var region = this.frames[this.getCurrentFrame()][regionId];
           for (var i = 0; i < selectedTagsArray.length; i++) {
-                  region.tags.push(selectedTagsArray[i]);
+               region.tags.push(selectedTagsArray[i]);
           }
     },
     nextUntaggedClicked :function() {
@@ -501,7 +501,6 @@
                   containment: $("#overlay")[0],
                   handles: 'n,s,e, w'
               });
-
               //raise regionSelectedEvent
              $('#video-tagging').trigger('canvasRegionSelected',[divId]); 
 
@@ -635,7 +634,6 @@
               }
             }
     },
-
     generateFrameUUID: function() {
         var d = new Date().getTime();
         var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -645,7 +643,7 @@
         });
         return uuid;
     },
-
+    
     /**
        * @method addRegion
        * Adds a region to the array of regions per current frame.
