@@ -238,3 +238,42 @@ function exportCNTK() {
     }
   }
 }
+
+function loadImageFolder(folderpath) {
+  var dataUrls = [];
+  var video = new Whammy.Video(15);
+  var canvas = document.createElement('canvas');
+
+  fs.readdir(folderpath,function (err, files) {
+
+    var imageFiles = files.filter(function(file){
+      return file.match(/.(jpg|jpeg|png|gif)$/i);
+    });
+    var index = 0;
+    imageFiles.forEach( function(file) {
+      var image = new Image(655, 392);
+      image.onload = function () {
+          canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
+          canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+          var imageContext = canvas.getContext('2d');
+          imageContext.drawImage(this, 0, 0);
+          video.add(imageContext);
+          console.log(index);
+          if(index == imageFiles.length-1){
+            $('#video-tagging').trigger('finished-processing-images');
+          }
+          index++;
+      };
+      image.src = `${folderpath}/${file}`;        
+      
+    });
+
+    $('#video-tagging').on("finished-processing-images",function(){
+      var output = video.compile();
+      videotagging.framerate = 15;
+      videotagging.src = URL.createObjectURL(output);
+    });
+
+  });
+
+}
