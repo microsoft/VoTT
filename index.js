@@ -331,7 +331,7 @@ function initRegionTracking() {
         }
 
         prevImage = prevFrameId = undefined;
-        trackerStack = []; 
+        trackersStack = []; 
     }            
 
 }
