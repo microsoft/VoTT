@@ -1,7 +1,7 @@
 const remote = require('electron').remote;
 const basepath = remote.app.getAppPath();
 const dialog = remote.require('electron').dialog;
-const path = require('path');
+const pathJS = require('path');
 const fs = require('fs');
 const ipcRenderer = require('electron').ipcRenderer;
 
@@ -60,91 +60,108 @@ ipcRenderer.on('exportCNTK', function(event, message) {
 });
 
 
-function fileSelected(filePath) {
+function fileSelected(path) {
   document.getElementById('openFile').style.display = "none";
 
-  if(filePath) {  //checking if a video is dropped
-    let fileName = [filePath.path];
-    openFile(fileName);
+  if(path) {  //checking if a video is dropped
+    let pathName = [path.path];
+    openPath(pathName);
   } else { // showing system open dialog
     dialog.showOpenDialog({
       filters: [{ name: 'Videos', extensions: ['mp4']}],
-      properties: ['openFile']
+      properties: ['openFile','openDirectory']
     },
-    function (fileName) {
-      openFile(fileName);
+    function (pathName) {
+      if (pathName) openPath(pathName[0]);
+      else document.getElementById('openFile').style.display = "inline";
     });
   }
 
-  function openFile(fileName) {
-    if (fileName) {
-        var config;
+  function openPath(pathName) {
+    var config;
 
-        document.getElementById('video-tagging-container').style.display = "none";
-        document.getElementById('exportCNTK').style.display = "none";
-        document.getElementById('saveFile').style.display = "none";
-        document.getElementById('load-message').style.display = "none";
-        document.getElementById('load-form-container').style.display = "block";
+    document.getElementById('video-tagging-container').style.display = "none";
+    document.getElementById('exportCNTK').style.display = "none";
+    document.getElementById('saveFile').style.display = "none";
+    document.getElementById('load-message').style.display = "none";
+    document.getElementById('load-form-container').style.display = "block";
 
-        $('title').text(`Video Tagging Job Configuration: ${path.basename(fileName[0], path.extname(fileName[0]))}`);      //set title indicator
-        $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
-
-        try{
-          config = require(`${fileName}.json`);
-          document.getElementById('MultiRegions').checked = config.multiRegions;
-          //restore tags
-          document.getElementById('inputtags').value = config.inputTags;
-          config.inputTags.split(",").forEach(function(tag) {
-              $("#inputtags").tagsinput('add',tag);
-          });
-        }
-        catch (e){
-          console.log(`Error loading save file ${e.message}`);
-        }
-        document.getElementById('loadButton').addEventListener('click', function (e) {
-
-          videotagging = document.getElementById('video-tagging');
-          videotagging.framerate = document.getElementById('framerate').value;
-          videotagging.regiontype = document.getElementById('regiontype').value;
-          videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
-          videotagging.regionsize = document.getElementById('regionsize').value;
-          videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
-
-          videotagging.video.currentTime = 0;
-
-          if(config) videotagging.inputframes = config.frames;
-          else videotagging.inputframes = {};
-
-          document.getElementById('load-form-container').style.display = "none";
-          document.getElementById('video-tagging-container').style.display = "block";
-          document.getElementById('openFile').style.display = "inline";
-          document.getElementById('saveFile').style.display = "inline";
-          document.getElementById('exportCNTK').style.display = "inline";
-
-          videotagging.src = fileName;//load
-
-          console.log(fileName);
-
-          ipcRenderer.send('setFilePath', fileName[0])
-
-          //set title indicator
-          $('title').text(`Video Tagging Job: ${path.basename(fileName[0], path.extname(fileName[0]))}`);
-
-          //track furthestVisitedFrame
-          furthestVisitedFrame = 1;
-          videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
-          videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
-
-          //init region tracking
-          videotagging.video.addEventListener("canplaythrough",  initRegionTracking);
-        });
+    if (fs.lstatSync(pathName).isDirectory()){
+      var dirName = pathName.match(/([^\/]*)\/*$/)[1]
+      document.getElementById('framerateGroup').style.display = "none";
+      $('title').text(`Video Tagging Job Configuration: ${dirName}`);
+    } else {
+      document.getElementById('framerateGroup').style.display = "inline";
+      //set title indicator
+      $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
     }
-    else {
+    
+    $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
+
+    try{
+      config = require(`${pathName}.json`);
+      document.getElementById('MultiRegions').checked = config.multiRegions;
+      //restore tags
+      document.getElementById('inputtags').value = config.inputTags;
+      config.inputTags.split(",").forEach(function(tag) {
+          $("#inputtags").tagsinput('add',tag);
+      });
+    } catch (e){
+      console.log(`Error loading save file ${e.message}`);
+    }
+    
+    document.getElementById('loadButton').parentNode.replaceChild(document.getElementById('loadButton').cloneNode(true), document.getElementById('loadButton'));
+    document.getElementById('loadButton').addEventListener('click', loadTagger);
+    function loadTagger (e) {
+
+      videotagging = document.getElementById('video-tagging');
+      videotagging.regiontype = document.getElementById('regiontype').value;
+      videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
+      videotagging.regionsize = document.getElementById('regionsize').value;
+      videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
+
+      videotagging.video.currentTime = 0;
+
+      if(config) videotagging.inputframes = config.frames;
+      else videotagging.inputframes = {};
+
+      if (fs.lstatSync(pathName).isDirectory()){
+          loadImageFolder(pathName);
+          $('title').text(`Video Tagging Job: ${dirName}`);
+          videotagging.framerate = 15; 
+      } else {
+        videotagging.framerate = document.getElementById('framerate').value;
+        //set title indicator
+        $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
+        videotagging.src = pathName;//load
+
+        //track furthestVisitedFrame
+        furthestVisitedFrame = 1;
+        videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
+        videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
+
+        //init region tracking
+        videotagging.video.addEventListener("canplaythrough",  initRegionTracking);
+
+      }
+
+
+      document.getElementById('load-form-container').style.display = "none";
+      document.getElementById('video-tagging-container').style.display = "block";
       document.getElementById('openFile').style.display = "inline";
+      document.getElementById('saveFile').style.display = "inline";
+      document.getElementById('exportCNTK').style.display = "inline";
+
+      console.log(pathName);
+
+      ipcRenderer.send('setFilePath', pathName)
+
     }
   }
-
 }
+
+
+
 
 function save() {
     var saveObject = {
@@ -167,7 +184,7 @@ function exportCNTK() {
 
   //make sure paths exist
   if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
-  var framesPath = `${basepath}/cntk/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frames`;
+  var framesPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frames`;
 
   if (!fs.existsSync(framesPath)) fs.mkdirSync(framesPath);
   if (!fs.existsSync(`${framesPath}/positive`)) fs.mkdirSync(`${framesPath}/positive`);
@@ -196,8 +213,8 @@ function exportCNTK() {
     }
 
     //set default writepath to the negative folder
-    var writePath = `${framesPath}/negative/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${frameId}.jpg`; //defaults to negative
-    var positiveWritePath = `${framesPath}/positive/${path.basename(videotagging.src[0], path.extname(videotagging.src[0]))}_frame_${frameId}.jpg`;
+    var writePath = `${framesPath}/negative/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frame_${frameId}.jpg`; //defaults to negative
+    var positiveWritePath = `${framesPath}/positive/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frame_${frameId}.jpg`;
     //If frame contains tags generate the metadata and save it in the positive directory
     var frameIsTagged = videotagging.frames.hasOwnProperty(frameId) && (videotagging.frames[frameId].length > 0);
     if (frameIsTagged && (videotagging.getUnlabeledRegionTags(frameId).length != videotagging.frames[frameId].length)){
@@ -331,7 +348,7 @@ function initRegionTracking() {
         }
 
         prevImage = prevFrameId = undefined;
-        trackerStack = []; 
+        trackersStack = []; 
     }            
 }
 
@@ -347,10 +364,10 @@ function loadImageFolder(folderpath) {
     });
     var index = 0;
     imageFiles.forEach( function(file) {
-      var image = new Image(655, 392);
+      var image = new Image();
       image.onload = function () {
-          canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
-          canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+          canvas.width = this.width; // or 'width' if you want a special/scaled size
+          canvas.height = this.height; // or 'height' if you want a special/scaled size
           var imageContext = canvas.getContext('2d');
           imageContext.drawImage(this, 0, 0);
           video.add(imageContext);
@@ -365,7 +382,14 @@ function loadImageFolder(folderpath) {
     });
 
     $('#video-tagging').on("finished-processing-images",function(){
-      var output = video.compile();
+      try{
+       var output = video.compile();
+
+      } catch (e) {
+        console.error(e.msg);
+        alert("Images must be the same dimensions to tag.")
+        location.reload();
+      }
       videotagging.framerate = 15;
       videotagging.src = URL.createObjectURL(output);
     });
