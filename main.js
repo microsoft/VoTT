@@ -96,6 +96,11 @@ function createWindow () {
           label: 'Toggle Developer Tools',
           accelerator: 'CmdOrCtrl+T',
           click () { mainWindow.webContents.toggleDevTools(); }
+        },
+        {
+          label: 'Refresh App',
+          accelerator: 'CmdOrCtrl+R',
+          click () { mainWindow.reload(); }
         }
       ]
     }
