@@ -87,7 +87,7 @@ function fileSelected(path) {
     document.getElementById('load-form-container').style.display = "block";
 
     if (fs.lstatSync(pathName).isDirectory()){
-      var dirName = pathName.match(/([^\/]*)\/*$/)[1]
+      var dirName = pathName.match(/([^\/]*)\/*$/)[1];
       document.getElementById('framerateGroup').style.display = "none";
       $('title').text(`Video Tagging Job Configuration: ${dirName}`);
     } else {
@@ -154,7 +154,7 @@ function fileSelected(path) {
 
       console.log(pathName);
 
-      ipcRenderer.send('setFilePath', pathName)
+      ipcRenderer.send('setFilePath', pathName);
 
     }
   }
@@ -169,7 +169,7 @@ function save() {
       "inputTags": document.getElementById('inputtags').value,
       "multiRegions": document.getElementById('MultiRegions').checked,
       "furthestVisitedFrame": furthestVisitedFrame
-    }
+    };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
 
@@ -275,9 +275,9 @@ function initRegionTracking() {
 
     var frameCanvas = document.createElement("canvas"),
     canvasContext = frameCanvas.getContext("2d"),
-    scd = new SceneChangeDetector(options={threshold:60, detectionRegion:{w:frameCanvas.width, h:frameCanvas.height}}),
+    scd = new SceneChangeDetector({threshold:60, detectionRegion:{w:frameCanvas.width, h:frameCanvas.height}}),
     trackersStack = [],
-    prevImage, prevFrameId, prevLabels;
+    prevImage, prevFrameId;
     
     //set canvas dimensions
     frameCanvas.width = videotagging.video.offsetWidth;
@@ -312,6 +312,12 @@ function initRegionTracking() {
     function afterStep() {
       videotagging.video.removeEventListener("canplaythrough", afterStep);
 
+      
+      function suggestionExists(e) {
+          if (!e.suggestedBy) return undefined;
+          return e.suggestedBy.regionId == tracker.prevRegionId; 
+      }
+      
       //to do pop the stack make the reccomendations
         while(trackersStack.length > 0 && prevImage) {
           //caputure new frame
@@ -324,7 +330,7 @@ function initRegionTracking() {
           tracker.cstracker.track(frameCanvas);
           var trackedObject = tracker.cstracker.getTrackObj();        
           //if object has disapeared don't add a new region
-          if (trackedObject.width == 0 || trackedObject.height == 0 ) continue;
+          if (trackedObject.width === 0 || trackedObject.height === 0 ) continue;
           //get bounding box of tracked object
           var tx1 = Math.max(Math.floor((trackedObject.x - trackedObject.width/2) ), 0);
           var ty1 = Math.max(Math.floor((trackedObject.y - trackedObject.height/2)), 0);
@@ -333,10 +339,7 @@ function initRegionTracking() {
           // don't create a new region if a suggestion already exists
           var currentFrameId = videotagging.getCurrentFrame();
           if (videotagging.frames[currentFrameId]){
-            var existingSuggestion = $.grep(videotagging.frames[currentFrameId], function(e) { 
-              if (!e.suggestedBy) return undefined;
-              return e.suggestedBy.regionId == tracker.prevRegionId; 
-            }); 
+            var existingSuggestion = $.grep(videotagging.frames[currentFrameId], suggestionExists); 
             if (existingSuggestion && existingSuggestion.length > 0) {
               continue;
             }
@@ -353,7 +356,6 @@ function initRegionTracking() {
 }
 
 function loadImageFolder(folderpath) {
-  var dataUrls = [];
   var video = new Whammy.Video(15);
   var canvas = document.createElement('canvas');
 
@@ -382,12 +384,11 @@ function loadImageFolder(folderpath) {
     });
 
     $('#video-tagging').on("finished-processing-images",function(){
-      try{
-       var output = video.compile();
-
+      var output;
+      try{ output = video.compile();
       } catch (e) {
         console.error(e.msg);
-        alert("Images must be the same dimensions to tag.")
+        alert("Images must be the same dimensions to tag.");
         location.reload();
       }
       videotagging.framerate = 15;
