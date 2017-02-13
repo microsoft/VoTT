@@ -18,6 +18,7 @@
     <script src="./public/js/bootstrap-tagsinput.min.js"></script>
     <script src="./public/js/camshift.js"></script>
     <script src="./public/js/scene-change-detector.js"></script>
+
     <script src="./index.js"></script>
 
     <link rel="stylesheet" href="./public/css/bootstrap-tagsinput.css" />
@@ -26,12 +27,15 @@
   <body>
     <div id="container">
 
-        <div id ='load-message'>
-            <img id="vidImage" src ="./public/images/Wikiversity-Mooc-Icon-Video.svg.png"></img>
+        <div id ='load-message'   onclick="fileSelected();">
+            <div id = "load-text"><h2>Please <b>Drag in</b> or <b>Click</b> to load a video for tagging.</h2>
+            <img id="vidImage" src ="./public/images/Wikiversity-Mooc-Icon-Video.svg.png" ></img>
+            </div>
+            
         </div>
         <div id ='load-form-container' style ="display: none">
-          <h2>Video Configuration</h2>
-          <div class="form-group">
+          <h2>Tagging Job Configuration</h2>
+          <div class="form-group" id="framerateGroup">
             <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per video second)</label>
             <input id="framerate" type="number" min="1" max="999" value="1" maxlength="3" size="3" class="form-control" />
           </div>
@@ -71,11 +75,5 @@
         </div>
     </div>
 
-    <div id="controlDiv">
-      <button id="openFile" class="btn" onclick="fileSelected();">Load Video</button>
-      <button id="saveFile" class="btn" onclick="save();" style ="display: none">Save Video</button>
-      <button id="exportCNTK" class="btn" onclick="exportCNTK();" style ="display: none">Export to CNTK</button>
-      <br>
-    </div>
   </body>
 </html>
