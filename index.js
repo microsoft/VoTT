@@ -71,7 +71,6 @@ function fileSelected(path) {
   document.getElementById('load-message').style.display = "none";
 
   if(path) {  //checking if a video is dropped
-    let pathName = [path.path];
     openPath(path.path);
   } else { // showing system open dialog
     dialog.showOpenDialog({
