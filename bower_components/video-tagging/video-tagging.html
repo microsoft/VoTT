@@ -113,6 +113,8 @@
       this.selectedRegionId = 0;//Holds the current selected region number
       this.lockTagsEnabled = false;
       this.selectedTags = [];
+      this.uniqueTagId = 0;
+
       //Divs and spans
       this.controlWrapper= this.$$('#controlWrapper');
       this.videoWrapper= this.$$('#videoWrapper');
@@ -573,15 +575,6 @@
               }
             }
     },
-    generateFrameUUID: function() {
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (d + Math.random()*16)%16 | 0;
-            d = Math.floor(d/16);
-            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-        });
-        return uuid;
-    },
     
     /**
        * @method addRegion
@@ -595,7 +588,7 @@
             region.y1 = y1;
             region.x2 = x2;
             region.y2 = y2;
-            region.id = this.generateFrameUUID();
+            region.id = this.uniqueTagId++;
             region.width = $('#vid').width();
             region.height = $('#vid').height();
             region.type = this.regiontype;
