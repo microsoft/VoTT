@@ -64,7 +64,7 @@ function fileSelected(path) {
   document.getElementById('load-message').style.display = "none";
 
   if(path) {  //checking if a video is dropped
-    let pathName = [path.path];
+    let pathName = path.path;
     openPath(pathName);
   } else { // showing system open dialog
     dialog.showOpenDialog({
@@ -140,9 +140,6 @@ function fileSelected(path) {
     }
   }
 }
-
-
-
 
 function save() {
     var saveObject = {

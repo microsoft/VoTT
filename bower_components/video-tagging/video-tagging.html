@@ -40,8 +40,8 @@
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepBwdClicked'></span>
               </td>
-              <td class="videoControlCell simpleControl clickableControl">
-                <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked'></span>
+              <td class="videoControlCell simpleControl clickableControl" style="display: none">
+                <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked' ></span>
               </td>
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepfwd" title="next" class="icon-forward3 taggingControls" on-click='stepFwdClicked'></span>
@@ -55,13 +55,13 @@
               <td class="videoControlCell frameNumber">
                 <span id='frameText' class="textElements" title="frame#"></span>
               </td>
-              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" >
+              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" style="display: none">
                 <span id="playbackSpan"  class="textElements" on-click="playbackSpeedClicked">x 1.0</span>
               </td>
               <td nowrap="nowrap" class="videoControlCell simpleControl">
                 <span id="timeSpan" class="textElements"></span>
               </td>
-              <td class ="videoControlCell simpleControl clickableControl" >
+              <td class ="videoControlCell simpleControl clickableControl" style="display: none">
                 <span id="mute" title="Mute" class="icon-volume-medium taggingControls" on-click='muteClicked'></span>
               </td>
               <td class="volumeControlCell longControl" >
