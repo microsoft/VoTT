@@ -40,8 +40,8 @@
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepBwdClicked'></span>
               </td>
-              <td class="videoControlCell simpleControl clickableControl">
-                <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked'></span>
+              <td class="videoControlCell simpleControl clickableControl" style="display: none">
+                <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked' ></span>
               </td>
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepfwd" title="next" class="icon-forward3 taggingControls" on-click='stepFwdClicked'></span>
@@ -55,16 +55,16 @@
               <td class="videoControlCell frameNumber">
                 <span id='frameText' class="textElements" title="frame#"></span>
               </td>
-              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" >
+              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" style="display: none">
                 <span id="playbackSpan"  class="textElements" on-click="playbackSpeedClicked">x 1.0</span>
               </td>
               <td nowrap="nowrap" class="videoControlCell simpleControl">
                 <span id="timeSpan" class="textElements"></span>
               </td>
-              <td class ="videoControlCell simpleControl clickableControl" >
+              <td class ="videoControlCell simpleControl clickableControl" style="display: none">
                 <span id="mute" title="Mute" class="icon-volume-medium taggingControls" on-click='muteClicked'></span>
               </td>
-              <td class="volumeControlCell longControl" >
+              <td class="volumeControlCell longControl" style="display: none">
                   <input id="volumeSlider" class="volume clickableControl" type="range" min=0 max = 1 value=.5 step= .1 required />
               </td>
             </tr>
@@ -113,6 +113,8 @@
       this.selectedRegionId = 0;//Holds the current selected region number
       this.lockTagsEnabled = false;
       this.selectedTags = [];
+      this.uniqueTagId = 0;
+
       //Divs and spans
       this.controlWrapper= this.$$('#controlWrapper');
       this.videoWrapper= this.$$('#videoWrapper');
@@ -451,7 +453,7 @@
                       });
                   },
                   containment: $("#overlay")[0],
-                  handles: 'n,s,e, w'
+                  handles: 'all'
               });
               //raise regionSelectedEvent
              $('#video-tagging').trigger('canvasRegionSelected',[divId]); 
@@ -573,15 +575,6 @@
               }
             }
     },
-    generateFrameUUID: function() {
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (d + Math.random()*16)%16 | 0;
-            d = Math.floor(d/16);
-            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-        });
-        return uuid;
-    },
     
     /**
        * @method addRegion
@@ -595,7 +588,7 @@
             region.y1 = y1;
             region.x2 = x2;
             region.y2 = y2;
-            region.id = this.generateFrameUUID();
+            region.id = this.uniqueTagId++;
             region.width = $('#vid').width();
             region.height = $('#vid').height();
             region.type = this.regiontype;
