@@ -33,6 +33,13 @@ document.addEventListener('dragstart', function (e) {
     e.stopPropagation();
 });
 
+// stop zooming
+document.addEventListener('mousewheel', function(e) {
+  if(e.ctrlKey) {
+    e.preventDefault();
+  }
+});
+
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
@@ -64,8 +71,7 @@ function fileSelected(path) {
   document.getElementById('load-message').style.display = "none";
 
   if(path) {  //checking if a video is dropped
-    let pathName = [path.path];
-    openPath(pathName);
+    openPath(path.path);
   } else { // showing system open dialog
     dialog.showOpenDialog({
       filters: [{ name: 'Videos', extensions: ['mp4']}],
