@@ -34,6 +34,13 @@ document.addEventListener('dragstart', function (e) {
     e.stopPropagation();
 });
 
+// stop zooming
+document.addEventListener('mousewheel', function(e) {
+  if(e.ctrlKey) {
+    e.preventDefault();
+  }
+});
+
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
