@@ -460,6 +460,7 @@
     },
     deleteRegion: function(e) {
           var regions = this.frames[this.getCurrentFrame()];
+          var deletedRegion = regions[this.selectedRegionId - 1];
           regions.splice(this.selectedRegionId - 1, 1);
           //Shift array left to cover removed item - Rename all regions which are higher than the deleted one,
           for (var i=0;i<regions.length;i++) {
@@ -470,8 +471,10 @@
           }
           this.showAllRegions();
           this.emitRegionToHost();
+          $('#video-tagging').trigger('canvasRegionDeleted',[deletedRegion]); 
     },
     clearRegions: function(e) {
+          $('#video-tagging').trigger('clearingAllRegions'); 
           this.frames[this.getCurrentFrame()]=[];
           this.showAllRegions();
           this.emitRegionToHost();
