@@ -7,6 +7,7 @@ const ipcRenderer = require('electron').ipcRenderer;
 
 var furthestVisitedFrame; //keep track of the furthest visited frame
 var videotagging;
+var trackingSuggestionsBlacklist; //keep track of deleted suggestions
 
 document.addEventListener('drop', function (e) {
     e.preventDefault();
@@ -249,6 +250,8 @@ function exportCNTK() {
 
 function initRegionTracking() {
 
+    trackingSuggestionsBlacklist = {};
+
     videotagging.video.removeEventListener("canplaythrough", initRegionTracking); //remove old listener
 
     var frameCanvas = document.createElement("canvas"),
@@ -287,6 +290,14 @@ function initRegionTracking() {
         videotagging.video.addEventListener("canplaythrough", afterStep);
     });  
 
+    $('#video-tagging').on("canvasRegionDeleted", function(e,deletedRegion) {
+       updateBlackList([deletedRegion]);
+    });  
+
+    $('#video-tagging').on("clearingAllRegions", function(){
+       updateBlackList(videotagging.frames[this.getCurrentFrame()]);
+    });
+
     function afterStep() {
       videotagging.video.removeEventListener("canplaythrough", afterStep);
 
@@ -315,9 +326,13 @@ function initRegionTracking() {
             var ty2 = Math.min(Math.floor((trackedObject.height + ty1)), videotagging.video.offsetHeight);
             // don't create a new region if a suggestion already exists
             var currentFrameId = videotagging.getCurrentFrame();
-            if (videotagging.frames[currentFrameId]){
+            if (currentFrameId in videotagging.frames){
               var existingSuggestion = $.grep(videotagging.frames[currentFrameId], suggestionExists); 
               if (existingSuggestion && existingSuggestion.length > 0) continue;
+            }
+            //don't create a region if its in the trackingSuggestionsBlacklist
+            if (currentFrameId in trackingSuggestionsBlacklist){
+              if (trackingSuggestionsBlacklist[currentFrameId].has(tracker.prevRegionId)) continue;
             }
             //create new region
             videotagging.createRegion( tx1,ty1,tx2,ty2);   
@@ -327,5 +342,28 @@ function initRegionTracking() {
       }
       prevImage = prevFrameId = undefined;
       trackersStack = []; 
-    }            
+    }      
+
+    function updateBlackList(removedRegions) {
+      removedRegions.forEach(function(deletedRegion) {
+        // add suggested by to black list for frame
+        if(deletedRegion.suggestedBy !== undefined) {
+          if(!trackingSuggestionsBlacklist[videotagging.getCurrentFrame()]){
+            trackingSuggestionsBlacklist[videotagging.getCurrentFrame()] = new Set([deletedRegion.suggestedBy.regionId]);
+          } else {
+            trackingSuggestionsBlacklist[videotagging.getCurrentFrame()].add(deletedRegion.suggestedBy.regionId);
+          } 
+        }
+
+        //if in the next frame remove from the next frames trackingSuggestionsBlacklist
+        let nextFrameIndex = videotagging.getCurrentFrame() + 1;
+        if (nextFrameIndex in trackingSuggestionsBlacklist){
+          if (trackingSuggestionsBlacklist[nextFrameIndex].has(deletedRegion.id)) {
+            trackingSuggestionsBlacklist[nextFrameIndex].delete(deletedRegion.id);
+            //remove frame from blacklist if there is no entries in it
+            if (trackingSuggestionsBlacklist[nextFrameIndex].size === 0)  delete trackingSuggestionsBlacklist[nextFrameIndex];
+          }
+        }
+      });
+    }      
 }
