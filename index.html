@@ -52,15 +52,15 @@
               <label for="exampleTextarea" title="(Region Size for point selector!)">Point Region Size</label>
               <input class="form-control" type="text" value="25" id="regionsize"/>
             </div>
+          </div>
 
-            <div class="form-group">
-              <div class="form-check">
-                <label class="form-check-label">
-                  <input id="MultiRegions" type="checkbox" checked class="form-check-input" title="(Enable multiple regions on one frame.)"/>
-                    MultiRegions
-                </label>
-              </div>
-            </div>
+          <div class="form-group">
+           <label for="exampleTextarea" title="(Which frame to Export to.)">Export To: </label>
+            <select id="exportTo" class="form-control" id="text" >
+                  <option value="tagged" selected="selected">Last Tagged Region</option>
+                  <option value="visited">Last Visited Frame</option>
+                  <option value="last">Last Frame</option>
+            </select>
           </div>
 
           <div class="form-group">

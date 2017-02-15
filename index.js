@@ -92,7 +92,6 @@ function fileSelected(path) {
 
     try{
       config = require(`${pathName}.json`);
-      document.getElementById('MultiRegions').checked = config.multiRegions;
       //restore tags
       document.getElementById('inputtags').value = config.inputTags;
       config.inputTags.split(",").forEach(function(tag) {
@@ -108,7 +107,7 @@ function fileSelected(path) {
 
       videotagging = document.getElementById('video-tagging');
       videotagging.regiontype = document.getElementById('regiontype').value;
-      videotagging.multiregions = document.getElementById('MultiRegions').checked ? "1":"0";
+      videotagging.multiregions = 1;
       videotagging.regionsize = document.getElementById('regionsize').value;
       videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
 
@@ -146,7 +145,7 @@ function save() {
     var saveObject = {
       "frames" : videotagging.frames,
       "inputTags": document.getElementById('inputtags').value,
-      "multiRegions": document.getElementById('MultiRegions').checked,
+      "exportTo": document.getElementById('exportTo').value,
       "furthestVisitedFrame": furthestVisitedFrame
     };
     
@@ -184,11 +183,25 @@ function exportCNTK() {
   function saveFrames(){
 
     var frameId = videotagging.getCurrentFrame();
+    
     //if last frame removeEventListener and loader
-    if (( frameId >= furthestVisitedFrame) ) {
-      videotagging.video.removeEventListener("canplaythrough", saveFrames);
-      videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
-      $(".loader").remove();
+    var lastFrame;
+    switch(document.getElementById('exportTo').value) {
+      case "tagged":
+          lastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[videotagging.frames.length-1]));
+          break;
+      case "visited":
+          lastFrame = (frameId >= furthestVisitedFrame);        
+          break;
+      case "last":
+          lastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
+          break;
+   }
+
+   if(lastFrame) {
+          videotagging.video.removeEventListener("canplaythrough", saveFrames);
+          videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
+          $(".loader").remove();
     }
 
     //set default writepath to the negative folder
@@ -221,10 +234,10 @@ function exportCNTK() {
 
         writePath = positiveWritePath; // set write path to positve write path
     }
-    else if(fs.existsSync(positiveWritePath)){ //tags have been removed clear positive data if itexists from last run
+    else if(fs.existsSync(positiveWritePath)){ //tags have been removed clear positive data if it exists from last run
         fs.unlinkSync(positiveWritePath);
-        fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
-        fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
+        if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
+        if(fs.existsSync(positiveWritePath.replace('.jpg', '..bboxes.labels.tsv'))) fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
     }
 
     //draw the frame to the canvas
@@ -237,7 +250,7 @@ function exportCNTK() {
     if(!fs.existsSync(writePath)) {
       fs.writeFileSync(writePath, buf);
     }
-    if (frameId < furthestVisitedFrame) {
+    if (!lastFrame) {
       videotagging.stepFwdClicked(false);
 
     } else {
