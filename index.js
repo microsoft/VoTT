@@ -28,8 +28,9 @@ document.addEventListener('dragover', function (e) {
 
 document.addEventListener('dragstart', function (e) {
     e.preventDefault();
-    if(e.dataTransfer.files[0].type == "video/mp4") {
-      e.dataTransfer.effectAllowed = "copy";
+    let file = e.dataTransfer.files[0];
+    if(file && file.type == "video/mp4") {
+        e.dataTransfer.effectAllowed = "copy";
     }
     e.stopPropagation();
 });
