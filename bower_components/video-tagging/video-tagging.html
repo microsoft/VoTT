@@ -153,8 +153,6 @@
       this.ctx = this.overlay.getContext("2d");
       this.aspect = 0;
       this.snapWidth = 0;
-
-      const ipcRenderer = require('electron').ipcRenderer;
     },
 
      /**
@@ -794,8 +792,8 @@
             this.playingCallback();
           }
 
-        ipcRenderer.send('setProgressBar', time, 'paused');
-
+          var time =  this.seekBar.value / this.seekBar.max;
+          this.updateProgressBar(time, 'paused');
     },
     stepBwdClicked: function() {
           if (this.video.currentTime > 0) {
@@ -806,6 +804,9 @@
                 this.video.currentTime -= this.frameTime;
                 this.playingCallback();
               }
+
+              var time =  this.seekBar.value / this.seekBar.max;
+              this.updateProgressBar(time, 'paused');
           }
     },
     videoSrcChanged: function(newValue, oldValue) {
@@ -846,8 +847,8 @@
             this.optionalTags.toggleEnableButtons(false);
             $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
 
-            var time =  this.seekBar.value / this.seekBar.max;
-            ipcRenderer.send('setProgressBar', time, 'paused');
+              var time =  this.seekBar.value / this.seekBar.max;
+              this.updateProgressBar(time, 'paused');
     },
     playingCallback: function() {
             this.frameText.innerHTML = this.getCurrentFrame();
@@ -872,8 +873,12 @@
             this.seekStyle.textContent =  '.seek::-webkit-slider-runnable-track{background-size:'+perc+'% 100%}';
             this.seekStyle.textContent += '.seek::-moz-range-track{background-size:'+perc+'% 100%}';
 
-            ipcRenderer.send('setProgressBar', perc/100);
+            var time =  this.seekBar.value / this.seekBar.max;
+            this.updateProgressBar(time);
     },
+    updateProgressBar: function(time, state) {
+            this.fire('updateProgressBar', {currentTime: time, state: state})
+    }
 });
 </script>
 <script src="../jquery/dist/jquery.min.js"></script>

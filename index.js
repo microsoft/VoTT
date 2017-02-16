@@ -33,6 +33,10 @@ document.addEventListener('dragstart', function (e) {
     e.stopPropagation();
 });
 
+document.addEventListener('updateProgressBar', function (e) {
+  ipcRenderer.send('updateProgressBar', e.detail.currentTime, e.detail.state);
+});
+
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
