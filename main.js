@@ -49,14 +49,6 @@ function createWindow () {
     menu.items[p].submenu.items[3].enabled = true;
   });
 
-  ipcMain.on('setWindowSize', function (event, arg) {
-    let width = arg[0];
-    let height = arg[1];
-
-    mainWindow.setAspectRatio(width/height);
-    mainWindow.setSize(width, height, true);
-  });
-
   mainWindow.on('ready-to-show', function() {
       mainWindow.show();
       mainWindow.focus();
