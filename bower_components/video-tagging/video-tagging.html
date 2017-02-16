@@ -533,9 +533,6 @@
        */
     emitRegionToHost: function() {
         // setting document as edited
-        const ipcRenderer = require('electron').ipcRenderer;
-        ipcRenderer.send('regionChanged');
-
         var frameIndex = this.getCurrentFrame();
         this.fire('onregionchanged', {frame: {frameIndex:frameIndex, regions:this.frames[frameIndex]}});
     },

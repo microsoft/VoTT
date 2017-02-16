@@ -33,6 +33,10 @@ document.addEventListener('dragstart', function (e) {
     e.stopPropagation();
 });
 
+document.addEventListener('onregionchanged', function(e){
+  ipcRenderer.send('regionChanged');
+});
+
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
