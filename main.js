@@ -3,7 +3,7 @@ const electron = require('electron');
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
-
+const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
 
@@ -13,15 +13,25 @@ let mainWindow;
 let ipcMain = require('electron').ipcMain;
 
 function createWindow () {
+
+  let mainWindowState = windowStateKeeper({
+    defaultWidth: 800,
+    defaultHeight: 600
+  });
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      width: mainWindowState.width,
+      height: mainWindowState.height,
+      x: mainWindowState.x,
+      y: mainWindowState.y,
       minHeight: 480,
       minWidth: 480,
       icon: __dirname + '/icon.png',
       show: false
-    });
+  });
+
+  mainWindowState.manage(mainWindow);
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -94,6 +104,11 @@ function createWindow () {
           label: 'Toggle Developer Tools',
           accelerator: 'CmdOrCtrl+T',
           click () { mainWindow.webContents.toggleDevTools(); }
+        },
+        {
+          label: 'Refresh App',
+          accelerator: 'CmdOrCtrl+R',
+          click () { mainWindow.reload(); }
         }
       ]
     }

@@ -40,8 +40,8 @@
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepbwd" title="prev" class="icon-backward2 taggingControls" on-click='stepBwdClicked'></span>
               </td>
-              <td class="videoControlCell simpleControl clickableControl">
-                <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked'></span>
+              <td class="videoControlCell simpleControl clickableControl" style="display: none">
+                <span id="play-pause" title="play/pause" class="icon-play3 taggingControls" on-click='playPauseClicked' ></span>
               </td>
               <td class="videoControlCell simpleControl clickableControl">
                 <span id="stepfwd" title="next" class="icon-forward3 taggingControls" on-click='stepFwdClicked'></span>
@@ -55,16 +55,16 @@
               <td class="videoControlCell frameNumber">
                 <span id='frameText' class="textElements" title="frame#"></span>
               </td>
-              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" >
+              <td id="playSpeedCell" title="play speed" class="videoControlCell longControl clickableControl" style="display: none">
                 <span id="playbackSpan"  class="textElements" on-click="playbackSpeedClicked">x 1.0</span>
               </td>
               <td nowrap="nowrap" class="videoControlCell simpleControl">
                 <span id="timeSpan" class="textElements"></span>
               </td>
-              <td class ="videoControlCell simpleControl clickableControl" >
+              <td class ="videoControlCell simpleControl clickableControl" style="display: none">
                 <span id="mute" title="Mute" class="icon-volume-medium taggingControls" on-click='muteClicked'></span>
               </td>
-              <td class="volumeControlCell longControl" >
+              <td class="volumeControlCell longControl" style="display: none">
                   <input id="volumeSlider" class="volume clickableControl" type="range" min=0 max = 1 value=.5 step= .1 required />
               </td>
             </tr>
@@ -87,12 +87,10 @@
 </template>
 <script>
 
+  
   Polymer({
-
     is: 'video-tagging',
-
     properties: {
-
       framerate: Number,
       videoduration: Number,
       videowidth: Number,
@@ -115,6 +113,7 @@
       this.selectedRegionId = 0;//Holds the current selected region number
       this.lockTagsEnabled = false;
       this.selectedTags = [];
+      this.uniqueTagId = 0;
 
       //Divs and spans
       this.controlWrapper= this.$$('#controlWrapper');
@@ -127,7 +126,6 @@
       this.timeSpan = this.$$('#timeSpan');
       this.frameText = this.$$("#frameText");
       this.playbackSpan = this.$$("#playbackSpan");
-
       // Buttons
       this.playButton = this.$$('#play-pause');
       this.stepfwd = this.$$("#stepfwd");
@@ -138,23 +136,19 @@
       this.mute = this.$$('#mute');
       this.emptyFrame = this.$$("#emptyFrame");
       this.nextuntagged = this.$$("#nextuntagged");
-
       // Sliders
       this.seekBar = this.$$("#seekBar");
       this.volumeSlider = this.$$("#volumeSlider");
       //dynamic styles for sliders
       this.volumeStyle = document.createElement('style');
       Polymer.dom(this.root).appendChild(this.volumeStyle);
-
       this.seekStyle = document.createElement('style');
       Polymer.dom(this.root).appendChild(this.seekStyle);
-
       this.playing = null;
       this.ctx = this.overlay.getContext("2d");
       this.aspect = 0;
       this.snapWidth = 0;
     },
-
      /**
        * Events registration and handling
        *
@@ -162,44 +156,35 @@
        * Events registration and handling
        */
     attached: function() {
-
       //Reset all variables to new src
       var self = this;
       this.video.addEventListener( "loadedmetadata", function (e) {
-
             self.controlWrapper.style.display = "block";
-
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
             self.frameTime = 1/self.framerate;
             self.enableAreaSelect(self);
             self.optionalTags.createTagControls(self.inputtagsarray);
-
             //Take the raw video aspect ratio
             self.aspect = self.video.offsetWidth / self.video.offsetHeight;
             self.snapToAspectRatio();
-
             //Init sliders
-            self.volumeSlider.value = .5;
+            self.volumeSlider.value = 0.5;
             self.seekBar.max = self.video.duration;
             self.playingCallback();
-
            //Size canvas as video
             self.overlay.width = self.video.offsetWidth;
             self.overlay.height = self.video.offsetHeight;
       }, false );
-
      $(window).resize( function(){
-         if (self.video.offsetWidth != undefined){
+         if (self.video.offsetWidth !== undefined){
             self.snapToAspectRatio();
             //get transform ratio
             var transformWidth =  self.video.offsetWidth/self.overlay.width;
             var transformHeight = self.video.offsetHeight/self.overlay.height;
-
             //resize the overlay
             self.overlay.width = self.video.offsetWidth;
             self.overlay.height = self.video.offsetHeight;
-
             //resize the region boxes
             $('.regionCanvas').each(function() {
                 this.style.left = (parseFloat(this.style.left) * transformWidth) + "px";
@@ -207,7 +192,6 @@
                 this.style.width = (parseFloat(this.style.width) * transformWidth) + "px";
                 this.style.height = (parseFloat(this.style.height) * transformHeight) + "px";
             });
-
             //reposition selectedRegion Label
             var selectedDiv = $('.regionCanvasSelected')[0];
             self.positionRegionNameLabel(selectedDiv);
@@ -223,34 +207,26 @@
                 case 37:  // left
                 self.stepBwdClicked();
                 break;
-
                 case 39: // right
                 self.stepFwdClicked();
                 break;
-
                 case 46: //delete
                 if($('.regionCanvasSelected')[0]){
                     self.deleteRegion();
                 }
                 break;
-
                 default: return; // exit this handler for other keys
             }
             e.preventDefault(); // prevent the default action (scroll / move caret)
           };
       })(true), false);
-
       this.video.onended = function(){
-
            self.pauseState();
-      }
-
+      };
       this.seekBar.addEventListener("mousedown", function() {
-
             self.seeking = true;
           });
       this.seekBar.addEventListener("mouseup", function() {
-
             self.seeking = false;
           });
       this.seekBar.addEventListener("change", function() {
@@ -269,12 +245,11 @@
           });
       this.addEventListener("ontagsubmitted", function(e) {
               var arr = [];
-              arr.push(e.detail.tagid)
+              arr.push(e.detail.tagid);
               this.addTagsToRegion(arr);
               this.emitRegionToHost();//Persist
           });
       this.addEventListener("ontagdeleted", function(e) {
-
               var regionId = this.selectedRegionId -1;//Revert to zero-based array
               var region = this.frames[this.getCurrentFrame()][regionId];
               for(var index = 0;index < region.tags.length;index++){
@@ -286,24 +261,21 @@
               this.emitRegionToHost();
           });
     },
-
     snapToAspectRatio: function()
     {
         // -5 accounts for rounding errors during rendering to ensure
         // we never redraw larger than the parent container.
-
         // We need to offset for the non-scaling parts of the video controls
         this.snapWidth =
-            ($('#video-tagging').parent().height()
-            - $('#videoControls').innerHeight()
-            - $('#videoTagControls').innerHeight()
-            - 5)*this.aspect;
+            ($('#video-tagging').parent().height() -
+             $('#videoControls').innerHeight() -
+             $('#videoTagControls').innerHeight() -
+             5) * this.aspect;
         if(this.snapWidth > $('#video-tagging').parent().width())
             $('#video-tagging').width($('#video-tagging').parent().width());
         else
             $('#video-tagging').width(this.snapWidth);
     },
-
     /**
        * JQuery Area selector
        * Based on JQuery plugin imgareaselect
@@ -314,7 +286,6 @@
     clearArea: function()
     {
         $('canvas#overlay').imgAreaSelect({
-
                   show:false,
                   hide:true
             });
@@ -326,8 +297,6 @@
             hide:true
       });
       if((this.regiontype.toLowerCase() === "square") || (this.regiontype.toLowerCase() === "rectangle")) {
-          var areaSelected = false;
-
           $('canvas#overlay').imgAreaSelect({
                         disable: false, //enable/disable
                         handles: true, //grab handles when selecting the area
@@ -337,9 +306,7 @@
                         minWidth:10,
                         fadeSpeed: 200,
                         square: (this.regiontype.toLowerCase() === "square"),
-
                         onSelectEnd: function(img, selection){
-
                               if (selection.width !== 0 && selection.height !== 0) {
                                 self.areaSelected = true;
                                 self.createRegion(selection.x1, selection.y1, selection.x2, selection.y2);
@@ -347,7 +314,6 @@
                               }
                          },
                          onSelectStart: function(img, selection){
-
                               self.cleanSelectedElements();
                          },
                       });
@@ -361,7 +327,6 @@
        * @param {div} The region div
        */
     //Regions management
-
     updateRegionZIndices: function(){
         $('.regionCanvas').sort(function (e1, e2) {
             return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
@@ -369,7 +334,6 @@
             e.style.zIndex =(idx+200).toString();
         });
     },
-
     positionRegionNameLabel: function(div) {
         if (div){
             this.regionLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.regionLabelDiv.style.width, 10)) + "px";
@@ -383,25 +347,21 @@
         }
     },
     createRegion: function(x1, y1, x2, y2) {
-
         var region = this.addRegion(x1, y1, x2, y2);//Add to in-memory collection
         this.addDivToRegion(x1, y1, x2 , y2, region.name);//add frame
         this.updateRegionZIndices();//update region z indecies
         this.regionSelected(region.name);//Select it by default
-
         //if there is only one tag enable it  by default
         if ($(`#${this.optionalTags.id}`).find('.tagButtons').size() == 1){
             $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
         }
-
         if(this.lockTagsEnabled) {
             //Get all selected tags and add them to current region automatically
             //this.selectedTags was populated in this.lockTagsClicked
             var arr = [];
             for (var i=0; i<this.selectedTags.length;i++) {
-
               this.optionalTags.setSelected(this.selectedTags[i]);
-              arr.push(this.selectedTags[i].id)
+              arr.push(this.selectedTags[i].id);
             }
             this.addTagsToRegion(arr);
             var self = this;
@@ -410,24 +370,20 @@
                   setTimeout(function(){ self.stepFwdClicked(); }, 500);
             }
         }
-
         this.emitRegionToHost();//Persist
     },
     addTagsToRegion: function(selectedTagsArray) {
-
           var regionId = this.selectedRegionId -1;//Revert to zero-based array
           var region = this.frames[this.getCurrentFrame()][regionId];
           for (var i = 0; i < selectedTagsArray.length; i++) {
-
-                  region.tags.push(selectedTagsArray[i]);
-            }
+               region.tags.push(selectedTagsArray[i]);
+          }
     },
     nextUntaggedClicked :function() {
           var frameIndex = this.getCurrentFrame();
           var frames = this.video.duration * this.framerate;
           var framesForward = 1;
           for (var i=frameIndex;i<frames;i++) {
-
                 //The next frame is a first occurence of a frame with no regions
                 if(!this.frames[i + 1]) {
                       if(!this.video.paused) {
@@ -441,13 +397,12 @@
             }
     },
     lockTagsClicked: function() {
-
           var selTags = this.optionalTags.getSelectedTags();
           //There has to be selected label/s
           if (!this.lockTagsEnabled && selTags.length > 0) {
               this.lockTagsEnabled = true;
               this.selectedTags = selTags;
-              if(this.multiregions === "0"){this.stepFwdClicked()};
+              if(this.multiregions === "0"){this.stepFwdClicked();}
           }
           else {
               this.lockTagsEnabled = false;
@@ -463,7 +418,6 @@
               div.classList.add("regionCanvasSelected");
               this.selectedRegionId = div.id;
               this.positionRegionNameLabel(div);
-
               //Tags - display the tags of the region and enable editing
               this.optionalTags.toggleEnableButtons(true);
               this.optionalTags.resetSelected();
@@ -472,7 +426,6 @@
                   var tags = this.frames[this.getCurrentFrame()][this.selectedRegionId - 1].tags;
                   this.optionalTags.displaySelectedTags(tags);
               }
-
              function updateRegionFromDiv(div){
                  var region = regions[(divId-1).toString()];
                  region.width = $('#vid').width();
@@ -482,7 +435,6 @@
                  region.x2 = region.x1 + parseInt(div.style.width);
                  region.y2 = region.y1 + parseInt(div.style.height);
              }
-
               //make region  draggable
               $('#'+divId).draggable({
                   stop: function(event, ui) {
@@ -501,31 +453,32 @@
                       });
                   },
                   containment: $("#overlay")[0],
-                  handles: 'n,s,e, w'
+                  handles: 'all'
               });
-
+              //raise regionSelectedEvent
+             $('#video-tagging').trigger('canvasRegionSelected',[divId]); 
     },
     deleteRegion: function(e) {
-
           var regions = this.frames[this.getCurrentFrame()];
+          var deletedRegion = regions[this.selectedRegionId - 1];
           regions.splice(this.selectedRegionId - 1, 1);
           //Shift array left to cover removed item - Rename all regions which are higher than the deleted one,
           for (var i=0;i<regions.length;i++) {
-              var id = Number(regions[i].name)
+              var id = Number(regions[i].name);
               if(id > this.selectedRegionId){
                   regions[i].name = id - 1;
               }
           }
           this.showAllRegions();
           this.emitRegionToHost();
+          $('#video-tagging').trigger('canvasRegionDeleted',[deletedRegion]); 
     },
-
     clearRegions: function(e) {
-          var regions = this.frames[this.getCurrentFrame()]=[];
+          $('#video-tagging').trigger('clearingAllRegions'); 
+          this.frames[this.getCurrentFrame()]=[];
           this.showAllRegions();
           this.emitRegionToHost();
     },
-
     /**
        * @method emitRegionToHost
        * Fires an event to send the array of regions.
@@ -547,7 +500,6 @@
             var div = document.createElement("div");
             div.id = regionId;
             div.classList.add("regionCanvas");
-
             if(this.regiontype.toLowerCase() === "point") {
                   div.style.width = this.regionsize - 1 +  "px";//Compensate for 1px border
                   div.style.height = this.regionsize - 1 +  "px";
@@ -565,20 +517,17 @@
             $( div )
                       .click(function(e) {
                          self.regionSelected(div.id);
-                      })
+                      });
             $( div )
                       .mouseenter(function(e) {
-
                           self.positionRegionNameLabel(this);
                       })
                       .mouseleave(function() {
-
                         self.regionLabelDiv.style.display = "none";
                         if(self.selectedRegionId === div.id) {
                               self.regionLabelDiv.style.display = "block";
                         }
                       });
-
             Polymer.dom(this.$.videoWrapper).appendChild(div);
     },
     /**
@@ -590,8 +539,7 @@
           var regionCanvases = Polymer.dom(this.root).querySelectorAll('.regionCanvas');
           for (var i=0;i<regionCanvases.length;i++) {
             regionCanvases[i].classList.remove('regionCanvasSelected');
-          };
-
+          }
           //reset
           this.selectedRegionId = 0;
           this.optionalTags.toggleEnableButtons(false);
@@ -602,11 +550,9 @@
             this.cleanSelectedElements();//Clear selected regions
             var frameIndex = this.getCurrentFrame();
             var regions = this.frames[frameIndex];
-
             if(regions && regions.length > 0) {
               //Draw all regions for this frame
               for (var i=0; i<regions.length;i++) {
-
                   var region = regions[i];
                   //Frame was tagged as empty?
                   if(Object.keys(region).length === 0) {
@@ -620,7 +566,6 @@
                   var y1 = (region.y1 * heightRatio);
                   var x2 = (region.x2 * widthRatio);
                   var y2 = (region.y2 * heightRatio);
-
                   x1 = (region.x1 * widthRatio);
                   y1 = (region.y1 * heightRatio);
                   x2 = (region.x2 * widthRatio);
@@ -628,32 +573,30 @@
                   this.addDivToRegion( x1, y1, x2, y2, region.name);
                   //Only 1 region - select it and show tags
                   if(regions.length === 1) {
-                      this.regionSelected(region.name)
+                      this.regionSelected(region.name);
                   }
                   this.updateRegionZIndices();
-
               }
             }
     },
+    
     /**
        * @method addRegion
        * Adds a region to the array of regions per current frame.
        * @params {x1, y1, x2, y2} region coordinates.
        */
     addRegion: function(x1, y1, x2, y2) {
-
             this.resetEmptyFrame();//Clear empty frame logic
-
             var region = {};
             region.x1 = x1;
             region.y1 = y1;
             region.x2 = x2;
             region.y2 = y2;
+            region.id = this.uniqueTagId++;
             region.width = $('#vid').width();
             region.height = $('#vid').height();
             region.type = this.regiontype;
             region.tags = [];
-
             var frameIndex = this.getCurrentFrame();
             var regions = this.frames[frameIndex];
             //The array is populated and can contain multiple regions
@@ -676,7 +619,6 @@
        * Clears all drawings and divs from the video area and resets tag controls.
        */
     clearFrameElements: function() {
-
       //Clear divs
       $(this.videoWrapper).children(".regionCanvas").remove();
       //reset tag buttons to not selected
@@ -687,7 +629,7 @@
       this.indicateEmptyFrame(false);
     },
     getCurrentFrame: function() {
-      return this.video.currentTime === 0 ? 1 : Math.floor((this.video.currentTime * this.framerate)) + 1;;
+      return this.video.currentTime === 0 ? 1 : Math.floor((this.video.currentTime * this.framerate)) + 1;
     },
     indicateEmptyFrame : function(selected) {
         if(selected) {
@@ -728,7 +670,6 @@
             this.clearFrameElements();
         }
     },
-
     /**
        * Video management
        *
@@ -759,20 +700,18 @@
           this.playSpeedControl.style.display = this.playSpeedControl.style.display === "block"?"none":"block";
     },
     playPauseClicked: function() {
-          this.video.paused?this.playState():this.pauseState();
+          this.video.paused ? this.playState():this.pauseState();
     },
-
     getUnlabeledRegionTags: function(regionId){
          var regions = this.frames[regionId];
          var unlabledTags = [];
-         if (regions != undefined){
+         if (regions !== undefined){
             unlabledTags = regions.map(function(region,index){
                 if (!region.tags.length > 0) return index + 1;
          }).filter(Number.isInteger);
         }
         return unlabledTags;
     },
-
     checkRegionLabels: function(){
         var unlabledTags = this.getUnlabeledRegionTags(this.getCurrentFrame());
         if (unlabledTags.length > 0){
@@ -781,17 +720,21 @@
         }
         return true;
     },
-
-    stepFwdClicked: function() {
-          if(!this.video.paused) {
-              this.pauseState();
-          }
-
-          //if there are no unlabled tags move to next frame
-          if (this.checkRegionLabels()){
-            this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + this.frameTime);
+    stepFwdClicked: function(fireEvents = true) {
+        if(!this.video.paused) this.pauseState();
+        if ((this.video.currentTime + this.frameTime) > this.video.duration ){
+            this.video.currentTime = this.video.duration;
+            return;
+        } 
+        //raise before next frame
+        if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+        //if there are no unlabled tags move to next frame
+        if (this.checkRegionLabels()){
+            this.video.currentTime = this.video.currentTime + this.frameTime;
             this.playingCallback();
-          }
+        }
+        //raise after next frame
+        if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep'); 
     },
     stepBwdClicked: function() {
           if (this.video.currentTime > 0) {
@@ -805,7 +748,6 @@
           }
     },
     videoSrcChanged: function(newValue, oldValue) {
-
           if(this.video){
               this.video.src = newValue;
           }
@@ -853,7 +795,6 @@
     displayVideoTime: function() {
             var currentTime = Math.round(this.video.currentTime);
             var remainingtTime = Math.round(this.video.duration - this.video.currentTime);
-
             //Format using moment.js
             currentTime = moment().startOf('day').seconds(currentTime).format('HH:mm:ss');
             remainingtTime = moment().startOf('day').seconds(remainingtTime).format('HH:mm:ss');
