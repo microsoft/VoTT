@@ -140,10 +140,11 @@ function fileSelected(path) {
       document.getElementById('load-form-container').style.display = "none";
       document.getElementById('video-tagging-container').style.display = "block";
 
-      console.log(pathName);
-
       ipcRenderer.send('setFilePath', pathName);
-
+      videotagging.video.addEventListener("loadedmetadata", function() {
+        var videoSize = [videotagging.video.videoWidth, videotagging.video.videoHeight]
+        ipcRenderer.send('setWindowSize', videoSize);
+      });
     }
   }
 }
