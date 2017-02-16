@@ -1,11 +1,18 @@
 html, body {
     margin: 0;
     padding: 0;
-
 }
 
 #load-form-container {
     padding: 0 20px;
+}
+
+#load-text{
+    margin-top: 20px;
+    text-align: center;
+}
+.regionGroup {
+    margin-left: 10px;
 }
 
 #load-message{
@@ -26,13 +33,6 @@ html, body {
   margin:auto;
  }
 
-
-#controlDiv {
-    padding: 10px;
-    position: absolute;
-    bottom: 0;
-}
-
 #video-tagging {
     margin: 0 auto;
 }
@@ -40,7 +40,7 @@ html, body {
 #video-tagging-container {
     position:absolute;
     top: 0;
-    bottom: 54px;
+    bottom: 0;
     left: 0;
     right: 0;
     background-color: #000;
@@ -49,7 +49,6 @@ html, body {
 .bootstrap-tagsinput {
     display: block;
 }
-
 
 .loader {
     border: 16px solid #f3f3f3; /* Light grey */
