@@ -46,17 +46,10 @@ function createWindow () {
     // opened a file, enabling save and export to CNTK menu items
     let p = (process.platform === 'darwin') ? 1 : 0;
     menu.items[p].submenu.items[1].enabled = true;
-    menu.items[p].submenu.items[3].enabled = true;
+    menu.items[p+1].submenu.items[0].enabled = true;
+    menu.items[p+1].submenu.items[1].enabled = true;
   });
-
-  ipcMain.on('setWindowSize', function (event, arg) {
-    let width = arg[0];
-    let height = arg[1];
-
-    mainWindow.setAspectRatio(width/height);
-    mainWindow.setSize(width, height, true);
-  });
-
+  
   mainWindow.on('ready-to-show', function() {
       mainWindow.show();
       mainWindow.focus();
@@ -85,15 +78,23 @@ function createWindow () {
           accelerator: 'CmdOrCtrl+S',
           enabled: false,
           click () { mainWindow.webContents.send('saveVideo'); }
-        },
+        }
+      ]
+    },
+    {
+      label: 'CNTK',
+      submenu: [
         {
-          type: 'separator'
-        },
-        {
-          label: 'Export to CNTK',
+          label: 'Export Tags to CNTK',
           accelerator: 'CmdOrCtrl+E',
           enabled: false,
           click () { mainWindow.webContents.send('exportCNTK'); }
+        },
+        {
+          label: 'Review CNTK Model',
+          accelerator: 'CmdOrCtrl+R',
+          enabled: false,
+          click () { mainWindow.webContents.send('reviewCNTK'); }
         }
       ]
     },
@@ -107,7 +108,7 @@ function createWindow () {
         },
         {
           label: 'Refresh App',
-          accelerator: 'CmdOrCtrl+R',
+          accelerator: 'CmdOrCtrl+Space',
           click () { mainWindow.reload(); }
         }
       ]

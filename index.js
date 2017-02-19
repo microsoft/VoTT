@@ -3,6 +3,8 @@ const basepath = remote.app.getAppPath();
 const dialog = remote.require('electron').dialog;
 const pathJS = require('path');
 const fs = require('fs');
+const cntkModel= require('./public/js/node-cntk-fastrcnn');
+const mockModelFileLocation = 'mock_model_file_location';
 const ipcRenderer = require('electron').ipcRenderer;
 
 var furthestVisitedFrame; //keep track of the furthest visited frame
@@ -41,6 +43,12 @@ document.addEventListener('mousewheel', function(e) {
   }
 });
 
+function addLoader() {
+  if($('.loader').length == 0) {
+    $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
+  }
+}
+
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
@@ -67,6 +75,9 @@ ipcRenderer.on('exportCNTK', function(event, message) {
   exportCNTK();
 });
 
+ipcRenderer.on('reviewCNTK', function(event, message) {
+  reviewCNTK();
+});
 
 function fileSelected(path) {
   document.getElementById('load-message').style.display = "none";
@@ -166,8 +177,7 @@ function save() {
 
 function exportCNTK() {
 
-  $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
-
+  addLoader();
   //make sure paths exist
   if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
   var framesPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frames`;
@@ -191,12 +201,11 @@ function exportCNTK() {
   function saveFrames(){
 
     var frameId = videotagging.getCurrentFrame();
-    
     //if last frame removeEventListener and loader
     var lastFrame;
     switch(document.getElementById('exportTo').value) {
       case "tagged":
-          lastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[videotagging.frames.length-1]));
+          lastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
           break;
       case "visited":
           lastFrame = (frameId >= furthestVisitedFrame);        
@@ -239,7 +248,6 @@ function exportCNTK() {
               fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'), `${tag.tags[tag.tags.length-1]}\n`, function (err) {});
               fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.tsv'), `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`, function (err) {});
         });
-
         writePath = positiveWritePath; // set write path to positve write path
     }
     else if(fs.existsSync(positiveWritePath)){ //tags have been removed clear positive data if it exists from last run
@@ -260,7 +268,6 @@ function exportCNTK() {
     }
     if (!lastFrame) {
       videotagging.stepFwdClicked(false);
-
     } else {
       let notification = new Notification('Offline Video Tagger', {
           body: 'Successfully exported CNTK files.'
@@ -269,10 +276,133 @@ function exportCNTK() {
   }
 }
 
+//maps every frame in the video to an imageCanvas
+function mapVideo(exportUntil,cb) {
+   return new Promise(function(resolve, reject) {
+    //init canvas buffer
+    var frameCanvas = document.createElement("canvas");
+    frameCanvas.width = videotagging.video.videoWidth;
+    frameCanvas.height = videotagging.video.videoHeight;
+    var canvasContext = frameCanvas.getContext("2d");
+
+    // start exporting frames using the canplaythrough eventListener
+    videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //stop recording frame movment
+    videotagging.video.addEventListener("canplaythrough", iterateFrames);
+    videotagging.video.currentTime = 0;
+    videotagging.playingCallback();
+
+    function iterateFrames(){
+      var frameId = videotagging.getCurrentFrame();
+      var isLastFrame;
+
+      switch(exportUntil) {
+          case "tagged":
+              isLastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
+              break;
+          case "visited":
+              isLastFrame = (frameId >= furthestVisitedFrame);        
+              break;
+          case "last":
+              isLastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
+              break;
+      }
+      if(isLastFrame) {
+        videotagging.video.removeEventListener("canplaythrough", iterateFrames);
+        videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
+        resolve();
+      }
+      cb(frameId,frameCanvas,canvasContext);
+      if (!isLastFrame) {
+        videotagging.stepFwdClicked(false);
+      } 
+    }
+  });
+}
+
+function reviewCNTK() {
+  addLoader();
+  
+  //check if an export directory for the current model exists
+  if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
+  var reviewPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_review`;
+  
+  //if the export directory does not exist create it and export all the frames then review
+  if (!fs.existsSync(reviewPath)) {
+    fs.mkdirSync(reviewPath);
+    mapVideo("last", saveFrame).then(review);
+  } else {
+    review();
+  }
+
+  function review() {
+    //run the model on the reviewPath directory
+    model = new cntkModel.CNTKFRCNNModel(mockModelFileLocation);
+    var modelTagsPromise = new Promise(function(resolve, reject) { 
+      model.evaluateDirectory(reviewPath, function (err, res) {
+        if (err) {
+            console.info(err)
+            reject();
+        }
+        resolve(res);
+      });
+    });
+    modelTagsPromise.then(function(modelTags) {
+      videotagging.video.removeEventListener("canplaythrough", initRegionTracking); //remove region tracking listener
+      $('#video-tagging').off("stepFwdClicked-BeforeStep" );
+      $('#video-tagging').off("stepFwdClicked-AfterStep" );
+      videotagging.frames=[];
+      videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
+
+      //Create regions based on the provided modelTags
+      Object.keys(modelTags.frames).map(function(pathId){
+          frameId = pathId.replace(".jpg", "");//remove.jpg
+          videotagging.frames[frameId] = [];
+          modelTags.frames[pathId].regions.forEach(function(region) {
+            videotagging.frames[frameId].push({
+              x1:region.region.x1,
+              y1:region.region.y1,
+              x2:region.region.x2,
+              y2:region.region.y2,                          
+              id:videotagging.uniqueTagId++,
+              width:$('#vid').width(),
+              height:$('#vid').height(),
+              type:videotagging.regiontype,
+              tags:Object.keys(modelTags.classes).filter(function(key) {return modelTags.classes[key] === region.region.class }),
+              name:(videotagging.frames[frameId].length + 1)
+            }); 
+          });
+      });
+
+      videotagging.showAllRegions();
+      videotagging.emitRegionToHost();
+
+      //cleanup and notify
+      $(".loader").remove();
+      videotagging.video.currentTime = 0;
+      videotagging.playingCallback();
+      let notification = new Notification('Offline Video Tagger', {body: 'Model Ready For Review.'});
+
+    });
+  }
+
+  function saveFrame(frameId,fCanvas,canvasContext){
+    canvasContext.drawImage(videotagging.video, 0, 0);
+    var writePath = reviewPath+ `/${frameId}.jpg`
+    var data = fCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
+    var buf = new Buffer(data, 'base64');
+    //write canvas to file and change frame
+    console.log('saving file', writePath);
+    if(!fs.existsSync(writePath)) {
+      fs.writeFileSync(writePath, buf);
+    }
+   
+  }
+
+}
+
 function initRegionTracking() {
 
     trackingSuggestionsBlacklist = {};
-
     videotagging.video.removeEventListener("canplaythrough", initRegionTracking); //remove old listener
 
     var frameCanvas = document.createElement("canvas"),
