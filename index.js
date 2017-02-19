@@ -43,12 +43,14 @@ document.addEventListener('mousewheel', function(e) {
   }
 });
 
+//adds a loading animation to the tagger
 function addLoader() {
   if($('.loader').length == 0) {
     $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
   }
 }
 
+//managed the furthest visited frame
 function updateFurthestVisitedFrame(){
     var currentFrame = videotagging.getCurrentFrame();
     if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
@@ -79,6 +81,7 @@ ipcRenderer.on('reviewCNTK', function(event, message) {
   reviewCNTK();
 });
 
+//load logic
 function fileSelected(path) {
   document.getElementById('load-message').style.display = "none";
 
@@ -160,6 +163,7 @@ function fileSelected(path) {
   }
 }
 
+//saves current video to config 
 function save() {
     var saveObject = {
       "frames" : videotagging.frames,
@@ -175,9 +179,53 @@ function save() {
     });
 }
 
-function exportCNTK() {
+//maps every frame in the video to an imageCanvas
+function mapVideo(exportUntil,cb) {
+   return new Promise(function(resolve, reject) {
+    //init canvas buffer
+    var frameCanvas = document.createElement("canvas");
+    frameCanvas.width = videotagging.video.videoWidth;
+    frameCanvas.height = videotagging.video.videoHeight;
+    var canvasContext = frameCanvas.getContext("2d");
 
+    // start exporting frames using the canplaythrough eventListener
+    videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //stop recording frame movment
+    videotagging.video.addEventListener("canplaythrough", iterateFrames);
+    videotagging.video.currentTime = 0;
+    videotagging.playingCallback();
+
+    function iterateFrames(){
+      var frameId = videotagging.getCurrentFrame();
+      var isLastFrame;
+
+      switch(exportUntil) {
+          case "tagged":
+              isLastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
+              break;
+          case "visited":
+              isLastFrame = (frameId >= furthestVisitedFrame);        
+              break;
+          case "last":
+              isLastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
+              break;
+      }
+      if(isLastFrame) {
+        videotagging.video.removeEventListener("canplaythrough", iterateFrames);
+        videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
+        resolve();
+      }
+      cb(frameId,frameCanvas,canvasContext);
+      if (!isLastFrame) {
+        videotagging.stepFwdClicked(false);
+      } 
+    }
+  });
+}
+
+//exports frames to cntk format for model training
+function exportCNTK() {
   addLoader();
+
   //make sure paths exist
   if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
   var framesPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frames`;
@@ -186,40 +234,14 @@ function exportCNTK() {
   if (!fs.existsSync(`${framesPath}/positive`)) fs.mkdirSync(`${framesPath}/positive`);
   if (!fs.existsSync(`${framesPath}/negative`)) fs.mkdirSync(`${framesPath}/negative`);
 
-  //init canvas buffer
-  var frameCanvas = document.createElement("canvas");
-  frameCanvas.width = videotagging.video.videoWidth;
-  frameCanvas.height = videotagging.video.videoHeight;
-  var canvasContext = frameCanvas.getContext("2d");
+  mapVideo(document.getElementById('exportTo').value,exportFrame).then(function(){
+      $(".loader").remove();
+      let notification = new Notification('Offline Video Tagger', {
+          body: 'Successfully exported CNTK files.'
+      });
+  })
 
-  // start exporting frames using the canplaythrough eventListener
-  videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //stop recording frame movment
-  videotagging.video.addEventListener("canplaythrough", saveFrames);
-  videotagging.video.currentTime = 0;
-  videotagging.playingCallback();
-
-  function saveFrames(){
-
-    var frameId = videotagging.getCurrentFrame();
-    //if last frame removeEventListener and loader
-    var lastFrame;
-    switch(document.getElementById('exportTo').value) {
-      case "tagged":
-          lastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
-          break;
-      case "visited":
-          lastFrame = (frameId >= furthestVisitedFrame);        
-          break;
-      case "last":
-          lastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
-          break;
-   }
-
-   if(lastFrame) {
-          videotagging.video.removeEventListener("canplaythrough", saveFrames);
-          videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
-          $(".loader").remove();
-    }
+  function exportFrame(frameId,frameCanvas,canvasContext) {
 
     //set default writepath to the negative folder
     var writePath = `${framesPath}/negative/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frame_${frameId}.jpg`; //defaults to negative
@@ -266,59 +288,10 @@ function exportCNTK() {
     if(!fs.existsSync(writePath)) {
       fs.writeFileSync(writePath, buf);
     }
-    if (!lastFrame) {
-      videotagging.stepFwdClicked(false);
-    } else {
-      let notification = new Notification('Offline Video Tagger', {
-          body: 'Successfully exported CNTK files.'
-      });
-    }
   }
 }
 
-//maps every frame in the video to an imageCanvas
-function mapVideo(exportUntil,cb) {
-   return new Promise(function(resolve, reject) {
-    //init canvas buffer
-    var frameCanvas = document.createElement("canvas");
-    frameCanvas.width = videotagging.video.videoWidth;
-    frameCanvas.height = videotagging.video.videoHeight;
-    var canvasContext = frameCanvas.getContext("2d");
-
-    // start exporting frames using the canplaythrough eventListener
-    videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //stop recording frame movment
-    videotagging.video.addEventListener("canplaythrough", iterateFrames);
-    videotagging.video.currentTime = 0;
-    videotagging.playingCallback();
-
-    function iterateFrames(){
-      var frameId = videotagging.getCurrentFrame();
-      var isLastFrame;
-
-      switch(exportUntil) {
-          case "tagged":
-              isLastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
-              break;
-          case "visited":
-              isLastFrame = (frameId >= furthestVisitedFrame);        
-              break;
-          case "last":
-              isLastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
-              break;
-      }
-      if(isLastFrame) {
-        videotagging.video.removeEventListener("canplaythrough", iterateFrames);
-        videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
-        resolve();
-      }
-      cb(frameId,frameCanvas,canvasContext);
-      if (!isLastFrame) {
-        videotagging.stepFwdClicked(false);
-      } 
-    }
-  });
-}
-
+//allows user to review cntk suggestions on a video
 function reviewCNTK() {
   addLoader();
   
@@ -400,6 +373,7 @@ function reviewCNTK() {
 
 }
 
+//enables tracking
 function initRegionTracking() {
 
     trackingSuggestionsBlacklist = {};
