@@ -440,7 +440,9 @@ function initRegionTracking() {
           if (!e.suggestedBy) return undefined;
           return e.suggestedBy.regionId == tracker.prevRegionId; 
       }
-      if ((videotagging.getCurrentFrame() !== prevFrameId) &&  prevImage) {
+      var currentFrameId = videotagging.getCurrentFrame();
+      if ((currentFrameId !== prevFrameId) &&  prevImage) {
+        if (!videotagging.frames[currentFrameId]) videotagging.frames[currentFrameId] =[];
         //to do pop the stack make the reccomendations
         while(trackersStack.length > 0) {
             //caputure new frame
@@ -460,7 +462,6 @@ function initRegionTracking() {
             var tx2 = Math.min(Math.floor((trackedObject.width + tx1)), videotagging.video.offsetWidth);
             var ty2 = Math.min(Math.floor((trackedObject.height + ty1)), videotagging.video.offsetHeight);
             // don't create a new region if a suggestion already exists
-            var currentFrameId = videotagging.getCurrentFrame();
             if (currentFrameId in videotagging.frames){
               var existingSuggestion = $.grep(videotagging.frames[currentFrameId], suggestionExists); 
               if (existingSuggestion && existingSuggestion.length > 0) continue;
@@ -470,9 +471,20 @@ function initRegionTracking() {
               if (trackingSuggestionsBlacklist[currentFrameId].has(tracker.prevRegionId)) continue;
             }
             //create new region
-            videotagging.createRegion( tx1,ty1,tx2,ty2);   
-            videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].tags = tracker.prevTags;
-            videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].suggestedBy = {frameId:prevFrameId, regionId:tracker.prevRegionId};                   
+             videotagging.frames[currentFrameId].push({
+                x1:tx1,
+                y1:ty1,
+                x2:tx2,
+                y2:ty2,                          
+                id:videotagging.uniqueTagId++,
+                width:videotagging.video.offsetWidth,
+                height:videotagging.video.offsetHeight,
+                type:videotagging.regiontype,
+                tags:tracker.prevTags,
+                name:(videotagging.frames[currentFrameId].length + 1),
+                suggestedBy:{frameId:prevFrameId, regionId:tracker.prevRegionId}
+              }); 
+              videotagging.showAllRegions();
         }
       }
       prevImage = prevFrameId = undefined;
