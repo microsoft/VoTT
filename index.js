@@ -3,8 +3,8 @@ const basepath = remote.app.getAppPath();
 const dialog = remote.require('electron').dialog;
 const pathJS = require('path');
 const fs = require('fs');
-const cntkModel= require('./public/js/node-cntk-fastrcnn');
-const mockModelFileLocation = 'mock_model_file_location';
+const cntkModel= require('cntk-fastrcnn');
+const mockModelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 
 var furthestVisitedFrame; //keep track of the furthest visited frame
@@ -78,7 +78,11 @@ ipcRenderer.on('exportCNTK', function(event, message) {
 });
 
 ipcRenderer.on('reviewCNTK', function(event, message) {
-  reviewCNTK();
+    if (fs.existsSync(`c:/local/cntk`)) {
+        reviewCNTK();
+    } else{
+      alert("This feature isn't supported by your system please check your CNTK configuration and try again later.")
+    }
 });
 
 //load logic
@@ -313,7 +317,7 @@ function reviewCNTK() {
     var modelTagsPromise = new Promise(function(resolve, reject) { 
       model.evaluateDirectory(reviewPath, function (err, res) {
         if (err) {
-            console.info(err)
+            console.info(err);
             reject();
         }
         resolve(res);
@@ -332,15 +336,15 @@ function reviewCNTK() {
           videotagging.frames[frameId] = [];
           modelTags.frames[pathId].regions.forEach(function(region) {
             videotagging.frames[frameId].push({
-              x1:region.region.x1,
-              y1:region.region.y1,
-              x2:region.region.x2,
-              y2:region.region.y2,                          
+              x1:region.x1,
+              y1:region.y1,
+              x2:region.x2,
+              y2:region.y2,                          
               id:videotagging.uniqueTagId++,
               width:$('#vid').width(),
               height:$('#vid').height(),
               type:videotagging.regiontype,
-              tags:Object.keys(modelTags.classes).filter(function(key) {return modelTags.classes[key] === region.region.class }),
+              tags:Object.keys(modelTags.classes).filter(function(key) {return modelTags.classes[key] === region.class }),
               name:(videotagging.frames[frameId].length + 1)
             }); 
           });
