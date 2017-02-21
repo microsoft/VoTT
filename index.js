@@ -332,26 +332,32 @@ function reviewCNTK() {
 
       //Create regions based on the provided modelTags
       Object.keys(modelTags.frames).map(function(pathId){
-          frameId = pathId.replace(".jpg", "");//remove.jpg
-          videotagging.frames[frameId] = [];
-          modelTags.frames[pathId].regions.forEach(function(region) {
-            videotagging.frames[frameId].push({
-              x1:region.x1,
-              y1:region.y1,
-              x2:region.x2,
-              y2:region.y2,                          
-              id:videotagging.uniqueTagId++,
-              width:$('#vid').width(),
-              height:$('#vid').height(),
-              type:videotagging.regiontype,
-              tags:Object.keys(modelTags.classes).filter(function(key) {return modelTags.classes[key] === region.class }),
-              name:(videotagging.frames[frameId].length + 1)
-            }); 
-          });
-      });
+          var frameImage = new Image();
+          frameImage.src = `${reviewPath}\\${pathId}`;
+          frameImage.onload = loadFrameRegions; 
 
-      videotagging.showAllRegions();
-      videotagging.emitRegionToHost();
+          function loadFrameRegions(){
+            var imageWidth = this.width;
+            var imageHeight = this.height;
+            frameId = pathId.replace(".jpg", "");//remove.jpg
+            videotagging.frames[frameId] = [];
+            modelTags.frames[pathId].regions.forEach(function(region) {
+              videotagging.frames[frameId].push({
+                x1:region.x1,
+                y1:region.y1,
+                x2:region.x2,
+                y2:region.y2,                          
+                id:videotagging.uniqueTagId++,
+                width:imageWidth,
+                height:imageHeight,
+                type:videotagging.regiontype,
+                tags:Object.keys(modelTags.classes).filter(function(key) {return modelTags.classes[key] === region.class }),
+                name:(videotagging.frames[frameId].length + 1)
+              }); 
+            });
+           }
+          });
+          videotagging.showAllRegions();
 
       //cleanup and notify
       $(".loader").remove();
