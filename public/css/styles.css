@@ -15,6 +15,11 @@ html, body {
     margin-left: 10px;
 }
 
+#framerate:invalid{
+  border-color: #900;
+  background-color: #FDD;
+}
+
 #load-message{
     position: absolute;
     top: 0;
@@ -22,6 +27,7 @@ html, body {
     left: 0;
     right: 0;
 }
+
 #vidImage{
   width:50%;
   display:block;

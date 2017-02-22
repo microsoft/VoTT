@@ -49,7 +49,7 @@ function createWindow () {
     menu.items[p+1].submenu.items[0].enabled = true;
     menu.items[p+1].submenu.items[1].enabled = true;
   });
-  
+
   mainWindow.on('ready-to-show', function() {
       mainWindow.show();
       mainWindow.focus();
