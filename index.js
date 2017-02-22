@@ -4,7 +4,7 @@ const dialog = remote.require('electron').dialog;
 const pathJS = require('path');
 const fs = require('fs');
 const cntkModel= require('cntk-fastrcnn');
-const mockModelFileLocation = `${basepath}/Fast-RCNN.model`;
+const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 
 var furthestVisitedFrame; //keep track of the furthest visited frame
@@ -79,9 +79,14 @@ ipcRenderer.on('exportCNTK', function(event, message) {
 
 ipcRenderer.on('reviewCNTK', function(event, message) {
     if (fs.existsSync(`c:/local/cntk`)) {
-        reviewCNTK();
-    } else{
-      alert("This feature isn't supported by your system please check your CNTK configuration and try again later.")
+        if (fs.existsSync(modelFileLocation)){
+          reviewCNTK();
+        } else{
+            alert(`No model found! Please make sure you put your model in the following directory: ${modelFileLocation}`)
+        }
+        
+    } else {
+      alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
     }
 });
 
@@ -313,7 +318,8 @@ function reviewCNTK() {
 
   function review() {
     //run the model on the reviewPath directory
-    model = new cntkModel.CNTKFRCNNModel(mockModelFileLocation);
+    model = new cntkModel.CNTKFRCNNModel({cntkModelPath : modelFileLocation, verbose : true});
+
     var modelTagsPromise = new Promise(function(resolve, reject) { 
       model.evaluateDirectory(reviewPath, function (err, res) {
         if (err) {
@@ -471,7 +477,7 @@ function initRegionTracking() {
               if (trackingSuggestionsBlacklist[currentFrameId].has(tracker.prevRegionId)) continue;
             }
             //create new region
-             videotagging.createRegion(tx1,ty1,tx2,ty2);
+            videotagging.createRegion(tx1,ty1,tx2,ty2);
         }
       }
       prevImage = prevFrameId = undefined;
