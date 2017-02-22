@@ -108,44 +108,45 @@ function fileSelected(path) {
     } catch (e){
       console.log(`Error loading save file ${e.message}`);
     }
-    
+
     document.getElementById('loadButton').parentNode.replaceChild(document.getElementById('loadButton').cloneNode(true), document.getElementById('loadButton'));
     document.getElementById('loadButton').addEventListener('click', loadTagger);
     function loadTagger (e) {
+      if(framerate.validity.valid) {
+        videotagging = document.getElementById('video-tagging');
+        videotagging.regiontype = document.getElementById('regiontype').value;
+        videotagging.multiregions = 1;
+        videotagging.regionsize = document.getElementById('regionsize').value;
+        videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
 
-      videotagging = document.getElementById('video-tagging');
-      videotagging.regiontype = document.getElementById('regiontype').value;
-      videotagging.multiregions = 1;
-      videotagging.regionsize = document.getElementById('regionsize').value;
-      videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
+        videotagging.video.currentTime = 0;
 
-      videotagging.video.currentTime = 0;
+        if(config) videotagging.inputframes = config.frames;
+        else videotagging.inputframes = {};
 
-      if(config) videotagging.inputframes = config.frames;
-      else videotagging.inputframes = {};
+        videotagging.framerate = document.getElementById('framerate').value;
+        //set title indicator
+        $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
+        videotagging.src = pathName;
+        videotagging.video.load();//load video
 
-      videotagging.framerate = document.getElementById('framerate').value;
-      //set title indicator
-      $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
-      videotagging.src = pathName;
-      videotagging.video.load();//load video
+        //track furthestVisitedFrame
+        furthestVisitedFrame = 1;
+        videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
+        videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
 
-      //track furthestVisitedFrame
-      furthestVisitedFrame = 1;
-      videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
-      videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
+        //init region tracking
+        videotagging.video.addEventListener("canplaythrough",  initRegionTracking);
 
-      //init region tracking
-      videotagging.video.addEventListener("canplaythrough",  initRegionTracking);
+        document.getElementById('load-form-container').style.display = "none";
+        document.getElementById('video-tagging-container').style.display = "block";
 
-      document.getElementById('load-form-container').style.display = "none";
-      document.getElementById('video-tagging-container').style.display = "block";
-
-      ipcRenderer.send('setFilePath', pathName);
-      videotagging.video.addEventListener("loadedmetadata", function() {
-        var videoSize = [videotagging.video.videoWidth, videotagging.video.videoHeight]
-        ipcRenderer.send('setWindowSize', videoSize);
-      });
+        ipcRenderer.send('setFilePath', pathName);
+        videotagging.video.addEventListener("loadedmetadata", function() {
+          var videoSize = [videotagging.video.videoWidth, videotagging.video.videoHeight]
+          ipcRenderer.send('setWindowSize', videoSize);
+        });
+      }
     }
   }
 }
