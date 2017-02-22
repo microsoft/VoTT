@@ -471,20 +471,7 @@ function initRegionTracking() {
               if (trackingSuggestionsBlacklist[currentFrameId].has(tracker.prevRegionId)) continue;
             }
             //create new region
-             videotagging.frames[currentFrameId].push({
-                x1:tx1,
-                y1:ty1,
-                x2:tx2,
-                y2:ty2,                          
-                id:videotagging.uniqueTagId++,
-                width:videotagging.video.offsetWidth,
-                height:videotagging.video.offsetHeight,
-                type:videotagging.regiontype,
-                tags:tracker.prevTags,
-                name:(videotagging.frames[currentFrameId].length + 1),
-                suggestedBy:{frameId:prevFrameId, regionId:tracker.prevRegionId}
-              }); 
-              videotagging.showAllRegions();
+             videotagging.createRegion(tx1,ty1,tx2,ty2);
         }
       }
       prevImage = prevFrameId = undefined;
