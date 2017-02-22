@@ -12,23 +12,25 @@ var videotagging;
 var trackingSuggestionsBlacklist; //keep track of deleted suggestions
 
 //ipc rendering
-ipcRenderer.on('openVideo', function(event, message) {
+ipcRenderer.on('openVideo', (event, message) => {
   fileSelected();
 });
 
-ipcRenderer.on('saveVideo', function(event, message) {
+ipcRenderer.on('saveVideo', (event, message) => {
   save();
 });
 
-ipcRenderer.on('exportCNTK', function(event, message) {
+ipcRenderer.on('exportCNTK', (event, message) => {
   exportCNTK();
 });
 
-ipcRenderer.on('reviewCNTK', function(event, message) {
+
+/* add comment */
+ipcRenderer.on('reviewCNTK', (event, message) => {
     if (fs.existsSync(`c:/local/cntk`)) {
         if (fs.existsSync(modelFileLocation)){
           reviewCNTK();
-        } else{
+        } else {
             alert(`No model found! Please make sure you put your model in the following directory: ${modelFileLocation}`)
         }
         
@@ -40,34 +42,34 @@ ipcRenderer.on('reviewCNTK', function(event, message) {
 
 //drag and drop support
 
-document.addEventListener('drop', function (e) {
+document.addEventListener('drop', (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if(e.dataTransfer.files[0].type == "video/mp4") {
+    if (e.dataTransfer.files[0].type == "video/mp4") {
       fileSelected(e.dataTransfer.files[0]);
     }
     return false;
 });
 
-document.addEventListener('dragover', function (e) {
+document.addEventListener('dragover', (e) => {
     e.preventDefault();
-    if(e.dataTransfer.files[0].type == "video/mp4") {
+    if (e.dataTransfer.files[0].type == "video/mp4") {
       e.dataTransfer.dropEffect = "copy";
     }
     e.stopPropagation();
 });
 
-document.addEventListener('dragstart', function (e) {
+document.addEventListener('dragstart', (e) => {
     e.preventDefault();
     let file = e.dataTransfer.files[0];
-    if(file && file.type == "video/mp4") {
+    if (file && file.type == "video/mp4") {
         e.dataTransfer.effectAllowed = "copy";
     }
     e.stopPropagation();
 });
 
 // stop zooming
-document.addEventListener('mousewheel', function(e) {
+document.addEventListener('mousewheel', (e) => {
   if(e.ctrlKey) {
     e.preventDefault();
   }
@@ -82,24 +84,24 @@ function addLoader() {
 
 //managed the furthest visited frame
 function updateFurthestVisitedFrame(){
-    var currentFrame = videotagging.getCurrentFrame();
-    if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
+  var currentFrame = videotagging.getCurrentFrame();
+  if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
 }
 
 function checkPointRegion() {
-    if (document.getElementById('regiontype').value != "Point") {
-      document.getElementById('regionPointGroup').style.display = "none";
-    }
-    else {
-      document.getElementById('regionPointGroup').style.display = "inline";
-    }
+  if (document.getElementById('regiontype').value != "Point") {
+    document.getElementById('regionPointGroup').style.display = "none";
+  }
+  else {
+    document.getElementById('regionPointGroup').style.display = "inline";
+  }
 }
 
 //load logic
 function fileSelected(path) {
   document.getElementById('load-message').style.display = "none";
 
-  if(path) {  //checking if a video is dropped
+  if (path) {  //checking if a video is dropped
     let pathName = path.path;
     openPath(pathName);
   } else { // showing system open dialog
@@ -116,28 +118,35 @@ function fileSelected(path) {
   function openPath(pathName) {
     var config;
 
+    // TODO use jQuery
     document.getElementById('video-tagging-container').style.display = "none";
     document.getElementById('load-message').style.display = "none";
     document.getElementById('load-form-container').style.display = "block";
     document.getElementById('framerateGroup').style.display = "inline";
+
+
     //set title indicator
     $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
     
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
-    try{
+    try {
       config = require(`${pathName}.json`);
       //restore tags
       document.getElementById('inputtags').value = config.inputTags;
-      config.inputTags.split(",").forEach(function(tag) {
+      config.inputTags.split(",").forEach(tag => {
           $("#inputtags").tagsinput('add',tag);
       });
     } catch (e){
       console.log(`Error loading save file ${e.message}`);
     }
 
+    // REPLACE implementation, use jQuery to remove all event handlers on loadbutton
     document.getElementById('loadButton').parentNode.replaceChild(document.getElementById('loadButton').cloneNode(true), document.getElementById('loadButton'));
     document.getElementById('loadButton').addEventListener('click', loadTagger);
+    
+// TODO: H&E- get rid of document.getElementById
+
     function loadTagger (e) {
       if(framerate.validity.valid) {
         videotagging = document.getElementById('video-tagging');
@@ -148,7 +157,7 @@ function fileSelected(path) {
 
         videotagging.video.currentTime = 0;
 
-        if(config) videotagging.inputframes = config.frames;
+        if (config) videotagging.inputframes = config.frames;
         else videotagging.inputframes = {};
 
         videotagging.framerate = document.getElementById('framerate').value;
@@ -169,7 +178,7 @@ function fileSelected(path) {
         document.getElementById('video-tagging-container').style.display = "block";
 
         ipcRenderer.send('setFilePath', pathName);
-        videotagging.video.addEventListener("loadedmetadata", function() {
+        videotagging.video.addEventListener("loadedmetadata", () => {
           var videoSize = [videotagging.video.videoWidth, videotagging.video.videoHeight]
           ipcRenderer.send('setWindowSize', videoSize);
         });
@@ -195,8 +204,8 @@ function save() {
 }
 
 //maps every frame in the video to an imageCanvas
-function mapVideo(exportUntil,cb) {
-   return new Promise(function(resolve, reject) {
+function mapVideo(exportUntil, frameHandler) {
+   return new Promise((resolve, reject) => {
     //init canvas buffer
     var frameCanvas = document.createElement("canvas");
     frameCanvas.width = videotagging.video.videoWidth;
@@ -209,13 +218,13 @@ function mapVideo(exportUntil,cb) {
     videotagging.video.currentTime = 0;
     videotagging.playingCallback();
 
-    function iterateFrames(){
+    function iterateFrames() {
       var frameId = videotagging.getCurrentFrame();
       var isLastFrame;
 
       switch(exportUntil) {
           case "tagged":
-              isLastFrame = (Object.keys(videotagging.frames).length == 0) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
+              isLastFrame = (!Object.keys(videotagging.frames).length) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
               break;
           case "visited":
               isLastFrame = (frameId >= furthestVisitedFrame);        
@@ -224,12 +233,12 @@ function mapVideo(exportUntil,cb) {
               isLastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
               break;
       }
-      if(isLastFrame) {
+      if (isLastFrame) {
         videotagging.video.removeEventListener("canplaythrough", iterateFrames);
         videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
         resolve();
       }
-      cb(frameId,frameCanvas,canvasContext);
+      frameHandler(frameId, frameCanvas, canvasContext);
       if (!isLastFrame) {
         videotagging.stepFwdClicked(false);
       } 
@@ -241,6 +250,8 @@ function mapVideo(exportUntil,cb) {
 function exportCNTK() {
   addLoader();
 
+  /* create constants for all the paths with meaningful names*/
+
   //make sure paths exist
   if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
   var framesPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frames`;
@@ -249,48 +260,51 @@ function exportCNTK() {
   if (!fs.existsSync(`${framesPath}/positive`)) fs.mkdirSync(`${framesPath}/positive`);
   if (!fs.existsSync(`${framesPath}/negative`)) fs.mkdirSync(`${framesPath}/negative`);
 
-  mapVideo(document.getElementById('exportTo').value,exportFrame).then(function(){
-      $(".loader").remove();
-      let notification = new Notification('Offline Video Tagger', {
-          body: 'Successfully exported CNTK files.'
-      });
+  mapVideo(document.getElementById('exportTo').value, exportFrame).then(() => {
+    $(".loader").remove();
+    let notification = new Notification('Offline Video Tagger', {
+      body: 'Successfully exported CNTK files.'
+    });
   })
 
-  function exportFrame(frameId,frameCanvas,canvasContext) {
+  function exportFrame(frameId, frameCanvas, canvasContext) {
 
     //set default writepath to the negative folder
     var writePath = `${framesPath}/negative/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frame_${frameId}.jpg`; //defaults to negative
     var positiveWritePath = `${framesPath}/positive/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frame_${frameId}.jpg`;
     //If frame contains tags generate the metadata and save it in the positive directory
-    var frameIsTagged = videotagging.frames.hasOwnProperty(frameId) && (videotagging.frames[frameId].length > 0);
-    if (frameIsTagged && (videotagging.getUnlabeledRegionTags(frameId).length != videotagging.frames[frameId].length)){
+    var frameIsTagged = videotagging.frames.hasOwnProperty(frameId) && (videotagging.frames[frameId].length);
+    if (frameIsTagged && (videotagging.getUnlabeledRegionTags(frameId).length != videotagging.frames[frameId].length)) {
         //clear metadata if image exists from last run
-        if(fs.existsSync(writePath))fs.unlinkSync(writePath);
-        if(fs.existsSync(positiveWritePath)){
+        if (fs.existsSync(writePath)) 
+          fs.unlinkSync(writePath);
+        if (fs.existsSync(positiveWritePath)) {
           // checking to see if no tags were saved from last run
-          if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'))) {
+          if (fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'))) {
             fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
           }
-          if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) {
+          if (fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) {
             fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
           }
         }
         //genereate metadata from tags
-        videotagging.frames[frameId].map(function(tag){
-              if (!tag.tags[tag.tags.length-1]) {
-                return console.log(`frame ${frameId} region ${tag.name} has no label`);
-              }
-              var stanW = videotagging.video.videoWidth/tag.width;
-              var stanH = videotagging.video.videoHeight/tag.height;
-              fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'), `${tag.tags[tag.tags.length-1]}\n`, function (err) {});
-              fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.tsv'), `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`, function (err) {});
+        videotagging.frames[frameId].map( (tag) => {
+          if (!tag.tags[tag.tags.length-1]) {
+            return console.log(`frame ${frameId} region ${tag.name} has no label`);
+          }
+          var stanW = videotagging.video.videoWidth/tag.width;
+          var stanH = videotagging.video.videoHeight/tag.height;
+          fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'), `${tag.tags[tag.tags.length-1]}\n`, (err) => {console.error(err)});
+          fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.tsv'), `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`, (err) => {console.error(err)});
         });
         writePath = positiveWritePath; // set write path to positve write path
     }
-    else if(fs.existsSync(positiveWritePath)){ //tags have been removed clear positive data if it exists from last run
+    else if(fs.existsSync(positiveWritePath)) { //tags have been removed clear positive data if it exists from last run
         fs.unlinkSync(positiveWritePath);
-        if(fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
-        if(fs.existsSync(positiveWritePath.replace('.jpg', '..bboxes.labels.tsv'))) fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
+        if (fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) 
+          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
+        if (fs.existsSync(positiveWritePath.replace('.jpg', '..bboxes.labels.tsv'))) 
+          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
     }
 
     //draw the frame to the canvas
@@ -326,8 +340,8 @@ function reviewCNTK() {
     //run the model on the reviewPath directory
     model = new cntkModel.CNTKFRCNNModel({cntkModelPath : modelFileLocation, verbose : true});
 
-    var modelTagsPromise = new Promise(function(resolve, reject) { 
-      model.evaluateDirectory(reviewPath, function (err, res) {
+    var modelTagsPromise = new Promise((resolve, reject) => { 
+      model.evaluateDirectory(reviewPath, (err, res) => {
         if (err) {
             console.info(err);
             reject();
@@ -335,59 +349,60 @@ function reviewCNTK() {
         resolve(res);
       });
     });
-    modelTagsPromise.then(function(modelTags) {
+
+    modelTagsPromise.then( (modelTags) => {
       videotagging.video.removeEventListener("canplaythrough", initRegionTracking); //remove region tracking listener
-      $('#video-tagging').off("stepFwdClicked-BeforeStep" );
-      $('#video-tagging').off("stepFwdClicked-AfterStep" );
+      $('#video-tagging').off("stepFwdClicked-BeforeStep");
+      $('#video-tagging').off("stepFwdClicked-AfterStep");
       videotagging.frames=[];
       videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
 
       //Create regions based on the provided modelTags
-      Object.keys(modelTags.frames).map(function(pathId){
-          var frameImage = new Image();
-          frameImage.src = `${reviewPath}\\${pathId}`;
-          frameImage.onload = loadFrameRegions; 
+      Object.keys(modelTags.frames).map( (pathId) => {
+        var frameImage = new Image();
+        frameImage.src = `${reviewPath}\\${pathId}`;
+        frameImage.onload = loadFrameRegions; 
 
-          function loadFrameRegions(){
-            var imageWidth = this.width;
-            var imageHeight = this.height;
-            frameId = pathId.replace(".jpg", "");//remove.jpg
-            videotagging.frames[frameId] = [];
-            modelTags.frames[pathId].regions.forEach(function(region) {
-              videotagging.frames[frameId].push({
-                x1:region.x1,
-                y1:region.y1,
-                x2:region.x2,
-                y2:region.y2,                          
-                id:videotagging.uniqueTagId++,
-                width:imageWidth,
-                height:imageHeight,
-                type:videotagging.regiontype,
-                tags:Object.keys(modelTags.classes).filter(function(key) {return modelTags.classes[key] === region.class }),
-                name:(videotagging.frames[frameId].length + 1)
-              }); 
-            });
-           }
+        function loadFrameRegions() {
+          var imageWidth = this.width;
+          var imageHeight = this.height;
+          frameId = pathId.replace(".jpg", "");//remove.jpg
+          videotagging.frames[frameId] = [];
+          modelTags.frames[pathId].regions.forEach( (region) => {
+            videotagging.frames[frameId].push({
+              x1:region.x1,
+              y1:region.y1,
+              x2:region.x2,
+              y2:region.y2,                          
+              id:videotagging.uniqueTagId++,
+              width:imageWidth,
+              height:imageHeight,
+              type:videotagging.regiontype,
+              tags:Object.keys(modelTags.classes).filter( (key) => {return modelTags.classes[key] === region.class }),
+              name:(videotagging.frames[frameId].length + 1)
+            }); 
           });
-          videotagging.showAllRegions();
+          }
+        });
+        videotagging.showAllRegions();
 
       //cleanup and notify
       $(".loader").remove();
       videotagging.video.currentTime = 0;
       videotagging.playingCallback();
-      let notification = new Notification('Offline Video Tagger', {body: 'Model Ready For Review.'});
+      let notification = new Notification('Offline Video Tagger', { body: 'Model Ready For Review.' });
 
     });
   }
 
-  function saveFrame(frameId,fCanvas,canvasContext){
+  function saveFrame(frameId, fCanvas, canvasContext){
     canvasContext.drawImage(videotagging.video, 0, 0);
     var writePath = reviewPath+ `/${frameId}.jpg`
     var data = fCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
     var buf = new Buffer(data, 'base64');
     //write canvas to file and change frame
     console.log('saving file', writePath);
-    if(!fs.existsSync(writePath)) {
+    if (!fs.existsSync(writePath)) {
       fs.writeFileSync(writePath, buf);
     }
    
@@ -397,13 +412,12 @@ function reviewCNTK() {
 
 //enables tracking
 function initRegionTracking() {
-
     trackingSuggestionsBlacklist = {};
     videotagging.video.removeEventListener("canplaythrough", initRegionTracking); //remove old listener
 
     var frameCanvas = document.createElement("canvas"),
     canvasContext = frameCanvas.getContext("2d"),
-    scd = new SceneChangeDetector({threshold:49, detectionRegion:{w:frameCanvas.width, h:frameCanvas.height}}),
+    scd = new SceneChangeDetector({ threshold:49, detectionRegion: { w:frameCanvas.width, h:frameCanvas.height } }),
     trackersStack = [],
     prevImage, prevFrameId;
     
@@ -411,7 +425,7 @@ function initRegionTracking() {
     frameCanvas.width = videotagging.video.offsetWidth;
     frameCanvas.height = videotagging.video.offsetHeight;
 
-    $('#video-tagging').on("stepFwdClicked-BeforeStep",function() {
+    $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
 
       if ($('.regionCanvas').length > 0) {         
         //init store imagedata for scene detection
@@ -419,7 +433,7 @@ function initRegionTracking() {
         prevFrameId = videotagging.getCurrentFrame();    
         prevImage = canvasContext.getImageData(0, 0, frameCanvas.width, frameCanvas.height).data;
 
-        $.map($('.regionCanvas'), function(regionCanvas) {  
+        $.map($('.regionCanvas'), (regionCanvas) => {  
           var w = parseInt(regionCanvas.style.width);
           var h = parseInt(regionCanvas.style.height);
           var y = parseInt(regionCanvas.style.top);
@@ -433,15 +447,15 @@ function initRegionTracking() {
       }
     });
 
-    $('#video-tagging').on("stepFwdClicked-AfterStep",function() {
+    $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
         videotagging.video.addEventListener("canplaythrough", afterStep);
     });  
 
-    $('#video-tagging').on("canvasRegionDeleted", function(e,deletedRegion) {
+    $('#video-tagging').on("canvasRegionDeleted", (e,deletedRegion) => {
        updateBlackList([deletedRegion]);
     });  
 
-    $('#video-tagging').on("clearingAllRegions", function(){
+    $('#video-tagging').on("clearingAllRegions", () => {
        updateBlackList(videotagging.frames[this.getCurrentFrame()]);
     });
 
@@ -494,7 +508,7 @@ function initRegionTracking() {
     }      
 
     function updateBlackList(removedRegions) {
-      removedRegions.forEach(function(deletedRegion) {
+      removedRegions.forEach( (deletedRegion) => {
         // add suggested by to black list for frame
         if(deletedRegion.suggestedBy !== undefined) {
           if(!trackingSuggestionsBlacklist[videotagging.getCurrentFrame()]){
