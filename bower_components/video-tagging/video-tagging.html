@@ -734,6 +734,9 @@
         }
         //raise after next frame
         if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep'); 
+      
+        var time =  this.seekBar.value / this.seekBar.max;
+        this.updateProgressBar(time, 'paused');
     },
     stepBwdClicked: function() {
           if (this.video.currentTime > 0) {
@@ -744,6 +747,9 @@
                 this.video.currentTime -= this.frameTime;
                 this.playingCallback();
               }
+
+              var time =  this.seekBar.value / this.seekBar.max;
+              this.updateProgressBar(time, 'paused');
           }
     },
     videoSrcChanged: function(newValue, oldValue) {
@@ -782,6 +788,9 @@
             this.playButton.classList.toggle("icon-pause2", !this.video.paused);
             this.optionalTags.toggleEnableButtons(false);
             $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
+
+              var time =  this.seekBar.value / this.seekBar.max;
+              this.updateProgressBar(time, 'paused');
     },
     playingCallback: function() {
             this.frameText.innerHTML = this.getCurrentFrame();
@@ -804,7 +813,13 @@
             var perc =  100 * this.seekBar.value / this.seekBar.max;
             this.seekStyle.textContent =  '.seek::-webkit-slider-runnable-track{background-size:'+perc+'% 100%}';
             this.seekStyle.textContent += '.seek::-moz-range-track{background-size:'+perc+'% 100%}';
+
+            var time =  this.seekBar.value / this.seekBar.max;
+            this.updateProgressBar(time);
     },
+    updateProgressBar: function(time, state) {
+            this.fire('updateProgressBar', {currentTime: time, state: state})
+    }
 });
 </script>
 <script src="../jquery/dist/jquery.min.js"></script>

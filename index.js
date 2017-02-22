@@ -35,6 +35,10 @@ document.addEventListener('dragstart', function (e) {
     e.stopPropagation();
 });
 
+document.addEventListener('updateProgressBar', function (e) {
+  ipcRenderer.send('updateProgressBar', e.detail.currentTime, e.detail.state);
+});
+
 // stop zooming
 document.addEventListener('mousewheel', function(e) {
   if(e.ctrlKey) {

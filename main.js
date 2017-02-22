@@ -49,6 +49,10 @@ function createWindow () {
     menu.items[p].submenu.items[3].enabled = true;
   });
 
+  ipcMain.on('updateProgressBar', function (event, time, state) {
+      mainWindow.setProgressBar(time, {mode: state});
+  });
+
   mainWindow.on('ready-to-show', function() {
       mainWindow.show();
       mainWindow.focus();
