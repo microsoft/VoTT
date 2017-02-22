@@ -11,6 +11,35 @@ var furthestVisitedFrame; //keep track of the furthest visited frame
 var videotagging;
 var trackingSuggestionsBlacklist; //keep track of deleted suggestions
 
+//ipc rendering
+ipcRenderer.on('openVideo', function(event, message) {
+  fileSelected();
+});
+
+ipcRenderer.on('saveVideo', function(event, message) {
+  save();
+});
+
+ipcRenderer.on('exportCNTK', function(event, message) {
+  exportCNTK();
+});
+
+ipcRenderer.on('reviewCNTK', function(event, message) {
+    if (fs.existsSync(`c:/local/cntk`)) {
+        if (fs.existsSync(modelFileLocation)){
+          reviewCNTK();
+        } else{
+            alert(`No model found! Please make sure you put your model in the following directory: ${modelFileLocation}`)
+        }
+        
+    } else {
+      alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
+    }
+});
+
+
+//drag and drop support
+
 document.addEventListener('drop', function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -65,31 +94,6 @@ function checkPointRegion() {
       document.getElementById('regionPointGroup').style.display = "inline";
     }
 }
-
-ipcRenderer.on('openVideo', function(event, message) {
-  fileSelected();
-});
-
-ipcRenderer.on('saveVideo', function(event, message) {
-  save();
-});
-
-ipcRenderer.on('exportCNTK', function(event, message) {
-  exportCNTK();
-});
-
-ipcRenderer.on('reviewCNTK', function(event, message) {
-    if (fs.existsSync(`c:/local/cntk`)) {
-        if (fs.existsSync(modelFileLocation)){
-          reviewCNTK();
-        } else{
-            alert(`No model found! Please make sure you put your model in the following directory: ${modelFileLocation}`)
-        }
-        
-    } else {
-      alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
-    }
-});
 
 //load logic
 function fileSelected(path) {
@@ -480,6 +484,9 @@ function initRegionTracking() {
             }
             //create new region
             videotagging.createRegion(tx1,ty1,tx2,ty2);
+            videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].tags = tracker.prevTags;
+            videotagging.frames[currentFrameId][videotagging.frames[currentFrameId].length-1].suggestedBy = {frameId:prevFrameId, regionId:tracker.prevRegionId};                   
+
         }
       }
       prevImage = prevFrameId = undefined;
