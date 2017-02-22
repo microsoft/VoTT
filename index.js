@@ -4,6 +4,7 @@ const dialog = remote.require('electron').dialog;
 const pathJS = require('path');
 const fs = require('fs');
 const cntkModel= require('cntk-fastrcnn');
+const cntkDefaultPath = 'c:/local/cntk';
 const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 
@@ -24,10 +25,8 @@ ipcRenderer.on('exportCNTK', (event, message) => {
   exportCNTK();
 });
 
-
-/* add comment */
 ipcRenderer.on('reviewCNTK', (event, message) => {
-    if (fs.existsSync(`c:/local/cntk`)) {
+    if (fs.existsSync(cntkDefaultPath)) {
         if (fs.existsSync(modelFileLocation)){
           reviewCNTK();
         } else {
@@ -41,7 +40,6 @@ ipcRenderer.on('reviewCNTK', (event, message) => {
 
 
 //drag and drop support
-
 document.addEventListener('drop', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -77,7 +75,7 @@ document.addEventListener('mousewheel', (e) => {
 
 //adds a loading animation to the tagger
 function addLoader() {
-  if($('.loader').length == 0) {
+  if(!$('.loader').length) {
     $("<div class=\"loader\"></div>").appendTo($("#videoWrapper"));
   }
 }
@@ -89,17 +87,16 @@ function updateFurthestVisitedFrame(){
 }
 
 function checkPointRegion() {
-  if (document.getElementById('regiontype').value != "Point") {
-    document.getElementById('regionPointGroup').style.display = "none";
-  }
-  else {
-    document.getElementById('regionPointGroup').style.display = "inline";
+  if ($('#regiontype').val() != "Point") {
+    $('#regionPointGroup').hide();
+  } else {
+    $('#regionPointGroup').show();
   }
 }
 
 //load logic
 function fileSelected(path) {
-  document.getElementById('load-message').style.display = "none";
+   $('#load-message').hide();
 
   if (path) {  //checking if a video is dropped
     let pathName = path.path;
@@ -111,20 +108,18 @@ function fileSelected(path) {
     },
     function (pathName) {
       if (pathName) openPath(pathName[0]);
-      else document.getElementById('load-message').style.display = "inline";
+      else $('#load-message').show();
     });
   }
 
   function openPath(pathName) {
     var config;
 
-    // TODO use jQuery
-    document.getElementById('video-tagging-container').style.display = "none";
-    document.getElementById('load-message').style.display = "none";
-    document.getElementById('load-form-container').style.display = "block";
-    document.getElementById('framerateGroup').style.display = "inline";
-
-
+    // show configuration
+    $('#video-tagging-container','#load-message').hide()
+    $('#load-form-container').show();
+    $('#framerateGroup').show();
+    
     //set title indicator
     $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
     
@@ -133,11 +128,11 @@ function fileSelected(path) {
     try {
       config = require(`${pathName}.json`);
       //restore tags
-      document.getElementById('inputtags').value = config.inputTags;
-      config.inputTags.split(",").forEach(tag => {
+      $('#inputtags').val(config.inputTags);
+      config.inputTags.split(",").forEach( tag => {
           $("#inputtags").tagsinput('add',tag);
       });
-    } catch (e){
+    } catch (e) {
       console.log(`Error loading save file ${e.message}`);
     }
 
@@ -145,24 +140,22 @@ function fileSelected(path) {
     document.getElementById('loadButton').parentNode.replaceChild(document.getElementById('loadButton').cloneNode(true), document.getElementById('loadButton'));
     document.getElementById('loadButton').addEventListener('click', loadTagger);
     
-// TODO: H&E- get rid of document.getElementById
-
     function loadTagger (e) {
       if(framerate.validity.valid) {
-        videotagging = document.getElementById('video-tagging');
-        videotagging.regiontype = document.getElementById('regiontype').value;
-        videotagging.multiregions = 1;
-        videotagging.regionsize = document.getElementById('regionsize').value;
-        videotagging.inputtagsarray = document.getElementById('inputtags').value.split(',');
+       
+        $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`); //set title indicator
 
+        videotagging = document.getElementById('video-tagging'); //find out why jquery doesn't play nice with polymer
+        videotagging.regiontype = $('#regiontype').val();
+        videotagging.multiregions = 1;
+        videotagging.regionsize = $('#regionsize').val();
+        videotagging.inputtagsarray = $('#inputtags').val().split(',');
         videotagging.video.currentTime = 0;
+        videotagging.framerate = $('#framerate').val();
 
         if (config) videotagging.inputframes = config.frames;
         else videotagging.inputframes = {};
 
-        videotagging.framerate = document.getElementById('framerate').value;
-        //set title indicator
-        $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
         videotagging.src = pathName;
         videotagging.video.load();//load video
 
@@ -174,8 +167,8 @@ function fileSelected(path) {
         //init region tracking
         videotagging.video.addEventListener("canplaythrough",  initRegionTracking);
 
-        document.getElementById('load-form-container').style.display = "none";
-        document.getElementById('video-tagging-container').style.display = "block";
+        $('#load-form-container').hide();
+        $('#video-tagging-container').show();
 
         ipcRenderer.send('setFilePath', pathName);
         videotagging.video.addEventListener("loadedmetadata", () => {
@@ -191,8 +184,8 @@ function fileSelected(path) {
 function save() {
     var saveObject = {
       "frames" : videotagging.frames,
-      "inputTags": document.getElementById('inputtags').value,
-      "exportTo": document.getElementById('exportTo').value,
+      "inputTags": $('#inputtags').val(),
+      "exportTo": $('#exportTo').val(),
       "furthestVisitedFrame": furthestVisitedFrame
     };
     
@@ -260,7 +253,7 @@ function exportCNTK() {
   if (!fs.existsSync(`${framesPath}/positive`)) fs.mkdirSync(`${framesPath}/positive`);
   if (!fs.existsSync(`${framesPath}/negative`)) fs.mkdirSync(`${framesPath}/negative`);
 
-  mapVideo(document.getElementById('exportTo').value, exportFrame).then(() => {
+  mapVideo($('#exportTo').val(), exportFrame).then(() => {
     $(".loader").remove();
     let notification = new Notification('Offline Video Tagger', {
       body: 'Successfully exported CNTK files.'
@@ -427,7 +420,7 @@ function initRegionTracking() {
 
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
 
-      if ($('.regionCanvas').length > 0) {         
+      if ($('.regionCanvas').length) {         
         //init store imagedata for scene detection
         canvasContext.drawImage(videotagging.video, 0, 0);
         prevFrameId = videotagging.getCurrentFrame();    
@@ -470,7 +463,7 @@ function initRegionTracking() {
       if ((currentFrameId !== prevFrameId) &&  prevImage) {
         if (!videotagging.frames[currentFrameId]) videotagging.frames[currentFrameId] =[];
         //to do pop the stack make the reccomendations
-        while(trackersStack.length > 0) {
+        while(trackersStack.length) {
             //caputure new frame
             canvasContext.drawImage(videotagging.video, 0, 0);
             var curImage = canvasContext.getImageData(0, 0, frameCanvas.width, frameCanvas.height).data;
