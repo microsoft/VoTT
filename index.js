@@ -8,9 +8,9 @@ const cntkDefaultPath = 'c:/local/cntk';
 const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 
-var furthestVisitedFrame; //keep track of the furthest visited frame
-var videotagging;
-var trackingSuggestionsBlacklist; //keep track of deleted suggestions
+var furthestVisitedFrame, //keep track of the furthest visited frame
+    videotagging,
+    trackingSuggestionsBlacklist; //keep track of deleted suggestions
 
 //ipc rendering
 ipcRenderer.on('openVideo', (event, message) => {
@@ -216,21 +216,23 @@ function mapVideo(exportUntil, frameHandler) {
       var isLastFrame;
 
       switch(exportUntil) {
-          case "tagged":
-              isLastFrame = (!Object.keys(videotagging.frames).length) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
-              break;
-          case "visited":
-              isLastFrame = (frameId >= furthestVisitedFrame);        
-              break;
-          case "last":
-              isLastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
-              break;
+        case "tagged":
+          isLastFrame = (!Object.keys(videotagging.frames).length) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
+          break;
+        case "visited":
+          isLastFrame = (frameId >= furthestVisitedFrame);        
+          break;
+        case "last":
+          isLastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
+          break;
       }
+
       if (isLastFrame) {
         videotagging.video.removeEventListener("canplaythrough", iterateFrames);
         videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
         resolve();
       }
+      
       frameHandler(frameId, frameCanvas, canvasContext);
       if (!isLastFrame) {
         videotagging.stepFwdClicked(false);
