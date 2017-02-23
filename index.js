@@ -116,7 +116,8 @@ function fileSelected(path) {
     var config;
 
     // show configuration
-    $('#video-tagging-container','#load-message').hide()
+    $('#load-message').hide();
+    $('#video-tagging-container').hide()
     $('#load-form-container').show();
     $('#framerateGroup').show();
     
@@ -171,10 +172,6 @@ function fileSelected(path) {
         $('#video-tagging-container').show();
 
         ipcRenderer.send('setFilePath', pathName);
-        videotagging.video.addEventListener("loadedmetadata", () => {
-          var videoSize = [videotagging.video.videoWidth, videotagging.video.videoHeight]
-          ipcRenderer.send('setWindowSize', videoSize);
-        });
       }
     }
   }
@@ -420,6 +417,11 @@ function initRegionTracking() {
     frameCanvas.width = videotagging.video.offsetWidth;
     frameCanvas.height = videotagging.video.offsetHeight;
 
+    $(window).resize( () => {
+      frameCanvas.width = videotagging.video.offsetWidth;
+      frameCanvas.height = videotagging.video.offsetHeight;
+    });
+
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
 
       if ($('.regionCanvas').length) {         
@@ -451,7 +453,7 @@ function initRegionTracking() {
     });  
 
     $('#video-tagging').on("clearingAllRegions", () => {
-       updateBlackList(videotagging.frames[this.getCurrentFrame()]);
+       updateBlackList(videotagging.frames[videotagging.getCurrentFrame()]);
     });
 
     function afterStep() {
@@ -525,3 +527,5 @@ function initRegionTracking() {
       });
     }      
 }
+
+
