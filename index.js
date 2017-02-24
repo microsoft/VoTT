@@ -420,6 +420,8 @@ function initRegionTracking() {
     $(window).resize( () => {
       frameCanvas.width = videotagging.video.offsetWidth;
       frameCanvas.height = videotagging.video.offsetHeight;
+      scd = new SceneChangeDetector({ threshold:49, detectionRegion: { w:frameCanvas.width, h:frameCanvas.height } });
+
     });
 
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
@@ -440,6 +442,7 @@ function initRegionTracking() {
           cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(x,y,w,h));
           var prevRegion = $.grep(videotagging.frames[prevFrameId], function(e){ return e.name == regionCanvas.id;})[0];
           trackersStack.push({cstracker: cstracker, prevTags: prevRegion.tags, prevRegionId: prevRegion.id});
+
         });
       }
     });
@@ -476,6 +479,8 @@ function initRegionTracking() {
             //apply camshift here 
             var tracker = trackersStack.pop();
             tracker.cstracker.track(frameCanvas);
+            //debug
+            debugCamshift(tracker.cstracker,tracker.prevRegionId);
             var trackedObject = tracker.cstracker.getTrackObj();        
             //if object has disapeared don't add a new region
             if (trackedObject.width === 0 || trackedObject.height === 0 ) continue;
@@ -528,4 +533,36 @@ function initRegionTracking() {
     }      
 }
 
+//write image to camshift debug
+
+function debugCamshift(cstracker,name){
+  var bpi = cstracker.getBackProjectionImg();
+
+    // create off-screen canvas element
+   var canvas = document.createElement('canvas'),
+    ctx = canvas.getContext('2d');
+
+    canvas.width = bpi.width;
+    canvas.height = bpi.height;
+
+  // create imageData object
+  var idata = ctx.createImageData(bpi.width, bpi.height);
+
+  // set our buffer as source
+  idata.data.set(bpi.data);
+
+  // update canvas with new data
+  ctx.putImageData(idata, 0, 0);
+
+  var dataUri = canvas.toDataURL().replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
+    var buf = new Buffer(dataUri, 'base64');
+
+    // strip off the data: url prefix to get just the base64-encoded bytes
+    //var  = img.replace(/^data:image\/\w+;base64,/, "");
+    //var buf = new Buffer(, 'base64');
+    var debugPath = `${basepath}/camshift_debug/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}`;
+    if (!fs.existsSync(debugPath)) fs.mkdirSync(debugPath);
+
+    fs.writeFile(`${debugPath}/${name}.png`, buf);
+}
 
