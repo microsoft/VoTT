@@ -26,11 +26,12 @@ function SceneChangeDetector(options={}) {
                 video.removeEventListener("canplaythrough", isSceneChanged);
                 canvasContext.drawImage(video, 0, 0);
                 d.resolve(sceneChanged);
+            } else {
+                canvasContext.drawImage(video, 0, 0);
+                var nxtFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
+                sceneChanged = self.detectChange(curFrame, nxtFrame);
+                video.currentTime -= 1/framerate;
             }
-            canvasContext.drawImage(video, 0, 0);
-            var nxtFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
-            sceneChanged = self.detectChange(curFrame, nxtFrame);
-            video.currentTime -= 1/framerate;
         }
 
         return d;
@@ -42,19 +43,22 @@ function SceneChangeDetector(options={}) {
         var d = $.Deferred();
         var regionChanged;
         var curFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
+        
+        
         video.addEventListener("canplaythrough", isRegionChanged);
         video.currentTime += 1/framerate;
-
+        
         function isRegionChanged() {
             if (regionChanged != undefined){
                 video.removeEventListener("canplaythrough", isRegionChanged);
                 canvasContext.drawImage(video, 0, 0);
-                d.resolve(true);
+                d.resolve(regionChanged);
+            } else {
+                canvasContext.drawImage(video, 0, 0);
+                var nxtFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
+                regionChanged = self.detectChange(curFrame, nxtFrame);
+                video.currentTime -= 1/framerate;
             }
-            canvasContext.drawImage(video, 0, 0);
-            var nxtFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
-            regionChanged = self.detectChange(curFrame, nxtFrame);
-            video.currentTime -= 1/framerate;
         }
 
         return d;
