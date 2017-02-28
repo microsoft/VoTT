@@ -12,7 +12,56 @@ function SceneChangeDetector(options={}) {
         return this._detectionRegion;
     }
 
-    this.detectSceneChange = function(lastImgData, currentImgData) {
+    //detects whether next frame is a scene change
+    this.detectSceneChange = function(video, canvas, canvasContext, framerate) {
+        var self = this;
+        var d = $.Deferred();
+        var sceneChanged;
+        var curFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
+        video.addEventListener("canplaythrough", isSceneChanged);
+        video.currentTime += 1/framerate;
+
+        function isSceneChanged() {
+            if (sceneChanged != undefined){
+                video.removeEventListener("canplaythrough", isSceneChanged);
+                canvasContext.drawImage(video, 0, 0);
+                d.resolve(sceneChanged);
+            }
+            canvasContext.drawImage(video, 0, 0);
+            var nxtFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
+            sceneChanged = self.detectChange(curFrame, nxtFrame);
+            video.currentTime -= 1/framerate;
+        }
+
+        return d;
+    }
+
+    //detects whether region changes in the next frame (needs to be debugged for now resolve true)
+    this.detectRegionChange = function(video, canvas, canvasContext, region, framerate) {
+        var self = this;
+        var d = $.Deferred();
+        var regionChanged;
+        var curFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
+        video.addEventListener("canplaythrough", isRegionChanged);
+        video.currentTime += 1/framerate;
+
+        function isRegionChanged() {
+            if (regionChanged != undefined){
+                video.removeEventListener("canplaythrough", isRegionChanged);
+                canvasContext.drawImage(video, 0, 0);
+                d.resolve(true);
+            }
+            canvasContext.drawImage(video, 0, 0);
+            var nxtFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
+            regionChanged = self.detectChange(curFrame, nxtFrame);
+            video.currentTime -= 1/framerate;
+        }
+
+        return d;
+    }
+
+
+    this.detectChange = function(lastImgData, currentImgData) {
         var diff = this.computeDifferences(lastImgData, currentImgData);
         if (diff > this._threshold) return true;
         return false;
