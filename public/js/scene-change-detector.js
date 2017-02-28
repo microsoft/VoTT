@@ -18,12 +18,12 @@ function SceneChangeDetector(options={}) {
         var d = $.Deferred();
         var sceneChanged;
         var curFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
-        video.addEventListener("canplaythrough", isSceneChanged);
+        video.addEventListener("canplay", isSceneChanged);
         video.currentTime += 1/framerate;
 
         function isSceneChanged() {
             if (sceneChanged != undefined){
-                video.removeEventListener("canplaythrough", isSceneChanged);
+                video.removeEventListener("canplay", isSceneChanged);
                 canvasContext.drawImage(video, 0, 0);
                 d.resolve(sceneChanged);
             } else {
@@ -45,12 +45,12 @@ function SceneChangeDetector(options={}) {
         var curFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
         
         
-        video.addEventListener("canplaythrough", isRegionChanged);
+        video.addEventListener("canplay", isRegionChanged);
         video.currentTime += 1/framerate;
         
         function isRegionChanged() {
             if (regionChanged != undefined){
-                video.removeEventListener("canplaythrough", isRegionChanged);
+                video.removeEventListener("canplay", isRegionChanged);
                 canvasContext.drawImage(video, 0, 0);
                 d.resolve(regionChanged);
             } else {
