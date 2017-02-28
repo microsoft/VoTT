@@ -114,7 +114,7 @@
       this.lockTagsEnabled = false;
       this.selectedTags = [];
       this.uniqueTagId = 0;
-      this.canMoveTracking = true;
+      this.canMove = true;
 
       //Divs and spans
       this.controlWrapper= this.$$('#controlWrapper');
@@ -203,11 +203,11 @@
      //bind keys (note this currently overrides any listener on the parent controls needs a more elegant way to work only when control is in focus)
       window.addEventListener("keydown", (function(canMove) {
           return function(e) {
-            if (!canMove || !self.canMoveTracking){
+            if (!canMove){
                 return false;
             } 
             canMove = false;
-            setTimeout(function() { canMove = true; }, 200);
+            setTimeout(function() { canMove = true; }, 100);
             switch (e.keyCode) {
                 case 37:  // left
                 self.stepBwdClicked();
@@ -725,6 +725,8 @@
         return true;
     },
     stepFwdClicked: function(fireEvents = true) {
+        
+        if (!this.canMove) return;        
         if(!this.video.paused) this.pauseState();
         if ((this.video.currentTime + this.frameTime) > this.video.duration ){
             this.video.currentTime = this.video.duration;
@@ -742,6 +744,7 @@
         if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep'); 
     },
     stepBwdClicked: function() {
+          if (!this.canMove) return;        
           if (this.video.currentTime > 0) {
               if(!this.video.paused) {
                   this.pauseState();

@@ -162,11 +162,11 @@ function fileSelected(path) {
 
         //track furthestVisitedFrame
         furthestVisitedFrame = 1;
-        videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //remove old listener
-        videotagging.video.addEventListener("canplaythrough",updateFurthestVisitedFrame);
+        videotagging.video.removeEventListener("canplay", updateFurthestVisitedFrame); //remove old listener
+        videotagging.video.addEventListener("canplay",updateFurthestVisitedFrame);
 
         //init region tracking
-        videotagging.video.addEventListener("canplaythrough",  initSuperRegionTracking);
+        videotagging.video.addEventListener("canplay",  initSuperRegionTracking);
 
         $('#load-form-container').hide();
         $('#video-tagging-container').show();
@@ -202,9 +202,9 @@ function mapVideo(exportUntil, frameHandler) {
     frameCanvas.height = videotagging.video.videoHeight;
     var canvasContext = frameCanvas.getContext("2d");
 
-    // start exporting frames using the canplaythrough eventListener
-    videotagging.video.removeEventListener("canplaythrough", updateFurthestVisitedFrame); //stop recording frame movment
-    videotagging.video.addEventListener("canplaythrough", iterateFrames);
+    // start exporting frames using the canplay eventListener
+    videotagging.video.removeEventListener("canplay", updateFurthestVisitedFrame); //stop recording frame movment
+    videotagging.video.addEventListener("canplay", iterateFrames);
     videotagging.video.currentTime = 0;
     videotagging.playingCallback();
 
@@ -225,8 +225,8 @@ function mapVideo(exportUntil, frameHandler) {
       }
 
       if (isLastFrame) {
-        videotagging.video.removeEventListener("canplaythrough", iterateFrames);
-        videotagging.video.addEventListener("canplaythrough", updateFurthestVisitedFrame);
+        videotagging.video.removeEventListener("canplay", iterateFrames);
+        videotagging.video.addEventListener("canplay", updateFurthestVisitedFrame);
         resolve();
       }
       
@@ -343,7 +343,7 @@ function reviewCNTK() {
     });
 
     modelTagsPromise.then( (modelTags) => {
-      videotagging.video.removeEventListener("canplaythrough", initRegionTracking); //remove region tracking listener
+      videotagging.video.removeEventListener("canplay", initRegionTracking); //remove region tracking listener
       $('#video-tagging').off("stepFwdClicked-BeforeStep");
       $('#video-tagging').off("stepFwdClicked-AfterStep");
       videotagging.frames=[];
@@ -405,14 +405,14 @@ function reviewCNTK() {
 //superRegionTracking 
 
 function initSuperRegionTracking () {
-    videotagging.video.removeEventListener("canplaythrough", initSuperRegionTracking); //remove old listener
+    videotagging.video.removeEventListener("canplay", initSuperRegionTracking); //remove old listener
     trackingSuggestionsBlacklist = {};
     var suggestionStack = [];
 
     var d = $.Deferred();
     
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
-      videotagging.canMoveTracking = false;
+      videotagging.canMove = false;
       var regionCount = $('.regionCanvas').length;
       if (regionCount) {         
         //init store imagedata for scene detection
@@ -452,7 +452,7 @@ function initSuperRegionTracking () {
 
     $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
       $.when( d ).done( () => {
-        //videotagging.video.addEventListener("canplaythrough", afterStep);
+        //videotagging.video.addEventListener("canplay", afterStep);
         afterStep();
         d = $.Deferred();
       });
@@ -467,7 +467,7 @@ function initSuperRegionTracking () {
     });
 
     function afterStep() {
-      videotagging.video.removeEventListener("canplaythrough", afterStep);
+      videotagging.video.removeEventListener("canplay", afterStep);
       function suggestionExists(e) {
         if (!e.suggestedBy) return undefined;
         return e.suggestedBy.regionId == suggestion.originalRegion.id; 
@@ -511,7 +511,7 @@ function initSuperRegionTracking () {
       }
       //can move 
 
-      videotagging.canMoveTracking = true;
+      videotagging.canMove = true;
       
     }      
 
@@ -557,10 +557,10 @@ function superTracking(region) {
        trackedObject,
        tx, ty;
 
-      video.addEventListener("canplaythrough", init);
+      video.addEventListener("canplay", init);
 
       function init() {
-        video.removeEventListener("canplaythrough", init);
+        video.removeEventListener("canplay", init);
         frameCanvas = document.createElement("canvas");
         frameCanvas.width = video.videoWidth;
         frameCanvas.height = video.videoHeight;
@@ -581,7 +581,7 @@ function superTracking(region) {
                   //init tracking
                   cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.x, region.y, region.w, region.h));
                   if (video.currentTime < tagging_duration) video.currentTime += (1/supertrackingFrameRate);
-                  video.addEventListener("canplaythrough", trackFrames);
+                  video.addEventListener("canplay", trackFrames);
                 } else {
                   resolve({type:"copy",region : region});//find better way to do this so that the schema is consistent
                 }
@@ -594,7 +594,7 @@ function superTracking(region) {
         function trackFrames (){
           //check exit condition 
           if (video.currentTime > tagging_duration) {
-            video.removeEventListener("canplaythrough",trackFrames);
+            video.removeEventListener("canplay",trackFrames);
             if (trackedObject){
               resolve( {x : trackedObject.x, y : trackedObject.y, w : region.w, h: region.h});
             } else {
@@ -607,7 +607,7 @@ function superTracking(region) {
           cstracker.track(frameCanvas);
           trackedObject = cstracker.getTrackObj();  
           if (trackedObject.width === 0 || trackedObject.height === 0 ){
-            video.removeEventListener("canplaythrough",trackFrames);
+            video.removeEventListener("canplay",trackFrames);
             reject("region not found");
           }
 
