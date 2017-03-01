@@ -38,6 +38,11 @@ html, body {
   bottom:50%;
   margin:auto;
  }
+ 
+
+ .form-control {
+     max-width:800px;
+ }
 
 #video-tagging {
     margin: 0 auto;
@@ -54,6 +59,7 @@ html, body {
 
 .bootstrap-tagsinput {
     display: block;
+    max-width: 800px;
 }
 
 .loader {
@@ -76,4 +82,19 @@ html, body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+#loadButton {
+  color: #3c3c3c;
+  margin-right: 5px;
+  background-color: #d5d5d5;
+  border: 0px;
+  border-radius: 5px;
+  }
+
+  #loadButton:hover {
+  color: #3c3c3c;
+  background-color: #a2a5a3;
+  border: 0px;
+  border-radius: 5px;
 }
