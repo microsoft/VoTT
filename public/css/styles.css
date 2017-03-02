@@ -84,10 +84,10 @@ html, body {
     100% { transform: rotate(360deg); }
 }
 
-#loadButton {
-  color: #3c3c3c;
+#loadButton, .label-info {
+  color: #3c3c3c !important;
   margin-right: 5px;
-  background-color: #d5d5d5;
+  background-color: #d5d5d5 !important;
   border: 0px;
   border-radius: 5px;
   }

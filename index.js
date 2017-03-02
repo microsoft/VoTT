@@ -166,7 +166,7 @@ function fileSelected(path) {
         videotagging.video.addEventListener("canplay",updateFurthestVisitedFrame);
 
         //init region tracking
-        videotagging.video.addEventListener("canplay",  initSuperRegionTracking);
+        videotagging.video.addEventListener("canplay",  initRegionTracking);
 
         $('#load-form-container').hide();
         $('#video-tagging-container').show();
@@ -509,7 +509,6 @@ function initSuperRegionTracking () {
 
       }
       //can move 
-
       videotagging.canMove = true;
       
     }      
@@ -623,179 +622,229 @@ function initSuperRegionTracking () {
 
 
 //optomize superRegionTracking 
-// function initRegionTracking () {
-//     videotagging.video.removeEventListener("canplay", initRegionTracking); //remove old listener
-//     trackingSuggestionsBlacklist = {};
-//     var regionsToTrack = [];
+function initRegionTracking () {
+    videotagging.video.removeEventListener("canplay", initRegionTracking); //remove old listener
+    trackingSuggestionsBlacklist = {};
+    var regionsToTrack = [];
     
-//     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
-//       videotagging.canMove = false;
-//       var regionCount = $('.regionCanvas').length;
-//       if (regionCount) {         
-//         var curFrame = videotagging.getCurrentFrame(),
-//             nxtFrame = currentFrame+1;
-//         //init store imagedata for scene detection
-//         var stanW = videotagging.video.videoWidth/videotagging.video.offsetWidth;
-//         var stanH = videotagging.video.videoHeight/videotagging.video.offsetHeight;
-        
-//         var trackedCounter = 0; // used to make sure all regions are proccessed to be deprecated
-//         $.map($('.regionCanvas'), (regionCanvas, i) => { 
-//           //scale window to video 
-//           var w = Math.round(parseInt(regionCanvas.style.width) * stanW);
-//           var h = Math.round(parseInt(regionCanvas.style.height) * stanH);
-//           var y = Math.round(parseInt(regionCanvas.style.top) * stanH);
-//           var x = Math.round(parseInt(regionCanvas.style.left) * stanW);
+    $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
+      videotagging.canMove = false;
+      var regionCount = $('.regionCanvas').length;
+      if (regionCount) {         
+        var curFrame = videotagging.getCurrentFrame(),
+            nxtFrame = curFrame + 1;
+        //init store imagedata for scene detection
+        var stanW = videotagging.video.videoWidth/videotagging.video.offsetWidth,
+            stanH = videotagging.video.videoHeight/videotagging.video.offsetHeight;
+        $.map($('.regionCanvas'), (regionCanvas, i) => { 
+          //scale window to video 
+          var w = Math.round(parseInt(regionCanvas.style.width) * stanW);
+          var h = Math.round(parseInt(regionCanvas.style.height) * stanH);
+          var y = Math.round(parseInt(regionCanvas.style.top) * stanH);
+          var x = Math.round(parseInt(regionCanvas.style.left) * stanW);
+          //get regionId
+          var originalRegion = $.grep(videotagging.frames[curFrame], function(e){ return e.name == regionCanvas.id;})[0];
+          //if region already exists in next frame don't track
+          if (nxtFrame in videotagging.frames){
+            var existingSuggestion = $.grep(videotagging.frames[nxtFrame], (e) => {
+                if (!e.suggestedBy) return undefined;
+                return e.suggestedBy.regionId == originalRegion.id; 
+            }); 
+            if (existingSuggestion && existingSuggestion.length > 0) {
+              return;
+            }
+          }
+          //if next frame is in blacklist don't track
+          if (nxtFrame in trackingSuggestionsBlacklist) {
+            if (trackingSuggestionsBlacklist[nxtFrame].has(originalRegion.id)) return;
+          }
+          //add region to be tracked 
+          regionsToTrack.push({x,y,w,h,originalRegion});
+        });
+      }
+    });
 
-//           //get regionId
-//           var originalRegion = $.grep(videotagging.frames[curFrame], function(e){ return e.name == regionCanvas.id;})[0];
+    $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
+        videotagging.video.addEventListener("canplay", afterStep);
+    });  
 
-//           //if region already exists in next frame don't track
-//           if (nxtFrame in videotagging.frames){
-//             var existingSuggestion = $.grep(videotagging.frames[nxtFrame], (e) => {
-//                 if (!e.suggestedBy) return undefined;
-//                 return e.suggestedBy.regionId == originalRegion.id; 
-//             }); 
-//             if (existingSuggestion && existingSuggestion.length > 0) {
-//               continue;
-//             }
-//           }
-          
-//           //if next frame is in blacklist don't track
-//           if (nxtFrame in trackingSuggestionsBlacklist) {
-//             if (trackingSuggestionsBlacklist[nxtFrame].has(originalRegion.id)) continue;
-//           }
+    $('#video-tagging').on("canvasRegionDeleted", (e,deletedRegion) => {
+       updateBlackList([deletedRegion]);
+    });  
 
-//           //add region to be tracked 
-//           regionsToTrack.push({x,y,w,h,originalRegion})
-//         });
-//       }
-//     });
+    $('#video-tagging').on("clearingAllRegions", () => {
+       updateBlackList(videotagging.frames[videotagging.getCurrentFrame()]);
+    });
 
-//     $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
-//         videotagging.video.addEventListener("canplay", afterStep);
-//     });  
-
-//     $('#video-tagging').on("canvasRegionDeleted", (e,deletedRegion) => {
-//        updateBlackList([deletedRegion]);
-//     });  
-
-//     $('#video-tagging').on("clearingAllRegions", () => {
-//        updateBlackList(videotagging.frames[videotagging.getCurrentFrame()]);
-//     });
-
-//     function afterStep() {
-   
-
-//       videotagging.canMove = true;
+    function afterStep() {
+      videotagging.video.removeEventListener("canplay", afterStep);
+      if (regionsToTrack.length) {
+          var curFrame = videotagging.getCurrentFrame(),
+              stanW = videotagging.video.offsetWidth/videotagging.video.videoWidth,
+              stanH = videotagging.video.offsetHeight/videotagging.video.videoHeight;
+          // pass regions to super tracking 
+          superTracking(regionsToTrack).then( (suggestions) => {
+            suggestions.forEach((suggestion) => {
+                var x1, y1, x2, y2;
+                if (suggestion.type == "copy") {
+                  x1 = suggestion.region.x * stanW;
+                  y1 = suggestion.region.y * stanH;
+                  x2 = x1 + suggestion.region.w * stanW;
+                  y2 = y1 + suggestion.region.h * stanH;
+                } else { //get bounding box of tracked object
+                  x1 = Math.max(Math.round(suggestion.region.x * stanW) - Math.round((suggestion.region.w * stanW)/2), 0),
+                  y1 = Math.max(Math.round(suggestion.region.y * stanH) - Math.round((suggestion.region.h * stanH)/2), 0),
+                  x2 = Math.min(Math.round(suggestion.region.w * stanW) + x1, videotagging.video.offsetWidth),
+                  y2 = Math.min(Math.round(suggestion.region.h * stanH) + y1, videotagging.video.offsetHeight);
+                }
+                // create new region
+                videotagging.createRegion(x1, y1, x2, y2);
+                videotagging.frames[curFrame][videotagging.frames[curFrame].length-1].tags = suggestion.originalRegion.tags;
+                videotagging.frames[curFrame][videotagging.frames[curFrame].length-1].suggestedBy = {frameId:curFrame-1, regionId:suggestion.originalRegion.id};        
+            });   
+            regionsToTrack = [];
+            videotagging.canMove = true;
+          }).catch( (e) => {
+              console.info(e);
+              regionsToTrack = [];
+              videotagging.canMove = true;
+          });
+      } else {
+        videotagging.canMove =true;
+      }
       
-//     }     
+    }     
 
-//     function updateBlackList(removedRegions) {
-//       removedRegions.forEach( (deletedRegion) => {
-//         // add suggested by to black list for frame
-//         if(deletedRegion.suggestedBy !== undefined) {
-//           if(!trackingSuggestionsBlacklist[videotagging.getCurrentFrame()]){
-//             trackingSuggestionsBlacklist[videotagging.getCurrentFrame()] = new Set([deletedRegion.suggestedBy.regionId]);
-//           } else {
-//             trackingSuggestionsBlacklist[videotagging.getCurrentFrame()].add(deletedRegion.suggestedBy.regionId);
-//           } 
-//         }
+    function updateBlackList(removedRegions) {
+      removedRegions.forEach( (deletedRegion) => {
+        // add suggested by to black list for frame
+        if(deletedRegion.suggestedBy !== undefined) {
+          if(!trackingSuggestionsBlacklist[videotagging.getCurrentFrame()]){
+            trackingSuggestionsBlacklist[videotagging.getCurrentFrame()] = new Set([deletedRegion.suggestedBy.regionId]);
+          } else {
+            trackingSuggestionsBlacklist[videotagging.getCurrentFrame()].add(deletedRegion.suggestedBy.regionId);
+          } 
+        }
 
-//         //if in the next frame remove from the next frames trackingSuggestionsBlacklist
-//         let nextFrameIndex = videotagging.getCurrentFrame() + 1;
-//         if (nextFrameIndex in trackingSuggestionsBlacklist){
-//           if (trackingSuggestionsBlacklist[nextFrameIndex].has(deletedRegion.id)) {
-//             trackingSuggestionsBlacklist[nextFrameIndex].delete(deletedRegion.id);
-//             //remove frame from blacklist if there is no entries in it
-//             if (trackingSuggestionsBlacklist[nextFrameIndex].size === 0)  delete trackingSuggestionsBlacklist[nextFrameIndex];
-//           }
-//         }
-//       });
-//     }    
+        //if in the next frame remove from the next frames trackingSuggestionsBlacklist
+        let nextFrameIndex = videotagging.getCurrentFrame() + 1;
+        if (nextFrameIndex in trackingSuggestionsBlacklist){
+          if (trackingSuggestionsBlacklist[nextFrameIndex].has(deletedRegion.id)) {
+            trackingSuggestionsBlacklist[nextFrameIndex].delete(deletedRegion.id);
+            //remove frame from blacklist if there is no entries in it
+            if (trackingSuggestionsBlacklist[nextFrameIndex].size === 0)  delete trackingSuggestionsBlacklist[nextFrameIndex];
+          }
+        }
+      });
+    }    
 
-//     function superTracking(region) {
-//       return new Promise((resolve, reject) => {
-//         const supertrackingFrameRate = 5;
-//         var video = document.createElement('video');
-//         video.src = videotagging.video.src;
-//         video.currentTime = videotagging.video.currentTime;
-//         video.load();
+    function superTracking(regions) {
+      return new Promise((resolve, reject) => {
 
-//         var cstracker = new regiontrackr.camshift.Tracker({whitebalancing : false, calcAngles : false});
+        const supertrackingFrameRate = 5;
+        var video = document.createElement('video');
+        video.src = videotagging.video.src;
+        video.currentTime = videotagging.video.currentTime - (1/videotagging.framerate);
+        video.load();
+
+        var cstracker = new regiontrackr.camshift.Tracker({whitebalancing : false, calcAngles : false});
+        var tagging_duration, frameCanvas, canvasContext, scd, rcd;
+        var suggestions = [];
+
+        video.oncanplay = init;    
         
-//         var frameCanvas,
-//         canvasContext,
-//         trackedObject,
-//         tx, ty;
+        function init() {
+          video.oncanplay = undefined;
+          frameCanvas = document.createElement("canvas");
+          frameCanvas.width = video.videoWidth;
+          frameCanvas.height = video.videoHeight;
+          canvasContext = frameCanvas.getContext("2d")
+          canvasContext.drawImage(video, 0, 0);
 
-//         video.addEventListener("canplay", init);
+          tagging_duration = Math.min(videotagging.video.currentTime , videotagging.video.duration);
 
-//         function init() {
-//           video.removeEventListener("canplay", init);
-//           frameCanvas = document.createElement("canvas");
-//           frameCanvas.width = video.videoWidth;
-//           frameCanvas.height = video.videoHeight;
-//           canvasContext = frameCanvas.getContext("2d")
-//           canvasContext.drawImage(video, 0, 0);
+          //detect if scene change
+          scd = new SceneChangeDetector({ threshold:49, detectionRegion: { w:frameCanvas.width, h:frameCanvas.height } });
+          $.when(scd.detectSceneChange(video, frameCanvas, canvasContext, videotagging.framerate) ).done( (sceneChanged) => {          
+              if (!sceneChanged) {
+                video.oncanplay = trackFrames;    
+                video.currentTime += (1/supertrackingFrameRate);          
+              } else {
+                reject("scene changed");
+              }
+          });
+        }
 
-//           var tagging_duration = Math.min(video.currentTime + (1/videotagging.framerate), video.duration);
+        function trackFrames() {
+          var itterationDeferral = $.Deferred();
+          var regionsLength = regions.length;
+          var trackedCounter = 0;
+          regions.forEach((region, i) => {
+            (function (i,region,video) {
+              // if first pass check whether the region changed
+              if (region.regionChanged === undefined) {
+                  rcd = new SceneChangeDetector({ threshold:1, detectionRegion: { w:region.w, h:region.h} });   
+                    $.when( rcd.detectRegionChange(video, frameCanvas, canvasContext, region,videotagging.framerate) ).done( (regionChanged) => {
+                      if (regionChanged) trackRegion(region, i);
+                      else suggestions.push({type:"copy", region : region, originalRegion: region.originalRegion});
+                      regions[i].regionChanged = regionChanged; //make sure region change only executes once
+                      //increment counter and check exit condition
+                      trackedCounter++;
+                      if (trackedCounter == regionsLength) itterationDeferral.resolve();
+                    });
+                  
+              } else {
+                if (region.regionChanged) {
+                  trackRegion(region, i);
+                }
+                //itterate counter and check exist condition
+                trackedCounter++;
+                if (trackedCounter == regionsLength) itterationDeferral.resolve();
+              }
+            }(i,region,video));
+                
+          });  
 
-//           //detect if scene change
-//           var scd = new SceneChangeDetector({ threshold:49, detectionRegion: { w:frameCanvas.width, h:frameCanvas.height } });
+          $.when(itterationDeferral.done(() => {
+              if (video.currentTime >= tagging_duration) {
+                video.oncanplay = undefined;    
+                resolve(suggestions);
+              } else { 
+                video.currentTime += (1 / supertrackingFrameRate);
+                //go to next frame segment
+              }
+          }));
+        }
 
-//           $.when( scd.detectSceneChange(video, frameCanvas, canvasContext, videotagging.framerate) ).done( (sceneChanged) => {          
-//               if (!sceneChanged){
-//                 //check if region sceneChanged
-//                 rcd = new SceneChangeDetector({ threshold:1, detectionRegion: { w:region.w, h:region.h} });
-//                 $.when( rcd.detectRegionChange(video, frameCanvas, canvasContext, region ,videotagging.framerate) ).done( (regionChanged) => {
-//                   if (regionChanged) {
-//                     //init tracking
-//                     cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.x, region.y, region.w, region.h));
-//                     if (video.currentTime < tagging_duration) video.currentTime += (1/supertrackingFrameRate);
-//                     video.addEventListener("canplay", trackFrames);
-//                   } else {
-//                     resolve({type:"copy",region : region});//find better way to do this so that the schema is consistent
-//                   }
-//                 });
-//               } else {
-//                 reject("scene changed");
-//               }
-//           });
+          function trackRegion(region, i) {   
+              //on exit condition push to suggestions
+              if (video.currentTime >= tagging_duration) {
+                if (region.trackedObject) {
+                  suggestions.push( {type:"tracked", region:{x : region.trackedObject.x, y : region.trackedObject.y, w : region.w, h: region.h}, originalRegion: region.originalRegion});
+                } 
+              }
+              //init tracker for region  
+              if (!region.trackedObject){
+                cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.x, region.y, region.w, region.h));
+              } else {
+                if (region.trackedObject.width === 0 || region.trackedObject.height === 0 ) { //skip tracking if object disapeared
+                  return;
+                } else {
+                  cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.tx, region.ty, region.w, region.h));
+                }
+              }
+              //track region
+              canvasContext.drawImage(video, 0, 0);
+              cstracker.track(frameCanvas);
+              regions[i].trackedObject = cstracker.getTrackObj();  
+              //create new tracker 
+              regions[i].tx = Math.round(region.trackedObject.x - region.w/2);
+              regions[i].ty = Math.round(region.trackedObject.y - region.h/2);
+          }
+      });
 
-//           function trackFrames (){
-//             //check exit condition 
-//             if (video.currentTime > tagging_duration) {
-//               video.removeEventListener("canplay",trackFrames);
-//               if (trackedObject){
-//                 resolve( {x : trackedObject.x, y : trackedObject.y, w : region.w, h: region.h});
-//               } else {
-//                 reject("region not found");
-//               }
-//             }
-
-//             //track image 
-//             canvasContext.drawImage(video, 0, 0);
-//             cstracker.track(frameCanvas);
-//             trackedObject = cstracker.getTrackObj();  
-//             if (trackedObject.width === 0 || trackedObject.height === 0 ){
-//               video.removeEventListener("canplay",trackFrames);
-//               reject("region not found");
-//             }
-
-//             //create new tracker 
-//             tx = Math.round(trackedObject.x - region.w/2);
-//             ty = Math.round(trackedObject.y - region.h/2);
-            
-//             cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(tx, ty, region.w, region.h));
-            
-//             //go to next frame segment
-//             video.currentTime += (1 / supertrackingFrameRate);
-//           }
-//         }
-//       });
-
-//     } 
-// }
+    } 
+}
 
 
 
