@@ -15,54 +15,61 @@ function SceneChangeDetector(options={}) {
     //detects whether next frame is a scene change
     this.detectSceneChange = function(video, canvas, canvasContext, framerate) {
         var self = this;
-        var d = $.Deferred();
-        var sceneChanged;
-        var curFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
-        var oldEvent = video.oncanplay; 
-        video.oncanplay = isSceneChanged;
-        video.currentTime += 1/framerate;
+        return new Promise((resolve, reject) => {
+            var sceneChanged;
+            var curFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
+            var oldEvent = video.oncanplay; 
+            video.oncanplay = isSceneChanged;
+            video.currentTime += 1/framerate;
 
-        function isSceneChanged() {
-            if (sceneChanged != undefined){
-                video.oncanplay = oldEvent;
-                canvasContext.drawImage(video, 0, 0);
-                d.resolve(sceneChanged);
-            } else {
-                canvasContext.drawImage(video, 0, 0);
-                var nxtFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
-                sceneChanged = self.detectChange(curFrame, nxtFrame);
-                video.currentTime -= 1/framerate;
+            function isSceneChanged() {
+                if (sceneChanged != undefined){
+                    video.oncanplay = oldEvent;
+                    canvasContext.drawImage(video, 0, 0);
+                    resolve(sceneChanged);
+                } else {
+                    canvasContext.drawImage(video, 0, 0);
+                    var nxtFrame = canvasContext.getImageData(0, 0, canvas.width, canvas.height).data;
+                    sceneChanged = self.detectChange(curFrame, nxtFrame);
+                    video.currentTime -= 1/framerate;
+                }
             }
-        }
-
-        return d;
+        });
     }
 
     //detects whether region changes in the next frame (needs to be debugged for now resolve true)
-    this.detectRegionChange = function(video, canvas, canvasContext, region, framerate) {
-        var self = this;
-        var d = $.Deferred();
-        var regionChanged;
-        var curFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
-        
-        var oldEvent = video.oncanplay; 
-        video.oncanplay = isRegionChanged;
-        video.currentTime += 1/framerate;
-        
-        function isRegionChanged() {
-            if (regionChanged != undefined){
-                video.oncanplay = oldEvent;
-                canvasContext.drawImage(video, 0, 0);
-                d.resolve(regionChanged);
-            } else {
-                canvasContext.drawImage(video, 0, 0);
-                var prevFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
-                regionChanged = self.detectChange(prevFrame,curFrame);
-                video.currentTime -= 1/framerate;
+    this.detectRegionChange = function(video, frameCanvas, region, index, framerate) {
+        return new Promise((resolve, reject) => {
+            try {
+                var self = this;
+                var regionChanged;
+                //clone local video and framecanvas since javascript does pass by reference
+                var vid = video.cloneNode(true);
+                var canvas = frameCanvas.cloneNode(true);
+                //put the first frame into the canvas  
+                var canvasContext = canvas.getContext("2d");
+                canvasContext.drawImage(vid, 0, 0);
+                var curFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
+                //set up is region changed event
+                vid.oncanplay = isRegionChanged;
+                vid.currentTime += 1/framerate;
+                
+                function isRegionChanged() {
+                    if (regionChanged != undefined){
+                        canvasContext.drawImage(vid, 0, 0);
+                        resolve({regionChanged, region, index});
+                    } else {
+                        canvasContext.drawImage(vid, 0, 0);
+                        var prevFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
+                        regionChanged = self.detectChange(prevFrame,curFrame);
+                        vid.currentTime -= 1/framerate;
+                    }
+                }
+            } catch (e){
+                reject(e);
             }
-        }
 
-        return d;
+        });
     }
 
 

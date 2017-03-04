@@ -765,82 +765,80 @@ function initRegionTracking () {
 
           //detect if scene change
           scd = new SceneChangeDetector({ threshold:49, detectionRegion: { w:frameCanvas.width, h:frameCanvas.height } });
-          $.when(scd.detectSceneChange(video, frameCanvas, canvasContext, videotagging.framerate) ).done( (sceneChanged) => {          
+          scd.detectSceneChange(video, frameCanvas, canvasContext, videotagging.framerate).then( (sceneChanged) => {          
               if (!sceneChanged) {
                 video.oncanplay = trackFrames;    
                 video.currentTime += (1/supertrackingFrameRate);          
               } else {
                 reject("scene changed");
               }
-          });
+          }).catch((e) => {console.info(e)});
         }
 
-        function trackFrames() {
-          var itterationDeferral = $.Deferred();
-          var regionsLength = regions.length;
-          var trackedCounter = 0;
+        function trackFrames() { 
+          if (!regions.length) {
+            resolve(suggestions);
+          }
+          var regionDetectionPromises = [];
+
           regions.forEach((region, i) => {
-            (function (i,region,video) {
               // if first pass check whether the region changed
+              console.log(`${video.currentTime},${i}`);
               if (region.regionChanged === undefined) {
                   rcd = new SceneChangeDetector({ threshold:1, detectionRegion: { w:region.w, h:region.h} });   
-                    $.when( rcd.detectRegionChange(video, frameCanvas, canvasContext, region,videotagging.framerate) ).done( (regionChanged) => {
-                      if (regionChanged) trackRegion(region, i);
-                      else suggestions.push({type:"copy", region : region, originalRegion: region.originalRegion});
-                      regions[i].regionChanged = regionChanged; //make sure region change only executes once
-                      //increment counter and check exit condition
-                      trackedCounter++;
-                      if (trackedCounter == regionsLength) itterationDeferral.resolve();
-                    });
-                  
+                  regionDetectionPromises.push(rcd.detectRegionChange(video, frameCanvas, region, i, videotagging.framerate));
               } else {
                 if (region.regionChanged) {
                   trackRegion(region, i);
                 }
-                //itterate counter and check exist condition
-                trackedCounter++;
-                if (trackedCounter == regionsLength) itterationDeferral.resolve();
-              }
-            }(i,region,video));
-                
+              }                
           });  
 
-          $.when(itterationDeferral.done(() => {
+          Promise.all(regionDetectionPromises).then((values) => {
+            console.log("wtf?");
+             values.forEach ( (rp) => { //rp is resolved promise
+                if (rp.regionChanged) {
+                  trackRegion(rp.region, rp.index); 
+                  regions[rp.index].regionChanged = rp.regionChanged; //make sure region change only executes once
+                } else {
+                  suggestions.push({type:"copy", region : rp.region, originalRegion: rp.region.originalRegion});
+                  delete regions[rp.index];
+                }
+              });
               if (video.currentTime >= tagging_duration) {
                 video.oncanplay = undefined;    
                 resolve(suggestions);
               } else { 
-                video.currentTime += (1 / supertrackingFrameRate);
-                //go to next frame segment
+                video.currentTime += (1 / supertrackingFrameRate);//go to next frame segment
               }
-          }));
-        }
+          },(e)=>{console.info(e);});
 
-          function trackRegion(region, i) {   
-              //on exit condition push to suggestions
-              if (video.currentTime >= tagging_duration) {
-                if (region.trackedObject) {
-                  suggestions.push( {type:"tracked", region:{x : region.trackedObject.x, y : region.trackedObject.y, w : region.w, h: region.h}, originalRegion: region.originalRegion});
-                } 
-              }
-              //init tracker for region  
-              if (!region.trackedObject){
-                cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.x, region.y, region.w, region.h));
+        }
+        function trackRegion(region, i) {   
+            //on exit condition push to suggestions
+            if (video.currentTime >= tagging_duration) {
+              if (region.trackedObject) {
+                suggestions.push( {type:"tracked", region:{x : region.trackedObject.x, y : region.trackedObject.y, w : region.w, h: region.h}, originalRegion: region.originalRegion});
+              } 
+            }
+            //init tracker for region  
+            if (!region.trackedObject){
+              cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.x, region.y, region.w, region.h));
+            } else {
+              if (region.trackedObject.width === 0 || region.trackedObject.height === 0 ) { //skip tracking if object disapeared
+                return;
               } else {
-                if (region.trackedObject.width === 0 || region.trackedObject.height === 0 ) { //skip tracking if object disapeared
-                  return;
-                } else {
-                  cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.tx, region.ty, region.w, region.h));
-                }
+                cstracker.initTracker(frameCanvas, new regiontrackr.camshift.Rectangle(region.tx, region.ty, region.w, region.h));
               }
-              //track region
-              canvasContext.drawImage(video, 0, 0);
-              cstracker.track(frameCanvas);
-              regions[i].trackedObject = cstracker.getTrackObj();  
-              //create new tracker 
-              regions[i].tx = Math.round(region.trackedObject.x - region.w/2);
-              regions[i].ty = Math.round(region.trackedObject.y - region.h/2);
-          }
+            }
+            //track region
+            canvasContext.drawImage(video, 0, 0);
+            cstracker.track(frameCanvas);
+            regions[i].trackedObject = cstracker.getTrackObj();  
+            //create new tracker 
+            regions[i].tx = Math.round(region.trackedObject.x - region.w/2);
+            regions[i].ty = Math.round(region.trackedObject.y - region.h/2);
+        }
       });
 
     } 
