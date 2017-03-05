@@ -7,7 +7,7 @@ const cntkModel= require('cntk-fastrcnn');
 const cntkDefaultPath = 'c:/local/cntk';
 const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
-const supertrackingFrameRate = 20;
+var supertrackingFrameRate = 10;
 
 
 var furthestVisitedFrame, //keep track of the furthest visited frame
@@ -160,7 +160,12 @@ function fileSelected(path) {
         else videotagging.inputframes = {};
 
         videotagging.src = pathName;
-        videotagging.video.load();//load video
+        videotagging.video.oncanplay = function (){
+                      //set start time
+            videotagging.videoStartTime = videotagging.video.currentTime;
+            videotagging.video.oncanplay = undefined;
+        }
+        //videotagging.video.load();//load video
 
         //track furthestVisitedFrame
         furthestVisitedFrame = 1;
@@ -448,6 +453,7 @@ function initRegionTracking () {
     });
 
     $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
+        console.log(`${videotagging.getCurrentFrame()}, time: ${videotagging.video.currentTime}`);
         videotagging.video.addEventListener("canplay", afterStep);
     });  
 
@@ -524,6 +530,7 @@ function initRegionTracking () {
     function superTracking(regions) {
       return new Promise((resolve, reject) => {
 
+        supertrackingFrameRate = Math.max(supertrackingFrameRate,videotagging.framerate + 1);
         var video = document.createElement('video');
         video.src = videotagging.video.src;
         video.currentTime = videotagging.video.currentTime - (1/videotagging.framerate);
