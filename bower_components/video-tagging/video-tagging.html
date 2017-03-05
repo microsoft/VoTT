@@ -114,6 +114,8 @@
       this.lockTagsEnabled = false;
       this.selectedTags = [];
       this.uniqueTagId = 0;
+      this.videoStartTime = 0; //sometimes videos don't load at absoultue zero
+      this.canMove = true;
 
       //Divs and spans
       this.controlWrapper= this.$$('#controlWrapper');
@@ -157,8 +159,10 @@
        */
     attached: function() {
       //Reset all variables to new src
+      this.video.addEventListener( "loadedmetadata", init);
       var self = this;
-      this.video.addEventListener( "loadedmetadata", function (e) {
+      function init() {
+
             self.controlWrapper.style.display = "block";
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
@@ -175,34 +179,38 @@
            //Size canvas as video
             self.overlay.width = self.video.offsetWidth;
             self.overlay.height = self.video.offsetHeight;
-      }, false );
-     $(window).resize( function(){
-         if (self.video.offsetWidth !== undefined){
-            self.snapToAspectRatio();
-            //get transform ratio
-            var transformWidth =  self.video.offsetWidth/self.overlay.width;
-            var transformHeight = self.video.offsetHeight/self.overlay.height;
-            //resize the overlay
-            self.overlay.width = self.video.offsetWidth;
-            self.overlay.height = self.video.offsetHeight;
-            //resize the region boxes
-            $('.regionCanvas').each(function() {
-                this.style.left = (parseFloat(this.style.left) * transformWidth) + "px";
-                this.style.top = (parseFloat(this.style.top) * transformHeight) + "px";
-                this.style.width = (parseFloat(this.style.width) * transformWidth) + "px";
-                this.style.height = (parseFloat(this.style.height) * transformHeight) + "px";
+            //fix resize bug
+            $(window).resize( function(){
+                if (self.video.offsetWidth !== undefined){
+                    self.snapToAspectRatio();
+                    //get transform ratio
+                    var transformWidth =  self.video.offsetWidth/self.overlay.width;
+                    var transformHeight = self.video.offsetHeight/self.overlay.height;
+                    //resize the overlay
+                    self.overlay.width = self.video.offsetWidth;
+                    self.overlay.height = self.video.offsetHeight;
+                    //resize the region boxes
+                    $('.regionCanvas').each(function() {
+                        this.style.left = (parseFloat(this.style.left) * transformWidth) + "px";
+                        this.style.top = (parseFloat(this.style.top) * transformHeight) + "px";
+                        this.style.width = (parseFloat(this.style.width) * transformWidth) + "px";
+                        this.style.height = (parseFloat(this.style.height) * transformHeight) + "px";
+                    });
+                    //reposition selectedRegion Label
+                    var selectedDiv = $('.regionCanvasSelected')[0];
+                    self.positionRegionNameLabel(selectedDiv);
+                }
             });
-            //reposition selectedRegion Label
-            var selectedDiv = $('.regionCanvasSelected')[0];
-            self.positionRegionNameLabel(selectedDiv);
-        }
-      });
+      }
+
      //bind keys (note this currently overrides any listener on the parent controls needs a more elegant way to work only when control is in focus)
       window.addEventListener("keydown", (function(canMove) {
           return function(e) {
-            if (!canMove) return false;
+            if (!canMove){
+                return false;
+            } 
             canMove = false;
-            setTimeout(function() { canMove = true; }, 200);
+            setTimeout(function() { canMove = true; }, 100);
             switch (e.keyCode) {
                 case 37:  // left
                 self.stepBwdClicked();
@@ -211,6 +219,7 @@
                 self.stepFwdClicked();
                 break;
                 case 46: //delete
+                case 8:  //backspace
                 if($('.regionCanvasSelected')[0]){
                     self.deleteRegion();
                 }
@@ -261,6 +270,8 @@
               this.emitRegionToHost();
           });
     },
+
+
     snapToAspectRatio: function()
     {
         // -5 accounts for rounding errors during rendering to ensure
@@ -628,7 +639,8 @@
       this.indicateEmptyFrame(false);
     },
     getCurrentFrame: function() {
-      return this.video.currentTime === 0 ? 1 : Math.floor((this.video.currentTime * this.framerate)) + 1;
+      //if (this.videoStartTime == 0)  return Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
+      return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
     },
     indicateEmptyFrame : function(selected) {
         if(selected) {
@@ -720,22 +732,29 @@
         return true;
     },
     stepFwdClicked: function(fireEvents = true) {
+        
+        if (!this.canMove) return; 
         if(!this.video.paused) this.pauseState();
         if ((this.video.currentTime + this.frameTime) > this.video.duration ){
-            this.video.currentTime = this.video.duration;
-            return;
+                this.video.currentTime = this.video.duration;
+                return;
         } 
-        //raise before next frame
-        if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
-        //if there are no unlabled tags move to next frame
+       
         if (this.checkRegionLabels()){
-            this.video.currentTime = this.video.currentTime + this.frameTime;
-            this.playingCallback();
-        }
-        //raise after next frame
-        if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep'); 
+            //raise before next frame
+            
+            if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+            //if there are no unlabled tags move to next frame
+        
+                this.video.currentTime += this.frameTime;
+                this.playingCallback();
+            
+            //raise after next frame
+            if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep');
+        } 
     },
     stepBwdClicked: function() {
+          if (!this.canMove) return;        
           if (this.video.currentTime > 0) {
               if(!this.video.paused) {
                   this.pauseState();

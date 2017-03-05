@@ -46,7 +46,8 @@ function createWindow () {
     // opened a file, enabling save and export to CNTK menu items
     let p = (process.platform === 'darwin') ? 1 : 0;
     menu.items[p].submenu.items[1].enabled = true;
-    menu.items[p].submenu.items[3].enabled = true;
+    menu.items[p+1].submenu.items[0].enabled = true;
+    menu.items[p+1].submenu.items[1].enabled = true;
   });
 
   mainWindow.on('ready-to-show', function() {
@@ -59,7 +60,7 @@ function createWindow () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    mainWindow = null
+    mainWindow = null;
   });
 
   const {app, Menu} = require('electron');
@@ -77,15 +78,23 @@ function createWindow () {
           accelerator: 'CmdOrCtrl+S',
           enabled: false,
           click () { mainWindow.webContents.send('saveVideo'); }
-        },
+        }
+      ]
+    },
+    {
+      label: 'CNTK',
+      submenu: [
         {
-          type: 'separator'
-        },
-        {
-          label: 'Export to CNTK',
+          label: 'Export Tags to CNTK',
           accelerator: 'CmdOrCtrl+E',
           enabled: false,
           click () { mainWindow.webContents.send('exportCNTK'); }
+        },
+        {
+          label: 'Review CNTK Model',
+          accelerator: 'CmdOrCtrl+R',
+          enabled: false,
+          click () { mainWindow.webContents.send('reviewCNTK'); }
         }
       ]
     },
@@ -99,7 +108,7 @@ function createWindow () {
         },
         {
           label: 'Refresh App',
-          accelerator: 'CmdOrCtrl+R',
+          accelerator: 'CmdOrCtrl+Space',
           click () { mainWindow.reload(); }
         }
       ]

@@ -27,16 +27,14 @@
   <body>
     <div id="container">
 
-        <div id='load-message' onclick="fileSelected();">
-            <div id ="load-text"><h2>Please <b>Drag in</b> or <b>Click</b> to load a video for tagging.</h2>
-            <img id="vidImage" src ="./public/images/Wikiversity-Mooc-Icon-Video.svg.png" ></img>
-            </div>
-
+        <div id ='load-message'   onclick="fileSelected();">
+            <div id = "load-text"><h2>Please <b>Drag in</b> or <b>Click</b> to load a video for tagging.</h2></div>
+             <img id="vidImage" src ="./public/images/Wikiversity-Mooc-Icon-Video.svg.png" ></img>
         </div>
         <div id ='load-form-container' style ="display: none">
           <h2>Tagging Job Configuration</h2>
           <div class="form-group" id="framerateGroup">
-            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per video second)</label>
+            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per a video second)</label>
             <input id="framerate" type="number" min="1" max="999" value="1" maxlength="3" size="3" class="form-control" />
           </div>
           <div class="form-group">
