@@ -567,7 +567,8 @@ function initRegionTracking () {
 
         function trackFrames() { 
           if (!regions.length) {
-            resolve(suggestions);
+            video.oncanplay = undefined;    
+            return resolve(suggestions);
           }
           var regionDetectionPromises = [];
 
@@ -584,13 +585,14 @@ function initRegionTracking () {
           });  
 
           Promise.all(regionDetectionPromises).then((values) => {
+             values.sort((a,b) => { return b.index - a.index; });//sort so removal works correctly
              values.forEach ( (rp) => { //rp is resolved promise
                 if (rp.regionChanged) {
                   trackRegion(rp.region, rp.index); 
                   regions[rp.index].regionChanged = rp.regionChanged; //make sure region change only executes once
                 } else {
                   suggestions.push({type:"copy", region : rp.region, originalRegion: rp.region.originalRegion});
-                  delete regions[rp.index];
+                   regions.splice(rp.index,1);
                 }
               });
               if (video.currentTime >= tagging_duration) {
