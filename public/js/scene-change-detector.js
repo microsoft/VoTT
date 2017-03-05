@@ -42,17 +42,21 @@ function SceneChangeDetector(options={}) {
         return new Promise((resolve, reject) => {
             try {
                 var self = this;
-                var regionChanged;
+                var canvasContext,curFrame,regionChanged;
                 //clone local video and framecanvas since javascript does pass by reference
                 var vid = video.cloneNode(true);
-                var canvas = frameCanvas.cloneNode(true);
-                //put the first frame into the canvas  
-                var canvasContext = canvas.getContext("2d");
-                canvasContext.drawImage(vid, 0, 0);
-                var curFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
-                //set up is region changed event
-                vid.oncanplay = isRegionChanged;
-                vid.currentTime += 1/framerate;
+
+                vid.oncanplay = init;
+                function init (){
+                    var canvas = frameCanvas.cloneNode(true);
+                    //put the first frame into the canvas  
+                    canvasContext = canvas.getContext("2d");
+                    canvasContext.drawImage(vid, 0, 0);
+                    curFrame = canvasContext.getImageData(region.x, region.y, region.w, region.h).data;
+                    //set up is region changed event
+                    vid.oncanplay = isRegionChanged;
+                    vid.currentTime += 1/framerate;
+                }
                 
                 function isRegionChanged() {
                     if (regionChanged != undefined){
