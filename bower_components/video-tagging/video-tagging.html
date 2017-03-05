@@ -633,7 +633,7 @@
       this.indicateEmptyFrame(false);
     },
     getCurrentFrame: function() {
-      return this.video.currentTime === 0 ? 1 : Math.floor((this.video.currentTime * this.framerate)) + 1;
+      return this.video.currentTime === 0 ? 1 : Math.ceil(this.video.currentTime * this.framerate) + 1;
     },
     indicateEmptyFrame : function(selected) {
         if(selected) {
