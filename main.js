@@ -51,6 +51,14 @@ function createWindow () {
     menu.items[p+1].submenu.items[1].enabled = true;
   });
 
+  ipcMain.on('regionChanged', function(event, arg) {
+    if(arg == 'save') { // video metadata is saved
+      mainWindow.setDocumentEdited(false);
+    } else { // region changed
+      mainWindow.setDocumentEdited(true);
+    }
+  });
+
   mainWindow.on('ready-to-show', function() {
       mainWindow.show();
       mainWindow.focus();

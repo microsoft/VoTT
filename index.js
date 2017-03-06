@@ -99,6 +99,10 @@ document.addEventListener('dragstart', (e) => {
     e.stopPropagation();
 });
 
+document.addEventListener('onregionchanged', function(e){
+  ipcRenderer.send('regionChanged');
+});
+
 // stop zooming
 document.addEventListener('mousewheel', (e) => {
   if(e.ctrlKey) {
@@ -236,6 +240,8 @@ function save() {
     let notification = new Notification('Offline Video Tagger', {
       body: 'Successfully saved metadata in ' + `${videotagging.src}.json`
     });
+
+    ipcRenderer.send('regionChanged', 'save');
 }
 
 //maps every frame in the video to an imageCanvas

@@ -496,8 +496,9 @@
        * The host html page can listen to this event.
        */
     emitRegionToHost: function() {
-          var frameIndex = this.getCurrentFrame();
-          this.fire('onregionchanged', {frame: {frameIndex:frameIndex, regions:this.frames[frameIndex]}});
+        // setting document as edited
+        var frameIndex = this.getCurrentFrame();
+        this.fire('onregionchanged', {frame: {frameIndex:frameIndex, regions:this.frames[frameIndex]}});
     },
     /**
        * @method addDivToRegion
