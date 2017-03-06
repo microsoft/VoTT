@@ -46,6 +46,7 @@ function createWindow () {
     // opened a file, enabling save and export to CNTK menu items
     let p = (process.platform === 'darwin') ? 1 : 0;
     menu.items[p].submenu.items[1].enabled = true;
+    menu.items[p].submenu.items[2].enabled = true;
     menu.items[p+1].submenu.items[0].enabled = true;
     menu.items[p+1].submenu.items[1].enabled = true;
   });
@@ -78,6 +79,12 @@ function createWindow () {
           accelerator: 'CmdOrCtrl+S',
           enabled: false,
           click () { mainWindow.webContents.send('saveVideo'); }
+        },
+        {
+          label: 'Toggle Tracking',
+          accelerator: 'CmdOrCtrl+T',
+          enabled: false,
+          click () { mainWindow.webContents.send('toggleTracking'); }
         }
       ]
     },
@@ -103,7 +110,7 @@ function createWindow () {
       submenu: [
         {
           label: 'Toggle Developer Tools',
-          accelerator: 'CmdOrCtrl+T',
+          accelerator: 'CmdOrCtrl+D',
           click () { mainWindow.webContents.toggleDevTools(); }
         },
         {

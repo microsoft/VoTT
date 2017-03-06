@@ -8,6 +8,7 @@ const cntkDefaultPath = 'c:/local/cntk';
 const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 var supertrackingFrameRate = 10;
+var trackingEnabled = true;
 
 
 var furthestVisitedFrame, //keep track of the furthest visited frame
@@ -38,6 +39,19 @@ ipcRenderer.on('reviewCNTK', (event, message) => {
     } else {
       alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
     }
+});
+
+ipcRenderer.on('toggleTracking', (event, message) => {
+  if (trackingEnabled) {
+      $('#video-tagging').off("stepFwdClicked-BeforeStep");
+      $('#video-tagging').off("stepFwdClicked-AfterStep");
+      //add event to add regions on afterstep to blacklist
+
+  } else {
+      videotagging.video.addEventListener("canplay",  initRegionTracking);
+  } 
+  trackingEnabled = !trackingEnabled;
+
 });
 
 
@@ -156,8 +170,14 @@ function fileSelected(path) {
         videotagging.video.currentTime = 0;
         videotagging.framerate = $('#framerate').val();
 
-        if (config) videotagging.inputframes = config.frames;
-        else videotagging.inputframes = {};
+        if (config) {
+          videotagging.inputframes = config.frames;
+          trackingSuggestionsBlacklist = config.trackingSuggestionsBlacklist;
+        }
+        else {
+            videotagging.inputframes = {};
+            trackingSuggestionsBlacklist = {};
+        } 
 
         videotagging.src = pathName;
         videotagging.video.oncanplay = function (){
@@ -190,7 +210,8 @@ function save() {
       "frames" : videotagging.frames,
       "inputTags": $('#inputtags').val(),
       "exportTo": $('#exportTo').val(),
-      "furthestVisitedFrame": furthestVisitedFrame
+      "furthestVisitedFrame": furthestVisitedFrame,
+      "trackingSuggestionsBlacklist":trackingSuggestionsBlacklist
     };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
@@ -412,7 +433,6 @@ function reviewCNTK() {
 //optomize superRegionTracking 
 function initRegionTracking () {
     videotagging.video.removeEventListener("canplay", initRegionTracking); //remove old listener
-    trackingSuggestionsBlacklist = {};
     var regionsToTrack = [];
     
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
