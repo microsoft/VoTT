@@ -9,11 +9,8 @@ const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 var supertrackingFrameRate = 10;
 var trackingEnabled = true;
-
-
 var furthestVisitedFrame, //keep track of the furthest visited frame
-    videotagging,
-    trackingSuggestionsBlacklist; //keep track of deleted suggestions
+    videotagging;
 
 //ipc rendering
 ipcRenderer.on('openVideo', (event, message) => {
@@ -45,19 +42,17 @@ ipcRenderer.on('toggleTracking', (event, message) => {
   $('#video-tagging').off("stepFwdClicked-BeforeStep");
   if (trackingEnabled) {
       $('#video-tagging').off("stepFwdClicked-AfterStep");
-      //add event to add regions on BeforeStep to blacklist
+      //add event to prevent non tracked regions from giving suggestions
       $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
           var regionCount = $('.regionCanvas').length;
           if (regionCount) {         
             var curFrame = videotagging.getCurrentFrame();
             $.map($('.regionCanvas'), (regionCanvas, i) => { 
               //get regionId
-              var originalRegion = $.grep(videotagging.frames[curFrame], function(e){ return e.name == regionCanvas.id;})[0];
-              // add suggested by to previous region to blacklist
-              if (!trackingSuggestionsBlacklist[curFrame]){
-                trackingSuggestionsBlacklist[curFrame] = new Set([originalRegion.id]);
-              } else {
-                trackingSuggestionsBlacklist[curFrame].add(originalRegion.id);
+              for (regInd = 0; regInd < videotagging.frames[curFrame].length; regInd++) {
+                if (videotagging.frames[curFrame][regInd].name = regionCanvas.id) {
+                  videotagging.frames[curFrame][regInd].blockSuggest = true;
+                }
               }
             });
           }
@@ -70,7 +65,6 @@ ipcRenderer.on('toggleTracking', (event, message) => {
   trackingEnabled = !trackingEnabled;
 
 });
-
 
 //drag and drop support
 document.addEventListener('drop', (e) => {
@@ -189,11 +183,8 @@ function fileSelected(path) {
 
         if (config) {
           videotagging.inputframes = config.frames;
-          trackingSuggestionsBlacklist = config.trackingSuggestionsBlacklist;
-        }
-        else {
+        } else {
             videotagging.inputframes = {};
-            trackingSuggestionsBlacklist = {};
         } 
 
         videotagging.src = pathName;
@@ -228,7 +219,6 @@ function save() {
       "inputTags": $('#inputtags').val(),
       "exportTo": $('#exportTo').val(),
       "furthestVisitedFrame": furthestVisitedFrame,
-      "trackingSuggestionsBlacklist":trackingSuggestionsBlacklist
     };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
@@ -360,11 +350,9 @@ function exportCNTK() {
 //allows user to review cntk suggestions on a video
 function reviewCNTK() {
   addLoader();
-  
   //check if an export directory for the current model exists
   if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
   var reviewPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_review`;
-  
   //if the export directory does not exist create it and export all the frames then review
   if (!fs.existsSync(reviewPath)) {
     fs.mkdirSync(reviewPath);
@@ -376,7 +364,6 @@ function reviewCNTK() {
   function review() {
     //run the model on the reviewPath directory
     model = new cntkModel.CNTKFRCNNModel({cntkModelPath : modelFileLocation, verbose : true});
-
     var modelTagsPromise = new Promise((resolve, reject) => { 
       model.evaluateDirectory(reviewPath, (err, res) => {
         if (err) {
@@ -441,8 +428,7 @@ function reviewCNTK() {
     console.log('saving file', writePath);
     if (!fs.existsSync(writePath)) {
       fs.writeFileSync(writePath, buf);
-    }
-   
+    }  
   }
 
 }
@@ -469,9 +455,7 @@ function initRegionTracking () {
           //get regionId
           var originalRegion = $.grep(videotagging.frames[curFrame], function(e){ return e.name == regionCanvas.id;})[0];
           //if region is in blacklist don't track
-          if (curFrame in trackingSuggestionsBlacklist) {
-            if (trackingSuggestionsBlacklist[curFrame].has(originalRegion.id)) return;
-          }
+          if (originalRegion.blockSuggest) return;
           //add region to be tracked 
           regionsToTrack.push({x,y,w,h,originalRegion});
         });
@@ -517,12 +501,7 @@ function initRegionTracking () {
                 videotagging.frames[curFrame][videotagging.frames[curFrame].length-1].tags = suggestion.originalRegion.tags;
                 videotagging.frames[curFrame][videotagging.frames[curFrame].length-1].suggestedBy = {frameId:curFrame-1, regionId:suggestion.originalRegion.id};        
                 // add suggested by to previous region to blacklist
-                if (!trackingSuggestionsBlacklist[curFrame - 1]){
-                  trackingSuggestionsBlacklist[curFrame - 1] = new Set([suggestion.originalRegion.id]);
-                } else {
-                  trackingSuggestionsBlacklist[curFrame - 1].add(suggestion.originalRegion.id);
-                }
-
+                videotagging.frames[curFrame-1][videotagging.frames[curFrame].length-1].blockSuggest = true;
            });   
             regionsToTrack = [];
             videotagging.canMove = true;
@@ -541,21 +520,15 @@ function initRegionTracking () {
       var curFrame = videotagging.getCurrentFrame();
       var prevFrame = curFrame - 1;
       removedRegions.forEach( (deletedRegion) => {
-        // if current region in frame blacklist remove it
-        if (trackingSuggestionsBlacklist[curFrame]){
-            trackingSuggestionsBlacklist[curFrame].delete(deletedRegion.id);
-        }
-
-        // add suggested by to black list for previous frame
+        // prevent the suggestor from making more suggestins
         if(deletedRegion.suggestedBy !== undefined) {
-          if (!trackingSuggestionsBlacklist[prevFrame]){
-            trackingSuggestionsBlacklist[prevFrame] = new Set([deletedRegion.suggestedBy.regionId]);
-          } else {
-            trackingSuggestionsBlacklist[prevFrame].add(deletedRegion.suggestedBy.regionId);
+          for (i=0; i < videotagging.frames[prevFrame].length; i++){
+            if (videotagging.frames[prevFrame][i].id == deletedRegion.suggestedBy) {
+                videotagging.frames[prevFrame][i].blockSuggest = true;
+            } 
           }
-        }      
+        }
       });
-
       
     }    
 
@@ -589,7 +562,6 @@ function initRegionTracking () {
           scd.detectSceneChange(video, frameCanvas, canvasContext, videotagging.framerate).then( (sceneChanged) => {          
               if (!sceneChanged) {
                 video.oncanplay = trackFrames;    
-                console.log(video.currentTime);
                 video.currentTime += (1/supertrackingFrameRate);          
               } else {
                 reject("scene changed");
@@ -603,7 +575,6 @@ function initRegionTracking () {
             return resolve(suggestions);
           }
           var regionDetectionPromises = [];
-
           regions.forEach((region, i) => {
               // if first pass check whether the region changed
               if (region.regionChanged === undefined) {
@@ -631,7 +602,6 @@ function initRegionTracking () {
                 video.oncanplay = undefined;    
                 resolve(suggestions);
               } else { 
-                console.log(video.currentTime);
                 video.currentTime += (1 / supertrackingFrameRate);//go to next frame segment
               }
           },(e)=>{console.info(e);});
