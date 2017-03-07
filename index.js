@@ -19,6 +19,9 @@ ipcRenderer.on('openVideo', (event, message) => {
 
 ipcRenderer.on('saveVideo', (event, message) => {
   save();
+  let notification = new Notification('Offline Video Tagger', {
+   body: 'Successfully saved metadata in ' + `${videotagging.src}.json`
+  });
 });
 
 ipcRenderer.on('exportCNTK', (event, message) => {
@@ -44,6 +47,7 @@ ipcRenderer.on('toggleTracking', (event, message) => {
       $('#video-tagging').off("stepFwdClicked-AfterStep");
       //add event to prevent non tracked regions from giving suggestions
       $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
+          save();
           var regionCount = $('.regionCanvas').length;
           if (regionCount) {         
             var curFrame = videotagging.getCurrentFrame();
@@ -221,10 +225,6 @@ function save() {
     };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
-
-    let notification = new Notification('Offline Video Tagger', {
-      body: 'Successfully saved metadata in ' + `${videotagging.src}.json`
-    });
 }
 
 //maps every frame in the video to an imageCanvas
@@ -440,6 +440,7 @@ function initRegionTracking () {
     var regionsToTrack = [];
     
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
+      save();
       videotagging.canMove = false;
       var regionCount = $('.regionCanvas').length;
       if (regionCount) {         
