@@ -9,7 +9,7 @@ const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 var supertrackingFrameRate = 10;
 var trackingEnabled = true;
-var furthestVisitedFrame, //keep track of the furthest visited frame
+var visitedFrames, //keep track of the visited frames
     videotagging;
 
 //ipc rendering
@@ -107,10 +107,9 @@ function addLoader() {
   }
 }
 
-//managed the furthest visited frame
-function updateFurthestVisitedFrame(){
-  var currentFrame = videotagging.getCurrentFrame();
-  if (furthestVisitedFrame < currentFrame) furthestVisitedFrame = currentFrame;
+//managed the visited frames
+function updateVisitedFrames(){
+  visitedFrames.add(videotagging.getCurrentFrame());
 }
 
 function checkPointRegion() {
@@ -195,10 +194,10 @@ function fileSelected(path) {
         }
         //videotagging.video.load();//load video
 
-        //track furthestVisitedFrame
-        furthestVisitedFrame = 1;
-        videotagging.video.removeEventListener("canplay", updateFurthestVisitedFrame); //remove old listener
-        videotagging.video.addEventListener("canplay",updateFurthestVisitedFrame);
+        //track visited frames
+        visitedFrames = new Set();
+        videotagging.video.removeEventListener("canplay", updateVisitedFrames); //remove old listener
+        videotagging.video.addEventListener("canplay",updateVisitedFrames);
 
         //init region tracking
         videotagging.video.addEventListener("canplay",  initRegionTracking);
@@ -218,7 +217,7 @@ function save() {
       "frames" : videotagging.frames,
       "inputTags": $('#inputtags').val(),
       "exportTo": $('#exportTo').val(),
-      "furthestVisitedFrame": furthestVisitedFrame,
+      "visitedFrames": visitedFrames,
     };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
@@ -238,7 +237,7 @@ function mapVideo(exportUntil, frameHandler) {
     var canvasContext = frameCanvas.getContext("2d");
 
     // start exporting frames using the canplay eventListener
-    videotagging.video.removeEventListener("canplay", updateFurthestVisitedFrame); //stop recording frame movment
+    videotagging.video.removeEventListener("canplay", updateVisitedFrames); //stop recording frame movment
     videotagging.video.addEventListener("canplay", iterateFrames);
     videotagging.video.currentTime = 0;
     videotagging.playingCallback();
@@ -252,7 +251,8 @@ function mapVideo(exportUntil, frameHandler) {
           isLastFrame = (!Object.keys(videotagging.frames).length) || (frameId >= parseInt(Object.keys(videotagging.frames)[Object.keys(videotagging.frames).length-1]));
           break;
         case "visited":
-          isLastFrame = (frameId >= furthestVisitedFrame);        
+          var lastVisitedFrameId = Math.max.apply(Math, Array.from(visitedFrames));
+          isLastFrame = (frameId >= lastVisitedFrameId);        
           break;
         case "last":
           isLastFrame = (videotagging.video.currentTime >= videotagging.video.duration);
@@ -261,7 +261,7 @@ function mapVideo(exportUntil, frameHandler) {
 
       if (isLastFrame) {
         videotagging.video.removeEventListener("canplay", iterateFrames);
-        videotagging.video.addEventListener("canplay", updateFurthestVisitedFrame);
+        videotagging.video.addEventListener("canplay", updateVisitedFrames);
         resolve();
       }
       
