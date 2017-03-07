@@ -33,10 +33,7 @@
               </video>
       </div>
       <div id="videoControls" class="videoControls">
-
         <input id="seekBar" class="seek clickableControl" type="range" min='0' value="0" step="any" onkeydown="return false;"  required />
-          <div id="tooltip"></div>
-
           <table id="videoControlsTable" class="videoControlsTable">
 
             <tr>
@@ -235,39 +232,6 @@
       this.video.onended = function(){
            self.pauseState();
       };
-
-    function updateTimelineTooltip(e) {
-        var tooltip = $('#tooltip')[0]
-        var percentage = e.pageX / this.seekBar.offsetWidth;
-        var time = formatTime(percentage * videotagging.video.duration);
-        tooltip.innerHTML = time;
-        tooltip.style.left = (e.pageX - tooltip.offsetWidth / 2) + "px"
-
-        function formatTime(secs) {
-            var hours = (secs / 3600) | 0
-            var mins = ((secs - hours * 3600) / 60) | 0
-            secs = (secs - (3600 * hours + 60 * mins)) | 0
-            if (mins < 10) mins = '0' + mins
-            if (secs < 10) secs = '0' + secs
-            return (hours ? hours + ':' : '') + mins + ':' + secs
-        }
-    }
-
-    this.seekBar.addEventListener('mousemove', function (e) {
-        updateTimelineTooltip(e)
-    });
-
-    this.seekBar.addEventListener('mouseover', function (e) {
-        var tooltip = $('#tooltip')[0]
-        tooltip.style.opacity = 1
-        updateTimelineTooltip(e)
-    });
-
-    this.seekBar.addEventListener('mouseout', function (e) {
-        var tooltip = $('#tooltip')[0]
-        tooltip.style.opacity = 0
-    });
-
       this.seekBar.addEventListener("mousedown", function() {
             self.seeking = true;
           });
