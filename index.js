@@ -342,6 +342,7 @@ function exportCNTK() {
     //write canvas to file and change frame
     console.log('saving file', writePath);
     if(!fs.existsSync(writePath)) {
+      if (! (writePath.includes("negative") && visitedFrames.has(frameId))) return; //only write visited frames
       fs.writeFileSync(writePath, buf);
     }
   }
