@@ -3,9 +3,9 @@ const basepath = remote.app.getAppPath();
 const dialog = remote.require('electron').dialog;
 const pathJS = require('path');
 const fs = require('fs');
+const rimraf = require('rimraf');
 const cntkModel= require('cntk-fastrcnn');
 const cntkDefaultPath = 'c:/local/cntk';
-const modelFileLocation = `${basepath}/Fast-RCNN.model`;
 const ipcRenderer = require('electron').ipcRenderer;
 var supertrackingFrameRate = 10;
 var trackingEnabled = true;
@@ -30,10 +30,11 @@ ipcRenderer.on('exportCNTK', (event, message) => {
 
 ipcRenderer.on('reviewCNTK', (event, message) => {
     if (fs.existsSync(cntkDefaultPath)) {
-        if (fs.existsSync(modelFileLocation)){
+        var modelLocation = $('#model').val();
+        if (fs.existsSync(modelLocation)) {
           reviewCNTK();
         } else {
-            alert(`No model found! Please make sure you put your model in the following directory: ${modelFileLocation}`)
+            alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
         }
         
     } else {
@@ -155,6 +156,8 @@ function fileSelected(path) {
     $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
     
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
+    $('#output').val(`${basepath}/cntk`);
+    $('#model').val(`${basepath}/cntk/Fast-RCNN.model`);
 
     try {
       config = require(`${pathName}.json`);
@@ -186,20 +189,22 @@ function fileSelected(path) {
 
         if (config) {
           videotagging.inputframes = config.frames;
+          visitedFrames = new Set(config.visitedFrames);
         } else {
             videotagging.inputframes = {};
+            visitedFrames = new Set();
         } 
 
+        videotagging.src = ''; // ensures reload if user opens same video 
         videotagging.src = pathName;
+        
+        //set start time
         videotagging.video.oncanplay = function (){
-                      //set start time
             videotagging.videoStartTime = videotagging.video.currentTime;
             videotagging.video.oncanplay = undefined;
         }
-        //videotagging.video.load();//load video
 
         //track visited frames
-        visitedFrames = new Set();
         videotagging.video.removeEventListener("canplay", updateVisitedFrames); //remove old listener
         videotagging.video.addEventListener("canplay",updateVisitedFrames);
 
@@ -221,7 +226,7 @@ function save() {
       "frames" : videotagging.frames,
       "inputTags": $('#inputtags').val(),
       "exportTo": $('#exportTo').val(),
-      "visitedFrames": visitedFrames,
+      "visitedFrames": Array.from(visitedFrames),
     };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
@@ -280,19 +285,24 @@ function exportCNTK() {
   /* create constants for all the paths with meaningful names*/
 
   //make sure paths exist
-  if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
-  var framesPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frames`;
+  var exportPath = $('#output').val();
+  if (!fs.existsSync(`${exportPath}`)) fs.mkdirSync(`${exportPath}`);
+  var framesPath = `${exportPath}/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_frames`;
 
-  if (!fs.existsSync(framesPath)) fs.mkdirSync(framesPath);
-  if (!fs.existsSync(`${framesPath}/positive`)) fs.mkdirSync(`${framesPath}/positive`);
-  if (!fs.existsSync(`${framesPath}/negative`)) fs.mkdirSync(`${framesPath}/negative`);
+  //clear past directory 
+  rimraf(framesPath, () => { 
+    fs.mkdirSync(framesPath);
+    fs.mkdirSync(`${framesPath}/positive`);
+    fs.mkdirSync(`${framesPath}/negative`);
 
-  mapVideo($('#exportTo').val(), exportFrame).then(() => {
-    $(".loader").remove();
-    let notification = new Notification('Offline Video Tagger', {
-      body: 'Successfully exported CNTK files.'
-    });
-  })
+    mapVideo($('#exportTo').val(), exportFrame).then(() => {
+      $(".loader").remove();
+      let notification = new Notification('Offline Video Tagger', {
+        body: 'Successfully exported CNTK files.'
+      });
+    })
+  });
+
 
   function exportFrame(frameId, frameCanvas, canvasContext) {
 
@@ -302,36 +312,22 @@ function exportCNTK() {
     //If frame contains tags generate the metadata and save it in the positive directory
     var frameIsTagged = videotagging.frames.hasOwnProperty(frameId) && (videotagging.frames[frameId].length);
     if (frameIsTagged && (videotagging.getUnlabeledRegionTags(frameId).length != videotagging.frames[frameId].length)) {
-        //clear metadata if image exists from last run
-        if (fs.existsSync(writePath)) 
-          fs.unlinkSync(writePath);
-        if (fs.existsSync(positiveWritePath)) {
-          // checking to see if no tags were saved from last run
-          if (fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'))) {
-            fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
-          }
-          if (fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) {
-            fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
-          }
-        }
         //genereate metadata from tags
+        var frameBBoxes = "",
+            frameLabels = "";
         videotagging.frames[frameId].map( (tag) => {
           if (!tag.tags[tag.tags.length-1]) {
-            return console.log(`frame ${frameId} region ${tag.name} has no label`);
+             return console.log(`frame ${frameId} region ${tag.name} has no label`);
           }
           var stanW = videotagging.video.videoWidth/tag.width;
           var stanH = videotagging.video.videoHeight/tag.height;
-          fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'), `${tag.tags[tag.tags.length-1]}\n`, (err) => {console.error(err)});
-          fs.appendFile(positiveWritePath.replace('.jpg', '.bboxes.tsv'), `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`, (err) => {console.error(err)});
+          frameBBoxes += `${tag.tags[tag.tags.length-1]}\n`;
+          frameLabels += `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`;
         });
+        if (frameBBoxes == "" || frameLabels == "") return;
+        fs.writeFileSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'), frameLabels, (err) => {console.error(err)});
+        fs.writeFileSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'), frameBBoxes, (err) => {console.error(err)});
         writePath = positiveWritePath; // set write path to positve write path
-    }
-    else if(fs.existsSync(positiveWritePath)) { //tags have been removed clear positive data if it exists from last run
-        fs.unlinkSync(positiveWritePath);
-        if (fs.existsSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'))) 
-          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'));
-        if (fs.existsSync(positiveWritePath.replace('.jpg', '..bboxes.labels.tsv'))) 
-          fs.unlinkSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'));
     }
 
     //draw the frame to the canvas
@@ -341,10 +337,9 @@ function exportCNTK() {
 
     //write canvas to file and change frame
     console.log('saving file', writePath);
-    if(!fs.existsSync(writePath)) {
-      if (! (writePath.includes("negative") && visitedFrames.has(frameId))) return; //only write visited frames
-      fs.writeFileSync(writePath, buf);
-    }
+    if (writePath.includes("negative") && !visitedFrames.has(frameId)) return; //only write visited frames
+    fs.writeFileSync(writePath, buf);
+
   }
 }
 
@@ -352,8 +347,9 @@ function exportCNTK() {
 function reviewCNTK() {
   addLoader();
   //check if an export directory for the current model exists
-  if (!fs.existsSync(`${basepath}/cntk`)) fs.mkdirSync(`${basepath}/cntk`);
-  var reviewPath = `${basepath}/cntk/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_review`;
+  var exportPath = $('#output').val();
+  if (!fs.existsSync(`${exportPath}`)) fs.mkdirSync(`${exportPath}`);
+  var reviewPath = `${exportPath}/${pathJS.basename(videotagging.src, pathJS.extname(videotagging.src))}_review`;
   //if the export directory does not exist create it and export all the frames then review
   if (!fs.existsSync(reviewPath)) {
     fs.mkdirSync(reviewPath);
@@ -364,7 +360,7 @@ function reviewCNTK() {
 
   function review() {
     //run the model on the reviewPath directory
-    model = new cntkModel.CNTKFRCNNModel({cntkModelPath : modelFileLocation, verbose : true});
+    model = new cntkModel.CNTKFRCNNModel({cntkModelPath : $('#model').val(), verbose : true});
     var modelTagsPromise = new Promise((resolve, reject) => { 
       model.evaluateDirectory(reviewPath, (err, res) => {
         if (err) {
@@ -465,7 +461,6 @@ function initRegionTracking () {
     });
 
     $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
-        console.log(`${videotagging.getCurrentFrame()}, time: ${videotagging.video.currentTime}`);
         videotagging.video.addEventListener("canplay", afterStep);
     });  
 
