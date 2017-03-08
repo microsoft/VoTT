@@ -23,6 +23,7 @@
   "dependencies": {
     "cntk-fastrcnn": "^0.1.5",
     "electron-window-state": "^4.0.2",
-    "remote": "^0.2.6"
+    "remote": "^0.2.6",
+    "rimraf": "^2.6.1"
   }
 }

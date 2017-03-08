@@ -33,6 +33,7 @@
         </div>
         <div id ='load-form-container' style ="display: none">
           <h2>Tagging Job Configuration</h2>
+
           <div class="form-group" id="framerateGroup">
             <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per a video second)</label>
             <input id="framerate" type="number" min="1" max="999" value="1" maxlength="3" size="3" class="form-control" />
@@ -45,6 +46,7 @@
                   <option>Square</option>
             </select>
           </div>
+
           <div class="regionGroup">
             <div class="form-group" id="regionPointGroup" style ="display: none">
               <label for="exampleTextarea" title="(Region Size for point selector!)">Point Region Size</label>
@@ -59,6 +61,16 @@
                   <option value="visited">Last Visited Frame</option>
                   <option value="last">Last Frame</option>
             </select>
+          </div>
+
+          <div class="form-group">
+            <label for="Tags"> Output Path</label>
+            <input id="output" class="form-control" type="text" />
+          </div>
+
+          <div class="form-group">
+            <label for="Tags"> Model Path</label>
+            <input id="model" class="form-control" type="text" />
           </div>
 
           <div class="form-group">
