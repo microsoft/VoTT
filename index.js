@@ -451,7 +451,7 @@ function initRegionTracking () {
           var y = Math.round(parseInt(regionCanvas.style.top) * stanH);
           var x = Math.round(parseInt(regionCanvas.style.left) * stanW);
           //get regionId
-          var originalRegion = $.grep(videotagging.frames[curFrame], function(e){ return e.name == regionCanvas.id;})[0];
+          var originalRegion = videotagging.frames[curFrame][regionCanvas.id-1];
           //if region is in blacklist don't track
           if (originalRegion.blockSuggest) return;
           //add region to be tracked 
@@ -463,14 +463,6 @@ function initRegionTracking () {
     $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
         videotagging.video.addEventListener("canplay", afterStep);
     });  
-
-    $('#video-tagging').on("canvasRegionDeleted", (e,deletedRegion) => {
-       updateBlackList([deletedRegion]);
-    });  
-
-    $('#video-tagging').on("clearingAllRegions", () => {
-       updateBlackList(videotagging.frames[videotagging.getCurrentFrame()]);
-    });
 
     function afterStep() {
       videotagging.video.removeEventListener("canplay", afterStep);
@@ -498,7 +490,7 @@ function initRegionTracking () {
                 videotagging.frames[curFrame][videotagging.frames[curFrame].length-1].tags = suggestion.originalRegion.tags;
                 videotagging.frames[curFrame][videotagging.frames[curFrame].length-1].suggestedBy = {frameId:curFrame-1, regionId:suggestion.originalRegion.id};        
                 // add suggested by to previous region to blacklist
-                videotagging.frames[curFrame-1][videotagging.frames[curFrame].length-1].blockSuggest = true;
+                videotagging.frames[curFrame-1][suggestion.originalRegion.name-1].blockSuggest = true;
            });   
             regionsToTrack = [];
             videotagging.canMove = true;
@@ -513,21 +505,7 @@ function initRegionTracking () {
       
     }     
 
-    function updateBlackList(removedRegions) {
-      var curFrame = videotagging.getCurrentFrame();
-      var prevFrame = curFrame - 1;
-      removedRegions.forEach( (deletedRegion) => {
-        // prevent the suggestor from making more suggestins
-        if(deletedRegion.suggestedBy !== undefined) {
-          for (i=0; i < videotagging.frames[prevFrame].length; i++){
-            if (videotagging.frames[prevFrame][i].id == deletedRegion.suggestedBy) {
-                videotagging.frames[prevFrame][i].blockSuggest = true;
-            } 
-          }
-        }
-      });
-      
-    }    
+    
 
     function superTracking(regions) {
       return new Promise((resolve, reject) => {
@@ -542,7 +520,6 @@ function initRegionTracking () {
         var cstracker = new regiontrackr.camshift.Tracker({whitebalancing : false, calcAngles : false});
         var tagging_duration, frameCanvas, canvasContext, scd, rcd;
         var suggestions = [];
-
         
         function init() {
           video.oncanplay = undefined;
