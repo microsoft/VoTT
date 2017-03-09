@@ -482,10 +482,8 @@
           }
           this.showAllRegions();
           this.emitRegionToHost();
-          $('#video-tagging').trigger('canvasRegionDeleted',[deletedRegion]); 
     },
     clearRegions: function(e) {
-          $('#video-tagging').trigger('clearingAllRegions'); 
           this.frames[this.getCurrentFrame()]=[];
           this.showAllRegions();
           this.emitRegionToHost();
