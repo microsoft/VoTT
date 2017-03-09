@@ -175,7 +175,8 @@ function fileSelected(path) {
     document.getElementById('loadButton').addEventListener('click', loadTagger);
     
     function loadTagger (e) {
-      if(framerate.validity.valid) {
+      if(framerate.validity.valid && inputtags.validity.valid) {
+        $('.bootstrap-tagsinput').last().removeClass( "invalid" );
        
         $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`); //set title indicator
 
@@ -215,6 +216,8 @@ function fileSelected(path) {
         $('#video-tagging-container').show();
 
         ipcRenderer.send('setFilePath', pathName);
+      } else {
+        $('.bootstrap-tagsinput').last().addClass( "invalid" );
       }
     }
   }
