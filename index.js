@@ -175,7 +175,8 @@ function fileSelected(path) {
     document.getElementById('loadButton').addEventListener('click', loadTagger);
     
     function loadTagger (e) {
-      if(framerate.validity.valid) {
+      if(framerate.validity.valid && inputtags.validity.valid) {
+        $('.bootstrap-tagsinput').last().removeClass( "invalid" );
        
         $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`); //set title indicator
 
@@ -215,6 +216,8 @@ function fileSelected(path) {
         $('#video-tagging-container').show();
 
         ipcRenderer.send('setFilePath', pathName);
+      } else {
+        $('.bootstrap-tagsinput').last().addClass( "invalid" );
       }
     }
   }
@@ -433,6 +436,8 @@ function reviewCNTK() {
 //optomize superRegionTracking 
 function initRegionTracking () {
     videotagging.video.removeEventListener("canplay", initRegionTracking); //remove old listener
+    $('#video-tagging').off("stepFwdClicked-BeforeStep");
+    $('#video-tagging').off("stepFwdClicked-AfterStep");
     var regionsToTrack = [];
     
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
@@ -451,7 +456,7 @@ function initRegionTracking () {
           var y = Math.round(parseInt(regionCanvas.style.top) * stanH);
           var x = Math.round(parseInt(regionCanvas.style.left) * stanW);
           //get regionId
-          var originalRegion = videotagging.frames[curFrame][regionCanvas.id-1];
+          var originalRegion = $.grep(videotagging.frames[curFrame], function(e){ return e.name == regionCanvas.id;})[0];
           //if region is in blacklist don't track
           if (originalRegion.blockSuggest) return;
           //add region to be tracked 

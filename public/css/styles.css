@@ -20,6 +20,11 @@ html, body {
   background-color: #FDD;
 }
 
+.invalid{
+  border-color: #900;
+  background-color: #FDD;
+}
+
 #load-message{
     position: absolute;
     top: 0;
