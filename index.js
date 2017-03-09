@@ -433,6 +433,8 @@ function reviewCNTK() {
 //optomize superRegionTracking 
 function initRegionTracking () {
     videotagging.video.removeEventListener("canplay", initRegionTracking); //remove old listener
+    $('#video-tagging').off("stepFwdClicked-BeforeStep");
+    $('#video-tagging').off("stepFwdClicked-AfterStep");
     var regionsToTrack = [];
     
     $('#video-tagging').on("stepFwdClicked-BeforeStep", () => {
@@ -451,7 +453,7 @@ function initRegionTracking () {
           var y = Math.round(parseInt(regionCanvas.style.top) * stanH);
           var x = Math.round(parseInt(regionCanvas.style.left) * stanW);
           //get regionId
-          var originalRegion = videotagging.frames[curFrame][regionCanvas.id-1];
+          var originalRegion = $.grep(videotagging.frames[curFrame], function(e){ return e.name == regionCanvas.id;})[0];
           //if region is in blacklist don't track
           if (originalRegion.blockSuggest) return;
           //add region to be tracked 
