@@ -1,4 +1,4 @@
-# offline-video-tagger
+# CNTK Object Recognizer Video Tagging Tool
 
 This tool provides end to end support for generating datasets for and validating Object Recognition Models with CNTK.
 
@@ -8,7 +8,7 @@ It supports the following scenarios:
 - Export Tags to CNTK format for training a CNTK object recognition model.
 - Running and validating a trained CNTK object recognition model on new videos to generate stronger models. (Windows only for now)
 
-To Use:
+## To Use:
  1. Download the release binary.
  2. Extract and run the app
  3. Load a video.
