@@ -19,5 +19,6 @@ It supports the following scenarios:
     - Labels (Labels for tagging)
  5. Tag the video frame by frame.
  6. Export Video to CNTK Format
- 7. Train model using the following tutorial.
- 8. Load new video apply model to new video, validate tags, re-exort and retrain
+ 7. Train model using [CNTK-FastRCNNDetector](https://github.com/CatalystCode/CNTK-FastRCNNDetector).
+ 8. Load new video apply model to new video, validate tags, re-export, retrain
+ 9. Repeat step #8 on new videos until model preformance is satisfactory.  
