@@ -6,7 +6,7 @@ It supports the following scenarios:
 
 - Computer Assisted Tagging of Objects In Video Using Custom implementation of Camshift Algorithm
 - Export Tags to CNTK format for training a CNTK object recognition model.
-- Running and validating a trained CNTK object recognition model on new videos to generate stronger models. (Windows only for now)
+- Running and validating a trained CNTK object recognition model on new videos to generate stronger models. (Windows only for now, GPU recommended)
 
 ## To Use:
  1. Download the release binary.
