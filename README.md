@@ -22,3 +22,8 @@ It supports the following scenarios:
  7. Train model using [CNTK-FastRCNNDetector](https://github.com/CatalystCode/CNTK-FastRCNNDetector).
  8. Load new video apply model to new video, validate tags, re-export, retrain
  9. Repeat step #8 on new videos until model preformance is satisfactory.  
+
+## Upcoming Features
+- Image Directory Tagging Support
+- Tagging Project Management 
+- UI enhancements 
