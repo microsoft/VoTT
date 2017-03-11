@@ -1,4 +1,4 @@
-# CNTK Object Recognizer Video Tagging Tool
+# CNTK Object Recognition Video Tagging Tool
 
 This tool provides end to end support for generating datasets for and validating Object Recognition Models with CNTK.
 
