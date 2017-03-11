@@ -1,0 +1,29 @@
+{
+  "name": "offline-video-tagger",
+  "version": "1.0.0",
+  "description": "An offline port of the video-tagging-tool for electron.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/CatalystCode/offline-video-tagger/",
+  "keywords": [
+    "Electron",
+    "Video-Tagging",
+    "CNTK",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^1.4.1",
+    "bower": "^1.7.2"
+  },
+  "dependencies": {
+    "cntk-fastrcnn": "^0.1.5",
+    "electron-window-state": "^4.0.2",
+    "remote": "^0.2.6",
+    "rimraf": "^2.6.1"
+  }
+}
