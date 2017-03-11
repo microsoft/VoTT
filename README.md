@@ -19,7 +19,7 @@ It supports the following scenarios:
     - Labels (Labels for tagging)
  5. Tag the video frame by frame.
  6. Export Video to CNTK Format
- 7. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN).
+ 7. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data).
  8. Load new video apply model to new video, validate tags, re-export, retrain
  9. Repeat step #8 on new videos until model preformance is satisfactory.  
 
