@@ -27,7 +27,7 @@ function createWindow () {
       y: mainWindowState.y,
       minHeight: 480,
       minWidth: 480,
-      icon: __dirname + '/icon.png',
+      icon: __dirname + '/public/images/icon.png',
       show: false
   });
 
