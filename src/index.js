@@ -34,7 +34,8 @@ ipcRenderer.on('reviewCNTK', (event, message) => {
     if (fs.existsSync(cntkDefaultPath)) {
         var modelLocation = $('#model').val();
         if (fs.existsSync(modelLocation)) {
-          CNTKExtension.reviewCNTK();
+          addLoader();
+          CNTKExtension.reviewCNTK(modelLocation, removeLoader);
         } else {
             alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
         }
