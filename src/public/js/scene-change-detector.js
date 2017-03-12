@@ -3,7 +3,7 @@ Detects scene change based on the median color diference between detectionRegion
 Defaults at w:50, 50
 */
 
-function SceneChangeDetector(options={}) {  
+function SceneChangeDetector(options = {}) {  
     this._threshold = options.threshold || 110.418238983; // 25 * Math.sqrt(255 * 255 * 3) / 100
     this._detectionRegion = options.detectionRegion || {w:50,h:50};
     this._canvasContextImageDataLength =  (this._detectionRegion.w * this._detectionRegion.h *4);// The length of the canvas context imageData object. Used to speed up calculation.
@@ -76,14 +76,15 @@ function SceneChangeDetector(options={}) {
 
         });
     }
-
-
+    
+    // detects change between two images 
     this.detectChange = function(lastImgData, currentImgData) {
         var diff = this.computeDifferences(lastImgData, currentImgData);
         if (diff > this._threshold) return true;
         return false;
     }
 
+    //computes the median color diference between two images
     this.computeDifferences = function(colorsA, colorsB) {
         var colorDiffs = [];
         for (var i = 0; i < this._canvasContextImageDataLength; i = i + 4) {
@@ -92,10 +93,12 @@ function SceneChangeDetector(options={}) {
         return this.getMedian(colorDiffs);
     }
 
+    //calculates the euclidian color distance between two pixels
     this.getColorDistance = function(ra, ga, ba, rb, gb, bb) {
         return Math.sqrt((ra - rb) * (ra - rb) + (ga - gb) * (ga - gb) + (ba - bb) * (ba - bb));
     }
 
+    //finds the median of an array
     this.getMedian = function(array) {
         if (!array.length) {return 0};
         var numbers = array.slice(0).sort((a,b) => a - b);
