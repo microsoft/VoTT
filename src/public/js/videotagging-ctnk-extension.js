@@ -4,6 +4,8 @@ function VideoTaggingCNTKExtension(options = {}) {
     this.exportUntil = options.exportUntil;
     this.exportPath = options.exportPath;
 
+    var self = this;
+
     //check requirements fs and rimraf
     try {
         require.resolve("fs");
@@ -14,7 +16,6 @@ function VideoTaggingCNTKExtension(options = {}) {
 
     //maps every frame in the video to an imageCanvas
     this.mapVideo = function(frameHandler) {
-        var self = this;
         return new Promise((resolve, reject) => {
             //init canvas buffer
             var frameCanvas = document.createElement("canvas");
@@ -130,7 +131,6 @@ function VideoTaggingCNTKExtension(options = {}) {
             review();
         }
 
-        var self = this;
         function review() {
             self.exportUntil = previousExportUntil;
             //run the model on the reviewPath directory
