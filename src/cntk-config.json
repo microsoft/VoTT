@@ -1,0 +1,4 @@
+{
+    "cntkPath" : "c:/local/cntk", 
+    "cntkEnv" : "cntk-py34" 
+}
