@@ -3,6 +3,7 @@ function VideoTaggingCNTKExtension(options = {}) {
     this.visitedFrames = options.visitedFrames;
     this.exportUntil = options.exportUntil;
     this.exportPath = options.exportPath;
+    this.cntkPath = cntkPath;
 
     var self = this;
 
@@ -134,7 +135,7 @@ function VideoTaggingCNTKExtension(options = {}) {
         function review() {
             self.exportUntil = previousExportUntil;
             //run the model on the reviewPath directory
-            model = new cntkModel.CNTKFRCNNModel({cntkModelPath : modelPath, verbose : true});
+            model = new cntkModel.CNTKFRCNNModel({cntkModelPath : modelPath, cntkPath: self.cntkPath, verbose : true});
             var modelTagsPromise = new Promise((resolve, reject) => { 
                 model.evaluateDirectory(reviewPath, (err, res) => {
                     if (err) {

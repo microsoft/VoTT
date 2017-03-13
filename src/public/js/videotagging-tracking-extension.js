@@ -65,6 +65,7 @@ function VideoTaggingTrackingExtension( options = {} ) {
             }
         });
 
+        //runs tracking after step and adds each suggestion to tracked regions
         $('#video-tagging').on("stepFwdClicked-AfterStep", () => {
             self.videotagging.video.addEventListener("canplay", afterStep);
         });  
