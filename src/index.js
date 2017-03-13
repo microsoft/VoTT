@@ -5,7 +5,7 @@ const pathJS = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf');
 const cntkModel= require('cntk-fastrcnn');
-const cntkPath = require(`${basepath}/cntk-config.json`).cntkPath;
+const cntkConfig = require(`${basepath}/cntk-config.json`);
 const ipcRenderer = require('electron').ipcRenderer;
 var trackingEnabled = true;
 var visitedFrames, //keep track of the visited frames
@@ -31,7 +31,7 @@ ipcRenderer.on('exportCNTK', (event, message) => {
 });
 
 ipcRenderer.on('reviewCNTK', (event, message) => {
-    if (fs.existsSync(cntkPath)) {
+    if (fs.existsSync(cntkConfig.cntkPath)) {
         var modelLocation = $('#model').val();
         if (fs.existsSync(modelLocation)) {
           addLoader();
@@ -199,8 +199,9 @@ function fileSelected(path) {
 
         //init cntk extensions
         CNTKExtension = new VideoTaggingCNTKExtension({
-            cntkpath: cntkPath,
             videotagging: videotagging,
+            cntkPath: cntkConfig.cntkPath,
+            cntkEnv: cntkConfig.cntkEnv,
             visitedFrames: visitedFrames,
             exportUntil: $('#exportTo').val(),
             exportPath: $('#output').val()
