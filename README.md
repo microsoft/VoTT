@@ -9,8 +9,12 @@ It supports the following scenarios:
 - Running and validating a trained CNTK object recognition model on new videos to generate stronger models. (Windows only for now, GPU recommended)
 
 ## To Use:
- 1. Download the release binary.
- 2. Extract and run the app
+**Prerequisites** 
+ 1. Install [CNTK and Dependencies](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup)
+ 2. Download the [release binary](https://github.com/CatalystCode/CNTK-Object-Recognition-Video-Tagging-Tool/releases)
+ 3. Extract and run the app
+ 
+ **Tagging Job**
  3. Load a video.
  4. Configure the tagging job specifying the following preferences
     - Frame Extraction Rate (Number of frames to tag per a second)
@@ -18,10 +22,13 @@ It supports the following scenarios:
     - Export Frames Until (How far to export)
     - Labels (Labels for tagging)
  5. Tag the video frame by frame.
+ 
  6. Export Video to CNTK Format
  7. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data).
  8. Load new video apply model to new video, validate tags, re-export, retrain
  9. Repeat step #8 on new videos until model preformance is satisfactory.  
+
+## Configuring CNTK Support
 
 ## Upcoming Features
 - Image Directory Tagging Support
