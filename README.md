@@ -11,24 +11,49 @@ It supports the following scenarios:
 ## To Use:
 **Prerequisites** 
  1. Install [CNTK and Dependencies](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup)
- 2. Download the [release binary](https://github.com/CatalystCode/CNTK-Object-Recognition-Video-Tagging-Tool/releases)
- 3. Extract and run the app
+ 2. Download and Extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Recognition-Video-Tagging-Tool/releases)
+ 3. Configure CNTK-Config.json with the following properties
+  ```json
+   {
+    "cntkPath" : "{CNTK Path default is c:/local/cntk}", 
+    "cntkEnv" : "{CNTK Enviorment default is cntk-py34}" 
+   }
+  ```
+ 4. Run the app
  
- **Tagging Job**
- 3. Load a video.
- 4. Configure the tagging job specifying the following preferences
+ <img src="/media/1_home.jpg" alt="Home Page" height="300" width="450"/>
+ 
+**Tagging Job**
+ 1. Load a video.
+  
+  <img src="/media/2_load.jpg" alt="Home Page" height="300" width="450"/>
+   
+ 2. Configure the tagging job specifying the following preferences
+ 
+  <img src="/media/3 _Job_Configuration.jpg" alt="Home Page" height="300" width="450"/>
+
     - Frame Extraction Rate (Number of frames to tag per a second)
     - Tagging Region Type (Rectangle, Point, Square)
     - Export Frames Until (How far to export)
+    - Output directory (Directory to export training data to)
+    - Model Path (Path of trained model this is optional for tagging 
     - Labels (Labels for tagging)
- 5. Tag the video frame by frame.
+    
+ 3. Tag the video frame by frame.
  
- 6. Export Video to CNTK Format
- 7. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data).
- 8. Load new video apply model to new video, validate tags, re-export, retrain
- 9. Repeat step #8 on new videos until model preformance is satisfactory.  
+  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="450"/>
 
-## Configuring CNTK Support
+ 4. Export Video to CNTK Format using Menu or Ctrl/Cmd + E
+ 
+  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="450"/>
+
+ 
+**Review Model**
+ 1. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data).
+ 2. Load a video.
+ 3. Configure the tagging job specifying the following preferences
+ 4. Load new video apply model to new video, validate tags, re-export, retrain
+ 5. Repeat step #1 on new videos until model preformance is satisfactory.  
 
 ## Upcoming Features
 - Image Directory Tagging Support
