@@ -8,8 +8,10 @@ It supports the following scenarios:
 - Export Tags to CNTK format for training a CNTK object recognition model.
 - Running and validating a trained CNTK object recognition model on new videos to generate stronger models. (Windows only for now, GPU recommended)
 
-## To Use:
-**Prerequisites** 
+## Table of Contents (TBI)
+
+
+## Prerequisites 
  1. Install [CNTK and Dependencies](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup)
  2. Download and Extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Recognition-Video-Tagging-Tool/releases)
  3. Configure CNTK-Config.json with the following properties
@@ -24,7 +26,7 @@ It supports the following scenarios:
  
  <img src="/media/1_home.jpg" alt="Home Page" height="300px" width="500px"/>
  
-**Tagging Job**
+## Tagging Job
  1. Load a video.
   
   <img src="/media/2_load.jpg" alt="Home Page" height="300" width="500"/>
@@ -49,8 +51,8 @@ It supports the following scenarios:
   <img src="/media/5_Export.jpg" alt="Home Page" height="300" width="500"/>
 
  
-**Review Model**
- 1. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data).
+## Review/Itterate CNTK Object Detction Model
+ 1. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data) **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py**
  2. Load new video that the model hasn't been trained on.
  3. Configure the tagging job specifying the following preferences
  4. Apply model to new video using ctr/cmd + R
