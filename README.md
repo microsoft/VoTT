@@ -5,7 +5,7 @@ This tool provides end to end support for generating datasets for and validating
 It supports the following scenarios:
 
 - Computer Assisted Tagging of Objects In Video Using Custom implementation of Camshift Algorithm
-- Export Tags to CNTK format for training a CNTK object recognition model.
+- Exporting Tags to CNTK format for training a CNTK object recognition model.
 - Running and validating a trained CNTK object recognition model on new videos to generate stronger models. (Windows only for now, GPU recommended)
 
 ## Table of Contents
@@ -45,7 +45,7 @@ It supports the following scenarios:
     - Model Path (Path of trained model this is optional for tagging 
     - Labels (Labels for tagging)
  
-    <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="300" width="500"/>
+  <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="300" width="500"/>
  
  3. Tag the video frame by frame.
  
@@ -57,7 +57,7 @@ It supports the following scenarios:
 
 <a name="review"></a>
 ## Review/Itterate CNTK Object Detction Model 
- 1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data) **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py**
+ 1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py**
  2. Load new video that the model hasn't been trained on.
  3. Configure the tagging job specifying the following preferences
  4. Apply model to new video using ctr/cmd + R
