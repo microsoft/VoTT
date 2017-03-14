@@ -31,15 +31,15 @@ It supports the following scenarios:
    
  2. Configure the tagging job specifying the following preferences
  
-  <img src="/media/3 _Job_Configuration.jpg" alt="Home Page" height="300" width="500"/>
-
     - Frame Extraction Rate (Number of frames to tag per a second)
     - Tagging Region Type (Rectangle, Point, Square)
     - Export Frames Until (How far to export)
     - Output directory (Directory to export training data to)
     - Model Path (Path of trained model this is optional for tagging 
     - Labels (Labels for tagging)
-    
+ 
+    <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="300" width="500"/>
+ 
  3. Tag the video frame by frame.
  
   <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="500"/>
