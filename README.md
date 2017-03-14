@@ -13,6 +13,7 @@ It supports the following scenarios:
  1. Install [CNTK and Dependencies](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup)
  2. Download and Extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Recognition-Video-Tagging-Tool/releases)
  3. Configure CNTK-Config.json with the following properties
+ 
   ```json
    {
     "cntkPath" : "{CNTK Path default is c:/local/cntk}", 
@@ -21,7 +22,7 @@ It supports the following scenarios:
   ```
  4. Run the app
  
- <img src="/media/1_home.jpg" alt="Home Page" height="300" width="500"/>
+ <img src="/media/1_home.jpg" alt="Home Page" height="300px" width="500px"/>
  
 **Tagging Job**
  1. Load a video.
