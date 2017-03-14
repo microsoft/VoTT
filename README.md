@@ -1,6 +1,6 @@
-# CNTK Object Recognition Video Tagging Tool
+# CNTK Object Detection Video Tagging Tool
 
-This tool provides end to end support for generating datasets for and validating Object Recognition Models with CNTK.
+This tool provides end to end support for generating datasets for and validating Object Detection Models with CNTK.
 
 It supports the following scenarios:
 
@@ -17,7 +17,7 @@ It supports the following scenarios:
 <a name="prerequisites"></a>
 ## Prerequisites
  1. Install [CNTK and Dependencies](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup)
- 2. Download and Extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Recognition-Video-Tagging-Tool/releases)
+ 2. Download and Extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Detection-Video-Tagging-Tool/releases)
  3. Configure CNTK-Config.json with the following properties
  
   ```json
