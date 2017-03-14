@@ -21,16 +21,16 @@ It supports the following scenarios:
   ```
  4. Run the app
  
- <img src="/media/1_home.jpg" alt="Home Page" height="300" width="450"/>
+ <img src="/media/1_home.jpg" alt="Home Page" height="300" width="500"/>
  
 **Tagging Job**
  1. Load a video.
   
-  <img src="/media/2_load.jpg" alt="Home Page" height="300" width="450"/>
+  <img src="/media/2_load.jpg" alt="Home Page" height="300" width="500"/>
    
  2. Configure the tagging job specifying the following preferences
  
-  <img src="/media/3 _Job_Configuration.jpg" alt="Home Page" height="300" width="450"/>
+  <img src="/media/3 _Job_Configuration.jpg" alt="Home Page" height="300" width="500"/>
 
     - Frame Extraction Rate (Number of frames to tag per a second)
     - Tagging Region Type (Rectangle, Point, Square)
@@ -41,19 +41,20 @@ It supports the following scenarios:
     
  3. Tag the video frame by frame.
  
-  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="450"/>
+  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="500"/>
 
  4. Export Video to CNTK Format using Menu or Ctrl/Cmd + E
  
-  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="450"/>
+  <img src="/media/5_Export.jpg" alt="Home Page" height="300" width="500"/>
 
  
 **Review Model**
  1. Train model using [Object Detection using FastRCNN] (https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data).
- 2. Load a video.
+ 2. Load new video that the model hasn't been trained on.
  3. Configure the tagging job specifying the following preferences
- 4. Load new video apply model to new video, validate tags, re-export, retrain
- 5. Repeat step #1 on new videos until model preformance is satisfactory.  
+ 4. Apply model to new video using ctr/cmd + R
+ 5. When model finishes processing, validate tags, re-export, retrain
+ 6. Repeat step #1 on new videos until model preformance is satisfactory.  
 
 ## Upcoming Features
 - Image Directory Tagging Support
