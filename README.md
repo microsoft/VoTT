@@ -4,9 +4,9 @@ This tool provides end to end support for generating datasets for and validating
 
 It supports the following scenarios:
 
-- Computer Assisted Tagging and Tracking of Objects In Video Using Custom implementation of [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) 
-- Exporting Tags to CNTK format for training a CNTK object detection model.
-- Running and validating a trained CNTK object detection model on new videos to generate stronger models. (Windows only for now, GPU recommended)
+- Computer assisted tagging and tracking of objects in video using [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) 
+- Exporting tags and assets to CNTK format for training a CNTK object detection model.
+- Running and validating a trained CNTK object detection model on new videos to generate stronger models. 
 
 ## Table of Contents
  - [Prerequisites](#prerequisites)
