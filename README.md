@@ -18,7 +18,7 @@ This tool provides end to end support for generating datasets for and validating
 -----------
 <a name="prerequisites"></a>
 ## Prerequisites
-**Please Note that installation of CNTK and the FAST-RCNN dependencies is only required for CNTK model review and training, not tagging**
+**Please Note that installation of CNTK and the FAST-RCNN dependencies is only required for CNTK model review and training, not tagging.**
 
  1. Install [CNTK](https://github.com/Microsoft/CNTK/wiki/Setup-CNTK-on-your-machine) (*Note: currently the tool only supports the non-pip/full installation of CNTK.*)
  2. Follow the setup instruction of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN  is only supported for Linux with python 3.4 and not 3.5*)
