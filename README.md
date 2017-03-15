@@ -88,7 +88,7 @@ The tool supports the following **features**:
      - Tags are auto-saved each time a frame is changed 
     
     **Tracking**: new regions are tracked by default until a given scene changes. 
-     - To toggle tracking on and off use the file menu setting, or the keyboard shortcut Ctrl/Cmd + T.    
+     - Since the [camshift algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) has some known limitations, you can disable tracking for certain sets of frames. To toggle tracking *on* and *off* use the file menu setting, or the keyboard shortcut Ctrl/Cmd + T.    
     
  4. Export video to CNTK Format using Menu or Ctrl/Cmd + E
     
