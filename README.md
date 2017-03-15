@@ -13,6 +13,7 @@ It supports the following scenarios:
  - [Tagging Job](#taggingjob)
  - [Review/Iterate CNTK Object Detection Model](#review)
  - [Upcoming Features](#upcoming)
+ - [Contribute](#contribute)
  
 <a name="prerequisites"></a>
 ## Prerequisites
@@ -68,7 +69,7 @@ It supports the following scenarios:
 
 <a name="review"></a>
 ## Review/Iterate CNTK Object Detection Model 
- 1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py, currently the tool does not auto generate a "testImages" directory**
+ 1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py, however the tool does not auto-generate a "testImages" directory**
  2. Load new video that the model hasn't been trained on.
  3. Configure the tagging job specifying the following preferences
  4. Apply model to new video using Ctrl/Cmd + R
@@ -81,7 +82,7 @@ It supports the following scenarios:
 - Tagging Project Management 
 
 -----------
-<a name="Contribute"></a> 
+<a name="contribute"></a> 
 <H3>Contribute</H3>
 You are welcome to send us any bugs you may find, suggestions, or any other comments.
 Before sending anything, please go over the repository issues list, just to make sure that it isn't already there.
