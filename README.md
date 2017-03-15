@@ -1,6 +1,6 @@
 # CNTK Object Detection Video Tagging Tool
 
-This CNTK Object Detection Video Tagging Tool provides end to end support for generating datasets and validating Object Detection Models with CNTK.
+The CNTK Object Detection Video Tagging Tool provides end to end support for generating datasets and validating Object Detection Models.
 
 **End To End Object Detection Pipeline**
 ![detection In a box](media/detectioninabox.jpg)
@@ -59,7 +59,6 @@ This CNTK Object Detection Video Tagging Tool provides end to end support for ge
     **Tagging Region Type:**  The type of bounding box for tagging regions.<br>
       - "Rectangle": Tag bounding boxes of any dimension.
       - "Square": Tag bounding boxes of auto-fixed dimensions.
-      - "Point": Tag a point (This is useful for object recognition but not object detection)
       
     **Export Frames Until:** How far will the export operation proceed.<br>
       - "Last Tagged Region": Exports frames up until the last frame that contain tags.
