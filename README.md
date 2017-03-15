@@ -7,7 +7,7 @@ The CNTK Object Detection Video Tagging Tool provides end to end support for gen
 
 **The tool supports the following features:**
 
-- Computer assisted tagging and tracking of objects in video using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf).
+- Computer assisted tagging and tracking of objects in videos using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf).
 - Exporting tags and assets to CNTK format for training a CNTK object detection model.
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models. 
 
