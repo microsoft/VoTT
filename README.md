@@ -4,37 +4,45 @@ This tool provides end to end support for generating datasets for and validating
 
 **It supports the following scenarios:**
 
-- Computer assisted tagging and tracking of objects in video using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) 
+- Computer assisted tagging and tracking of objects in video using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf).
 - Exporting tags and assets to CNTK format for training a CNTK object detection model.
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models. 
 
 ## Table of Contents
- - [Prerequisites](#prerequisites)
- - [Tagging Job](#taggingjob)
+ - [Installation](#intallation)
+ - [How to tag a video](#taggingjob)
  - [Review/Iterate CNTK Object Detection Model](#review)
  - [Upcoming Features](#upcoming)
  - [How to Contribute](#contribute)
  
 -----------
-<a name="prerequisites"></a>
-## Prerequisites
-**Please Note that installation of CNTK and the FAST-RCNN dependencies is only required for CNTK model review and training, not tagging.**
+<a name="installation"></a>
+## Installation
+ 
 
- 1. Install [CNTK](https://github.com/Microsoft/CNTK/wiki/Setup-CNTK-on-your-machine) (*Note: currently the tool only supports the non-pip/full installation of CNTK.*)
- 2. Follow the setup instruction of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN  is only supported for Linux with python 3.4 and not 3.5*)
- 3. Download and Extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Detection-Video-Tagging-Tool/releases)
- 4. Configure CNTK-Config.json with the following properties
+**Installing the Video Tagging Tool**
+ 
+ 1. Download and Extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Detection-Video-Tagging-Tool/releases)
+ 2. Configure CNTK-Config.json (which resides in the main directory of the tagging tool) with the following properties to enable the model review feature. 
  
   ```json
    {
     "cntkPath" : "{CNTK Path default is c:/local/cntk}", 
    }
   ```
- 5. Run the app
+ 3. Run the app
+ 
+ **Installing CNTK with the FRCNN prequisites**
+ 
+ *Please Note that installation of CNTK and the FAST-RCNN dependencies is only required for CNTK model review and training, not tagging.*
+ 
+1. Install [CNTK](https://github.com/Microsoft/CNTK/wiki/Setup-CNTK-on-your-machine) (*Note: currently the tool only supports the full installation method (non pip) of CNTK.*)
+ 2. Follow the setup instructions of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN currently only supports Linux python version 3.4 and not 3.5*)
+ 
  
 -----------
 <a name="taggingjob"></a>
-## Tagging Job 
+## How to tag a video 
  1. Load a mp4 video file by either dragging it into the app or clicking and selecting it.
   
     <img src="/media/2_load.jpg" alt="Home Page" height="426" width="695"/>
