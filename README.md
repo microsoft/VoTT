@@ -78,7 +78,7 @@ This tool provides end to end support for generating datasets for and validating
      - A tag can be assigned to a region by clicking on a region and selecting the desired tag from the label toolbar at the bottom of the tagging control. 
      - Click the ![cleartags](media/cleartags.png) button to clear all tags on a given frame.  
     
-    **Navigation**: Users can navigate video frames by using the left and right arrow keys or clicking the forward ![foward](media/right.png) and back ![back](media/left.png) buttons on the control.
+    **Navigation**: Users can navigate between video frames by using either the left and right arrow keys, the previous ![back](media/left.png) and next ![foward](media/right.png) buttons or the video skip bar.
      - Tags are auto saved each time a frame is changed. 
     
     **Tracking**: New regions are tracked by default until a given scene changes. 
