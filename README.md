@@ -1,6 +1,6 @@
 # CNTK Object Detection Video Tagging Tool
 
-This tool provides end to end support for generating datasets for and validating Object Detection Models with CNTK.
+This CNTK Object Detection Video Tagging Tool provides end to end support for generating datasets and validating Object Detection Models with CNTK.
 
 **End To End Object Detection Pipeline**
 ![detection In a box](media/detectioninabox.jpg)
