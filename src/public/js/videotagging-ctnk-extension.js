@@ -5,7 +5,7 @@ function VideoTaggingCNTKExtension(options = {}) {
     this.exportPath = options.exportPath;
     this.cntkPath = options.cntkPath;
     this.cntkEnv = options.cntkEnv;
-
+    
     var self = this;
 
     //check requirements fs and rimraf
@@ -63,10 +63,10 @@ function VideoTaggingCNTKExtension(options = {}) {
     }
 
     //exports frames to cntk format for model training
-    this.exportCNTK = function(cb) {
+    this.exportCNTK = function(testSetSize,cb) {
 
         //generate test images list 
-        var testFrameIndecies = generateTestFrameIndecies(.20);
+        var testFrameIndecies = generateTestFrameIndecies(testSetSize);
         //make sure paths exist
         if (!fs.existsSync(`${this.exportPath}`)) fs.mkdirSync(`${this.exportPath}`);
         var framesPath = `${this.exportPath}/${pathJS.basename(this.videotagging.src, pathJS.extname(this.videotagging.src))}_frames`;
