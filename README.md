@@ -34,11 +34,11 @@ It supports the following scenarios:
 ## Tagging Job 
  1. Load a mp4 video file by either dragging it into the app or clicking and selecting it.
   
-    <img src="/media/2_load.jpg" alt="Home Page" height="389" width="601"/>
+    <img src="/media/2_load.jpg" alt="Home Page" height="486" width="685"/>
    
  2. Configure the tagging job specifying the following preferences
  
-     <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="410" width="464"/>
+    <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="586" width="685"/>
  
     **Frame Extraction Rate:** The number of frames to tag per a second of video.<br>
     
@@ -60,11 +60,11 @@ It supports the following scenarios:
   
  3. Tag the video frame by frame.
  
-  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="586" width="685"/>
+    <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="586" width="685"/>
 
  4. Export Video to CNTK Format using Menu or Ctrl/Cmd + E
  
-  <img src="/media/5_Export.jpg" alt="Home Page" height="586" width="685"/>
+    <img src="/media/5_Export.jpg" alt="Home Page" height="586" width="685"/>
 
 <a name="review"></a>
 ## Review/Iterate CNTK Object Detection Model 
