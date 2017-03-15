@@ -38,21 +38,26 @@ It supports the following scenarios:
    
  2. Configure the tagging job specifying the following preferences
  
-    - Frame Extraction Rate: The number of frames to tag per a second of video.
-    - Tagging Region Type:  The type of bounding box for tagging regions.
-       - "Rectangle": Tag bounding boxes of any dimension.
-       - "Square": Tag bounding boxes of auto-fixed dimensions.
-       - "Point": Tag a point (This is useful for object recognition but not object detection)
-    - Export Frames Until: How far will the export operation proceed.
-       - "Last Tagged Region": Exports frames up until the last frame that contain tags.
-       - "Last Visited Frame": Exports frames up until the last frame that the user explicitly visited.
-       - "Last Frame": Exports all video frames.
-    - Output directory: Directory path for exporting training data.
-    - Model Path: File path of the trained Fast-RCNN model file (Optional). 
-    - Labels: The labels of the tagged regions (Ex. Cat, Dog, Horse, Person).
+     <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="410" width="464"/>
  
-  <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="308" width="348"/>
- 
+    **Frame Extraction Rate:** The number of frames to tag per a second of video.<br>
+    
+    **Tagging Region Type:**  The type of bounding box for tagging regions.<br>
+      - "Rectangle": Tag bounding boxes of any dimension.
+      - "Square": Tag bounding boxes of auto-fixed dimensions.
+      - "Point": Tag a point (This is useful for object recognition but not object detection)
+      
+    **Export Frames Until:** How far will the export operation proceed.<br>
+      - "Last Tagged Region": Exports frames up until the last frame that contain tags.
+      - "Last Visited Frame": Exports frames up until the last frame that the user explicitly visited.
+      - "Last Frame": Exports all video frames.
+      
+    **Output directory:** Directory path for exporting training data.<br>
+    
+    **Model Path:** File path of the trained Fast-RCNN model file (Optional).<br>
+    
+    **Labels:** The labels of the tagged regions (Ex. Cat, Dog, Horse, Person).<br>
+  
  3. Tag the video frame by frame.
  
   <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="500"/>
