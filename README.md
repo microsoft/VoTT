@@ -60,7 +60,7 @@ The CNTK Object Detection Video Tagging Tool provides end to end support for gen
       - "Rectangle": Tag bounding boxes of any dimension.
       - "Square": Tag bounding boxes of auto-fixed dimensions.
       
-    **Export Frames Until:** How far will the export operation proceed.<br>
+    **Export Frames Until:** How far into the video the export operation will proceed.<br>
       - "Last Tagged Region": Exports frames up until the last frame that contain tags.
       - "Last Visited Frame": Exports frames up until the last frame that the user explicitly visited.
       - "Last Frame": Exports all video frames.
