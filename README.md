@@ -37,7 +37,7 @@ The CNTK Object Detection Video Tagging Tool provides end to end support for gen
  
  **Installing CNTK with the FRCNN prequisites**
  
- *Please mote that installation of CNTK and FAST-RCNN dependencies are optional for taggin and are only required for CNTK model review and training.*
+ *Please note that installation of CNTK and FAST-RCNN dependencies are optional for taggin and are only required for CNTK model review and training.*
  
 1. Install [CNTK](https://github.com/Microsoft/CNTK/wiki/Setup-CNTK-on-your-machine) (*Note: currently the tool only supports the full installation method (non pip) of CNTK.*)
  2. Follow the setup instructions of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN currently only supports Linux python version 3.4 and not 3.5*)
