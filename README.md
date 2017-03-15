@@ -9,7 +9,7 @@ This tool provides end to end support for generating datasets for and validating
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models. 
 
 ## Table of Contents
- - [Installation](#intallation)
+ - [Installation](#installation)
  - [How to tag a video](#taggingjob)
  - [Review/Iterate CNTK Object Detection Model](#review)
  - [Upcoming Features](#upcoming)
@@ -76,9 +76,9 @@ This tool provides end to end support for generating datasets for and validating
     **Tagging**: To add a region to a frame simply click and drag a bounding box around the desired object. Then move or resize the region till it perfectly fits the desired area.
      - Selected regions appear as red ![red](https://placehold.it/15/f03c15/000000?text=+) and unselected regions will appear as blue ![#1589F0](https://placehold.it/15/1589F0/000000?text=+).
      - A tag can be assigned to a region by clicking on a region and selecting the desired tag from the label toolbar at the bottom of the tagging control. 
-     - Click the [cleartags](media/cleartags.png) button to clear all tags on a given frame.  
+     - Click the ![cleartags](media/cleartags.png) button to clear all tags on a given frame.  
     
-    **Navigation**: Users can navigate video frames by using the left and right arrow keys or clicking the forward [foward](media/right.png) and back [back](media/left.png) buttons on the control.
+    **Navigation**: Users can navigate video frames by using the left and right arrow keys or clicking the forward ![foward](media/right.png) and back ![back](media/left.png) buttons on the control.
      - Tags are auto saved each time a frame is changed. 
     
     **Tracking**: New regions are tracked by default until a given scene changes. 
