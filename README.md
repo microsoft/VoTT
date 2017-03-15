@@ -93,7 +93,7 @@ The CNTK Object Detection Video Tagging Tool provides end to end support for gen
 
 -----------
 <a name="review"></a>
-## Review/Iterate CNTK Object Detection Model 
+## How to Review & Improve a CNTK Object Detection Model
  1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py**
  2. Load a new video that the model has not been trained on.
  3. Configure the tagging job specifying the following preferences
