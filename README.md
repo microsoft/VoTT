@@ -51,7 +51,7 @@ It supports the following scenarios:
     - Model Path: File path of the trained Fast-RCNN model file (Optional). 
     - Labels: The labels of the tagged regions (Ex. Cat, Dog, Horse, Person).
  
-  <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="300" width="500"/>
+  <img src="/media/3_Job_Configuration.jpg" alt="Home Page" height="308" width="348"/>
  
  3. Tag the video frame by frame.
  
