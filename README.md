@@ -14,7 +14,7 @@ The CNTK Object Detection Video Tagging Tool provides end to end support for gen
 ## Table of Contents
  - [Installation](#installation)
  - [How to tag a video](#taggingjob)
- - [Review/Iterate CNTK Object Detection Model](#review)
+ - [How to Review & Improve a CNTK Object Detection Model](#review)
  - [Upcoming Features](#upcoming)
  - [How to Contribute](#contribute)
  
