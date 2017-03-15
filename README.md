@@ -66,13 +66,14 @@ This tool provides end to end support for generating datasets for and validating
     <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="586" width="685"/>
 
  4. Export Video to CNTK Format using Menu or Ctrl/Cmd + E
- 
+    
+    **Note pn Export the tool reserves a random 20% sample of the tagged frames as a test set.**
     <img src="/media/5_Export.jpg" alt="Home Page" height="586" width="685"/>
 
 -----------
 <a name="review"></a>
 ## Review/Iterate CNTK Object Detection Model 
- 1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py, however the tool does not auto-generate a "testImages" directory**
+ 1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py**
  2. Load new video that the model hasn't been trained on.
  3. Configure the tagging job specifying the following preferences
  4. Apply model to new video using Ctrl/Cmd + R
