@@ -81,8 +81,7 @@ This tool provides end to end support for generating datasets for and validating
      - A tag can be assigned to a region by clicking on a region and selecting the desired tag from the label toolbar at the bottom of the tagging control. 
      - Click the ![cleartags](media/cleartags.png) button to clear all tags on a given frame.  
     
-    **Navigation**: Users can navigate between video frames by using the left and right arrow keys
-     - The previous and next ![prev-nxt](media/prev-next.png) buttons and the video skip bar can also be used to navigate between frames.
+    **Navigation**: Users can navigate between video frames by using either the ![prev-nxt](media/prev-next.png) buttons, the left and right arrow keys, or the video skip bar.
      - Tags are auto saved each time a frame is changed. 
     
     **Tracking**: New regions are tracked by default until a given scene changes. 
@@ -97,7 +96,7 @@ This tool provides end to end support for generating datasets for and validating
 <a name="review"></a>
 ## Review/Iterate CNTK Object Detection Model 
  1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py**
- 2. Load new video that the model hasn't been trained on.
+ 2. Load a new video that the model has not been trained on.
  3. Configure the tagging job specifying the following preferences
  4. Apply model to new video using Ctrl/Cmd + R
  5. When model finishes processing, validate tags, re-export, retrain
