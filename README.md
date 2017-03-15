@@ -64,10 +64,22 @@ This tool provides end to end support for generating datasets for and validating
  3. Tag the video frame by frame.
  
     <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="586" width="685"/>
-
+    
+    **Tagging**: To add a region to a frame simply click and drag a bounding box around the desired object. Then move or resize the region till it perfectly fits the desired area.
+     - Selected regions appear as red ![red](https://placehold.it/15/f03c15/000000?text=+), and unselected regions will appear as blue ![#1589F0](https://placehold.it/15/1589F0/000000?text=+).
+     - A tag can be assigned to a region by clicking on a region and selecting the desired tag from the label toolbar at the bottom of the tagging control. 
+     - To clear all tags on a given frame click the clear tags button to the right navigation buttons on the video tagging control 
+    
+    **Navigation**: Users can navigate video frames by using the left and right arrow keys or clicking the forward and back buttons on the control.
+     - Tags are auto saved each time a frame is changed. 
+    
+    **Tracking**: New regions are tracked by default until a given scene changes. 
+     - To toggle tracking on and off use the file menu setting or the keyboard shortcut Ctrl/Cmd + T.
+    
+    
  4. Export Video to CNTK Format using Menu or Ctrl/Cmd + E
     
-    **Note pn Export the tool reserves a random 20% sample of the tagged frames as a test set.**
+    **Note on Export the tool reserves a random 20% sample of the tagged frames as a test set.**
     <img src="/media/5_Export.jpg" alt="Home Page" height="586" width="685"/>
 
 -----------
