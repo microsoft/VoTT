@@ -75,7 +75,7 @@ The CNTK Object Detection Video Tagging Tool provides end to end support for gen
  
     <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="586" width="685"/>
     
-    **Tagging**: To add a region to a frame simply click and drag a bounding box around the desired object. Then move or resize the region till it perfectly fits the desired area.
+    **Tagging**: To add a region to a frame, simply click and drag a bounding box around the desired area. Then move or resize the region till it perfectly fits a desired object.
      - Selected regions appear as red ![red](https://placehold.it/15/f03c15/000000?text=+) and unselected regions will appear as blue ![#1589F0](https://placehold.it/15/1589F0/000000?text=+).
      - A tag can be assigned to a region by clicking on a region and selecting the desired tag from the label toolbar at the bottom of the tagging control. 
      - Click the ![cleartags](media/cleartags.png) button to clear all tags on a given frame.  
