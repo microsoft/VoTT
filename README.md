@@ -13,8 +13,9 @@ It supports the following scenarios:
  - [Tagging Job](#taggingjob)
  - [Review/Iterate CNTK Object Detection Model](#review)
  - [Upcoming Features](#upcoming)
- - [Contribute](#contribute)
+ - [How to Contribute](#contribute)
  
+-----------
 <a name="prerequisites"></a>
 ## Prerequisites
 **Please Note that installation of CNTK and the FAST-RCNN dependencies is only required for CNTK model review and training, not tagging**
@@ -30,7 +31,8 @@ It supports the following scenarios:
    }
   ```
  5. Run the app
-  
+ 
+-----------
 <a name="taggingjob"></a>
 ## Tagging Job 
  1. Load a mp4 video file by either dragging it into the app or clicking and selecting it.
@@ -67,6 +69,7 @@ It supports the following scenarios:
  
     <img src="/media/5_Export.jpg" alt="Home Page" height="586" width="685"/>
 
+-----------
 <a name="review"></a>
 ## Review/Iterate CNTK Object Detection Model 
  1. Train model using [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> **Note: The data is already in CNTK format you do not have to run C1_DrawBboxesOnImages.py or C2_AssignLabelsToBboxes.py, however the tool does not auto-generate a "testImages" directory**
@@ -76,6 +79,7 @@ It supports the following scenarios:
  5. When model finishes processing, validate tags, re-export, retrain
  6. Repeat step #1 on new videos until model performance is satisfactory.  
 
+-----------
 <a name="upcoming"></a>
 ## Upcoming Features 
 - Image Directory Tagging Support
@@ -83,7 +87,7 @@ It supports the following scenarios:
 
 -----------
 <a name="contribute"></a> 
-<H3>Contribute</H3>
+## How to Contribute
 You are welcome to send us any bugs you may find, suggestions, or any other comments.
 Before sending anything, please go over the repository issues list, just to make sure that it isn't already there.
 
