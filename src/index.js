@@ -7,6 +7,7 @@ const rimraf = require('rimraf');
 const cntkModel= require('cntk-fastrcnn');
 const cntkConfig = require(`${basepath}/cntk-config.json`);
 const ipcRenderer = require('electron').ipcRenderer;
+const testSetSize = .20;
 var trackingEnabled = true;
 var visitedFrames, //keep track of the visited frames
     videotagging,
@@ -27,7 +28,7 @@ ipcRenderer.on('saveVideo', (event, message) => {
 
 ipcRenderer.on('exportCNTK', (event, message) => {
   addLoader();
-  CNTKExtension.exportCNTK(removeLoader);
+  CNTKExtension.exportCNTK(testSetSize, removeLoader);
 });
 
 ipcRenderer.on('reviewCNTK', (event, message) => {

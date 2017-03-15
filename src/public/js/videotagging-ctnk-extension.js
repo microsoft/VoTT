@@ -5,7 +5,7 @@ function VideoTaggingCNTKExtension(options = {}) {
     this.exportPath = options.exportPath;
     this.cntkPath = options.cntkPath;
     this.cntkEnv = options.cntkEnv;
-
+    
     var self = this;
 
     //check requirements fs and rimraf
@@ -63,7 +63,10 @@ function VideoTaggingCNTKExtension(options = {}) {
     }
 
     //exports frames to cntk format for model training
-    this.exportCNTK = function(cb) {
+    this.exportCNTK = function(testSetSize,cb) {
+
+        //generate test images list 
+        var testFrameIndecies = generateTestFrameIndecies(testSetSize);
         //make sure paths exist
         if (!fs.existsSync(`${this.exportPath}`)) fs.mkdirSync(`${this.exportPath}`);
         var framesPath = `${this.exportPath}/${pathJS.basename(this.videotagging.src, pathJS.extname(this.videotagging.src))}_frames`;
@@ -72,6 +75,7 @@ function VideoTaggingCNTKExtension(options = {}) {
             fs.mkdirSync(framesPath);
             fs.mkdirSync(`${framesPath}/positive`);
             fs.mkdirSync(`${framesPath}/negative`);
+            fs.mkdirSync(`${framesPath}/testImages`);
             this.mapVideo(exportFrame).then(() => {
                 let notification = new Notification('Offline Video Tagger', {
                     body: 'Successfully exported CNTK files.'
@@ -83,7 +87,6 @@ function VideoTaggingCNTKExtension(options = {}) {
         function exportFrame(frameId, frameCanvas, canvasContext) {
             //set default writepath to the negative folder
             var writePath = `${framesPath}/negative/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`; //defaults to negative
-            var positiveWritePath = `${framesPath}/positive/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
             //If frame contains tags generate the metadata and save it in the positive directory
             var frameIsTagged = self.videotagging.frames.hasOwnProperty(frameId) && (self.videotagging.frames[frameId].length);
             if (frameIsTagged && (self.videotagging.getUnlabeledRegionTags(frameId).length != self.videotagging.frames[frameId].length)) {
@@ -99,9 +102,18 @@ function VideoTaggingCNTKExtension(options = {}) {
                 frameLabels += `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`;
                 });
                 if (frameBBoxes == "" || frameLabels == "") return;
-                fs.writeFileSync(positiveWritePath.replace('.jpg', '.bboxes.labels.tsv'), frameLabels, (err) => {console.error(err)});
-                fs.writeFileSync(positiveWritePath.replace('.jpg', '.bboxes.tsv'), frameBBoxes, (err) => {console.error(err)});
-                writePath = positiveWritePath; // set write path to positve write path
+                //since there is a tag update write path check if the frameId is in the test frame indecies 
+                if (testFrameIndecies.includes(frameId.toString())) {
+                    // write to testImages folder 
+                    writePath = `${framesPath}/testImages/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
+                } else {
+                    //write to positive folder
+                    writePath = `${framesPath}/positive/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
+                }
+                
+                fs.writeFileSync(writePath.replace('.jpg', '.bboxes.labels.tsv'), frameLabels, (err) => {console.error(err)});
+                fs.writeFileSync(writePath.replace('.jpg', '.bboxes.tsv'), frameBBoxes, (err) => {console.error(err)});
+                
             }
 
             //draw the frame to the canvas
@@ -115,6 +127,20 @@ function VideoTaggingCNTKExtension(options = {}) {
             fs.writeFileSync(writePath, buf);
 
         }
+
+        //random subset http://stackoverflow.com/questions/11935175/sampling-a-random-subset-from-an-array
+        function generateTestFrameIndecies(percent) {
+            var keys = Object.keys(videotagging.frames);
+            var size = Math.floor(percent * keys.length);
+            var shuffled = keys.slice(0), i = keys.length, min = i - size, temp, index;
+            while (i-- > min) {
+                index = Math.floor((i + 1) * Math.random());
+                temp = shuffled[index];
+                shuffled[index] = shuffled[i];
+                shuffled[i] = temp;
+            }
+            return shuffled.slice(min);
+        } 
 
     }
 
