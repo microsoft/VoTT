@@ -98,7 +98,7 @@ The CNTK Object Detection Video Tagging Tool provides end to end support for gen
  2. Load a new video that the model has not been trained on.
  3. Configure the tagging job specifying the following preferences
  4. Apply model to new video using Ctrl/Cmd + R
- 5. When model finishes processing, validate tags, re-export, retrain
+ 5. When the model finishes processing; validate tags, re-export and retrain
  6. Repeat step #1 on new videos until model performance is satisfactory.  
 
 -----------
