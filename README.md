@@ -2,7 +2,10 @@
 
 This tool provides end to end support for generating datasets for and validating Object Detection Models with CNTK.
 
-**It supports the following scenarios:**
+**End To End Object Detection Pipeline**
+![detection In a box](media/detectioninabox.jpg)
+
+**It provides following features:**
 
 - Computer assisted tagging and tracking of objects in video using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf).
 - Exporting tags and assets to CNTK format for training a CNTK object detection model.
