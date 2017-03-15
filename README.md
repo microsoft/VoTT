@@ -35,7 +35,7 @@ It supports the following scenarios:
 ## Tagging Job 
  1. Load a mp4 video file by either dragging it into the app or clicking and selecting it.
   
-    <img src="/media/2_load.jpg" alt="Home Page" height="486" width="685"/>
+    <img src="/media/2_load.jpg" alt="Home Page" height="426" width="695"/>
    
  2. Configure the tagging job specifying the following preferences
  
