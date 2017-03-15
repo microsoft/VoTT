@@ -60,11 +60,11 @@ It supports the following scenarios:
   
  3. Tag the video frame by frame.
  
-  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="300" width="500"/>
+  <img src="/media/4_Tagging_Job.jpg" alt="Home Page" height="586" width="685"/>
 
  4. Export Video to CNTK Format using Menu or Ctrl/Cmd + E
  
-  <img src="/media/5_Export.jpg" alt="Home Page" height="300" width="500"/>
+  <img src="/media/5_Export.jpg" alt="Home Page" height="586" width="685"/>
 
 <a name="review"></a>
 ## Review/Iterate CNTK Object Detection Model 
