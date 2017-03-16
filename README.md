@@ -37,7 +37,7 @@ The tool supports the following **features**:
 
 2. Follow the setup instructions of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN currently only supports Linux python version 3.4 and not 3.5*).
 
-3. Configure `CNTK-Config.json` (which resides in the main directory of the tagging tool) with the following properties to enable the model review feature:
+3. Configure `CNTK-Config.json` (which resides in the '\resources\app' directory of the tagging tool) with the following properties to enable the model review feature:
  
 ```json
 {
