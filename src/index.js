@@ -202,7 +202,6 @@ function fileSelected(path) {
         CNTKExtension = new VideoTaggingCNTKExtension({
             videotagging: videotagging,
             cntkPath: cntkConfig.cntkPath,
-            cntkEnv: cntkConfig.cntkEnv,
             visitedFrames: visitedFrames,
             exportUntil: $('#exportTo').val(),
             exportPath: $('#output').val()
