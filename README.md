@@ -33,11 +33,11 @@ The tool supports the following **features**:
  
 *Please note that installation of **CNTK and FAST-RCNN dependencies** are **optional for tagging** and are **only required for CNTK model review and training**.*
  
-1. Install [CNTK](https://github.com/Microsoft/CNTK/wiki/Setup-CNTK-on-your-machine) (*Note: currently the tool only supports the full installation method (non pip) of CNTK.*)
+1. Install [CNTK](https://github.com/Microsoft/CNTK/wiki/Setup-CNTK-on-your-machine) (*Note: currently the tool only supports the full installation method (non pip) of CNTK*).
 
-2. Follow the setup instructions of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN currently only supports Linux python version 3.4 and not 3.5*)
+2. Follow the setup instructions of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN currently only supports Linux python version 3.4 and not 3.5*).
 
-3. Configure `CNTK-Config.json` (which resides in the main directory of the tagging tool) with the following properties to enable the model review feature
+3. Configure `CNTK-Config.json` (which resides in the main directory of the tagging tool) with the following properties to enable the model review feature:
  
 ```json
 {
