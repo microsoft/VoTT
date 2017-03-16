@@ -2,7 +2,7 @@
 
 This tool provides end to end support for generating datasets and validating object detection models.
 
-**End to End Object Detection Pipeline**
+### End to End Object Detection Pipeline:
 ![Pipeline: tag video, export tags to CNTK, train model, run model on a new video, validate model suggestions and fix errors, return to export tags](media/detectioninabox.jpg)
 
 The tool supports the following **features**:
@@ -27,15 +27,7 @@ The tool supports the following **features**:
  
  1. Download and extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Detection-Video-Tagging-Tool/releases)
 
- 2. Configure `CNTK-Config.json` (which resides in the main directory of the tagging tool) with the following properties to enable the model review feature
- 
-  ```json
-   {
-    "cntkPath" : "{CNTK Path default is c:/local/cntk}", 
-   }
-  ```
-
- 3. Run the app
+ 2. Run the app by launching the "CNTKVideoTagger" executable which will be located inside the unzipped folder.
  
  ### Installing CNTK with the FRCNN Prerequisites
  
@@ -44,6 +36,14 @@ The tool supports the following **features**:
 1. Install [CNTK](https://github.com/Microsoft/CNTK/wiki/Setup-CNTK-on-your-machine) (*Note: currently the tool only supports the full installation method (non pip) of CNTK.*)
 
 2. Follow the setup instructions of the [CNTK Fast-RCNN tutorial](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#setup) (*Note: Fast-RCNN currently only supports Linux python version 3.4 and not 3.5*)
+
+3. Configure `CNTK-Config.json` (which resides in the main directory of the tagging tool) with the following properties to enable the model review feature
+ 
+```json
+{
+    "cntkPath" : "{CNTK Path default is c:/local/cntk}", 
+}
+```
  
  
 -----------
