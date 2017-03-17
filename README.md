@@ -3,7 +3,7 @@
 This tool provides end to end support for generating datasets and validating object detection models.
 
 ### End to End Object Detection Pipeline:
-![Pipeline: tag video, export tags to CNTK, train model, run model on a new video, validate model suggestions and fix errors, return to export tags](media/detectioninabox.jpg)
+![Pipeline: tag video, export tags to CNTK, train model, run model on a new video, validate model suggestions and fix errors, return to export tags](media/detectioninabox.jpg?raw=true)
 
 The tool supports the following **features**:
 
@@ -21,8 +21,7 @@ The tool supports the following **features**:
 -----------
 <a name="installation"></a>
 
-## Installation
- 
+## Installation 
 
 ### Installing the Video Tagging Tool
  
@@ -49,15 +48,16 @@ The tool supports the following **features**:
  
 -----------
 <a name="taggingjob"></a>
+
 ## Tagging a Video 
 
  1. Load an MP4 video file either by dragging it into the app or clicking on and selecting it.
   
-    <img src="/media/2_load.jpg" alt="step 1" height="426" width="695"/>
+    <img src="/media/2_load.jpg?raw=true" alt="step 1" height="426" width="695"/>
    
  2. Configure the tagging job and specify the settings in the screenshot below: 
  
-    <img src="/media/3_Job_Configuration.jpg" alt="step 2" height="586" width="685"/>
+    <img src="/media/3_Job_Configuration.jpg?raw=true" alt="step 2" height="586" width="685"/>
  
     **Frame Extraction Rate**: number of frames to tag per second of video<br>
     
@@ -78,7 +78,7 @@ The tool supports the following **features**:
   
  3. Tag the video frame by frame
  
-    <img src="/media/4_Tagging_Job.jpg" alt="step 3" height="586" width="685"/>
+    <img src="/media/4_Tagging_Job.jpg?raw=true" alt="step 3" height="586" width="685"/>
     
     **Tagging**: click and drag a bounding box around the desired area, then move or resize the region until it fits the object
      - Selected regions appear as red ![red](https://placehold.it/15/f03c15/000000?text=+) and unselected regions will appear as blue ![#1589F0](https://placehold.it/15/1589F0/000000?text=+).
@@ -94,10 +94,11 @@ The tool supports the following **features**:
  4. Export video to CNTK Format using Menu or Ctrl/Cmd + E
     
     *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
-    <img src="/media/5_Export.jpg" alt="Home Page" height="586" width="685"/>
+    <img src="/media/5_Export.jpg?raw=true" alt="Home Page" height="586" width="685"/>
 
 -----------
 <a name="review"></a>
+
 ## How to Review & Improve a CNTK Object Detection Model
 
  1. Train model with [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> *Note: the data is already in CNTK format, so you do not have to run `C1_DrawBboxesOnImages.py` or `C2_AssignLabelsToBboxes.py`*
@@ -109,6 +110,7 @@ The tool supports the following **features**:
 
 -----------
 <a name="upcoming"></a>
+
 ## Upcoming Features 
 
 - Image directory tagging support
@@ -116,6 +118,7 @@ The tool supports the following **features**:
 
 -----------
 <a name="contribute"></a> 
+
 ## How to Contribute
 
 You are welcome to send us any bugs you may find, suggestions, or any other comments.
