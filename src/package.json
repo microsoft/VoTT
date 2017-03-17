@@ -1,20 +1,20 @@
 {
-  "name": "offline-video-tagger",
-  "version": "1.0.0",
-  "description": "An offline port of the video-tagging-tool for electron.",
+  "name": "cntk-video-tagging-tool",
+  "version": "1.0.1",
+  "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/CatalystCode/offline-video-tagger/",
+  "repository": "https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/",
   "keywords": [
-    "Electron",
     "Video-Tagging",
     "CNTK",
-    "tutorial",
-    "demo"
+    "Deep-Learning",
+    "Object-Detection"
   ],
-  "author": "GitHub",
+  "readme":"README.md",
+  "author": "aribornstein",
   "license": "MIT",
   "devDependencies": {
     "electron": "^1.4.1",
