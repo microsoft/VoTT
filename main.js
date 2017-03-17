@@ -27,7 +27,7 @@ function createWindow () {
       y: mainWindowState.y,
       minHeight: 480,
       minWidth: 480,
-      icon: __dirname + '/public/images/icon.png',
+      icon: __dirname + 'src/public/images/icon.png',
       show: false
   });
 
@@ -35,7 +35,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
+    pathname: path.join(__dirname, 'src/index.html'),
     protocol: 'file:',
     slashes: true
   }));

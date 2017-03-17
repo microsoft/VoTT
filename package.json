@@ -1,6 +1,6 @@
 {
   "name": "cntk-video-tagging-tool",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
