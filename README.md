@@ -12,6 +12,7 @@ The tool supports the following **features**:
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models.
 
 ## Table of Contents
+
  - [Installation](#installation)
  - [Tagging a Video](#tagging-a-video)
  - [Reviewing and Improving a CNTK Object Detection Model](#how-to-review-and-improve-a-CNTK-Object-Detection-Model)
@@ -103,6 +104,7 @@ The tool supports the following **features**:
  6. Repeat step 1 on new videos until the model performance is satisfactory
 
 <a name="upcoming"></a>
+
 ## Upcoming Features 
 
 - Image directory tagging support
