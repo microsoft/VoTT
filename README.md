@@ -42,8 +42,6 @@ The tool supports the following **features**:
     "cntkPath" : "{CNTK Path default is c:/local/cntk}",
 }
 ```
-
----
 ## Tagging a Video
 
  1. Load an MP4 video file either by dragging it into the app or clicking on and selecting it.
@@ -72,7 +70,7 @@ The tool supports the following **features**:
     **Labels**: labels of the tagged regions (e.g. `Cat`, `Dog`, `Horse`, `Person`)<br>
 
  3. Tag the video frame by frame
-
+ 
     ![](media/4_Tagging_Job.jpg)
 
     **Tagging**: click and drag a bounding box around the desired area, then move or resize the region until it fits the object
@@ -86,9 +84,11 @@ The tool supports the following **features**:
     **Tracking**: new regions are tracked by default until a given scene changes.
      - Since the [camshift algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) has some known limitations, you can disable tracking for certain sets of frames. To toggle tracking *on* and *off* use the file menu setting, or the keyboard shortcut Ctrl/Cmd + T.
 
+
  4. Export video to CNTK Format using Menu or Ctrl/Cmd + E
 
     *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
+
     ![]( media/5_Export.jpg)
 
 
@@ -102,13 +102,15 @@ The tool supports the following **features**:
  5. When the model finishes processing, validate tags, re-export and retrain it
  6. Repeat step 1 on new videos until the model performance is satisfactory
 
----
-## Upcoming Features
+<a name="upcoming"></a>
+## Upcoming Features 
 
 - Image directory tagging support
 - Tagging project management
 
----
+-----------
+<a name="contribute"></a> 
+
 ## How to Contribute
 
 You are welcome to send us any bugs you may find, suggestions, or any other comments.

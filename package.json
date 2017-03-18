@@ -17,10 +17,10 @@
   "author": "aribornstein",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^1.4.1",
     "bower": "^1.7.2"
   },
   "dependencies": {
+    "electron": "^1.4.1",
     "cntk-fastrcnn": "^0.2.2",
     "electron-window-state": "^4.0.2",
     "remote": "^0.2.6",
