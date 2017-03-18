@@ -3,7 +3,7 @@
 This tool provides end to end support for generating datasets and validating object detection models.
 
 ### End to End Object Detection Pipeline:
-![Pipeline: tag video, export tags to CNTK, train model, run model on a new video, validate model suggestions and fix errors, return to export tags](media/detectioninabox.jpg?raw=true)
+![Pipeline: tag video, export tags to CNTK, train model, run model on a new video, validate model suggestions and fix errors, return to export tags](media/detectioninabox.jpg)
 
 The tool supports the following **features**:
 
@@ -53,11 +53,11 @@ The tool supports the following **features**:
 
  1. Load an MP4 video file either by dragging it into the app or clicking on and selecting it.
   
-    <img src="/media/2_load.jpg?raw=true" alt="step 1" height="426" width="695"/>
+    <img src="https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/blob/master/2_load.jpg?raw=true" alt="step 1" height="426" width="695"/>
    
  2. Configure the tagging job and specify the settings in the screenshot below: 
  
-    <img src="/media/3_Job_Configuration.jpg?raw=true" alt="step 2" height="586" width="685"/>
+    <img src="https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/blob/master/3_Job_Configuration.jpg?raw=true" alt="step 2" height="586" width="685"/>
  
     **Frame Extraction Rate**: number of frames to tag per second of video<br>
     
@@ -78,14 +78,14 @@ The tool supports the following **features**:
   
  3. Tag the video frame by frame
  
-    <img src="/media/4_Tagging_Job.jpg?raw=true" alt="step 3" height="586" width="685"/>
+    <img src="https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/blob/master/4_Tagging_Job.jpg?raw=true" alt="step 3" height="586" width="685"/>
     
     **Tagging**: click and drag a bounding box around the desired area, then move or resize the region until it fits the object
      - Selected regions appear as red ![red](https://placehold.it/15/f03c15/000000?text=+) and unselected regions will appear as blue ![#1589F0](https://placehold.it/15/1589F0/000000?text=+).
      - Assign a tag to a region by clicking on it and selecting the desired tag from the labeling toolbar at the bottom of the tagging control
-     - Click the ![cleartags](media/cleartags.png) button to clear all tags on a given frame  
+     - Click the ![cleartags](https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/blob/master/media/cleartags.png) button to clear all tags on a given frame  
     
-    **Navigation**: users can navigate between video frames by using the ![prev-nxt](media/prev-next.png) buttons, the left/right arrow keys, or the video skip bar
+    **Navigation**: users can navigate between video frames by using the ![prev-nxt](https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/blob/master/media/prev-next.png) buttons, the left/right arrow keys, or the video skip bar
      - Tags are auto-saved each time a frame is changed 
     
     **Tracking**: new regions are tracked by default until a given scene changes. 
@@ -94,7 +94,7 @@ The tool supports the following **features**:
  4. Export video to CNTK Format using Menu or Ctrl/Cmd + E
     
     *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
-    <img src="/media/5_Export.jpg?raw=true" alt="Home Page" height="586" width="685"/>
+    <img src="https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/blob/master/5_Export.jpg?raw=true" alt="Home Page" height="586" width="685"/>
 
 -----------
 <a name="review"></a>
