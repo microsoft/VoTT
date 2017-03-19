@@ -15,7 +15,7 @@ The tool supports the following **features**:
 
  - [Installation](#installation)
  - [Tagging a Video](#tagging-a-video)
- - [Reviewing and Improving a CNTK Object Detection Model](#how-to-review-and-improve-a-CNTK-Object-Detection-Model)
+ - [Reviewing and Improving a CNTK Object Detection Model](#reviewing-and-improving-a-cntk-object-detection-model)
  - [Upcoming Features](#upcoming-features)
  - [How to Contribute](#how-to-contribute)
 
@@ -94,7 +94,7 @@ The tool supports the following **features**:
 
 
 ---
-## How to Review and Improve a CNTK Object Detection Model
+## Reviewing and Improving a CNTK Object Detection Model
 
  1. Train model with [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> *Note: the data is already in CNTK format, so you do not have to run `C1_DrawBboxesOnImages.py` or `C2_AssignLabelsToBboxes.py`*
  2. Load a new video that the model has not been trained on
@@ -103,15 +103,12 @@ The tool supports the following **features**:
  5. When the model finishes processing, validate tags, re-export and retrain it
  6. Repeat step 1 on new videos until the model performance is satisfactory
 
-<a name="upcoming"></a>
-
 ## Upcoming Features 
 
 - Image directory tagging support
 - Tagging project management
 
 -----------
-<a name="contribute"></a> 
 
 ## How to Contribute
 
