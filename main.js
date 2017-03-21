@@ -89,19 +89,19 @@ function createWindow () {
       ]
     },
     {
-      label: 'CNTK',
+      label: 'Object Detection',
       submenu: [
         {
-          label: 'Export Tags to CNTK',
+          label: 'Export Tags',
           accelerator: 'CmdOrCtrl+E',
           enabled: false,
-          click () { mainWindow.webContents.send('exportCNTK'); }
+          click () { mainWindow.webContents.send('export'); }
         },
         {
-          label: 'Review CNTK Model',
+          label: 'Review Detection Model',
           accelerator: 'CmdOrCtrl+R',
           enabled: false,
-          click () { mainWindow.webContents.send('reviewCNTK'); }
+          click () { mainWindow.webContents.send('review'); }
         }
       ]
     },
