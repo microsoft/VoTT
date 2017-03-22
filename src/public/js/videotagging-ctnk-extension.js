@@ -62,6 +62,7 @@ function VideoTaggingCNTKExtension(options = {}) {
         });
     }
 
+    // TODO: Abstract to a module that receives a "framesReader" object as input
     //exports frames to cntk format for model training
     this.exportCNTK = function(testSetSize,cb) {
 
@@ -144,7 +145,8 @@ function VideoTaggingCNTKExtension(options = {}) {
 
     }
 
-     //allows user to review cntk suggestions on a video
+    // TODO: abstract this
+    //allows user to review cntk suggestions on a video
     this.reviewCNTK = function(modelPath, cb) {
         //check if an export directory for the current model exists
         var previousExportUntil = this.exportUntil;
