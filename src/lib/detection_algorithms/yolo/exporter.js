@@ -18,7 +18,7 @@ function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
     // Prepare everything for exporting (e.g. create metadata files,
     // directories, ..)    
     // Returns: A Promise object that resolves when the operation completes
-    this.init = function init(cb) {
+    this.init = function init() {
     }
 
     // Export a single frame to the training data
