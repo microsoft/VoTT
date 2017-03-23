@@ -1,0 +1,48 @@
+<!--
+   Demo html page for an example of hosting the
+       video-tagging control.
+-->
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <!-- Insert this line above script imports for jquery -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/export-configuration.js"></script>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/styles.css">
+  </head>
+  <body>
+    <title>Export Configuration</title>
+    <div id ='export-configuration-container'>          
+        <div class="form-group">
+        <label for="exampleTextarea" title="(Which tagging format to Export to.)">Export Format: </label>
+        <select id="format" class="form-control" id="text" >
+                <option value="cntk" selected="selected">CNTK</option>
+        </select>
+        </div>
+
+        <div class="form-group">
+        <label for="exampleTextarea" title="(Which frame to Export to.)">Export Until: </label>
+        <select id="exportTo" class="form-control" id="text" >
+                <option value="tagged" selected="selected">Last Tagged Region</option>
+                <option value="visited">Last Visited Frame</option>
+                <option value="last">Last Frame</option>
+        </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Out"> Output Path</label>
+            <input id="output" class="form-control" type="text" />
+        </div>
+
+        <div id="exportButton" class="btn btn-primary" style="display:inline-block;">Export</div>
+        <div id="cancelButton" class="btn btn-primary" style="display:inline-block;">Cancel</div>
+    
+    </div>
+  </body>
+</html>

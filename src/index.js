@@ -27,17 +27,56 @@ ipcRenderer.on('saveVideo', (event, message) => {
 });
 
 ipcRenderer.on('export', (event, message) => {
-   $('#video-tagging-container').hide();
-   $('#review-configuration-container').hide();
-   $('#export-configuration-container').show();
-   document.getElementById('exportButton').onclick = exportTags;
+   ipcRenderer.send('show-popup', 'export');
+});
+
+ipcRenderer.on('export-tags', (event, exportConfig) => {
+  //add logic for supporting alternate export methods besides cntk
+  
+  //init cntk extensions
+  CNTKExtension = new VideoTaggingCNTKExtension({
+      videotagging: videotagging,
+      cntkPath: cntkConfig.cntkPath,
+      visitedFrames: visitedFrames,
+      exportUntil: exportConfig.exportUntil,
+      exportPath: exportConfig.exportPath
+  });
+
+  addLoader();
+  CNTKExtension.exportCNTK(testSetSize, () => {
+     $(".loader").remove();
+  });
 });
 
 ipcRenderer.on('review', (event, message) => {
-  $('#video-tagging-container').hide();
-  $('#export-configuration-container').hide();
-  $('#review-configuration-container').show();
-  document.getElementById('reviewButton').onclick = reviewModel;
+     ipcRenderer.send('show-popup', 'review');
+});
+
+ipcRenderer.on('review-model', (event, reviewModelConfig) => {
+  //add logic for supporting alternate review model methods besides cntk
+
+  //init cntk extensions
+  CNTKExtension = new VideoTaggingCNTKExtension({
+        videotagging: videotagging,
+        cntkPath: cntkConfig.cntkPath,
+        visitedFrames: visitedFrames,
+        exportPath: reviewModelConfig.exportPath
+  });
+
+  if (fs.existsSync(cntkConfig.cntkPath)) {
+      var modelLocation = reviewModelConfig.modelPath;
+      if (fs.existsSync(modelLocation)) {
+        addLoader();
+        CNTKExtension.reviewCNTK(modelLocation, () => {
+           $(".loader").remove();
+        });
+      } else {
+          alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
+      }
+      
+  } else {
+    alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
+  }
 });
 
 ipcRenderer.on('toggleTracking', (event, message) => {
@@ -128,8 +167,6 @@ function fileSelected(path) {
     // show configuration
     $('#load-message').hide();
     $('#video-tagging-container').hide();
-    $('#export-configuration-container').hide();
-    $('#review-configuration-container').hide();
     $('#load-form-container').show();
     $('#framerateGroup').show();
     
@@ -137,7 +174,6 @@ function fileSelected(path) {
     $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
     
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
-    $('#output').val(`${basepath}/cntk`);
     $('#model').val(`${basepath}/cntk/Fast-RCNN.model`);
 
     try {
@@ -212,56 +248,8 @@ function save() {
     var saveObject = {
       "frames" : videotagging.frames,
       "inputTags": $('#inputtags').val(),
-      "exportTo": $('#exportTo').val(),
       "visitedFrames": Array.from(visitedFrames),
     };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
-}
-
-function exportTags(){
-  $('#export-configuration-container').hide();
-  $('#video-tagging-container').show();
-
-  //init cntk extensions
-  CNTKExtension = new VideoTaggingCNTKExtension({
-      videotagging: videotagging,
-      cntkPath: cntkConfig.cntkPath,
-      visitedFrames: visitedFrames,
-      exportUntil: $('#exportTo').val(),
-      exportPath: $('#output').val()
-  });
-
-  addLoader();
-  CNTKExtension.exportCNTK(testSetSize, () => {
-     $(".loader").remove();
-  });
-}
-
-function reviewModel() {
-  $('#export-configuration-container').hide();
-  $('#video-tagging-container').show();
-  //init cntk extensions
-  CNTKExtension = new VideoTaggingCNTKExtension({
-        videotagging: videotagging,
-        cntkPath: cntkConfig.cntkPath,
-        visitedFrames: visitedFrames,
-        exportUntil: $('#exportTo').val(),
-        exportPath: $('#output').val()
-  });
-
-  if (fs.existsSync(cntkConfig.cntkPath)) {
-      var modelLocation = $('#model').val();
-      if (fs.existsSync(modelLocation)) {
-        addLoader();
-        CNTKExtension.reviewCNTK(modelLocation, () => {
-           $(".loader").remove();
-        });
-      } else {
-          alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
-      }
-      
-  } else {
-    alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
-  }
 }
