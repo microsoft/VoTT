@@ -204,7 +204,8 @@ function fileSelected(path) {
             cntkPath: cntkConfig.cntkPath,
             visitedFrames: visitedFrames,
             exportUntil: $('#exportTo').val(),
-            exportPath: $('#output').val()
+            exportPath: $('#output').val(),
+            classes : videotagging.inputtagsarray,
         });
 
         //init region tracking
