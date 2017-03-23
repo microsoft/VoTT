@@ -23,14 +23,16 @@ function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
 
     // Export a single frame to the training data
     // Parameters:
-    //  frameFileName - The file name to use when saving the image file
+    //  frameFileName - The file name to use when saving the image file 
     //  frameBuffer - A buffer with the frame image data 
     //  bboxes  - a list of bboxes in the format of x1, y1, x2, y2 where the
     //           coordinates are in absolute values of the image
-    //  tags - a list of tags / classes (in strings) corresponding to the list
-    //        of bounding boxes
+    //  tags - a list of objects containing the tagging data. Each object is in the format of:
+    //         {'x1' : int, 'y1' : int, 'x2' : int, 'y2' : int, 'class' : string}
+    //         Where (x1,y1) and (x2,y2) are the coordinates of the top left and bottom right corner
+    //         of the bounding boxes (respectively), and 'class' is the name of the class.
     // Returns: A Promise object that resolves when the operation completes
-    this.exportFrame = function exportFrame(frameFileName, frameBuffer, bboxes, tags) {
+    this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
     }
 }
 
