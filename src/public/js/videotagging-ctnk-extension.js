@@ -98,8 +98,8 @@ function VideoTaggingCNTKExtension(options = {}) {
                 }
                 var stanW = self.videotagging.video.videoWidth/tag.width;
                 var stanH = self.videotagging.video.videoHeight/tag.height;
-                frameBBoxes += `${tag.tags[tag.tags.length-1]}\n`;
-                frameLabels += `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`;
+                frameLabels += `${tag.tags[tag.tags.length-1]}\n`;
+                frameBBoxes += `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`;
                 });
                 if (frameBBoxes == "" || frameLabels == "") return;
                 //since there is a tag update write path check if the frameId is in the test frame indecies 
