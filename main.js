@@ -51,34 +51,35 @@ function createWindow () {
     menu.items[p+1].submenu.items[1].enabled = true;
   });
 
-  ipcMain.on('show-popup', function(event, arg) {
-      var popupSize = popup.getSize();
+
+  // do this independently for each object
+  ipcMain.on('show-popup', function(event, arg) { 
+      var popup = new BrowserWindow({
+        parent: mainWindow, 
+        modal: true, 
+        show: false, 
+        frame: false,
+        autoHideMenuBar : true
+      });
       switch (arg) {
         case "export":
-          if (popupSize[0] == 359 && popupSize[1] == 300){ //check if export configuration already loaded
-            popup.show();
-          } else {
             popup.setSize(359, 300);
             popup.loadURL(url.format({
               pathname: path.join(__dirname, 'src/public/html/export-configuration.html'),
               protocol: 'file:',
               slashes: true
             }));
-          }
           break;
 
         case "review":
-          if (popupSize[0] == 359 && popupSize[1] == 310){ //check if export configuration already loaded
-            popup.show();
-          } else {
-            popup.setSize(359, 310);
-            popup.loadURL(url.format({
-              pathname: path.join(__dirname, 'src/public/html/review-configuration.html'),
-              protocol: 'file:',
-              slashes: true
-            }));
-          }
+          popup.setSize(359, 310);
+          popup.loadURL(url.format({
+            pathname: path.join(__dirname, 'src/public/html/review-configuration.html'),
+            protocol: 'file:',
+            slashes: true
+          }));
           break;
+          
         default: return; 
       }
       
@@ -204,14 +205,7 @@ if (process.platform === 'darwin') {
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 
-  //popup 
-  var popup = new BrowserWindow({
-    parent: mainWindow, 
-    modal: true, 
-    show: false, 
-    frame: false,
-    autoHideMenuBar : true
-  });
+
 
 }
 
