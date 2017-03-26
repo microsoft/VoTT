@@ -47,7 +47,7 @@ The tool supports the following **features**:
 
  1. Load an MP4 video file either by dragging it into the app or clicking on and selecting it.
 
-  ![](media/2_load.jpg)
+    ![](media/2_load.jpg)
 
  2. Configure the tagging job and specify the settings in the screenshot below:
 
@@ -84,7 +84,8 @@ The tool supports the following **features**:
     Specify the follow export configurations:
     
     ![]( media/5a_Export.jpg)
-    **Export Format**: What framework to export to defaults to *CNTK*
+    
+    **Export Format**: What framework to export to defaults to *CNTK*<br>
     **Export Frames Until**: how far into the video the export operation will proceed<br>
       - *Last Tagged Region*: exports frames up until the last frame containing tags
       - *Last Visited Frame*: exports frames up until the last frame that the user explicitly visited
@@ -98,7 +99,7 @@ The tool supports the following **features**:
  2. Load a new video that the model has not been trained on
  3. Configure a new or load a previous tagging job 
  4. Apply model to new video using Ctrl/Cmd + R
- 5. Specify a the model path and a temporary output directory 
+ 5. Specify a the model path and a temporary output directory<br> 
     ![](media/6_Review.jpg)
  6. When the model finishes processing, validate tags, re-export and retrain it
  7. Repeat step 1 on new videos until the model performance is satisfactory
