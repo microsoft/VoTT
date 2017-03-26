@@ -84,7 +84,6 @@ The tool supports the following **features**:
     Specify the follow export configurations:
     
     ![]( media/5a_Export.jpg)
-
     **Export Format**: What framework to export to defaults to *CNTK*<br>
     **Export Frames Until**: how far into the video the export operation will proceed<br>
       - *Last Tagged Region*: exports frames up until the last frame containing tags
@@ -100,7 +99,7 @@ The tool supports the following **features**:
  3. Configure a new or load a previous tagging job 
  4. Apply model to new video using Ctrl/Cmd + R
  5. Specify a the model path and a temporary output directory 
-    ![](media/6_Review/jpg)
+    ![](media/6_Review.jpg)
  6. When the model finishes processing, validate tags, re-export and retrain it
  7. Repeat step 1 on new videos until the model performance is satisfactory
 
