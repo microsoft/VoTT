@@ -7,8 +7,8 @@ const DEFAULT_DATA_SET_NAME = 'obj';
 const CFG_TEMPLATE_FILE_PATH = path.join(__dirname, 'yolo-obj.cfg.template');
 
 const OBJ_DATA_TAMPLATE = 'classes = %s\n' + 
-                          'train  = train.txt\n' +
-                          'valid  = test.txt\n' +
+                          'train  = data/train.txt\n' +
+                          'valid  = data/test.txt\n' +
                           'names = %s.names\n' +
                           'backup = backup/'
 
@@ -107,7 +107,7 @@ function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
                     fs.writeFile(imageFilePath, frameBuffer, cb); 
                 },
                 function saveBBoxesData(cb) {
-                    imageDataFilePath = path.join(self.imagesDirPath, frameFileName + '.txt');
+                    imageDataFilePath = path.join(self.imagesDirPath, path.parse(frameFileName).name + '.txt');
                     var bboxesData = '';
                     for (var i in tags) {
                         var tag = tags[i];
