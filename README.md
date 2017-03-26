@@ -1,4 +1,4 @@
-# CNTK Video Tagging Tool for Object Detection
+# VOTT: Visual Object Tagging Tool
 
 This tool provides end to end support for generating datasets and validating object detection models.
 

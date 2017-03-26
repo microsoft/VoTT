@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/CatalystCode/CNTK-Video-Tagging-Tool/",
+  "repository": "https://github.com/CatalystCode/VOTT",
   "keywords": [
     "Video-Tagging",
     "CNTK",
