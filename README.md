@@ -83,7 +83,7 @@ The tool supports the following **features**:
     
     *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
  
-    Specify the follow export configurations:
+    Specify the following export configuration settings:
     
     ![]( media/5a_Export.jpg)
     
