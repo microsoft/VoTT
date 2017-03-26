@@ -84,7 +84,7 @@ The tool supports the following **features**:
     Specify the follow export configurations:
     
     ![]( media/5a_Export.jpg)
-    **Export Format**: What framework to export to defaults to *CNTK*<br>
+    **Export Format**: What framework to export to defaults to *CNTK*
     **Export Frames Until**: how far into the video the export operation will proceed<br>
       - *Last Tagged Region*: exports frames up until the last frame containing tags
       - *Last Visited Frame*: exports frames up until the last frame that the user explicitly visited
