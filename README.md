@@ -85,12 +85,12 @@ The tool supports the following **features**:
     
     ![]( media/5a_Export.jpg)
     
-    **Export Format**: What framework to export to defaults to *CNTK*<br>
-    **Export Frames Until**: how far into the video the export operation will proceed<br>
+    - **Export Format**: What framework to export to defaults to *CNTK*<br>
+    - **Export Frames Until**: how far into the video the export operation will proceed<br>
       - *Last Tagged Region*: exports frames up until the last frame containing tags
       - *Last Visited Frame*: exports frames up until the last frame that the user explicitly visited
       - *Last Frame*: exports all video frames<br>
-    **Output directory**: directory path for exporting training data<br>
+    - **Output directory**: directory path for exporting training data<br>
     
 ---
 ## Reviewing and Improving a CNTK Object Detection Model
@@ -99,7 +99,7 @@ The tool supports the following **features**:
  2. Load a new video that the model has not been trained on
  3. Configure a new or load a previous tagging job 
  4. Apply model to new video using Ctrl/Cmd + R
- 5. Specify a the model path and a temporary output directory<br> 
+ 5. Specify a model path and temporary output directory<br> 
     ![](media/6_Review.jpg)
  6. When the model finishes processing, validate tags, re-export and retrain it
  7. Repeat step 1 on new videos until the model performance is satisfactory
