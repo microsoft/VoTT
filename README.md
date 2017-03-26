@@ -94,9 +94,6 @@ The tool supports the following **features**:
     
     **Model Path**: file path of the trained Fast-RCNN model file (optional)<br>
 
-
-
-
 ---
 ## Reviewing and Improving a CNTK Object Detection Model
 
