@@ -79,6 +79,8 @@ The tool supports the following **features**:
 
  4. Export video to CNTK Format using Object Detection Menu or Ctrl/Cmd + E
 
+    ![]( media/5_Export.jpg)
+    
     *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
  
     Specify the follow export configurations:
