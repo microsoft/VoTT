@@ -14,6 +14,10 @@ var visitedFrames, //keep track of the visited frames
     CNTKExtension,
     trackingExtension; 
 
+$(document).ready(() => {//init confirm keys figure out why this doesn't work
+  $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
+});
+
 //ipc rendering
 ipcRenderer.on('openVideo', (event, message) => {
   fileSelected();
@@ -172,7 +176,6 @@ function fileSelected(path) {
     
     //set title indicator
     $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
-    
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
     $('#model').val(`${basepath}/cntk/Fast-RCNN.model`);
 
