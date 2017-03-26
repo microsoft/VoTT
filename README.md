@@ -80,20 +80,18 @@ The tool supports the following **features**:
  4. Export video to CNTK Format using Object Detection Menu or Ctrl/Cmd + E
 
     *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
-
+ 
+    Specify the follow export configurations:
+    
     ![]( media/5a_Export.jpg)
 
-    Specify the follow export configurations:
-
+    **Export Format**: What framework to export to defaults to *CNTK*<br>
     **Export Frames Until**: how far into the video the export operation will proceed<br>
       - *Last Tagged Region*: exports frames up until the last frame containing tags
       - *Last Visited Frame*: exports frames up until the last frame that the user explicitly visited
-      - *Last Frame*: exports all video frames
-    
+      - *Last Frame*: exports all video frames<br>
     **Output directory**: directory path for exporting training data<br>
     
-    **Model Path**: file path of the trained Fast-RCNN model file (optional)<br>
-
 ---
 ## Reviewing and Improving a CNTK Object Detection Model
 
@@ -102,7 +100,7 @@ The tool supports the following **features**:
  3. Configure a new or load a previous tagging job 
  4. Apply model to new video using Ctrl/Cmd + R
  5. Specify a the model path and a temporary output directory 
-    ![](_media/6_Review/jpg)
+    ![](media/6_Review/jpg)
  6. When the model finishes processing, validate tags, re-export and retrain it
  7. Repeat step 1 on new videos until the model performance is satisfactory
 
