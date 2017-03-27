@@ -128,6 +128,7 @@ function VideoTaggingCNTKExtension(options = {}) {
                         x2 : parseInt(tag.x2 * stanW),
                         y2 : parseInt(tag.y2 * stanH)
                     });
+
                 });
             }
 

@@ -89,7 +89,7 @@ html, body {
     100% { transform: rotate(360deg); }
 }
 
-#loadButton, .label-info {
+.btn-primary, .label-info {
   color: #3c3c3c !important;
   margin-right: 5px;
   background-color: #d5d5d5 !important;

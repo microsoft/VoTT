@@ -27,7 +27,7 @@ function createWindow () {
       y: mainWindowState.y,
       minHeight: 480,
       minWidth: 480,
-      icon: __dirname + 'src/public/images/icon.png',
+      icon: __dirname + '/src/public/images/icon.png',
       show: false
   });
 
@@ -49,6 +49,52 @@ function createWindow () {
     menu.items[p].submenu.items[2].enabled = true;
     menu.items[p+1].submenu.items[0].enabled = true;
     menu.items[p+1].submenu.items[1].enabled = true;
+  });
+
+
+  // do this independently for each object
+  ipcMain.on('show-popup', function(event, arg) { 
+      var popup = new BrowserWindow({
+        parent: mainWindow, 
+        modal: true, 
+        show: false, 
+        frame: false,
+        autoHideMenuBar : true
+      });
+      switch (arg) {
+        case "export":
+            popup.setSize(359, 300);
+            popup.loadURL(url.format({
+              pathname: path.join(__dirname, 'src/public/html/export-configuration.html'),
+              protocol: 'file:',
+              slashes: true
+            }));
+          break;
+
+        case "review":
+          popup.setSize(359, 310);
+          popup.loadURL(url.format({
+            pathname: path.join(__dirname, 'src/public/html/review-configuration.html'),
+            protocol: 'file:',
+            slashes: true
+          }));
+          break;
+          
+        default: return; 
+      }
+      
+      popup.once('ready-to-show', () => {
+        popup.show();
+//        child.webContents.toggleDevTools();
+      });
+
+      ipcMain.on('export-tags', (event, arg) => {
+        mainWindow.send('export-tags', arg);
+      });
+
+      ipcMain.on('review-model', (event, arg) => {
+        mainWindow.send('review-model', arg);
+      });
   });
 
   mainWindow.on('ready-to-show', function() {
@@ -89,19 +135,19 @@ function createWindow () {
       ]
     },
     {
-      label: 'CNTK',
+      label: 'Object Detection',
       submenu: [
         {
-          label: 'Export Tags to CNTK',
+          label: 'Export Tags',
           accelerator: 'CmdOrCtrl+E',
           enabled: false,
-          click () { mainWindow.webContents.send('exportCNTK'); }
+          click () { mainWindow.webContents.send('export'); }
         },
         {
-          label: 'Review CNTK Model',
+          label: 'Review Detection Model',
           accelerator: 'CmdOrCtrl+R',
           enabled: false,
-          click () { mainWindow.webContents.send('reviewCNTK'); }
+          click () { mainWindow.webContents.send('review'); }
         }
       ]
     },
@@ -158,6 +204,9 @@ if (process.platform === 'darwin') {
 
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
+
+
+
 }
 
 // This method will be called when Electron has finished

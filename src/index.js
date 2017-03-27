@@ -14,6 +14,10 @@ var visitedFrames, //keep track of the visited frames
     CNTKExtension,
     trackingExtension; 
 
+$(document).ready(() => {//init confirm keys figure out why this doesn't work
+  $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
+});
+
 //ipc rendering
 ipcRenderer.on('openVideo', (event, message) => {
   fileSelected();
@@ -26,24 +30,59 @@ ipcRenderer.on('saveVideo', (event, message) => {
   });
 });
 
-ipcRenderer.on('exportCNTK', (event, message) => {
-  addLoader();
-  CNTKExtension.exportCNTK(testSetSize, removeLoader);
+ipcRenderer.on('export', (event, message) => {
+   ipcRenderer.send('show-popup', 'export');
 });
 
-ipcRenderer.on('reviewCNTK', (event, message) => {
-    if (fs.existsSync(cntkConfig.cntkPath)) {
-        var modelLocation = $('#model').val();
-        if (fs.existsSync(modelLocation)) {
-          addLoader();
-          CNTKExtension.reviewCNTK(modelLocation, removeLoader);
-        } else {
-            alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
-        }
-        
-    } else {
-      alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
-    }
+ipcRenderer.on('export-tags', (event, exportConfig) => {
+  //add logic for supporting alternate export methods besides cntk
+  
+  //init cntk extensions
+  CNTKExtension = new VideoTaggingCNTKExtension({
+      videotagging: videotagging,
+      cntkPath: cntkConfig.cntkPath,
+      visitedFrames: visitedFrames,
+      exportUntil: exportConfig.exportUntil,
+      exportPath: exportConfig.exportPath,
+      classes : videotagging.inputtagsarray
+  });
+
+  addLoader();
+  CNTKExtension.exportCNTK(testSetSize, () => {
+     $(".loader").remove();
+  });
+});
+
+ipcRenderer.on('review', (event, message) => {
+     ipcRenderer.send('show-popup', 'review');
+});
+
+ipcRenderer.on('review-model', (event, reviewModelConfig) => {
+  //add logic for supporting alternate review model methods besides cntk
+
+  //init cntk extensions
+  CNTKExtension = new VideoTaggingCNTKExtension({
+        videotagging: videotagging,
+        cntkPath: cntkConfig.cntkPath,
+        visitedFrames: visitedFrames,
+        exportPath: reviewModelConfig.exportPath,
+        classes : videotagging.inputtagsarray
+  });
+
+  if (fs.existsSync(cntkConfig.cntkPath)) {
+      var modelLocation = reviewModelConfig.modelPath;
+      if (fs.existsSync(modelLocation)) {
+        addLoader();
+        CNTKExtension.reviewCNTK(modelLocation, () => {
+           $(".loader").remove();
+        });
+      } else {
+          alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
+      }
+      
+  } else {
+    alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
+  }
 });
 
 ipcRenderer.on('toggleTracking', (event, message) => {
@@ -97,10 +136,6 @@ function addLoader() {
   }
 }
 
-function removeLoader() {
-   $(".loader").remove();
-}
-
 //managed the visited frames
 function updateVisitedFrames(){
   visitedFrames.add(videotagging.getCurrentFrame());
@@ -137,15 +172,13 @@ function fileSelected(path) {
 
     // show configuration
     $('#load-message').hide();
-    $('#video-tagging-container').hide()
+    $('#video-tagging-container').hide();
     $('#load-form-container').show();
     $('#framerateGroup').show();
     
     //set title indicator
     $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
-    
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
-    $('#output').val(`${basepath}/cntk`);
     $('#model').val(`${basepath}/cntk/Fast-RCNN.model`);
 
     try {
@@ -159,9 +192,7 @@ function fileSelected(path) {
       console.log(`Error loading save file ${e.message}`);
     }
 
-    // REPLACE implementation, use jQuery to remove all event handlers on loadbutton
-    document.getElementById('loadButton').parentNode.replaceChild(document.getElementById('loadButton').cloneNode(true), document.getElementById('loadButton'));
-    document.getElementById('loadButton').addEventListener('click', loadTagger);
+    document.getElementById('loadButton').onclick = loadTagger;
     
     function loadTagger (e) {
       if(framerate.validity.valid && inputtags.validity.valid) {
@@ -198,16 +229,6 @@ function fileSelected(path) {
         videotagging.video.removeEventListener("canplay", updateVisitedFrames); //remove old listener
         videotagging.video.addEventListener("canplay",updateVisitedFrames);
 
-        //init cntk extensions
-        CNTKExtension = new VideoTaggingCNTKExtension({
-            videotagging: videotagging,
-            cntkPath: cntkConfig.cntkPath,
-            visitedFrames: visitedFrames,
-            exportUntil: $('#exportTo').val(),
-            exportPath: $('#output').val(),
-            classes : videotagging.inputtagsarray,
-        });
-
         //init region tracking
         trackingExtension = new VideoTaggingTrackingExtension({
             videotagging: videotagging, 
@@ -232,10 +253,8 @@ function save() {
     var saveObject = {
       "frames" : videotagging.frames,
       "inputTags": $('#inputtags').val(),
-      "exportTo": $('#exportTo').val(),
       "visitedFrames": Array.from(visitedFrames),
     };
     
     fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
 }
-

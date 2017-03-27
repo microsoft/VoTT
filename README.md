@@ -1,4 +1,4 @@
-# CNTK Video Tagging Tool for Object Detection
+# VOTT: Visual Object Tagging Tool
 
 This tool provides end to end support for generating datasets and validating object detection models.
 
@@ -47,7 +47,7 @@ The tool supports the following **features**:
 
  1. Load an MP4 video file either by dragging it into the app or clicking on and selecting it.
 
-  ![](media/2_load.jpg)
+    ![](media/2_load.jpg)
 
  2. Configure the tagging job and specify the settings in the screenshot below:
 
@@ -58,15 +58,6 @@ The tool supports the following **features**:
     **Tagging Region Type**:  type of bounding box for tagging regions<br>
       - *Rectangle*: tag bounding boxes of any dimension
       - *Square*: tag bounding boxes of auto-fixed dimensions
-
-    **Export Frames Until**: how far into the video the export operation will proceed<br>
-      - *Last Tagged Region*: exports frames up until the last frame containing tags
-      - *Last Visited Frame*: exports frames up until the last frame that the user explicitly visited
-      - *Last Frame*: exports all video frames
-
-    **Output directory**: directory path for exporting training data<br>
-
-    **Model Path**: file path of the trained Fast-RCNN model file (optional)<br>
 
     **Labels**: labels of the tagged regions (e.g. `Cat`, `Dog`, `Horse`, `Person`)<br>
 
@@ -86,22 +77,34 @@ The tool supports the following **features**:
      - Since the [camshift algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) has some known limitations, you can disable tracking for certain sets of frames. To toggle tracking *on* and *off* use the file menu setting, or the keyboard shortcut Ctrl/Cmd + T.
 
 
- 4. Export video to CNTK Format using Menu or Ctrl/Cmd + E
-
-    *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
+ 4. Export video to CNTK Format using Object Detection Menu or Ctrl/Cmd + E
 
     ![]( media/5_Export.jpg)
-
-
+    
+    *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
+ 
+    Specify the following export configuration settings:
+    
+    ![]( media/5a_Export.jpg)
+    
+    - **Export Format**: What framework to export to defaults to *CNTK*<br>
+    - **Export Frames Until**: how far into the video the export operation will proceed<br>
+      - *Last Tagged Region*: exports frames up until the last frame containing tags
+      - *Last Visited Frame*: exports frames up until the last frame that the user explicitly visited
+      - *Last Frame*: exports all video frames<br>
+    - **Output directory**: directory path for exporting training data<br>
+    
 ---
 ## Reviewing and Improving a CNTK Object Detection Model
 
  1. Train model with [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> *Note: the data is already in CNTK format, so you do not have to run `C1_DrawBboxesOnImages.py` or `C2_AssignLabelsToBboxes.py`*
  2. Load a new video that the model has not been trained on
- 3. Configure the tagging job specifying the following preferences
+ 3. Configure a new or load a previous tagging job 
  4. Apply model to new video using Ctrl/Cmd + R
- 5. When the model finishes processing, validate tags, re-export and retrain it
- 6. Repeat step 1 on new videos until the model performance is satisfactory
+ 5. Specify a model path and temporary output directory<br> 
+    ![](media/6_Review.jpg)
+ 6. When the model finishes processing, validate tags, re-export and retrain it
+ 7. Repeat step 1 on new videos until the model performance is satisfactory
 
 ## Upcoming Features 
 
