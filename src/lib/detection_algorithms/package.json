@@ -1,0 +1,6 @@
+{
+    "main" : "main.js",
+    "dependencies": {
+        "rimraf": "^2.6.1"
+    }
+}

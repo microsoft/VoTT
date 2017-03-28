@@ -6,14 +6,18 @@ const path = require('path');
 // Constructor parameters:
 //  exportDirPath - path to the directory where the exported file will be placed
 //  classes - list of classes supported by the tagged data
+//  posFramesCount - number of positive tagged frames
 //  frameWidth - The width (in pixels) of the image frame
 //  frameHeight - The height (in pixels) of the image frame
-function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
+//  testSplit - the percent of tragged frames to reserve for test set defaults to 20%
+function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit) {
     var self = this;
     self.exportDirPath = exportDirPath;
     self.classes = classes;
+    self.posFramesCount = posFramesCount;
     self.frameWidth = frameWidth;
-    self.frameHeight;
+    self.frameHeight = frameHeight;
+    self.testSplit = testSplit || 0.2;
 
     // Prepare everything for exporting (e.g. create metadata files,
     // directories, ..)    

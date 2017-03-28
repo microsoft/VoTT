@@ -1,4 +1,4 @@
-const YOLOExporter = require('./lib/detection_algorithms/yolo').Exporter;
+const DetectionAlgorithmManager = require('./lib/detection_algorithms').DetectionAlgorithmManager;
 
 function VideoTaggingCNTKExtension(options = {}) {
     this.videotagging = options.videotagging;
@@ -8,6 +8,7 @@ function VideoTaggingCNTKExtension(options = {}) {
     this.cntkPath = options.cntkPath;
     this.cntkEnv = options.cntkEnv;
     this.classes = options.classes;
+    this.DAM = new DetectionAlgorithmManager();
     
     //check requirements fs and rimraf
     try {
@@ -16,7 +17,7 @@ function VideoTaggingCNTKExtension(options = {}) {
     } catch(e) {
         return console.error("VideoTaggingCNTKExtension module requires fs and rimraf.");
     }
-
+    
     var self = this;
 
     //maps every frame in the video to an imageCanvas
@@ -72,9 +73,11 @@ function VideoTaggingCNTKExtension(options = {}) {
         //generate test images list 
         var testFrameIndecies = generateTestFrameIndecies(testSetSize);
         
-        var yoloExporter = new YOLOExporter(self.exportPath, self.classes, 
+        self.DAM.setExporter("YOLO",self.exportPath, self.classes, 
+                                            Object.keys(self.videotagging.frames).length,
                                             self.videotagging.video.videoWidth,
-                                            self.videotagging.video.videoHeight);
+                                            self.videotagging.video.videoHeight,
+                                            testSetSize);
         /*
         //make sure paths exist
         if (!fs.existsSync(`${this.exportPath}`)) fs.mkdirSync(`${this.exportPath}`);
@@ -93,7 +96,7 @@ function VideoTaggingCNTKExtension(options = {}) {
             })
         });*/
 
-        yoloExporter.init()
+        self.DAM.exporter.init()
             .then(() => {
                 this.mapVideo(exportFrame).then(() => {
                 let notification = new Notification('Offline Video Tagger', {
@@ -102,7 +105,7 @@ function VideoTaggingCNTKExtension(options = {}) {
                 cb();
             })  
             }, (err) => {
-                console.info('Error on YOLOExporter init:', err);
+                console.info(`Error on ${self.DAM.getCurrentExportAlgorithm()} init:`, err);
                 cb(err)
             });
 
@@ -137,7 +140,7 @@ function VideoTaggingCNTKExtension(options = {}) {
             var data = frameCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
             var buf = new Buffer(data, 'base64');
             var frameFileName = `${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`
-            yoloExporter.exportFrame(frameFileName, buf, frameTags)
+            self.DAM.exporter.exportFrame(frameFileName, buf, frameTags)
                 .then(()=>{
                     frameExportCb();
                 }, (err) => {

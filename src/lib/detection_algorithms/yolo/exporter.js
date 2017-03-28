@@ -19,19 +19,25 @@ const OBJ_DATA_TAMPLATE = 'classes = %s\n' +
 // Constructor parameters:
 //  exportDirPath - path to the directory where the exported file will be placed
 //  classes - list of classes supported by the tagged data
+//  posFramesCount - number of positive tagged frames
 //  frameWidth - The width (in pixels) of the image frame
 //  frameHeight - The height (in pixels) of the image frame
-function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
+function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit) {
     var self = this;
     self.dataSetName = DEFAULT_DATA_SET_NAME;
     self.exportDirPath = exportDirPath;
     self.dataDirPath = path.join(self.exportDirPath, 'data');
     self.imagesDirPath = path.join(self.dataDirPath, self.dataSetName);
     self.trainFilePath = path.join(self.dataDirPath, 'train.txt');
+    self.testFilePath = path.join(self.dataDirPath, 'test.txt');
     self.classes = classes;
+    self.posFramesCount = posFramesCount;
     self.frameWidth = frameWidth;
     self.frameHeight = frameHeight;
     self.cfgTemplate = null;
+    self.testFrameIndecies = null;
+    self.posFrameIndex = null;
+    self.testSplit = testSplit || 0.2;
 
     // will be used later when writing the image data to file
     self.classesDict = {};
@@ -45,8 +51,15 @@ function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
     this.init = function init() {
         return new Promise(function(resolve, reject) {
             async.waterfall([
+                generateTestIndecies.bind(null,self.testSplit),
+                function updateIndecies(testIndecies, cb) {
+                    self.posFrameIndex = 0;
+                    self.testFrameIndecies = testIndecies;
+                    cb();
+                },
                 ensureDirExists.bind(null, self.exportDirPath),
                 deleteFileIfExists.bind(null, self.trainFilePath),
+                deleteFileIfExists.bind(null, self.testFilePath),
                 function getTemplate(cb) {
                     if (self.cfgTemplate) {
                         return cb();
@@ -76,7 +89,7 @@ function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
                 function saveObjectData(cb) {
                     var objectData = util.format(OBJ_DATA_TAMPLATE, self.classes.length, self.dataSetName);
                     fs.writeFile(path.join(self.dataDirPath, self.dataSetName + '.data'), objectData, cb);
-                }
+                },
             ], function(err) {
                 if (err) {
                     reject(err);
@@ -124,7 +137,13 @@ function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
                 },
                 function updateFilesList(cb) {
                     var lineToAppend = 'data/' + self.dataSetName + '/' + frameFileName + '\n';
-                    fs.appendFile(self.trainFilePath, lineToAppend, cb);
+                    if (self.testFrameIndecies.includes(self.posFrameIndex)){
+                        self.posFrameIndex++;
+                        fs.appendFile(self.testFilePath, lineToAppend, cb);
+                    } else {
+                        self.posFrameIndex++;
+                        fs.appendFile(self.trainFilePath, lineToAppend, cb);
+                    }
                 }
             ],
             function(err) {
@@ -162,6 +181,17 @@ function Exporter(exportDirPath, classes, frameWidth, frameHeight) {
             cb();
         });
     }
+
+    //random set http://stackoverflow.com/questions/2380019/generate-unique-random-numbers-between-1-and-100 there has to be a set way of doing this
+    function generateTestIndecies(percent, cb) {
+       var testIndecies = [];
+       while(testIndecies.length < Math.floor(percent * self.posFramesCount)){
+            var randomnumber = Math.ceil(Math.random() * self.posFramesCount)
+            if(testIndecies.indexOf(randomnumber) > -1) continue;
+            testIndecies[testIndecies.length] = randomnumber;
+        }
+        cb(null, testIndecies);
+    } 
 }
 
 
