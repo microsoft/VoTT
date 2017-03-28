@@ -43,7 +43,8 @@ ipcRenderer.on('export-tags', (event, exportConfig) => {
       cntkPath: cntkConfig.cntkPath,
       visitedFrames: visitedFrames,
       exportUntil: exportConfig.exportUntil,
-      exportPath: exportConfig.exportPath
+      exportPath: exportConfig.exportPath,
+      classes : videotagging.inputtagsarray
   });
 
   addLoader();
@@ -64,7 +65,8 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
         videotagging: videotagging,
         cntkPath: cntkConfig.cntkPath,
         visitedFrames: visitedFrames,
-        exportPath: reviewModelConfig.exportPath
+        exportPath: reviewModelConfig.exportPath,
+        classes : videotagging.inputtagsarray
   });
 
   if (fs.existsSync(cntkConfig.cntkPath)) {

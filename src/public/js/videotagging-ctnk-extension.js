@@ -1,3 +1,5 @@
+const YOLOExporter = require('./lib/detection_algorithms/yolo').Exporter;
+
 function VideoTaggingCNTKExtension(options = {}) {
     this.videotagging = options.videotagging;
     this.visitedFrames = options.visitedFrames;
@@ -5,9 +7,8 @@ function VideoTaggingCNTKExtension(options = {}) {
     this.exportPath = options.exportPath;
     this.cntkPath = options.cntkPath;
     this.cntkEnv = options.cntkEnv;
+    this.classes = options.classes;
     
-    var self = this;
-
     //check requirements fs and rimraf
     try {
         require.resolve("fs");
@@ -15,6 +16,8 @@ function VideoTaggingCNTKExtension(options = {}) {
     } catch(e) {
         return console.error("VideoTaggingCNTKExtension module requires fs and rimraf.");
     }
+
+    var self = this;
 
     //maps every frame in the video to an imageCanvas
     this.mapVideo = function(frameHandler) {
@@ -53,20 +56,26 @@ function VideoTaggingCNTKExtension(options = {}) {
                     resolve();
                 }
                 
-                frameHandler(frameId, frameCanvas, canvasContext);
-
-                if (!isLastFrame) {
-                    self.videotagging.stepFwdClicked(false);
-                } 
+                frameHandler(frameId, frameCanvas, canvasContext, ()=> {
+                    if (!isLastFrame) {
+                        self.videotagging.stepFwdClicked(false);
+                    }
+                })
             }
         });
     }
 
+    // TODO: Abstract to a module that receives a "framesReader" object as input
     //exports frames to cntk format for model training
     this.exportCNTK = function(testSetSize,cb) {
 
         //generate test images list 
         var testFrameIndecies = generateTestFrameIndecies(testSetSize);
+        
+        var yoloExporter = new YOLOExporter(self.exportPath, self.classes, 
+                                            self.videotagging.video.videoWidth,
+                                            self.videotagging.video.videoHeight);
+        /*
         //make sure paths exist
         if (!fs.existsSync(`${this.exportPath}`)) fs.mkdirSync(`${this.exportPath}`);
         var framesPath = `${this.exportPath}/${pathJS.basename(this.videotagging.src, pathJS.extname(this.videotagging.src))}_frames`;
@@ -82,50 +91,59 @@ function VideoTaggingCNTKExtension(options = {}) {
                 });
                 cb();
             })
-        });
+        });*/
 
-        function exportFrame(frameId, frameCanvas, canvasContext) {
+        yoloExporter.init()
+            .then(() => {
+                this.mapVideo(exportFrame).then(() => {
+                let notification = new Notification('Offline Video Tagger', {
+                    body: 'Successfully exported CNTK files.'
+                });
+                cb();
+            })  
+            }, (err) => {
+                console.info('Error on YOLOExporter init:', err);
+                cb(err)
+            });
+
+        function exportFrame(frameId, frameCanvas, canvasContext, frameExportCb) {
             //set default writepath to the negative folder
-            var writePath = `${framesPath}/negative/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`; //defaults to negative
+            //var writePath = `${framesPath}/negative/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`; //defaults to negative
             //If frame contains tags generate the metadata and save it in the positive directory
             var frameIsTagged = self.videotagging.frames.hasOwnProperty(frameId) && (self.videotagging.frames[frameId].length);
+            var frameTags = [];
             if (frameIsTagged && (self.videotagging.getUnlabeledRegionTags(frameId).length != self.videotagging.frames[frameId].length)) {
                 //genereate metadata from tags
                 var frameBBoxes = "", frameLabels = "";
                 self.videotagging.frames[frameId].map( (tag) => {
-                if (!tag.tags[tag.tags.length-1]) {
-                    return console.log(`frame ${frameId} region ${tag.name} has no label`);
-                }
-                var stanW = self.videotagging.video.videoWidth/tag.width;
-                var stanH = self.videotagging.video.videoHeight/tag.height;
-                frameLabels += `${tag.tags[tag.tags.length-1]}\n`;
-                frameBBoxes += `${parseInt(tag.x1 * stanW)}\t${parseInt(tag.y1 * stanH)}\t${parseInt(tag.x2 * stanW)}\t${parseInt(tag.y2 * stanH)}\n`;
+                    if (!tag.tags[tag.tags.length-1]) {
+                        return console.log(`frame ${frameId} region ${tag.name} has no label`);
+                    }
+                    var stanW = self.videotagging.video.videoWidth/tag.width;
+                    var stanH = self.videotagging.video.videoHeight/tag.height;
+                    frameTags.push({
+                        class : tag.tags[tag.tags.length-1],
+                        x1 : parseInt(tag.x1 * stanW),
+                        y1 : parseInt(tag.y1 * stanH),
+                        x2 : parseInt(tag.x2 * stanW),
+                        y2 : parseInt(tag.y2 * stanH)
+                    });
+
                 });
-                if (frameBBoxes == "" || frameLabels == "") return;
-                //since there is a tag update write path check if the frameId is in the test frame indecies 
-                if (testFrameIndecies.includes(frameId.toString())) {
-                    // write to testImages folder 
-                    writePath = `${framesPath}/testImages/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
-                } else {
-                    //write to positive folder
-                    writePath = `${framesPath}/positive/${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
-                }
-                
-                fs.writeFileSync(writePath.replace('.jpg', '.bboxes.labels.tsv'), frameLabels, (err) => {console.error(err)});
-                fs.writeFileSync(writePath.replace('.jpg', '.bboxes.tsv'), frameBBoxes, (err) => {console.error(err)});
-                
             }
 
             //draw the frame to the canvas
             canvasContext.drawImage(self.videotagging.video, 0, 0);
             var data = frameCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
             var buf = new Buffer(data, 'base64');
-
-            //write canvas to file and change frame
-            console.log('saving file', writePath);
-            if (writePath.includes("negative") && !self.visitedFrames.has(frameId)) return; //only write visited frames
-            fs.writeFileSync(writePath, buf);
-
+            var frameFileName = `${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`
+            yoloExporter.exportFrame(frameFileName, buf, frameTags)
+                .then(()=>{
+                    frameExportCb();
+                }, (err) => {
+                    console.info('Error occured when trying to export frame', err);
+                    frameExportCb(err);
+                });
         }
 
         //random subset http://stackoverflow.com/questions/11935175/sampling-a-random-subset-from-an-array
@@ -144,7 +162,8 @@ function VideoTaggingCNTKExtension(options = {}) {
 
     }
 
-     //allows user to review cntk suggestions on a video
+    // TODO: abstract this
+    //allows user to review cntk suggestions on a video
     this.reviewCNTK = function(modelPath, cb) {
         //check if an export directory for the current model exists
         var previousExportUntil = this.exportUntil;
