@@ -13,7 +13,7 @@ function DetectionAlgorithmManager() {
     var exporter, reviewer, export_algorithm, review_algorthim;
     //this returns a list of the availble detection modules
     this.getAvailbleAlgorthims = function() {
-        return Object.keys(detection_modules);
+        return config;
     },
 
     //returns export detection algorithm
@@ -29,7 +29,7 @@ function DetectionAlgorithmManager() {
 
     //Set the  exporter to the specified detection module
     this.setExporter = function(algorithm, exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit) {
-         if (!this.getAvailbleAlgorthims().includes(algorithm)){
+         if (!Object.values(config).includes(algorithm)){
              throw (`Error ${algorithm} module is not recognized`);
          }
          this.exporter = new detection_modules[algorithm].Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit);
@@ -37,8 +37,8 @@ function DetectionAlgorithmManager() {
     },
 
     //Set the reviewer for to the specified detection module
-    this.setReviewer = function(algorithm, modelPath, imagesFolderPath) {
-        if (!this.getAvailbleAlgorthims().includes(algorithm)){
+    this.setReviewer = function(algorithm, modelPath) {
+        if (!Object.values(config).includes(algorithm)){
              throw (`Error ${algorithm} module is not recognized`);
         }
         this.reviewer = new detection_modules[algorithm].Reviewer(modelPath);

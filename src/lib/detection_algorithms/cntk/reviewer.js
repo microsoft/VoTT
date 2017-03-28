@@ -1,3 +1,9 @@
+const path = require('path');
+const config_path = path.join(__dirname, 'cntk-config.json');
+const cntkConfig = require(config_path);
+
+const cntkModel= require('cntk-fastrcnn');
+
 // An model reviewer class that provides functionality to review images using the model
 // Constructor parameters:
 //  modelPath - Path to the model file 
@@ -49,6 +55,18 @@ function Reviewer(modelPath) {
 	//      }
     // }
     this.reviewImagesFolder = function reviewImagesFolder(imagesFolderPath) {
+		var model = new cntkModel.CNTKFRCNNModel({cntkModelPath : self.modelPath, cntkPath: cntkConfig.cntkPath, verbose : true});
+		return new Promise((resolve, reject) => { 
+			model.evaluateDirectory(imagesFolderPath, (err, res) => {
+				if (err) {
+					console.info(err);
+					reject();
+				}
+				resolve(res);
+			});
+		});
+
+
     }
 }
 

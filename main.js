@@ -61,7 +61,7 @@ function createWindow () {
         frame: false,
         autoHideMenuBar : true
       });
-      switch (arg) {
+      switch (arg.type) {
         case "export":
             popup.setSize(359, 300);
             popup.loadURL(url.format({
@@ -84,8 +84,10 @@ function createWindow () {
       }
       
       popup.once('ready-to-show', () => {
+        popup.send('supported-formats', arg.supportedFormats);
         popup.show();
-//        child.webContents.toggleDevTools();
+
+       // popup.webContents.toggleDevTools();
       });
 
       ipcMain.on('export-tags', (event, arg) => {

@@ -6,8 +6,17 @@ const basepath = remote.app.getAppPath();
 window.onload = function(){
     document.getElementById('exportButton').onclick = getExportConfiguration;
     document.getElementById('cancelButton').onclick = closeWindow;
-    $('#output').val(`${basepath}/cntk`);
+    $('#output').val(`${basepath}/output`);
 }
+
+ipcRenderer.on('supported-formats', (event, supportedFormats) => {  
+    $('#format').empty(); // remove old options
+    console.log(supportedFormats);
+    $.each(supportedFormats, function(key, value) {
+        $('#format').append($("<option></option>").attr("value", value).text(key));
+    });
+});
+
 
 function getExportConfiguration() {
     var exportConfig = {
@@ -19,6 +28,7 @@ function getExportConfiguration() {
     ipcRenderer.send('export-tags', exportConfig); 
     closeWindow();
 }
+
 
 function closeWindow() {
      remote.getCurrentWindow().hide();

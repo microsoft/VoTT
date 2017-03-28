@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 
-
 // The Exporter interface - provides a mean to export the tagged frames
 // data in the expected data format of the detection algorithm
 // Constructor parameters:

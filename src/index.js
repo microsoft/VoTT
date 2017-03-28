@@ -3,15 +3,13 @@ const basepath = remote.app.getAppPath();
 const dialog = remote.require('electron').dialog;
 const pathJS = require('path');
 const fs = require('fs');
-const rimraf = require('rimraf');
-const cntkModel= require('cntk-fastrcnn');
-const cntkConfig = require(`${basepath}/cntk-config.json`);
+const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
 var trackingEnabled = true;
 var visitedFrames, //keep track of the visited frames
     videotagging,
-    CNTKExtension,
+    detection,
     trackingExtension; 
 
 $(document).ready(() => {//init confirm keys figure out why this doesn't work
@@ -31,58 +29,43 @@ ipcRenderer.on('saveVideo', (event, message) => {
 });
 
 ipcRenderer.on('export', (event, message) => {
-   ipcRenderer.send('show-popup', 'export');
+   var args = {
+     type : "export",
+     supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims()
+   };
+
+   ipcRenderer.send('show-popup', args);
 });
 
 ipcRenderer.on('export-tags', (event, exportConfig) => {
-  //add logic for supporting alternate export methods besides cntk
-  
-  //init cntk extensions
-  CNTKExtension = new VideoTaggingCNTKExtension({
-      videotagging: videotagging,
-      cntkPath: cntkConfig.cntkPath,
-      visitedFrames: visitedFrames,
-      exportUntil: exportConfig.exportUntil,
-      exportPath: exportConfig.exportPath,
-      classes : videotagging.inputtagsarray
-  });
-
   addLoader();
-  CNTKExtension.exportCNTK(testSetSize, () => {
+  detection.export(exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
      $(".loader").remove();
   });
 });
 
 ipcRenderer.on('review', (event, message) => {
-     ipcRenderer.send('show-popup', 'review');
+     var args = {
+        type: 'review',
+        supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims()
+     };
+     ipcRenderer.send('show-popup', args);
 });
 
 ipcRenderer.on('review-model', (event, reviewModelConfig) => {
   //add logic for supporting alternate review model methods besides cntk
 
-  //init cntk extensions
-  CNTKExtension = new VideoTaggingCNTKExtension({
-        videotagging: videotagging,
-        cntkPath: cntkConfig.cntkPath,
-        visitedFrames: visitedFrames,
-        exportPath: reviewModelConfig.exportPath,
-        classes : videotagging.inputtagsarray
-  });
-
-  if (fs.existsSync(cntkConfig.cntkPath)) {
-      var modelLocation = reviewModelConfig.modelPath;
-      if (fs.existsSync(modelLocation)) {
-        addLoader();
-        CNTKExtension.reviewCNTK(modelLocation, () => {
-           $(".loader").remove();
-        });
-      } else {
-          alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
-      }
-      
+  var modelLocation = reviewModelConfig.modelPath;
+  
+  if (fs.existsSync(modelLocation)) {
+    addLoader();
+    detection.review( reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, () => {
+        $(".loader").remove();
+    });
   } else {
-    alert("This feature isn't supported by your system please check your CNTK configuration and try again later.");
+      alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
   }
+      
 });
 
 ipcRenderer.on('toggleTracking', (event, message) => {
@@ -237,6 +220,9 @@ function fileSelected(path) {
         });
         trackingExtension.startTracking();
 
+        //init detection
+        detection = new DetectionExtension(videotagging, visitedFrames);
+        
         $('#load-form-container').hide();
         $('#video-tagging-container').show();
 

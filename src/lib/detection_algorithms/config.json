@@ -1,4 +1,4 @@
 {
-    "yolo" : "YOLO",
-    "cntk" : "CNTK"
+    "YOLO": "yolo",
+    "CNTK": "cntk"  
 }
