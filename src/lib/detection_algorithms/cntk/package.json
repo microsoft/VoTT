@@ -1,7 +1,6 @@
 {
     "main" : "main.js",
     "dependencies": {
-        "rimraf": "^2.6.1",
         "cntk-fastrcnn": "^0.2.2"
     }
 }

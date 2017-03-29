@@ -7,7 +7,7 @@ function Detection(videotagging, visitedFrames) {
 
     var self = this;
 
-    //maps every frame in the video to an imageCanvas
+    //maps every frame in the video to an imageCanvas NOTE mapVideo clears the oncanplay eventListener
     this.mapVideo = function(frameHandler, exportUntil) {
         return new Promise((resolve, reject) => {
             //init canvas buffer
@@ -17,7 +17,6 @@ function Detection(videotagging, visitedFrames) {
             var canvasContext = frameCanvas.getContext("2d");
 
             // start exporting frames using the canplay eventListener
-            var oldEvent = self.videotagging.video.oncanplay;
             self.videotagging.video.oncanplay = iterateFrames;
             self.videotagging.video.currentTime = 0;
             self.videotagging.playingCallback();
@@ -40,7 +39,7 @@ function Detection(videotagging, visitedFrames) {
                 }
 
                 if (isLastFrame) {
-                    self.videotagging.video.oncanplay = oldEvent;
+                    self.videotagging.video.oncanplay = null;
                     resolve();
                 }
                 
@@ -65,7 +64,7 @@ function Detection(videotagging, visitedFrames) {
 
         self.detectionAlgorithmManager.exporter.init()
             .then(() => {
-                this.mapVideo(exportFrame, exportUntil).then(() => {
+                this.mapVideo(exportFrame,exportUntil).then(() => {
                 let notification = new Notification('Offline Video Tagger', {
                     body: 'Successfully exported CNTK files.'
                 });
@@ -77,6 +76,9 @@ function Detection(videotagging, visitedFrames) {
             });
 
         function exportFrame(frameId, frameCanvas, canvasContext, frameExportCb) {
+            if (!self.visitedFrames.has(frameId)) {
+                return frameExportCb();
+            }
             var frameTags = [];
             //confirm that frame is tagged and that no tags are unlabeled 
             var frameIsTagged = self.videotagging.frames.hasOwnProperty(frameId) && (self.videotagging.frames[frameId].length);

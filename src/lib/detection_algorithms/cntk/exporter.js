@@ -1,7 +1,6 @@
 const async = require('async');
 const fs = require('fs');
 const path = require('path');
-const rimraf = require('rimraf');
 
 // The Exporter interface - provides a mean to export the tagged frames
 // data in the expected data format of the detection algorithm
@@ -39,7 +38,6 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
                     self.testFrameIndecies = testIndecies;
                     cb();
                 },
-                rimraf.bind(null, self.exportDirPath),
                 ensureDirExists.bind(null, self.exportDirPath),
                 ensureDirExists.bind(null, self.posDirPath),
                 ensureDirExists.bind(null, self.negDirPath),
@@ -68,8 +66,15 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
         return new Promise(function(resolve, reject) {
             async.waterfall([
+                deleteFileIfExists.bind(null, path.join(self.negDirPath,  frameFileName)),
+                deleteFileIfExists.bind(null, path.join(self.posDirPath,  frameFileName)),
+                deleteFileIfExists.bind(null, path.join(self.testDirPath, frameFileName)),
+                deleteFileIfExists.bind(null, path.join(self.posDirPath,  `${frameFileName}.bboxes.labels.tsv`)),
+                deleteFileIfExists.bind(null, path.join(self.testDirPath, `${frameFileName}.bboxes.labels.tsv`)),
+                deleteFileIfExists.bind(null, path.join(self.posDirPath,  `${frameFileName}.bboxes.tsv`)),
+                deleteFileIfExists.bind(null, path.join(self.testDirPath, `${frameFileName}.bboxes.tsv`)),
                 function determineWritePath(cb){
-                    if( !tags || (Object.keys(tags).length === 0 && tags.constructor === Object)){ 
+                    if( !tags.length){ 
                         cb(null, self.negDirPath);
                     } else {
                          if (self.testFrameIndecies.includes(self.posFrameIndex)){
@@ -116,7 +121,7 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     //random set http://stackoverflow.com/questions/2380019/generate-unique-random-numbers-between-1-and-100 there has to be a set way of doing this
     function generateTestIndecies(percent, cb) {
        var testIndecies = [];
-       while(testIndecies.length < Math.floor(percent * self.posFramesCount)){
+       while(testIndecies.length < Math.ceil(percent * self.posFramesCount)){
             var randomnumber = Math.ceil(Math.random() * self.posFramesCount)
             if(testIndecies.indexOf(randomnumber) > -1) continue;
             testIndecies[testIndecies.length] = randomnumber;
@@ -129,6 +134,18 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
             if (err) {
                 if (err.code == 'EEXIST') { 
                     return cb(); // ignore the error if the folder already exists
+                }
+                return cb(err);
+            }
+            cb();
+        });
+    }
+
+    function deleteFileIfExists(path, cb) {
+        fs.unlink(path, (err) => {
+            if (err) {
+                if (err.code == 'ENOENT') {
+                    return cb();
                 }
                 return cb(err);
             }

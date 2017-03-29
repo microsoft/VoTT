@@ -40,6 +40,7 @@ ipcRenderer.on('export', (event, message) => {
 ipcRenderer.on('export-tags', (event, exportConfig) => {
   addLoader();
   detection.export(exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
+     videotagging.video.oncanplay = updateVisitedFrames;
      $(".loader").remove();
   });
 });
@@ -61,6 +62,7 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
     addLoader();
     detection.review( reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, () => {
         $(".loader").remove();
+        videotagging.video.oncanplay = updateVisitedFrames;
     });
   } else {
       alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
@@ -209,8 +211,7 @@ function fileSelected(path) {
         }
 
         //track visited frames
-        videotagging.video.removeEventListener("canplay", updateVisitedFrames); //remove old listener
-        videotagging.video.addEventListener("canplay",updateVisitedFrames);
+        videotagging.video.oncanplay = updateVisitedFrames; //remove old listener
 
         //init region tracking
         trackingExtension = new VideoTaggingTrackingExtension({
