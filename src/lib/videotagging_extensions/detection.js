@@ -43,7 +43,7 @@ function Detection(videotagging, visitedFrames) {
                     resolve();
                 }
                 
-                frameHandler(frameId, frameCanvas, canvasContext, ()=> {
+                frameHandler(frameId, frameCanvas, canvasContext, () => {
                     if (!isLastFrame) {
                         self.videotagging.stepFwdClicked(false);
                     }
@@ -121,8 +121,11 @@ function Detection(videotagging, visitedFrames) {
     this.review = function(method, modelPath, reviewPath, cb) {
         //if the export reviewPath directory does not exist create it and export all the frames then review
         if (!fs.existsSync(reviewPath)) {
-            fs.mkdirSync(reviewPath);
-            this.mapVideo(saveFrame, "last").then(reviewModel);
+            fs.mkdir(reviewPath, () =>{
+                this.mapVideo(saveFrame, "last").then( () => {
+                    reviewModel();
+                });
+            });
         } else {
             reviewModel();
         }
@@ -131,8 +134,6 @@ function Detection(videotagging, visitedFrames) {
             //run the model on the reviewPath directory
             self.detectionAlgorithmManager.setReviewer(method, modelPath);
             self.detectionAlgorithmManager.reviewer.reviewImagesFolder(reviewPath).then( (modelTags) => {
-                $('#video-tagging').off("stepFwdClicked-BeforeStep");
-                $('#video-tagging').off("stepFwdClicked-AfterStep");
                 self.videotagging.frames = [];
                 self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
 
@@ -146,7 +147,7 @@ function Detection(videotagging, visitedFrames) {
                         var imageWidth = this.width;
                         var imageHeight = this.height;
                         frameId = pathId.replace(".jpg", "");//remove.jpg
-                        videotagging.frames[frameId] = [];
+                        self.videotagging.frames[frameId] = [];
                         modelTags.frames[pathId].regions.forEach( (region) => {
                             self.videotagging.frames[frameId].push({
                             x1:region.x1,
@@ -158,7 +159,8 @@ function Detection(videotagging, visitedFrames) {
                             height:imageHeight,
                             type:self.videotagging.regiontype,
                             tags:Object.keys(modelTags.classes).filter( (key) => {return modelTags.classes[key] === region.class }),
-                            name:(self.videotagging.frames[frameId].length + 1)
+                            name:(self.videotagging.frames[frameId].length + 1),
+                            blockSuggest: true
                             }); 
                         });
                     }
@@ -172,9 +174,9 @@ function Detection(videotagging, visitedFrames) {
             });
         }
 
-        function saveFrame(frameId, fCanvas, canvasContext){
+        function saveFrame(frameId, fCanvas, canvasContext, saveCb){
             canvasContext.drawImage(videotagging.video, 0, 0);
-            var writePath = reviewPath+ `/${frameId}.jpg`
+            var writePath =  `${reviewPath}/${frameId}.jpg`
             var data = fCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
             var buf = new Buffer(data, 'base64');
             //write canvas to file and change frame
@@ -182,6 +184,7 @@ function Detection(videotagging, visitedFrames) {
             if (!fs.existsSync(writePath)) {
                 fs.writeFileSync(writePath, buf);
             }  
+            saveCb();
         }
     }
 

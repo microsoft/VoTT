@@ -46,18 +46,15 @@ ipcRenderer.on('export-tags', (event, exportConfig) => {
 });
 
 ipcRenderer.on('review', (event, message) => {
-     var args = {
-        type: 'review',
-        supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims()
-     };
-     ipcRenderer.send('show-popup', args);
+    var args = {
+      type: 'review',
+      supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims()
+    };
+    ipcRenderer.send('show-popup', args);
 });
 
 ipcRenderer.on('review-model', (event, reviewModelConfig) => {
-  //add logic for supporting alternate review model methods besides cntk
-
   var modelLocation = reviewModelConfig.modelPath;
-  
   if (fs.existsSync(modelLocation)) {
     addLoader();
     detection.review( reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, () => {
@@ -164,7 +161,6 @@ function fileSelected(path) {
     //set title indicator
     $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
-    $('#model').val(`${basepath}/cntk/Fast-RCNN.model`);
 
     try {
       config = require(`${pathName}.json`);

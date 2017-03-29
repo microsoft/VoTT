@@ -65,8 +65,6 @@ function Reviewer(modelPath) {
 				resolve(res);
 			});
 		});
-
-
     }
 }
 
