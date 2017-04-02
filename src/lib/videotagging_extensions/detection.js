@@ -1,4 +1,6 @@
-const DetectionAlgorithmManager = require('../detection_algorithms').DetectionAlgorithmManager;
+const DetectionAlgorithmManager = require('../detection_algorithm_manager').DetectionAlgorithmManager;
+const path = require('path');
+const fs = require('fs');
 
 function Detection(videotagging, visitedFrames) {
     this.videotagging = videotagging;
@@ -21,30 +23,37 @@ function Detection(videotagging, visitedFrames) {
             self.videotagging.video.currentTime = 0;
             self.videotagging.playingCallback();
 
+            //resolve export until
+            var isLastFrame;
+            if (exportUntil === "tagged") {   
+                isLastFrame = function(frameId) {
+                    return (!Object.keys(self.videotagging.frames).length) || (frameId >= parseInt(Object.keys(self.videotagging.frames)[Object.keys(self.videotagging.frames).length-1]));
+                } 
+            }
+            else if (exportUntil === "visited") {
+                isLastFrame = function(frameId) {
+                    var lastVisitedFrameId = Math.max.apply(Math, Array.from(self.visitedFrames));
+                    return (frameId >= lastVisitedFrameId);        
+                }
+            }
+            else { //last
+                isLastFrame = function(frameId) {
+                    return (self.videotagging.video.currentTime >= self.videotagging.video.duration);
+                }
+            }
+            
+
             function iterateFrames() {
                 var frameId = self.videotagging.getCurrentFrame();
-                var isLastFrame;
-
-                switch(exportUntil) {
-                    case "tagged":
-                    isLastFrame = (!Object.keys(self.videotagging.frames).length) || (frameId >= parseInt(Object.keys(self.videotagging.frames)[Object.keys(self.videotagging.frames).length-1]));
-                    break;
-                    case "visited":
-                    var lastVisitedFrameId = Math.max.apply(Math, Array.from(self.visitedFrames));
-                    isLastFrame = (frameId >= lastVisitedFrameId);        
-                    break;
-                    case "last":
-                    isLastFrame = (self.videotagging.video.currentTime >= self.videotagging.video.duration);
-                    break;
-                }
-
-                if (isLastFrame) {
+                var lastFrame = isLastFrame(frameId); 
+                
+                if (lastFrame) {
                     self.videotagging.video.oncanplay = null;
                     resolve();
                 }
                 
                 frameHandler(frameId, frameCanvas, canvasContext, () => {
-                    if (!isLastFrame) {
+                    if (!lastFrame) {
                         self.videotagging.stepFwdClicked(false);
                     }
                 })
@@ -66,7 +75,7 @@ function Detection(videotagging, visitedFrames) {
             .then(() => {
                 this.mapVideo(exportFrame,exportUntil).then(() => {
                 let notification = new Notification('Offline Video Tagger', {
-                    body: 'Successfully exported CNTK files.'
+                    body: `Successfully exported ${self.detectionAlgorithmManager.getCurrentExportAlgorithm()} files.`
                 });
                 cb();
             })  
@@ -102,10 +111,8 @@ function Detection(videotagging, visitedFrames) {
             }
 
             //draw the frame to the canvas
-            canvasContext.drawImage(self.videotagging.video, 0, 0);
-            var data = frameCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
-            var buf = new Buffer(data, 'base64');
-            var frameFileName = `${pathJS.basename(self.videotagging.src, pathJS.extname(self.videotagging.src))}_frame_${frameId}.jpg`
+            var frameFileName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
+            var buf = self.canvasToJpgBuffer(frameCanvas, canvasContext);
             self.detectionAlgorithmManager.exporter.exportFrame(frameFileName, buf, frameTags)
                 .then(()=>{
                     frameExportCb();
@@ -140,7 +147,7 @@ function Detection(videotagging, visitedFrames) {
                 //Create regions based on the provided modelTags
                 Object.keys(modelTags.frames).map( (pathId) => {
                     var frameImage = new Image();
-                    frameImage.src = `${reviewPath}\\${pathId}`;
+                    frameImage.src = path.join(reviewPath, pathId);
                     frameImage.onload = loadFrameRegions; 
 
                     function loadFrameRegions() {
@@ -175,17 +182,20 @@ function Detection(videotagging, visitedFrames) {
         }
 
         function saveFrame(frameId, fCanvas, canvasContext, saveCb){
-            canvasContext.drawImage(videotagging.video, 0, 0);
-            var writePath =  `${reviewPath}/${frameId}.jpg`
-            var data = fCanvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
-            var buf = new Buffer(data, 'base64');
+            var writePath =  path.join(reviewPath, `{frameId}.jpg`);
             //write canvas to file and change frame
             console.log('saving file', writePath);
-            if (!fs.existsSync(writePath)) {
-                fs.writeFileSync(writePath, buf);
+            if (!fs.exists(writePath,saveCb)) {
+                fs.writeFile(writePath, self.canvasToJpgBuffer(fCanvas, canvasContext), saveCb);
             }  
-            saveCb();
         }
+
+    }
+
+    this.canvasToJpgBuffer = function(canvas, canvasContext) {
+        canvasContext.drawImage(videotagging.video, 0, 0);
+        var data = canvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
+        return new Buffer(data, 'base64');
     }
 
 }

@@ -1,7 +1,7 @@
 const remote = require('electron').remote;
 const basepath = remote.app.getAppPath();
 const dialog = remote.require('electron').dialog;
-const pathJS = require('path');
+const path = require('path');
 const fs = require('fs');
 const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
@@ -132,11 +132,11 @@ function checkPointRegion() {
 }
 
 //load logic
-function fileSelected(path) {
+function fileSelected(filepath) {
    $('#load-message').hide();
 
-  if (path) {  //checking if a video is dropped
-    let pathName = path.path;
+  if (filepath) {  //checking if a video is dropped
+    let pathName = filepath.path;
     openPath(pathName);
   } else { // showing system open dialog
     dialog.showOpenDialog({
@@ -159,7 +159,7 @@ function fileSelected(path) {
     $('#framerateGroup').show();
     
     //set title indicator
-    $('title').text(`Video Tagging Job Configuration: ${pathJS.basename(pathName, pathJS.extname(pathName))}`);
+    $('title').text(`Video Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
     try {
@@ -179,7 +179,7 @@ function fileSelected(path) {
       if(framerate.validity.valid && inputtags.validity.valid) {
         $('.bootstrap-tagsinput').last().removeClass( "invalid" );
        
-        $('title').text(`Video Tagging Job: ${pathJS.basename(pathName, pathJS.extname(pathName))}`); //set title indicator
+        $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
 
         videotagging = document.getElementById('video-tagging'); //find out why jquery doesn't play nice with polymer
         videotagging.regiontype = $('#regiontype').val();

@@ -5,15 +5,19 @@ const config = require(config_path);
 
 //load detection modules
 var detection_modules = {}
-Object.keys(config).forEach((module_path) => {
-    detection_modules[config[module_path]] =  require(path.join(__dirname, module_path));
+Object.keys(config).forEach((key) => {
+    detection_modules[key] =  require(path.join(__dirname, config[key]));
 });
 
+//removes
+var  export_algorithm, review_algorthim;
+
+
 function DetectionAlgorithmManager() {
-    var exporter, reviewer, export_algorithm, review_algorthim;
+    var self = this;
     //this returns a list of the availble detection modules
     this.getAvailbleAlgorthims = function() {
-        return config;
+        return Object.keys(config);
     },
 
     //returns export detection algorithm
@@ -22,18 +26,17 @@ function DetectionAlgorithmManager() {
     },
 
     //returns current review algorithm
-    this.getCurrentExportAlgorithm = function() {
+    this.getCurrentReviewAlgorithm = function() {
         return review_algorthim;
     },
 
-
     //Set the  exporter to the specified detection module
     this.setExporter = function(algorithm, exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit) {
-         if (!Object.values(config).includes(algorithm)){
+         if (!Object.keys(config).includes(algorithm)){
              throw (`Error ${algorithm} module is not recognized`);
          }
          this.exporter = new detection_modules[algorithm].Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit);
-         this.export_algorithm = algorithm;
+         export_algorithm = algorithm;
     },
 
     //Set the reviewer for to the specified detection module
@@ -42,7 +45,7 @@ function DetectionAlgorithmManager() {
              throw (`Error ${algorithm} module is not recognized`);
         }
         this.reviewer = new detection_modules[algorithm].Reviewer(modelPath);
-        this.review_algorthim = algorithm;
+        review_algorthim = algorithm;
     }
 
 }

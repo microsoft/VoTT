@@ -2,6 +2,7 @@ const async = require('async');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const detectionUtils = require('../detectionUtils.js');
 
 const DEFAULT_DATA_SET_NAME = 'obj';
 const CFG_TEMPLATE_FILE_PATH = path.join(__dirname, 'yolo-obj.cfg.template');
@@ -19,10 +20,10 @@ const OBJ_DATA_TAMPLATE = 'classes = %s\n' +
 // Constructor parameters:
 //  exportDirPath - path to the directory where the exported file will be placed
 //  classes - list of classes supported by the tagged data
-//  posFramesCount - number of positive tagged frames
+//  taggedFramesCount - number of positive tagged frames
 //  frameWidth - The width (in pixels) of the image frame
 //  frameHeight - The height (in pixels) of the image frame
-function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit) {
+function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHeight, testSplit) {
     var self = this;
     self.dataSetName = DEFAULT_DATA_SET_NAME;
     self.exportDirPath = exportDirPath;
@@ -31,7 +32,7 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     self.trainFilePath = path.join(self.dataDirPath, 'train.txt');
     self.testFilePath = path.join(self.dataDirPath, 'test.txt');
     self.classes = classes;
-    self.posFramesCount = posFramesCount;
+    self.taggedFramesCount = taggedFramesCount;
     self.frameWidth = frameWidth;
     self.frameHeight = frameHeight;
     self.cfgTemplate = null;
@@ -49,17 +50,16 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     // directories, ..)    
     // Returns: A Promise object that resolves when the operation completes
     this.init = function init() {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             async.waterfall([
-                generateTestIndecies.bind(null,self.testSplit),
+                detectionUtils.generateTestIndecies.bind(null,self.testSplit, self.taggedFramesCount),
                 function updateIndecies(testIndecies, cb) {
                     self.posFrameIndex = 0;
                     self.testFrameIndecies = testIndecies;
                     cb();
                 },
-                ensureDirExists.bind(null, self.exportDirPath),
-                deleteFileIfExists.bind(null, self.trainFilePath),
-                deleteFileIfExists.bind(null, self.testFilePath),
+                detectionUtils.ensureDirExists.bind(null, self.exportDirPath),
+                async.each.bind(null,[self.trainFilePath, self.testFilePath], detectionUtils.deleteFileIfExists),
                 function getTemplate(cb) {
                     if (self.cfgTemplate) {
                         return cb();
@@ -78,7 +78,7 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
                     var cfg = util.format(self.cfgTemplate, filtersCount, self.classes.length);
                     fs.writeFile(path.join(self.exportDirPath, 'yolo-' + self.dataSetName +'.cfg'), cfg, cb);
                 },
-                ensureDirExists.bind(null, self.dataDirPath),
+                detectionUtils.ensureDirExists.bind(null, self.dataDirPath),
                 function saveObjectNames(cb) {
                     var objectNames = '';
                     for (var i in self.classes) {
@@ -90,7 +90,7 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
                     var objectData = util.format(OBJ_DATA_TAMPLATE, self.classes.length, self.dataSetName);
                     fs.writeFile(path.join(self.dataDirPath, self.dataSetName + '.data'), objectData, cb);
                 },
-            ], function(err) {
+            ], (err) => {
                 if (err) {
                     reject(err);
                     return;
@@ -112,9 +112,9 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     //         of the bounding boxes (respectively), and 'class' is the name of the class.
     // Returns: A Promise object that resolves when the operation completes
     this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             async.waterfall([
-                ensureDirExists.bind(null, self.imagesDirPath),
+                detectionUtils.ensureDirExists.bind(null, self.imagesDirPath),
                 function saveImage(cb) {
                     var imageFilePath = path.join(self.imagesDirPath, frameFileName);
                     fs.writeFile(imageFilePath, frameBuffer, cb); 
@@ -145,8 +145,7 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
                         fs.appendFile(self.trainFilePath, lineToAppend, cb);
                     }
                 }
-            ],
-            function(err) {
+            ], (err) => {
                 if (err) {
                     reject(err);
                     return;
@@ -155,44 +154,6 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
             });
         });
     }
-
-    // code snippet used from: 
-    // http://stackoverflow.com/questions/21194934/node-how-to-create-a-directory-if-doesnt-exist
-    function ensureDirExists(path, cb) {
-        fs.mkdir(path, 0777, (err) => {
-            if (err) {
-                if (err.code == 'EEXIST') { 
-                    return cb(); // ignore the error if the folder already exists
-                }
-                return cb(err);
-            }
-            cb();
-        });
-    }
-
-    function deleteFileIfExists(path, cb) {
-        fs.unlink(path, (err) => {
-            if (err) {
-                if (err.code == 'ENOENT') {
-                    return cb();
-                }
-                return cb(err);
-            }
-            cb();
-        });
-    }
-
-    //random set http://stackoverflow.com/questions/2380019/generate-unique-random-numbers-between-1-and-100 there has to be a set way of doing this
-    function generateTestIndecies(percent, cb) {
-       var testIndecies = [];
-       while(testIndecies.length < Math.floor(percent * self.posFramesCount)){
-            var randomnumber = Math.ceil(Math.random() * self.posFramesCount)
-            if(testIndecies.indexOf(randomnumber) > -1) continue;
-            testIndecies[testIndecies.length] = randomnumber;
-        }
-        cb(null, testIndecies);
-    } 
 }
-
 
 exports.Exporter = Exporter;

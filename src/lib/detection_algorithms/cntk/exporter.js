@@ -1,24 +1,25 @@
 const async = require('async');
 const fs = require('fs');
 const path = require('path');
+const detectionUtils = require('../detectionUtils.js');
 
 // The Exporter interface - provides a mean to export the tagged frames
 // data in the expected data format of the detection algorithm
 // Constructor parameters:
 //  exportDirPath - path to the directory where the exported file will be placed
 //  classes - list of classes supported by the tagged data
-//  posFramesCount - number of positive tagged frames
+//  taggedFramesCount - number of positive tagged frames
 //  frameWidth - The width (in pixels) of the image frame
 //  frameHeight - The height (in pixels) of the image frame
 //  testSplit - the percent of tragged frames to reserve for test set defaults to 20%
-function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit) {
+function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHeight, testSplit) {
     var self = this;
     self.exportDirPath = exportDirPath;
     self.posDirPath  = path.join(self.exportDirPath, 'positive');
     self.negDirPath  = path.join(self.exportDirPath, 'negative');
     self.testDirPath = path.join(self.exportDirPath, 'testImages');
     self.classes = classes;
-    self.posFramesCount = posFramesCount;
+    self.taggedFramesCount = taggedFramesCount;
     self.frameWidth = frameWidth;
     self.frameHeight = frameHeight;
     self.testSplit = testSplit || 0.2;
@@ -30,19 +31,16 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     // Returns: A Promise object that resolves when the operation completes
     this.init = function init() {
 
-         return new Promise(function(resolve, reject) {
+         return new Promise((resolve, reject) => {
             async.waterfall([
-                generateTestIndecies.bind(null,self.testSplit),
+                detectionUtils.generateTestIndecies.bind(null,self.testSplit, self.taggedFramesCount),
                 function updateIndecies(testIndecies, cb) {
                     self.posFrameIndex = 0;
                     self.testFrameIndecies = testIndecies;
                     cb();
                 },
-                ensureDirExists.bind(null, self.exportDirPath),
-                ensureDirExists.bind(null, self.posDirPath),
-                ensureDirExists.bind(null, self.negDirPath),
-                ensureDirExists.bind(null, self.testDirPath)
-            ], function(err) {
+                async.each.bind(null,[self.exportDirPath, self.posDirPath, self.negDirPath, self.testDirPath], detectionUtils.ensureDirExists)
+            ], (err) => {
                 if (err) {
                     reject(err);
                     return;
@@ -64,26 +62,24 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     //         of the bounding boxes (respectively), and 'class' is the name of the class.
     // Returns: A Promise object that resolves when the operation completes
     this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
-        return new Promise(function(resolve, reject) {
-            async.waterfall([
-                deleteFileIfExists.bind(null, path.join(self.negDirPath,  frameFileName)),
-                deleteFileIfExists.bind(null, path.join(self.posDirPath,  frameFileName)),
-                deleteFileIfExists.bind(null, path.join(self.testDirPath, frameFileName)),
-                deleteFileIfExists.bind(null, path.join(self.posDirPath,  `${frameFileName}.bboxes.labels.tsv`)),
-                deleteFileIfExists.bind(null, path.join(self.testDirPath, `${frameFileName}.bboxes.labels.tsv`)),
-                deleteFileIfExists.bind(null, path.join(self.posDirPath,  `${frameFileName}.bboxes.tsv`)),
-                deleteFileIfExists.bind(null, path.join(self.testDirPath, `${frameFileName}.bboxes.tsv`)),
+        return new Promise((resolve, reject) => {
+            async.waterfall(
+              [
+                async.each.bind(null,[path.join(self.posDirPath,  frameFileName), 
+                                      path.join(self.negDirPath,  frameFileName), 
+                                      path.join(self.testDirPath, frameFileName),
+                                      path.join(self.posDirPath,  `${frameFileName}.bboxes.tsv`),
+                                      path.join(self.testDirPath, `${frameFileName}.bboxes.tsv`),
+                                      path.join(self.posDirPath,  `${frameFileName}.bboxes.labels.tsv`), 
+                                      path.join(self.testDirPath, `${frameFileName}.bboxes.labels.tsv`)], detectionUtils.deleteFileIfExists),
+
                 function determineWritePath(cb){
                     if( !tags.length){ 
                         cb(null, self.negDirPath);
                     } else {
-                         if (self.testFrameIndecies.includes(self.posFrameIndex)){
-                             self.posFrameIndex++;
-                             cb(null, self.testDirPath);
-                         } else {
-                             self.posFrameIndex++;
-                             cb(null, self.posDirPath);
-                         }
+                        var dirPath = self.testFrameIndecies.includes(self.posFrameIndex) ? self.testDirPath : self.posDirPath;
+                        self.posFrameIndex++;
+                        cb(null, dirPath);
                     }
                 },
                 function saveImage(exportPath, cb) {
@@ -107,8 +103,7 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
                     } 
                     cb();
                 }
-            ],
-            function(err) {
+            ], (err) => {
                 if (err) {
                     reject(err);
                     return;
@@ -117,41 +112,6 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
             });
         });
     }       
-
-    //random set http://stackoverflow.com/questions/2380019/generate-unique-random-numbers-between-1-and-100 there has to be a set way of doing this
-    function generateTestIndecies(percent, cb) {
-       var testIndecies = [];
-       while(testIndecies.length < Math.ceil(percent * self.posFramesCount)){
-            var randomnumber = Math.ceil(Math.random() * self.posFramesCount)
-            if(testIndecies.indexOf(randomnumber) > -1) continue;
-            testIndecies[testIndecies.length] = randomnumber;
-        }
-        cb(null, testIndecies);
-    } 
-    // http://stackoverflow.com/questions/21194934/node-how-to-create-a-directory-if-doesnt-exist
-    function ensureDirExists(path, cb) {
-        fs.mkdir(path, 0777, (err) => {
-            if (err) {
-                if (err.code == 'EEXIST') { 
-                    return cb(); // ignore the error if the folder already exists
-                }
-                return cb(err);
-            }
-            cb();
-        });
-    }
-
-    function deleteFileIfExists(path, cb) {
-        fs.unlink(path, (err) => {
-            if (err) {
-                if (err.code == 'ENOENT') {
-                    return cb();
-                }
-                return cb(err);
-            }
-            cb();
-        });
-    }
 
 }
 

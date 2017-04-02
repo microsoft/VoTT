@@ -1,7 +1,7 @@
-const YoloExporter = require('../main.js').Exporter;
+const CNKTExporter = require('../main.js').Exporter;
 const path = require('path');
 
-var exporter = new YoloExporter(path.join(__dirname, 'export_test'), ['cat', 'dog', 'mouse'], 1000, 1000);
+var exporter = new CNKTExporter(path.join(__dirname, 'export_test'), ['cat', 'dog', 'mouse'], 1000, 1000);
 
 var p = exporter.init();
 p.then(() => {
