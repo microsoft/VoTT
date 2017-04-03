@@ -85,7 +85,7 @@ function createWindow () {
       }
       
       popup.once('ready-to-show', () => {
-        popup.send('supported-formats', arg.supportedFormats);
+        popup.send('configs', arg);
         popup.show();
         //popup.webContents.toggleDevTools();
       });
@@ -99,8 +99,6 @@ function createWindow () {
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
   });
-
-
 
   mainWindow.on('ready-to-show', function() {
       mainWindow.show();
@@ -209,8 +207,6 @@ if (process.platform === 'darwin') {
 
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-
-
 
 }
 

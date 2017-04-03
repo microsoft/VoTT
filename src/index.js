@@ -10,7 +10,8 @@ var trackingEnabled = true;
 var visitedFrames, //keep track of the visited frames
     videotagging,
     detection,
-    trackingExtension; 
+    trackingExtension,
+    assetFolder; 
 
 $(document).ready(() => {//init confirm keys figure out why this doesn't work
   $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
@@ -31,7 +32,8 @@ ipcRenderer.on('saveVideo', (event, message) => {
 ipcRenderer.on('export', (event, message) => {
    var args = {
      type : "export",
-     supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims()
+     supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims(),
+     assetFolder : assetFolder
    };
 
    ipcRenderer.send('show-popup', args);
@@ -48,7 +50,8 @@ ipcRenderer.on('export-tags', (event, exportConfig) => {
 ipcRenderer.on('review', (event, message) => {
     var args = {
       type: 'review',
-      supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims()
+      supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims(),
+      assetFolder : assetFolder
     };
     ipcRenderer.send('show-popup', args);
 });
@@ -150,7 +153,6 @@ function fileSelected(filepath) {
   }
 
   function openPath(pathName) {
-    var config;
 
     // show configuration
     $('#load-message').hide();
@@ -162,6 +164,8 @@ function fileSelected(filepath) {
     $('title').text(`Video Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
+    assetFolder = path.dirname(pathName);
+    var config;
     try {
       config = require(`${pathName}.json`);
       //restore tags
@@ -172,6 +176,7 @@ function fileSelected(filepath) {
     } catch (e) {
       console.log(`Error loading save file ${e.message}`);
     }
+
 
     document.getElementById('loadButton').onclick = loadTagger;
     

@@ -1,18 +1,15 @@
 const ipcRenderer = require('electron').ipcRenderer;
 const remote = require('electron').remote;
-const basepath = remote.app.getAppPath();
-const path = require('path');
-
 
 window.onload = function(){
     document.getElementById('reviewButton').onclick = getReviewConfiguration;
     document.getElementById('cancelButton').onclick = closeWindow;
-    $('#output').val(path.join(basepath,'review'));
 }
 
-ipcRenderer.on('supported-formats', (event, supportedFormats) => {  
+ipcRenderer.on('configs', (event, configs) => {  
+    $('#output').val(configs.assetFolder);
     $('#format').empty(); // remove old options
-    supportedFormats.forEach( (algorithm) => {
+    configs.supportedFormats.forEach( (algorithm) => {
         $('#format').append($("<option></option>").attr("value", algorithm).text(algorithm));
     });
 });
