@@ -50,14 +50,10 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     // directories, ..)    
     // Returns: A Promise object that resolves when the operation completes
     this.init = function init() {
+        self.posFrameIndex = 0;
+        self.testFrameIndecies = detectionUtils.generateTestIndecies(self.testSplit, taggedFramesCount);
         return new Promise((resolve, reject) => {
             async.waterfall([
-                detectionUtils.generateTestIndecies.bind(null,self.testSplit, self.taggedFramesCount),
-                function updateIndecies(testIndecies, cb) {
-                    self.posFrameIndex = 0;
-                    self.testFrameIndecies = testIndecies;
-                    cb();
-                },
                 detectionUtils.ensureDirExists.bind(null, self.exportDirPath),
                 async.each.bind(null,[self.trainFilePath, self.testFilePath], detectionUtils.deleteFileIfExists),
                 function getTemplate(cb) {
