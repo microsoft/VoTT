@@ -30,17 +30,10 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     // directories, ..)    
     // Returns: A Promise object that resolves when the operation completes
     this.init = function init() {
-
+         self.posFrameIndex = 0;
+         self.testFrameIndecies = detectionUtils.generateTestIndecies(self.testSplit, taggedFramesCount);
          return new Promise((resolve, reject) => {
-            async.waterfall([
-                detectionUtils.generateTestIndecies.bind(null,self.testSplit, self.taggedFramesCount),
-                function updateIndecies(testIndecies, cb) {
-                    self.posFrameIndex = 0;
-                    self.testFrameIndecies = testIndecies;
-                    cb();
-                },
-                async.each.bind(null,[self.exportDirPath, self.posDirPath, self.negDirPath, self.testDirPath], detectionUtils.ensureDirExists)
-            ], (err) => {
+            async.eachSeries([self.exportDirPath, self.posDirPath, self.negDirPath, self.testDirPath], detectionUtils.ensureDirExists, (err) => {
                 if (err) {
                     reject(err);
                     return;
@@ -84,8 +77,8 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                 },
                 function saveImage(exportPath, cb) {
                     var imageFilePath  = path.join(exportPath, frameFileName);
-                    fs.writeFile(imageFilePath, frameBuffer, () => {
-                        cb(null, exportPath);
+                    fs.writeFile(imageFilePath, frameBuffer, (err) => {
+                        cb(err, exportPath);
                     });
                 },
                 function saveBboxes(exportPath, cb) {

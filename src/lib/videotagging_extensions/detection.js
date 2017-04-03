@@ -127,69 +127,72 @@ function Detection(videotagging, visitedFrames) {
     //allows user to review model suggestions on a video
     this.review = function(method, modelPath, reviewPath, cb) {
         //if the export reviewPath directory does not exist create it and export all the frames then review
-        if (!fs.existsSync(reviewPath)) {
-            fs.mkdir(reviewPath, () =>{
-                this.mapVideo(saveFrame, "last").then( () => {
-                    reviewModel();
+        fs.exists(reviewPath, (exists) => {
+            if (exists){
+                fs.mkdir(reviewPath, () =>{
+                    this.mapVideo(saveFrame, "last").then( () => {
+                        reviewModel();
+                    });
                 });
-            });
-        } else {
-            reviewModel();
-        }
+            } else {
+                reviewModel();
+            }
+        
+            function reviewModel() {
+                //run the model on the reviewPath directory
+                self.detectionAlgorithmManager.setReviewer(method, modelPath);
+                self.detectionAlgorithmManager.reviewer.reviewImagesFolder(reviewPath).then( (modelTags) => {
+                    self.videotagging.frames = [];
+                    self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
 
-        function reviewModel() {
-            //run the model on the reviewPath directory
-            self.detectionAlgorithmManager.setReviewer(method, modelPath);
-            self.detectionAlgorithmManager.reviewer.reviewImagesFolder(reviewPath).then( (modelTags) => {
-                self.videotagging.frames = [];
-                self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
+                    //Create regions based on the provided modelTags
+                    Object.keys(modelTags.frames).map( (pathId) => {
+                        var frameImage = new Image();
+                        frameImage.src = path.join(reviewPath, pathId);
+                        frameImage.onload = loadFrameRegions; 
 
-                //Create regions based on the provided modelTags
-                Object.keys(modelTags.frames).map( (pathId) => {
-                    var frameImage = new Image();
-                    frameImage.src = path.join(reviewPath, pathId);
-                    frameImage.onload = loadFrameRegions; 
-
-                    function loadFrameRegions() {
-                        var imageWidth = this.width;
-                        var imageHeight = this.height;
-                        frameId = pathId.replace(".jpg", "");//remove.jpg
-                        self.videotagging.frames[frameId] = [];
-                        modelTags.frames[pathId].regions.forEach( (region) => {
-                            self.videotagging.frames[frameId].push({
-                            x1:region.x1,
-                            y1:region.y1,
-                            x2:region.x2,
-                            y2:region.y2,                          
-                            id:self.videotagging.uniqueTagId++,
-                            width:imageWidth,
-                            height:imageHeight,
-                            type:self.videotagging.regiontype,
-                            tags:Object.keys(modelTags.classes).filter( (key) => {return modelTags.classes[key] === region.class }),
-                            name:(self.videotagging.frames[frameId].length + 1),
-                            blockSuggest: true
-                            }); 
-                        });
-                    }
+                        function loadFrameRegions() {
+                            var imageWidth = this.width;
+                            var imageHeight = this.height;
+                            frameId = pathId.replace(".jpg", "");//remove.jpg
+                            self.videotagging.frames[frameId] = [];
+                            modelTags.frames[pathId].regions.forEach( (region) => {
+                                self.videotagging.frames[frameId].push({
+                                x1:region.x1,
+                                y1:region.y1,
+                                x2:region.x2,
+                                y2:region.y2,                          
+                                id:self.videotagging.uniqueTagId++,
+                                width:imageWidth,
+                                height:imageHeight,
+                                type:self.videotagging.regiontype,
+                                tags:Object.keys(modelTags.classes).filter( (key) => {return modelTags.classes[key] === region.class }),
+                                name:(self.videotagging.frames[frameId].length + 1),
+                                blockSuggest: true
+                                }); 
+                            });
+                        }
+                    });
+                    self.videotagging.showAllRegions();
+                    //cleanup and notify
+                    self.videotagging.video.currentTime = 0;
+                    self.videotagging.playingCallback();
+                    let notification = new Notification('Offline Video Tagger', { body: 'Model Ready For Review.' });
+                    cb();
                 });
-                self.videotagging.showAllRegions();
-                //cleanup and notify
-                self.videotagging.video.currentTime = 0;
-                self.videotagging.playingCallback();
-                let notification = new Notification('Offline Video Tagger', { body: 'Model Ready For Review.' });
-                cb();
-            });
-        }
+            }
 
-        function saveFrame(frameId, fCanvas, canvasContext, saveCb){
-            var writePath =  path.join(reviewPath, `{frameId}.jpg`);
-            //write canvas to file and change frame
-            console.log('saving file', writePath);
-            if (!fs.exists(writePath,saveCb)) {
-                fs.writeFile(writePath, self.canvasToJpgBuffer(fCanvas, canvasContext), saveCb);
-            }  
-        }
-
+            function saveFrame(frameId, fCanvas, canvasContext, saveCb){
+                var writePath =  path.join(reviewPath, `{frameId}.jpg`);
+                //write canvas to file and change frame
+                console.log('saving file', writePath);
+                fs.exists(writePath, (exists) => {
+                    if (!exists) {
+                        fs.writeFile(writePath, self.canvasToJpgBuffer(fCanvas, canvasContext), saveCb);
+                    }  
+                });
+            }
+        });
     }
 
     this.canvasToJpgBuffer = function(canvas, canvasContext) {

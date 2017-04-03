@@ -164,7 +164,8 @@ function fileSelected(filepath) {
     $('title').text(`Video Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
-    assetFolder = path.dirname(pathName);
+    assetFolder = path.join(path.dirname(pathName), `${path.basename(pathName, path.extname(pathName))}_output`);
+    
     var config;
     try {
       config = require(`${pathName}.json`);

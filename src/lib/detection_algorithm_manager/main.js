@@ -9,9 +9,7 @@ Object.keys(config).forEach((key) => {
     detection_modules[key] =  require(path.join(__dirname, config[key]));
 });
 
-//removes
 var  export_algorithm, review_algorthim;
-
 
 function DetectionAlgorithmManager() {
     var self = this;
