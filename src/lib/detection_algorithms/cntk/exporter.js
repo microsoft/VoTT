@@ -84,8 +84,9 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                 },
                 function saveImage(exportPath, cb) {
                     var imageFilePath  = path.join(exportPath, frameFileName);
-                    fs.writeFileSync(imageFilePath, frameBuffer);
-                    cb(null, exportPath); 
+                    fs.writeFile(imageFilePath, frameBuffer, () => {
+                        cb(null, exportPath);
+                    });
                 },
                 function saveBboxes(exportPath, cb) {
                     if (exportPath !== self.negDirPath){
@@ -96,12 +97,14 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                             labelData  += `${tag.class}\n`;
                             bboxesData += `${tag.x1}\t${tag.y1}\t${tag.x2}\t${tag.y2}\n`;
                         }
-                        var labelFilePath  = path.join(exportPath, `${frameFileName}.bboxes.labels.tsv`);
-                        var bboxesFilePath  = path.join(exportPath, `${frameFileName}.bboxes.tsv`);
-                        fs.writeFileSync(labelFilePath, labelData);
-                        fs.writeFileSync(bboxesFilePath, bboxesData);
+                        var metadata = [
+                            {data: bboxesData, filepath : path.join(exportPath, `${frameFileName}.bboxes.tsv`)},                            
+                            {data: labelData, filepath : path.join(exportPath, `${frameFileName}.bboxes.labels.tsv`)}
+                        ]
+                        async.map(metadata, (obj, cb) => {
+                            fs.writeFile(obj.filepath, obj.data, cb);
+                        }, cb);
                     } 
-                    cb();
                 }
             ], (err) => {
                 if (err) {
