@@ -10,7 +10,7 @@ const CFG_TEMPLATE_FILE_PATH = path.join(__dirname, 'yolo-obj.cfg.template');
 const OBJ_DATA_TAMPLATE = 'classes = %s\n' + 
                           'train  = data/train.txt\n' +
                           'valid  = data/test.txt\n' +
-                          'names = %s.names\n' +
+                          'names = data/%s.names\n' +
                           'backup = backup/'
 
 
@@ -50,6 +50,8 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     // directories, ..)    
     // Returns: A Promise object that resolves when the operation completes
     this.init = function init() {
+        self.exportStarted = false;
+        
         return new Promise((resolve, reject) => {
             async.waterfall([
                 detectionUtils.generateTestIndecies.bind(null,self.testSplit, self.taggedFramesCount),
@@ -123,20 +125,25 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     imageDataFilePath = path.join(self.imagesDirPath, path.parse(frameFileName).name + '.txt');
                     var bboxesData = '';
                     for (var i in tags) {
+                        if (i > 0) {
+                            bboxesData += '\n';
+                        }
                         var tag = tags[i];
                         var classIndex = self.classesDict[tag.class];
                         var relWidth = (tag.x2 - tag.x1) / self.frameWidth;
                         var relHeight = (tag.y2 - tag.y1) / self.frameHeight;
                         var relCenterX = (tag.x1 / self.frameWidth) + (relWidth / 2);
                         var relCenterY = (tag.y1 / self.frameHeight) + (relHeight / 2);
-
-                        bboxesData += util.format('%s %s %s %s %s\n', classIndex, relCenterX.toFixed(6), 
+                        bboxesData += util.format('%s %s %s %s %s', classIndex, relCenterX.toFixed(6), 
                                                relCenterY.toFixed(6), relWidth.toFixed(6), relHeight.toFixed(6));
                     }
                     fs.writeFile(imageDataFilePath, bboxesData, cb);
                 },
                 function updateFilesList(cb) {
-                    var lineToAppend = 'data/' + self.dataSetName + '/' + frameFileName + '\n';
+                    var lineToAppend = 'data/' + self.dataSetName + '/' + frameFileName;
+                    if (self.exportStarted) {
+                        lineToAppend = '\n' + lineToAppend;
+                    }
                     if (self.testFrameIndecies.includes(self.posFrameIndex)){
                         self.posFrameIndex++;
                         fs.appendFile(self.testFilePath, lineToAppend, cb);
@@ -150,6 +157,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     reject(err);
                     return;
                 }
+                self.exportStarted = true;
                 resolve();
             });
         });
