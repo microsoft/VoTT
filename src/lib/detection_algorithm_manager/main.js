@@ -9,41 +9,32 @@ Object.keys(config).forEach((key) => {
     detection_modules[key] =  require(path.join(__dirname, config[key]));
 });
 
-var  export_algorithm, review_algorthim;
-
 function DetectionAlgorithmManager() {
     var self = this;
     //this returns a list of the availble detection modules
-    this.getAvailbleAlgorthims = function() {
+    this.getAvailbleAlgorthims = function getAvailbleAlgorthims() {
         return Object.keys(config);
     },
 
-    //returns export detection algorithm
-    this.getCurrentExportAlgorithm = function() {
-        return export_algorithm;
-    },
-
-    //returns current review algorithm
-    this.getCurrentReviewAlgorithm = function() {
-        return review_algorthim;
-    },
-
     //Set the  exporter to the specified detection module
-    this.setExporter = function(algorithm, exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit) {
+    this.initExporter = function(algorithm, exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit, cb) {
          if (!Object.keys(config).includes(algorithm)){
              throw (`Error ${algorithm} module is not recognized`);
          }
-         this.exporter = new detection_modules[algorithm].Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit);
-         export_algorithm = algorithm;
+         var exporter = new detection_modules[algorithm].Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeight, testSplit);
+         exporter.init().then(()=> {
+             return cb(null, exporter.exportFrame);         
+         }).catch((err) =>{
+            return cb(err);
+         });
     },
 
-    //Set the reviewer for to the specified detection module
-    this.setReviewer = function(algorithm, modelPath) {
+    this.initReviewer = function (algorithm, modelPath, cb) {
         if (!Object.values(config).includes(algorithm)){
              throw (`Error ${algorithm} module is not recognized`);
         }
-        this.reviewer = new detection_modules[algorithm].Reviewer(modelPath);
-        review_algorthim = algorithm;
+        var reviewer = new detection_modules[algorithm].Reviewer(modelPath);
+        return cb(reviewer.reviewImagesFolder);
     }
 
 }

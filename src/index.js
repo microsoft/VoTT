@@ -15,6 +15,11 @@ var visitedFrames, //keep track of the visited frames
 
 $(document).ready(() => {//init confirm keys figure out why this doesn't work
   $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
+  
+  // hover support
+  $('#load-message').hover(() => {$("#vidImage").attr('src', './public/images/Load-Video-Active.png')},
+                    () => {$("#vidImage").attr('src', './public/images/Load-Video.png')});
+
 });
 
 //ipc rendering
@@ -87,6 +92,7 @@ document.addEventListener('drop', (e) => {
     if (e.dataTransfer.files[0].type == "video/mp4") {
       fileSelected(e.dataTransfer.files[0]);
     }
+    $("#vidImage").attr('src', './public/images/Load-Video.png');
     return false;
 });
 
@@ -94,7 +100,15 @@ document.addEventListener('dragover', (e) => {
     e.preventDefault();
     if (e.dataTransfer.files[0].type == "video/mp4") {
       e.dataTransfer.dropEffect = "copy";
+      $("#vidImage").attr('src', './public/images/Load-Video-Active.png');
+
     }
+    e.stopPropagation();
+});
+
+document.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    $("#vidImage").attr('src', './public/images/Load-Video.png');
     e.stopPropagation();
 });
 

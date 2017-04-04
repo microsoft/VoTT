@@ -7,6 +7,10 @@ html, body {
     padding: 0 20px;
 }
 
+#required{
+    display: inline;
+}
+
 #load-text{
     margin-top: 20px;
     text-align: center;
@@ -34,7 +38,7 @@ html, body {
 }
 
 #vidImage{
-  width:50%;
+  width:480px;
   display:block;
   position:absolute;
   left:0;
@@ -44,7 +48,6 @@ html, body {
   margin:auto;
  }
  
-
  .form-control {
      max-width:800px;
  }
@@ -64,7 +67,7 @@ html, body {
 
 .bootstrap-tagsinput {
     display: block;
-    max-width: 800px;
+    max-width: 500px;
 }
 
 .loader {
