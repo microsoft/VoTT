@@ -3,8 +3,16 @@ html, body {
     padding: 0;
 }
 
+label {
+    font-size: 16px;
+}
+
 #load-form-container {
     padding: 0 20px;
+}
+
+#required{
+    display: inline;
 }
 
 #load-text{
@@ -34,7 +42,7 @@ html, body {
 }
 
 #vidImage{
-  width:50%;
+  width:400px;
   display:block;
   position:absolute;
   left:0;
@@ -44,7 +52,6 @@ html, body {
   margin:auto;
  }
  
-
  .form-control {
      max-width:800px;
  }
@@ -64,7 +71,8 @@ html, body {
 
 .bootstrap-tagsinput {
     display: block;
-    max-width: 800px;
+    min-height: 34px;
+    max-width: 500px;
 }
 
 .loader {
@@ -95,6 +103,11 @@ html, body {
   background-color: #d5d5d5 !important;
   border: 0px;
   border-radius: 5px;
+  }
+
+  #loadButton {
+      margin-top: 5px;
+      
   }
 
   #loadButton:hover {

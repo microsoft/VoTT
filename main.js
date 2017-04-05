@@ -54,14 +54,15 @@ function createWindow () {
 
   // do this independently for each object
   ipcMain.on('show-popup', function(event, arg) { 
-      var popup = new BrowserWindow({
+      let popup = new BrowserWindow({
         parent: mainWindow, 
         modal: true, 
         show: false, 
         frame: false,
         autoHideMenuBar : true
       });
-      switch (arg) {
+      
+      switch (arg.type) {
         case "export":
             popup.setSize(359, 300);
             popup.loadURL(url.format({
@@ -84,17 +85,19 @@ function createWindow () {
       }
       
       popup.once('ready-to-show', () => {
+        popup.send('configs', arg);
         popup.show();
-//        child.webContents.toggleDevTools();
+        //popup.webContents.toggleDevTools();
       });
 
-      ipcMain.on('export-tags', (event, arg) => {
-        mainWindow.send('export-tags', arg);
-      });
+  });
 
-      ipcMain.on('review-model', (event, arg) => {
-        mainWindow.send('review-model', arg);
-      });
+  ipcMain.on('export-tags', (event, arg) => {
+    mainWindow.send('export-tags', arg);
+  });
+
+  ipcMain.on('review-model', (event, arg) => {
+    mainWindow.send('review-model', arg);
   });
 
   mainWindow.on('ready-to-show', function() {
@@ -204,8 +207,6 @@ if (process.platform === 'darwin') {
 
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-
-
 
 }
 

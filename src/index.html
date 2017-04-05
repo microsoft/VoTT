@@ -14,12 +14,11 @@
     <script src="./bower_components/webcomponentsjs/webcomponents.min.js"></script>
     <link rel="import" href="./bower_components/video-tagging/video-tagging.html">
 
-    <script src="./public/js/bootstrap.min.js"></script>
+    <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="./public/js/bootstrap-tagsinput.min.js"></script>
-    <script src="./public/js/videotagging-ctnk-extension.js"></script>
-    <script src="./public/js/camshift.js"></script>
-    <script src="./public/js/scene-change-detector.js"></script>
-    <script src="./public/js/videotagging-tracking-extension.js"></script>
+    <script src="./lib/tracking_algorithms/camshift/camshift.js"></script>
+    <script src="./lib/tracking_algorithms/camshift/scene-change-detector.js"></script>
+    <script src="./lib/tracking_algorithms/videotagging-tracking-extension.js"></script>
 
     <script src="./index.js"></script>
 
@@ -28,21 +27,21 @@
   </head>
   <body>
     <div id="container">
-
-        <div id ='load-message'   onclick="fileSelected();">
-            <div id = "load-text"><h2>Please <b>Drag in</b> or <b>Click</b> to load a video for tagging.</h2></div>
-             <img id="vidImage" src ="./public/images/Wikiversity-Mooc-Icon-Video.svg.png" ></img>
+        <div id ='load-message'  onclick="fileSelected();">
+            
+             <img id="vidImage" src ="./public/images/Load-Video.png" ></img>
+             <div id = "load-text"><h2>Please <b>Drag in</b> or <b>Click</b> to load a video for tagging.</h2></div>
         </div>
         <div id ='load-form-container' style ="display: none">
-          <h2>Tagging Job Configuration</h2>
+          <h2>Tagging Job Configuration</h2> <hr>
 
           <div class="form-group" id="framerateGroup">
-            <label for="exampleTextarea" title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per a video second)</label>
-            <input id="framerate" type="number" min="1" max="60" value="1" maxlength="3" size="3" class="form-control" />
+            <label title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per a video second)</label>
+            <input id="framerate" type="number" min="1" max="60" value="1" maxlength="3" size="3" class="form-control" style ="max-width: 5em"/>
           </div>
           <div class="form-group">
-            <label for="exampleTextarea" title="(Type of region selector to tag frames)">Region Type</label>
-            <select id="regiontype" class="form-control" id="text" onchange="checkPointRegion();">
+            <label title="(Type of region selector to tag frames)">Region Type</label>
+            <select id="regiontype" class="form-control" id="text" onchange="checkPointRegion();" style ="max-width: 8em">
                   <option selected="selected">Rectangle</option>
                   <!--option>Point</option-->
                   <option>Square</option>
@@ -51,17 +50,17 @@
 
           <div class="regionGroup">
             <div class="form-group" id="regionPointGroup" style ="display: none">
-              <label for="exampleTextarea" title="(Region Size for point selector!)">Point Region Size</label>
+              <label title="(Region Size for point selector!)">Point Region Size</label>
               <input class="form-control" type="text" value="25" id="regionsize"/>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="Tags"> Labels* (Comma Seperated)</label>
+            <label for="Tags"> Labels<div id="required">*</div> (Comma Seperated)</label>
             <input id="inputtags" class="form-control" type="text"  data-role="tagsinput" required/>
-          </div>
+          </div> 
 
-          <div id="loadButton" class="btn btn-primary">Continue</div>
+            <div id="loadButton" class="btn btn-primary">Continue</div>
         </div>
         <div id='video-tagging-container' style="display: none">
             <video-tagging id='video-tagging' ></video-tagging>

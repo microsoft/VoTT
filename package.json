@@ -13,17 +13,17 @@
     "Deep-Learning",
     "Object-Detection"
   ],
-  "readme":"README.md",
+  "readme": "README.md",
   "author": "aribornstein",
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.7.2"
   },
   "dependencies": {
-    "electron": "^1.4.1",
+    "async": "^2.1.5",
     "cntk-fastrcnn": "^0.2.2",
+    "electron": "^1.4.1",
     "electron-window-state": "^4.0.2",
-    "remote": "^0.2.6",
-    "rimraf": "^2.6.1"
+    "remote": "^0.2.6"
   }
 }

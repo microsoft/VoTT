@@ -629,7 +629,7 @@
       //reset tag buttons to not selected
       this.optionalTags.resetSelected();
       //hide region number
-      self.regionLabelDiv.style.display = "none";
+      this.regionLabelDiv.style.display = "none";
       //Clears the empty frame icon
       this.indicateEmptyFrame(false);
     },
@@ -741,8 +741,8 @@
             if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
             //if there are no unlabled tags move to next frame
         
-                this.video.currentTime += this.frameTime;
-                this.playingCallback();
+            this.video.currentTime += this.frameTime;
+            this.playingCallback();
             
             //raise after next frame
             if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep');
