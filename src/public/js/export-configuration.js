@@ -17,7 +17,7 @@ ipcRenderer.on('configs', (event, configs) => {
 
 function getExportConfiguration() {
     var exportConfig = {
-        exportUntil:   $('#exportTo').val(),
+        exportUntil: $('#exportTo').val(),
         exportPath: $('#output').val(),
         exportFormat: $('#format').val()
     };

@@ -1,4 +1,0 @@
-{
-    "CNTK Fast-RCNN": "../detection_algorithms/cntkfastrcnn",  
-    "YOLO": "../detection_algorithms/yolo"
-}

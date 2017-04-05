@@ -3,6 +3,10 @@ html, body {
     padding: 0;
 }
 
+label {
+    font-size: 16px;
+}
+
 #load-form-container {
     padding: 0 20px;
 }
@@ -38,7 +42,7 @@ html, body {
 }
 
 #vidImage{
-  width:480px;
+  width:400px;
   display:block;
   position:absolute;
   left:0;
@@ -67,6 +71,7 @@ html, body {
 
 .bootstrap-tagsinput {
     display: block;
+    min-height: 34px;
     max-width: 500px;
 }
 
@@ -98,6 +103,11 @@ html, body {
   background-color: #d5d5d5 !important;
   border: 0px;
   border-radius: 5px;
+  }
+
+  #loadButton {
+      margin-top: 5px;
+      
   }
 
   #loadButton:hover {
