@@ -70,9 +70,14 @@ function createWindow () {
       label: 'File',
       submenu: [
         {
-          label: 'Open...',
+          label: 'Open Video...',
           accelerator: 'CmdOrCtrl+O',
           click () { mainWindow.webContents.send('openVideo'); }
+        },
+        {
+          label: 'Open Image Directory...',
+          accelerator: 'CmdOrCtrl+I',
+          click () { mainWindow.webContents.send('openImageDirectory'); }
         },
         {
           label: 'Save',
