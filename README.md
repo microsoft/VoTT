@@ -8,7 +8,7 @@ This tool provides end to end support for generating datasets and validating obj
 The tool supports the following **features**:
 
 - Computer-assisted tagging and tracking of objects in videos using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf).
-- Exporting tags and assets to CNTK format for training a CNTK object detection model.
+- Exporting tags and assets to CNTK or YOLO format for training an object detection model.
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models.
 
 ## Table of Contents
@@ -26,7 +26,7 @@ The tool supports the following **features**:
 
  1. Download and extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Detection-Video-Tagging-Tool/releases)
 
- 2. Run the app by launching the "CNTKVideoTagger" executable which will be located inside the unzipped folder.
+ 2. Run the app by launching the "VOTT" executable which will be located inside the unzipped folder.
 
  ### Installing CNTK with the FRCNN Prerequisites
 
@@ -77,7 +77,7 @@ The tool supports the following **features**:
      - Since the [camshift algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) has some known limitations, you can disable tracking for certain sets of frames. To toggle tracking *on* and *off* use the file menu setting, or the keyboard shortcut Ctrl/Cmd + T.
 
 
- 4. Export video to CNTK Format using Object Detection Menu or Ctrl/Cmd + E
+ 4. Export video Tags using the Object Detection Menu or Ctrl/Cmd + E
 
     ![]( media/5_Export.jpg)
     
@@ -95,7 +95,7 @@ The tool supports the following **features**:
     - **Output directory**: directory path for exporting training data<br>
     
 ---
-## Reviewing and Improving a CNTK Object Detection Model
+## Reviewing and Improving a Object Detection Model
 
  1. Train model with [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> *Note: the data is already in CNTK format, so you do not have to run `C1_DrawBboxesOnImages.py` or `C2_AssignLabelsToBboxes.py`*
  2. Load a new video that the model has not been trained on
@@ -105,6 +105,10 @@ The tool supports the following **features**:
     ![](media/6_Review.jpg)
  6. When the model finishes processing, validate tags, re-export and retrain it
  7. Repeat step 1 on new videos until the model performance is satisfactory
+ 
+## Supporting additonal object detection Export and Review formats.
+
+In the latest release we provide support for [Export and Review formats](https://github.com/CatalystCode/VOTT/tree/master/src/lib/detection_algorithms). To add a new object detection format, copy the interface folder and use the Yolo and CNTK implementations as reference. 
 
 ## Upcoming Features 
 
