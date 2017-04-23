@@ -52,7 +52,8 @@ function Detection(videotagging, visitedFrames) {
                     resolve();
                 }
                 
-                frameHandler(frameId, frameCanvas, canvasContext, () => {
+                var frameName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameId}.jpg`
+                frameHandler(frameName, frameId, frameCanvas, canvasContext, () => {
                     if (!lastFrame) {
                         self.videotagging.stepFwdClicked(false);
                     }
@@ -61,9 +62,29 @@ function Detection(videotagging, visitedFrames) {
         });
     }
 
+    //this maps dir of images for exporting
+    this.mapDir = function(frameHandler, dir){
+        return new Promise((resolve, reject) => {
+            dir.forEach( (imagePath, index) => {
+                var img = new Image();
+                img.src = imagePath;
+                img.onload = function () {
+                    var frameCanvas = document.createElement("canvas");
+                    frameCanvas.width = img.width;
+                    frameCanvas.height = img.height;
+                    // Copy the image contents to the canvas
+                    var canvasContext = frameCanvas.getContext("2d");
+                    canvasContext.drawImage(img, 0, 0);
+                    frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext,()=>{});
+                }
+            });
+            resolve();
+        });
+    }
+
     // TODO: Abstract to a module that receives a "framesReader" object as input
     //exports frames to the selected detection algorithm format  for model training
-    this.export = function(method, exportUntil, exportPath, testSplit, cb) {
+    this.export = function(dir, method, exportUntil, exportPath, testSplit, cb) {
         self.detectionAlgorithmManager.initExporter(method, exportPath, self.videotagging.inputtagsarray, 
                                             Object.keys(self.videotagging.frames).length,
                                             self.videotagging.video.videoWidth,
@@ -72,19 +93,30 @@ function Detection(videotagging, visitedFrames) {
         (err, exporter) => {
             if (err){
                 cb(err);
-            }        
-            this.mapVideo(exportFrame.bind(err, exporter), exportUntil).then(() => {
+            }   
+            if (dir){
+                this.mapDir(exportFrame.bind(err, exporter), dir).then(exportFinished, (err) => {
+                    console.info(`Error on ${method} init:`, err);
+                    cb(err);
+                });
+
+            } else {
+                this.mapVideo(exportFrame.bind(err, exporter), exportUntil).then(exportFinished, (err) => {
+                    console.info(`Error on ${method} init:`, err);
+                    cb(err);
+                });
+            }  
+
+            function exportFinished() {
                 let notification = new Notification('Offline Video Tagger', {
-                    body: `Successfully exported ${method} files.`
+                        body: `Successfully exported ${method} files.`
                 });
                 cb();
-            }, (err) => {
-                console.info(`Error on ${method} init:`, err);
-                cb(err);
-            });
+            }
+ 
         });
 
-        function exportFrame(exporter, frameId, frameCanvas, canvasContext, frameExportCb) {
+        function exportFrame(exporter, frameName, frameId, frameCanvas, canvasContext, frameExportCb) {
             if (!self.visitedFrames.has(frameId)) {
                 return frameExportCb();
             }
@@ -111,16 +143,15 @@ function Detection(videotagging, visitedFrames) {
             }
 
             //draw the frame to the canvas
-            var frameFileName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
             var buf = self.canvasToJpgBuffer(frameCanvas, canvasContext);
-            exporter(frameFileName, buf, frameTags)
+            exporter(frameName, buf, frameTags)
                 .then(()=>{
                     frameExportCb();
                 }, (err) => {
                     console.info('Error occured when trying to export frame', err);
                     frameExportCb(err);
                 });
-        }
+        } 
     }
     
     //allows user to review model suggestions on a video
@@ -139,7 +170,7 @@ function Detection(videotagging, visitedFrames) {
         
             function reviewModel() {
                 //run the model on the reviewPath directory
-                self.detectionAlgorithmManager.initReviewer(method, modelPath, (reviewImagesFolder) =>{
+                self.detectionAlgorithmManager.initReviewer(method, modelPath, (reviewImagesFolder) => {
                     reviewImagesFolder(reviewPath).then( (modelTags) => {
                         self.videotagging.frames = [];
                         self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
