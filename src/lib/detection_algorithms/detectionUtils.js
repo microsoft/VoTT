@@ -1,10 +1,10 @@
 //fisherYates http://stackoverflow.com/questions/2380019/generate-unique-random-numbers-between-1-and-100 
 module.exports.generateTestIndecies = function(percent, taggedFramesCount) {
-    var splitSize = Math.ceil(percent * taggedFramesCount),
+    var splitSize = taggedFramesCount - 1 - Math.ceil(percent * taggedFramesCount),
         testIndecies = [];
     //range call http://stackoverflow.com/questions/3895478/does-javascript-have-a-method-like-range-to-generate-an-array-based-on-suppl
     taggedFrameIndecies = Array.apply(null, Array(taggedFramesCount)).map(function (_, i) {return i;});
-    for (i = taggedFrameIndecies.length-1; i > splitSize; i--){
+    for (i = taggedFramesCount-1; i > splitSize; i--){
         var t = taggedFrameIndecies[i];
         var r = Math.floor(Math.random() * i);
         testIndecies.push(r);
