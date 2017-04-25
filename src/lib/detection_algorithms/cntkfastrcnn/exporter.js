@@ -67,7 +67,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                                       path.join(self.testDirPath, `${frameFileName}.bboxes.labels.tsv`)], detectionUtils.deleteFileIfExists),
 
                 function determineWritePath(cb){
-                    if( !tags.length){ 
+                    if(!tags.length){ 
                         cb(null, self.negDirPath);
                     } else {
                         var dirPath = self.testFrameIndecies.includes(self.posFrameIndex) ? self.testDirPath : self.posDirPath;
@@ -97,7 +97,9 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                         async.map(metadata, (obj, cb) => {
                             fs.writeFile(obj.filepath, obj.data, cb);
                         }, cb);
-                    } 
+                    } else {
+                        cb();
+                    }
                 }
             ], (err) => {
                 if (err) {
