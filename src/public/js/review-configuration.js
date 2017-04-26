@@ -7,7 +7,7 @@ window.onload = function(){
 }
 
 ipcRenderer.on('configs', (event, configs) => {  
-    $('#output').val(configs.assetFolder);
+    $('#output').val(configs.assetFolder+"_review");
     $('#format').empty(); // remove old options
     configs.supportedFormats.forEach( (algorithm) => {
         $('#format').append($("<option></option>").attr("value", algorithm).text(algorithm));
