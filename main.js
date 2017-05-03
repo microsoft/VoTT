@@ -130,7 +130,7 @@ function createWindow () {
           click () { mainWindow.webContents.send('saveVideo'); }
         },
         {
-          label: 'Toggle Tracking',
+          label: 'Toggle Region Suggestions',
           accelerator: 'CmdOrCtrl+T',
           enabled: false,
           click () { mainWindow.webContents.send('toggleTracking'); }

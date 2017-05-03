@@ -2,6 +2,9 @@ function VideoTaggingTrackingExtension( options = {} ) {
     this.videotagging = options.videotagging;
     this.trackingFrameRate = Math.max(options.trackingFrameRate, this.videotagging.framerate + 1);
     this.saveHandler = options.saveHandler;
+    this.method = options.method;
+    this.enableRegionChangeDetection = options.enableRegionChangeDetection;
+    this.enableSceneChangeDetection = options.enableRegionChangeDetection;
 
     var self = this;
 
@@ -77,35 +80,56 @@ function VideoTaggingTrackingExtension( options = {} ) {
                 var curFrame = self.videotagging.getCurrentFrame(),
                     stanW = self.videotagging.video.offsetWidth/self.videotagging.video.videoWidth,
                     stanH = self.videotagging.video.offsetHeight/self.videotagging.video.videoHeight;
-                // pass regions to track 
-                track(regionsToTrack).then( (suggestions) => {
-                    suggestions.forEach((suggestion) => {
+                
+                if (self.method === "track"){
+                    // pass regions to track 
+                    track(regionsToTrack).then( (suggestions) => {
+                        suggestions.forEach((suggestion) => {
+                            var x1, y1, x2, y2;
+                            if (suggestion.type == "copy") {
+                                x1 = suggestion.region.x * stanW;
+                                y1 = suggestion.region.y * stanH;
+                                x2 = x1 + suggestion.region.w * stanW;
+                                y2 = y1 + suggestion.region.h * stanH;
+                            } else { //get bounding box of tracked object
+                                x1 = Math.max(Math.round(suggestion.region.x * stanW) - Math.round((suggestion.region.w * stanW)/2), 0),
+                                y1 = Math.max(Math.round(suggestion.region.y * stanH) - Math.round((suggestion.region.h * stanH)/2), 0),
+                                x2 = Math.min(Math.round(suggestion.region.w * stanW) + x1, self.videotagging.video.offsetWidth),
+                                y2 = Math.min(Math.round(suggestion.region.h * stanH) + y1, self.videotagging.video.offsetHeight);
+                            }
+                            // create new region
+                            self.videotagging.createRegion(x1, y1, x2, y2);
+                            self.videotagging.frames[curFrame][self.videotagging.frames[curFrame].length-1].tags = suggestion.originalRegion.tags;
+                            self.videotagging.frames[curFrame][self.videotagging.frames[curFrame].length-1].suggestedBy = {frameId:curFrame-1, regionId:suggestion.originalRegion.id};        
+                            // add suggested by to previous region to blacklist
+                            self.videotagging.frames[curFrame-1][suggestion.originalRegion.name-1].blockSuggest = true;
+                        });   
+                            regionsToTrack = [];
+                            self.videotagging.canMove = true;
+                        }).catch( (e) => {
+                            console.info(e);
+                            regionsToTrack = [];
+                            self.videotagging.canMove = true;
+                        });
+
+                }
+                else if (self.method == "copy"){
+                    regionsToTrack.forEach((region) => {
                         var x1, y1, x2, y2;
-                        if (suggestion.type == "copy") {
-                            x1 = suggestion.region.x * stanW;
-                            y1 = suggestion.region.y * stanH;
-                            x2 = x1 + suggestion.region.w * stanW;
-                            y2 = y1 + suggestion.region.h * stanH;
-                        } else { //get bounding box of tracked object
-                            x1 = Math.max(Math.round(suggestion.region.x * stanW) - Math.round((suggestion.region.w * stanW)/2), 0),
-                            y1 = Math.max(Math.round(suggestion.region.y * stanH) - Math.round((suggestion.region.h * stanH)/2), 0),
-                            x2 = Math.min(Math.round(suggestion.region.w * stanW) + x1, self.videotagging.video.offsetWidth),
-                            y2 = Math.min(Math.round(suggestion.region.h * stanH) + y1, self.videotagging.video.offsetHeight);
-                        }
+                            x1 = region.x * stanW;
+                            y1 = region.y * stanH;
+                            x2 = x1 + region.w * stanW;
+                            y2 = y1 + region.h * stanH;
                         // create new region
                         self.videotagging.createRegion(x1, y1, x2, y2);
-                        self.videotagging.frames[curFrame][self.videotagging.frames[curFrame].length-1].tags = suggestion.originalRegion.tags;
-                        self.videotagging.frames[curFrame][self.videotagging.frames[curFrame].length-1].suggestedBy = {frameId:curFrame-1, regionId:suggestion.originalRegion.id};        
+                        self.videotagging.frames[curFrame][self.videotagging.frames[curFrame].length-1].tags = region.originalRegion.tags;
+                        self.videotagging.frames[curFrame][self.videotagging.frames[curFrame].length-1].suggestedBy = {frameId:curFrame-1, regionId:region.originalRegion.id};        
                         // add suggested by to previous region to blacklist
-                        self.videotagging.frames[curFrame-1][suggestion.originalRegion.name-1].blockSuggest = true;
+                        self.videotagging.frames[curFrame-1][region.originalRegion.name-1].blockSuggest = true;
                     });   
-                        regionsToTrack = [];
-                        self.videotagging.canMove = true;
-                    }).catch( (e) => {
-                        console.info(e);
-                        regionsToTrack = [];
-                        self.videotagging.canMove = true;
-                    });
+                    regionsToTrack = [];
+                    self.videotagging.canMove = true;
+                }
             } else {
                 self.videotagging.canMove =true;
             }        
@@ -134,15 +158,21 @@ function VideoTaggingTrackingExtension( options = {} ) {
                     tagging_duration = Math.min(self.videotagging.video.currentTime , self.videotagging.video.duration);
 
                     //detect if scene change
-                    scd = new SceneChangeDetector({ threshold:49, detectionRegion: { w:frameCanvas.width, h:frameCanvas.height } });
-                    scd.detectSceneChange(video, frameCanvas, canvasContext, self.videotagging.framerate).then((sceneChanged) => {          
-                        if (!sceneChanged) {
-                            video.oncanplay = trackFrames;    
-                            video.currentTime += (1 / self.trackingFrameRate);          
-                        } else {
-                            reject("scene changed");
-                        }
-                    }).catch((e) => {console.info(e)});
+                    if (self.enableSceneChangeDetection){
+                        scd = new SceneChangeDetector({ threshold:49, detectionRegion: { w:frameCanvas.width, h:frameCanvas.height } });
+                        scd.detectSceneChange(video, frameCanvas, canvasContext, self.videotagging.framerate).then((sceneChanged) => {          
+                            if (!sceneChanged) {
+                                video.oncanplay = trackFrames;    
+                                video.currentTime += (1 / self.trackingFrameRate);          
+                            } else {
+                                reject("scene changed");
+                            }
+                        }).catch((e) => {console.info(e)});
+                    }
+                    else {
+                         video.oncanplay = trackFrames;    
+                         video.currentTime += (1 / self.trackingFrameRate);    
+                    }
                 }
 
                 function trackFrames() { 
@@ -154,12 +184,12 @@ function VideoTaggingTrackingExtension( options = {} ) {
                     var regionDetectionPromises = [];
                     regions.forEach((region, i) => {
                         // if first pass check whether the region changed
-                        if (region.regionChanged === undefined) {
+                        if (self.enableRegionChangeDetection && region.regionChanged === undefined) {
                             rcd = new SceneChangeDetector({ threshold:1, detectionRegion: { w:region.w, h:region.h} });   
                             regionDetectionPromises.push(rcd.detectRegionChange(video, frameCanvas, region, i, self.videotagging.framerate));
                         } else {
-                            if (region.regionChanged) {
-                            trackRegion(region, i);
+                            if (region.regionChanged || !self.enableRegionChangeDetection) {
+                                trackRegion(region, i);
                             }
                         }                
                     });  
@@ -168,11 +198,11 @@ function VideoTaggingTrackingExtension( options = {} ) {
                         values.sort((a,b) => { return b.index - a.index; });//sort so removal works correctly
                         values.forEach ( (rp) => { //rp is resolved promise
                             if (rp.regionChanged) {
-                                trackRegion(rp.region, rp.index); 
-                                regions[rp.index].regionChanged = rp.regionChanged; //make sure region change only executes once
+                                 trackRegion(rp.region, rp.index); 
+                                 regions[rp.index].regionChanged = rp.regionChanged; //make sure region change only executes once
                             } else {
-                                suggestions.push({type:"copy", region : rp.region, originalRegion: rp.region.originalRegion});
-                                regions.splice(rp.index,1);
+                                 suggestions.push({type:"copy", region : rp.region, originalRegion: rp.region.originalRegion});
+                                 regions.splice(rp.index,1);
                             }
                         });
                         if (video.currentTime >= tagging_duration) {
@@ -211,6 +241,7 @@ function VideoTaggingTrackingExtension( options = {} ) {
                 }
             });
         } 
+        
     }
 
 }
