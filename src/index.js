@@ -183,11 +183,21 @@ function fileSelected(filepath) {
     var config;
     try {
       config = require(`${pathName}.json`);
-      //restore tags
+      //restore config
       $('#inputtags').val(config.inputTags);
       config.inputTags.split(",").forEach( tag => {
           $("#inputtags").tagsinput('add',tag);
       });
+      if (config.framerate){
+         $("#framerate").val(config.framerate);
+      }
+      if (config.suggestiontype){
+        $('#suggestiontype').val(config.suggestiontype);
+      }
+      if (config.scd){
+        document.getElementById("scd").checked =config.scd;
+      }
+      
     } catch (e) {
       console.log(`Error loading save file ${e.message}`);
     }
@@ -232,9 +242,13 @@ function fileSelected(filepath) {
         //init region tracking
         trackingExtension = new VideoTaggingTrackingExtension({
             videotagging: videotagging, 
-            trackingFrameRate: 10,
+            trackingFrameRate: 15,
+            method: $('#suggestiontype').val(),
+            enableRegionChangeDetection: document.getElementById("scd").checked,
+            enableSceneChangeDetection: document.getElementById("scd").checked,
             saveHandler: save
         });
+        
         trackingExtension.startTracking();
 
         //init detection
@@ -255,7 +269,10 @@ function fileSelected(filepath) {
 function save() {
     var saveObject = {
       "frames" : videotagging.frames,
+      "framerate":$('#framerate').val(),
       "inputTags": $('#inputtags').val(),
+      "suggestiontype": $('#suggestiontype').val(),
+      "scd": document.getElementById("scd").checked,
       "visitedFrames": Array.from(visitedFrames),
     };
     
