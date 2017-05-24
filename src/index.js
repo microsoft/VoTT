@@ -16,11 +16,6 @@ var saveState,
 
 $(document).ready(() => {//init confirm keys figure out why this doesn't work
   $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
-  
-  // hover support
-  $('#load-message').hover(() => {$("#vidImage").attr('src', './public/images/Load-Video-Active.png')},
-                    () => {$("#vidImage").attr('src', './public/images/Load-Video.png')});
-
 });
 
 //ipc rendering
@@ -159,7 +154,7 @@ function checkPointRegion() {
 
 //load logic
 function fileSelected(filepath) {
-   $('#load-message').hide();
+   $('#load-message-container').hide();
 
   if (filepath) {  //checking if a video is dropped
     let pathName = filepath.path;
@@ -171,27 +166,27 @@ function fileSelected(filepath) {
     },
     function (pathName) {
       if (pathName) openPath(pathName[0], false);
-      else $('#load-message').show();
+      else $('#load-message-container').show();
     });
   }
 
 }
 
 function folderSelected(folderpath) {
-   $('#load-message').hide();
+   $('#load-message-container').hide();
    dialog.showOpenDialog({
       filters: [{ name: 'Image Directory'}],
       properties: ['openDirectory']
     },function (pathName) {
       if (pathName) openPath(pathName[0], true);
-      else $('#load-message').show();
+      else $('#load-message-container').show();
     });
 
 }
 
 function openPath(pathName, isDir) {
     // show configuration
-    $('#load-message').hide();
+    $('#load-message-container').hide();
     $('#video-tagging-container').hide();
     $('#load-form-container').show();
     $('#framerateGroup').show();

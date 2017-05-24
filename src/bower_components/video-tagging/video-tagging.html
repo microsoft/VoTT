@@ -573,18 +573,17 @@
               for (var i=0; i<regions.length;i++) {
                   var region = regions[i];
                   //Frame was tagged as empty?
-                  if(Object.keys(region).length === 0) {
+                  if (Object.keys(region).length === 0) {
                       this.indicateEmptyFrame(true);
                       continue;
                   }
                   //Calculate x, y relative to current width and height
-                 
                   if (this.imagelist){
-                     var widthRatio =  this.overlay.width / region.width;
-                     var heightRatio =  this.overlay.height / region.height ;
+                     var widthRatio = this.overlay.width / region.width;
+                     var heightRatio = this.overlay.height / region.height ;
                   } else {
-                      var widthRatio =  $("#vid").width() / region.width;
-                     var heightRatio =  $("#vid").height() / region.height ;
+                     var widthRatio = $("#vid").width() / region.width;
+                     var heightRatio = $("#vid").height() / region.height ;
                   }
                   var x1 = (region.x1 * widthRatio);
                   var y1 = (region.y1 * heightRatio);
@@ -595,11 +594,9 @@
                   x2 = (region.x2 * widthRatio);
                   y2 = (region.y2 * heightRatio);
                   var offset = parseFloat(this.overlay.style.left);
-                  this.addDivToRegion(x1 + (isNaN(offset) ? 0 : offset), y1, x2 + (isNaN(offset) ? 0 : offset) , y2, region.name);//add frame
-
-                  //this.addDivToRegion( x1, y1, x2, y2, region.name);
+                  this.addDivToRegion(x1 + (isNaN(offset) ? 0 : offset), y1, x2 + (isNaN(offset) ? 0 : offset) , y2, region.name); //add frame
                   //Only 1 region - select it and show tags
-                  if(regions.length === 1) {
+                  if (regions.length === 1) {
                       this.regionSelected(region.name);
                   }
                   this.updateRegionZIndices();
@@ -799,7 +796,6 @@
             self.optionalTags.createTagControls(self.inputtagsarray);
             self.playingCallback();
             $(window).off("resize");
-            
             var imgRatio = self.curImg.width / self.curImg.height;
             //fix resize bug
             $(window).resize(function(){
@@ -810,27 +806,15 @@
                     var transformHeight = parseFloat(self.video.offsetHeight)/parseFloat(self.overlay.height);
                     //resize the overlay
                     self.overlay.width =  parseFloat(self.video.offsetHeight * imgRatio);
-                    
                     self.overlay.style.left = `${((self.video.offsetWidth/2) - (self.overlay.width/2))}px`;
                     self.overlay.height = self.video.offsetHeight;
                     //resize the region boxes
                     self.showAllRegions();
-
-                    // $('.regionCanvas').each(function() {
-                    //     this.style.left =   (parseFloat(this.style.left) * transformWidth) + "px";
-                    //     this.style.top =    (parseFloat(this.style.top) * transformHeight) + "px";
-                    //     this.style.width =  (parseFloat(this.style.width) * transformWidth)  + "px";
-                    //     this.style.height = (parseFloat(this.style.height) * transformHeight) + "px";
-                    // });
                     //reposition selectedRegion Label
                     var selectedDiv = $('.regionCanvasSelected')[0];
                     self.positionRegionNameLabel(selectedDiv);
-
-                    
-
                 }
             });
-
         }
 
     },

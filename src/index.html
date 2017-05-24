@@ -26,53 +26,63 @@
     <link rel="stylesheet" href="./public/css/styles.css">
   </head>
   <body>
-    <div id="container">
-        <div id ='load-message'  onclick="fileSelected();">
-            
-             <img id="vidImage" src ="./public/images/Load-Video.png" ></img>
-             <div id = "load-text"><h2>Please <b>Drag in</b> or <b>Click</b> to load a video for tagging.</h2></div>
+    
+    <div id="load-message-container">
+      <div id = "load-text"><h2>Select an <b>Image Directory</b> or <b>Video</b> for tagging.</h2></div>
+        <div id="load-icons" >
+          <svg id="dirImage" version="1.1" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 36 32" onclick="folderSelected()">
+            <title>images</title>
+            <path d="M34 4h-2v-2c0-1.1-0.9-2-2-2h-28c-1.1 0-2 0.9-2 2v24c0 1.1 0.9 2 2 2h2v2c0 1.1 0.9 2 2 2h28c1.1 0 2-0.9 2-2v-24c0-1.1-0.9-2-2-2zM4 6v20h-1.996c-0.001-0.001-0.003-0.002-0.004-0.004v-23.993c0.001-0.001 0.002-0.003 0.004-0.004h27.993c0.001 0.001 0.003 0.002 0.004 0.004v1.996h-24c-1.1 0-2 0.9-2 2v0zM34 29.996c-0.001 0.001-0.002 0.003-0.004 0.004h-27.993c-0.001-0.001-0.003-0.002-0.004-0.004v-23.993c0.001-0.001 0.002-0.003 0.004-0.004h27.993c0.001 0.001 0.003 0.002 0.004 0.004v23.993z"></path>
+            <path d="M30 11c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3 3 1.343 3 3z"></path>
+            <path d="M32 28h-24v-4l7-12 8 10h2l7-6z"></path>
+          </svg>
+
+          <svg id="vidImage" version="1.1" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 36 32" onclick="fileSelected();">
+            <title>play</title>
+            <path d="M30.662 5.003c-4.488-0.645-9.448-1.003-14.662-1.003s-10.174 0.358-14.662 1.003c-0.86 3.366-1.338 7.086-1.338 10.997s0.477 7.63 1.338 10.997c4.489 0.645 9.448 1.003 14.662 1.003s10.174-0.358 14.662-1.003c0.86-3.366 1.338-7.086 1.338-10.997s-0.477-7.63-1.338-10.997zM12 22v-12l10 6-10 6z"></path>
+          </svg>
         </div>
-        <div id ='load-form-container' style ="display: none">
-          <h2>Tagging Job Configuration</h2> <hr>
+    </div>
+    <div id ='load-form-container' style ="display: none">
+      <h2>Tagging Job Configuration</h2> <hr>
 
-          <div class="form-group" id="framerateGroup">
-            <label title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per a video second)</label>
-            <input id="framerate" type="number" min="1" max="60" value="1" maxlength="3" size="3" class="form-control" style ="max-width: 5em"/>
-          </div>
-          <div class="form-group">
-            <label title="(Type of region selector to tag frames)">Region Type</label>
-            <select id="regiontype" class="form-control" id="text" onchange="checkPointRegion();" style ="max-width: 8em">
-                  <option selected="selected">Rectangle</option>
-                  <!--option>Point</option-->
-                  <option>Square</option>
-            </select>
-          </div>
+      <div class="form-group" id="framerateGroup">
+        <label title="(How many frames to extract per a second of video!)">Frame Extraction Rate (frames per a video second)</label>
+        <input id="framerate" type="number" min="1" max="60" value="1" maxlength="3" size="3" class="form-control" style ="max-width: 5em"/>
+      </div>
+      <div class="form-group">
+        <label title="(Type of region selector to tag frames)">Region Type</label>
+        <select id="regiontype" class="form-control" id="text" onchange="checkPointRegion();" style ="max-width: 8em">
+              <option selected="selected">Rectangle</option>
+              <!--option>Point</option-->
+              <option>Square</option>
+        </select>
+      </div>
 
-          <div class="regionGroup">
-            <div class="form-group" id="regionPointGroup" style ="display: none">
-              <label title="(Region Size for point selector!)">Point Region Size</label>
-              <input class="form-control" type="text" value="25" id="regionsize"/>
-            </div>
-          </div>
-
-          <div class="form-group" id="suggestGroup">
-            <label title="Suggested Region Method">Suggested Region Method</label>
-            <select id="suggestiontype" class="form-control" id="text" onchange="checkPointRegion();" style ="max-width: 8em">
-                  <option selected="selected" value = "track">Tracking</option>
-                  <option  value = "copy">Copy Last Frame</option>
-            </select>
-            <input type="checkbox" id="scd" > Enable Scene Change Detection<br>
-          </div>
-          <div class="form-group">
-            <label for="Tags"> Labels<div id="required">*</div> (Comma Seperated)</label>
-            <input id="inputtags" class="form-control" type="text"  data-role="tagsinput" required/>
-          </div> 
-
-            <div id="loadButton" class="btn btn-primary">Continue</div>
+      <div class="regionGroup">
+        <div class="form-group" id="regionPointGroup" style ="display: none">
+          <label title="(Region Size for point selector!)">Point Region Size</label>
+          <input class="form-control" type="text" value="25" id="regionsize"/>
         </div>
-        <div id='video-tagging-container' style="display: none">
-            <video-tagging id='video-tagging' ></video-tagging>
-        </div>
+      </div>
+
+      <div class="form-group" id="suggestGroup">
+        <label title="Suggested Region Method">Suggested Region Method</label>
+        <select id="suggestiontype" class="form-control" id="text" onchange="checkPointRegion();" style ="max-width: 8em">
+              <option selected="selected" value = "track">Tracking</option>
+              <option  value = "copy">Copy Last Frame</option>
+        </select>
+        <input type="checkbox" id="scd" > Enable Scene Change Detection<br>
+      </div>
+      <div class="form-group">
+        <label for="Tags"> Labels<div id="required">*</div> (Comma Seperated)</label>
+        <input id="inputtags" class="form-control" type="text"  data-role="tagsinput" required/>
+      </div> 
+
+        <div id="loadButton" class="btn btn-primary">Continue</div>
+    </div>
+    <div id='video-tagging-container' style="display: none">
+        <video-tagging id='video-tagging' ></video-tagging>
     </div>
 
   </body>
