@@ -56,18 +56,19 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     // Returns: A Promise object that resolves when the operation completes
     this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
         return new Promise((resolve, reject) => {
+            var frameName = path.parse(frameFileName).name;
             async.waterfall(
               [
                 async.each.bind(null,[path.join(self.posDirPath,  frameFileName), 
                                       path.join(self.negDirPath,  frameFileName), 
                                       path.join(self.testDirPath, frameFileName),
-                                      path.join(self.posDirPath,  `${frameFileName}.bboxes.tsv`),
-                                      path.join(self.testDirPath, `${frameFileName}.bboxes.tsv`),
-                                      path.join(self.posDirPath,  `${frameFileName}.bboxes.labels.tsv`), 
-                                      path.join(self.testDirPath, `${frameFileName}.bboxes.labels.tsv`)], detectionUtils.deleteFileIfExists),
+                                      path.join(self.posDirPath,  `${frameName}.bboxes.tsv`),
+                                      path.join(self.testDirPath, `${frameName}.bboxes.tsv`),
+                                      path.join(self.posDirPath,  `${frameName}.bboxes.labels.tsv`), 
+                                      path.join(self.testDirPath, `${frameName}.bboxes.labels.tsv`)], detectionUtils.deleteFileIfExists),
 
                 function determineWritePath(cb){
-                    if( !tags.length){ 
+                    if(!tags.length){ 
                         cb(null, self.negDirPath);
                     } else {
                         var dirPath = self.testFrameIndecies.includes(self.posFrameIndex) ? self.testDirPath : self.posDirPath;
@@ -91,13 +92,15 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                             bboxesData += `${tag.x1}\t${tag.y1}\t${tag.x2}\t${tag.y2}\n`;
                         }
                         var metadata = [
-                            {data: bboxesData, filepath : path.join(exportPath, `${frameFileName}.bboxes.tsv`)},                            
-                            {data: labelData, filepath : path.join(exportPath, `${frameFileName}.bboxes.labels.tsv`)}
+                            {data: bboxesData, filepath : path.join(exportPath, `${frameName}.bboxes.tsv`)},                            
+                            {data: labelData, filepath : path.join(exportPath, `${frameName}.bboxes.labels.tsv`)}
                         ]
                         async.map(metadata, (obj, cb) => {
                             fs.writeFile(obj.filepath, obj.data, cb);
                         }, cb);
-                    } 
+                    } else {
+                        cb();
+                    }
                 }
             ], (err) => {
                 if (err) {

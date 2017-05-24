@@ -129,15 +129,29 @@ function Detection(videotagging, visitedFrames) {
                     if (!tag.tags[tag.tags.length-1]) {
                         return console.log(`frame ${frameId} region ${tag.name} has no label`);
                     }
-                    var stanW = self.videotagging.video.videoWidth/tag.width;
-                    var stanH = self.videotagging.video.videoHeight/tag.height;
-                    frameTags.push({
-                        class : tag.tags[tag.tags.length-1],
-                        x1 : parseInt(tag.x1 * stanW),
-                        y1 : parseInt(tag.y1 * stanH),
-                        x2 : parseInt(tag.x2 * stanW),
-                        y2 : parseInt(tag.y2 * stanH)
-                    });
+                    if (self.videotagging.imagelist) { //image
+                        var stanH = frameCanvas.height/tag.height;
+                        var stanW = frameCanvas.width/tag.width;
+                        frameTags.push({
+                            class : tag.tags[tag.tags.length-1],
+                            x1 : parseInt(tag.x1 * stanW),
+                            y1 : parseInt(tag.y1 * stanH),
+                            x2 : parseInt(tag.x2 * stanW),
+                            y2 : parseInt(tag.y2 * stanH)
+                        });                         
+                        
+                    }
+                    else { //video
+                        var stanW = (self.videotagging.imagelist) ? frameCanvas.width/tag.width : self.videotagging.video.videoWidth/tag.width;
+                        var stanH = (self.videotagging.imagelist) ? frameCanvas.height/tag.height : self.videotagging.video.videoHeight/tag.height;
+                        frameTags.push({
+                            class : tag.tags[tag.tags.length-1],
+                            x1 : parseInt(tag.x1 * stanW),
+                            y1 : parseInt(tag.y1 * stanH),
+                            x2 : parseInt(tag.x2 * stanW),
+                            y2 : parseInt(tag.y2 * stanH)
+                        });
+                    }
 
                 });
             }

@@ -72,10 +72,10 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
   if (fs.existsSync(modelLocation)) {
     addLoader();
     detection.review( reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, () => {
-      if(!videotagging.imagelist){
-       videotagging.video.oncanplay = updateVisitedFrames;
-      }      
-      $(".loader").remove();
+        if(!videotagging.imagelist){
+          videotagging.video.oncanplay = updateVisitedFrames;
+        }      
+        $(".loader").remove();        
     });
   } else {
       alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
@@ -169,7 +169,7 @@ function fileSelected(filepath) {
       properties: ['openFile']
     },
     function (pathName) {
-      if (pathName) openPath(pathName[0],false);
+      if (pathName) openPath(pathName[0], false);
       else $('#load-message').show();
     });
   }
@@ -182,116 +182,140 @@ function folderSelected(folderpath) {
       filters: [{ name: 'Image Directory'}],
       properties: ['openDirectory']
     },function (pathName) {
-      if (pathName) openPath(pathName[0],true);
+      if (pathName) openPath(pathName[0], true);
       else $('#load-message').show();
     });
 
 }
 
 function openPath(pathName, isDir) {
-  // show configuration
-  $('#load-message').hide();
-  $('#video-tagging-container').hide();
-  $('#load-form-container').show();
-  $('#framerateGroup').show();
-  
-  //set title indicator
-  $('title').text(`Video Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
-  $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
+    // show configuration
+    $('#load-message').hide();
+    $('#video-tagging-container').hide();
+    $('#load-form-container').show();
+    $('#framerateGroup').show();
+    
+    //set title indicator
+    $('title').text(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
+    $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
-  assetFolder = path.join(path.dirname(pathName), `${path.basename(pathName, path.extname(pathName))}_output`);
-  
-  var config;
-  try {
-    config = require(`${pathName}.json`);
-    //restore tags
-    $('#inputtags').val(config.inputTags);
-    config.inputTags.split(",").forEach( tag => {
-        $("#inputtags").tagsinput('add',tag);
-    });
-  } catch (e) {
-    console.log(`Error loading save file ${e.message}`);
-  }
-
-
-  document.getElementById('loadButton').onclick = loadTagger;
-  
-  function loadTagger (e) {
-    if(framerate.validity.valid && inputtags.validity.valid) {
-      $('.bootstrap-tagsinput').last().removeClass( "invalid" );
-      
-      videotagging = document.getElementById('video-tagging'); //find out why jquery doesn't play nice with polymer
-      videotagging.regiontype = $('#regiontype').val();
-      videotagging.multiregions = 1;
-      videotagging.regionsize = $('#regionsize').val();
-      videotagging.inputtagsarray = $('#inputtags').val().split(',');
-      videotagging.video.currentTime = 0;
-      videotagging.framerate = $('#framerate').val();
-
-      if (config) {
-        videotagging.inputframes = config.frames;
-        visitedFrames = new Set(config.visitedFrames);
-      } else {
-          videotagging.inputframes = {};
-          visitedFrames =  (isDir) ? new Set([0]) : new Set();
-      } 
-
-      videotagging.src = ''; // ensures reload if user opens same video 
-
-      if (isDir){
-          $('title').text(`Image Tagging Job: ${path.dirname(pathName)}}`); //set title indicator
-
-          //get list of images in directory
-          var files = fs.readdirSync(pathName);
-          
-          videotagging.imagelist = files.filter(function(file){
-                return file.match(/.(jpg|jpeg|png|gif)$/i);
-          });
-
-          videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
-          videotagging.src = pathName; 
-          //track visited frames
-          $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
-          $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
-
-      } else {
-        $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
-        videotagging.disableImageDir();
-        videotagging.src = pathName;
-        //set start time
-        videotagging.video.oncanplay = function (){
-            videotagging.videoStartTime = videotagging.video.currentTime;
-            videotagging.video.oncanplay = undefined;
-        }
-        //init region tracking
-        trackingExtension = new VideoTaggingTrackingExtension({
-            videotagging: videotagging, 
-            trackingFrameRate: 10,
-            saveHandler: save
-        });
-        videotagging.video.oncanplay = updateVisitedFrames; 
-        //track visited frames
-        trackingExtension.startTracking();
-      }
-
-      //init detection
-      detection = new DetectionExtension(videotagging, visitedFrames);
-      
-      $('#load-form-container').hide();
-      $('#video-tagging-container').show();
-
-      ipcRenderer.send('setFilePath', pathName);
+    if (isDir) {
+      $('#framerateGroup').hide();
+      $('#suggestGroup').hide();
     } else {
-      $('.bootstrap-tagsinput').last().addClass( "invalid" );
+      $('#framerateGroup').show();
+      $('#suggestGroup').show();
     }
-  }
+
+    assetFolder = path.join(path.dirname(pathName), `${path.basename(pathName, path.extname(pathName))}_output`);
+    
+    var config;
+    try {
+      config = require(`${pathName}.json`);
+      //restore config
+      $('#inputtags').val(config.inputTags);
+      config.inputTags.split(",").forEach( tag => {
+          $("#inputtags").tagsinput('add',tag);
+      });
+      if (config.framerate){
+         $("#framerate").val(config.framerate);
+      }
+      if (config.suggestiontype){
+        $('#suggestiontype').val(config.suggestiontype);
+      }
+      if (config.scd){
+        document.getElementById("scd").checked = config.scd;
+      }
+      
+    } catch (e) {
+      console.log(`Error loading save file ${e.message}`);
+    }
+
+
+    document.getElementById('loadButton').onclick = loadTagger;
+    
+    function loadTagger (e) {
+      if(framerate.validity.valid && inputtags.validity.valid) {
+        $('.bootstrap-tagsinput').last().removeClass( "invalid" );
+       
+        videotagging = document.getElementById('video-tagging'); //find out why jquery doesn't play nice with polymer
+        videotagging.regiontype = $('#regiontype').val();
+        videotagging.multiregions = 1;
+        videotagging.regionsize = $('#regionsize').val();
+        videotagging.inputtagsarray = $('#inputtags').val().split(',');
+        videotagging.video.currentTime = 0;
+        videotagging.framerate = $('#framerate').val();
+
+        if (config) {
+          videotagging.inputframes = config.frames;
+          visitedFrames = new Set(config.visitedFrames);
+        } else {
+          videotagging.inputframes = {};
+           visitedFrames =  (isDir) ? new Set([0]) : new Set();
+        } 
+
+        videotagging.src = ''; // ensures reload if user opens same video 
+
+        if (isDir){
+            $('title').text(`Image Tagging Job: ${path.dirname(pathName)}}`); //set title indicator
+
+            //get list of images in directory
+            var files = fs.readdirSync(pathName);
+            
+            videotagging.imagelist = files.filter(function(file){
+                  return file.match(/.(jpg|jpeg|png|gif)$/i);
+            });
+
+            videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
+            videotagging.src = pathName; 
+            //track visited frames
+            $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
+            $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
+
+        } else {
+          $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
+          videotagging.disableImageDir();
+          videotagging.src = pathName;
+          //set start time
+          videotagging.video.oncanplay = function (){
+              videotagging.videoStartTime = videotagging.video.currentTime;
+              videotagging.video.oncanplay = undefined;
+          }
+          //init region tracking
+          trackingExtension = new VideoTaggingTrackingExtension({
+              videotagging: videotagging, 
+              trackingFrameRate: 15,
+              method: $('#suggestiontype').val(),
+              enableRegionChangeDetection: document.getElementById("scd").checked,
+              enableSceneChangeDetection: document.getElementById("scd").checked,
+              saveHandler: save
+          });
+          videotagging.video.oncanplay = updateVisitedFrames; 
+          //track visited frames
+          trackingExtension.startTracking();
+        }
+
+        //init detection
+        detection = new DetectionExtension(videotagging, visitedFrames);
+        
+        $('#load-form-container').hide();
+        $('#video-tagging-container').show();
+
+        ipcRenderer.send('setFilePath', pathName);
+      } else {
+        $('.bootstrap-tagsinput').last().addClass( "invalid" );
+      }
+    }
 }
 
 //saves current video to config 
 function save() {
     var saveObject = {
       "frames" : videotagging.frames,
+      "framerate":$('#framerate').val(),
       "inputTags": $('#inputtags').val(),
+      "suggestiontype": $('#suggestiontype').val(),
+      "scd": document.getElementById("scd").checked,
       "visitedFrames": Array.from(visitedFrames),
     };
     
