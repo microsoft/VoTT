@@ -7,7 +7,8 @@ const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
 var trackingEnabled = true;
-var visitedFrames, //keep track of the visited frames
+var saveState,
+    visitedFrames, //keep track of the visited frames
     videotagging,
     detection,
     trackingExtension,
@@ -209,9 +210,9 @@ function openPath(pathName, isDir) {
 
     assetFolder = path.join(path.dirname(pathName), `${path.basename(pathName, path.extname(pathName))}_output`);
     
-    var config;
     try {
-      config = require(`${pathName}.json`);
+      var config = require(`${pathName}.json`);
+      saveState = JSON.stringify(config);
       //restore config
       $('#inputtags').val(config.inputTags);
       config.inputTags.split(",").forEach( tag => {
@@ -271,6 +272,9 @@ function openPath(pathName, isDir) {
             //track visited frames
             $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
             $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
+            //auto-save 
+            $("#video-tagging").off("stepFwdClicked-BeforeStep");
+            $("#video-tagging").on("stepFwdClicked-BeforeStep", save);
 
         } else {
           $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
@@ -318,6 +322,19 @@ function save() {
       "scd": document.getElementById("scd").checked,
       "visitedFrames": Array.from(visitedFrames),
     };
-    
-    fs.writeFileSync(`${videotagging.src}.json`, JSON.stringify(saveObject));
+    //if nothing changed don't save
+    if (saveState === JSON.stringify(saveObject) ) {
+      return;
+    }
+
+    var saveLock;
+    if (!saveLock){
+           saveLock = true;
+           fs.writeFile(`${videotagging.src}.json`, JSON.stringify(saveObject),()=>{
+             saveState = JSON.stringify(saveObject);
+             console.log("saved");
+           });
+           setTimeout(()=>{saveLock=false;}, 500);
+    } 
+
 }

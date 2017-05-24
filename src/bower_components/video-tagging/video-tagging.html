@@ -848,11 +848,10 @@
         $('#vid').css("transform",`rotate(${this.rotation}deg)`);   
     },
     stepFwdClicked: function(fireEvents = true) {       
-        if (!this.canMove) return; 
         if (this.checkRegionLabels()){
             //raise before next frame  
-            if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
             if (this.imagelist){//image handling
+                if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
                 if (this.imageIndex < this.imagelist.length-1) {
                     this.imageIndex++;
                     this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
@@ -861,9 +860,11 @@
             } else { //video handling
                 if(!this.video.paused) this.pauseState();
                 if ((this.video.currentTime + this.frameTime) > this.video.duration ){
-                    this.video.currentTime = this.video.duration;
+                    //this.video.currentTime = this.video.duration;
                     return;
                 }
+                if (!this.canMove ) return; 
+                if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
                 //if there are no unlabled tags move to next frame
                 this.video.currentTime += this.frameTime;
                 this.playingCallback();            
