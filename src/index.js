@@ -267,15 +267,19 @@ function openPath(pathName, isDir) {
                   return file.match(/.(jpg|jpeg|png|gif)$/i);
             });
 
-            videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
-            videotagging.src = pathName; 
-            //track visited frames
-            $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
-            $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
-            //auto-save 
-            $("#video-tagging").off("stepFwdClicked-BeforeStep");
-            $("#video-tagging").on("stepFwdClicked-BeforeStep", save);
-
+            if (videotagging.imagelist.length){
+              videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
+              videotagging.src = pathName; 
+              //track visited frames
+              $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
+              $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
+              //auto-save 
+              $("#video-tagging").off("stepFwdClicked-BeforeStep");
+              $("#video-tagging").on("stepFwdClicked-BeforeStep", save);
+            } else {
+              alert("No images were in the selected directory. Please choose an Image directory.");
+                return folderSelected();
+            }
         } else {
           $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
           videotagging.disableImageDir();
