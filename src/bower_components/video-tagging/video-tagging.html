@@ -183,14 +183,12 @@
             self.volumeSlider.value = 0.5;
             self.seekBar.max = self.video.duration;
             self.playingCallback();
-            //Size canvas as video
-            self.overlay.style.Left =  "0px";
+
             self.overlay.width = self.video.offsetWidth;
             self.overlay.height = self.video.offsetHeight;
             //fix resize bug
             $(window).resize( function(){
                 if (self.video.offsetWidth !== undefined){
-                    console.log("y");
                     self.snapToAspectRatio();
                     //get transform ratio
                     var transformWidth =  self.video.offsetWidth/self.overlay.width;
@@ -363,8 +361,10 @@
     },
     createRegion: function(x1, y1, x2, y2) {
         var region = this.addRegion(x1, y1, x2, y2);//Add to in-memory collection
-        var offset = parseFloat(this.overlay.style.left);
-        this.addDivToRegion(x1 + (isNaN(offset) ? 0 : offset), y1, x2 + (isNaN(offset) ? 0 : offset) , y2, region.name);//add frame and account for image offset
+        var xOffset = parseFloat(this.overlay.style.left);
+        var yOffset = parseFloat(this.overlay.style.top);
+        this.addDivToRegion(x1 + (isNaN(xOffset) ? 0 : xOffset), y1 + (isNaN(yOffset) ? 0 : yOffset), 
+                            x2 + (isNaN(xOffset) ? 0 : xOffset), y2 + (isNaN(yOffset) ? 0 : yOffset), region.name); //add frame
         this.updateRegionZIndices();//update region z indecies
         this.regionSelected(region.name);//Select it by default
         //if there is only one tag enable it  by default
@@ -442,19 +442,19 @@
                   var tags = this.frames[this.getCurrentFrame()][this.selectedRegionId - 1].tags;
                   this.optionalTags.displaySelectedTags(tags);
               }
-             function updateRegionFromDiv(div, xOffset){
+             function updateRegionFromDiv(div, xOffset, yOffset){
                  var region = regions[(divId-1).toString()];
                  region.width = parseFloat(this.overlay.width);//$('#vid').width();
-                 region.height = $('#vid').height();
+                 region.height = parseFloat(this.overlay.height);//$('#vid').height();
                  region.x1 = parseInt(div.style.left) - ((xOffset) ? xOffset : 0);
-                 region.y1 = parseInt(div.style.top);
+                 region.y1 = parseInt(div.style.top)  - ((yOffset) ? yOffset : 0) ;
                  region.x2 = region.x1 + parseInt(div.style.width);
                  region.y2 = region.y1 + parseInt(div.style.height);
              }
               //make region  draggable
               $('#'+divId).draggable({
                   stop: function(event, ui) {
-                     updateRegionFromDiv(this,parseFloat(self.overlay.style.left));
+                     updateRegionFromDiv(this,parseFloat(self.overlay.style.left), parseFloat(self.overlay.style.top));
                   },
                   containment: $("#overlay")[0]
               });
@@ -472,7 +472,7 @@
                    handles: 'all'
               });
               $('#'+divId).on('resize',function(e){
-                 updateRegionFromDiv(this, parseFloat(self.overlay.style.left));
+                  updateRegionFromDiv(this,parseFloat(self.overlay.style.left), parseFloat(self.overlay.style.top));
                   e.stopPropagation();
               });
               //raise regionSelectedEvent
@@ -593,8 +593,10 @@
                   y1 = (region.y1 * heightRatio);
                   x2 = (region.x2 * widthRatio);
                   y2 = (region.y2 * heightRatio);
-                  var offset = parseFloat(this.overlay.style.left);
-                  this.addDivToRegion(x1 + (isNaN(offset) ? 0 : offset), y1, x2 + (isNaN(offset) ? 0 : offset) , y2, region.name); //add frame
+                  var xOffset = parseFloat(this.overlay.style.left);
+                  var yOffset = parseFloat(this.overlay.style.top);
+                  this.addDivToRegion(x1 + (isNaN(xOffset) ? 0 : xOffset), y1 + (isNaN(yOffset) ? 0 : yOffset), 
+                                      x2 + (isNaN(xOffset) ? 0 : xOffset), y2 + (isNaN(yOffset) ? 0 : yOffset), region.name); //add frame
                   //Only 1 region - select it and show tags
                   if (regions.length === 1) {
                       this.regionSelected(region.name);
@@ -786,28 +788,53 @@
         var self = this;
         self.curImg.onload = function() {
             self.controlWrapper.style.display = "block";
+            var imgRatio = self.curImg.width / self.curImg.height;
             //Size canvas as image
-            self.overlay.width = (this.width * self.video.offsetHeight)/this.height;
-            self.overlay.style.left  =  `${((self.video.offsetWidth/2) - (self.overlay.width/2))}px`;
-            self.overlay.height = self.video.offsetHeight;
+            var scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= (videotagging.curImg.width/videotagging.curImg.height));
+            //todo clean this logic
+            if (scaleByPortrait){
+               self.overlay.width = parseFloat(self.video.offsetHeight * imgRatio);
+               self.overlay.style.left  =  `${((self.video.offsetWidth/2) - (self.overlay.width/2))}px`;
+               self.overlay.style.top  = '0px';
+               self.overlay.height = self.video.offsetHeight;
+            } else {
+               self.overlay.height =  (self.video.offsetWidth / imgRatio);
+               self.overlay.style.top  =  `${((self.video.offsetHeight/2) - (self.overlay.height/2))}px`;
+               self.overlay.style.left  = '0px';
+               self.overlay.width = self.video.offsetWidth;
+            }
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
             self.enableAreaSelect(self);
             self.optionalTags.createTagControls(self.inputtagsarray);
             self.playingCallback();
-            $(window).off("resize");
-            var imgRatio = self.curImg.width / self.curImg.height;
             //fix resize bug
+            $(window).off("resize");
             $(window).resize(function(){
                 if (self.video.offsetWidth !== undefined){
-                    //get transform ratio
-                    var onScreenWidth =   parseFloat(self.video.offsetHeight * imgRatio);
-                    var transformWidth =  parseFloat(onScreenWidth) / parseFloat(self.overlay.width);
-                    var transformHeight = parseFloat(self.video.offsetHeight)/parseFloat(self.overlay.height);
-                    //resize the overlay
-                    self.overlay.width =  parseFloat(self.video.offsetHeight * imgRatio);
-                    self.overlay.style.left = `${((self.video.offsetWidth/2) - (self.overlay.width/2))}px`;
-                    self.overlay.height = self.video.offsetHeight;
+                    //Todo clean this
+                    if (scaleByPortrait){
+                        //get transform ratio
+                        var onScreenWidth =   parseFloat(self.video.offsetHeight * imgRatio);
+                        var transformWidth =  parseFloat(onScreenWidth) / parseFloat(self.overlay.width);
+                        var transformHeight = parseFloat(self.video.offsetHeight)/parseFloat(self.overlay.height);
+                        //resize the overlay
+                        self.overlay.width =  parseFloat(self.video.offsetHeight * imgRatio);
+                        self.overlay.style.left = `${((self.video.offsetWidth/2) - (self.overlay.width/2))}px`;
+                        self.overlay.height = self.video.offsetHeight;
+                    } else {
+                        //get transform ratio
+                        var onScreenHeight =  parseFloat(self.video.offsetWidth / imgRatio);
+                        var transformWidth =  parseFloat(self.video.offsetWidth)/parseFloat(self.overlay.width);
+                        var transformHeight = parseFloat(onScreenHeight) / parseFloat(self.overlay.height);
+                        //resize the overlay
+                        self.overlay.height =  parseFloat(self.video.offsetWidth / imgRatio);
+                        self.overlay.style.top = `${((self.video.offsetHeight/2) - (self.overlay.height/2))}px`;
+                        self.overlay.width = self.video.offsetWidth;
+                    }
+
+
+
                     //resize the region boxes
                     self.showAllRegions();
                     //reposition selectedRegion Label
