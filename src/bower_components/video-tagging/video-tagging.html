@@ -947,13 +947,17 @@
             $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
     },
     playingCallback: function() {
-            this.frameText.innerHTML = this.getCurrentFrame();
             if (!this.imagelist){
+                this.frameText.innerHTML = this.getCurrentFrame();
                 this.displayVideoTime();
                 if(!this.seeking){
                     this.updateSeekBar();
                 }
+            } else{
+                this.frameText.innerHTML = `${this.getCurrentFrame()}/${this.imagelist.length}`;
+
             }
+
             this.showAllRegions();
     },
     displayVideoTime: function() {
