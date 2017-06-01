@@ -172,7 +172,7 @@ function Detection(videotagging, visitedFrames) {
     this.review = function(method, modelPath, reviewPath, cb) {
         //if the export reviewPath directory does not exist create it and export all the frames then review
         fs.exists(reviewPath, (exists) => {
-            if (exists){
+            if (!exists){
                 fs.mkdir(reviewPath, () =>{
                     this.mapVideo(saveFrame, "last").then( () => {
                         reviewModel();
@@ -227,8 +227,8 @@ function Detection(videotagging, visitedFrames) {
                 });
             }
 
-            function saveFrame(frameId, fCanvas, canvasContext, saveCb){
-                var writePath =  path.join(reviewPath, `{frameId}.jpg`);
+            function saveFrame(frameName, frameId, fCanvas, canvasContext, saveCb){
+                var writePath =  path.join(reviewPath, `${frameId}.jpg`);
                 //write canvas to file and change frame
                 console.log('saving file', writePath);
                 fs.exists(writePath, (exists) => {
