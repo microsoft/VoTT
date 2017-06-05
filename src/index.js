@@ -67,7 +67,7 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
   var modelLocation = reviewModelConfig.modelPath;
   if (fs.existsSync(modelLocation)) {
     addLoader();
-    detection.review( reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, () => {
+    detection.review( videotagging.imagelist, reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, () => {
         if(!videotagging.imagelist){
           videotagging.video.oncanplay = updateVisitedFrames;
         }      
@@ -268,9 +268,16 @@ function openPath(pathName, isDir) {
               //track visited frames
               $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
               $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
+              $("#video-tagging").on("stepFwdClicked-AfterStep", () => {
+                  //update title to match src
+                   $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}}`);
+
+              });
+
               //auto-save 
               $("#video-tagging").off("stepFwdClicked-BeforeStep");
               $("#video-tagging").on("stepFwdClicked-BeforeStep", save);
+              
             } else {
               alert("No images were in the selected directory. Please choose an Image directory.");
                 return folderSelected();
