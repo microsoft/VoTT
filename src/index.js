@@ -238,7 +238,7 @@ function openPath(pathName, isDir) {
         videotagging.regiontype = $('#regiontype').val();
         videotagging.multiregions = 1;
         videotagging.regionsize = $('#regionsize').val();
-        videotagging.inputtagsarray = $('#inputtags').val().split(',');
+        videotagging.inputtagsarray = $('#inputtags').val().replace(/\s/g,'').split(',');
         videotagging.video.currentTime = 0;
         videotagging.framerate = $('#framerate').val();
 
@@ -323,7 +323,7 @@ function save() {
     var saveObject = {
       "frames" : videotagging.frames,
       "framerate":$('#framerate').val(),
-      "inputTags": $('#inputtags').val(),
+      "inputTags": $('#inputtags').val().replace(/\s/g,''),
       "suggestiontype": $('#suggestiontype').val(),
       "scd": document.getElementById("scd").checked,
       "visitedFrames": Array.from(visitedFrames),
