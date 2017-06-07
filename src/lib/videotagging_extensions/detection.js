@@ -242,14 +242,11 @@ function Detection(videotagging, visitedFrames) {
             }
 
             function saveFrame(frameName, frameId, fCanvas, canvasContext, saveCb){
+
                 var writePath =  path.join(reviewPath, `${frameId}.jpg`);
                 //write canvas to file and change frame
                 console.log('saving file', writePath);
-                fs.exists(writePath, (exists) => {
-                    if (!exists) {
-                        fs.writeFile(writePath, self.canvasToJpgBuffer(fCanvas, canvasContext), saveCb);
-                    }  
-                });
+                fs.writeFile(writePath, self.canvasToJpgBuffer(fCanvas, canvasContext), saveCb);
             }
         });
     }

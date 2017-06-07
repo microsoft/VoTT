@@ -119,7 +119,7 @@ function createWindow () {
       label: 'File',
       submenu: [
         {
-          label: 'Open...',
+          label: 'Open Video...',
           accelerator: 'CmdOrCtrl+O',
           click () { mainWindow.webContents.send('openVideo'); }
         },
@@ -135,7 +135,7 @@ function createWindow () {
           click () { mainWindow.webContents.send('saveVideo'); }
         },
         {
-          label: 'Toggle Tracking',
+          label: 'Toggle Region Suggestions',
           accelerator: 'CmdOrCtrl+T',
           enabled: false,
           click () { mainWindow.webContents.send('toggleTracking'); }
