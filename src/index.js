@@ -27,6 +27,10 @@ ipcRenderer.on('openVideo', (event, message) => {
   fileSelected();
 });
 
+ipcRenderer.on('openImageDirectory', (event, message) => {
+  folderSelected();
+});
+
 ipcRenderer.on('saveVideo', (event, message) => {
   save();
   let notification = new Notification('Offline Video Tagger', {
@@ -150,6 +154,7 @@ function checkPointRegion() {
 
 //load logic
 function fileSelected(filepath) {
+
    $('#load-message').hide();
 
   if (filepath) {  //checking if a video is dropped
@@ -212,6 +217,7 @@ function fileSelected(filepath) {
         $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
 
         videotagging = document.getElementById('video-tagging'); //find out why jquery doesn't play nice with polymer
+        videotagging.disableImageDir();
         videotagging.regiontype = $('#regiontype').val();
         videotagging.multiregions = 1;
         videotagging.regionsize = $('#regionsize').val();
@@ -264,6 +270,101 @@ function fileSelected(filepath) {
     }
   }
 }
+
+//load image directory
+function folderSelected(path) {
+   $('#load-message').hide();
+   dialog.showOpenDialog({
+      filters: [{ name: 'Image Directory'}],
+      properties: ['openDirectory']
+    },function (pathName) {
+      if (pathName) openPath(pathName[0]);
+      else $('#load-message').show();
+    });
+
+    function openPath(pathName) {
+      var config;
+
+      // show configuration
+      $('#load-message').hide();
+      $('#video-tagging-container').hide()
+      $('#load-form-container').show();
+      $('#framerateGroup').hide();
+
+      //set title indicator
+      $('title').text(`Image Tagging Job Configuration: ${pathJS.dirname(pathName)}`);
+      
+      $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
+      $('#output').val(`${basepath}/cntk`);
+      $('#model').val(`${basepath}/cntk/Fast-RCNN.model`);
+
+      try {
+        config = require(`${pathName}/ImageTaggingConfig.json`);
+        //restore tags
+        $('#inputtags').val(config.inputTags);
+        config.inputTags.split(",").forEach( tag => {
+            $("#inputtags").tagsinput('add',tag);
+        });
+      } catch (e) {
+        console.log(`Error loading save file ${e.message}`);
+      }
+
+      // REPLACE implementation, use jQuery to remove all event handlers on loadbutton
+      document.getElementById('loadButton').parentNode.replaceChild(document.getElementById('loadButton').cloneNode(true), document.getElementById('loadButton'));
+      document.getElementById('loadButton').addEventListener('click', loadTagger);
+
+      function loadTagger (e) {
+        if(inputtags.validity.valid) {
+          $('.bootstrap-tagsinput').last().removeClass( "invalid" );
+        
+          $('title').text(`Image Tagging Job: ${pathJS.dirname(pathName)}}`); //set title indicator
+
+          videotagging = document.getElementById('video-tagging'); //find out why jquery doesn't play nice with polymer
+          videotagging.regiontype = $('#regiontype').val();
+          videotagging.multiregions = 1;
+          videotagging.regionsize = $('#regionsize').val();
+          videotagging.inputtagsarray = $('#inputtags').val().split(',');
+          videotagging.video.currentTime = 0;
+          videotagging.videowidth = 854;
+          videotagging.videoheight = 480;
+          videotagging.framerate = $('#framerate').val();
+
+          //get list of images in directory
+          var files = fs.readdirSync(pathName);
+          
+          videotagging.imagelist = files.filter(function(file){
+                return file.match(/.(jpg|jpeg|png|gif)$/i);
+          });
+
+          videotagging.imagelist = videotagging.imagelist.map((filepath) => {return pathJS.join(pathName,filepath)});
+          videotagging.src = pathName; 
+          
+          //track visited frames
+          videotagging.video.removeEventListener("canplay", updateVisitedFrames); //remove old listener
+          videotagging.video.addEventListener("canplay",updateVisitedFrames);
+
+          //init cntk extensions
+          CNTKExtension = new VideoTaggingCNTKExtension({
+              videotagging: videotagging,
+              cntkPath: cntkConfig.cntkPath,
+              cntkEnv: cntkConfig.cntkEnv,
+              visitedFrames: visitedFrames,
+              exportUntil: $('#exportTo').val(),
+              exportPath: $('#output').val()
+          });
+
+          $('#load-form-container').hide();
+          $('#video-tagging-container').show();
+
+          ipcRenderer.send('setFilePath', pathName);
+        } else {
+          $('.bootstrap-tagsinput').last().addClass( "invalid" );
+        }
+      }
+
+    }
+}
+
 
 //saves current video to config 
 function save() {
