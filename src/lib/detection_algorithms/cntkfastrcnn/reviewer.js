@@ -62,6 +62,7 @@ function Reviewer(modelPath) {
 					console.info(err);
 					reject();
 				}
+				console.log(res);
 				resolve(res);
 			});
 		});

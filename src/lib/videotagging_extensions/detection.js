@@ -52,7 +52,8 @@ function Detection(videotagging, visitedFrames) {
                     resolve();
                 }
                 
-                frameHandler(frameId, frameCanvas, canvasContext, () => {
+                var frameName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameId}.jpg`
+                frameHandler(frameName, frameId, frameCanvas, canvasContext, () => {
                     if (!lastFrame) {
                         self.videotagging.stepFwdClicked(false);
                     }
@@ -61,9 +62,29 @@ function Detection(videotagging, visitedFrames) {
         });
     }
 
+    //this maps dir of images for exporting
+    this.mapDir = function(frameHandler, dir){
+        return new Promise((resolve, reject) => {
+            dir.forEach( (imagePath, index) => {
+                var img = new Image();
+                img.src = imagePath;
+                img.onload = function () {
+                    var frameCanvas = document.createElement("canvas");
+                    frameCanvas.width = img.width;
+                    frameCanvas.height = img.height;
+                    // Copy the image contents to the canvas
+                    var canvasContext = frameCanvas.getContext("2d");
+                    canvasContext.drawImage(img, 0, 0);
+                    frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext,()=>{});
+                }
+            });
+            resolve();
+        });
+    }
+
     // TODO: Abstract to a module that receives a "framesReader" object as input
     //exports frames to the selected detection algorithm format  for model training
-    this.export = function(method, exportUntil, exportPath, testSplit, cb) {
+    this.export = function(dir, method, exportUntil, exportPath, testSplit, cb) {
         self.detectionAlgorithmManager.initExporter(method, exportPath, self.videotagging.inputtagsarray, 
                                             Object.keys(self.videotagging.frames).length,
                                             self.videotagging.video.videoWidth,
@@ -72,19 +93,30 @@ function Detection(videotagging, visitedFrames) {
         (err, exporter) => {
             if (err){
                 cb(err);
-            }        
-            this.mapVideo(exportFrame.bind(err, exporter), exportUntil).then(() => {
+            }   
+            if (dir){
+                this.mapDir(exportFrame.bind(err, exporter), dir).then(exportFinished, (err) => {
+                    console.info(`Error on ${method} init:`, err);
+                    cb(err);
+                });
+
+            } else {
+                this.mapVideo(exportFrame.bind(err, exporter), exportUntil).then(exportFinished, (err) => {
+                    console.info(`Error on ${method} init:`, err);
+                    cb(err);
+                });
+            }  
+
+            function exportFinished() {
                 let notification = new Notification('Offline Video Tagger', {
-                    body: `Successfully exported ${method} files.`
+                        body: `Successfully exported ${method} files.`
                 });
                 cb();
-            }, (err) => {
-                console.info(`Error on ${method} init:`, err);
-                cb(err);
-            });
+            }
+ 
         });
 
-        function exportFrame(exporter, frameId, frameCanvas, canvasContext, frameExportCb) {
+        function exportFrame(exporter, frameName, frameId, frameCanvas, canvasContext, frameExportCb) {
             if (!self.visitedFrames.has(frameId)) {
                 return frameExportCb();
             }
@@ -97,41 +129,60 @@ function Detection(videotagging, visitedFrames) {
                     if (!tag.tags[tag.tags.length-1]) {
                         return console.log(`frame ${frameId} region ${tag.name} has no label`);
                     }
-                    var stanW = self.videotagging.video.videoWidth/tag.width;
-                    var stanH = self.videotagging.video.videoHeight/tag.height;
-                    frameTags.push({
-                        class : tag.tags[tag.tags.length-1],
-                        x1 : parseInt(tag.x1 * stanW),
-                        y1 : parseInt(tag.y1 * stanH),
-                        x2 : parseInt(tag.x2 * stanW),
-                        y2 : parseInt(tag.y2 * stanH)
-                    });
+                    if (self.videotagging.imagelist) { //image
+                        var stanH = frameCanvas.height/tag.height;
+                        var stanW = frameCanvas.width/tag.width;
+                        frameTags.push({
+                            class : tag.tags[tag.tags.length-1],
+                            x1 : parseInt(tag.x1 * stanW),
+                            y1 : parseInt(tag.y1 * stanH),
+                            x2 : parseInt(tag.x2 * stanW),
+                            y2 : parseInt(tag.y2 * stanH)
+                        });                         
+                        
+                    }
+                    else { //video
+                        var stanW = (self.videotagging.imagelist) ? frameCanvas.width/tag.width : self.videotagging.video.videoWidth/tag.width;
+                        var stanH = (self.videotagging.imagelist) ? frameCanvas.height/tag.height : self.videotagging.video.videoHeight/tag.height;
+                        frameTags.push({
+                            class : tag.tags[tag.tags.length-1],
+                            x1 : parseInt(tag.x1 * stanW),
+                            y1 : parseInt(tag.y1 * stanH),
+                            x2 : parseInt(tag.x2 * stanW),
+                            y2 : parseInt(tag.y2 * stanH)
+                        });
+                    }
 
                 });
             }
 
             //draw the frame to the canvas
-            var frameFileName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameId}.jpg`;
             var buf = self.canvasToJpgBuffer(frameCanvas, canvasContext);
-            exporter(frameFileName, buf, frameTags)
+            exporter(frameName, buf, frameTags)
                 .then(()=>{
                     frameExportCb();
                 }, (err) => {
                     console.info('Error occured when trying to export frame', err);
                     frameExportCb(err);
                 });
-        }
+        } 
     }
     
     //allows user to review model suggestions on a video
-    this.review = function(method, modelPath, reviewPath, cb) {
+    this.review = function(dir, method, modelPath, reviewPath, cb) {
         //if the export reviewPath directory does not exist create it and export all the frames then review
         fs.exists(reviewPath, (exists) => {
             if (!exists){
                 fs.mkdir(reviewPath, () =>{
-                    this.mapVideo(saveFrame, "last").then( () => {
-                        reviewModel();
-                    });
+                    if (dir){
+                        this.mapDir(saveFrame, dir).then( () => {
+                            reviewModel();
+                        });                        
+                    } else {
+                        this.mapVideo(saveFrame, "last").then( () => {
+                            reviewModel();
+                        });                        
+                    }
                 });
             } else {
                 reviewModel();
@@ -139,50 +190,59 @@ function Detection(videotagging, visitedFrames) {
         
             function reviewModel() {
                 //run the model on the reviewPath directory
-                self.detectionAlgorithmManager.initReviewer(method, modelPath, (reviewImagesFolder) =>{
+                self.detectionAlgorithmManager.initReviewer(method, modelPath, (reviewImagesFolder) => {
                     reviewImagesFolder(reviewPath).then( (modelTags) => {
-                        self.videotagging.frames = [];
+                        self.videotagging.frames = {};
                         self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
 
                         //Create regions based on the provided modelTags
-                        Object.keys(modelTags.frames).map( (pathId) => {
-                            var frameImage = new Image();
-                            frameImage.src = path.join(reviewPath, pathId);
-                            frameImage.onload = loadFrameRegions; 
+                        var p = new Promise ((resolve,reject) => {
+                            Object.keys(modelTags.frames).map( (pathId) => {
+                                var frameImage = new Image();
+                                frameImage.src = path.join(reviewPath, pathId);
+                                frameImage.onload = loadFrameRegions; 
 
-                            function loadFrameRegions() {
-                                var imageWidth = this.width;
-                                var imageHeight = this.height;
-                                frameId = pathId.replace(".jpg", "");//remove.jpg
-                                self.videotagging.frames[frameId] = [];
-                                modelTags.frames[pathId].regions.forEach( (region) => {
-                                    self.videotagging.frames[frameId].push({
-                                    x1:region.x1,
-                                    y1:region.y1,
-                                    x2:region.x2,
-                                    y2:region.y2,                          
-                                    id:self.videotagging.uniqueTagId++,
-                                    width:imageWidth,
-                                    height:imageHeight,
-                                    type:self.videotagging.regiontype,
-                                    tags:Object.keys(modelTags.classes).filter( (key) => {return modelTags.classes[key] === region.class }),
-                                    name:(self.videotagging.frames[frameId].length + 1),
-                                    blockSuggest: true
-                                    }); 
-                                });
-                            }
+                                function loadFrameRegions() {
+                                    var imageWidth = this.width;
+                                    var imageHeight = this.height;
+                                    frameId = pathId.replace(".jpg", "");//remove.jpg
+                                    console.log(frameId)
+                                    self.videotagging.frames[frameId] = [];
+                                    modelTags.frames[pathId].regions.forEach( (region) => {
+                                        self.videotagging.frames[frameId].push({
+                                        x1:region.x1,
+                                        y1:region.y1,
+                                        x2:region.x2,
+                                        y2:region.y2,                          
+                                        id:self.videotagging.uniqueTagId++,
+                                        width:imageWidth,
+                                        height:imageHeight,
+                                        type:self.videotagging.regiontype,
+                                        tags:Object.keys(modelTags.classes).filter( (key) => {return modelTags.classes[key] === region.class }),
+                                        name:(self.videotagging.frames[frameId].length + 1),
+                                        blockSuggest: true
+                                        }); 
+                                    });
+                                    if (Object.keys(self.videotagging.frames).length >= Object.keys(modelTags.frames).length){
+                                        resolve();
+                                    }
+                                }
+                            });                            
                         });
-                        self.videotagging.showAllRegions();
-                        //cleanup and notify
-                        self.videotagging.video.currentTime = 0;
-                        self.videotagging.playingCallback();
-                        let notification = new Notification('Offline Video Tagger', { body: 'Model Ready For Review.' });
-                        cb();
+                        p.then(()=>{
+                            self.videotagging.showAllRegions();
+                            //cleanup and notify
+                            self.videotagging.video.currentTime = 0;
+                            self.videotagging.playingCallback();
+                            let notification = new Notification('Offline Video Tagger', { body: 'Model Ready For Review.' });
+                            cb();
+                        })
                     });
                 });
             }
 
-            function saveFrame(frameId, fCanvas, canvasContext, saveCb){
+            function saveFrame(frameName, frameId, fCanvas, canvasContext, saveCb){
+
                 var writePath =  path.join(reviewPath, `${frameId}.jpg`);
                 //write canvas to file and change frame
                 console.log('saving file', writePath);

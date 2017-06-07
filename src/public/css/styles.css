@@ -3,6 +3,43 @@ html, body {
     padding: 0;
 }
 
+#load-message-container{
+  min-width: 700px;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin-top: -200px; /* half the height of the element */
+ }
+#load-text{
+    margin-bottom: 30px;
+}
+
+#load-icons{
+    display: block;
+    width: 645px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#dirImage  
+ {
+  width:300px;
+  display:inline-block;
+  margin-right: 20px;
+ }
+
+
+#vidImage{
+  width:300px;
+  display:inline-block;
+  margin-left: 20px;
+ }
+
+svg:hover path { 
+  fill:red !important;
+}
+
 label {
     font-size: 16px;
 }
@@ -33,24 +70,6 @@ label {
   background-color: #FDD;
 }
 
-#load-message{
-    position: absolute;
-    top: 0;
-    bottom: 54px;
-    left: 0;
-    right: 0;
-}
-
-#vidImage{
-  width:400px;
-  display:block;
-  position:absolute;
-  left:0;
-  right:0;
-  top: 50%;
-  bottom:50%;
-  margin:auto;
- }
  
  .form-control {
      max-width:800px;
@@ -115,4 +134,16 @@ label {
   background-color: #a2a5a3;
   border: 0px;
   border-radius: 5px;
+}
+
+#methodLabel{
+    display: block !important;
+}
+
+#suggestiontype{
+    display: inline-block;
+}
+
+#scd{
+    margin-left: 10px;
 }
