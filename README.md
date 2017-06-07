@@ -7,6 +7,7 @@ This tool provides end to end support for generating datasets and validating obj
 
 The tool supports the following **features**:
 
+- The ability to tag an annotate Image Directories or Stand alone videos.
 - Computer-assisted tagging and tracking of objects in videos using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf).
 - Exporting tags and assets to CNTK or YOLO format for training an object detection model.
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models.
@@ -23,13 +24,13 @@ The tool supports the following **features**:
 ---
 ## Installation
 
-### Installing the Video Tagging Tool
+### Installing the Visual Object Tagging Tool
 
  1. Download and extract the app [release package](https://github.com/CatalystCode/CNTK-Object-Detection-Video-Tagging-Tool/releases)
 
  2. Run the app by launching the "VOTT" executable which will be located inside the unzipped folder.
 
- ### Installing CNTK with the FRCNN Prerequisites
+ ### Installing CNTK with the FRCNN Prerequisites for Reviewing Model
 
 *Please note that installation of **CNTK and FAST-RCNN dependencies** are **optional for tagging** and are **only required for CNTK model review and training**.*
 
@@ -129,7 +130,7 @@ The tool supports the following **features**:
 
     **Labels**: labels of the tagged regions (e.g. `Cat`, `Dog`, `Horse`, `Person`)<br>
 
- 4. Tag each image
+ 4. Tag each Image
  
     ![](media/4_Tagging_Job.jpg)
 
@@ -141,7 +142,7 @@ The tool supports the following **features**:
     **Navigation**: users can navigate between video frames by using the ![prev-nxt](media/prev-next.png) buttons, the left/right arrow keys, or the video skip bar
      - Tags are auto-saved each time a frame is changed
 
- 5. Export image directory tags Tags using the Object Detection Menu or Ctrl/Cmd + E
+ 5. Export Image directory tags Tags using the Object Detection Menu or Ctrl/Cmd + E
 
     ![]( media/5_Export.jpg)
     
@@ -162,13 +163,13 @@ The tool supports the following **features**:
 ## Reviewing and Improving a Object Detection Model
 
  1. Train model with [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> *Note: the data is already in CNTK format, so you do not have to run `C1_DrawBboxesOnImages.py` or `C2_AssignLabelsToBboxes.py`*
- 2. Load a new video that the model has not been trained on
+ 2. Load a new asset that the model has not been trained on
  3. Configure a new or load a previous tagging job 
- 4. Apply model to new video using Ctrl/Cmd + R
+ 4. Apply model to new asset using Ctrl/Cmd + R
  5. Specify a model path and temporary output directory<br> 
     ![](media/6_Review.jpg)
  6. When the model finishes processing, validate tags, re-export and retrain it
- 7. Repeat step 1 on new videos until the model performance is satisfactory
+ 7. Repeat step 1 on new assets until the model performance is satisfactory
  
 ## Supporting additonal object detection Export and Review formats.
 
