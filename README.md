@@ -16,7 +16,7 @@ The tool supports the following **features**:
 
  - [Installation](#installation)
  - [Tagging a Video](#tagging-a-video)
- - [Tagging an Image Directory](#tagging-a-video)
+ - [Tagging an Image Directory](#tagging-an-image-directory)
  - [Reviewing and Improving a CNTK Object Detection Model](#reviewing-and-improving-a-cntk-object-detection-model)
  - [Upcoming Features](#upcoming-features)
  - [How to Contribute](#how-to-contribute)
