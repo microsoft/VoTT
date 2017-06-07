@@ -1,6 +1,6 @@
 # VOTT: Visual Object Tagging Tool
 
-This tool provides end to end support for generating datasets and validating object detection models.
+This tool provides end to end support for generating datasets and validating object detection models from video and image assets.
 
 ### End to End Object Detection Pipeline:
 ![Pipeline: tag video, export tags to CNTK, train model, run model on a new video, validate model suggestions and fix errors, return to export tags](media/detectioninabox.jpg)
@@ -15,6 +15,7 @@ The tool supports the following **features**:
 
  - [Installation](#installation)
  - [Tagging a Video](#tagging-a-video)
+ - [Tagging an Image Directory](#tagging-a-video)
  - [Reviewing and Improving a CNTK Object Detection Model](#reviewing-and-improving-a-cntk-object-detection-model)
  - [Upcoming Features](#upcoming-features)
  - [How to Contribute](#how-to-contribute)
@@ -45,11 +46,15 @@ The tool supports the following **features**:
 ```
 ## Tagging a Video
 
- 1. Load an MP4 video file either by dragging it into the app or clicking on and selecting it.
+ 1. Select the option to tag a video
+
+    ![](media/video-option.jpg)
+
+ 2. Load an MP4 video file either by dragging it into the app or clicking on and selecting it.
 
     ![](media/2_load.jpg)
 
- 2. Configure the tagging job and specify the settings in the screenshot below:
+ 3. Configure the tagging job and specify the settings in the screenshot below:
 
     ![](media/3_Job_Configuration.jpg)
 
@@ -59,9 +64,15 @@ The tool supports the following **features**:
       - *Rectangle*: tag bounding boxes of any dimension
       - *Square*: tag bounding boxes of auto-fixed dimensions
 
+    **Suggested Region Method**: how to suggest regions for next frame<br>
+     - *Tracking*: Use camshift to track tagged regions in next frame
+     - *Copy Last Frame*: Copy all regions to the next frame.
+
+    **Enable Scene Change Detection**: Detect scene changes to prevent false positives when tracking. (Note this option is slightly slower)
+
     **Labels**: labels of the tagged regions (e.g. `Cat`, `Dog`, `Horse`, `Person`)<br>
 
- 3. Tag the video frame by frame
+ 4. Tag the video frame by frame
  
     ![](media/4_Tagging_Job.jpg)
 
@@ -77,7 +88,60 @@ The tool supports the following **features**:
      - Since the [camshift algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf) has some known limitations, you can disable tracking for certain sets of frames. To toggle tracking *on* and *off* use the file menu setting, or the keyboard shortcut Ctrl/Cmd + T.
 
 
- 4. Export video Tags using the Object Detection Menu or Ctrl/Cmd + E
+ 5. Export video Tags using the Object Detection Menu or Ctrl/Cmd + E
+
+    ![]( media/5_Export.jpg)
+    
+    *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
+ 
+    Specify the following export configuration settings:
+    
+    ![]( media/5a_Export.jpg)
+    
+    - **Export Format**: What framework to export to defaults to *CNTK*<br>
+    - **Export Frames Until**: how far into the video the export operation will proceed<br>
+      - *Last Tagged Region*: exports frames up until the last frame containing tags
+      - *Last Visited Frame*: exports frames up until the last frame that the user explicitly visited
+      - *Last Frame*: exports all video frames<br>
+    - **Output directory**: directory path for exporting training data<br>
+    
+---
+
+## Tagging an Image Directory
+
+ 1. Select the option to tag an image directory
+
+    ![](media/image-option.jpg)
+
+ 2. Load an image directory by selecting it.
+
+    ![](media/2_load.jpg)
+
+ 3. Configure the tagging job and specify the settings in the screenshot below:
+
+    ![](media/3_Job_Configuration.jpg)
+
+    **Frame Extraction Rate**: number of frames to tag per second of video<br>
+
+    **Tagging Region Type**:  type of bounding box for tagging regions<br>
+      - *Rectangle*: tag bounding boxes of any dimension
+      - *Square*: tag bounding boxes of auto-fixed dimensions
+
+    **Labels**: labels of the tagged regions (e.g. `Cat`, `Dog`, `Horse`, `Person`)<br>
+
+ 4. Tag each image
+ 
+    ![](media/4_Tagging_Job.jpg)
+
+    **Tagging**: click and drag a bounding box around the desired area, then move or resize the region until it fits the object
+     - Selected regions appear as red ![red](https://placehold.it/15/f03c15/000000?text=+) and unselected regions will appear as blue ![#1589F0](https://placehold.it/15/1589F0/000000?text=+).
+     - Assign a tag to a region by clicking on it and selecting the desired tag from the labeling toolbar at the bottom of the tagging control
+     - Click the ![cleartags](media/cleartags.png) button to clear all tags on a given frame
+
+    **Navigation**: users can navigate between video frames by using the ![prev-nxt](media/prev-next.png) buttons, the left/right arrow keys, or the video skip bar
+     - Tags are auto-saved each time a frame is changed
+
+ 5. Export image directory tags Tags using the Object Detection Menu or Ctrl/Cmd + E
 
     ![]( media/5_Export.jpg)
     
@@ -112,7 +176,6 @@ In the latest release we provide support for [Export and Review formats](https:/
 
 ## Upcoming Features 
 
-- Image directory tagging support
 - Tagging project management
 
 -----------

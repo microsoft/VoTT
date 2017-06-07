@@ -135,3 +135,15 @@ label {
   border: 0px;
   border-radius: 5px;
 }
+
+#methodLabel{
+    display: block !important;
+}
+
+#suggestiontype{
+    display: inline-block;
+}
+
+#scd{
+    margin-left: 10px;
+}

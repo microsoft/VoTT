@@ -67,12 +67,12 @@
       </div>
 
       <div class="form-group" id="suggestGroup">
-        <label title="Suggested Region Method">Suggested Region Method</label>
-        <select id="suggestiontype" class="form-control" id="text" onchange="checkPointRegion();" style ="max-width: 8em">
-              <option selected="selected" value = "track">Tracking</option>
-              <option  value = "copy">Copy Last Frame</option>
-        </select>
-        <input type="checkbox" id="scd" > Enable Scene Change Detection<br>
+        <label id="methodLabel" title="Suggested Region Method" >Suggested Region Method</label>
+          <select id="suggestiontype" class="form-control" id="text" onchange="checkPointRegion();" style ="max-width: 8em">
+                <option selected="selected" value = "track">Tracking</option>
+                <option  value = "copy">Copy Last Frame</option>
+          </select>
+          <input type="checkbox" id="scd" title="Scene Change Detection"> Enable SCD</input>
       </div>
       <div class="form-group">
         <label for="Tags"> Labels<div id="required">*</div> (Comma Seperated)</label>
