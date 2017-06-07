@@ -120,7 +120,7 @@ The tool supports the following **features**:
 
  3. Configure the tagging job and specify the settings in the screenshot below:
 
-    ![](media/3_Job_Configuration.jpg)
+    ![](media/3_image_Job_Configuration.jpg)
 
     **Frame Extraction Rate**: number of frames to tag per second of video<br>
 
@@ -132,7 +132,7 @@ The tool supports the following **features**:
 
  4. Tag each Image
  
-    ![](media/4_Tagging_Job.jpg)
+    ![](media/4_image_Tagging_Job.jpg)
 
     **Tagging**: click and drag a bounding box around the desired area, then move or resize the region until it fits the object
      - Selected regions appear as red ![red](https://placehold.it/15/f03c15/000000?text=+) and unselected regions will appear as blue ![#1589F0](https://placehold.it/15/1589F0/000000?text=+).
@@ -144,7 +144,7 @@ The tool supports the following **features**:
 
  5. Export Image directory tags Tags using the Object Detection Menu or Ctrl/Cmd + E
 
-    ![]( media/5_Export.jpg)
+    ![]( media/5_image_Export.jpg)
     
     *Note on exporting: the tool reserves a random 20% sample of the tagged frames as a test set.*
  
