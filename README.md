@@ -17,7 +17,7 @@ The tool supports the following **features**:
  - [Installation](#installation)
  - [Tagging a Video](#tagging-a-video)
  - [Tagging an Image Directory](#tagging-an-image-directory)
- - [Reviewing and Improving a CNTK Object Detection Model](#reviewing-and-improving-a-cntk-object-detection-model)
+ - [Reviewing and Improving an Object Detection Model](#reviewing-and-improving-an-object-detection-model)
  - [Upcoming Features](#upcoming-features)
  - [How to Contribute](#how-to-contribute)
 
@@ -160,16 +160,29 @@ The tool supports the following **features**:
     - **Output directory**: directory path for exporting training data<br>
     
 ---
-## Reviewing and Improving a Object Detection Model
+## Reviewing and Improving an Object Detection Model
 
  1. Train model with [Object Detection using FastRCNN](https://github.com/Microsoft/CNTK/wiki/Object-Detection-using-Fast-R-CNN#train-on-your-own-data)<br> *Note: the data is already in CNTK format, so you do not have to run `C1_DrawBboxesOnImages.py` or `C2_AssignLabelsToBboxes.py`*
- 2. Load a new asset that the model has not been trained on
- 3. Configure a new or load a previous tagging job 
+ 2. Since CNTK does not embed the names of the classes in the model, on default, the module returns non descriptive names for the classes, e.g. "class_1", "class_2".Place a JSON file named "model.json" in the same directory of the Fast-RCNN model file with the the correct tag labels. Format the json file as follows with your own class names:
+   ```json
+   {
+       "classes" : {
+           "background" : 0,
+           "human" : 1,
+     "cat" : 2,
+     "dog" : 3
+       }
+   }
+   ```
+
+ 3. Load a new asset that the model has not been trained on
+ 4. Configure a new or load a previous tagging job 
  4. Apply model to new asset using Ctrl/Cmd + R
  5. Specify a model path and temporary output directory<br> 
     ![](media/6_Review.jpg)
  6. When the model finishes processing, validate tags, re-export and retrain it
  7. Repeat step 1 on new assets until the model performance is satisfactory
+ 
  
 ## Supporting additonal object detection Export and Review formats.
 
