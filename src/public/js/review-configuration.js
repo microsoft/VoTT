@@ -27,3 +27,12 @@ function getReviewConfiguration() {
 function closeWindow() {
      remote.getCurrentWindow().hide();
 }
+
+function getModelFile(){
+    remote.dialog.showOpenDialog({
+      filters: [{ name: 'Model File', extensions: ['model']}],
+      properties: ['openFile']
+    }, (pathName) => {
+        $('#model').val(pathName);
+    });
+}
