@@ -10,7 +10,8 @@ html, body {
   top: 50%;
   left: 0;
   margin-top: -200px; /* half the height of the element */
- }
+}
+
 #load-text{
     margin-bottom: 30px;
 }
@@ -34,7 +35,7 @@ html, body {
   width:300px;
   display:inline-block;
   margin-left: 20px;
- }
+}
 
 svg:hover path { 
   fill:red !important;
@@ -56,6 +57,7 @@ label {
     margin-top: 20px;
     text-align: center;
 }
+
 .regionGroup {
     margin-left: 10px;
 }
@@ -70,10 +72,15 @@ label {
   background-color: #FDD;
 }
 
- 
- .form-control {
+.form-control {
      max-width:800px;
- }
+}
+
+#model_selector{
+    width:30px; 
+    vertical-align: middle;
+    display:inline-block;
+}
 
 #video-tagging {
     margin: 0 auto;
@@ -124,12 +131,12 @@ label {
   border-radius: 5px;
   }
 
-  #loadButton {
+#loadButton {
       margin-top: 5px;
       
-  }
+}
 
-  #loadButton:hover {
+#loadButton:hover {
   color: #3c3c3c;
   background-color: #a2a5a3;
   border: 0px;

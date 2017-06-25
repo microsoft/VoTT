@@ -104,8 +104,8 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     //  bboxes  - a list of bboxes in the format of x1, y1, x2, y2 where the
     //           coordinates are in absolute values of the image
     //  tags - a list of objects containing the tagging data. Each object is in the format of:
-    //         {'x1' : int, 'y1' : int, 'x2' : int, 'y2' : int, 'class' : string}
-    //         Where (x1,y1) and (x2,y2) are the coordinates of the top left and bottom right corner
+    //         {'x1' : int, 'y1' : int, 'x2' : int, 'y2' : int, 'class' : string 'w': int, 'h' :int}
+    //         Where (x1,y1) and (x2,y2) are the coordinates of the top left and bottom right corner and w an h are optional overloads for the frame demensions
     //         of the bounding boxes (respectively), and 'class' is the name of the class.
     // Returns: A Promise object that resolves when the operation completes
     this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
@@ -125,10 +125,10 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                         }
                         var tag = tags[i];
                         var classIndex = self.classesDict[tag.class];
-                        var relWidth = (tag.x2 - tag.x1) / self.frameWidth;
-                        var relHeight = (tag.y2 - tag.y1) / self.frameHeight;
-                        var relCenterX = (tag.x1 / self.frameWidth) + (relWidth / 2);
-                        var relCenterY = (tag.y1 / self.frameHeight) + (relHeight / 2);
+                        var relWidth = (tag.x2 - tag.x1) / (tag.w || self.frameWidth);
+                        var relHeight = (tag.y2 - tag.y1) / (tag.h || self.frameHeight);
+                        var relCenterX = (tag.x1 / (tag.w || self.frameWidth)) + (relWidth / 2);
+                        var relCenterY = (tag.y1 / (tag.h || self.frameHeight)) + (relHeight / 2);
                         bboxesData += util.format('%s %s %s %s %s', classIndex, relCenterX.toFixed(6), 
                                                relCenterY.toFixed(6), relWidth.toFixed(6), relHeight.toFixed(6));
                     }
