@@ -1,4 +1,4 @@
-# VOTT: Visual Object Tagging Tool
+# VoTT: Visual Object Tagging Tool
 
 This tool provides end to end support for generating datasets and validating object detection models from video and image assets.
 
