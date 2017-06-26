@@ -30,3 +30,12 @@ function getExportConfiguration() {
 function closeWindow() {
      remote.getCurrentWindow().hide();
 }
+
+function getOutputFolder(){
+    remote.dialog.showOpenDialog({
+      filters: [{ name: 'Output Folder'}],
+      properties: ['openDirectory']
+    }, (pathName) => {
+        $('#output').val(pathName);
+    });
+}

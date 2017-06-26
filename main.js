@@ -208,6 +208,7 @@ if (process.platform === 'darwin') {
     })
     template[1].submenu.push();
     template[2].submenu.push();
+    
   }
 
   const menu = Menu.buildFromTemplate(template);

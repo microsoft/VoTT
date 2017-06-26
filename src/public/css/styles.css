@@ -76,7 +76,7 @@ label {
      max-width:800px;
 }
 
-#model_selector{
+.file_selector{
     width:30px; 
     vertical-align: middle;
     display:inline-block;

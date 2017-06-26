@@ -36,3 +36,12 @@ function getModelFile(){
         $('#model').val(pathName);
     });
 }
+
+function getOutputFolder(){
+    remote.dialog.showOpenDialog({
+      filters: [{ name: 'Output Folder'}],
+      properties: ['openDirectory']
+    }, (pathName) => {
+        $('#output').val(pathName);
+    });
+}
