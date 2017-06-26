@@ -32,8 +32,8 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
     //  bboxes  - a list of bboxes in the format of x1, y1, x2, y2 where the
     //           coordinates are in absolute values of the image
     //  tags - a list of objects containing the tagging data. Each object is in the format of:
-    //         {'x1' : int, 'y1' : int, 'x2' : int, 'y2' : int, 'class' : string}
-    //         Where (x1,y1) and (x2,y2) are the coordinates of the top left and bottom right corner
+    //         {'x1' : int, 'y1' : int, 'x2' : int, 'y2' : int, 'class' : string 'w': int, 'h' :int}
+    //         Where (x1,y1) and (x2,y2) are the coordinates of the top left and bottom right corner and w an h are optional overloads for the frame demensions
     //         of the bounding boxes (respectively), and 'class' is the name of the class.
     // Returns: A Promise object that resolves when the operation completes
     this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
