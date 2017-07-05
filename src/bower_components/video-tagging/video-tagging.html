@@ -395,23 +395,34 @@
                region.tags.push(selectedTagsArray[i]);
           }
     },
-    nextUntaggedClicked :function() {
+    nextUntaggedClicked:function() {
+        if (this.checkRegionLabels()){
           var frameIndex = this.getCurrentFrame();
-          var frames = this.video.duration * this.framerate;
-          var framesForward = 1;
-          for (var i=frameIndex;i<frames;i++) {
-                //The next frame is a first occurence of a frame with no regions
-                if(!this.frames[i + 1]) {
-                      if(!this.video.paused) {
-                          this.playPauseClicked();//Will pause the video
-                      }
-                      this.video.currentTime += (this.frameTime * framesForward);
-                      this.playingCallback();
-                      break;
+            if (this.imagelist){//image handling
+                var lastTagIndex = parseInt(Object.keys(this.frames)[Object.keys(this.frames).length-1])
+                if (this.imageIndex < this.imagelist.length) {
+                    if (lastTagIndex <= frameIndex){
+                        this.imageIndex++;
+                    } else {
+                        this.imageIndex = lastTagIndex;
+                    }
+                    this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
+                    this.playingCallback();
                 }
-                framesForward++;
+            } else { //video handling
+                var lastTagIndex = Object.keys(document.getElementById("video-tagging").frames).length;
+                var nextFrameOffset = Math.max((lastTagIndex - frameIndex), 1);
+                if(!this.video.paused) this.pauseState();
+                if ((this.video.currentTime + this.frameTime) > this.video.duration ){
+                    return;
+                }
+                if (!this.canMove ) return; 
+                //if there are no unlabled tags move to next frame
+                this.video.currentTime += this.frameTime * (nextFrameOffset);
+                this.playingCallback();            
             }
-    },
+        }
+   },
     lockTagsClicked: function() {
           var selTags = this.optionalTags.getSelectedTags();
           //There has to be selected label/s

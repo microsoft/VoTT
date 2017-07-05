@@ -136,7 +136,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                 },
                 function updateFilesList(cb) {
                     var lineToAppend = 'data/' + self.dataSetName + '/' + frameFileName;
-                    if (self.exportStarted) {
+                    if (!self.exportStarted) {
                         lineToAppend = '\n' + lineToAppend;
                     }
                     if (self.testFrameIndecies.includes(self.posFrameIndex)){

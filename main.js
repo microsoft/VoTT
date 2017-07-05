@@ -47,6 +47,7 @@ function createWindow () {
     let p = (process.platform === 'darwin') ? 1 : 0;
     menu.items[p].submenu.items[1].enabled = true;
     menu.items[p].submenu.items[2].enabled = true;
+    menu.items[p].submenu.items[3].enabled = true;
     menu.items[p+1].submenu.items[0].enabled = true;
     menu.items[p+1].submenu.items[1].enabled = true;
   });
@@ -87,7 +88,6 @@ function createWindow () {
       popup.once('ready-to-show', () => {
         popup.send('configs', arg);
         popup.show();
-        //popup.webContents.toggleDevTools();
       });
 
   });
@@ -157,6 +157,18 @@ function createWindow () {
           enabled: false,
           click () { mainWindow.webContents.send('review'); }
         }
+      ]
+    },
+    {
+    label: "Edit",
+      submenu: [
+          { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+          { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+          { type: "separator" },
+          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+          { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+          { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+          { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
       ]
     },
     {

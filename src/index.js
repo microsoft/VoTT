@@ -161,7 +161,7 @@ function fileSelected(filepath) {
     openPath(pathName, false);
   } else { // showing system open dialog
     dialog.showOpenDialog({
-      filters: [{ name: 'Videos', extensions: ['mp4']}],
+      filters: [{ name: 'Videos', extensions: ['mp4','ogg']}],
       properties: ['openFile']
     },
     function (pathName) {
@@ -227,7 +227,6 @@ function openPath(pathName, isDir) {
       console.log(`Error loading save file ${e.message}`);
     }
 
-
     document.getElementById('loadButton').onclick = loadTagger;
     
     function loadTagger (e) {
@@ -253,7 +252,7 @@ function openPath(pathName, isDir) {
         videotagging.src = ''; // ensures reload if user opens same video 
 
         if (isDir){
-            $('title').text(`Image Tagging Job: ${path.dirname(pathName)}}`); //set title indicator
+            $('title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
 
             //get list of images in directory
             var files = fs.readdirSync(pathName);
@@ -270,7 +269,7 @@ function openPath(pathName, isDir) {
               $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
               $("#video-tagging").on("stepFwdClicked-AfterStep", () => {
                   //update title to match src
-                   $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}}`);
+                   $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
               });
 

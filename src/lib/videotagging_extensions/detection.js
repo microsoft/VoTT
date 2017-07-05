@@ -65,6 +65,7 @@ function Detection(videotagging, visitedFrames) {
     //this maps dir of images for exporting
     this.mapDir = function(frameHandler, dir){
         return new Promise((resolve, reject) => {
+            imagesProcessed = 0;
             dir.forEach( (imagePath, index) => {
                 var img = new Image();
                 img.src = imagePath;
@@ -75,10 +76,14 @@ function Detection(videotagging, visitedFrames) {
                     // Copy the image contents to the canvas
                     var canvasContext = frameCanvas.getContext("2d");
                     canvasContext.drawImage(img, 0, 0);
-                    frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext,()=>{});
+                    frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext,() => {
+                        imagesProcessed += 1;
+                        if (imagesProcessed == dir.length){
+                            resolve();
+                        }
+                    });
                 }
             });
-            resolve();
         });
     }
 
