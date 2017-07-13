@@ -55,7 +55,7 @@ function Reviewer(modelPath) {
 	//      }
     // }
     this.reviewImagesFolder = function reviewImagesFolder(imagesFolderPath) {
-		var model = new cntkModel.CNTKFRCNNModel({cntkModelPath : self.modelPath, cntkPath: cntkConfig.cntkPath, anacondaPath: cntkConfig.anacondaPath , verbose : true});
+		var model = new cntkModel.CNTKFRCNNModel({cntkModelPath : self.modelPath, cntkPath: cntkConfig.cntkPath, anacondaPath: cntkConfig.anacondaPath, verbose : true});
 		return new Promise((resolve, reject) => { 
 			model.evaluateDirectory(imagesFolderPath, (err, res) => {
 				if (err) {
