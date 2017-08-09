@@ -7,7 +7,7 @@ const detectionUtils = require('../detectionUtils.js');
 const DEFAULT_DATA_SET_NAME = 'obj';
 const CFG_TEMPLATE_FILE_PATH = path.join(__dirname, 'yolo-obj.cfg.template');
 
-const OBJ_DATA_TAMPLATE = 'classes = %s\n' + 
+const OBJ_DATA_TEMPLATE = 'classes = %s\n' + 
                           'train  = data/train.txt\n' +
                           'valid  = data/test.txt\n' +
                           'names = data/%s.names\n' +
@@ -84,7 +84,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     fs.writeFile(path.join(self.dataDirPath, self.dataSetName + '.names'), objectNames, cb)
                 },
                 function saveObjectData(cb) {
-                    var objectData = util.format(OBJ_DATA_TAMPLATE, self.classes.length, self.dataSetName);
+                    var objectData = util.format(OBJ_DATA_TEMPLATE, self.classes.length, self.dataSetName);
                     fs.writeFile(path.join(self.dataDirPath, self.dataSetName + '.data'), objectData, cb);
                 },
             ], (err) => {
