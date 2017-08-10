@@ -24,6 +24,7 @@
     "cntk-fastrcnn": "^0.2.6",
     "electron": "^1.4.1",
     "electron-window-state": "^4.0.2",
-    "remote": "^0.2.6"
+    "remote": "^0.2.6",
+    "replace": "^0.3.0"
   }
 }
