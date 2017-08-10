@@ -71,7 +71,6 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     this.exportFrame = function exportFrame(frameFileName, frameBuffer, tags) {
         return new Promise((resolve, reject) => {
             var frameName = path.parse(frameFileName).name;
-            
             var b64 = 'data:image/jpeg;base64,' + frameBuffer.toString('base64');
             var img = new Image(); 
             img.onload = function() {   
@@ -153,7 +152,6 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     }
                     return resolve();
                 });
-
             }
             img.src = b64;
         });
