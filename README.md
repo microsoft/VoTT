@@ -9,7 +9,7 @@ The tool supports the following **features**:
 
 - The ability to tag and annotate Image Directories or Stand alone videos.
 - Computer-assisted tagging and tracking of objects in videos using the [Camshift tracking algorithm](http://opencv.jp/opencv-1.0.0_org/docs/papers/camshift.pdf).
-- Exporting tags and assets to CNTK or YOLO format for training an object detection model.
+- Exporting tags and assets to CNTK , Tensorflow (PascalVOC) or YOLO format for training an object detection model.
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models.
 
 ## Table of Contents
