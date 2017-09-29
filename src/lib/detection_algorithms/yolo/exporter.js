@@ -52,7 +52,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     this.init = function init() {
         self.posFrameIndex = 0;
         self.testFrameIndecies = detectionUtils.generateTestIndecies(self.testSplit, taggedFramesCount);
-        self.exportStarted = false;
+        self.filesTouched = {};  // Keep track of files we've touched so far
         return new Promise((resolve, reject) => {
             async.waterfall([
                 detectionUtils.ensureDirExists.bind(null, self.exportDirPath),
@@ -136,23 +136,21 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                 },
                 function updateFilesList(cb) {
                     var lineToAppend = 'data/' + self.dataSetName + '/' + frameFileName;
-                    if (!self.exportStarted) {
+                    var isTestFrame = (self.testFrameIndecies.includes(self.posFrameIndex));
+                    var filePath = (isTestFrame ? self.testFilePath : self.trainFilePath);
+                    if (self.filesTouched[filePath]) {
+                        // If we have written to this file previously, we need to add a newline
                         lineToAppend = '\n' + lineToAppend;
                     }
-                    if (self.testFrameIndecies.includes(self.posFrameIndex)){
-                        self.posFrameIndex++;
-                        fs.appendFile(self.testFilePath, lineToAppend, cb);
-                    } else {
-                        self.posFrameIndex++;
-                        fs.appendFile(self.trainFilePath, lineToAppend, cb);
-                    }
+                    self.filesTouched[filePath] = true;  // Mark that we need to add a newline when writing more
+                    self.posFrameIndex++;
+                    fs.appendFile(filePath, lineToAppend, cb);
                 }
             ], (err) => {
                 if (err) {
                     reject(err);
                     return;
                 }
-                self.exportStarted = true;
                 resolve();
             });
         });
