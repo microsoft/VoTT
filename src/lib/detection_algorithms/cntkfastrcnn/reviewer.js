@@ -2,7 +2,7 @@ const path = require('path');
 const config_path = path.join(__dirname, 'cntk-config.json');
 const cntkConfig = require(config_path);
 
-const cntkModel= require('cntk-fastrcnn');
+const cntkModel= require('cntk-fastercnn');
 
 // An model reviewer class that provides functionality to review images using the model
 // Constructor parameters:
