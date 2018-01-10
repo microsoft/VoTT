@@ -181,9 +181,9 @@ In the latest release we provide support for [Export and Review formats](https:/
 ## Upcoming Features 
 
 - Tagging project management
-- Altenative Tracking algorithms such as optical flow.
+- Alternative Tracking algorithms such as optical flow.
 - Classification Labeling Support
-- Segmentation Annoatation support.
+- Segmentation Annotation support.
 
 -----------
 
