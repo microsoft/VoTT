@@ -783,6 +783,12 @@
                     case 39: // right
                     self.stepFwdClicked();
                     break;
+                    case 68:// d for duplicate
+                    if (self.imageIndex > 0){
+                        self.frames[self.imageIndex] = JSON.parse(JSON.stringify(self.frames[self.imageIndex-1]));
+                    }
+                    self.playingCallback();
+                    break;
                     case 46: //delete
                     case 8:  //backspace
                     if($('.regionCanvasSelected')[0]){
