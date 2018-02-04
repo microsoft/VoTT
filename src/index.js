@@ -272,6 +272,12 @@ function openPath(pathName, isDir) {
                    $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
               });
+              $("#video-tagging").on("stepBwdClicked-AfterStep", () => {
+                //update title to match src
+                 $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+
+            });
+
 
               //auto-save 
               $("#video-tagging").off("stepFwdClicked-BeforeStep");
