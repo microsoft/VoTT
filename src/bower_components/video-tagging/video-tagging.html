@@ -260,7 +260,9 @@
               arr.push(e.detail.tagid);
               this.addTagsToRegion(arr);
               this.emitRegionToHost();//Persist
+              selected_region = this.selectedRegionId
               this.showAllRegions();
+              this.regionSelected(selected_region)
           });
       this.addEventListener("ontagdeleted", function(e) {
               var regionId = this.selectedRegionId -1;//Revert to zero-based array
@@ -272,7 +274,9 @@
                     }
               }
               this.emitRegionToHost();
+              selected_region = this.selectedRegionId
               this.showAllRegions();
+              this.regionSelected(selected_region)
           });
     },
 
@@ -793,6 +797,17 @@
                     case 39: // right
                     self.stepFwdClicked();
                     break;
+                    case 9: //tab
+                    if (self.selectedRegionId){
+                        if (self.selectedRegionId >= self.frames[self.getCurrentFrame()].length){
+                            self.regionSelected(0)
+                        }
+                        // self.selectedRegionId += 1
+                        self.regionSelected(parseInt(self.selectedRegionId)+1)
+                    } else{
+                        self.regionSelected(0)
+                    }          
+                    break;
                     case 68:// d for duplicate
                     if (self.imageIndex > 0){
                         self.frames[self.imageIndex] = JSON.parse(JSON.stringify(self.frames[self.imageIndex-1]));
@@ -913,7 +928,7 @@
 
         }
     },
-    stepBwdClicked: function() {
+    stepBwdClicked: function(fireEvents = true) {
         if (!this.canMove) return;    
         if (this.imagelist){//image handling
             if (this.imageIndex > 0) {
@@ -931,6 +946,7 @@
               this.playingCallback();
             }
         }
+        if(fireEvents)$('#video-tagging').trigger('stepBwdClicked-AfterStep');    
     },
     videoSrcChanged: function(newValue, oldValue) {
           if(this.video){
