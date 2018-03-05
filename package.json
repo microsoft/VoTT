@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "async": "^2.1.5",
-    "cntk-fastercnn": "^0.1.1",
+    "cntk-fastercnn": "^0.1.2",
     "electron": "^1.4.1",
     "electron-window-state": "^4.0.2",
     "remote": "^0.2.6",
