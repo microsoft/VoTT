@@ -6,7 +6,9 @@ const fs = require('fs');
 const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
-var trackingEnabled = true;
+
+var trackingEnabled = true; 
+
 var saveState,
     visitedFrames, //keep track of the visited frames
     videotagging,
@@ -195,6 +197,9 @@ function openPath(pathName, isDir) {
     $('title').text(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
+    // USVIDEO add temp tag for BP
+    $("#inputtags").tagsinput('add', 'BP');
+
     if (isDir) {
       $('#framerateGroup').hide();
       $('#suggestGroup').hide();
@@ -288,7 +293,8 @@ function openPath(pathName, isDir) {
                 return folderSelected();
             }
         } else {
-          $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
+          // USVIDEO
+          $('title').text(`US Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
           videotagging.disableImageDir();
           videotagging.src = pathName;
           //set start time
@@ -306,6 +312,7 @@ function openPath(pathName, isDir) {
               saveHandler: save
           });
           videotagging.video.oncanplay = updateVisitedFrames; 
+
           //track visited frames
           trackingExtension.startTracking();
         }
