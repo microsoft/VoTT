@@ -1,3 +1,11 @@
+
+# Revision History
+1. 2018/4/3 forked from Microsoft/VoTT, 根据业务需求做修改适应影像标注需求
+
+
+
+
+
 # VoTT: Visual Object Tagging Tool
 
 This tool provides end to end support for generating datasets and validating object detection models from video and image assets.
