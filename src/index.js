@@ -199,6 +199,9 @@ function openPath(pathName, isDir) {
     $('title').text(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
+    // USVIDEO add temp tag for BP
+    $("#inputtags").tagsinput('add', 'BP');
+
     if (isDir) {
       $('#framerateGroup').hide();
       $('#suggestGroup').hide();
@@ -292,7 +295,8 @@ function openPath(pathName, isDir) {
                 return folderSelected();
             }
         } else {
-          $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
+          // USVIDEO
+          $('title').text(`US Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
           videotagging.disableImageDir();
           videotagging.src = pathName;
           //set start time

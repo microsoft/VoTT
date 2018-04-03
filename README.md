@@ -1,7 +1,8 @@
 
 # Revision History
 1. 2018/4/3 forked from Microsoft/VoTT, 根据业务需求做修改适应影像标注需求
-
+2. 初始化过程 - (1) 默认不使用tracking功能；(2) 把标题改成"US Video ..."; (3) configur对话框汉化，增加默认tag BP，默认帧速率5
+3. 
 
 
 
