@@ -7,9 +7,7 @@ const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
 
-// USVIDEO disable tracing when start, since the tracking algrithem is not good enough for US video
-var trackingEnabled = false; 
-//var trackingEnabled = true; 
+var trackingEnabled = true; 
 
 var saveState,
     visitedFrames, //keep track of the visited frames
@@ -314,9 +312,9 @@ function openPath(pathName, isDir) {
               saveHandler: save
           });
           videotagging.video.oncanplay = updateVisitedFrames; 
+
           //track visited frames
-          // USVIDEO disable auto tracking when open new video
-          // trackingExtension.startTracking();
+          trackingExtension.startTracking();
         }
 
         //init detection
