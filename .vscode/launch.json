@@ -6,10 +6,10 @@
     "configurations": [
         {
             "name": "Debug Renderer",
-            "type": "chrome",
+            "type": "node",  //"chrome",
             "request": "launch",
-            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
-            //"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
+            //"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
             "runtimeArgs": [
                 "${workspaceRoot}",
                 "--enable-logging",
@@ -22,8 +22,8 @@
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
-            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
-            //"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
+            //"runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
             "program": "${workspaceRoot}/main.js"
         }
     ]
