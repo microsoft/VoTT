@@ -249,13 +249,30 @@ function Detection(videotagging, visitedFrames) {
             }
         });
     }
+    
+    this.reviewEndpoint = function(dir, endpoint, cb) {
+        console.log(endpoint);
+        if (dir){
+            this.mapDir(detectFrame, dir);
+        } else {
+            this.mapVideo(detectFrame, "last");
+        }
+
+        function detectFrame(frameName, frameId, fCanvas, canvasContext, saveCb){
+            // extract img from canvas
+            var frame_img = self.canvasToJpgBuffer(fCanvas, canvasContext);
+            console.log(`Detected ${frameId}`);
+            // send frame_img to endpoint
+            // take output from endpoint and write videotagging componenet
+        }
+        cb();        
+    }
 
     this.canvasToJpgBuffer = function(canvas, canvasContext) {
         canvasContext.drawImage(videotagging.video, 0, 0);
         var data = canvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
         return new Buffer(data, 'base64');
     }
-
 }
 
 module.exports.Detection = Detection;
