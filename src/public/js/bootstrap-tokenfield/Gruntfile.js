@@ -26,9 +26,9 @@ module.exports = function (grunt) {
           expand: true,
           flatten: true,
           src: [
-            'bower_components/bootstrap/js/affix.js',
-            'bower_components/bootstrap/js/scrollspy.js',
-            'bower_components/typeahead.js/dist/typeahead.bundle.min.js'
+            '../bootstrap/js/affix.js',
+            '../bootstrap/js/scrollspy.js',
+            '../typeahead.js/dist/typeahead.bundle.min.js'
           ],
           dest: 'docs-assets/js/'
         }]
