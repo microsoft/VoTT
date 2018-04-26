@@ -25,6 +25,9 @@
               <span id="regionLabelSpan" class="regionLabelSpan"></span>
               <span id="closeRegionImage" on-click="deleteRegion" class="closeRegion clickableControl">X</span>
           </div>
+          <svg id="selectionZone" class="selectionZoneStyle" >                  
+            </svg>    
+
               <canvas id="overlay"  on-click='videoClicked' class="overlaystyle" width="100" height="100" >
                       Your browser does not support the HTML5 canvas location.
               </canvas>
@@ -117,58 +120,69 @@
     },
     // Element Lifecycle
     ready: function() {
-      this.frames = {}; // Holds the data of the tagged frames, their regions and tags
-      this.seeking = false;//Flag for enabling control over the seek bar while the video is playing, see playingCallback function
-      this.selectedRegionId = 0;//Holds the current selected region number
-      this.lockTagsEnabled = false;
-      this.selectedTags = [];
-      this.uniqueTagId = 0;
-      this.videoStartTime = 0; //sometimes videos don't load at absoultue zero
-      this.canMove = true;
-      this.imageIndex = 0;
-      this.curImg = new Image();
-      this.rotation = 0;
+        this.frames = {}; // Holds the data of the tagged frames, their regions and tags
+        this.seeking = false;//Flag for enabling control over the seek bar while the video is playing, see playingCallback function
+        this.selectedRegionId = 0;//Holds the current selected region number
+        this.lockTagsEnabled = false;
+        this.selectedTags = [];
+        this.uniqueTagId = 0;
+        this.videoStartTime = 0; //sometimes videos don't load at absoultue zero
+        this.canMove = true;
+        this.imageIndex = 0;
+        this.curImg = new Image();
+        this.rotation = 0;
 
-      //Frame view size
-      this.frameWidth = 0;
-      this.frameHeight = 0;
+        //Frame view size
+        this.frameWidth = 0;
+        this.frameHeight = 0;
 
-      //Divs and spans
-      this.controlWrapper= this.$$('#controlWrapper');
-      this.videoWrapper= this.$$('#videoWrapper');
-      this.overlay = this.$$('#overlay');
-      this.video= this.$$('#vid');
-      this.frameCanvas = this.$$('#frameCanvas');
+        //Divs and spans
+        this.controlWrapper= this.$$('#controlWrapper');
+        this.videoWrapper= this.$$('#videoWrapper');
+        this.overlay = this.$$('#overlay');
+        this.video= this.$$('#vid');
+        this.frameCanvas = this.$$('#frameCanvas');
 
-      this.optionalTags= this.$$('#optionalTags');
-      this.regionLabelDiv = this.$$('#regionLabelDiv');
-      this.regionLabelSpan = this.$$('#regionLabelSpan');
-      this.timeSpan = this.$$('#timeSpan');
-      this.frameText = this.$$("#frameText");
-      this.playbackSpan = this.$$("#playbackSpan");
+        this.optionalTags= this.$$('#optionalTags');
+        this.regionLabelDiv = this.$$('#regionLabelDiv');
+        this.regionLabelSpan = this.$$('#regionLabelSpan');
+        this.timeSpan = this.$$('#timeSpan');
+        this.frameText = this.$$("#frameText");
+        this.playbackSpan = this.$$("#playbackSpan");
 
-      // Buttons
-      this.playButton = this.$$('#play-pause');
-      this.stepfwd = this.$$("#stepfwd");
-      this.stepbwd = this.$$("#stepbwd");
-      this.lockTag = this.$$("#lockTag");
-      this.playSpeedControl = this.$$("#playSpeedControl");
-      this.playSpeedCell = this.$$("#playSpeedCell");
-      this.mute = this.$$('#mute');
-      this.emptyFrame = this.$$("#emptyFrame");
-      this.nextuntagged = this.$$("#nextuntagged");
-      // Sliders
-      this.seekBar = this.$$("#seekBar");
-      this.volumeSlider = this.$$("#volumeSlider");
-      //dynamic styles for sliders
-      this.volumeStyle = document.createElement('style');
-      Polymer.dom(this.root).appendChild(this.volumeStyle);
-      this.seekStyle = document.createElement('style');
-      Polymer.dom(this.root).appendChild(this.seekStyle);
-      this.playing = null;
-      this.ctx = this.overlay.getContext("2d");
-      this.aspect = 0;
-      this.snapWidth = 0;
+        // Buttons
+        this.playButton = this.$$('#play-pause');
+        this.stepfwd = this.$$("#stepfwd");
+        this.stepbwd = this.$$("#stepbwd");
+        this.lockTag = this.$$("#lockTag");
+        this.playSpeedControl = this.$$("#playSpeedControl");
+        this.playSpeedCell = this.$$("#playSpeedCell");
+        this.mute = this.$$('#mute');
+        this.emptyFrame = this.$$("#emptyFrame");
+        this.nextuntagged = this.$$("#nextuntagged");
+        // Sliders
+        this.seekBar = this.$$("#seekBar");
+        this.volumeSlider = this.$$("#volumeSlider");
+        //dynamic styles for sliders
+        this.volumeStyle = document.createElement('style');
+        Polymer.dom(this.root).appendChild(this.volumeStyle);
+        this.seekStyle = document.createElement('style');
+        Polymer.dom(this.root).appendChild(this.seekStyle);
+        this.playing = null;
+        this.ctx = this.overlay.getContext("2d");
+        this.aspect = 0;
+        this.snapWidth = 0;
+
+      // svg canvas
+        
+        this.selectionZone = document.getElementById("selectionZone");
+        var self = this;
+        this.areaSelector = AreaSelector.init(this.selectionZone, function(x1, y1, x2, y2){
+            console.log("Selection: " + x1 + ": " + y1 + "; " + x2 + ": " + y2);
+
+            self.onRegionSelected(x1, y1, x2, y2);
+        });
+
     },
      /**
        * Events registration and handling
@@ -180,7 +194,12 @@
       //Reset all variables to new src
       this.video.addEventListener( "loadedmetadata", init);
       var self = this;
+      
       function init() {
+            // Update frame size to video size     
+            self.resetLayout();                          
+            self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
+
             self.controlWrapper.style.display = "block";
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
@@ -195,16 +214,17 @@
             self.seekBar.max = self.video.duration;
             self.playingCallback();
 
-            // Update frame size to video size                    
-            self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
+                        
 
-            self.frameCanvas.style.padding = "";
+            
 
             //fix resize bug
+            $(window).off("resize");
             $(window).resize( function(){
                 if (self.video.offsetWidth !== undefined){
                     self.snapToAspectRatio();
-                    // Update frame size to video size                    
+                    // Update frame size to video size  
+                    self.resetLayout();                  
                     self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
 
                     //resize the region boxes
@@ -316,17 +336,21 @@
        */
     clearArea: function()
     {
+        /*
         $('canvas#overlay').imgAreaSelect({
                   show:false,
                   hide:true
             });
+            */
     },
     enableAreaSelect: function(self) {
+        /*
       $('canvas#overlay').imgAreaSelect({
             disable: true,
             show:false,
             hide:true
       });
+      
       if((this.regiontype.toLowerCase() === "square") || (this.regiontype.toLowerCase() === "rectangle")) {
           $('canvas#overlay').imgAreaSelect({
                         disable: false, //enable/disable
@@ -349,6 +373,7 @@
                          },
                       });
           }
+          */
     },
     /**
        * All functions related to regions management
@@ -377,6 +402,29 @@
             this.regionLabelDiv.style.display = "block";
         }
     },
+
+    onRegionSelected: function(x1, y1, x2, y2){
+        // TODO: Add threshold for minimum area size (ex., 5px x 5px)
+        var r = {};
+        if (x1 < x2) {
+            r.x1 = x1;
+            r.x2 = x2;
+        } else {
+            r.x1 = x2;
+            r.x2 = x1;
+        }
+
+        if (y1 < y2) {
+            r.y1 = y1;
+            r.y2 = y2;
+        } else {
+            r.y1 = y2;
+            r.y2 = y1;
+        }
+
+        this.createRegion(r.x1, r.y1, r.x2, r.y2);
+    },
+
     createRegion: function(x1, y1, x2, y2) {
         var region = this.addRegion(x1, y1, x2, y2);//Add to in-memory collection
         var xOffset = parseFloat(this.overlay.style.left);
@@ -547,6 +595,7 @@
             var div = document.createElement("div");
             div.id = regionId;
             div.classList.add("regionCanvas");
+
             if (tags.length > 0){
                 div.style.borderColor = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
             }else {
@@ -795,7 +844,8 @@
         self.frames = self.inputframes? self.inputframes:{};
         self.optionalTags.createTagControls(self.inputtagsarray);
 
-
+        //self.resetLayout();
+        
         //bind keys (note this currently overrides any listener on the parent controls needs a more elegant way to work only when control is in focus)
         window.addEventListener("keyup", (function(canMove) {
             return function(e) {
@@ -883,7 +933,8 @@
             this.overlay.style.left = leftShift;
             this.overlay.style.top  = '0px';
 
-            this.frameCanvas.style.padding = "0px " + leftShift; 
+            this.frameCanvas.style.margin = "0px " + leftShift; 
+            this.selectionZone.style.margin = "0px " + leftShift;  
 
         } else {
             this.resizeFrameSize(this.video.offsetWidth, parseFloat(this.video.offsetWidth / imgRatio));
@@ -892,7 +943,8 @@
             this.overlay.style.top = topShift;
             this.overlay.style.left  = '0px';
 
-            this.frameCanvas.style.padding = topShift + " 0px"; 
+            this.frameCanvas.style.margin = topShift + " 0px"; 
+            this.selectionZone.style.margin = topShift + " 0px"; 
         }
     },
 
@@ -905,6 +957,15 @@
                         
         this.frameCanvas.width = this.frameWidth;
         this.frameCanvas.height = this.frameHeight;
+
+        this.areaSelector.resize(width, height);
+    },
+
+    resetLayout: function(){
+        this.overlay.style.top = "";
+        this.overlay.style.left = "";
+        this.frameCanvas.style.margin = "";
+        this.selectionZone.style.margin = "";
     },
 
     disableImageDir: function() {       
@@ -994,7 +1055,7 @@
         this.lockTagsEnabled = true;
         this.lockTagsClicked();
         this.optionalTags.toggleEnableButtons(false);
-        $('canvas#overlay').imgAreaSelect({disable: true});//disable canvas
+        // $('canvas#overlay').imgAreaSelect({disable: true});//disable canvas
         var self = this;
         this.playing = setInterval(function() {
             self.playingCallback();
@@ -1007,7 +1068,7 @@
             this.playingCallback();
             this.playButton.classList.toggle("icon-pause2", !this.video.paused);
             this.optionalTags.toggleEnableButtons(false);
-            $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
+            // $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
     },
     playingCallback: function() {
             if (!this.imagelist){
@@ -1059,6 +1120,8 @@
         }
     },
 
+
+    // Image filters for frameCanvas (not exposed to interface yet!)
     applyFilter(filter) {
         var canvas = this.frameCanvas;
         var context = canvas.getContext('2d');
@@ -1147,4 +1210,6 @@
 <script src="../moment/moment.js"></script>
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
+<script src="js/snap.svg-min.js"></script>
+<script src="js/areaselection.js"></script> 
 </dom-module>
