@@ -39,6 +39,7 @@
 
             this.onSelectionCallback = onSelection;
 
+            this.squareMode = false;
             return this;
         },
 
@@ -170,21 +171,46 @@
                 var y = e.clientY - rect[0].top;
 
                 if (self.capturingState) {                    
-                    self.moveCross(self.crossB, x, y);                    
+                    self.moveCross(self.crossB, x, y, self.squareMode, self.crossA);                    
                     self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB);
                 } else {                    
                     self.moveCross(self.crossA, x, y);
                     self.show(self.crossA);
                 }
             });
+            window.addEventListener("keydown", function(e){
+                if (e.shiftKey) {
+                    self.squareMode = true;
+                    console.log("Squares");
+                }
+            });
+            window.addEventListener("keyup", function(e){
+                if (!e.shiftKey) {
+                    self.squareMode = false;
+                    console.log("Rectangles");
+                }
+            });
         },
 
-        moveCross: function(cross, x, y) {
+        moveCross: function(cross, x, y, square, refCross) {
             var self = this;
+            var xx = (x < 0) ? 0 : ((x > self.paperWidth) ? self.paperWidth : x);
+            var yy = (y < 0) ? 0 : ((y > self.paperHeight) ? self.paperHeight : y);
+
+            if (square) {
+                var dx = Math.abs(xx - refCross.x);
+                var vx = Math.sign(xx - refCross.x);
+                var dy = Math.abs(yy - refCross.y);
+                var vy = Math.sign(yy - refCross.y);
+
+                var d = Math.min(dx, dy);
+                xx = refCross.x + d * vx;
+                yy = refCross.y + d * vy;
+            }
+
             window.requestAnimationFrame(function(){
                 // Move vertical line
-                var xx = (x < 0) ? 0 : ((x > self.paperWidth) ? self.paperWidth : x);
-                var yy = (y < 0) ? 0 : ((y > self.paperHeight) ? self.paperHeight : y);
+                
                 cross.vl.attr({
                         x1: xx,
                         x2: xx,
