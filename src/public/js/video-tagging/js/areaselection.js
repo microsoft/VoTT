@@ -1,4 +1,6 @@
 (function(glob){
+    // TODO Wrap internals into a new object to avoid exposing everything externally
+
     var AreaSelector = {
         baseParent: null,
         paper: null,
@@ -15,6 +17,8 @@
         capturingState: false,
 
         onSelectionCallback: null,
+
+        isEnabled: true,
 
         init: function(svgZone, onSelection) {
             this.baseParent = svgZone;
@@ -181,15 +185,17 @@
             window.addEventListener("keydown", function(e){
                 if (e.shiftKey) {
                     self.squareMode = true;
-                    console.log("Squares");
                 }
             });
             window.addEventListener("keyup", function(e){
                 if (!e.shiftKey) {
                     self.squareMode = false;
-                    console.log("Rectangles");
                 }
             });
+        },
+
+        unsubscribeFromMouseEvents: function() {
+
         },
 
         moveCross: function(cross, x, y, square, refCross) {
@@ -259,6 +265,16 @@
                     height: h
                 });
             })             
+        },
+
+        enable: function() {
+            this.isEnabled = true;
+            this.baseParent.style.visibility = "visible";
+        },
+
+        disable: function() {
+            this.isEnabled = false;
+            this.baseParent.style.visibility = "hidden";
         }
     };
 
