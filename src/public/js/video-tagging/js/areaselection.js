@@ -19,6 +19,8 @@
         onSelectionCallback: null,
 
         isEnabled: true,
+        squareMode: false,
+        twoPointsMode: false,
 
         init: function(svgZone, onSelection) {
             this.baseParent = svgZone;
@@ -42,8 +44,6 @@
             this.subscribeToMouseEvents();
 
             this.onSelectionCallback = onSelection;
-
-            this.squareMode = false;
             return this;
         },
 
@@ -135,61 +135,115 @@
         subscribeToMouseEvents: function() {
             var self = this;
             this.baseParent.addEventListener("pointerenter", function(e){
+                self.show(self.crossA);
             });
             this.baseParent.addEventListener("pointerleave", function(e){
-                self.hide(self.crossA);
-                self.hide(self.crossB);
-
-                self.hide(self.selectionBox);
+                if (!self.twoPointsMode && !self.capturingState) {
+                    self.hide(self.crossA);
+                    self.hide(self.crossB);
+                    self.hide(self.selectionBox);
+                }
             });
             this.baseParent.addEventListener("pointerdown", function(e){
-                self.baseParent.setPointerCapture(e.pointerId);
+                var rect = self.baseParent.getClientRects();
+                var x = e.clientX - rect[0].left;
+                var y = e.clientY - rect[0].top;
+                
+                if (!self.twoPointsMode) {
+                    self.baseParent.setPointerCapture(e.pointerId);
 
-                self.capturingState = true;
+                    self.capturingState = true;
 
+                    self.moveCross(self.crossB, x, y); 
+                    self.show(self.crossB);     
+                    self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB); 
+                    self.show(self.selectionBox);           
+                    self.show(self.overlay);      
+                } 
+                else {
+
+                }                 
+            });
+            this.baseParent.addEventListener("pointerup", function(e){
                 var rect = self.baseParent.getClientRects();
                 var x = e.clientX - rect[0].left;
                 var y = e.clientY - rect[0].top;
 
-                self.moveCross(self.crossB, x, y); 
-                self.show(self.crossB);     
-                self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB); 
-                self.show(self.selectionBox);           
-                self.show(self.overlay);                        
-            });
-            this.baseParent.addEventListener("pointerup", function(e){
-                self.baseParent.releasePointerCapture(e.pointerId);
-                self.capturingState = false;
+                if (!self.twoPointsMode) { 
+                    self.baseParent.releasePointerCapture(e.pointerId);
+                    self.capturingState = false;
 
-                self.hide(self.crossB);
-                self.hide(self.overlay);                    
-                
-                if (typeof self.onSelectionCallback === "function") {
-                    self.onSelectionCallback(self.crossA.x, self.crossA.y, self.crossB.x, self.crossB.y);
+                    self.hide(self.crossB);
+                    self.hide(self.overlay);                    
+                    
+                    if (typeof self.onSelectionCallback === "function") {
+                        self.onSelectionCallback(self.crossA.x, self.crossA.y, self.crossB.x, self.crossB.y);
+                    }
+                } 
+                else if (self.twoPointsMode && !self.capturingState) {
+                    self.baseParent.releasePointerCapture(e.pointerId);
+                    self.baseParent.setPointerCapture(e.pointerId);
+                    self.capturingState = true;
+                    
+                    self.moveCross(self.crossB, x, y); 
+                    self.show(self.crossA);  
+                    self.show(self.crossB);     
+                    self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB); 
+                    self.show(self.selectionBox);           
+                    self.show(self.overlay);   
+                } else {
+                    self.baseParent.releasePointerCapture(e.pointerId);
+                    self.capturingState = false;
+
+                    self.hide(self.crossB);
+                    self.hide(self.overlay);   
+                    self.moveCross(self.crossA, x, y);
+                    self.moveCross(self.crossB, x, y);
+                    if (typeof self.onSelectionCallback === "function") {
+                        self.onSelectionCallback(self.crossA.x, self.crossA.y, self.crossB.x, self.crossB.y);
+                    }
                 }
-
             });
             this.baseParent.addEventListener("pointermove", function(e){
                 var rect = self.baseParent.getClientRects();
                 var x = e.clientX - rect[0].left;
                 var y = e.clientY - rect[0].top;
-
-                if (self.capturingState) {                    
+                if (!self.twoPointsMode && !self.capturingState){
+                    self.moveCross(self.crossA, x, y);
+                }
+                else if (!self.twoPointsMode && self.capturingState) {                    
                     self.moveCross(self.crossB, x, y, self.squareMode, self.crossA);                    
                     self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB);
-                } else {                    
+                } 
+                else if (self.twoPointsMode && self.capturingState) {
+                    self.moveCross(self.crossB, x, y, self.squareMode, self.crossA);                    
+                    self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB);
+                } 
+                else {                    
                     self.moveCross(self.crossA, x, y);
-                    self.show(self.crossA);
+                    self.moveCross(self.crossB, x, y);
                 }
             });
             window.addEventListener("keydown", function(e){
                 if (e.shiftKey) {
-                    self.squareMode = true;
+                    self.squareMode = true; 
+                } 
+                if (e.ctrlKey) {
+                    self.twoPointsMode = true;                    
                 }
             });
             window.addEventListener("keyup", function(e){
                 if (!e.shiftKey) {
                     self.squareMode = false;
+                }
+                if (!e.ctrlKey && self.twoPointsMode) {
+                    self.twoPointsMode = false;   
+                    self.capturingState = false;
+
+                    self.moveCross(self.crossA, self.crossB.x, self.crossB.y);
+                    self.hide(self.crossB);
+                    self.hide(self.selectionBox);
+                    self.hide(self.overlay);
                 }
             });
         },
