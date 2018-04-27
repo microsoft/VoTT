@@ -382,6 +382,7 @@
             return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
         }).each(function(idx,e) {
             e.style.zIndex =(idx+200).toString();
+            $(e).css('box-shadow', 'inset 0 0 0 2px ' + $(e).css('border-color')); 
         });
     },
     positionRegionNameLabel: function(div) {
