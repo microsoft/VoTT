@@ -16,13 +16,14 @@
         crossB: null,
         capturingState: false,
 
-        onSelectionCallback: null,
+        onSelectionBeginCallback: null,
+        onSelectionEndCallback: null,
 
         isEnabled: true,
         squareMode: false,
         twoPointsMode: false,
 
-        init: function(svgZone, onSelection) {
+        init: function(svgZone, onSelectionBegin, onSelectionEnd) {
             this.baseParent = svgZone;
             this.paper = Snap(svgZone);
             this.paperWidth = svgZone.width.baseVal.value;
@@ -43,7 +44,8 @@
             this.crossB = this.createCross();
             this.subscribeToMouseEvents();
 
-            this.onSelectionCallback = onSelection;
+            this.onSelectionEndCallback = onSelectionEnd;
+            this.onSelectionBeginCallback = onSelectionBegin;
             return this;
         },
 
@@ -138,10 +140,17 @@
                 self.show(self.crossA);
             });
             this.baseParent.addEventListener("pointerleave", function(e){
+                var rect = self.baseParent.getClientRects();
+                var x = e.clientX - rect[0].left;
+                var y = e.clientY - rect[0].top;
+
                 if (!self.twoPointsMode && !self.capturingState) {
                     self.hide(self.crossA);
                     self.hide(self.crossB);
                     self.hide(self.selectionBox);
+                } else if (self.twoPointsMode && self.capturingState) {
+                    self.moveCross(self.crossB, x, y);
+                    self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB); 
                 }
             });
             this.baseParent.addEventListener("pointerdown", function(e){
@@ -151,14 +160,16 @@
                 
                 if (!self.twoPointsMode) {
                     self.baseParent.setPointerCapture(e.pointerId);
-
                     self.capturingState = true;
-
-                    self.moveCross(self.crossB, x, y); 
-                    self.show(self.crossB);     
+                    self.moveCross(self.crossB, self.crossA.x, self.crossA.y); 
                     self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB); 
+                    self.show(self.crossB);     
                     self.show(self.selectionBox);           
-                    self.show(self.overlay);      
+                    self.show(self.overlay);     
+                    
+                    if (typeof self.onSelectionBeginCallback === "function") {
+                        self.onSelectionBeginCallback();
+                    }
                 } 
                 else {
 
@@ -176,32 +187,35 @@
                     self.hide(self.crossB);
                     self.hide(self.overlay);                    
                     
-                    if (typeof self.onSelectionCallback === "function") {
-                        self.onSelectionCallback(self.crossA.x, self.crossA.y, self.crossB.x, self.crossB.y);
+                    if (typeof self.onSelectionEndCallback === "function") {
+                        self.onSelectionEndCallback(self.crossA.x, self.crossA.y, self.crossB.x, self.crossB.y);
                     }
                 } 
                 else if (self.twoPointsMode && !self.capturingState) {
-                    self.baseParent.releasePointerCapture(e.pointerId);
-                    self.baseParent.setPointerCapture(e.pointerId);
                     self.capturingState = true;
                     
                     self.moveCross(self.crossB, x, y); 
-                    self.show(self.crossA);  
-                    self.show(self.crossB);     
                     self.moveSelectionBox(self.selectionBox, self.crossA, self.crossB); 
+                    self.show(self.crossA);  
+                    self.show(self.crossB);                         
                     self.show(self.selectionBox);           
                     self.show(self.overlay);   
+
+                    if (typeof self.onSelectionBeginCallback === "function") {
+                        self.onSelectionBeginCallback();
+                    }
+
                 } else {
-                    self.baseParent.releasePointerCapture(e.pointerId);
                     self.capturingState = false;
 
                     self.hide(self.crossB);
                     self.hide(self.overlay);   
+                                        
+                    if (typeof self.onSelectionEndCallback === "function") {
+                        self.onSelectionEndCallback(self.crossA.x, self.crossA.y, self.crossB.x, self.crossB.y);
+                    }
                     self.moveCross(self.crossA, x, y);
                     self.moveCross(self.crossB, x, y);
-                    if (typeof self.onSelectionCallback === "function") {
-                        self.onSelectionCallback(self.crossA.x, self.crossA.y, self.crossB.x, self.crossB.y);
-                    }
                 }
             });
             this.baseParent.addEventListener("pointermove", function(e){
@@ -228,7 +242,7 @@
                 if (e.shiftKey) {
                     self.squareMode = true; 
                 } 
-                if (e.ctrlKey) {
+                if (e.ctrlKey && !self.capturingState) {
                     self.twoPointsMode = true;                    
                 }
             });
@@ -252,41 +266,51 @@
 
         },
 
+        boundPointToRect: function(x, y) {
+            var p = {x:0, y: 0};
+
+            p.x = (x < 0) ? 0 : ((x > this.paperWidth) ? this.paperWidth : x);
+            p.y = (y < 0) ? 0 : ((y > this.paperHeight) ? this.paperHeight : y);
+
+            return p;
+        },
+
         moveCross: function(cross, x, y, square, refCross) {
             var self = this;
-            var xx = (x < 0) ? 0 : ((x > self.paperWidth) ? self.paperWidth : x);
-            var yy = (y < 0) ? 0 : ((y > self.paperHeight) ? self.paperHeight : y);
+
+            var p = this.boundPointToRect(x, y);
 
             if (square) {
-                var dx = Math.abs(xx - refCross.x);
-                var vx = Math.sign(xx - refCross.x);
-                var dy = Math.abs(yy - refCross.y);
-                var vy = Math.sign(yy - refCross.y);
+                var dx = Math.abs(p.x - refCross.x);
+                var vx = Math.sign(p.x - refCross.x);
+                var dy = Math.abs(p.y - refCross.y);
+                var vy = Math.sign(p.y - refCross.y);
 
                 var d = Math.min(dx, dy);
-                xx = refCross.x + d * vx;
-                yy = refCross.y + d * vy;
+                p.x = refCross.x + d * vx;
+                p.y = refCross.y + d * vy;
             }
+
+            cross.x = p.x;
+            cross.y = p.y;   
 
             window.requestAnimationFrame(function(){
                 // Move vertical line
                 
                 cross.vl.attr({
-                        x1: xx,
-                        x2: xx,
+                        x1: p.x,
+                        x2: p.x,
                         y2: self.paperHeight
                 });
 
                 // Move horizontal line
                 cross.hl.attr({
-                        y1: yy,
+                        y1: p.y,
                         x2: self.paperWidth,
-                        y2: yy
+                        y2: p.y
                 })
-
-                cross.x = xx;
-                cross.y = yy;
-            })            
+            }) 
+        
         },
 
         show: function(element) {
