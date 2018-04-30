@@ -37,7 +37,7 @@ ipcRenderer.on('saveVideo', (event, message) => {
 ipcRenderer.on('export', (event, message) => {
    var args = {
      type : "export",
-     supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims(),
+     supportedFormats : detection.detectionAlgorithmManager.getAvailbleExporters(),
      assetFolder : assetFolder
    };
 
@@ -57,10 +57,17 @@ ipcRenderer.on('export-tags', (event, exportConfig) => {
 ipcRenderer.on('review', (event, message) => {
     var args = {
       type: 'review',
-      supportedFormats : detection.detectionAlgorithmManager.getAvailbleAlgorthims(),
+      supportedFormats : detection.detectionAlgorithmManager.getAvailbleReviewers(),
       assetFolder : assetFolder
     };
     ipcRenderer.send('show-popup', args);
+});
+
+ipcRenderer.on('reviewEndpoint', (event, message) => {
+  var args = {
+    type: 'review-endpoint',
+  };
+  ipcRenderer.send('show-popup', args);
 });
 
 ipcRenderer.on('review-model', (event, reviewModelConfig) => {
@@ -78,6 +85,17 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
   }
       
 });
+
+ipcRenderer.on('review-model-endpoint', (event, reviewModelConfig) => {
+    addLoader();
+    detection.reviewEndpoint( videotagging.imagelist, reviewModelConfig.endpoint, () => {
+        if(!videotagging.imagelist){
+          videotagging.video.oncanplay = updateVisitedFrames;
+        }      
+        $(".loader").remove();        
+    });    
+});
+
 
 ipcRenderer.on('toggleTracking', (event, message) => {
   if (trackingEnabled) {
