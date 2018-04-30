@@ -165,38 +165,38 @@ function Detection(videotagging, visitedFrames) {
     }
 
     //allows user to review model suggestions on a video
-    this.review = function (dir, method, modelPath, reviewPath, cb) {
+    this.review = function(dir, method, modelPath, reviewPath, cb) {
         //if the export reviewPath directory does not exist create it and export all the frames then review
         fs.exists(reviewPath, (exists) => {
-            if (!exists) {
-                fs.mkdir(reviewPath, () => {
-                    if (dir) {
-                        this.mapDir(saveFrame, dir).then(() => {
+            if (!exists){
+                fs.mkdir(reviewPath, () =>{
+                    if (dir){
+                        this.mapDir(saveFrame, dir).then( () => {
                             reviewModel();
-                        });
+                        });                        
                     } else {
-                        this.mapVideo(saveFrame, "last").then(() => {
+                        this.mapVideo(saveFrame, "last").then( () => {
                             reviewModel();
-                        });
+                        });                        
                     }
                 });
             } else {
                 reviewModel();
             }
-
+        
             function reviewModel() {
                 //run the model on the reviewPath directory
                 self.detectionAlgorithmManager.initReviewer(method, modelPath, (reviewImagesFolder) => {
-                    reviewImagesFolder(reviewPath).then((modelTags) => {
+                    reviewImagesFolder(reviewPath).then( (modelTags) => {
                         self.videotagging.frames = {};
                         self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
 
                         //Create regions based on the provided modelTags
-                        var p = new Promise((resolve, reject) => {
-                            Object.keys(modelTags.frames).map((pathId) => {
+                        var p = new Promise ((resolve,reject) => {
+                            Object.keys(modelTags.frames).map( (pathId) => {
                                 var frameImage = new Image();
                                 frameImage.src = path.join(reviewPath, pathId);
-                                frameImage.onload = loadFrameRegions;
+                                frameImage.onload = loadFrameRegions; 
 
                                 function loadFrameRegions() {
                                     var imageWidth = this.width;
@@ -204,28 +204,28 @@ function Detection(videotagging, visitedFrames) {
                                     frameId = pathId.replace(".jpg", "");//remove.jpg
                                     console.log(frameId)
                                     self.videotagging.frames[frameId] = [];
-                                    modelTags.frames[pathId].regions.forEach((region) => {
+                                    modelTags.frames[pathId].regions.forEach( (region) => {
                                         self.videotagging.frames[frameId].push({
-                                            x1: region.x1,
-                                            y1: region.y1,
-                                            x2: region.x2,
-                                            y2: region.y2,
-                                            id: self.videotagging.uniqueTagId++,
-                                            width: imageWidth,
-                                            height: imageHeight,
-                                            type: self.videotagging.regiontype,
-                                            tags: Object.keys(modelTags.classes).filter((key) => { return modelTags.classes[key] === region.class }),
-                                            name: (self.videotagging.frames[frameId].length + 1),
-                                            blockSuggest: true
-                                        });
+                                        x1:region.x1,
+                                        y1:region.y1,
+                                        x2:region.x2,
+                                        y2:region.y2,                          
+                                        id:self.videotagging.uniqueTagId++,
+                                        width:imageWidth,
+                                        height:imageHeight,
+                                        type:self.videotagging.regiontype,
+                                        tags:Object.keys(modelTags.classes).filter( (key) => {return modelTags.classes[key] === region.class }),
+                                        name:(self.videotagging.frames[frameId].length + 1),
+                                        blockSuggest: true
+                                        }); 
                                     });
-                                    if (Object.keys(self.videotagging.frames).length >= Object.keys(modelTags.frames).length) {
+                                    if (Object.keys(self.videotagging.frames).length >= Object.keys(modelTags.frames).length){
                                         resolve();
                                     }
                                 }
-                            });
+                            });                            
                         });
-                        p.then(() => {
+                        p.then(()=>{
                             self.videotagging.showAllRegions();
                             //cleanup and notify
                             self.videotagging.video.currentTime = 0;
@@ -237,14 +237,14 @@ function Detection(videotagging, visitedFrames) {
                 });
             }
 
-            function saveFrame(frameName, frameId, fCanvas, canvasContext, saveCb) {
-                var writePath = path.join(reviewPath, `${frameId}.jpg`);
+            function saveFrame(frameName, frameId, fCanvas, canvasContext, saveCb){
+                var writePath =  path.join(reviewPath, `${frameId}.jpg`);
                 //write canvas to file and change frame
                 console.log('saving file', writePath);
                 fs.exists(writePath, (exists) => {
                     if (!exists) {
                         fs.writeFile(writePath, self.canvasToJpgBuffer(fCanvas, canvasContext), saveCb);
-                    }
+                    }  
                 });
             }
         });
@@ -270,8 +270,6 @@ function Detection(videotagging, visitedFrames) {
             ).then((data)=>{
                 //dumb way to do this fix with a promis
                 self.videotagging.optionalTags.createTagControls(Object.keys(data.classes));
-                console.log(data);
-                console.log(frameId);
                 self.videotagging.frames[frameId] = [];
                 data.frames[`${frameId}.jpg`].regions.forEach((region) => {
                     self.videotagging.frames[frameId].push({
@@ -287,14 +285,15 @@ function Detection(videotagging, visitedFrames) {
                         name: (self.videotagging.frames[frameId].length + 1),
                         blockSuggest: true,
                     });
+                    self.videotagging.showAllRegions();
                 });
             }); 
-            saveCb();
+            // saveCb();
         }
         cb();
     }
 
-    this.canvasToJpgBuffer = function (canvas, canvasContext) {
+    this.canvasToJpgBuffer = function(canvas, canvasContext) {
         canvasContext.drawImage(videotagging.video, 0, 0);
         var data = canvas.toDataURL('image/jpeg').replace(/^data:image\/\w+;base64,/, ""); // strip off the data: url prefix to get just the base64-encoded bytes http://stackoverflow.com/questions/5867534/how-to-save-canvas-data-to-file
         return new Buffer(data, 'base64');
