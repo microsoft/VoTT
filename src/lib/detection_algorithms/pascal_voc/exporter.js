@@ -105,6 +105,8 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                                     <object>
                                             <name>${tag.class}</name>
                                             <pose>Unspecified</pose>
+                                            <truncated>0</truncated>
+                                            <difficult>0</difficult>
                                             <bndbox>
                                                 <xmin>${tag.x1}</xmin>
                                                 <ymin>${tag.y1}</ymin>
