@@ -253,9 +253,13 @@ function Detection(videotagging, visitedFrames) {
     this.reviewEndpoint = function (dir, endpoint, cb) {
         console.log(endpoint);
         if (dir) {
-            this.mapDir(detectFrame, dir);
+            this.mapDir(detectFrame, dir).then(() => {
+                cb();
+            });
         } else {
-            this.mapVideo(detectFrame, "last");
+            this.mapVideo(detectFrame, "last").then(() => {
+                cb();
+            });
         }
         self.videotagging.frames = {};
 
@@ -286,11 +290,10 @@ function Detection(videotagging, visitedFrames) {
                         blockSuggest: true,
                     });
                     self.videotagging.showAllRegions();
+                    saveCb();
                 });
             }); 
-            // saveCb();
         }
-        cb();
     }
 
     this.canvasToJpgBuffer = function(canvas, canvasContext) {
