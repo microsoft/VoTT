@@ -42,7 +42,6 @@ function Detection(videotagging, visitedFrames) {
                 }
             }
 
-
             function iterateFrames() {
                 var frameId = self.videotagging.getCurrentFrame();
                 var lastFrame = isLastFrame(frameId);
@@ -53,7 +52,10 @@ function Detection(videotagging, visitedFrames) {
                 }
 
                 var frameName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameId}.jpg`
-                frameHandler(frameName, frameId, frameCanvas, canvasContext, () => {
+                frameHandler(frameName, frameId, frameCanvas, canvasContext, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
                     if (!lastFrame) {
                         self.videotagging.stepFwdClicked(false);
                     }
@@ -76,7 +78,10 @@ function Detection(videotagging, visitedFrames) {
                     // Copy the image contents to the canvas
                     var canvasContext = frameCanvas.getContext("2d");
                     canvasContext.drawImage(img, 0, 0);
-                    frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext, () => {
+                    frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext, (err) => {
+                        if (err) {
+                            reject(err);
+                        }
                         imagesProcessed += 1;
                         if (imagesProcessed == dir.length) {
                             resolve();
@@ -169,7 +174,10 @@ function Detection(videotagging, visitedFrames) {
         //if the export reviewPath directory does not exist create it and export all the frames then review
         fs.exists(reviewPath, (exists) => {
             if (!exists){
-                fs.mkdir(reviewPath, () =>{
+                fs.mkdir(reviewPath, (err) => {
+                    if (err){
+                        cb(err);
+                    }
                     if (dir){
                         this.mapDir(saveFrame, dir).then( () => {
                             reviewModel();
@@ -187,13 +195,13 @@ function Detection(videotagging, visitedFrames) {
             function reviewModel() {
                 //run the model on the reviewPath directory
                 self.detectionAlgorithmManager.initReviewer(method, modelPath, (reviewImagesFolder) => {
-                    reviewImagesFolder(reviewPath).then( (modelTags) => {
+                    reviewImagesFolder(reviewPath).then((err, modelTags) => {
                         self.videotagging.frames = {};
                         self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
 
                         //Create regions based on the provided modelTags
-                        var p = new Promise ((resolve,reject) => {
-                            Object.keys(modelTags.frames).map( (pathId) => {
+                        var p = new Promise ((resolve, reject) => {
+                            Object.keys(modelTags.frames).map((pathId) => {
                                 var frameImage = new Image();
                                 frameImage.src = path.join(reviewPath, pathId);
                                 frameImage.onload = loadFrameRegions; 
@@ -223,8 +231,9 @@ function Detection(videotagging, visitedFrames) {
                                         resolve();
                                     }
                                 }
-                            });                            
+                            })                       
                         });
+
                         p.then(()=>{
                             self.videotagging.showAllRegions();
                             //cleanup and notify
@@ -232,7 +241,9 @@ function Detection(videotagging, visitedFrames) {
                             self.videotagging.playingCallback();
                             let notification = new Notification('Offline Video Tagger', { body: 'Model Ready For Review.' });
                             cb();
-                        })
+                        });
+                    }, (err) => {
+                        cb(err);
                     });
                 });
             }
@@ -255,15 +266,19 @@ function Detection(videotagging, visitedFrames) {
         if (dir) {
             this.mapDir(detectFrame, dir).then(() => {
                 cb();
+            },(err) => {
+                cb(err);
             });
         } else {
             this.mapVideo(detectFrame, "last").then(() => {
                 cb();
+            },(err) => {
+                cb(err);
             });
         }
         self.videotagging.frames = {};
 
-        function detectFrame(frameName, frameId, fCanvas, canvasContext, saveCb) {
+        function detectFrame(frameName, frameId, fCanvas, canvasContext, detectCb) {
             // extract img from 
             var frame_img =  self.canvasToArrayBuffer(fCanvas, canvasContext, frameId);
             fetch(endpoint, {
@@ -290,8 +305,10 @@ function Detection(videotagging, visitedFrames) {
                         blockSuggest: true,
                     });
                     self.videotagging.showAllRegions();
-                    saveCb();
+                    detectCb();
                 });
+            }).catch((err)=>{
+                detectCb(err);
             }); 
         }
     }
