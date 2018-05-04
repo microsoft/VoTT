@@ -193,7 +193,7 @@ function createWindow () {
       label: 'Debug',
       submenu: [
         {
-          label: 'Toggle Developer Tools',
+          label: 'Developer Console',
           accelerator: 'CmdOrCtrl+D',
           click () { mainWindow.webContents.toggleDevTools(); }
         },

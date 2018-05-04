@@ -74,13 +74,17 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
   var modelLocation = reviewModelConfig.modelPath;
   if (fs.existsSync(modelLocation)) {
     addLoader();
-    detection.review( videotagging.imagelist, reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, () => {
+    detection.review(videotagging.imagelist, reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, (err) => {
+        if (err){
+          alert(`An error occured with Local Active Learning \n Please check the debug console for more information.`);
+        }
         if(!videotagging.imagelist){
           videotagging.video.oncanplay = updateVisitedFrames;
         }      
         $(".loader").remove();        
     });
-  } else {
+  }
+   else {
       alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
   }
       
@@ -88,11 +92,14 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
 
 ipcRenderer.on('review-model-endpoint', (event, reviewModelConfig) => {
     addLoader();
-    detection.reviewEndpoint( videotagging.imagelist, reviewModelConfig.endpoint, () => {
-        if(!videotagging.imagelist){
-          videotagging.video.oncanplay = updateVisitedFrames;
-        }      
-        $(".loader").remove();        
+    detection.reviewEndpoint( videotagging.imagelist, reviewModelConfig.endpoint, (err) => {
+      if (err){
+        alert(`An error occured with Remote Active Learning \n Please check the debug console for more information.`);
+      }
+      if(!videotagging.imagelist){
+        videotagging.video.oncanplay = updateVisitedFrames;
+      }      
+      $(".loader").remove();        
     });    
 });
 
