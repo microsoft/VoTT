@@ -55,12 +55,17 @@ function Reviewer(modelPath) {
 	//      }
     // }
     this.reviewImagesFolder = function reviewImagesFolder(imagesFolderPath) {
-		var model = new cntkModel.CNTKFRCNNModel({cntkModelPath : self.modelPath, cntkPath: cntkConfig.cntkPath, anacondaPath: cntkConfig.anacondaPath, verbose : true});
 		return new Promise((resolve, reject) => { 
+			try {
+				var model = new cntkModel.CNTKFRCNNModel({cntkModelPath : self.modelPath, cntkPath: cntkConfig.cntkPath, anacondaPath: cntkConfig.anacondaPath, verbose : true})
+			} catch(err) {
+				console.info(err);				
+				reject(err);
+			}
 			model.evaluateDirectory(imagesFolderPath, (err, res) => {
 				if (err) {
 					console.info(err);
-					reject();
+					reject(err);
 				}
 				console.log(res);
 				resolve(res);
