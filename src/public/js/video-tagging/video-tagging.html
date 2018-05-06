@@ -13,6 +13,7 @@
   <template>
     <style include="video-taggingstyles"></style>
     <link rel="stylesheet" href="css/sliders.css" />
+    <link rel="stylesheet" href="css/selectiontool.css" />
     <link rel="stylesheet" href="../jquery-ui/themes/base/resizable.css">
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
     <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css" />
@@ -175,8 +176,31 @@
         this.snapWidth = 0;
 
       // svg canvas
-        
+        let self = this;
         this.selectionZone = document.getElementById("selectionZone");
+
+        SystemJS.import("./public/js/video-tagging/js/canvastools.js").then(function(module){
+            Promise.all([
+                System.import('selectiontool'),
+                //System.import('regiontool'),
+            ]).then(function(modules){
+                //var rtools = modules[1].CanvasTools.Region;
+                var stools = modules[0].CanvasTools.Selection;
+                
+                self.areaSelector = new stools.AreaSelector(self.selectionZone, 
+                    function(){
+                    self.selectionZone.style.zIndex = 300;
+                },
+                function(x1, y1, x2, y2){
+                    self.selectionZone.style.zIndex = 30;
+                    self.onNewAreaSelected(x1, y1, x2, y2);
+                }
+                );
+            });
+
+        })
+        
+/*         this.selectionZone = document.getElementById("selectionZone");
         var self = this;
         this.areaSelector = AreaSelector.init(this.selectionZone, 
             function(){
@@ -185,7 +209,7 @@
             function(x1, y1, x2, y2){
                 self.selectionZone.style.zIndex = 30;
                 self.onNewAreaSelected(x1, y1, x2, y2);
-            });
+            }); */
 
     },
      /**
@@ -1240,6 +1264,5 @@
 <script src="../moment/moment.js"></script>
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
-<script src="js/snap.svg-min.js"></script>
-<script src="js/areaselection.js"></script> 
+<script src="js/system.js"></script>
 </dom-module>
