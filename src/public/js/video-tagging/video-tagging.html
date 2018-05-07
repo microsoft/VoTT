@@ -346,10 +346,12 @@
              $('#videoControls').innerHeight() -
              $('#videoTagControls').innerHeight() -
              5) * this.aspect;
-        if(this.snapWidth > $('#video-tagging').parent().width())
+        if(this.snapWidth > $('#video-tagging').parent().width()) {
             $('#video-tagging').width($('#video-tagging').parent().width());
-        else
+        }
+        else {
             $('#video-tagging').width(this.snapWidth);
+        }
     },
     /**
        * JQuery Area selector
@@ -951,6 +953,7 @@
         self.curImg.onload = function() {
             self.controlWrapper.style.display = "block";
             var imgRatio = self.curImg.width / self.curImg.height;
+            self.aspect = imgRatio;
             //Size canvas as image
             var scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= (videotagging.curImg.width/videotagging.curImg.height));
             
@@ -964,8 +967,9 @@
             $(window).off("resize");
             $(window).resize(function(){
                 if (self.video.offsetWidth !== undefined){
+                    self.snapToAspectRatio();
                     self.resizeFrame(scaleByPortrait, imgRatio);
-
+                    
                     //resize the region boxes
                     self.showAllRegions();
                     //reposition selectedRegion Label
