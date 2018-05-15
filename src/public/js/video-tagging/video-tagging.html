@@ -224,32 +224,39 @@
       var self = this;
       
       function init() {
-            self.controlWrapper.style.display = "block";
+            self.controlWrapper.style.display = "grid";
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
             self.frameTime = 1/self.framerate;
             self.enableAreaSelect(self);
             self.optionalTags.createTagControls(self.inputtagsarray);
             //Take the raw video aspect ratio
-            self.aspect = self.video.offsetWidth / self.video.offsetHeight;
+            self.aspect = self.video.videoWidth / self.video.videoHeight;
             self.snapToAspectRatio();
             //Init sliders
             self.volumeSlider.value = 0.5;
-            self.seekBar.max = self.video.duration;
-            self.playingCallback();
+            self.seekBar.max = self.video.duration;            
 
             // Update frame size to video size     
             self.resetLayout();                          
-            self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);            
+            //self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
+            let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
+            self.resizeFrame(scaleByPortrait, self.aspect);         
+
+            self.playingCallback();   
 
             //fix resize bug
             $(window).off("resize");
             $(window).resize( function(){
                 if (self.video.offsetWidth !== undefined){
-                    self.snapToAspectRatio();
+                    //self.snapToAspectRatio();
                     // Update frame size to video size  
                     self.resetLayout();                  
-                    self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
+                    
+                    //self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
+
+                    let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
+                    self.resizeFrame(scaleByPortrait, self.aspect);
 
                     //resize the region boxes
                     self.showAllRegions();
@@ -336,12 +343,12 @@
           });
     },
 
-    snapToAspectRatio: function()
-    {
+    //snapToAspectRatio: function()
+    //{
         // -5 accounts for rounding errors during rendering to ensure
         // we never redraw larger than the parent container.
         // We need to offset for the non-scaling parts of the video controls
-        this.snapWidth =
+        /* this.snapWidth =
             ($('#video-tagging').parent().height() -
              $('#videoControls').innerHeight() -
              $('#videoTagControls').innerHeight() -
@@ -351,8 +358,9 @@
         }
         else {
             $('#video-tagging').width(this.snapWidth);
-        }
-    },
+        } */
+    //},
+    
     /**
        * JQuery Area selector
        * Based on JQuery plugin imgareaselect
@@ -718,13 +726,13 @@
                       continue;
                   }
                   //Calculate x, y relative to current width and height
-                  if (this.imagelist){
+                  //if (this.imagelist){
                      var widthRatio = this.overlay.width / region.width;
                      var heightRatio = this.overlay.height / region.height ;
-                  } else {
-                     var widthRatio = $("#vid").width() / region.width;
-                     var heightRatio = $("#vid").height() / region.height ;
-                  }
+                  //} else {
+                  //   var widthRatio = $("#vid").width() / region.width;
+                  //   var heightRatio = $("#vid").height() / region.height ;
+                  //}
                   var x1 = (region.x1 * widthRatio);
                   var y1 = (region.y1 * heightRatio);
                   var x2 = (region.x2 * widthRatio);
@@ -951,13 +959,12 @@
         var self = this;
 
         self.curImg.onload = function() {
-            self.controlWrapper.style.display = "block";
-            var imgRatio = self.curImg.width / self.curImg.height;
-            self.aspect = imgRatio;
+            self.controlWrapper.style.display = "grid";
+            self.aspect = self.curImg.width / self.curImg.height;;
             //Size canvas as image
-            var scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= (videotagging.curImg.width/videotagging.curImg.height));
+            let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
             
-            self.resizeFrame(scaleByPortrait, imgRatio);
+            self.resizeFrame(scaleByPortrait, self.aspect);
 
             //Init variables and controls
             self.enableAreaSelect(self);
@@ -967,8 +974,10 @@
             $(window).off("resize");
             $(window).resize(function(){
                 if (self.video.offsetWidth !== undefined){
-                    self.snapToAspectRatio();
-                    self.resizeFrame(scaleByPortrait, imgRatio);
+                    //self.snapToAspectRatio();
+
+                    let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
+                    self.resizeFrame(scaleByPortrait, self.aspect);
                     
                     //resize the region boxes
                     self.showAllRegions();
