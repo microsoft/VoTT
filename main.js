@@ -50,7 +50,7 @@ function createWindow () {
     menu.items[p].submenu.items[3].enabled = true;
     menu.items[p+1].submenu.items[0].enabled = true;
     menu.items[p+1].submenu.items[1].enabled = true;
-    menu.items[p+1].submenu.items[2].enabled = true;
+    // menu.items[p+1].submenu.items[2].enabled = true;
   });
 
   // do this independently for each object
@@ -165,13 +165,8 @@ function createWindow () {
           click () { mainWindow.webContents.send('export'); }
         },
         {
-          label: 'Remote Active Learning',
-          accelerator: 'CmdOrCtrl+R',
-          enabled: false,
-          click () { mainWindow.webContents.send('reviewEndpoint'); }
-        },{
-          label: 'Local Active Learning',
-          accelerator: 'CmdOrCtrl+L',
+          label: 'Active Learning',
+          accelerator: 'CmdOrCtrl+A',
           enabled: false,
           click () { mainWindow.webContents.send('review'); }
         }

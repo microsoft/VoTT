@@ -74,9 +74,13 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
   var modelLocation = reviewModelConfig.modelPath;
   if (fs.existsSync(modelLocation)) {
     addLoader();
+    var colors_back = videotagging.optionalTags.colors;
+    videotagging.optionalTags.colors = null;
+
     detection.review(videotagging.imagelist, reviewModelConfig.modelFormat, modelLocation, reviewModelConfig.output, (err) => {
         if (err){
           alert(`An error occured with Local Active Learning \n Please check the debug console for more information.`);
+          videotagging.optionalTags.colors = colors_back;
         }
         if(!videotagging.imagelist){
           videotagging.video.oncanplay = updateVisitedFrames;
@@ -257,7 +261,7 @@ function openPath(pathName, isDir) {
     function loadTagger (e) {
       if(framerate.validity.valid && inputtags.validity.valid) {
         $('.bootstrap-tagsinput').last().removeClass( "invalid" );
-       
+             
         videotagging = document.getElementById('video-tagging'); //find out why jquery doesn't play nice with polymer
         videotagging.regiontype = $('#regiontype').val();
         videotagging.multiregions = 1;
@@ -265,16 +269,18 @@ function openPath(pathName, isDir) {
         videotagging.inputtagsarray = $('#inputtags').val().replace(/\s/g,'').split(',');
         videotagging.video.currentTime = 0;
         videotagging.framerate = $('#framerate').val();
+        videotagging.src = ''; // ensures reload if user opens same video 
 
-        if (config) {
-          videotagging.inputframes = config.frames;
+        if (config) {  
+          if (config.tag_colors){
+            videotagging.optionalTags.colors = config.tag_colors;
+          }
+            videotagging.inputframes = config.frames;
           visitedFrames = new Set(config.visitedFrames);
         } else {
           videotagging.inputframes = {};
            visitedFrames =  (isDir) ? new Set([0]) : new Set();
         } 
-
-        videotagging.src = ''; // ensures reload if user opens same video 
 
         if (isDir){
             $('title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
@@ -357,6 +363,7 @@ function save() {
       "suggestiontype": $('#suggestiontype').val(),
       "scd": document.getElementById("scd").checked,
       "visitedFrames": Array.from(visitedFrames),
+      "tag_colors" : videotagging.optionalTags.colors,
     };
     //if nothing changed don't save
     if (saveState === JSON.stringify(saveObject) ) {

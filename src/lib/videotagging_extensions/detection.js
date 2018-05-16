@@ -195,7 +195,7 @@ function Detection(videotagging, visitedFrames) {
             function reviewModel() {
                 //run the model on the reviewPath directory
                 self.detectionAlgorithmManager.initReviewer(method, modelPath, (reviewImagesFolder) => {
-                    reviewImagesFolder(reviewPath).then((err, modelTags) => {
+                    reviewImagesFolder(reviewPath).then(modelTags => {
                         self.videotagging.frames = {};
                         self.videotagging.optionalTags.createTagControls(Object.keys(modelTags.classes));
 
