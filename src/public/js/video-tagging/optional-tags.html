@@ -28,7 +28,9 @@
        },
        createTagControls: function(tagsArray)  {
           $('#buttonsContainer').empty();
-          this.colors = this.generateRandomColors(tagsArray.length)
+          if (!this.colors){
+            this.colors = this.generateRandomColors(tagsArray.length)
+          }
           for(var index = 0;index < tagsArray.length;index++){
                 var btn = document.createElement("input");
                 btn.id = tagsArray[index];

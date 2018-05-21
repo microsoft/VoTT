@@ -50,8 +50,8 @@ function createWindow () {
     menu.items[p].submenu.items[3].enabled = true;
     menu.items[p+1].submenu.items[0].enabled = true;
     menu.items[p+1].submenu.items[1].enabled = true;
+    // menu.items[p+1].submenu.items[2].enabled = true;
   });
-
 
   // do this independently for each object
   ipcMain.on('show-popup', function(event, arg) { 
@@ -81,7 +81,16 @@ function createWindow () {
             slashes: true
           }));
           break;
-          
+
+        case "review-endpoint":
+          popup.setSize(359, 150);
+          popup.loadURL(url.format({
+            pathname: path.join(__dirname, 'src/public/html/review-endpoint-configuration.html'),
+            protocol: 'file:',
+            slashes: true
+          }));
+          break;
+
         default: return; 
       }
       
@@ -98,6 +107,10 @@ function createWindow () {
 
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
+  });
+
+  ipcMain.on('review-model-endpoint', (event, arg) => {
+    mainWindow.send('review-model-endpoint', arg);
   });
 
   mainWindow.on('ready-to-show', function() {
@@ -152,8 +165,8 @@ function createWindow () {
           click () { mainWindow.webContents.send('export'); }
         },
         {
-          label: 'Review Detection Model',
-          accelerator: 'CmdOrCtrl+R',
+          label: 'Active Learning',
+          accelerator: 'CmdOrCtrl+A',
           enabled: false,
           click () { mainWindow.webContents.send('review'); }
         }
@@ -175,7 +188,7 @@ function createWindow () {
       label: 'Debug',
       submenu: [
         {
-          label: 'Toggle Developer Tools',
+          label: 'Developer Console',
           accelerator: 'CmdOrCtrl+D',
           click () { mainWindow.webContents.toggleDevTools(); }
         },

@@ -20,13 +20,18 @@
     <title>Review Configuration</title>
 
     <div id ='review-configuration-container' style = "padding: 20px 20px 20px 20px;">
-    
+  
       <div class="form-group">
         <label for="exampleTextarea" title="(Which tagging format to Export to.)">Model Framework: </label>
-        <select id="format" class="form-control" id="text" >  </select>
+        <select id="format" class="form-control" >  </select>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="remote-group">
+        <label for="Endpoint"> Review Enpoint</label>
+        <input id="endpoint" class="form-control" type="text" style=" width:300px; display:inline-block;"  />
+      </div>
+
+      <div class="form-group" id="model-group">
         <label for="Model"> Model Path</label>
         <input id="model" class="form-control" type="text" style=" width:268px; display:inline-block;"  />
         <div class="file_selector" onclick="getModelFile()" >
@@ -37,7 +42,7 @@
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group" id="output-group" >
           <label for="Out"> Output Path</label>
           <input id="output" class="form-control" type="text" style=" width:268px; display:inline-block;"  />
           <div class="file_selector" onclick="getOutputFolder()" >

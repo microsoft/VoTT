@@ -23,33 +23,61 @@
             display: none;
             overflow: hidden;
             background-color: rgb(64,64,64);
+
+        /* Grid */
+        #controlWrapper {
+            grid-template-rows: auto 60px 120px;
         }
 
-        .clickableControl{
-            cursor: pointer;
+        #videoWrapper {
+            grid-row: 1;   
+            display:grid;
+            grid-template-rows: 1fr;
+            grid-template-columns: 1fr;   
+            align-content: center;
+            justify-content: center;
         }
 
-        .relativeDiv{
-            position:relative;
+        #videoWrapper .video-tagging {
+            grid-row: 1;
+            grid-column: 1;
+            text-align: center;
         }
 
+        #vid {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
 
-        /*Video area*/
+        #videoControls {
+            grid-row: 2;
+        }
 
-        .overlaystyle {
+        #videoTagControls {
+            grid-row: 3;
+        }
+          display:none;
+        }
+
+        .frameCanvasStyle {
           position: absolute; 
-          z-index: 20;
-          border:0px solid green;
+          z-index: 10;
+          /* border:1px solid green;   */        
+          /* width: auto; */
+          /* height: 100%; */
         }
 
-       .videoStyle {
-           z-index: 2;
-           width: 100%;
-           background: transparent;
-           background-size: contain; 
-           background-repeat: no-repeat;
-           background-position: 50% 50%;
-           box-sizing: border-box;                    
+        .selectionZoneStyle {
+            z-index: 30;
+            position: absolute; 
+            width: 100%;
+            height: 100%;
+            background: #333;
+            background-size: contain; 
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+            box-sizing: border-box;                    
         }
 
         /*playback*/
@@ -122,9 +150,10 @@
 
 
         .regionCanvasSelected{
-            /* border: 5px solid; */
-            box-shadow: inset 0 0 0 5px;
+            /* border: 2px solid; */
+            box-shadow: inset 0 0 0 2px; 
             border-radius: 8px;
+            background: repeating-linear-gradient(-45deg, rgba(200, 200, 200, 0.1) 10px, rgba(200, 200, 200, 0.1) 20px, rgba(0, 0, 0, 0.2) 20px, rgba(0, 0, 0, 0.2) 30px);
         }
 
 
