@@ -14,6 +14,7 @@
     <style include="video-taggingstyles"></style>
     <link rel="stylesheet" href="css/sliders.css" />
     <link rel="stylesheet" href="css/selectiontool.css" />
+    <link rel="stylesheet" href="css/regiontool.css" />
     <link rel="stylesheet" href="../jquery-ui/themes/base/resizable.css">
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
     <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css" />
@@ -22,7 +23,20 @@
     <div id="controlWrapper" class="controlWrapper">
       <playback-control id="playSpeedControl" class="playSpeedControl"></playback-control>
       <div id='videoWrapper' class="relativeDiv">
-            <svg id="selectionZone" class="selectionZoneStyle" >                  
+            <svg id="selectionZone" class="selectionZoneStyle" >
+                    <defs>
+                            <filter id="black-glow">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="2"/> 
+                                <feOffset dx="0" dy="0" result="offsetblur"/>
+                                <feComponentTransfer>
+                                    <feFuncA type="linear" slope="0.8"/>
+                                </feComponentTransfer>
+                                <feMerge> 
+                                    <feMergeNode/>
+                                    <feMergeNode in="SourceGraphic"/> 
+                                </feMerge>
+                            </filter>
+                        </defs>                  
                 </svg>  
           <div id = "regionLabelDiv" style="width:40px;height:20px;" class="regionLabel" >
               <span id="regionLabelSpan" class="regionLabelSpan"></span>
@@ -182,20 +196,40 @@
         SystemJS.import("./public/js/video-tagging/js/canvastools.js").then(function(module){
             Promise.all([
                 System.import('selectiontool'),
-                //System.import('regiontool'),
+                System.import('regiontool'),
+                System.import('basetool')
             ]).then(function(modules){
-                //var rtools = modules[1].CanvasTools.Region;
                 var stools = modules[0].CanvasTools.Selection;
-                
+                var rtools = modules[1].CanvasTools.Region;                
+                var btools = modules[2].CanvasTools.Base;
+
+                var regionsManager;
                 self.areaSelector = new stools.AreaSelector(self.selectionZone, 
                     function(){
-                    self.selectionZone.style.zIndex = 300;
-                },
-                function(x1, y1, x2, y2){
-                    self.selectionZone.style.zIndex = 30;
-                    self.onNewAreaSelected(x1, y1, x2, y2);
-                }
+                        self.selectionZone.style.zIndex = 300;
+                    },
+                    function(x1, y1, x2, y2){
+                        self.selectionZone.style.zIndex = 30;
+                        self.onNewAreaSelected(x1, y1, x2, y2);
+
+                        var primaryTag = new btools.Tag(
+                            (Math.random() > 0.5) ? "Awesome" : "Brilliante!",
+                            Math.floor(Math.random() * 360.0));
+                        var tags = new btools.TagsDescriptor(primaryTag);
+                        regionsManager.addRegion({x:x1, y:y1}, {x:x2, y:y2}, tags);
+                    }
                 );
+
+                regionsManager = new rtools.RegionsManager(self.selectionZone, 
+                    function() {
+                        self.areaSelector.disable();
+                    },
+                    function() {
+                        self.areaSelector.enable();
+                    })
+                ;
+
+                self.regionsManager = regionsManager;
             });
 
         })
@@ -1026,6 +1060,7 @@
         this.frameCanvas.height = this.frameHeight;
 
         this.areaSelector.resize(width, height);
+        this.regionsManager.resize(width, height);
     },
 
     resetLayout: function(){

@@ -28,9 +28,42 @@ define("basetool", ["require", "exports"], function (require, exports) {
                 }
             }
             Base.Point2D = Point2D;
+            class Tag {
+                constructor(name, colorHue, id = "none") {
+                    this.name = name;
+                    this.colorHue = colorHue;
+                    this.id = id;
+                }
+                get colorPure() {
+                    let pure = `hsla(${this.colorHue.toString()}, 100%, 50%)`;
+                    return pure;
+                }
+                get colorAccent() {
+                    let accent = `hsla(${this.colorHue.toString()}, 100%, 50%, 0.5)`;
+                    return accent;
+                }
+                get colorHighlight() {
+                    let highlight = `hsla(${this.colorHue.toString()}, 80%, 40%, 0.3)`;
+                    return highlight;
+                }
+                get colorShadow() {
+                    let shadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.2)`;
+                    return shadow;
+                }
+            }
+            Base.Tag = Tag;
+            class TagsDescriptor {
+                constructor(primary, ...secondary) {
+                    this.primary = primary;
+                    this.secondary = secondary;
+                }
+            }
+            Base.TagsDescriptor = TagsDescriptor;
         })(Base = CanvasTools.Base || (CanvasTools.Base = {}));
     })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
 });
+
+
 define("regiontool", ["require", "exports", "basetool", "./public/js/video-tagging/js/snap.svg.js"], function (require, exports, CT, Snap) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -39,26 +72,15 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
     (function (CanvasTools) {
         var Region;
         (function (Region) {
-            class AncorsElement {
-                get width() {
-                    return this.rect.width;
-                }
-                set width(width) {
-                    this.resize(width, this.rect.height);
-                }
-                get height() {
-                    return this.rect.height;
-                }
-                ;
-                set height(height) {
-                    this.resize(this.rect.width, height);
-                }
+            class AnchorsElement {
                 constructor(paper, x, y, rect, boundRect = null, onChange, onManipulationBegin, onManipulationEnd) {
                     this.x = x;
                     this.y = y;
                     this.rect = rect;
-                    this.onChange = onChange;
                     this.boundRect = boundRect;
+                    if (onChange !== undefined) {
+                        this.onChange = onChange;
+                    }
                     if (onManipulationBegin !== undefined) {
                         this.onManipulationBegin = onManipulationBegin;
                     }
@@ -69,45 +91,45 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.subscribeToEvents();
                 }
                 buildOn(paper) {
-                    this.ancorsGroup = paper.g();
-                    this.ancorsGroup.addClass("ancorsLayer");
-                    this.ancors = {
-                        TL: this.createAncor(paper),
-                        TR: this.createAncor(paper),
-                        BL: this.createAncor(paper),
-                        BR: this.createAncor(paper)
+                    this.anchorsGroup = paper.g();
+                    this.anchorsGroup.addClass("ancorsLayer");
+                    this.anchors = {
+                        TL: this.createAnchor(paper, "TL"),
+                        TR: this.createAnchor(paper, "TR"),
+                        BL: this.createAnchor(paper, "BL"),
+                        BR: this.createAnchor(paper, "BR")
                     };
-                    this.ghostAncor = this.createAncor(paper, 7);
-                    this.ghostAncor.addClass("ghost");
-                    this.rearrangeAncors();
-                    this.ancorsGroup.add(this.ancors.TL);
-                    this.ancorsGroup.add(this.ancors.TR);
-                    this.ancorsGroup.add(this.ancors.BR);
-                    this.ancorsGroup.add(this.ancors.BL);
-                    this.ancorsGroup.add(this.ghostAncor);
+                    this.ghostAnchor = this.createAnchor(paper, "ghost", 7);
+                    this.rearrangeAnchors();
+                    this.anchorsGroup.add(this.anchors.TL);
+                    this.anchorsGroup.add(this.anchors.TR);
+                    this.anchorsGroup.add(this.anchors.BR);
+                    this.anchorsGroup.add(this.anchors.BL);
+                    this.anchorsGroup.add(this.ghostAnchor);
                 }
-                createAncor(paper, r = 3) {
+                createAnchor(paper, style = "", r = 3) {
                     let a = paper.circle(0, 0, r);
-                    a.addClass("ancorStyle");
+                    a.addClass("anchorStyle");
+                    a.addClass(style);
                     return a;
                 }
-                move(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.rearrangeAncors();
+                move(p) {
+                    this.x = p.x;
+                    this.y = p.y;
+                    this.rearrangeAnchors();
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
-                    this.rearrangeAncors();
+                    this.rearrangeAnchors();
                 }
-                rearrangeAncors() {
+                rearrangeAnchors() {
                     let self = this;
                     window.requestAnimationFrame(function () {
-                        self.ancors.TL.attr({ cx: self.x, cy: self.y });
-                        self.ancors.TR.attr({ cx: self.x + self.width, cy: self.y });
-                        self.ancors.BR.attr({ cx: self.x + self.width, cy: self.y + self.height });
-                        self.ancors.BL.attr({ cx: self.x, cy: self.y + self.height });
+                        self.anchors.TL.attr({ cx: self.x, cy: self.y });
+                        self.anchors.TR.attr({ cx: self.x + self.rect.width, cy: self.y });
+                        self.anchors.BR.attr({ cx: self.x + self.rect.width, cy: self.y + self.rect.height });
+                        self.anchors.BL.attr({ cx: self.x, cy: self.y + self.rect.height });
                     });
                 }
                 rearrangeCoord(p1, p2) {
@@ -115,67 +137,71 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let y = (p1.y < p2.y) ? p1.y : p2.y;
                     let width = Math.abs(p1.x - p2.x);
                     let height = Math.abs(p1.y - p2.y);
-                    this.flipActiveAncor(p1.x - p2.x > 0, p1.y - p2.y > 0);
-                    this.onChange(x, y, width, height);
+                    this.flipActiveAnchor(p1.x - p2.x > 0, p1.y - p2.y > 0);
+                    this.onChange(x, y, width, height, true);
                 }
-                flipActiveAncor(w, h) {
+                flipActiveAnchor(w, h) {
                     let ac = "";
-                    if (this.activeAncor !== "") {
-                        ac += (this.activeAncor[0] == "T") ? (h ? "B" : "T") : (h ? "T" : "B");
-                        ac += (this.activeAncor[1] == "L") ? (w ? "R" : "L") : (w ? "L" : "R");
+                    if (this.activeAnchor !== "") {
+                        ac += (this.activeAnchor[0] == "T") ? (h ? "B" : "T") : (h ? "T" : "B");
+                        ac += (this.activeAnchor[1] == "L") ? (w ? "R" : "L") : (w ? "L" : "R");
                     }
-                    this.activeAncor = ac;
+                    if (this.activeAnchor != ac) {
+                        this.ghostAnchor.removeClass(this.activeAnchor);
+                        this.activeAnchor = ac;
+                        this.ghostAnchor.addClass(this.activeAnchor);
+                    }
                 }
-                ancorDragBegin() {
+                anchorDragBegin() {
                 }
                 getDragOriginPoint() {
                     let x, y;
-                    switch (this.activeAncor) {
+                    switch (this.activeAnchor) {
                         case "TL": {
                             x = this.x;
                             y = this.y;
                             break;
                         }
                         case "TR": {
-                            x = this.x + this.width;
+                            x = this.x + this.rect.width;
                             y = this.y;
                             break;
                         }
                         case "BL": {
                             x = this.x;
-                            y = this.y + this.height;
+                            y = this.y + this.rect.height;
                             break;
                         }
                         case "BR": {
-                            x = this.x + this.width;
-                            y = this.y + this.height;
+                            x = this.x + this.rect.width;
+                            y = this.y + this.rect.height;
                             break;
                         }
                     }
                     return new base.Point2D(x, y);
                 }
-                ancorDragMove(dx, dy, x, y) {
+                anchorDragMove(dx, dy, x, y) {
                     let p1, p2;
                     let x1, y1, x2, y2;
-                    switch (this.activeAncor) {
+                    switch (this.activeAnchor) {
                         case "TL": {
                             x1 = this.dragOrigin.x + dx;
                             y1 = this.dragOrigin.y + dy;
-                            x2 = this.x + this.width;
-                            y2 = this.y + this.height;
+                            x2 = this.x + this.rect.width;
+                            y2 = this.y + this.rect.height;
                             break;
                         }
                         case "TR": {
                             x1 = this.x;
                             y1 = this.dragOrigin.y + dy;
                             x2 = this.dragOrigin.x + dx;
-                            y2 = this.y + this.height;
+                            y2 = this.y + this.rect.height;
                             break;
                         }
                         case "BL": {
                             x1 = this.dragOrigin.x + dx;
                             y1 = this.y;
-                            x2 = this.x + this.width;
+                            x2 = this.x + this.rect.width;
                             y2 = this.dragOrigin.y + dy;
                             break;
                         }
@@ -195,50 +221,52 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     }
                     let self = this;
                     window.requestAnimationFrame(function () {
-                        self.ghostAncor.attr({ cx: self.dragOrigin.x + dx, cy: self.dragOrigin.y + dy });
+                        self.ghostAnchor.attr({ cx: self.dragOrigin.x + dx, cy: self.dragOrigin.y + dy });
                     });
                     this.rearrangeCoord(p1, p2);
                 }
                 ;
-                ancorDragEnd() {
-                    this.ghostAncor.attr({
+                anchorDragEnd() {
+                    this.ghostAnchor.attr({
                         display: "none"
                     });
                 }
                 subscribeToEvents() {
                     let self = this;
-                    this.subscribeAncorToEvents(this.ancors.TL, "TL");
-                    this.subscribeAncorToEvents(this.ancors.TR, "TR");
-                    this.subscribeAncorToEvents(this.ancors.BL, "BL");
-                    this.subscribeAncorToEvents(this.ancors.BR, "BR");
-                    self.ghostAncor.mouseover(function (e) {
-                        self.ghostAncor.drag(self.ancorDragMove.bind(self), self.ancorDragBegin.bind(self), self.ancorDragEnd.bind(self));
+                    this.subscribeAnchorToEvents(this.anchors.TL, "TL");
+                    this.subscribeAnchorToEvents(this.anchors.TR, "TR");
+                    this.subscribeAnchorToEvents(this.anchors.BL, "BL");
+                    this.subscribeAnchorToEvents(this.anchors.BR, "BR");
+                    self.ghostAnchor.mouseover(function (e) {
+                        self.ghostAnchor.drag(self.anchorDragMove.bind(self), self.anchorDragBegin.bind(self), self.anchorDragEnd.bind(self));
+                        self.ghostAnchor.addClass(self.activeAnchor);
                         self.onManipulationBegin();
                     });
-                    self.ghostAncor.mouseout(function (e) {
-                        self.ghostAncor.undrag();
+                    self.ghostAnchor.mouseout(function (e) {
+                        self.ghostAnchor.undrag();
                         window.requestAnimationFrame(function () {
-                            self.ghostAncor.attr({
+                            self.ghostAnchor.attr({
                                 display: "none"
                             });
                         });
+                        self.ghostAnchor.removeClass(self.activeAnchor);
                         self.onManipulationEnd();
                     });
-                    self.ghostAncor.node.addEventListener("pointerdown", function (e) {
-                        self.ghostAncor.node.setPointerCapture(e.pointerId);
+                    self.ghostAnchor.node.addEventListener("pointerdown", function (e) {
+                        self.ghostAnchor.node.setPointerCapture(e.pointerId);
                     });
-                    self.ghostAncor.node.addEventListener("pointerup", function (e) {
-                        self.ghostAncor.node.releasePointerCapture(e.pointerId);
+                    self.ghostAnchor.node.addEventListener("pointerup", function (e) {
+                        self.ghostAnchor.node.releasePointerCapture(e.pointerId);
                     });
                 }
-                subscribeAncorToEvents(ancor, active) {
+                subscribeAnchorToEvents(ancor, active) {
                     let self = this;
                     ancor.mouseover(function (e) {
-                        self.activeAncor = active;
+                        self.activeAnchor = active;
                         let p = self.getDragOriginPoint();
                         self.dragOrigin = p;
                         window.requestAnimationFrame(function () {
-                            self.ghostAncor.attr({
+                            self.ghostAnchor.attr({
                                 cx: p.x,
                                 cy: p.y,
                                 display: 'block'
@@ -249,7 +277,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 hide() {
                     let self = this;
                     window.requestAnimationFrame(function () {
-                        self.ancorsGroup.attr({
+                        self.anchorsGroup.attr({
                             visibility: 'hidden'
                         });
                     });
@@ -257,31 +285,113 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 show() {
                     let self = this;
                     window.requestAnimationFrame(function () {
-                        self.ancorsGroup.attr({
+                        self.anchorsGroup.attr({
                             visibility: 'visible'
                         });
                     });
                 }
             }
             class TagsElement {
-                get width() {
-                    return this.rect.width;
+                constructor(paper, x, y, rect, tags, styleId, styleSheet) {
+                    this.styleSheet = null;
+                    this.tags = tags;
+                    this.rect = rect;
+                    this.x = x;
+                    this.y = y;
+                    this.styleId = styleId;
+                    this.styleSheet = styleSheet;
+                    this.buildOn(paper);
                 }
-                set width(width) {
-                    this.resize(width, this.rect.height);
+                buildOn(paper) {
+                    this.tagsGroup = paper.g();
+                    this.tagsGroup.addClass("tagsLayer");
+                    this.primaryTagRect = paper.rect(0, 0, this.rect.width, this.rect.height);
+                    this.primaryTagRect.addClass("primaryTagRectStyle");
+                    this.primaryTagText = paper.text(0, 0, this.tags.primary.name);
+                    this.primaryTagText.addClass("primaryTagTextStyle");
+                    let box = this.primaryTagText.getBBox();
+                    this.primaryTagTextBG = paper.rect(0, 0, box.width + 10, box.height + 5);
+                    this.primaryTagTextBG.addClass("primaryTagTextBGStyle");
+                    this.tagsGroup.add(this.primaryTagRect);
+                    this.tagsGroup.add(this.primaryTagTextBG);
+                    this.tagsGroup.add(this.primaryTagText);
+                    this.applyColors();
                 }
-                get height() {
-                    return this.rect.height;
+                applyColors() {
+                    if (this.tags && this.tags.primary !== undefined) {
+                        let styleMap = [
+                            {
+                                rule: `.${this.styleId} .primaryTagRectStyle`,
+                                style: `fill: ${this.tags.primary.colorShadow};
+                                stroke:${this.tags.primary.colorAccent};`
+                            },
+                            {
+                                rule: `.regionStyle.${this.styleId}:hover  .primaryTagRectStyle`,
+                                style: `fill: ${this.tags.primary.colorHighlight}; 
+                                stroke: #fff;`
+                            },
+                            {
+                                rule: `.regionStyle.selected.${this.styleId} .primaryTagRectStyle`,
+                                style: `fill: ${this.tags.primary.colorHighlight};
+                                stroke:${this.tags.primary.colorAccent};`
+                            },
+                            {
+                                rule: `.regionStyle.${this.styleId} .ancorStyle`,
+                                style: `stroke:${this.tags.primary.colorHighlight};
+                                fill:${this.tags.primary.colorPure};`
+                            },
+                            {
+                                rule: `.regionStyle.${this.styleId}:hover .ancorStyle`,
+                                style: `stroke:#fff;`
+                            },
+                            {
+                                rule: `.regionStyle.${this.styleId} .ancorStyle.ghost`,
+                                style: `fill:transparent;`
+                            },
+                            {
+                                rule: `.regionStyle.${this.styleId} .ancorStyle.ghost:hover`,
+                                style: `fill:${this.tags.primary.colorPure};`
+                            },
+                            {
+                                rule: `.regionStyle.${this.styleId} .primaryTagTextBGStyle`,
+                                style: `fill:${this.tags.primary.colorAccent};`
+                            },
+                        ];
+                        for (var i = 0; i < styleMap.length; i++) {
+                            let r = styleMap[i];
+                            this.styleSheet.insertRule(`${r.rule}{${r.style}}`);
+                        }
+                    }
                 }
-                ;
-                set height(height) {
-                    this.resize(this.rect.width, height);
-                }
-                constructor() {
+                move(p) {
+                    let self = this;
+                    this.x = p.x;
+                    this.y = p.y;
+                    window.requestAnimationFrame(function () {
+                        self.primaryTagRect.attr({
+                            x: p.x,
+                            y: p.y
+                        });
+                        self.primaryTagText.attr({
+                            x: p.x + 5,
+                            y: p.y + self.primaryTagText.getBBox().height
+                        });
+                        self.primaryTagTextBG.attr({
+                            x: p.x + 1,
+                            y: p.y + 1
+                        });
+                    });
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.primaryTagRect.attr({
+                            width: width,
+                            height: height
+                        });
+                    });
                 }
                 hide() {
                     let self = this;
@@ -300,17 +410,14 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                 }
             }
-            class RegionElement {
-                constructor(paper, rect, boundRect = null, onManipulationBegin, onManipulationEnd) {
-                    this.isSelected = false;
-                    this.x = 0;
-                    this.y = 0;
+            class DragElement {
+                constructor(paper, x, y, rect, boundRect = null, onChange, onManipulationBegin, onManipulationEnd) {
                     this.rect = rect;
-                    if (boundRect !== null) {
-                        this.boundRects = {
-                            host: boundRect,
-                            self: new base.Rect(boundRect.width - rect.width, boundRect.height - rect.height)
-                        };
+                    this.x = x;
+                    this.y = y;
+                    this.boundRect = boundRect;
+                    if (onChange !== undefined) {
+                        this.onChange = onChange;
                     }
                     if (onManipulationBegin !== undefined) {
                         this.onManipulationBegin = onManipulationBegin;
@@ -321,42 +428,308 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.buildOn(paper);
                     this.subscribeToEvents();
                 }
-                get width() {
-                    return this.rect.width;
-                }
-                set width(width) {
-                    this.resize(width, this.rect.height);
-                }
-                get height() {
-                    return this.rect.height;
-                }
-                ;
-                set height(height) {
-                    this.resize(this.rect.width, height);
-                }
                 buildOn(paper) {
-                    this.regionGroup = paper.g();
-                    this.regionGroup.addClass("regionStyle");
-                    this.regionRect = paper.rect(0, 0, this.width, this.height);
-                    this.regionRect.addClass("regionRectStyle");
-                    this.ancors = new AncorsElement(paper, this.x, this.y, this.rect, this.boundRects.host, this.onInternalChange.bind(this), this.onManipulationBegin, this.onManipulationEnd);
-                    this.regionGroup.add(this.regionRect);
-                    this.regionGroup.add(this.ancors.ancorsGroup);
-                }
-                onInternalChange(x, y, width, height) {
-                    this.move(new base.Point2D(x, y));
-                    this.resize(width, height);
+                    this.dragGroup = paper.g();
+                    this.dragGroup.addClass("dragLayer");
+                    this.dragRect = paper.rect(0, 0, this.rect.width, this.rect.height);
+                    this.dragRect.addClass("dragRectStyle");
+                    this.dragGroup.add(this.dragRect);
                 }
                 move(p) {
                     let self = this;
                     this.x = p.x;
                     this.y = p.y;
                     window.requestAnimationFrame(function () {
-                        self.regionRect.attr({
+                        self.dragRect.attr({
                             x: p.x,
                             y: p.y
                         });
-                        self.ancors.move(p.x, p.y);
+                    });
+                }
+                resize(width, height) {
+                    this.rect.width = width;
+                    this.rect.height = height;
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.dragRect.attr({
+                            width: width,
+                            height: height
+                        });
+                    });
+                }
+                hide() {
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.dragRect.attr({
+                            visibility: 'hidden'
+                        });
+                    });
+                }
+                show() {
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.dragRect.attr({
+                            visibility: 'visible'
+                        });
+                    });
+                }
+                rectDragBegin() {
+                    this.dragOrigin = new base.Point2D(this.x, this.y);
+                }
+                rectDragMove(dx, dy) {
+                    let p;
+                    p = new base.Point2D(this.dragOrigin.x + dx, this.dragOrigin.y + dy);
+                    if (this.boundRect !== null) {
+                        p = p.boundToRect(this.boundRect);
+                    }
+                    this.onChange(p.x, p.y, this.rect.width, this.rect.height);
+                }
+                ;
+                rectDragEnd() {
+                    this.dragOrigin = null;
+                }
+                subscribeToEvents() {
+                    let self = this;
+                    self.dragRect.mouseover(function (e) {
+                        self.dragRect.drag(self.rectDragMove.bind(self), self.rectDragBegin.bind(self), self.rectDragEnd.bind(self));
+                        self.onManipulationBegin();
+                    });
+                    self.dragRect.mouseout(function (e) {
+                        self.dragRect.undrag();
+                        self.onManipulationEnd();
+                    });
+                    self.dragRect.node.addEventListener("pointerdown", function (e) {
+                        self.dragRect.node.setPointerCapture(e.pointerId);
+                    });
+                    self.dragRect.node.addEventListener("pointerup", function (e) {
+                        self.dragRect.node.releasePointerCapture(e.pointerId);
+                    });
+                    self.dragRect.click(function (e) {
+                        self.onChange(self.x, self.y, self.rect.width, self.rect.height, true);
+                    });
+                }
+            }
+            class MenuElement {
+                constructor(paper, x, y, rect, boundRect = null, onManipulationBegin, onManipulationEnd) {
+                    this.menuItemSize = 20;
+                    this.mw = this.menuItemSize + 10;
+                    this.mh = 60;
+                    this.dh = 20;
+                    this.dw = 5;
+                    this.pathCollection = {
+                        "delete": {
+                            path: "M 83.4 21.1 L 74.9 12.6 L 48 39.5 L 21.1 12.6 L 12.6 21.1 L 39.5 48 L 12.6 74.9 L 21.1 83.4 L 48 56.5 L 74.9 83.4 L 83.4 74.9 L 56.5 48 Z",
+                            iconSize: 96
+                        }
+                    };
+                    this.paper = paper;
+                    this.rect = rect;
+                    this.x = x;
+                    this.y = y;
+                    this.boundRect = boundRect;
+                    if (onManipulationBegin !== undefined) {
+                        this.onManipulationBegin = onManipulationBegin;
+                    }
+                    if (onManipulationEnd !== undefined) {
+                        this.onManipulationEnd = onManipulationEnd;
+                    }
+                    this.buildOn(this.paper);
+                }
+                buildOn(paper) {
+                    let menuSVG = this.paper.svg(this.mx, this.my, this.mw, this.mh, this.mx, this.my, this.mw, this.mh);
+                    this.menuGroup = Snap(menuSVG).paper;
+                    this.menuGroup.addClass("menuLayer");
+                    this.rearrangeMenuPosition();
+                    this.menuRect = this.menuGroup.rect(0, 0, this.mw, this.mh, 5, 5);
+                    this.menuRect.addClass("menuRectStyle");
+                    this.menuItemsGroup = this.menuGroup.g();
+                    this.menuItemsGroup.addClass("menuItems");
+                    this.menuItems = new Array();
+                    this.menuGroup.add(this.menuRect);
+                    this.menuGroup.add(this.menuItemsGroup);
+                    this.menuGroup.mouseover((e) => {
+                        this.onManipulationBegin();
+                    });
+                    this.menuGroup.mouseout((e) => {
+                        this.onManipulationEnd();
+                    });
+                }
+                addAction(action, icon, actor) {
+                    let item = this.menuGroup.g();
+                    let itemBack = this.menuGroup.rect(5, 5, this.menuItemSize, this.menuItemSize, 5, 5);
+                    itemBack.addClass("menuItemBack");
+                    let k = (this.menuItemSize - 4) / this.pathCollection.delete.iconSize;
+                    let itemIcon = this.menuGroup.path(this.pathCollection.delete.path);
+                    itemIcon.transform(`scale(0.2) translate(26 26)`);
+                    itemIcon.addClass("menuIcon");
+                    itemIcon.addClass("menuIcon-" + icon);
+                    let itemRect = this.menuGroup.rect(5, 5, this.menuItemSize, this.menuItemSize, 5, 5);
+                    itemRect.addClass("menuItem");
+                    item.add(itemBack);
+                    item.add(itemIcon);
+                    item.add(itemRect);
+                    item.click((e) => {
+                        actor(this.region);
+                    });
+                    this.menuItemsGroup.add(item);
+                    this.menuItems.push(item);
+                }
+                rearrangeMenuPosition() {
+                    if (this.mh <= this.rect.height - this.dh) {
+                        this.my = this.y + this.rect.height / 2 - this.mh / 2;
+                        if (this.x + this.rect.width + this.mw / 2 + this.dw < this.boundRect.width) {
+                            this.mx = this.x + this.rect.width - this.mw / 2;
+                        }
+                        else if (this.x - this.mw / 2 - this.dw > 0) {
+                            this.mx = this.x - this.mw / 2;
+                        }
+                        else {
+                            this.mx = this.x + this.rect.width - this.mw - this.dw;
+                        }
+                    }
+                    else {
+                        this.my = this.y;
+                        if (this.x + this.rect.width + this.mw + 2 * this.dw < this.boundRect.width) {
+                            this.mx = this.x + this.rect.width + this.dw;
+                        }
+                        else if (this.x - this.mw - 2 * this.dw > 0) {
+                            this.mx = this.x - this.mw - this.dw;
+                        }
+                        else {
+                            this.mx = this.x + this.rect.width - this.mw - this.dw;
+                        }
+                    }
+                }
+                attachTo(region) {
+                    this.region = region;
+                    this.x = region.x;
+                    this.y = region.y;
+                    this.rect = region.rect;
+                    this.rearrangeMenuPosition();
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.menuGroup.attr({
+                            x: self.mx,
+                            y: self.my
+                        });
+                    });
+                }
+                move(p) {
+                    let self = this;
+                    this.x = p.x;
+                    this.y = p.y;
+                    this.rearrangeMenuPosition();
+                    window.requestAnimationFrame(function () {
+                        self.menuGroup.attr({
+                            x: self.mx,
+                            y: self.my
+                        });
+                    });
+                }
+                resize(width, height) {
+                    let self = this;
+                    this.rect.width = width;
+                    this.rect.height = height;
+                    this.rearrangeMenuPosition();
+                    window.requestAnimationFrame(function () {
+                        self.menuGroup.attr({
+                            x: self.mx,
+                            y: self.my
+                        });
+                    });
+                }
+                hide() {
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.menuGroup.attr({
+                            visibility: 'hidden'
+                        });
+                    });
+                }
+                show() {
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.menuGroup.attr({
+                            visibility: 'visible'
+                        });
+                    });
+                }
+            }
+            class RegionElement {
+                constructor(paper, rect, boundRect = null, tagsDescriptor, onManipulationBegin, onManipulationEnd) {
+                    this.isSelected = false;
+                    this.styleSheet = null;
+                    this.x = 0;
+                    this.y = 0;
+                    this.rect = rect;
+                    this.tagsDescriptor = tagsDescriptor;
+                    if (boundRect !== null) {
+                        this.boundRects = {
+                            host: boundRect,
+                            self: new base.Rect(boundRect.width - rect.width, boundRect.height - rect.height)
+                        };
+                    }
+                    if (onManipulationBegin !== undefined) {
+                        this.onManipulationBegin = () => {
+                            onManipulationBegin(this);
+                        };
+                    }
+                    if (onManipulationEnd !== undefined) {
+                        this.onManipulationEnd = () => {
+                            onManipulationEnd(this);
+                        };
+                    }
+                    this.regionID = this.s8();
+                    this.styleID = `region_${this.regionID}_style`;
+                    this.styleSheet = this.insertStyleSheet();
+                    this.buildOn(paper);
+                }
+                buildOn(paper) {
+                    this.regionGroup = paper.g();
+                    this.regionGroup.addClass("regionStyle");
+                    this.regionGroup.addClass(this.styleID);
+                    this.anchors = new AnchorsElement(paper, this.x, this.y, this.rect, this.boundRects.host, this.onInternalChange.bind(this), this.onManipulationBegin, this.onManipulationEnd);
+                    this.drag = new DragElement(paper, this.x, this.y, this.rect, this.boundRects.self, this.onInternalChange.bind(this), this.onManipulationBegin, this.onManipulationEnd);
+                    this.tags = new TagsElement(paper, this.x, this.y, this.rect, this.tagsDescriptor, this.styleID, this.styleSheet);
+                    this.regionGroup.add(this.tags.tagsGroup);
+                    this.regionGroup.add(this.drag.dragGroup);
+                    this.regionGroup.add(this.anchors.anchorsGroup);
+                    this.UI = new Array(this.tags, this.drag, this.anchors);
+                }
+                s8() {
+                    return Math.floor((1 + Math.random()) * 0x100000000)
+                        .toString(16)
+                        .substring(1);
+                }
+                insertStyleSheet() {
+                    var style = document.createElement("style");
+                    style.setAttribute("id", this.styleID);
+                    document.head.appendChild(style);
+                    return style.sheet;
+                }
+                clearStyles() {
+                    if (this.styleSheet != null) {
+                        for (var i = 0; i < this.styleSheet.cssRules.length; i++) {
+                            this.styleSheet.deleteRule(i);
+                        }
+                    }
+                }
+                removeStyles() {
+                    document.getElementById(this.styleID).remove();
+                }
+                onInternalChange(x, y, width, height, clicked = false) {
+                    this.move(new base.Point2D(x, y));
+                    this.resize(width, height);
+                    this.onChange(this, clicked);
+                }
+                move(p) {
+                    let self = this;
+                    this.x = p.x;
+                    this.y = p.y;
+                    window.requestAnimationFrame(function () {
+                        self.UI.forEach((element) => {
+                            element.move(p);
+                        });
                     });
                 }
                 resize(width, height) {
@@ -366,11 +739,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.boundRects.self.height = this.boundRects.host.height - height;
                     let self = this;
                     window.requestAnimationFrame(function () {
-                        self.regionRect.attr({
-                            width: width,
-                            height: height
+                        self.UI.forEach((element) => {
+                            element.resize(width, height);
                         });
-                        self.ancors.resize(width, height);
                     });
                 }
                 hide() {
@@ -397,46 +768,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.isSelected = false;
                     this.regionGroup.removeClass("selected");
                 }
-                rectDragBegin() {
-                    this.dragOrigin = new base.Point2D(this.x, this.y);
-                }
-                rectDragMove(dx, dy) {
-                    let p;
-                    p = new base.Point2D(this.dragOrigin.x + dx, this.dragOrigin.y + dy);
-                    if (this.boundRects !== null) {
-                        p = p.boundToRect(this.boundRects.self);
-                    }
-                    this.move(p);
-                }
-                ;
-                rectDragEnd() {
-                    this.dragOrigin = null;
-                }
-                subscribeToEvents() {
-                    let self = this;
-                    self.regionRect.click(function (e) {
-                        if (self.isSelected) {
-                            self.unselect();
-                        }
-                        else {
-                            self.select();
-                        }
-                    }, this);
-                    self.regionRect.mouseover(function (e) {
-                        self.regionRect.drag(self.rectDragMove.bind(self), self.rectDragBegin.bind(self), self.rectDragEnd.bind(self));
-                        self.onManipulationBegin();
-                    });
-                    self.regionRect.mouseout(function (e) {
-                        self.regionRect.undrag();
-                        self.onManipulationEnd();
-                    });
-                    self.regionRect.node.addEventListener("pointerdown", function (e) {
-                        self.regionRect.node.setPointerCapture(e.pointerId);
-                    });
-                    self.regionRect.node.addEventListener("pointerup", function (e) {
-                        self.regionRect.node.releasePointerCapture(e.pointerId);
-                    });
-                }
             }
             class RegionsManager {
                 constructor(svgHost, onManipulationBegin, onManipulationEnd) {
@@ -447,15 +778,74 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.regionManagerLayer.addClass("regionManager");
                     this.onManipulationBegin = onManipulationBegin;
                     this.onManipulationEnd = onManipulationEnd;
+                    this.regions = new Array();
+                    this.menuLayer = this.paper.g();
+                    this.menuLayer.addClass("menuManager");
+                    this.menu = new MenuElement(this.paper, 0, 0, new base.Rect(0, 0), this.paperRect, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
+                    this.menu.addAction("delete", "trash", (region) => {
+                        console.log(region.regionID);
+                        this.deleteRegion(region);
+                        this.menu.hide();
+                    });
+                    this.menuLayer.add(this.menu.menuGroup);
+                    this.menu.hide();
                 }
-                addRegion(pointA, pointB) {
+                addRegion(pointA, pointB, tagsDescriptor) {
+                    this.menu.hide();
                     let x = (pointA.x < pointB.x) ? pointA.x : pointB.x;
                     let y = (pointA.y < pointB.y) ? pointA.y : pointB.y;
                     let w = Math.abs(pointA.x - pointB.x);
                     let h = Math.abs(pointA.y - pointB.y);
-                    let region = new RegionElement(this.paper, new base.Rect(w, h), this.paperRect, this.onManipulationBegin, this.onManipulationEnd);
+                    let region = new RegionElement(this.paper, new base.Rect(w, h), this.paperRect, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
                     region.move(new base.Point2D(x, y));
+                    region.onChange = this.onRegionUpdate.bind(this);
+                    this.unselectRegions();
+                    region.select();
                     this.regionManagerLayer.add(region.regionGroup);
+                    this.regions.push(region);
+                    this.menu.attachTo(region);
+                    this.menu.show();
+                }
+                deleteRegion(region) {
+                    region.removeStyles();
+                    region.regionGroup.remove();
+                }
+                resize(width, height) {
+                    let tw = width / this.paperRect.width;
+                    let th = height / this.paperRect.height;
+                    this.paperRect.resize(width, height);
+                    for (var i = 0; i < this.regions.length; i++) {
+                        let r = this.regions[i];
+                        r.move(new base.Point2D(r.x * tw, r.y * th));
+                        r.resize(r.rect.width * tw, r.rect.height * th);
+                    }
+                }
+                onManipulationBegin_local(region) {
+                    this.onManipulationBegin();
+                }
+                onManipulationEnd_local(region) {
+                    this.onManipulationEnd();
+                }
+                onRegionUpdate(region, clicked) {
+                    if (clicked) {
+                        this.menu.hide();
+                        this.unselectRegions(region);
+                        region.select();
+                        this.menu.attachTo(region);
+                        this.menu.show();
+                    }
+                    else {
+                        this.menu.hide();
+                        region.unselect();
+                    }
+                }
+                unselectRegions(except) {
+                    for (var i = 0; i < this.regions.length; i++) {
+                        let r = this.regions[i];
+                        if (r != except) {
+                            r.unselect();
+                        }
+                    }
                 }
             }
             Region.RegionsManager = RegionsManager;

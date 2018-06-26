@@ -37,7 +37,7 @@ html, body {
   margin-left: 20px;
 }
 
-svg:hover path { 
+#load-message-container svg:hover path { 
   fill:red !important;
 }
 
