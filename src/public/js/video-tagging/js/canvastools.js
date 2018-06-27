@@ -13,6 +13,9 @@ define("basetool", ["require", "exports"], function (require, exports) {
                     this.width = width;
                     this.height = height;
                 }
+                copy() {
+                    return new Rect(this.width, this.height);
+                }
             }
             Base.Rect = Rect;
             class Point2D {
@@ -62,8 +65,6 @@ define("basetool", ["require", "exports"], function (require, exports) {
         })(Base = CanvasTools.Base || (CanvasTools.Base = {}));
     })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
 });
-
-
 define("regiontool", ["require", "exports", "basetool", "./public/js/video-tagging/js/snap.svg.js"], function (require, exports, CT, Snap) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -124,35 +125,45 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.rearrangeAnchors();
                 }
                 rearrangeAnchors() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.anchors.TL.attr({ cx: self.x, cy: self.y });
-                        self.anchors.TR.attr({ cx: self.x + self.rect.width, cy: self.y });
-                        self.anchors.BR.attr({ cx: self.x + self.rect.width, cy: self.y + self.rect.height });
-                        self.anchors.BL.attr({ cx: self.x, cy: self.y + self.rect.height });
-                    });
+                    this.anchors.TL.attr({ cx: this.x, cy: this.y });
+                    this.anchors.TR.attr({ cx: this.x + this.rect.width, cy: this.y });
+                    this.anchors.BR.attr({ cx: this.x + this.rect.width, cy: this.y + this.rect.height });
+                    this.anchors.BL.attr({ cx: this.x, cy: this.y + this.rect.height });
                 }
-                rearrangeCoord(p1, p2) {
+                rearrangeCoord(p1, p2, flipX, flipY) {
                     let x = (p1.x < p2.x) ? p1.x : p2.x;
                     let y = (p1.y < p2.y) ? p1.y : p2.y;
                     let width = Math.abs(p1.x - p2.x);
                     let height = Math.abs(p1.y - p2.y);
-                    this.flipActiveAnchor(p1.x - p2.x > 0, p1.y - p2.y > 0);
+                    this.flipActiveAnchor(flipX, flipY);
                     this.onChange(x, y, width, height, true);
                 }
-                flipActiveAnchor(w, h) {
+                flipActiveAnchor(flipX, flipY) {
                     let ac = "";
                     if (this.activeAnchor !== "") {
-                        ac += (this.activeAnchor[0] == "T") ? (h ? "B" : "T") : (h ? "T" : "B");
-                        ac += (this.activeAnchor[1] == "L") ? (w ? "R" : "L") : (w ? "L" : "R");
+                        ac += (this.activeAnchor[0] == "T") ? (flipY ? "B" : "T") : (flipY ? "T" : "B");
+                        ac += (this.activeAnchor[1] == "L") ? (flipX ? "R" : "L") : (flipX ? "L" : "R");
                     }
                     if (this.activeAnchor != ac) {
                         this.ghostAnchor.removeClass(this.activeAnchor);
                         this.activeAnchor = ac;
                         this.ghostAnchor.addClass(this.activeAnchor);
                     }
+                    if (flipX) {
+                        if (this.activeAnchor[1] == "R") {
+                            this.pointOrigin.x += this.rectOrigin.width;
+                        }
+                        this.rectOrigin.width = 0;
+                    }
+                    if (flipY) {
+                        if (this.activeAnchor[0] == "B") {
+                            this.pointOrigin.y += this.rectOrigin.height;
+                        }
+                        this.rectOrigin.height = 0;
+                    }
                 }
                 anchorDragBegin() {
+                    this.originalAnchor = this.activeAnchor;
                 }
                 getDragOriginPoint() {
                     let x, y;
@@ -183,33 +194,37 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 anchorDragMove(dx, dy, x, y) {
                     let p1, p2;
                     let x1, y1, x2, y2;
+                    let flipX = false;
+                    let flipY = false;
+                    x1 = this.dragOrigin.x + dx;
+                    y1 = this.dragOrigin.y + dy;
                     switch (this.activeAnchor) {
                         case "TL": {
-                            x1 = this.dragOrigin.x + dx;
-                            y1 = this.dragOrigin.y + dy;
-                            x2 = this.x + this.rect.width;
-                            y2 = this.y + this.rect.height;
+                            x2 = this.pointOrigin.x + this.rectOrigin.width;
+                            y2 = this.pointOrigin.y + this.rectOrigin.height;
+                            flipX = x2 < x1;
+                            flipY = y2 < y1;
                             break;
                         }
                         case "TR": {
-                            x1 = this.x;
-                            y1 = this.dragOrigin.y + dy;
-                            x2 = this.dragOrigin.x + dx;
-                            y2 = this.y + this.rect.height;
+                            x2 = this.pointOrigin.x;
+                            y2 = this.pointOrigin.y + this.rectOrigin.height;
+                            flipX = x1 < x2;
+                            flipY = y2 < y1;
                             break;
                         }
                         case "BL": {
-                            x1 = this.dragOrigin.x + dx;
-                            y1 = this.y;
-                            x2 = this.x + this.rect.width;
-                            y2 = this.dragOrigin.y + dy;
+                            y2 = this.pointOrigin.y;
+                            x2 = this.pointOrigin.x + this.rectOrigin.width;
+                            flipX = x2 < x1;
+                            flipY = y1 < y2;
                             break;
                         }
                         case "BR": {
-                            x1 = this.x;
-                            y1 = this.y;
-                            x2 = this.dragOrigin.x + dx;
-                            y2 = this.dragOrigin.y + dy;
+                            x2 = this.pointOrigin.x;
+                            y2 = this.pointOrigin.y;
+                            flipX = x1 < x2;
+                            flipY = y1 < y2;
                             break;
                         }
                     }
@@ -219,11 +234,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         p1 = p1.boundToRect(this.boundRect);
                         p2 = p2.boundToRect(this.boundRect);
                     }
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.ghostAnchor.attr({ cx: self.dragOrigin.x + dx, cy: self.dragOrigin.y + dy });
+                    window.requestAnimationFrame(() => {
+                        this.ghostAnchor.attr({ cx: x1, cy: y1 });
                     });
-                    this.rearrangeCoord(p1, p2);
+                    this.rearrangeCoord(p1, p2, flipX, flipY);
                 }
                 ;
                 anchorDragEnd() {
@@ -260,13 +274,14 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                 }
                 subscribeAnchorToEvents(ancor, active) {
-                    let self = this;
-                    ancor.mouseover(function (e) {
-                        self.activeAnchor = active;
-                        let p = self.getDragOriginPoint();
-                        self.dragOrigin = p;
-                        window.requestAnimationFrame(function () {
-                            self.ghostAnchor.attr({
+                    ancor.mouseover((e) => {
+                        this.activeAnchor = active;
+                        let p = this.getDragOriginPoint();
+                        this.dragOrigin = p;
+                        this.rectOrigin = this.rect.copy();
+                        this.pointOrigin = new base.Point2D(this.x, this.y);
+                        window.requestAnimationFrame(() => {
+                            this.ghostAnchor.attr({
                                 cx: p.x,
                                 cy: p.y,
                                 display: 'block'
@@ -364,33 +379,27 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     }
                 }
                 move(p) {
-                    let self = this;
                     this.x = p.x;
                     this.y = p.y;
-                    window.requestAnimationFrame(function () {
-                        self.primaryTagRect.attr({
-                            x: p.x,
-                            y: p.y
-                        });
-                        self.primaryTagText.attr({
-                            x: p.x + 5,
-                            y: p.y + self.primaryTagText.getBBox().height
-                        });
-                        self.primaryTagTextBG.attr({
-                            x: p.x + 1,
-                            y: p.y + 1
-                        });
+                    this.primaryTagRect.attr({
+                        x: p.x,
+                        y: p.y
+                    });
+                    this.primaryTagText.attr({
+                        x: p.x + 5,
+                        y: p.y + this.primaryTagText.getBBox().height
+                    });
+                    this.primaryTagTextBG.attr({
+                        x: p.x + 1,
+                        y: p.y + 1
                     });
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.primaryTagRect.attr({
-                            width: width,
-                            height: height
-                        });
+                    this.primaryTagRect.attr({
+                        width: width,
+                        height: height
                     });
                 }
                 hide() {
@@ -436,25 +445,19 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.dragGroup.add(this.dragRect);
                 }
                 move(p) {
-                    let self = this;
                     this.x = p.x;
                     this.y = p.y;
-                    window.requestAnimationFrame(function () {
-                        self.dragRect.attr({
-                            x: p.x,
-                            y: p.y
-                        });
+                    this.dragRect.attr({
+                        x: p.x,
+                        y: p.y
                     });
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.dragRect.attr({
-                            width: width,
-                            height: height
-                        });
+                    this.dragRect.attr({
+                        width: width,
+                        height: height
                     });
                 }
                 hide() {
