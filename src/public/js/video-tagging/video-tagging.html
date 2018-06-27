@@ -199,12 +199,12 @@
                 System.import('regiontool'),
                 System.import('basetool')
             ]).then(function(modules){
-                var stools = modules[0].CanvasTools.Selection;
-                var rtools = modules[1].CanvasTools.Region;                
-                var btools = modules[2].CanvasTools.Base;
+                self.stools = modules[0].CanvasTools.Selection;
+                self.rtools = modules[1].CanvasTools.Region;                
+                self.btools = modules[2].CanvasTools.Base;
 
                 var regionsManager;
-                self.areaSelector = new stools.AreaSelector(self.selectionZone, 
+                self.areaSelector = new self.stools.AreaSelector(self.selectionZone, 
                     function(){
                         self.selectionZone.style.zIndex = 300;
                     },
@@ -212,15 +212,15 @@
                         self.selectionZone.style.zIndex = 30;
                         self.onNewAreaSelected(x1, y1, x2, y2);
 
-                        var primaryTag = new btools.Tag(
-                            (Math.random() > 0.5) ? "Awesome" : "Brilliante!",
-                            Math.floor(Math.random() * 360.0));
-                        var tags = new btools.TagsDescriptor(primaryTag);
-                        regionsManager.addRegion({x:x1, y:y1}, {x:x2, y:y2}, tags);
+                        var primaryTag = new this.btools.Tag(
+                                (Math.random() > 0.5) ? "Awesome" : "Brilliante!",
+                                Math.floor(Math.random() * 360.0));
+                        var rtags = new this.btools.TagsDescriptor(primaryTag);
+                        this.regionsManager.addRegion({x:x1, y:y1}, {x:x2, y:y2}, rtags);
                     }
                 );
 
-                regionsManager = new rtools.RegionsManager(self.selectionZone, 
+                regionsManager = new self.rtools.RegionsManager(self.selectionZone, 
                     function() {
                         self.areaSelector.disable();
                     },
@@ -233,18 +233,6 @@
             });
 
         })
-        
-/*         this.selectionZone = document.getElementById("selectionZone");
-        var self = this;
-        this.areaSelector = AreaSelector.init(this.selectionZone, 
-            function(){
-                self.selectionZone.style.zIndex = 300;
-            },
-            function(x1, y1, x2, y2){
-                self.selectionZone.style.zIndex = 30;
-                self.onNewAreaSelected(x1, y1, x2, y2);
-            }); */
-
     },
      /**
        * Events registration and handling
@@ -262,7 +250,6 @@
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
             self.frameTime = 1/self.framerate;
-            self.enableAreaSelect(self);
             self.optionalTags.createTagControls(self.inputtagsarray);
             //Take the raw video aspect ratio
             self.aspect = self.video.videoWidth / self.video.videoHeight;
@@ -376,73 +363,7 @@
               this.regionSelected(selected_region)
           });
     },
-
-    //snapToAspectRatio: function()
-    //{
-        // -5 accounts for rounding errors during rendering to ensure
-        // we never redraw larger than the parent container.
-        // We need to offset for the non-scaling parts of the video controls
-        /* this.snapWidth =
-            ($('#video-tagging').parent().height() -
-             $('#videoControls').innerHeight() -
-             $('#videoTagControls').innerHeight() -
-             5) * this.aspect;
-        if(this.snapWidth > $('#video-tagging').parent().width()) {
-            $('#video-tagging').width($('#video-tagging').parent().width());
-        }
-        else {
-            $('#video-tagging').width(this.snapWidth);
-        } */
-    //},
-    
-    /**
-       * JQuery Area selector
-       * Based on JQuery plugin imgareaselect
-       * http://odyniec.net/projects/imgareaselect/usage.html
-       *
-       * Allows selection of a rectangle
-       */
-    clearArea: function()
-    {
-        /*
-        $('canvas#overlay').imgAreaSelect({
-                  show:false,
-                  hide:true
-            });
-            */
-    },
-    enableAreaSelect: function(self) {
-        /*
-      $('canvas#overlay').imgAreaSelect({
-            disable: true,
-            show:false,
-            hide:true
-      });
-      
-      if((this.regiontype.toLowerCase() === "square") || (this.regiontype.toLowerCase() === "rectangle")) {
-          $('canvas#overlay').imgAreaSelect({
-                        disable: false, //enable/disable
-                        handles: true, //grab handles when selecting the area
-                        aspectRatio: '1:1',
-                        maxWidth: self.overlay.offsetWidth,
-                        maxHeight: self.overlay.offsetHeight,
-                        minWidth:10,
-                        fadeSpeed: 200,
-                        square: (this.regiontype.toLowerCase() === "square"),
-                        onSelectEnd: function(img, selection){
-                              if (selection.width !== 0 && selection.height !== 0) {
-                                self.areaSelected = true;
-                                self.createRegion(selection.x1, selection.y1, selection.x2, selection.y2);
-                                self.clearArea();
-                              }
-                         },
-                         onSelectStart: function(img, selection){
-                              self.cleanSelectedElements();
-                         },
-                      });
-          }
-          */
-    },
+   
     /**
        * All functions related to regions management
        *
@@ -685,6 +606,8 @@
        * @param {regionId} The region id, which is the region index + 1.
        */
     addDivToRegion: function(x1, y1, x2, y2, regionId, tags) {
+
+
             var div = document.createElement("div");
             div.id = regionId;
             div.classList.add("regionCanvas");
@@ -1001,7 +924,6 @@
             self.resizeFrame(scaleByPortrait, self.aspect);
 
             //Init variables and controls
-            self.enableAreaSelect(self);
             self.playingCallback();
 
             //fix resize bug
