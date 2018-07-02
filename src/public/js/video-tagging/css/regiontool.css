@@ -21,22 +21,11 @@
 }
 
 .primaryTagRectStyle {
-    fill: rgba(68, 68, 68, 0.3);
+    fill: rgba(64, 64, 64, 0.4);
     stroke-width: 2;
-    stroke:rgba(92, 92, 92, 0.5);
+    stroke:rgba(196, 196, 196, 0.6);
     stroke-dasharray: 2 6;
     stroke-linecap: round;
-}
-
-.regionStyle:hover .primaryTagRectStyle {
-    fill: rgba(138, 138, 138, 0.3);
-    stroke: rgb(92, 92, 92);
-}
-
-.regionStyle.selected .primaryTagRectStyle {
-    fill: rgba(138, 138, 138, 0.5);
-    stroke: rgb(92, 92, 92);
-    stroke-dasharray: none;
 }
 
 .primaryTagTextStyle {
@@ -48,6 +37,17 @@
 .primaryTagTextBGStyle {
     stroke-width: 0;
     fill: rgba(0, 0, 0, 0.5);
+}
+
+.regionStyle:hover .primaryTagRectStyle {
+    fill: rgba(128, 128, 128, 0.4);
+    stroke: rgb(255, 255, 255);
+}
+
+.regionStyle.selected .primaryTagRectStyle {
+    fill: rgba(128, 128, 128, 0.4);
+    stroke: rgb(255, 255, 255);
+    stroke-dasharray: none;
 }
 
 .anchorStyle {
