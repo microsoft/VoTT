@@ -164,7 +164,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let width = Math.abs(p1.x - p2.x);
                     let height = Math.abs(p1.y - p2.y);
                     this.flipActiveAnchor(flipX, flipY);
-                    this.onChange(x, y, width, height, true);
+                    this.onChange(x, y, width, height, false, true);
                 }
                 flipActiveAnchor(flipX, flipY) {
                     let ac = "";
@@ -272,6 +272,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.ghostAnchor.attr({
                         display: "none"
                     });
+                    this.onChange(this.x, this.y, this.rect.width, this.rect.height, true, false);
                 }
                 subscribeToEvents() {
                     let self = this;
@@ -563,8 +564,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                     self.dragRect.node.addEventListener("pointerup", function (e) {
                         self.dragRect.node.releasePointerCapture(e.pointerId);
-                    });
-                    self.dragRect.click(function (e) {
                         self.onChange(self.x, self.y, self.rect.width, self.rect.height, true);
                     });
                 }
@@ -829,6 +828,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
             }
             class RegionsManager {
                 constructor(svgHost, onManipulationBegin, onManipulationEnd) {
+                    this.lastRegionManipulatedID = "";
+                    this.threshold = 500;
+                    this.timestamp = 0;
                     this.baseParent = svgHost;
                     this.paper = Snap(svgHost);
                     this.paperRect = new base.Rect(svgHost.width.baseVal.value, svgHost.height.baseVal.value);
@@ -928,24 +930,36 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 onManipulationEnd_local(region) {
                     this.onManipulationEnd();
                 }
-                onRegionUpdate(region, clicked, updated) {
-                    if (updated || (!region.isSelected && clicked)) {
-                        this.menu.hide();
-                        this.unselectRegions(region);
-                        region.select();
-                        this.menu.attachTo(region);
-                        this.menu.show();
-                        if ((typeof this.onRegionSelected) == "function") {
-                            this.onRegionSelected(region.ID);
-                        }
-                    }
-                    else {
-                        this.menu.hide();
+                onRegionUpdate(region, clicked, moving) {
+                    let id = "";
+                    if (moving) {
                         region.unselect();
-                        this.onRegionSelected("");
+                        this.menu.hide();
+                        id = region.ID;
+                        if ((typeof this.onRegionMove) == "function") {
+                            this.onRegionMove(region.ID, region.x, region.y, region.rect.width, region.rect.height);
+                        }
+                        this.lastRegionManipulatedID = region.ID;
+                        this.timestamp = Date.now();
                     }
-                    if ((typeof this.onRegionMove) == "function") {
-                        this.onRegionMove(region.ID, region.x, region.y, region.rect.width, region.rect.height);
+                    else if (clicked) {
+                        if ((this.lastRegionManipulatedID == region.ID && ((Date.now() - this.timestamp) < this.threshold))
+                            || !region.isSelected) {
+                            this.unselectRegions(region);
+                            region.select();
+                            this.menu.attachTo(region);
+                            this.menu.show();
+                            id = region.ID;
+                        }
+                        else {
+                            region.unselect();
+                            this.menu.hide();
+                        }
+                        this.lastRegionManipulatedID = "";
+                        this.timestamp = 0;
+                    }
+                    if ((typeof this.onRegionSelected) == "function") {
+                        this.onRegionSelected(id);
                     }
                 }
                 unselectRegions(except) {
@@ -1243,6 +1257,7 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         this.moveCross(this.crossA, p);
                         this.moveCross(this.crossB, p);
                     }
+                    e.preventDefault();
                 }
                 onKeyDown(e) {
                     if (e.shiftKey) {
