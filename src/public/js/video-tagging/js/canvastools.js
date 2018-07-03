@@ -164,7 +164,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let width = Math.abs(p1.x - p2.x);
                     let height = Math.abs(p1.y - p2.y);
                     this.flipActiveAnchor(flipX, flipY);
-                    this.onChange(x, y, width, height, false, true);
+                    this.onChange(x, y, width, height, "moving");
                 }
                 flipActiveAnchor(flipX, flipY) {
                     let ac = "";
@@ -272,7 +272,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.ghostAnchor.attr({
                         display: "none"
                     });
-                    this.onChange(this.x, this.y, this.rect.width, this.rect.height, true, false);
                 }
                 subscribeToEvents() {
                     let self = this;
@@ -297,9 +296,11 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                     self.ghostAnchor.node.addEventListener("pointerdown", function (e) {
                         self.ghostAnchor.node.setPointerCapture(e.pointerId);
+                        self.onChange(self.x, self.y, self.rect.width, self.rect.height, "movingbegin");
                     });
                     self.ghostAnchor.node.addEventListener("pointerup", function (e) {
                         self.ghostAnchor.node.releasePointerCapture(e.pointerId);
+                        self.onChange(self.x, self.y, self.rect.width, self.rect.height, "movingend");
                     });
                 }
                 subscribeAnchorToEvents(ancor, active) {
@@ -543,11 +544,12 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     if (this.boundRect !== null) {
                         p = p.boundToRect(this.boundRect);
                     }
-                    this.onChange(p.x, p.y, this.rect.width, this.rect.height);
+                    this.onChange(p.x, p.y, this.rect.width, this.rect.height, "moving");
                 }
                 ;
                 rectDragEnd() {
                     this.dragOrigin = null;
+                    this.onChange(this.x, this.y, this.rect.width, this.rect.height, "movingend");
                 }
                 subscribeToEvents() {
                     let self = this;
@@ -561,10 +563,11 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                     self.dragRect.node.addEventListener("pointerdown", function (e) {
                         self.dragRect.node.setPointerCapture(e.pointerId);
+                        self.onChange(self.x, self.y, self.rect.width, self.rect.height, "movingbegin");
                     });
                     self.dragRect.node.addEventListener("pointerup", function (e) {
                         self.dragRect.node.releasePointerCapture(e.pointerId);
-                        self.onChange(self.x, self.y, self.rect.width, self.rect.height, true);
+                        self.onChange(self.x, self.y, self.rect.width, self.rect.height, "clicked");
                     });
                 }
             }
@@ -713,6 +716,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         });
                     });
                 }
+                showOnRegion(region) {
+                    this.attachTo(region);
+                    this.show();
+                }
             }
             class RegionElement {
                 constructor(paper, rect, boundRect = null, id, tagsDescriptor, onManipulationBegin, onManipulationEnd) {
@@ -770,11 +777,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 removeStyles() {
                     document.getElementById(this.styleID).remove();
                 }
-                onInternalChange(x, y, width, height, clicked = false) {
-                    let updated = this.x != x || this.y != y || this.rect.width != width || this.rect.height != height;
+                onInternalChange(x, y, width, height, state) {
                     this.move(new base.Point2D(x, y));
                     this.resize(width, height);
-                    this.onChange(this, clicked, updated);
+                    this.onChange(this, state);
                 }
                 updateTags(tags) {
                     this.tags.updateTags(tags);
@@ -828,9 +834,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
             }
             class RegionsManager {
                 constructor(svgHost, onManipulationBegin, onManipulationEnd) {
-                    this.lastRegionManipulatedID = "";
-                    this.threshold = 500;
-                    this.timestamp = 0;
+                    this.justManipulated = false;
                     this.baseParent = svgHost;
                     this.paper = Snap(svgHost);
                     this.paperRect = new base.Rect(svgHost.width.baseVal.value, svgHost.height.baseVal.value);
@@ -863,8 +867,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     region.select();
                     this.regionManagerLayer.add(region.regionGroup);
                     this.regions.push(region);
-                    this.menu.attachTo(region);
-                    this.menu.show();
+                    this.menu.showOnRegion(region);
                 }
                 deleteRegion(region) {
                     region.removeStyles();
@@ -930,36 +933,43 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 onManipulationEnd_local(region) {
                     this.onManipulationEnd();
                 }
-                onRegionUpdate(region, clicked, moving) {
-                    let id = "";
-                    if (moving) {
-                        region.unselect();
+                onRegionUpdate(region, state) {
+                    if (state == "movingbegin") {
+                        this.unselectRegions(region);
                         this.menu.hide();
-                        id = region.ID;
+                        if ((typeof this.onRegionSelected) == "function") {
+                            this.onRegionSelected(region.ID);
+                        }
+                        this.justManipulated = false;
+                    }
+                    else if (state == "moving") {
                         if ((typeof this.onRegionMove) == "function") {
                             this.onRegionMove(region.ID, region.x, region.y, region.rect.width, region.rect.height);
                         }
-                        this.lastRegionManipulatedID = region.ID;
-                        this.timestamp = Date.now();
+                        this.justManipulated = true;
                     }
-                    else if (clicked) {
-                        if ((this.lastRegionManipulatedID == region.ID && ((Date.now() - this.timestamp) < this.threshold))
-                            || !region.isSelected) {
+                    else if (state == "movingend") {
+                        if (this.justManipulated) {
+                            region.select();
+                            this.menu.showOnRegion(region);
+                        }
+                    }
+                    else if (state == "clicked" && !this.justManipulated) {
+                        if (!region.isSelected) {
                             this.unselectRegions(region);
                             region.select();
-                            this.menu.attachTo(region);
-                            this.menu.show();
-                            id = region.ID;
+                            this.menu.showOnRegion(region);
+                            if ((typeof this.onRegionSelected) == "function") {
+                                this.onRegionSelected(region.ID);
+                            }
                         }
                         else {
                             region.unselect();
                             this.menu.hide();
+                            if ((typeof this.onRegionSelected) == "function") {
+                                this.onRegionSelected("");
+                            }
                         }
-                        this.lastRegionManipulatedID = "";
-                        this.timestamp = 0;
-                    }
-                    if ((typeof this.onRegionSelected) == "function") {
-                        this.onRegionSelected(id);
                     }
                 }
                 unselectRegions(except) {
