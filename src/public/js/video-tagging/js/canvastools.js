@@ -772,9 +772,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     document.getElementById(this.styleID).remove();
                 }
                 onInternalChange(x, y, width, height, clicked = false) {
+                    let updated = this.x != x || this.y != y || this.rect.width != width || this.rect.height != height;
                     this.move(new base.Point2D(x, y));
                     this.resize(width, height);
-                    this.onChange(this, clicked);
+                    this.onChange(this, clicked, updated);
                 }
                 updateTags(tags) {
                     this.tags.updateTags(tags);
@@ -914,6 +915,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let tw = width / this.paperRect.width;
                     let th = height / this.paperRect.height;
                     this.paperRect.resize(width, height);
+                    this.menu.hide();
                     for (var i = 0; i < this.regions.length; i++) {
                         let r = this.regions[i];
                         r.move(new base.Point2D(r.x * tw, r.y * th));
@@ -926,8 +928,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 onManipulationEnd_local(region) {
                     this.onManipulationEnd();
                 }
-                onRegionUpdate(region, clicked) {
-                    if (clicked) {
+                onRegionUpdate(region, clicked, updated) {
+                    if (updated || (!region.isSelected && clicked)) {
                         this.menu.hide();
                         this.unselectRegions(region);
                         region.select();
@@ -940,6 +942,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     else {
                         this.menu.hide();
                         region.unselect();
+                        this.onRegionSelected("");
                     }
                     if ((typeof this.onRegionMove) == "function") {
                         this.onRegionMove(region.ID, region.x, region.y, region.rect.width, region.rect.height);

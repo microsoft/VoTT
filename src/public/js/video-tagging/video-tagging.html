@@ -562,11 +562,13 @@
         this.optionalTags.toggleEnableButtons(true);
         this.optionalTags.resetSelected();
 
-        let region = this.getRegionById(id);
-        if(region) {
-            this.selectedRegionId = id;
-            var tags = region.tags;
-            this.optionalTags.displaySelectedTags(tags);
+        if (id != "") {
+            let region = this.getRegionById(id);
+            if(region) {
+                this.selectedRegionId = id;
+                var tags = region.tags;
+                this.optionalTags.displaySelectedTags(tags);
+            }
         }
     },
 
