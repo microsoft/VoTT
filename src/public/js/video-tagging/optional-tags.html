@@ -31,6 +31,9 @@
           if (!this.colors){
             this.colors = this.generateRandomColors(tagsArray.length)
           }
+          if (this.colors.length < tagsArray.length){
+            this.colors = this.generateRandomColors(tagsArray.length - this.colors.length, this.colors);
+          }
           for(var index = 0;index < tagsArray.length;index++){
                 var btn = document.createElement("input");
                 btn.id = tagsArray[index];
