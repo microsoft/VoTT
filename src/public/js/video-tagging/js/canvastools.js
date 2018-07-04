@@ -916,7 +916,11 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     if (region != null) {
                         this.unselectRegions(region);
                         region.select();
-                    }
+                        this.menu.showOnRegion(region);
+                        if ((typeof this.onRegionSelected) == "function") {
+                            this.onRegionSelected(region.ID);
+                        }
+                    }                    
                 }
                 resize(width, height) {
                     let tw = width / this.paperRect.width;
