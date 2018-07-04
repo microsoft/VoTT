@@ -856,9 +856,7 @@
                     break;
                     case 46: //delete
                     case 8:  //backspace
-                    if($('.regionCanvasSelected')[0]){
-                        self.deleteRegion();
-                    }
+                    self.deleteRegion();
                     break;
                     default: return; // exit this handler for other keys
                 }
