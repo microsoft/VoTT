@@ -14,6 +14,7 @@
     <style include="video-taggingstyles"></style>
     <link rel="stylesheet" href="css/sliders.css" />
     <link rel="stylesheet" href="css/selectiontool.css" />
+    <link rel="stylesheet" href="css/regiontool.css" />
     <link rel="stylesheet" href="../jquery-ui/themes/base/resizable.css">
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
     <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css" />
@@ -22,14 +23,21 @@
     <div id="controlWrapper" class="controlWrapper">
       <playback-control id="playSpeedControl" class="playSpeedControl"></playback-control>
       <div id='videoWrapper' class="relativeDiv">
-            <svg id="selectionZone" class="selectionZoneStyle" >                  
+            <svg id="selectionZone" class="selectionZoneStyle" >
+                    <defs>
+                            <filter id="black-glow">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="2"/> 
+                                <feOffset dx="0" dy="0" result="offsetblur"/>
+                                <feComponentTransfer>
+                                    <feFuncA type="linear" slope="0.8"/>
+                                </feComponentTransfer>
+                                <feMerge> 
+                                    <feMergeNode/>
+                                    <feMergeNode in="SourceGraphic"/> 
+                                </feMerge>
+                            </filter>
+                        </defs>                  
                 </svg>  
-          <div id = "regionLabelDiv" style="width:40px;height:20px;" class="regionLabel" >
-              <span id="regionLabelSpan" class="regionLabelSpan"></span>
-              <span id="closeRegionImage" on-click="deleteRegion" class="closeRegion clickableControl">X</span>
-          </div>
-            
-
               <canvas id="overlay"  on-click='videoClicked' class="overlaystyle" width="100" height="100" >
                       Your browser does not support the HTML5 canvas location.
               </canvas>
@@ -124,7 +132,7 @@
     ready: function() {
         this.frames = {}; // Holds the data of the tagged frames, their regions and tags
         this.seeking = false;//Flag for enabling control over the seek bar while the video is playing, see playingCallback function
-        this.selectedRegionId = 0;//Holds the current selected region number
+        this.selectedRegionId = "";//Holds the current selected region number
         this.lockTagsEnabled = false;
         this.selectedTags = [];
         this.uniqueTagId = 0;
@@ -138,6 +146,9 @@
         this.frameWidth = 0;
         this.frameHeight = 0;
 
+        this.sourceWidth = 0;
+        this.sourceHeight = 0;
+
         //Divs and spans
         this.controlWrapper= this.$$('#controlWrapper');
         this.videoWrapper= this.$$('#videoWrapper');
@@ -146,7 +157,6 @@
         this.frameCanvas = this.$$('#frameCanvas');
 
         this.optionalTags= this.$$('#optionalTags');
-        this.regionLabelDiv = this.$$('#regionLabelDiv');
         this.regionLabelSpan = this.$$('#regionLabelSpan');
         this.timeSpan = this.$$('#timeSpan');
         this.frameText = this.$$("#frameText");
@@ -182,35 +192,49 @@
         SystemJS.import("./public/js/video-tagging/js/canvastools.js").then(function(module){
             Promise.all([
                 System.import('selectiontool'),
-                //System.import('regiontool'),
+                System.import('regiontool'),
+                System.import('basetool')
             ]).then(function(modules){
-                //var rtools = modules[1].CanvasTools.Region;
-                var stools = modules[0].CanvasTools.Selection;
-                
-                self.areaSelector = new stools.AreaSelector(self.selectionZone, 
+                self.stools = modules[0].CanvasTools.Selection;
+                self.rtools = modules[1].CanvasTools.Region;                
+                self.btools = modules[2].CanvasTools.Base;
+
+                var regionsManager;
+                self.areaSelector = new self.stools.AreaSelector(self.selectionZone, 
                     function(){
-                    self.selectionZone.style.zIndex = 300;
-                },
-                function(x1, y1, x2, y2){
-                    self.selectionZone.style.zIndex = 30;
-                    self.onNewAreaSelected(x1, y1, x2, y2);
-                }
+                        self.selectionZone.style.zIndex = 300;
+                    },
+                    function(x1, y1, x2, y2){
+                        self.selectionZone.style.zIndex = 30;
+                        self.onNewAreaSelected(x1, y1, x2, y2);
+                    }
                 );
+
+                regionsManager = new self.rtools.RegionsManager(self.selectionZone, 
+                    function() {
+                        self.areaSelector.disable();
+                    },
+                    function() {
+                        self.areaSelector.enable();
+                    })
+                ;
+
+                regionsManager.onRegionSelected = function(id) {
+                    self.regionSelected(id);
+                };
+
+                regionsManager.onRegionMove = function(id, x, y, width, height) {
+                    self.regionMoved(id, x, y, width, height);
+                };
+
+                regionsManager.onRegionDelete = function(id) {
+                    self.deleteRegionById(id);
+                };
+
+                self.regionsManager = regionsManager;
             });
 
         })
-        
-/*         this.selectionZone = document.getElementById("selectionZone");
-        var self = this;
-        this.areaSelector = AreaSelector.init(this.selectionZone, 
-            function(){
-                self.selectionZone.style.zIndex = 300;
-            },
-            function(x1, y1, x2, y2){
-                self.selectionZone.style.zIndex = 30;
-                self.onNewAreaSelected(x1, y1, x2, y2);
-            }); */
-
     },
      /**
        * Events registration and handling
@@ -228,10 +252,11 @@
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
             self.frameTime = 1/self.framerate;
-            self.enableAreaSelect(self);
             self.optionalTags.createTagControls(self.inputtagsarray);
             //Take the raw video aspect ratio
-            self.aspect = self.video.videoWidth / self.video.videoHeight;
+            self.sourceWidth = self.video.videoWidth;
+            self.sourceHeight = self.video.videoHeight;
+            self.aspect = self.sourceWidth / self.sourceHeight;
             //self.snapToAspectRatio();
             //Init sliders
             self.volumeSlider.value = 0.5;
@@ -239,7 +264,6 @@
 
             // Update frame size to video size     
             self.resetLayout();                          
-            //self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
             let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
             self.resizeFrame(scaleByPortrait, self.aspect);         
 
@@ -253,16 +277,11 @@
                     // Update frame size to video size  
                     self.resetLayout();                  
                     
-                    //self.resizeFrameSize(self.video.offsetWidth, self.video.offsetHeight);
-
                     let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
                     self.resizeFrame(scaleByPortrait, self.aspect);
 
                     //resize the region boxes
-                    self.showAllRegions();
-                    //reposition selectedRegion Label
-                    var selectedDiv = $('.regionCanvasSelected')[0];
-                    self.positionRegionNameLabel(selectedDiv);
+                    // self.showAllRegions();                    
                 }
             });
 
@@ -323,119 +342,34 @@
               arr.push(e.detail.tagid);
               this.addTagsToRegion(arr);
               this.emitRegionToHost();//Persist
-              selected_region = this.selectedRegionId
-              this.showAllRegions();
-              this.regionSelected(selected_region)
+              
+              // this.showAllRegions();
+              this.regionSelected(this.selectedRegionId)
           });
-      this.addEventListener("ontagdeleted", function(e) {
-              var regionId = this.selectedRegionId -1;//Revert to zero-based array
-              var region = this.frames[this.getCurrentFrame()][regionId];
-              for(var index = 0;index < region.tags.length;index++){
-                    if(region.tags[index] === e.detail.tagid){
-                        region.tags.splice(index, 1);
-                        break;
-                    }
-              }
-              this.emitRegionToHost();
-              selected_region = this.selectedRegionId
-              this.showAllRegions();
-              this.regionSelected(selected_region)
-          });
-    },
-
-    //snapToAspectRatio: function()
-    //{
-        // -5 accounts for rounding errors during rendering to ensure
-        // we never redraw larger than the parent container.
-        // We need to offset for the non-scaling parts of the video controls
-        /* this.snapWidth =
-            ($('#video-tagging').parent().height() -
-             $('#videoControls').innerHeight() -
-             $('#videoTagControls').innerHeight() -
-             5) * this.aspect;
-        if(this.snapWidth > $('#video-tagging').parent().width()) {
-            $('#video-tagging').width($('#video-tagging').parent().width());
-        }
-        else {
-            $('#video-tagging').width(this.snapWidth);
-        } */
-    //},
-    
-    /**
-       * JQuery Area selector
-       * Based on JQuery plugin imgareaselect
-       * http://odyniec.net/projects/imgareaselect/usage.html
-       *
-       * Allows selection of a rectangle
-       */
-    clearArea: function()
-    {
-        /*
-        $('canvas#overlay').imgAreaSelect({
-                  show:false,
-                  hide:true
-            });
-            */
-    },
-    enableAreaSelect: function(self) {
-        /*
-      $('canvas#overlay').imgAreaSelect({
-            disable: true,
-            show:false,
-            hide:true
-      });
-      
-      if((this.regiontype.toLowerCase() === "square") || (this.regiontype.toLowerCase() === "rectangle")) {
-          $('canvas#overlay').imgAreaSelect({
-                        disable: false, //enable/disable
-                        handles: true, //grab handles when selecting the area
-                        aspectRatio: '1:1',
-                        maxWidth: self.overlay.offsetWidth,
-                        maxHeight: self.overlay.offsetHeight,
-                        minWidth:10,
-                        fadeSpeed: 200,
-                        square: (this.regiontype.toLowerCase() === "square"),
-                        onSelectEnd: function(img, selection){
-                              if (selection.width !== 0 && selection.height !== 0) {
-                                self.areaSelected = true;
-                                self.createRegion(selection.x1, selection.y1, selection.x2, selection.y2);
-                                self.clearArea();
-                              }
-                         },
-                         onSelectStart: function(img, selection){
-                              self.cleanSelectedElements();
-                         },
-                      });
-          }
-          */
-    },
-    /**
-       * All functions related to regions management
-       *
-       * @method positionRegionNameLabel
-       * Positions the div with the region number next to the region div.
-       * @param {div} The region div
-       */
-    //Regions management
-    updateRegionZIndices: function(){
-        $('.regionCanvas').sort(function (e1, e2) {
-            return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
-        }).each(function(idx,e) {
-            e.style.zIndex =(idx+200).toString();
-            $(e).css('box-shadow', 'inset 0 0 0 2px ' + $(e).css('border-color')); 
-        });
-    },
-    positionRegionNameLabel: function(div) {
-        if (div){
-            this.regionLabelDiv.style.left = (div.offsetLeft + parseFloat(div.style.width, 10) - parseFloat(this.regionLabelDiv.style.width, 10)) + "px";
-            this.regionLabelDiv.style.top = (div.offsetTop - parseFloat(this.regionLabelDiv.style.height, 10)) + "px" ;
-            //Out of bounds top - move it below div
-            if(parseFloat(this.regionLabelDiv.style.top) < 0) {
-                this.regionLabelDiv.style.top = (div.offsetTop + parseFloat(div.style.height, 10)) + "px" ;
+        this.addEventListener("ontagdeleted", function(e) {
+            let region = this.getRegionById(this.selectedRegionId);
+            let tags = region.tags;
+             
+            for(var index = 0;index < tags.length;index++){
+                if(tags[index] === e.detail.tagid){
+                    tags.splice(index, 1);
+                    break;
+                }
             }
-            this.regionLabelSpan.innerHTML = div.id;
-            this.regionLabelDiv.style.display = "block";
-        }
+            this.emitRegionToHost();
+
+            let tagsDescriptor = null;
+            if (tags.length > 0) {
+                let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
+                let primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
+                tagsDescriptor = new this.btools.TagsDescriptor(primaryTag);
+            }
+
+            this.regionsManager.updateTagsById(this.selectedRegionId, tagsDescriptor);
+
+            //this.showAllRegions();
+            this.regionSelected(this.selectedRegionId)
+        });
     },
 
     onNewAreaSelected: function(x1, y1, x2, y2){
@@ -475,16 +409,52 @@
         this.createRegion(r.x1, r.y1, r.x2, r.y2);
     },
 
+    generateUniqueId: function() {
+        return Math.floor((1 + Math.random()) * 0x100000000)
+            .toString(16)
+            .substring(1);
+    },
+
+    getRegions: function(frameId) {
+        let regions = this.frames[frameId];
+        if (regions == undefined || regions == null) {
+            this.frames[frameId] = [];
+            regions = this.frames[frameId];
+        }
+
+        return regions;
+    },
+
+    getCurrentFrameRegions: function() {   
+        return this.getRegions(this.getCurrentFrame());
+    },
+
+    getRegionById: function(regionUID) {
+        let region = null;
+        let regions = this.getCurrentFrameRegions();
+        let i = 0;
+        while (i < regions.length && region == null) {
+                if (regions[i].UID == regionUID) {
+                    region = regions[i];
+                }
+                i++
+            }
+        return region;
+    },        
+
     createRegion: function(x1, y1, x2, y2) {
-        var region = this.addRegion(x1, y1, x2, y2);//Add to in-memory collection
-        var xOffset = parseFloat(this.overlay.style.left);
-        var yOffset = parseFloat(this.overlay.style.top);
-        this.addDivToRegion(x1 + (isNaN(xOffset) ? 0 : xOffset), y1 + (isNaN(yOffset) ? 0 : yOffset), 
-                            x2 + (isNaN(xOffset) ? 0 : xOffset), y2 + (isNaN(yOffset) ? 0 : yOffset), 
-                            region.name, region.tags); //add frame
-        this.updateRegionZIndices();//update region z indecies
-        this.regionSelected(region.name);//Select it by default
-        //if there is only one tag enable it  by default
+        let widthRatio = this.overlay.width / this.sourceWidth;
+        let heightRatio = this.overlay.height / this.sourceHeight;
+
+        var rx1 = x1 / widthRatio;
+        var ry1 = y1 / heightRatio;
+        var rx2 = x2 / widthRatio;
+        var ry2 = y2 / heightRatio;
+
+        var region = this.addRegion(rx1, ry1, rx2, ry2);//Add to in-memory collection
+        this.registerRegion(x1, y1, x2, y2, region.UID, region.tags); //add frame
+
+        //if there is only one tag enable it by default
         if ($(`#${this.optionalTags.id}`).find('.tagButtons').size() == 1){
             $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
         }
@@ -506,15 +476,25 @@
         this.emitRegionToHost();//Persist
     },
     addTagsToRegion: function(selectedTagsArray) {
-          var regionId = this.selectedRegionId -1;//Revert to zero-based array
-          var region = this.frames[this.getCurrentFrame()][regionId];
-          for (var i = 0; i < selectedTagsArray.length; i++) {
-               region.tags.push(selectedTagsArray[i]);
-          }
+        let region = this.getRegionById(this.selectedRegionId);
+        let tags = region.tags;
+        for (var i = 0; i < selectedTagsArray.length; i++) {
+            tags.push(selectedTagsArray[i]);
+        }
+
+        if (tags.length > 0) {
+            let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
+            var primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
+            var rtags = new this.btools.TagsDescriptor(primaryTag);
+            this.regionsManager.updateTagsById(region.UID, rtags);
+        } else {
+            this.regionsManager.updateTagsById(region.UID, null);
+        }
+        
     },
     nextUntaggedClicked:function() {
         if (this.checkRegionLabels()){
-          var frameIndex = this.getCurrentFrame();
+          var frameIndex = this.getCurrentFrameRegions();
             if (this.imagelist){//image handling
                 var lastTagIndex = parseInt(Object.keys(this.frames)[Object.keys(this.frames).length-1])
                 if (this.imageIndex < this.imagelist.length) {
@@ -556,82 +536,56 @@
         this.lockTag.classList.toggle("controlOn", this.lockTagsEnabled);
         this.lockTag.classList.toggle("controlOff", !this.lockTagsEnabled);
     },
-    regionSelected: function(divId) {
-              this.cleanSelectedElements();
-              var div = document.getElementById(divId);
-              div.classList.add("regionCanvasSelected");
-              this.selectedRegionId = div.id;
-              this.positionRegionNameLabel(div);
-              //Tags - display the tags of the region and enable editing
-              this.optionalTags.toggleEnableButtons(true);
-              this.optionalTags.resetSelected();
-              var regions = this.frames[this.getCurrentFrame()];
-              if(regions) {
-                  var tags = this.frames[this.getCurrentFrame()][this.selectedRegionId - 1].tags;
-                  this.optionalTags.displaySelectedTags(tags);
-              }
-             function updateRegionFromDiv(div, xOffset, yOffset){
-                 var region = regions[(divId-1).toString()];
-                 region.width = parseFloat(this.overlay.width);//$('#vid').width();
-                 region.height = parseFloat(this.overlay.height);//$('#vid').height();
-                 region.x1 = parseInt(div.style.left) - ((xOffset) ? xOffset : 0);
-                 region.y1 = parseInt(div.style.top)  - ((yOffset) ? yOffset : 0) ;
-                 region.x2 = region.x1 + parseInt(div.style.width);
-                 region.y2 = region.y1 + parseInt(div.style.height);
-             }
-              //make region  draggable
-              $('#'+divId).draggable({
-                  start: function(event, ui) {
-                    self.areaSelector.disable();
-                  },
-                  stop: function(event, ui) {
-                     updateRegionFromDiv(this,parseFloat(self.overlay.style.left), parseFloat(self.overlay.style.top));
-                     self.areaSelector.enable();
-                  },
-                  containment: $("#frameCanvas")[0]
-              });
 
-              //make region resizable
-               var self = this;
-               $('#'+divId).resizable({
-                    start: function(event, ui) {
-                        self.areaSelector.disable();
-                    },
-                   stop: function(event, ui) {
-                       $('.regionCanvas').sort(function (e1, e2) {
-                         return ($(e1).width() * $(e1).height() <= $(e2).width() * $(e2).height());
-                       }).each(function(idx,e) {
-                         e.style.zIndex =(idx+200).toString();
-                       });
-                       self.areaSelector.enable();
-                   },
-                   containment: $("#frameCanvas")[0],
-                   handles: 'all'
-              });
-              $('#'+divId).on('resize',function(e){
-                  updateRegionFromDiv(this,parseFloat(self.overlay.style.left), parseFloat(self.overlay.style.top));
-                  e.stopPropagation();
-              });
-              //raise regionSelectedEvent
-             $('#video-tagging').trigger('canvasRegionSelected',[divId]); 
+    regionMoved: function(id, x, y, width, height) {
+        let region = this.getRegionById(id);
+
+        let widthRatio = this.overlay.width / this.sourceWidth;
+        let heightRatio = this.overlay.height / this.sourceHeight;
+
+        var rx1 = x / widthRatio;
+        var ry1 = y / heightRatio;
+        var rx2 = (x + width) / widthRatio;
+        var ry2 = (y + height) / heightRatio;
+        
+        region.width = width;
+        region.height = height;
+        region.x1 = rx1;
+        region.y1 = ry1;
+        region.x2 = rx2;
+        region.y2 = ry2;
     },
+
+    regionSelected: function(id) {
+        this.cleanSelectedElements();
+        //Tags - display the tags of the region and enable editing
+        this.optionalTags.toggleEnableButtons(true);
+        this.optionalTags.resetSelected();
+
+        if (id != "") {
+            let region = this.getRegionById(id);
+            if(region) {
+                this.selectedRegionId = id;
+                var tags = region.tags;
+                this.optionalTags.displaySelectedTags(tags);
+            }
+        }
+    },
+
     deleteRegion: function(e) {
-          var regions = this.frames[this.getCurrentFrame()];
-          var deletedRegion = regions[this.selectedRegionId - 1];
-          regions.splice(this.selectedRegionId - 1, 1);
-          //Shift array left to cover removed item - Rename all regions which are higher than the deleted one,
-          for (var i=0;i<regions.length;i++) {
-              var id = Number(regions[i].name);
-              if(id > this.selectedRegionId){
-                  regions[i].name = id - 1;
-              }
-          }
-          this.showAllRegions();
-          this.emitRegionToHost();
+        this.deleteRegionById(this.selectedRegionId);
     },
+
+    deleteRegionById: function(id) {
+        var regions = this.getCurrentFrameRegions();
+        this.frames[this.getCurrentFrame()] = regions.filter((r) => {return r.UID != id;});
+        this.emitRegionToHost();
+    },
+
     clearRegions: function(e) {
           this.frames[this.getCurrentFrame()]=[];
-          this.showAllRegions();
+          this.clearAllRegions();
+          // this.showAllRegions();
           this.emitRegionToHost();
     },
     /**
@@ -640,61 +594,26 @@
        * The host html page can listen to this event.
        */
     emitRegionToHost: function() {
-          var frameIndex = this.getCurrentFrame();
-          this.fire('onregionchanged', {frame: {frameIndex:frameIndex, regions:this.frames[frameIndex]}});
+          this.fire('onregionchanged', {frame: {frameIndex: this.getCurrentFrame(), regions:this.getCurrentFrameRegions()}});
     },
     /**
        * @method addDivToRegion
        * Adds a transparent div to the region, the size of the region.
        * Used for click events, hover, etc..
-       * @params {x1, y1, x2, y2} region coordinates.
-       * @param {regionId} The region id, which is the region index + 1.
        */
-    addDivToRegion: function(x1, y1, x2, y2, regionId, tags) {
-            var div = document.createElement("div");
-            div.id = regionId;
-            div.classList.add("regionCanvas");
+    registerRegion: function(x1, y1, x2, y2, regionUID, tags) {
+        // Regions Manager
+        let tagsDescriptor = null;
+        
+        if (tags.length > 0) {
+            let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
+            let primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
+            tagsDescriptor = new this.btools.TagsDescriptor(primaryTag);
+        }
 
-            if (tags.length > 0){
-                div.style.borderColor = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            }else {
-                div.style.borderColor = null;
-            }
-            if(this.regiontype.toLowerCase() === "point") {
-                  div.style.width = this.regionsize - 1 +  "px";//Compensate for 1px border
-                  div.style.height = this.regionsize - 1 +  "px";
-                  div.style.top = y1 - this.regionsize/2  +  "px";
-                  div.style.left = x1 - this.regionsize/2  +  "px";
-                  div.classList.add("regionPoint");
-            }
-            if((this.regiontype.toLowerCase() === "square") || (this.regiontype.toLowerCase() === "rectangle")) {
-                 // add offset here
-                  div.style.width = x2 - x1 + "px";
-                  div.style.height = y2 - y1   +  "px";
-                  div.style.top = y1  + "px";
-                  div.style.left = x1 + "px";
-            }
-            var self = this;
-            $( div )
-                      .click(function(e) {
-                         self.regionSelected(div.id);
-                      });
-            $( div )
-                      .mouseenter(function(e) {
-                          self.positionRegionNameLabel(this);
-                      })
-                      .mouseleave(function() {
-                        self.regionLabelDiv.style.display = "none";
-                        if(self.selectedRegionId === div.id) {
-                              self.regionLabelDiv.style.display = "block";
-                        }
+        this.regionsManager.addRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
 
-                        self.freezeAreaSelection = false;
-                      })
-                      .mousemove(function(e){
-                         self.freezeAreaSelection = true;
-                      });
-            Polymer.dom(this.$.videoWrapper).appendChild(div);
+        this.regionSelected(regionUID);
     },
     /**
        * @method cleanSelectedElements
@@ -707,53 +626,48 @@
             regionCanvases[i].classList.remove('regionCanvasSelected');
           }
           //reset
-          this.selectedRegionId = 0;
+          this.selectedRegionId = "";
           this.optionalTags.toggleEnableButtons(false);
           this.optionalTags.resetSelected();
     },
-    showAllRegions: function() {
-            this.clearFrameElements();//Clear canvas and tags
-            this.cleanSelectedElements();//Clear selected regions
-            var frameIndex = this.getCurrentFrame();
-            var regions = this.frames[frameIndex];
-            if(regions && regions.length > 0) {
-              //Draw all regions for this frame
-              for (var i=0; i<regions.length;i++) {
-                  var region = regions[i];
-                  //Frame was tagged as empty?
-                  if (Object.keys(region).length === 0) {
-                      this.indicateEmptyFrame(true);
-                      continue;
-                  }
-                  //Calculate x, y relative to current width and height
-                  //if (this.imagelist){
-                     var widthRatio = this.overlay.width / region.width;
-                     var heightRatio = this.overlay.height / region.height ;
-                  //} else {
-                  //   var widthRatio = $("#vid").width() / region.width;
-                  //   var heightRatio = $("#vid").height() / region.height ;
-                  //}
-                  var x1 = (region.x1 * widthRatio);
-                  var y1 = (region.y1 * heightRatio);
-                  var x2 = (region.x2 * widthRatio);
-                  var y2 = (region.y2 * heightRatio);
-                  x1 = (region.x1 * widthRatio);
-                  y1 = (region.y1 * heightRatio);
-                  x2 = (region.x2 * widthRatio);
-                  y2 = (region.y2 * heightRatio);
-                  var xOffset = parseFloat(this.overlay.style.left);
-                  var yOffset = parseFloat(this.overlay.style.top);
 
-                  this.addDivToRegion(x1 + (isNaN(xOffset) ? 0 : xOffset), y1 + (isNaN(yOffset) ? 0 : yOffset), 
-                                      x2 + (isNaN(xOffset) ? 0 : xOffset), y2 + (isNaN(yOffset) ? 0 : yOffset), 
-                                      region.name, region.tags); //add frame
-                  //Only 1 region - select it and show tags
-                  if (regions.length === 1) {
-                      this.regionSelected(region.name);
-                  }
-                  this.updateRegionZIndices();
-              }
+    clearAllRegions: function() {
+        // Regions Manager
+        this.regionsManager.clearAll();
+
+        // ** Old code **
+        this.clearFrameElements();//Clear canvas and tags
+        this.cleanSelectedElements();//Clear selected regions
+    },
+
+    showAllRegions: function() {
+        this.clearAllRegions();
+        var regions = this.getCurrentFrameRegions();
+        if(regions && regions.length > 0) {
+            //Draw all regions for this frame
+            for (var i=0; i<regions.length;i++) {
+                var region = regions[i];
+                //Frame was tagged as empty?
+                if (Object.keys(region).length === 0) {
+                    this.indicateEmptyFrame(true);
+                    continue;
+                }
+
+                var widthRatio = this.overlay.width / this.sourceWidth;
+                var heightRatio = this.overlay.height / this.sourceHeight;
+
+                var x1 = (region.x1 * widthRatio);
+                var y1 = (region.y1 * heightRatio);
+                var x2 = (region.x2 * widthRatio);
+                var y2 = (region.y2 * heightRatio);
+
+                if (region.UID == undefined) {
+                    region.UID = this.generateUniqueId();
+                }
+                
+                this.registerRegion(x1, y1, x2, y2, region.UID, region.tags); ; //add frame                  
             }
+        }
     },
     
     /**
@@ -762,31 +676,34 @@
        * @params {x1, y1, x2, y2} region coordinates.
        */
     addRegion: function(x1, y1, x2, y2) {
-            this.resetEmptyFrame();//Clear empty frame logic
-            var region = {};
-            region.x1 = x1;
-            region.y1 = y1;
-            region.x2 = x2;
-            region.y2 = y2;
-            region.id = this.uniqueTagId++;
-            region.width = parseFloat(this.overlay.width); //ensures pass by value
-            region.height = $('#vid').height();
-            region.type = this.regiontype;
-            region.tags = [];
-            var frameIndex = this.getCurrentFrame();
-            var regions = this.frames[frameIndex];
-            //The array is populated and can contain multiple regions
-            if(this.multiregions == 1 && regions) {
-                region.name = regions.length + 1;
-                this.frames[frameIndex].push(region);
-            }
-            else {//Only one region allowed
-                this.clearFrameElements();
-                region.name = 1;
-                this.frames[frameIndex] = [];
-                this.frames[frameIndex].push(region);
-            }
-            return region;
+        this.resetEmptyFrame();//Clear empty frame logic
+        
+        var region = {
+            x1: x1,
+            y1: y1,
+            x2: x2,
+            y2: y2,
+            UID: this.generateUniqueId(),
+            id: this.uniqueTagId++,
+            width: parseFloat(this.overlay.width),
+            height: $('#vid').height(),
+            type: this.regiontype,
+            tags: []
+        };
+            
+        var regions = this.getCurrentFrameRegions();
+        //The array is populated and can contain multiple regions
+        if(this.multiregions == 1 && regions) {
+            region.name = regions.length + 1;
+            regions.push(region);
+        }
+        else {//Only one region allowed
+            this.clearFrameElements();
+            region.name = 1;
+            regions = [];
+            regions.push(region);
+        }
+        return region;
     },
     /**
        * All functions related to frames management
@@ -799,8 +716,6 @@
       $(this.videoWrapper).children(".regionCanvas").remove();
       //reset tag buttons to not selected
       this.optionalTags.resetSelected();
-      //hide region number
-      this.regionLabelDiv.style.display = "none";
       //Clears the empty frame icon
       this.indicateEmptyFrame(false);
     },
@@ -825,8 +740,7 @@
        * Creates an empty region array for the current frame, meaning that the frame is not tagged, but has been reviewed.
        */
     emptyFrameClicked: function() {
-        var frameIndex = this.getCurrentFrame();
-        var regions = this.frames[frameIndex];
+        var regions = this.getCurrentFrameRegions();
         if(!regions || regions.length === 0) {
             this.frames[frameIndex] = [{}];
             this.indicateEmptyFrame(true);
@@ -923,7 +837,7 @@
                     case 39: // right
                     self.stepFwdClicked();
                     break;
-                    case 9: //tab
+                    /* case 9: //tab
                     if (self.selectedRegionId){
                         if (self.selectedRegionId >= self.frames[self.getCurrentFrame()].length){
                             self.regionSelected(0)
@@ -933,7 +847,7 @@
                     } else{
                         self.regionSelected(0)
                     }          
-                    break;
+                    break; */
                     case 68:// d for duplicate
                     if (self.imageIndex > 0){
                         self.frames[self.imageIndex] = JSON.parse(JSON.stringify(self.frames[self.imageIndex-1]));
@@ -960,14 +874,15 @@
 
         self.curImg.onload = function() {
             self.controlWrapper.style.display = "grid";
-            self.aspect = self.curImg.width / self.curImg.height;;
+            self.sourceWidth = self.curImg.width;
+            self.sourceHeight = self.curImg.height;
+            self.aspect = self.sourceWidth / self.sourceHeight;
             //Size canvas as image
             let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
             
             self.resizeFrame(scaleByPortrait, self.aspect);
 
             //Init variables and controls
-            self.enableAreaSelect(self);
             self.playingCallback();
 
             //fix resize bug
@@ -980,11 +895,8 @@
                     self.resizeFrame(scaleByPortrait, self.aspect);
                     
                     //resize the region boxes
-                    self.showAllRegions();
+                    //self.showAllRegions();
                     //reposition selectedRegion Label
-                    var selectedDiv = $('.regionCanvasSelected')[0];
-                    self.positionRegionNameLabel(selectedDiv);
-
                     self.playingCallback();
                 }
             });
@@ -1026,6 +938,7 @@
         this.frameCanvas.height = this.frameHeight;
 
         this.areaSelector.resize(width, height);
+        this.regionsManager.resize(width, height);
     },
 
     resetLayout: function(){

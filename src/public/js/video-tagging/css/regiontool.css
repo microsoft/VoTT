@@ -1,0 +1,119 @@
+/*
+.regionStyle
+--> .tagsLayer
+    --> .primaryTagRectStyle
+        .primaryTagTextBGStyle
+        .primaryTagTextStyle    
+        //.tagStyle [n]
+--> .dragLayer
+    --> .dragRectStyle
+--> .ancorsLayer
+    --> .ancorStyle [4]
+        .ancorStyle.ghost
+--> .menuLayer
+    --> .menuRectStyle
+*/
+.dragRectStyle {
+    fill: transparent; 
+    stroke-width: 0;
+    pointer-events: all;
+    cursor: move;
+}
+
+.primaryTagRectStyle {
+    fill: rgba(64, 64, 64, 0.4);
+    stroke-width: 2;
+    stroke:rgba(196, 196, 196, 0.6);
+    stroke-dasharray: 2 6;
+    stroke-linecap: round;
+}
+
+.primaryTagTextStyle {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 9pt;
+    fill: #fff;
+}
+
+.primaryTagTextBGStyle {
+    stroke-width: 0;
+    fill: rgba(0, 0, 0, 0.5);
+}
+
+.regionStyle:hover .primaryTagRectStyle {
+    fill: rgba(128, 128, 128, 0.4);
+    stroke: rgb(255, 255, 255);
+}
+
+.regionStyle.selected .primaryTagRectStyle {
+    fill: rgba(128, 128, 128, 0.4);
+    stroke: rgb(255, 255, 255);
+    stroke-dasharray: none;
+}
+
+.anchorStyle {
+    stroke-width: 2;
+    stroke: #ccc;
+    fill: #333;
+}
+
+.anchorStyle.TL, .anchorStyle.BR {
+    cursor: nwse-resize;
+}
+
+.anchorStyle.TR, .anchorStyle.BL {
+    cursor: nesw-resize;
+}
+
+.anchorStyle.ghost, .anchorStyle.ghost:hover{
+    stroke-width: 0;
+    fill: rgba(255, 0, 0, 0);
+}
+
+.anchorStyle.ghost:hover {
+    fill: rgba(255,255,255,0.5);
+}
+
+.anchorStyle:hover {
+    stroke: rgb(25, 119, 96);
+    fill:rgb(7, 189, 143);
+}
+
+.regionStyle:hover .ancorStyle {
+    stroke: #fff;
+}
+
+.regionStyle.selected .ancorStyle {
+    stroke: rgb(7, 189, 143);
+}
+
+.menuLayer {
+    overflow: visible;
+}
+
+.menuRectStyle { 
+    stroke-width:0;
+    fill: rgba(64, 64, 64, 0.8);
+    filter: url(#black-glow); 
+}
+
+.menuItemBack {
+    stroke-width: 1.5;
+    stroke: rgba(198, 198, 198, 0.2);
+    fill:  rgb(32, 32, 32);
+}
+
+.menuIcon {
+    font-family: 'Segoe UI Emoji', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 10pt;
+    fill: rgb(64, 64, 64);
+}
+
+.menuItem {
+    stroke-width: 1.5;
+    stroke: rgba(198, 198, 198, 0.2);
+    fill:transparent;
+}
+
+.menuItem:hover {
+    stroke: rgba(198, 198, 198, 0.8);
+}
