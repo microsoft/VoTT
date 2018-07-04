@@ -300,9 +300,7 @@
                         break;
                         case 46: //delete
                         case 8:  //backspace
-                        if($('.regionCanvasSelected')[0]){
-                            self.deleteRegion();
-                        }
+                        self.deleteRegion();
                         break;
                         default: return; // exit this handler for other keys
                     }
@@ -573,13 +571,15 @@
     },
 
     deleteRegion: function(e) {
-        this.deleteRegionById(this.selectedRegionId);
+        if (this.selectedRegionId != "") {
+            this.regionsManager.deleteRegionById(this.selectedRegionId);
+        }
     },
 
     deleteRegionById: function(id) {
         var regions = this.getCurrentFrameRegions();
         this.frames[this.getCurrentFrame()] = regions.filter((r) => {return r.UID != id;});
-        this.emitRegionToHost();
+        this.emitRegionToHost();        
     },
 
     clearRegions: function(e) {
@@ -685,8 +685,8 @@
             y2: y2,
             UID: this.generateUniqueId(),
             id: this.uniqueTagId++,
-            width: parseFloat(this.overlay.width),
-            height: $('#vid').height(),
+            width: Math.abs(x1 - x2), 
+            height: Math.abs(y1 - y2), 
             type: this.regiontype,
             tags: []
         };

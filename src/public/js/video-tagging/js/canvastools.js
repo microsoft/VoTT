@@ -902,6 +902,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     if (region != null) {
                         this.deleteRegion(region);
                     }
+                    this.menu.hide();
+                    this.onManipulationEnd();
                 }
                 updateTagsById(id, tagsDescriptor) {
                     let region = this.lookupRegionByID(id);
