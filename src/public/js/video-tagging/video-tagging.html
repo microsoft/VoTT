@@ -300,9 +300,7 @@
                         break;
                         case 46: //delete
                         case 8:  //backspace
-                        if($('.regionCanvasSelected')[0]){
-                            self.deleteRegion();
-                        }
+                        self.deleteSelectedRegion();
                         break;
                         default: return; // exit this handler for other keys
                     }
@@ -572,14 +570,39 @@
         }
     },
 
-    deleteRegion: function(e) {
-        this.deleteRegionById(this.selectedRegionId);
+    selectNextRegion: function() {
+        let regions = this.getCurrentFrameRegions();
+        let i = 0;
+        let uid = "";
+        let length = regions.length;
+
+        if (length == 1 || (this.selectedRegionId == "" && length >= 1)) {
+            uid = regions[0].UID;
+        } else if (length > 1) {
+            while (i < length && uid == "") {
+                if (regions[i].UID == this.selectedRegionId) {
+                    uid = (i == length - 1) ? regions[0].UID : regions[i + 1].UID;
+                }
+                i++;
+            }
+        }        
+        this.regionsManager.selectRegionById(uid);
+    },
+
+    deleteSelectedRegion: function(e) {
+        if (this.selectedRegionId != "") {
+            this.regionsManager.deleteRegionById(this.selectedRegionId);
+        }
     },
 
     deleteRegionById: function(id) {
         var regions = this.getCurrentFrameRegions();
         this.frames[this.getCurrentFrame()] = regions.filter((r) => {return r.UID != id;});
-        this.emitRegionToHost();
+        this.emitRegionToHost();        
+        if (id == this.selectedRegionId) {
+            this.selectedRegionId = "";
+            this.selectNextRegion();
+        }
     },
 
     clearRegions: function(e) {
@@ -685,8 +708,8 @@
             y2: y2,
             UID: this.generateUniqueId(),
             id: this.uniqueTagId++,
-            width: parseFloat(this.overlay.width),
-            height: $('#vid').height(),
+            width: Math.abs(x1 - x2), 
+            height: Math.abs(y1 - y2), 
             type: this.regiontype,
             tags: []
         };
@@ -837,17 +860,9 @@
                     case 39: // right
                     self.stepFwdClicked();
                     break;
-                    /* case 9: //tab
-                    if (self.selectedRegionId){
-                        if (self.selectedRegionId >= self.frames[self.getCurrentFrame()].length){
-                            self.regionSelected(0)
-                        }
-                        // self.selectedRegionId += 1
-                        self.regionSelected(parseInt(self.selectedRegionId)+1)
-                    } else{
-                        self.regionSelected(0)
-                    }          
-                    break; */
+                    case 9: //tab
+                    self.selectNextRegion();          
+                    break;
                     case 68:// d for duplicate
                     if (self.imageIndex > 0){
                         self.frames[self.imageIndex] = JSON.parse(JSON.stringify(self.frames[self.imageIndex-1]));
@@ -856,9 +871,7 @@
                     break;
                     case 46: //delete
                     case 8:  //backspace
-                    if($('.regionCanvasSelected')[0]){
-                        self.deleteRegion();
-                    }
+                    self.deleteSelectedRegion();
                     break;
                     default: return; // exit this handler for other keys
                 }
