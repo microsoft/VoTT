@@ -170,7 +170,7 @@ function addLoader() {
 
 //managed the visited frames
 function updateVisitedFrames(){
-  visitedFrames.add(videotagging.getCurrentFrame());
+  visitedFrames.add(videotagging.getCurrentFrameId());
 }
 
 function checkPointRegion() {

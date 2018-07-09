@@ -243,11 +243,11 @@
        * Events registration and handling
        */
     attached: function() {
-      //Reset all variables to new src
-      this.video.addEventListener( "loadedmetadata", init);
-      var self = this;
+        //Reset all variables to new src
+        this.video.addEventListener( "loadedmetadata", init);
+        var self = this;
       
-      function init() {
+        function init() {
             self.controlWrapper.style.display = "grid";
             //Init variables and controls
             self.frames = self.inputframes? self.inputframes:{};
@@ -286,28 +286,13 @@
             });
 
             //bind keys (note this currently overrides any listener on the parent controls needs a more elegant way to work only when control is in focus)
-            window.addEventListener("keyup", (function(canMove) {
-                return function(e) {
-                    if (!canMove) return false;
-                    canMove = false;
-                    setTimeout(function() { canMove = true; }, 100);
-                    switch (e.keyCode) {
-                        case 37:  // left
-                        self.stepBwdClicked();
-                        break;
-                        case 39: // right
-                        self.stepFwdClicked();
-                        break;
-                        case 46: //delete
-                        case 8:  //backspace
-                        self.deleteSelectedRegion();
-                        break;
-                        default: return; // exit this handler for other keys
-                    }
-                    e.preventDefault(); // prevent the default action (scroll / move caret)
-                };
-            })(true), false);
-      }
+            if (self.keyUpEventsListenerBinded != null) {
+                window.removeEventListener("keyup", self.keyUpEventsListenerBinded);
+            }
+            self.keyUpEventsListenerBinded = self.keyUpEventsListener.bind(self);        
+            window.addEventListener("keyup", self.keyUpEventsListenerBinded, false);
+        }
+
       this.video.onended = function(){
            self.pauseState();
       };
@@ -370,6 +355,28 @@
         });
     },
 
+    keyUpEventsListener: function(e) {
+        switch (e.keyCode) {
+            case 37:  // left
+                this.stepBwdClicked();
+                break;
+            case 39: // right
+            this.stepFwdClicked();
+                break;
+            case 68:// d for duplicate
+                let frameId = this.getCurrentFrameId();
+                if (frameId > 0) {
+                    this.frames[frameId] = this.getPrevFrameRegions();
+                }
+                this.playingCallback();
+                break;
+                default: return; // exit this handler for other keys
+            }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    },
+
+    keyUpEventsListenerBinded: null,
+
     onNewAreaSelected: function(x1, y1, x2, y2){
         var threshold = 20;
         var dx, dy;
@@ -414,17 +421,32 @@
     },
 
     getRegions: function(frameId) {
-        let regions = this.frames[frameId];
-        if (regions == undefined || regions == null) {
-            this.frames[frameId] = [];
+        let regions = null;
+        if (frameId >=0) {
             regions = this.frames[frameId];
-        }
+
+            if (regions == undefined || regions == null) {
+                this.frames[frameId] = [];
+                regions = this.frames[frameId];
+            }
+        }         
 
         return regions;
     },
 
+    getCurrentFrameId: function() {
+      if (this.imagelist){
+        return this.imageIndex;
+      } 
+      return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
+    },
+
     getCurrentFrameRegions: function() {   
-        return this.getRegions(this.getCurrentFrame());
+        return this.getRegions(this.getCurrentFrameId());
+    },
+
+    getPrevFrameRegions: function() {
+        return this.getRegions(this.getCurrentFrameId() - 1);
     },
 
     getRegionById: function(regionUID) {
@@ -570,43 +592,17 @@
         }
     },
 
-    selectNextRegion: function() {
-        let regions = this.getCurrentFrameRegions();
-        let i = 0;
-        let uid = "";
-        let length = regions.length;
-
-        if (length == 1 || (this.selectedRegionId == "" && length >= 1)) {
-            uid = regions[0].UID;
-        } else if (length > 1) {
-            while (i < length && uid == "") {
-                if (regions[i].UID == this.selectedRegionId) {
-                    uid = (i == length - 1) ? regions[0].UID : regions[i + 1].UID;
-                }
-                i++;
-            }
-        }        
-        this.regionsManager.selectRegionById(uid);
-    },
-
-    deleteSelectedRegion: function(e) {
-        if (this.selectedRegionId != "") {
-            this.regionsManager.deleteRegionById(this.selectedRegionId);
-        }
-    },
-
     deleteRegionById: function(id) {
         var regions = this.getCurrentFrameRegions();
-        this.frames[this.getCurrentFrame()] = regions.filter((r) => {return r.UID != id;});
+        this.frames[this.getCurrentFrameId()] = regions.filter((r) => {return r.UID != id;});
         this.emitRegionToHost();        
         if (id == this.selectedRegionId) {
             this.selectedRegionId = "";
-            this.selectNextRegion();
         }
     },
 
     clearRegions: function(e) {
-          this.frames[this.getCurrentFrame()]=[];
+          this.frames[this.getCurrentFrameId()]=[];
           this.clearAllRegions();
           // this.showAllRegions();
           this.emitRegionToHost();
@@ -617,7 +613,7 @@
        * The host html page can listen to this event.
        */
     emitRegionToHost: function() {
-          this.fire('onregionchanged', {frame: {frameIndex: this.getCurrentFrame(), regions:this.getCurrentFrameRegions()}});
+          this.fire('onregionchanged', {frame: {frameIndex: this.getCurrentFrameId(), regions:this.getCurrentFrameRegions()}});
     },
     /**
        * @method addDivToRegion
@@ -656,7 +652,7 @@
 
     clearAllRegions: function() {
         // Regions Manager
-        this.regionsManager.clearAll();
+        this.regionsManager.deleteAllRegions();
 
         // ** Old code **
         this.clearFrameElements();//Clear canvas and tags
@@ -742,12 +738,7 @@
       //Clears the empty frame icon
       this.indicateEmptyFrame(false);
     },
-    getCurrentFrame: function() {
-      if (this.imagelist){
-        return this.imageIndex;
-      } 
-      return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
-    },
+
     indicateEmptyFrame : function(selected) {
         if(selected) {
             this.emptyFrame.classList.remove("controlOff");
@@ -778,11 +769,11 @@
        * If the frame has been marked as empty - reset that.
        */
     resetEmptyFrame: function() {
-        var regions = this.frames[this.getCurrentFrame()];
+        var regions = this.frames[this.getCurrentFrameId()];
         //If there is an empty region
         if(regions && regions.length === 1 && Object.keys(regions[0]).length === 0) {
             //reset all for this frame
-            this.frames[this.getCurrentFrame()] = [];
+            this.frames[this.getCurrentFrameId()] = [];
             this.clearFrameElements();
         }
     },
@@ -829,7 +820,7 @@
         return unlabledTags;
     },
     checkRegionLabels: function(){
-        var unlabledTags = this.getUnlabeledRegionTags(this.getCurrentFrame());
+        var unlabledTags = this.getUnlabeledRegionTags(this.getCurrentFrameId());
         if (unlabledTags.length > 0){
             alert(`Cannot move to the next frame until all tags are labeled. Please label the following tags [${unlabledTags}] on the displayed frame.`);
             return false;
@@ -848,36 +839,11 @@
         //self.resetLayout();
         
         //bind keys (note this currently overrides any listener on the parent controls needs a more elegant way to work only when control is in focus)
-        window.addEventListener("keyup", (function(canMove) {
-            return function(e) {
-                if (!canMove) return false;
-                canMove = false;
-                setTimeout(function() { canMove = true; }, 100);
-                switch (e.keyCode) {
-                    case 37:  // left
-                    self.stepBwdClicked();
-                    break;
-                    case 39: // right
-                    self.stepFwdClicked();
-                    break;
-                    case 9: //tab
-                    self.selectNextRegion();          
-                    break;
-                    case 68:// d for duplicate
-                    if (self.imageIndex > 0){
-                        self.frames[self.imageIndex] = JSON.parse(JSON.stringify(self.frames[self.imageIndex-1]));
-                    }
-                    self.playingCallback();
-                    break;
-                    case 46: //delete
-                    case 8:  //backspace
-                    self.deleteSelectedRegion();
-                    break;
-                    default: return; // exit this handler for other keys
-                }
-                e.preventDefault(); // prevent the default action (scroll / move caret)
-            };
-        })(true), false);        
+        if (self.keyUpEventsListenerBinded != null) {
+                window.removeEventListener("keyup", self.keyUpEventsListenerBinded);
+            }
+        self.keyUpEventsListenerBinded = self.keyUpEventsListener.bind(self);        
+        window.addEventListener("keyup", self.keyUpEventsListenerBinded, false); 
     },
     changeImage: function(imageUrl){
         this.rotation = 0;
@@ -1065,7 +1031,7 @@
     },
     playingCallback: function() {
             if (!this.imagelist){
-                this.frameText.innerHTML = this.getCurrentFrame();
+                this.frameText.innerHTML = this.getCurrentFrameId();
                 this.displayVideoTime();
                 if(!this.seeking){
                     this.updateSeekBar();
@@ -1075,7 +1041,7 @@
                 this.updateFrameCanvas(this.video);
 
             } else{
-                this.frameText.innerHTML = `${this.getCurrentFrame() + 1}/${this.imagelist.length}`;
+                this.frameText.innerHTML = `${this.getCurrentFrameId() + 1}/${this.imagelist.length}`;
                 
                 // Update canvas image based on new video frame
                 this.updateFrameCanvas(this.curImg);
