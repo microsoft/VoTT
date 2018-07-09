@@ -497,20 +497,21 @@
     },
     addTagsToRegion: function(selectedTagsArray) {
         let region = this.getRegionById(this.selectedRegionId);
-        let tags = region.tags;
-        for (var i = 0; i < selectedTagsArray.length; i++) {
-            tags.push(selectedTagsArray[i]);
-        }
+        if (region != null) {
+            let tags = region.tags;
+            for (var i = 0; i < selectedTagsArray.length; i++) {
+                tags.push(selectedTagsArray[i]);
+            }
 
-        if (tags.length > 0) {
-            let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            var primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
-            var rtags = new this.btools.TagsDescriptor(primaryTag);
-            this.regionsManager.updateTagsById(region.UID, rtags);
-        } else {
-            this.regionsManager.updateTagsById(region.UID, null);
+            if (tags.length > 0) {
+                let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
+                var primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
+                var rtags = new this.btools.TagsDescriptor(primaryTag);
+                this.regionsManager.updateTagsById(region.UID, rtags);
+            } else {
+                this.regionsManager.updateTagsById(region.UID, null);
+            }
         }
-        
     },
     nextUntaggedClicked:function() {
         if (this.checkRegionLabels()){

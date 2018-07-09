@@ -86,7 +86,7 @@
     stroke: rgb(7, 189, 143);
 }
 
-.menuLayer {
+svg:not(:root) .menuLayer {
     overflow: visible;
 }
 
