@@ -26,6 +26,7 @@
     stroke:rgba(196, 196, 196, 0.6);
     stroke-dasharray: 2 6;
     stroke-linecap: round;
+    filter: url(#black-glow); 
 }
 
 .primaryTagTextStyle {
@@ -86,7 +87,7 @@
     stroke: rgb(7, 189, 143);
 }
 
-.menuLayer {
+svg:not(:root) .menuLayer {
     overflow: visible;
 }
 

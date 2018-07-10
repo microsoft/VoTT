@@ -321,37 +321,36 @@
             self.playback(e.detail.playbackValue, e.detail.playbackText);
           });
       this.addEventListener("ontagsubmitted", function(e) {
-              var arr = [];
-              arr.push(e.detail.tagid);
-              this.addTagsToRegion(arr);
-              this.emitRegionToHost();//Persist
-              
-              // this.showAllRegions();
-              this.regionSelected(this.selectedRegionId)
+            var arr = [];
+
+            if (e.detail.tagid != "") {
+                arr.push(e.detail.tagid);
+                this.addTagsToRegion(arr);
+                this.emitRegionToHost();//Persist
+                
+                // this.showAllRegions();
+                this.regionSelected(this.selectedRegionId)
+            }
           });
         this.addEventListener("ontagdeleted", function(e) {
             let region = this.getRegionById(this.selectedRegionId);
-            let tags = region.tags;
+            if (region != null) {
+                let tags = region.tags;
              
-            for(var index = 0;index < tags.length;index++){
-                if(tags[index] === e.detail.tagid){
-                    tags.splice(index, 1);
-                    break;
+                for(var index = 0;index < tags.length;index++){
+                    if(tags[index] === e.detail.tagid){
+                        tags.splice(index, 1);
+                        break;
+                    }
                 }
-            }
-            this.emitRegionToHost();
+                this.emitRegionToHost();
 
-            let tagsDescriptor = null;
-            if (tags.length > 0) {
-                let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-                let primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
-                tagsDescriptor = new this.btools.TagsDescriptor(primaryTag);
-            }
+                let tagsDescriptor = this.buildTagsDescriptor(tags);;
+                this.regionsManager.updateTagsById(this.selectedRegionId, tagsDescriptor);
 
-            this.regionsManager.updateTagsById(this.selectedRegionId, tagsDescriptor);
-
-            //this.showAllRegions();
-            this.regionSelected(this.selectedRegionId)
+                //this.showAllRegions();
+                this.regionSelected(this.selectedRegionId)
+            }            
         });
     },
 
@@ -495,22 +494,43 @@
         }
         this.emitRegionToHost();//Persist
     },
-    addTagsToRegion: function(selectedTagsArray) {
-        let region = this.getRegionById(this.selectedRegionId);
-        let tags = region.tags;
-        for (var i = 0; i < selectedTagsArray.length; i++) {
-            tags.push(selectedTagsArray[i]);
-        }
 
+    buildTagsDescriptor: function(tags) {
+        let tagsDescriptor = null;
+        let primaryTag = null;
+        let secondaryTags = [];
         if (tags.length > 0) {
             let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            var primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
-            var rtags = new this.btools.TagsDescriptor(primaryTag);
-            this.regionsManager.updateTagsById(region.UID, rtags);
-        } else {
-            this.regionsManager.updateTagsById(region.UID, null);
+            primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
+
+            secondaryTags = [];
+            for (var i = 1; i < tags.length; i++) {
+                let c = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[i])];
+                let t = new this.btools.Tag(tags[i], this.btools.Tag.getHueFromColor(c) * 360);
+                secondaryTags.push(t)
+            }                
+
+            tagsDescriptor = new this.btools.TagsDescriptor(primaryTag, secondaryTags);
         }
-        
+
+        return tagsDescriptor;
+    },
+
+    addTagsToRegion: function(selectedTagsArray) {
+        let region = this.getRegionById(this.selectedRegionId);
+        if (region != null) {
+            let tags = region.tags;
+            for (var i = 0; i < selectedTagsArray.length; i++) {
+                tags.push(selectedTagsArray[i]);
+            }
+
+            if (tags.length > 0) {
+                let tagsDescriptor = this.buildTagsDescriptor(tags);
+                this.regionsManager.updateTagsById(region.UID, tagsDescriptor);
+            } else {
+                this.regionsManager.updateTagsById(region.UID, null);
+            }
+        }
     },
     nextUntaggedClicked:function() {
         if (this.checkRegionLabels()){
@@ -622,14 +642,8 @@
        */
     registerRegion: function(x1, y1, x2, y2, regionUID, tags) {
         // Regions Manager
-        let tagsDescriptor = null;
+        let tagsDescriptor = this.buildTagsDescriptor(tags);
         
-        if (tags.length > 0) {
-            let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            let primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
-            tagsDescriptor = new this.btools.TagsDescriptor(primaryTag);
-        }
-
         this.regionsManager.addRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
 
         this.regionSelected(regionUID);
