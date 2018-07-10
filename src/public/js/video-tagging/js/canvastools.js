@@ -61,7 +61,6 @@ define("basetool", ["require", "exports"], function (require, exports) {
                     var r = parseInt(color.substring(1, 3), 16) / 255;
                     var g = parseInt(color.substring(3, 5), 16) / 255;
                     var b = parseInt(color.substring(5, 7), 16) / 255;
-                    
                     var max = Math.max(r, g, b), min = Math.min(r, g, b);
                     var h, s, l = (max + min) / 2;
                     if (max == min) {
@@ -414,14 +413,14 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             let length = this.tags.secondary.length;
                             for (let i = 0; i < length; i++) {
                                 let stag = this.tags.secondary[i];
-                                let r = 3;
-                                let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * 2 * r;
-                                let y = this.y - r - 5;
-                                let tagCircle = this.paper.circle(x, y, r);
-                                tagCircle.addClass("secondaryTagStyle");
-                                tagCircle.addClass(`secondaryTag-${stag.name}`);
-                                this.secondaryTagsGroup.add(tagCircle);
-                                this.secondaryTags.push(tagCircle);
+                                let s = 6;
+                                let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * s - s / 2;
+                                let y = this.y - s - 5;
+                                let tagel = this.paper.rect(x, y, s, s);
+                                tagel.addClass("secondaryTagStyle");
+                                tagel.addClass(`secondaryTag-${stag.name}`);
+                                this.secondaryTagsGroup.add(tagel);
+                                this.secondaryTags.push(tagel);
                             }
                         }
                     }
@@ -512,12 +511,12 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         let length = this.secondaryTags.length;
                         for (let i = 0; i < length; i++) {
                             let stag = this.secondaryTags[i];
-                            let r = 3;
-                            let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * 2 * r;
-                            let y = this.y - r - 5;
+                            let s = 6;
+                            let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * s - s / 2;
+                            let y = this.y - s - 5;
                             stag.attr({
-                                cx: x,
-                                cy: y
+                                x: x,
+                                y: y
                             });
                         }
                     }
