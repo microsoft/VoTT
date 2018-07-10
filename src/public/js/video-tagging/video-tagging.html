@@ -321,13 +321,16 @@
             self.playback(e.detail.playbackValue, e.detail.playbackText);
           });
       this.addEventListener("ontagsubmitted", function(e) {
-              var arr = [];
-              arr.push(e.detail.tagid);
-              this.addTagsToRegion(arr);
-              this.emitRegionToHost();//Persist
-              
-              // this.showAllRegions();
-              this.regionSelected(this.selectedRegionId)
+            var arr = [];
+
+            if (e.detail.tagid != "") {
+                arr.push(e.detail.tagid);
+                this.addTagsToRegion(arr);
+                this.emitRegionToHost();//Persist
+                
+                // this.showAllRegions();
+                this.regionSelected(this.selectedRegionId)
+            }
           });
         this.addEventListener("ontagdeleted", function(e) {
             let region = this.getRegionById(this.selectedRegionId);
@@ -509,7 +512,7 @@
 
             tagsDescriptor = new this.btools.TagsDescriptor(primaryTag, secondaryTags);
         }
-                
+
         return tagsDescriptor;
     },
 
@@ -639,14 +642,8 @@
        */
     registerRegion: function(x1, y1, x2, y2, regionUID, tags) {
         // Regions Manager
-        let tagsDescriptor = null;
+        let tagsDescriptor = this.buildTagsDescriptor(tags);
         
-        if (tags.length > 0) {
-            let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            let primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
-            tagsDescriptor = new this.btools.TagsDescriptor(primaryTag);
-        }
-
         this.regionsManager.addRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
 
         this.regionSelected(regionUID);

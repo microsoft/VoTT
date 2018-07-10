@@ -61,7 +61,7 @@ define("basetool", ["require", "exports"], function (require, exports) {
                     var r = parseInt(color.substring(1, 3), 16) / 255;
                     var g = parseInt(color.substring(3, 5), 16) / 255;
                     var b = parseInt(color.substring(5, 7), 16) / 255;
-                    r /= 255, g /= 255, b /= 255;
+                    
                     var max = Math.max(r, g, b), min = Math.min(r, g, b);
                     var h, s, l = (max + min) / 2;
                     if (max == min) {
@@ -349,6 +349,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.y = y;
                     this.styleId = styleId;
                     this.styleSheet = styleSheet;
+                    this.paper = paper;
                     this.buildOn(paper);
                 }
                 buildOn(paper) {
@@ -361,9 +362,13 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let box = this.primaryTagText.getBBox();
                     this.primaryTagTextBG = paper.rect(0, 0, 0, 0);
                     this.primaryTagTextBG.addClass("primaryTagTextBGStyle");
+                    this.secondaryTagsGroup = paper.g();
+                    this.secondaryTagsGroup.addClass("secondatyTagsLayer");
+                    this.secondaryTags = [];
                     this.tagsGroup.add(this.primaryTagRect);
                     this.tagsGroup.add(this.primaryTagTextBG);
                     this.tagsGroup.add(this.primaryTagText);
+                    this.tagsGroup.add(this.secondaryTagsGroup);
                     this.updateTags(this.tags);
                 }
                 updateTags(tags) {
@@ -373,31 +378,51 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.applyColors();
                 }
                 redrawTagLabels() {
-                    if (this.tags && this.tags.primary !== undefined) {
-                        this.primaryTagText.node.innerHTML = this.tags.primary.name;
-                        let box = this.primaryTagText.getBBox();
-                        let showTextLabel = (box.width + 10 <= this.rect.width) && (box.height <= this.rect.height);
-                        if (showTextLabel) {
-                            this.primaryTagTextBG.attr({
-                                width: box.width + 10,
-                                height: box.height + 5
-                            });
-                            this.primaryTagText.attr({
-                                x: this.x + 5,
-                                y: this.y + box.height,
-                                visibility: "visible"
-                            });
+                    for (let i = 0; i < this.secondaryTags.length; i++) {
+                        this.secondaryTags[i].remove();
+                    }
+                    this.secondaryTags = [];
+                    if (this.tags) {
+                        if (this.tags.primary !== undefined) {
+                            this.primaryTagText.node.innerHTML = this.tags.primary.name;
+                            let box = this.primaryTagText.getBBox();
+                            let showTextLabel = (box.width + 10 <= this.rect.width) && (box.height <= this.rect.height);
+                            if (showTextLabel) {
+                                this.primaryTagTextBG.attr({
+                                    width: box.width + 10,
+                                    height: box.height + 5
+                                });
+                                this.primaryTagText.attr({
+                                    x: this.x + 5,
+                                    y: this.y + box.height,
+                                    visibility: "visible"
+                                });
+                            }
+                            else {
+                                this.primaryTagTextBG.attr({
+                                    width: Math.min(10, this.rect.width),
+                                    height: Math.min(10, this.rect.height)
+                                });
+                                this.primaryTagText.attr({
+                                    x: this.x + 5,
+                                    y: this.y + box.height,
+                                    visibility: "hidden"
+                                });
+                            }
                         }
-                        else {
-                            this.primaryTagTextBG.attr({
-                                width: Math.min(10, this.rect.width),
-                                height: Math.min(10, this.rect.height)
-                            });
-                            this.primaryTagText.attr({
-                                x: this.x + 5,
-                                y: this.y + box.height,
-                                visibility: "hidden"
-                            });
+                        if (this.tags.secondary && this.tags.secondary.length > 0) {
+                            let length = this.tags.secondary.length;
+                            for (let i = 0; i < length; i++) {
+                                let stag = this.tags.secondary[i];
+                                let r = 3;
+                                let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * 2 * r;
+                                let y = this.y - r - 5;
+                                let tagCircle = this.paper.circle(x, y, r);
+                                tagCircle.addClass("secondaryTagStyle");
+                                tagCircle.addClass(`secondaryTag-${stag.name}`);
+                                this.secondaryTagsGroup.add(tagCircle);
+                                this.secondaryTags.push(tagCircle);
+                            }
                         }
                     }
                     else {
@@ -453,9 +478,18 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 style: `fill:${this.tags.primary.colorAccent};`
                             },
                         ];
-                        for (var i = 0; i < styleMap.length; i++) {
+                        for (let i = 0; i < styleMap.length; i++) {
                             let r = styleMap[i];
                             this.styleSheet.insertRule(`${r.rule}{${r.style}}`, 0);
+                        }
+                        if (this.tags && this.tags.secondary.length > 0) {
+                            for (let i = 0; i < this.tags.secondary.length; i++) {
+                                let tag = this.tags.secondary[i];
+                                let rule = `.secondaryTagStyle.secondaryTag-${tag.name}{
+                            fill: ${tag.colorPure};
+                        }`;
+                                this.styleSheet.insertRule(rule, 0);
+                            }
                         }
                     }
                 }
@@ -474,6 +508,19 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         x: p.x + 1,
                         y: p.y + 1
                     });
+                    if (this.secondaryTags && this.secondaryTags.length > 0) {
+                        let length = this.secondaryTags.length;
+                        for (let i = 0; i < length; i++) {
+                            let stag = this.secondaryTags[i];
+                            let r = 3;
+                            let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * 2 * r;
+                            let y = this.y - r - 5;
+                            stag.attr({
+                                cx: x,
+                                cy: y
+                            });
+                        }
+                    }
                 }
                 resize(width, height) {
                     this.rect.width = width;
