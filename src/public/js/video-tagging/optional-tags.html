@@ -32,7 +32,7 @@
             this.colors = this.generateRandomColors(tagsArray.length)
           }
           for(var index = 0;index < tagsArray.length;index++){
-                var btn = document.createElement("input");
+                var btn = document.createElement("button");
                 btn.id = tagsArray[index];
                 btn.type = "button";
                 btn.className = "tagButtons clickableControl";
@@ -50,7 +50,8 @@
                   }
                 });
                 btn.style.color = this.colors[index];
-                btn.value = tagsArray[index];
+                btn.value = `${tagsArray[index]}`;
+                btn.innerHTML = `${tagsArray[index]}<sup>[${index < 10 ? index + 1 : ""}]</sup>`;
                 Polymer.dom(this.$.buttonsContainer).appendChild(btn);  
           }
        },
