@@ -45,13 +45,14 @@
                 btn.disabled = 'disabled';
                 var self = this;
                 btn.addEventListener("click", function(e) {
-                  if($(e.target).hasClass('tagOn')){
-                      self.setUnselected(e.target);
-                      self.fire('ontagdeleted', {tagid:e.target.id});
+                
+                  if($(e.currentTarget).hasClass('tagOn')){
+                      self.setUnselected(e.currentTarget);
+                      self.fire('ontagdeleted', {tagid:e.currentTarget.id});
                   }
                   else {
-                      self.setSelected(e.target);
-                      self.fire('ontagsubmitted', {tagid:e.target.id});
+                      self.setSelected(e.currentTarget);
+                      self.fire('ontagsubmitted', {tagid:e.currentTarget.id});
                   }
                 });
                 btn.style.color = this.colors[index];

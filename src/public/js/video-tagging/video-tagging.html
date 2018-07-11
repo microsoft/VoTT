@@ -132,7 +132,7 @@
     ready: function() {
         this.frames = {}; // Holds the data of the tagged frames, their regions and tags
         this.seeking = false;//Flag for enabling control over the seek bar while the video is playing, see playingCallback function
-        this.selectedRegionId = "";//Holds the current selected region number
+        this.selectedRegionId = [];//Holds the current selected region number
         this.lockTagsEnabled = false;
         this.selectedTags = [];
         this.uniqueTagId = 0;
@@ -219,8 +219,8 @@
                     })
                 ;
 
-                regionsManager.onRegionSelected = function(id) {
-                    self.regionSelected(id);
+                regionsManager.onRegionSelected = function(id, multiselection) {                    
+                    self.selectRegion(id, multiselection);
                 };
 
                 regionsManager.onRegionMove = function(id, x, y, width, height) {
@@ -326,14 +326,16 @@
             if (e.detail.tagid != "") {
                 arr.push(e.detail.tagid);
                 this.addTagsToRegion(arr);
-                this.emitRegionToHost();//Persist
+                //this.emitRegionToHost();//Persist
                 
                 // this.showAllRegions();
-                this.regionSelected(this.selectedRegionId)
+                let currentRegionUID = this.selectedRegionId[0];
+                this.selectRegion(currentRegionUID)
             }
           });
         this.addEventListener("ontagdeleted", function(e) {
-            let region = this.getRegionById(this.selectedRegionId);
+            let currentRegionUID = this.selectedRegionId[0];
+            let region = this.getRegionById(currentRegionUID);
             if (region != null) {
                 let tags = region.tags;
              
@@ -343,13 +345,13 @@
                         break;
                     }
                 }
-                this.emitRegionToHost();
+                //this.emitRegionToHost();
 
                 let tagsDescriptor = this.buildTagsDescriptor(tags);;
-                this.regionsManager.updateTagsById(this.selectedRegionId, tagsDescriptor);
+                this.regionsManager.updateTagsById(currentRegionUID, tagsDescriptor);
 
                 //this.showAllRegions();
-                this.regionSelected(this.selectedRegionId)
+                this.selectRegion(currentRegionUID)
             }            
         });
     },
@@ -357,10 +359,14 @@
     keyUpEventsListener: function(e) {
         switch (e.keyCode) {
             case 37:  // left
-                this.stepBwdClicked();
+                if (!e.ctrlKey) {
+                    this.stepBwdClicked();
+                }
                 break;
             case 39: // right
-            this.stepFwdClicked();
+                if (!e.ctrlKey) {
+                    this.stepFwdClicked();
+                }            
                 break;
             case 68:// d for duplicate
                 let frameId = this.getCurrentFrameId();
@@ -492,7 +498,7 @@
                   setTimeout(function(){ self.stepFwdClicked(); }, 500);
             }
         }
-        this.emitRegionToHost();//Persist
+        //this.emitRegionToHost();//Persist
     },
 
     buildTagsDescriptor: function(tags) {
@@ -517,7 +523,8 @@
     },
 
     addTagsToRegion: function(selectedTagsArray) {
-        let region = this.getRegionById(this.selectedRegionId);
+        let currentRegion = this.selectedRegionId[0];
+        let region = this.getRegionById(currentRegion);
         if (region != null) {
             let tags = region.tags;
             for (var i = 0; i < selectedTagsArray.length; i++) {
@@ -596,7 +603,11 @@
         region.y2 = ry2;
     },
 
-    regionSelected: function(id) {
+    selectRegion: function(id, multiselection) {
+        if (multiselection == undefined) {
+            multiselection = false;
+        }
+
         this.cleanSelectedElements();
         //Tags - display the tags of the region and enable editing
         this.optionalTags.toggleEnableButtons(true);
@@ -605,7 +616,7 @@
         if (id != "") {
             let region = this.getRegionById(id);
             if(region) {
-                this.selectedRegionId = id;
+                this.selectedRegionId = [id];
                 var tags = region.tags;
                 this.optionalTags.displaySelectedTags(tags);
             }
@@ -615,9 +626,9 @@
     deleteRegionById: function(id) {
         var regions = this.getCurrentFrameRegions();
         this.frames[this.getCurrentFrameId()] = regions.filter((r) => {return r.UID != id;});
-        this.emitRegionToHost();        
-        if (id == this.selectedRegionId) {
-            this.selectedRegionId = "";
+        //this.emitRegionToHost();        
+        if (id == this.selectedRegionId[0]) {
+            this.selectedRegionId = [];
         }
     },
 
@@ -625,16 +636,16 @@
           this.frames[this.getCurrentFrameId()]=[];
           this.clearAllRegions();
           // this.showAllRegions();
-          this.emitRegionToHost();
+          //this.emitRegionToHost();
     },
     /**
        * @method emitRegionToHost
        * Fires an event to send the array of regions.
        * The host html page can listen to this event.
        */
-    emitRegionToHost: function() {
-          this.fire('onregionchanged', {frame: {frameIndex: this.getCurrentFrameId(), regions:this.getCurrentFrameRegions()}});
-    },
+    //emitRegionToHost: function() {
+    //      this.fire('onregionchanged', {frame: {frameIndex: this.getCurrentFrameId(), regions:this.getCurrentFrameRegions()}});
+    //},
     /**
        * @method addDivToRegion
        * Adds a transparent div to the region, the size of the region.
@@ -646,7 +657,7 @@
         
         this.regionsManager.addRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
 
-        this.regionSelected(regionUID);
+        this.selectRegion(regionUID);
     },
     /**
        * @method cleanSelectedElements
@@ -659,7 +670,7 @@
             regionCanvases[i].classList.remove('regionCanvasSelected');
           }
           //reset
-          this.selectedRegionId = "";
+          this.selectedRegionId = [];
           this.optionalTags.toggleEnableButtons(false);
           this.optionalTags.resetSelected();
     },
@@ -772,7 +783,7 @@
         if(!regions || regions.length === 0) {
             this.frames[frameIndex] = [{}];
             this.indicateEmptyFrame(true);
-            this.emitRegionToHost();
+            // this.emitRegionToHost();
             if(this.lockTagsEnabled){
                 this.stepFwdClicked();
             }
