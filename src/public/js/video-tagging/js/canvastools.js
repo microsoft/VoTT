@@ -957,11 +957,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             case 8:
                                 this.deleteSelectedRegions();
                                 break;
-                            case 65:
-                            case 97:
-                                if (e.ctrlKey) {
-                                    return false;
-                                }
                             case 38:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
@@ -1030,7 +1025,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 break;
                             default: return;
                         }
-                        e.preventDefault();
                     });
                 }
                 addRegion(id, pointA, pointB, tagsDescriptor) {
