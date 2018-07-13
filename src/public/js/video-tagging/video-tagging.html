@@ -320,39 +320,21 @@
       this.addEventListener("playSpeedSelected", function(e) {
             self.playback(e.detail.playbackValue, e.detail.playbackText);
           });
-      this.addEventListener("ontagsubmitted", function(e) {
-            var arr = [];
-
-            if (e.detail.tagid != "") {
-                arr.push(e.detail.tagid);
-                this.addTagsToRegion(arr);
-                //this.emitRegionToHost();//Persist
-                
-                // this.showAllRegions();
-                let currentRegionUID = this.selectedRegionId[0];
-                this.selectRegion(currentRegionUID)
-            }
-          });
-        this.addEventListener("ontagdeleted", function(e) {
+      
+        this.addEventListener("ontagschanged", (tagsStateEvent) => {
+            let tags = tagsStateEvent.detail.selected;
             let currentRegionUID = this.selectedRegionId[0];
             let region = this.getRegionById(currentRegionUID);
-            if (region != null) {
-                let tags = region.tags;
-             
-                for(var index = 0;index < tags.length;index++){
-                    if(tags[index] === e.detail.tagid){
-                        tags.splice(index, 1);
-                        break;
-                    }
-                }
-                //this.emitRegionToHost();
-
-                let tagsDescriptor = this.buildTagsDescriptor(tags);;
+            if (tags.length > 0 && region != null) {
+                let tagsDescriptor = this.buildTagsDescriptor(tags);
+                region.tags = tags;
                 this.regionsManager.updateTagsById(currentRegionUID, tagsDescriptor);
+            } else {
+                region.tags = [];
+                this.regionsManager.updateTagsById(currentRegionUID, null);
+            }
 
-                //this.showAllRegions();
-                this.selectRegion(currentRegionUID)
-            }            
+            this.selectRegion(currentRegionUID)
         });
     },
 
