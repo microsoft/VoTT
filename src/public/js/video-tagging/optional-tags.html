@@ -64,9 +64,7 @@
         for(var index = 0;index < tagsArray.length;index++){
             var btn = document.createElement("button");
             btn.id = tagsArray[index];
-            btn.type = "button";
             btn.className = "tagButtons clickableControl";
-            btn.onclick = this.submitTextClicked;
             btn.disabled = 'disabled';
             var self = this;
             btn.addEventListener("click", (e) => {
@@ -74,7 +72,6 @@
                 if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
-
                 } else {
                     this.tagsState[tag] = "empty";
                     self.setUnselected(e.currentTarget);
@@ -85,9 +82,45 @@
             });
             btn.style.color = this.colors[index];
             btn.value = `${tagsArray[index]}`;
-            btn.innerHTML = `${tagsArray[index]}<sup>[${index < 10 ? index + 1 : ""}]</sup>`;
+
+            // Add indexes to map keyboard
+            if (index <= 9) {
+                btn.innerHTML = `${tagsArray[index]}<sup>[${index < 10 ? index + 1 : ""}]</sup>`;
+            } else {
+                btn.innerHTML = `${tagsArray[index]}`;
+            }
+            
             Polymer.dom(this.$.buttonsContainer).appendChild(btn);  
         }
+
+        window.addEventListener("keyup", (e) => {
+            if (e.keyCode >= 49 && e.keyCode <= 57) {
+                let index = e.keyCode - 49;
+                if (index < this.tags.length) {
+                    let tag = this.tags[index];
+                    let btn = this.getBtnByTag(tag);
+
+                    if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
+                        this.tagsState[tag] = "full";
+                        self.setSelected(btn);
+                    } else {
+                        this.tagsState[tag] = "empty";
+                        self.setUnselected(btn);
+                    }
+
+                    self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
+                }                
+            }
+        });
+    }, 
+
+    getBtnByTag(tag) {
+        for (var i=0;i<this.buttonsContainer.childNodes.length;i++) {                      
+            if(tag === this.buttonsContainer.childNodes[i].value){
+                return this.buttonsContainer.childNodes[i];
+            }
+        }
+        return null;
     },
     
     displaySelectedTags: function(tagsArray){
@@ -96,10 +129,9 @@
             for(var index=0;index<tagsArray.length;index++){
                 this.tagsState[tagsArray[index]] = "full";
 
-                for (var i=0;i<this.buttonsContainer.childNodes.length;i++) {                      
-                    if(tagsArray[index] === this.buttonsContainer.childNodes[i].value){
-                        this.setSelected(this.buttonsContainer.childNodes[i]);
-                    }
+                let btn = this.getBtnByTag(tagsArray[index]);
+                if (btn != null) {
+                    this.setSelected(btn);
                 }
             }
         }
