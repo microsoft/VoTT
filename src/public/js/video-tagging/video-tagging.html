@@ -353,7 +353,7 @@
             case 68:// d for duplicate
                 let frameId = this.getCurrentFrameId();
                 if (frameId > 0) {
-                    this.frames[frameId] = this.getPrevFrameRegions();
+                    this.frames[frameId] = this.getPrevFrameRegionsCopy();
                 }
                 this.playingCallback();
                 break;
@@ -432,8 +432,8 @@
         return this.getRegions(this.getCurrentFrameId());
     },
 
-    getPrevFrameRegions: function() {
-        return this.getRegions(this.getCurrentFrameId() - 1);
+    getPrevFrameRegionsCopy: function() {
+        return JSON.parse(JSON.stringify(this.getRegions(this.getCurrentFrameId() - 1)));
     },
 
     getRegionById: function(regionUID) {

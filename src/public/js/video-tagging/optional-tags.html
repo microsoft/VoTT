@@ -126,7 +126,7 @@
     displaySelectedTags: function(tagsArray){
         this.clearTagsState();
         if(tagsArray && tagsArray !== null){
-            for(var index=0;index<tagsArray.length;index++){
+            for(var index=0; index < tagsArray.length; index++){
                 this.tagsState[tagsArray[index]] = "full";
 
                 let btn = this.getBtnByTag(tagsArray[index]);
@@ -136,31 +136,33 @@
             }
         }
     },
-       setSelected: function(btn){
-            btn.classList.remove('tagOff');
-            btn.classList.add('tagOn');
-       },
-       setUnselected: function(btn){
-            btn.classList.remove('tagOn');
-            btn.classList.add('tagOff');
-       },
-       getSelectedTags :function(){ 
-            return $(this.buttonsContainer).find(".tagOn");
-       },
-       resetSelected: function(){
-            var self = this;
-            $(this.buttonsContainer).find('.tagButtons').each(function(index){
-                      self.setUnselected(this);
-            });
-       },
-       toggleEnableButtons: function(enable){
-            var self = this;
-            $(this.buttonsContainer).find('.tagButtons').each(function(index){
-                      this.disabled = !enable;
-            });
-       },
+      
+    setSelected: function(btn){
+        btn.classList.remove('tagOff');
+        btn.classList.add('tagOn');
+    },
+    setUnselected: function(btn){
+        btn.classList.remove('tagOn');
+        btn.classList.add('tagOff');
+    },
+    getSelectedTags :function(){ 
+        return $(this.buttonsContainer).find(".tagOn");
+    },
+    resetSelected: function(){
+        var self = this;
+        $(this.buttonsContainer).find('.tagButtons').each(function(index){
+            self.setUnselected(this);
+        });
+    },
+    
+    toggleEnableButtons: function(enable){
+        var self = this;
+        $(this.buttonsContainer).find('.tagButtons').each(function(index){
+            this.disabled = !enable;
+        });
+    },
 
-       generateRandomColors: function(number){
+    generateRandomColors: function(number){
             /*
             https://stackoverflow.com/questions/10014271/generate-random-color-distinguishable-to-humans
             This generates colors using the following algorithm:

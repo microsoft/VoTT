@@ -362,6 +362,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.primaryTagRect.addClass("primaryTagRectStyle");
                     this.primaryTagText = paper.text(0, 0, "");
                     this.primaryTagText.addClass("primaryTagTextStyle");
+                    this.textBox = this.primaryTagText.getBBox();
                     this.primaryTagTextBG = paper.rect(0, 0, 0, 0);
                     this.primaryTagTextBG.addClass("primaryTagTextBGStyle");
                     this.secondaryTagsGroup = paper.g();
