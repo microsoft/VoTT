@@ -346,16 +346,16 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
             class TagsElement {
                 constructor(paper, x, y, rect, tags, styleId, styleSheet) {
                     this.styleSheet = null;
-                    this.tags = tags;
+                    //this.tags = tags;
                     this.rect = rect;
                     this.x = x;
                     this.y = y;
                     this.styleId = styleId;
                     this.styleSheet = styleSheet;
                     this.paper = paper;
-                    this.buildOn(paper);
+                    this.buildOn(paper, tags);
                 }
-                buildOn(paper) {
+                buildOn(paper, tags) {
                     this.tagsGroup = paper.g();
                     this.tagsGroup.addClass("tagsLayer");
                     this.primaryTagRect = paper.rect(0, 0, this.rect.width, this.rect.height);
@@ -372,7 +372,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.tagsGroup.add(this.primaryTagTextBG);
                     this.tagsGroup.add(this.primaryTagText);
                     this.tagsGroup.add(this.secondaryTagsGroup);
-                    this.updateTags(this.tags);
+                    this.updateTags(tags);
                 }
                 updateTags(tags) {
                     let keepPrimaryText = false;
