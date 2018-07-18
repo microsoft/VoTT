@@ -156,10 +156,12 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.rearrangeAnchors();
                 }
                 rearrangeAnchors() {
-                    this.anchors.TL.attr({ cx: this.x, cy: this.y });
-                    this.anchors.TR.attr({ cx: this.x + this.rect.width, cy: this.y });
-                    this.anchors.BR.attr({ cx: this.x + this.rect.width, cy: this.y + this.rect.height });
-                    this.anchors.BL.attr({ cx: this.x, cy: this.y + this.rect.height });
+                    window.requestAnimationFrame(() => {
+                        this.anchors.TL.attr({ cx: this.x, cy: this.y });
+                        this.anchors.TR.attr({ cx: this.x + this.rect.width, cy: this.y });
+                        this.anchors.BR.attr({ cx: this.x + this.rect.width, cy: this.y + this.rect.height });
+                        this.anchors.BL.attr({ cx: this.x, cy: this.y + this.rect.height });
+                    });
                 }
                 rearrangeCoord(p1, p2, flipX, flipY) {
                     let x = (p1.x < p2.x) ? p1.x : p2.x;
@@ -272,8 +274,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
                 ;
                 anchorDragEnd() {
-                    this.ghostAnchor.attr({
-                        display: "none"
+                    window.requestAnimationFrame(() => {
+                        this.ghostAnchor.attr({
+                            display: "none"
+                        });
                     });
                 }
                 subscribeToEvents() {
@@ -284,17 +288,19 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.subscribeAnchorToEvents(this.anchors.BR, "BR");
                     self.ghostAnchor.mouseover(function (e) {
                         self.ghostAnchor.drag(self.anchorDragMove.bind(self), self.anchorDragBegin.bind(self), self.anchorDragEnd.bind(self));
-                        self.ghostAnchor.addClass(self.activeAnchor);
+                        window.requestAnimationFrame(() => {
+                            self.ghostAnchor.addClass(self.activeAnchor);
+                        });
                         self.onManipulationBegin();
                     });
                     self.ghostAnchor.mouseout(function (e) {
                         self.ghostAnchor.undrag();
-                        window.requestAnimationFrame(function () {
+                        window.requestAnimationFrame(() => {
                             self.ghostAnchor.attr({
                                 display: "none"
                             });
+                            self.ghostAnchor.removeClass(self.activeAnchor);
                         });
-                        self.ghostAnchor.removeClass(self.activeAnchor);
                         self.onManipulationEnd();
                     });
                     self.ghostAnchor.node.addEventListener("pointerdown", function (e) {
@@ -323,17 +329,15 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                 }
                 hide() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.anchorsGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.anchorsGroup.attr({
                             visibility: 'hidden'
                         });
                     });
                 }
                 show() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.anchorsGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.anchorsGroup.attr({
                             visibility: 'visible'
                         });
                     });
@@ -342,23 +346,23 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
             class TagsElement {
                 constructor(paper, x, y, rect, tags, styleId, styleSheet) {
                     this.styleSheet = null;
-                    this.tags = tags;
+                    //this.tags = tags;
                     this.rect = rect;
                     this.x = x;
                     this.y = y;
                     this.styleId = styleId;
                     this.styleSheet = styleSheet;
                     this.paper = paper;
-                    this.buildOn(paper);
+                    this.buildOn(paper, tags);
                 }
-                buildOn(paper) {
+                buildOn(paper, tags) {
                     this.tagsGroup = paper.g();
                     this.tagsGroup.addClass("tagsLayer");
                     this.primaryTagRect = paper.rect(0, 0, this.rect.width, this.rect.height);
                     this.primaryTagRect.addClass("primaryTagRectStyle");
                     this.primaryTagText = paper.text(0, 0, "");
                     this.primaryTagText.addClass("primaryTagTextStyle");
-                    let box = this.primaryTagText.getBBox();
+                    this.textBox = this.primaryTagText.getBBox();
                     this.primaryTagTextBG = paper.rect(0, 0, 0, 0);
                     this.primaryTagTextBG.addClass("primaryTagTextBGStyle");
                     this.secondaryTagsGroup = paper.g();
@@ -368,44 +372,54 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.tagsGroup.add(this.primaryTagTextBG);
                     this.tagsGroup.add(this.primaryTagText);
                     this.tagsGroup.add(this.secondaryTagsGroup);
-                    this.updateTags(this.tags);
+                    this.updateTags(tags);
                 }
                 updateTags(tags) {
+                    let keepPrimaryText = false;
+                    if (this.tags && this.tags.primary && tags && tags.primary) {
+                        keepPrimaryText = (tags.primary.name == this.tags.primary.name);
+                    }
                     this.tags = tags;
-                    this.redrawTagLabels();
+                    this.redrawTagLabels(keepPrimaryText);
                     this.clearColors();
                     this.applyColors();
                 }
-                redrawTagLabels() {
+                redrawTagLabels(keepPrimaryText = true) {
                     for (let i = 0; i < this.secondaryTags.length; i++) {
                         this.secondaryTags[i].remove();
                     }
                     this.secondaryTags = [];
                     if (this.tags) {
                         if (this.tags.primary !== undefined) {
-                            this.primaryTagText.node.innerHTML = this.tags.primary.name;
-                            let box = this.primaryTagText.getBBox();
-                            let showTextLabel = (box.width + 10 <= this.rect.width) && (box.height <= this.rect.height);
+                            if (!keepPrimaryText || this.textBox == undefined) {
+                                this.primaryTagText.node.innerHTML = this.tags.primary.name;
+                                this.textBox = this.primaryTagText.getBBox();
+                            }
+                            let showTextLabel = (this.textBox.width + 10 <= this.rect.width) && (this.textBox.height <= this.rect.height);
                             if (showTextLabel) {
-                                this.primaryTagTextBG.attr({
-                                    width: box.width + 10,
-                                    height: box.height + 5
-                                });
-                                this.primaryTagText.attr({
-                                    x: this.x + 5,
-                                    y: this.y + box.height,
-                                    visibility: "visible"
+                                window.requestAnimationFrame(() => {
+                                    this.primaryTagTextBG.attr({
+                                        width: this.textBox.width + 10,
+                                        height: this.textBox.height + 5
+                                    });
+                                    this.primaryTagText.attr({
+                                        x: this.x + 5,
+                                        y: this.y + this.textBox.height,
+                                        visibility: "visible"
+                                    });
                                 });
                             }
                             else {
-                                this.primaryTagTextBG.attr({
-                                    width: Math.min(10, this.rect.width),
-                                    height: Math.min(10, this.rect.height)
-                                });
-                                this.primaryTagText.attr({
-                                    x: this.x + 5,
-                                    y: this.y + box.height,
-                                    visibility: "hidden"
+                                window.requestAnimationFrame(() => {
+                                    this.primaryTagTextBG.attr({
+                                        width: Math.min(10, this.rect.width),
+                                        height: Math.min(10, this.rect.height)
+                                    });
+                                    this.primaryTagText.attr({
+                                        x: this.x + 5,
+                                        y: this.y + this.textBox.height,
+                                        visibility: "hidden"
+                                    });
                                 });
                             }
                         }
@@ -417,18 +431,22 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * s - s / 2;
                                 let y = this.y - s - 5;
                                 let tagel = this.paper.rect(x, y, s, s);
-                                tagel.addClass("secondaryTagStyle");
-                                tagel.addClass(`secondaryTag-${stag.name}`);
+                                window.requestAnimationFrame(() => {
+                                    tagel.addClass("secondaryTagStyle");
+                                    tagel.addClass(`secondaryTag-${stag.name}`);
+                                });
                                 this.secondaryTagsGroup.add(tagel);
                                 this.secondaryTags.push(tagel);
                             }
                         }
                     }
                     else {
-                        this.primaryTagText.node.innerHTML = "";
-                        this.primaryTagTextBG.attr({
-                            width: 0,
-                            height: 0
+                        window.requestAnimationFrame(() => {
+                            this.primaryTagText.node.innerHTML = "";
+                            this.primaryTagTextBG.attr({
+                                width: 0,
+                                height: 0
+                            });
                         });
                     }
                 }
@@ -477,71 +495,75 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 style: `fill:${this.tags.primary.colorAccent};`
                             },
                         ];
-                        for (let i = 0; i < styleMap.length; i++) {
-                            let r = styleMap[i];
-                            this.styleSheet.insertRule(`${r.rule}{${r.style}}`, 0);
-                        }
-                        if (this.tags && this.tags.secondary.length > 0) {
-                            for (let i = 0; i < this.tags.secondary.length; i++) {
-                                let tag = this.tags.secondary[i];
-                                let rule = `.secondaryTagStyle.secondaryTag-${tag.name}{
-                            fill: ${tag.colorAccent};
-                        }`;
-                                this.styleSheet.insertRule(rule, 0);
+                        window.requestAnimationFrame(() => {
+                            for (let i = 0; i < styleMap.length; i++) {
+                                let r = styleMap[i];
+                                this.styleSheet.insertRule(`${r.rule}{${r.style}}`, 0);
                             }
-                        }
+                            if (this.tags && this.tags.secondary.length > 0) {
+                                for (let i = 0; i < this.tags.secondary.length; i++) {
+                                    let tag = this.tags.secondary[i];
+                                    let rule = `.secondaryTagStyle.secondaryTag-${tag.name}{
+                                fill: ${tag.colorAccent};
+                            }`;
+                                    this.styleSheet.insertRule(rule, 0);
+                                }
+                            }
+                        });
                     }
                 }
                 move(p) {
                     this.x = p.x;
                     this.y = p.y;
-                    this.primaryTagRect.attr({
-                        x: p.x,
-                        y: p.y
-                    });
-                    this.primaryTagText.attr({
-                        x: p.x + 5,
-                        y: p.y + this.primaryTagText.getBBox().height
-                    });
-                    this.primaryTagTextBG.attr({
-                        x: p.x + 1,
-                        y: p.y + 1
-                    });
-                    if (this.secondaryTags && this.secondaryTags.length > 0) {
-                        let length = this.secondaryTags.length;
-                        for (let i = 0; i < length; i++) {
-                            let stag = this.secondaryTags[i];
-                            let s = 6;
-                            let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * s - s / 2;
-                            let y = this.y - s - 5;
-                            stag.attr({
-                                x: x,
-                                y: y
-                            });
+                    window.requestAnimationFrame(() => {
+                        this.primaryTagRect.attr({
+                            x: p.x,
+                            y: p.y
+                        });
+                        this.primaryTagText.attr({
+                            x: p.x + 5,
+                            y: p.y + this.textBox.height
+                        });
+                        this.primaryTagTextBG.attr({
+                            x: p.x + 1,
+                            y: p.y + 1
+                        });
+                        if (this.secondaryTags && this.secondaryTags.length > 0) {
+                            let length = this.secondaryTags.length;
+                            for (let i = 0; i < length; i++) {
+                                let stag = this.secondaryTags[i];
+                                let s = 6;
+                                let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * s - s / 2;
+                                let y = this.y - s - 5;
+                                stag.attr({
+                                    x: x,
+                                    y: y
+                                });
+                            }
                         }
-                    }
+                    });
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
-                    this.primaryTagRect.attr({
-                        width: width,
-                        height: height
+                    window.requestAnimationFrame(() => {
+                        this.primaryTagRect.attr({
+                            width: width,
+                            height: height
+                        });
                     });
                     this.redrawTagLabels();
                 }
                 hide() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.tagsGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.tagsGroup.attr({
                             visibility: 'hidden'
                         });
                     });
                 }
                 show() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.tagsGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.tagsGroup.attr({
                             visibility: 'visible'
                         });
                     });
@@ -575,31 +597,33 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 move(p) {
                     this.x = p.x;
                     this.y = p.y;
-                    this.dragRect.attr({
-                        x: p.x,
-                        y: p.y
+                    window.requestAnimationFrame(() => {
+                        this.dragRect.attr({
+                            x: p.x,
+                            y: p.y
+                        });
                     });
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
-                    this.dragRect.attr({
-                        width: width,
-                        height: height
+                    window.requestAnimationFrame(() => {
+                        this.dragRect.attr({
+                            width: width,
+                            height: height
+                        });
                     });
                 }
                 hide() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.dragRect.attr({
+                    window.requestAnimationFrame(() => {
+                        this.dragRect.attr({
                             visibility: 'hidden'
                         });
                     });
                 }
                 show() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.dragRect.attr({
+                    window.requestAnimationFrame(() => {
+                        this.dragRect.attr({
                             visibility: 'visible'
                         });
                     });
@@ -740,11 +764,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.y = region.y;
                     this.rect = region.rect;
                     this.rearrangeMenuPosition();
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.menuGroup.attr({
-                            x: self.mx,
-                            y: self.my
+                    window.requestAnimationFrame(() => {
+                        this.menuGroup.attr({
+                            x: this.mx,
+                            y: this.my
                         });
                     });
                 }
@@ -753,10 +776,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.x = p.x;
                     this.y = p.y;
                     this.rearrangeMenuPosition();
-                    window.requestAnimationFrame(function () {
-                        self.menuGroup.attr({
-                            x: self.mx,
-                            y: self.my
+                    window.requestAnimationFrame(() => {
+                        this.menuGroup.attr({
+                            x: this.mx,
+                            y: this.my
                         });
                     });
                 }
@@ -765,25 +788,23 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.rect.width = width;
                     this.rect.height = height;
                     this.rearrangeMenuPosition();
-                    window.requestAnimationFrame(function () {
-                        self.menuGroup.attr({
-                            x: self.mx,
-                            y: self.my
+                    window.requestAnimationFrame(() => {
+                        this.menuGroup.attr({
+                            x: this.mx,
+                            y: this.my
                         });
                     });
                 }
                 hide() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.menuGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.menuGroup.attr({
                             visibility: 'hidden'
                         });
                     });
                 }
                 show() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.menuGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.menuGroup.attr({
                             visibility: 'visible'
                         });
                     });
@@ -850,8 +871,12 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     document.getElementById(this.styleID).remove();
                 }
                 onInternalChange(x, y, width, height, state, multiSelection = false) {
-                    this.move(new base.Point2D(x, y));
-                    this.resize(width, height);
+                    if (this.x != x || this.y != y) {
+                        this.move(new base.Point2D(x, y));
+                    }
+                    if (this.rect.width != width || this.rect.height != height) {
+                        this.resize(width, height);
+                    }
                     this.onChange(this, state, multiSelection);
                 }
                 updateTags(tags) {
@@ -861,10 +886,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let self = this;
                     this.x = p.x;
                     this.y = p.y;
-                    window.requestAnimationFrame(function () {
-                        self.UI.forEach((element) => {
-                            element.move(p);
-                        });
+                    this.UI.forEach((element) => {
+                        element.move(p);
                     });
                 }
                 resize(width, height) {
@@ -872,25 +895,20 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.rect.height = height;
                     this.boundRects.self.width = this.boundRects.host.width - width;
                     this.boundRects.self.height = this.boundRects.host.height - height;
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.UI.forEach((element) => {
-                            element.resize(width, height);
-                        });
+                    this.UI.forEach((element) => {
+                        element.resize(width, height);
                     });
                 }
                 hide() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.regionGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.regionGroup.attr({
                             visibility: 'hidden'
                         });
                     });
                 }
                 show() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.regionGroup.attr({
+                    window.requestAnimationFrame(() => {
+                        this.regionGroup.attr({
                             visibility: 'visible'
                         });
                     });
@@ -940,11 +958,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             case 8:
                                 this.deleteSelectedRegions();
                                 break;
-                            case 65:
-                            case 97:
-                                if (e.ctrlKey) {
-                                    return false;
-                                }
                             case 38:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
@@ -1013,7 +1026,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 break;
                             default: return;
                         }
-                        e.preventDefault();
                     });
                 }
                 addRegion(id, pointA, pointB, tagsDescriptor) {
