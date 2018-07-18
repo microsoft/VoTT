@@ -294,21 +294,6 @@ function openPath(pathName, isDir) {
 
             if (videotagging.imagelist.length){
               videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
-              if (config && config.framesByImagesName){
-                var frames = {};
-                for (var k in config.framesByImagesName){
-                  if (config.framesByImagesName.hasOwnProperty(k)) {
-                    var fullFilepath = path.join(pathName, k);
-                    var imgIndex = videotagging.imagelist.indexOf(fullFilepath);
-                    if (imgIndex > -1){
-                      frames[imgIndex] = config.framesByImagesName[k];
-                    }
-                  }
-                }
-                if (Object.keys(frames).length > 0){
-                  videotagging.inputframes = frames;
-                }
-              }
               videotagging.src = pathName; 
               //track visited frames
               $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
@@ -380,17 +365,6 @@ function save() {
       "visitedFrames": Array.from(visitedFrames),
       "tag_colors" : videotagging.optionalTags.colors,
     };
-    //for image directory
-    if (videotagging.imagelist){
-      var imgFramesByName = {};
-      Object.keys(videotagging.frames).forEach( i => {
-        if (!isNaN(Number(i))){
-          var imgFilename = path.basename(videotagging.imagelist[Number(i)]);
-          imgFramesByName[imgFilename] = videotagging.frames[i];
-        }
-      });
-      saveObject.framesByImagesName = imgFramesByName;
-    }
     //if nothing changed don't save
     if (saveState === JSON.stringify(saveObject) ) {
       return;
