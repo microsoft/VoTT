@@ -577,12 +577,20 @@
         var rx2 = (x + width) / widthRatio;
         var ry2 = (y + height) / heightRatio;
         
-        region.width = width;
-        region.height = height;
+        // back compatibility for v < 2.0
         region.x1 = rx1;
         region.y1 = ry1;
         region.x2 = rx2;
         region.y2 = ry2;
+        region.width = this.sourceWidth;
+        region.height = this.sourceHeight;
+        // coordinates for v 2.0+
+        region.box = {
+            x1: rx1,
+            y1: ry1,
+            x2: rx2,
+            y2: ry2
+        }
     },
 
     selectRegion: function(id, multiselection) {
@@ -682,10 +690,33 @@
                 var widthRatio = this.overlay.width / this.sourceWidth;
                 var heightRatio = this.overlay.height / this.sourceHeight;
 
-                var x1 = (region.x1 * widthRatio);
-                var y1 = (region.y1 * heightRatio);
-                var x2 = (region.x2 * widthRatio);
-                var y2 = (region.y2 * heightRatio);
+                let x1, y1, x2, y2;
+                if (region.box != undefined) {
+                    // onscreen coordinates
+                    x1 = (region.box.x1 * widthRatio);
+                    y1 = (region.box.y1 * heightRatio);
+                    x2 = (region.box.x2 * widthRatio);
+                    y2 = (region.box.y2 * heightRatio);
+                } else {
+                    // restore absolute coordinates
+                    let wRatio = this.sourceWidth / region.width;
+                    let hRatio = this.sourceHeight / region.height;
+                    x1 = (region.x1 * wRatio);
+                    y1 = (region.y1 * hRatio);
+                    x2 = (region.x2 * wRatio);
+                    y2 = (region.y2 * hRatio);
+                    region.box = {
+                        x1: x1,
+                        y1: y1,
+                        x2: x2,
+                        y2: y2
+                    };
+                    //onscreen coordinates
+                    x1 = x1 * widthRatio;
+                    y1 = y1 * heightRatio;
+                    x2 = x2 * widthRatio;
+                    y2 = y2 * heightRatio;
+                }
 
                 if (region.UID == undefined) {
                     region.UID = this.generateUniqueId();
@@ -705,14 +736,22 @@
         this.resetEmptyFrame();//Clear empty frame logic
         
         var region = {
+            // relative for back compatiblity (v < 2.0)
             x1: x1,
             y1: y1,
             x2: x2,
             y2: y2,
+            width: this.sourceWidth,
+            height: this.sourceHeight,
+            // absolute coordinates - new (v 2.0+)
+            box: {
+                x1: x1,
+                y1: y1,
+                x2: x2,
+                y2: y2
+            },
             UID: this.generateUniqueId(),
-            id: this.uniqueTagId++,
-            width: Math.abs(x1 - x2), 
-            height: Math.abs(y1 - y2), 
+            id: this.uniqueTagId++,            
             type: this.regiontype,
             tags: []
         };
