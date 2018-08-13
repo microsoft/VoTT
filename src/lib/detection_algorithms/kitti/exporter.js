@@ -38,14 +38,18 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
     self.frameWidth = frameWidth;
     self.frameHeight = frameHeight;
     self.testFrameIndices = null;
-    self.posFrameIndex = null;
+    self.testFrameNames = null;
+    self.posFrameLabelIndex = null;
+    self.posFrameImageIndex = null;
     self.testSplit = testSplit || 0.2;
 
     // Prepare everything for exporting (e.g. create metadata files,
     // directories, ..)    
     // Returns: A Promise object that resolves when the operation completes
     this.init = function init() {
-        self.posFrameIndex = 0;
+        self.posFrameLabelIndex = 0;
+        self.posFrameImageIndex = 0;
+        self.testFrameNames = [];
         self.testFrameIndices = detectionUtils.generateTestIndecies(self.testSplit, taggedFramesCount);
         self.filesTouched = {};  // Keep track of files we've touched so far
         return new Promise((resolve, reject) => {
@@ -87,13 +91,17 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                 detectionUtils.ensureDirExists.bind(null, self.validImagesDirPath),
                 detectionUtils.ensureDirExists.bind(null, self.validLabelsDirPath),
                 function saveImage(cb) {
-                    var isTestFrame = (self.testFrameIndices.includes(self.posFrameIndex));
+                    var isTestFrame = (self.testFrameIndices.includes(self.posFrameImageIndex));
                     var outputDirPath = (isTestFrame ? self.validImagesDirPath : self.trainImagesDirPath)
                     var imageFilePath = path.join(outputDirPath, frameFileName);
                     fs.writeFile(imageFilePath, frameBuffer, cb);
+                    self.posFrameImageIndex++;
+                    if(isTestFrame) {
+                        self.testFrameNames.push(frameFileName);
+                    }
                 },
                 function saveLabel(cb) {
-                    var isTestFrame = (self.testFrameIndices.includes(self.posFrameIndex));
+                    var isTestFrame = (self.testFrameNames.includes(frameFileName));
                     var outputDirPath = (isTestFrame ? self.validLabelsDirPath : self.trainLabelsDirPath);
                     var labelFileName = path.parse(frameFileName).name + '.txt';
                     var labelFilePath = path.join(outputDirPath, labelFileName);
@@ -119,7 +127,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                                                  rotation_y.toFixed(1));
                     }
                     fs.writeFile(labelFilePath, labelData, cb);
-                    self.posFrameIndex++;
+                    self.posFrameLabelIndex++;
                 },
             ], (err) => {
                 if (err) {
