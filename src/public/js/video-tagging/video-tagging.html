@@ -305,6 +305,10 @@
       this.seekBar.addEventListener("change", function() {
             if (!this.imagelist){
                  self.seeking = false;
+                 
+                 var seekToFrameId =  Math.floor(self.seekBar.value * self.imagelist.length / 100);//keep the frame in sync
+                 self.seekToFrame(seekToFrameId);
+
                  self.video.currentTime =  Math.floor(self.seekBar.value/self.frameTime) * self.frameTime;//keep the frame in sync
             }
             self.playingCallback();
@@ -985,6 +989,33 @@
     rotate: function() {
         this.rotation = (this.rotation + 90) % 360;
         $('#vid').css("transform",`rotate(${this.rotation}deg)`);   
+    },
+    seekToFrame: function(id, fireEvents = true) {
+        if (this.checkRegionLabels()){
+            //raise before next frame  
+            if (this.imagelist){//image handling
+                if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+                if (id < this.imagelist.length-1) {
+                    this.imageIndex = id;
+                    this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
+                    this.playingCallback();
+                }
+            } else { //video handling
+                if(!this.video.paused) this.pauseState();
+                if ((this.video.currentTime + this.frameTime) > this.video.duration ){
+                    //this.video.currentTime = this.video.duration;
+                    return;
+                }
+                if (!this.canMove ) return; 
+                if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+                //if there are no unlabled tags move to next frame
+                this.video.currentTime += this.frameTime;
+                this.playingCallback();            
+            } 
+            //raise after next frame
+            if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep');
+
+        }
     },
     stepFwdClicked: function(fireEvents = true) {       
         if (this.checkRegionLabels()){
