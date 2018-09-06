@@ -493,7 +493,7 @@
 
             secondaryTags = [];
             for (var i = 1; i < tags.length; i++) {
-                let c = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[i])];
+                let color = this.optionalTags.colors[Math.max(0, this.inputtagsarray.indexOf(tags[0]))];
                 let t = new this.btools.Tag(tags[i], this.btools.Tag.getHueFromColor(c) * 360);
                 secondaryTags.push(t)
             }                
