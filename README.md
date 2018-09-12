@@ -131,8 +131,6 @@ The tool supports the following **features**:
 
     ![](media/3_image_Job_Configuration.jpg)
 
-    **Frame Extraction Rate**: number of frames to tag per second of video<br>
-
     **Tagging Region Type**:  type of bounding box for tagging regions<br>
       - *Rectangle*: tag bounding boxes of any dimension
       - *Square*: tag bounding boxes of auto-fixed dimensions
