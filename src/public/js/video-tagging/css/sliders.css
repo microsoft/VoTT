@@ -142,13 +142,13 @@ input[type='range']::-ms-tooltip {
 
 
 /*webkit and moz - show seek bar button on hover or click*/
-.seek::-webkit-slider-thumb {
+/* .seek::-webkit-slider-thumb {
   background: transparent;
 }
 
 .seek::-moz-range-thumb {
   background: transparent;
-}
+} */
 
 .seek::-webkit-slider-thumb:active,
 .seek::-webkit-slider-thumb:hover  {
