@@ -328,7 +328,10 @@
                 self.volumeStyle.textContent += '.volume::-moz-range-track{background-size:'+ perc +'% 100%} ';
             }
           });
-      this.frameText.addEventListener("input", function() {
+      this.frameText.addEventListener("keydown", self.frameInputListener);
+      this.frameText.addEventListener("keyup", self.frameInputListener);
+
+      this.frameText.addEventListener("input", function(event) {
             if (self.imagelist){
                 if(self.frameText.value > 0 && self.frameText.value <= self.imagelist.length) {
                     var seekToFrameId =  Math.min(self.imagelist.length, self.frameText.value);//keep the frame in sync
@@ -340,6 +343,7 @@
                 }
             }
             self.playingCallback();
+            event.stopPropagation();
           });
       this.addEventListener("playSpeedSelected", function(e) {
             self.playback(e.detail.playbackValue, e.detail.playbackText);
@@ -360,6 +364,10 @@
 
             this.selectRegion(currentRegionUID)
         });
+    },
+
+    frameInputListener: function(event) {
+        event.stopPropagation();
     },
 
     keyUpEventsListener: function(e) {
@@ -1019,13 +1027,21 @@
         if (this.checkRegionLabels()){
             //raise before next frame  
             if (this.imagelist){//image handling
-                if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+                if(this.imageIndex == id - 1) {
+                    //Only fire before step if seeking to the next frame
+                    if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+                }
+                if(this.imageIndex == id + 1) {
+                    //Only fire before step if seeking to the previous frame
+                    if(fireEvents)$('#video-tagging').trigger('stepBwdClicked-BeforeStep');    
+                }
                 if (id < this.imagelist.length-1) {
                     this.imageIndex = id;
                     this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
-                    this.playingCallback();
+                    //this.playingCallback();
                 }
             } else { //video handling
+                //TODO: This is never called, so why is it here?
                 if(!this.video.paused) this.pauseState();
                 if ((this.video.currentTime + this.frameTime) > this.video.duration ){
                     //this.video.currentTime = this.video.duration;
@@ -1050,7 +1066,7 @@
                 if (this.imageIndex < this.imagelist.length-1) {
                     this.imageIndex++;
                     this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
-                    this.playingCallback();
+                    //this.playingCallback();
                 }
             } else { //video handling
                 if(!this.video.paused) this.pauseState();
@@ -1075,7 +1091,7 @@
             if (this.imageIndex > 0) {
                 this.imageIndex--;
                 this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
-                this.playingCallback();
+                //this.playingCallback();
             }
         } 
         if (this.video.currentTime > 0) {
@@ -1110,6 +1126,7 @@
             }
     },
     playState: function() {
+        console.log("Playing");
         if(!this.imagelist) {
             this.video.play();
             this.playing = setInterval(function() {
@@ -1131,6 +1148,7 @@
         
     },
     pauseState: function() {
+        console.log("Paused");
         if(!this.imagelist) {
             this.video.pause();
 

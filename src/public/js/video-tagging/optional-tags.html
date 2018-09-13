@@ -94,14 +94,12 @@
         }
 
         window.addEventListener("keyup", (e) => {
-            // Needs to have a CTRL modifier to avoid collisions with numeric entry
-            if (e.ctrlKey) {
-                if (e.keyCode >= 49 && e.keyCode <= 57) {
-                    let index = e.keyCode - 49;
-                    if (index < this.tags.length) {
-                        let tag = this.tags[index];
-                        let btn = this.getBtnByTag(tag);
-
+            if (e.keyCode >= 49 && e.keyCode <= 57) {
+                let index = e.keyCode - 49;
+                if (index < this.tags.length) {
+                    let tag = this.tags[index];
+                    let btn = this.getBtnByTag(tag);
+                    if(!btn.disabled) {
                         if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
                             this.tagsState[tag] = "full";
                             self.setSelected(btn);
@@ -111,8 +109,8 @@
                         }
 
                         self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
-                    }                
-                }
+                    }
+                }                
             }
         });
     }, 
