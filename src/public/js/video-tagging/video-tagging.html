@@ -352,12 +352,19 @@
                 break;
             case 68:// d for duplicate
                 let frameId = this.getCurrentFrameId();
+                console.log(`1: ${frameId}`)
+                if(this.imagelist){
+                    frameId = this.imageIndex
+                    console.log(`2: ${frameId}`)
+                }
                 if (frameId > 0) {
+                    console.log(this.getCurrentFrameRegions())
                     this.frames[frameId] = this.getPrevFrameRegionsCopy();
+                    console.log(this.frames[frameId])
                 }
                 this.playingCallback();
                 break;
-                default: return; // exit this handler for other keys
+            default: return; // exit this handler for other keys
             }
         e.preventDefault(); // prevent the default action (scroll / move caret)
     },
@@ -409,7 +416,7 @@
 
     getRegions: function(frameId) {
         let regions = null;
-        if (frameId >=0) {
+        if (frameId || frameId == 0) {
             regions = this.frames[frameId];
 
             if (regions == undefined || regions == null) {
@@ -423,7 +430,8 @@
 
     getCurrentFrameId: function() {
       if (this.imagelist){
-        return this.imageIndex;
+        // return this.imageIndex;
+        return (this.imagelist[this.imageIndex].split("\\").pop());
       } 
       return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
     },
@@ -433,7 +441,12 @@
     },
 
     getPrevFrameRegionsCopy: function() {
-        return JSON.parse(JSON.stringify(this.getRegions(this.getCurrentFrameId() - 1)));
+        if(this.imagelist){
+            // console.log(this.getRegions(this.imagelist[this.imageIndex - 1].split("\\").pop()))
+            return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.imageIndex - 1].split("\\").pop())));    
+        } else {
+            return JSON.parse(JSON.stringify(this.getRegions(this.getCurrentFrameId() - 1)));
+        }
     },
 
     getRegionById: function(regionUID) {
@@ -1087,7 +1100,11 @@
                 this.updateFrameCanvas(this.video);
 
             } else{
-                this.frameText.innerHTML = `${this.getCurrentFrameId() + 1}/${this.imagelist.length}`;
+                if(this.imagelist){
+                    this.frameText.innerHTML = `${this.imageIndex + 1}/${this.imagelist.length}`;
+                } else {
+                    this.frameText.innerHTML = `${this.getCurrentFrameId() + 1}/${this.imagelist.length}`;
+                }
                 
                 // Update canvas image based on new video frame
                 this.updateFrameCanvas(this.curImg);

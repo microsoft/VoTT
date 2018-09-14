@@ -23,8 +23,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
       width: mainWindowState.width,
       height: mainWindowState.height,
-      x: mainWindowState.x,
-      y: mainWindowState.y,
+      x: 0,
+      y: 0,
       minHeight: 480,
       minWidth: 480,
       icon: __dirname + '/src/public/images/icon.png',
@@ -178,7 +178,7 @@ function createWindow () {
           { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
           { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
           { type: "separator" },
-          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:"},
           { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
           { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
           { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
@@ -260,6 +260,10 @@ app.on('activate', function () {
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow()
+    
+    mainWindow.addListener('keyup', (e) => {
+      console.log(`pressed: ${e.char}`)
+    }, false); 
   }
 });
 

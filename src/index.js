@@ -6,6 +6,7 @@ const fs = require('fs');
 const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
+const {clipboard} = require('electron')
 var trackingEnabled = true;
 var saveState,
     visitedFrames, //keep track of the visited frames
@@ -161,6 +162,52 @@ document.addEventListener('mousewheel', (e) => {
   }
 });
 
+document.addEventListener('keyup', (e) => {
+  console.log(`pressed: ${e.code}`)
+  if(videotagging){
+    var currentRegion = videotagging.getRegionById(videotagging.selectedRegionId);
+    if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX')){
+      console.log('yay! Copying');
+      console.log(`selected region: ${JSON.stringify(currentRegion, null, 4)}`);
+      console.log(`selected region Id: ${videotagging.selectedRegionId}`);
+      // var content = currentRegion.box
+      // content.tags = currentRegion.tags
+
+      var widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
+      var heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
+      var content = {
+        x1: currentRegion.x1 * widthRatio,
+        y1: currentRegion.y1 * heightRatio,
+        x2: currentRegion.x2 * widthRatio,
+        y2: currentRegion.y2 * heightRatio,
+        tags: currentRegion.tags
+      }
+      clipboard.writeText(JSON.stringify(content));
+      if(e.code == 'KeyX'){
+        videotagging.deleteRegionById(videotagging.selectedRegionId);
+        videotagging.showAllRegions();
+        console.log('cut')
+      }
+    } 
+    if(e.shiftKey && e.code == 'Delete') {
+      console.log('kewl');
+      e.stopPropagation();
+      deleteFrame()
+    }
+  }
+  if(e.ctrlKey && e.code == 'KeyV'){
+    console.log('yay! Pasting');
+    try{
+      var content = JSON.parse(clipboard.readText());
+      console.log(JSON.stringify(content));
+      videotagging.createRegion(content.x1, content.y1, content.x2, content.y2);
+      videotagging.addTagsToRegion(content.tags);
+    }catch(error) {
+      console.log('ERROR: No bounding box in clipboard')
+    }
+  }
+}, true); 
+
 //adds a loading animation to the tagger
 function addLoader() {
   if(!$('.loader').length) {
@@ -170,7 +217,11 @@ function addLoader() {
 
 //managed the visited frames
 function updateVisitedFrames(){
-  visitedFrames.add(videotagging.getCurrentFrameId());
+  if(videotagging.imagelist){
+    visitedFrames.add(videotagging.imagelist[videotagging.imageIndex].split("\\").pop());
+  } else {
+    visitedFrames.add(videotagging.getCurrentFrameId());
+  }
 }
 
 function checkPointRegion() {
@@ -279,7 +330,18 @@ function openPath(pathName, isDir) {
           visitedFrames = new Set(config.visitedFrames);
         } else {
           videotagging.inputframes = {};
-           visitedFrames =  (isDir) ? new Set([0]) : new Set();
+          if(isDir){
+            var files = fs.readdirSync(pathName);
+            
+            videotagging.imagelist = files.filter(function(file){
+                  return file.match(/.(jpg|jpeg|png|gif)$/i);
+            });
+            console.log(videotagging.imagelist[0])
+            visitedFrames = new Set([videotagging.imagelist[0]]);
+          } else {
+            visitedFrames = new Set();
+          }
+          // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
         } 
 
         if (isDir){
@@ -380,4 +442,44 @@ function save() {
            setTimeout(()=>{saveLock=false;}, 500);
     } 
 
+}
+
+function deleteFrame(){
+  console.log(videotagging.frames);
+  let currFrameId = videotagging.getCurrentFrameId();
+  delete videotagging.frames[currFrameId];
+  console.log(`currentframe: ${currFrameId}`);
+  console.log(videotagging.frames);
+  visitedFrames.delete(currFrameId);
+  videotagging.imagelist.splice(currFrameId,1)
+
+  var delObject = {
+    "frames" : videotagging.frames,
+    "framerate":$('#framerate').val(),
+    "inputTags": $('#inputtags').val().replace(/\s/g,''),
+    "suggestiontype": $('#suggestiontype').val(),
+    "scd": document.getElementById("scd").checked,
+    "visitedFrames": Array.from(visitedFrames),
+    "tag_colors" : videotagging.optionalTags.colors,
+  };
+
+  var delLock;
+  if (!delLock){
+    delLock = true;
+    fs.writeFile(`${videotagging.src}.json`, JSON.stringify(delObject),()=>{
+      deleState = JSON.stringify(delObject);
+      console.log(`deleted: ${currFrameId}`);
+    });
+    setTimeout(()=>{delLock=false;}, 500);
+  }
+  // console.log(`imglist: ${videotagging.imagelist}`)
+  videotagging.imageIndex--
+  console.log(`imgIndex: ${videotagging.imageIndex}`)
+  fs.unlinkSync(videotagging.imagelist[videotagging.imageIndex]);//, () => {console.log(`deleted: ${currFrameId}`)})
+
+  videotagging.imageIndex--;
+
+  videotagging.stepFwdClicked({});
+  
+  // loadTagger();
 }
