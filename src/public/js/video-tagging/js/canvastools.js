@@ -124,7 +124,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
                 buildOn(paper) {
                     this.anchorsGroup = paper.g();
-                    this.anchorsGroup.addClass("ancorsLayer");
+                    this.anchorsGroup.addClass("anchorsLayer");
                     this.anchors = {
                         TL: this.createAnchor(paper, "TL"),
                         TR: this.createAnchor(paper, "TR"),
@@ -312,8 +312,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         self.onChange(self.x, self.y, self.rect.width, self.rect.height, "movingend");
                     });
                 }
-                subscribeAnchorToEvents(ancor, active) {
-                    ancor.mouseover((e) => {
+                subscribeAnchorToEvents(anchor, active) {
+                    anchor.mouseover((e) => {
                         this.activeAnchor = active;
                         let p = this.getDragOriginPoint();
                         this.dragOrigin = p;
@@ -821,6 +821,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.x = 0;
                     this.y = 0;
                     this.rect = rect;
+                    this.area = 0;
                     this.ID = id;
                     this.tagsDescriptor = tagsDescriptor;
                     if (boundRect !== null) {
@@ -895,6 +896,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.rect.height = height;
                     this.boundRects.self.width = this.boundRects.host.width - width;
                     this.boundRects.self.height = this.boundRects.host.height - height;
+                    this.area = width * height;
                     this.UI.forEach((element) => {
                         element.resize(width, height);
                     });
@@ -1028,20 +1030,50 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         }
                     });
                 }
-                addRegion(id, pointA, pointB, tagsDescriptor) {
+
+                redrawAllRegions() {
+                    let sr = this.regions;
+                    this.deleteAllRegions();
+                    for(var i = 0; i < sr.length; i++) {
+                        this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tagsDescriptor);
+                        if(sr[i].isSelected) {
+                            this.selectRegionById(sr[i].ID);
+                        }
+                    }
+                }
+
+                redrawRegion(region) {
+                    let newRegion = region;
+                    this.deleteRegion(region);
+                    this.drawRegion(newRegion.x, newRegion.y, newRegion.rect, newRegion.ID, newRegion.tagsDescriptor);
+                    if(region.isSelected) {
+                        this.selectRegionById(region.ID);
+                    }
+                }
+
+                drawRegion(x,y,rect,id,tagsDescriptor) {
                     this.menu.hide();
+                    let region = new RegionElement(this.paper, rect, this.paperRect, id, tagsDescriptor,this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
+                    region.area = rect.height * rect.width;
+                    region.move(new base.Point2D(x, y));
+                    region.onChange = this.onRegionUpdate.bind(this);
+                    region.tags.updateTags(tagsDescriptor);
+                    this.regionManagerLayer.add(region.regionGroup);
+                    this.regions.push(region);
+                    this.sortRegionsByArea();
+                    this.menu.showOnRegion(region);  
+                }
+
+                addRegion(id, pointA, pointB, tagsDescriptor) {
                     let x = (pointA.x < pointB.x) ? pointA.x : pointB.x;
                     let y = (pointA.y < pointB.y) ? pointA.y : pointB.y;
                     let w = Math.abs(pointA.x - pointB.x);
                     let h = Math.abs(pointA.y - pointB.y);
-                    let region = new RegionElement(this.paper, new base.Rect(w, h), this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
-                    region.move(new base.Point2D(x, y));
-                    region.onChange = this.onRegionUpdate.bind(this);
+                    this.drawRegion(x, y, new base.Rect(w,h), id, tagsDescriptor);
+                    this.redrawAllRegions();
                     this.unselectRegions();
-                    region.select();
-                    this.regionManagerLayer.add(region.regionGroup);
-                    this.regions.push(region);
-                    this.menu.showOnRegion(region);
+                    this.selectRegionById(id);
+                    //this.updateTagsById(id);
                 }
                 lookupRegionByID(id) {
                     let region = null;
@@ -1132,6 +1164,51 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         this.menu.showOnRegion(r);
                     }
                 }
+
+                sortRegionsByArea() {
+                    function quickSort(arr, left, right){
+                        var len = arr.length, 
+                        pivot,
+                        partitionIndex;
+                     
+                     
+                       if(left < right){
+                         pivot = right;
+                         partitionIndex = partition(arr, pivot, left, right);
+                         
+                        //sort left and right
+                        quickSort(arr, left, partitionIndex - 1);
+                        quickSort(arr, partitionIndex + 1, right);
+                       }
+                       return arr;
+                     }
+
+                     function partition(arr, pivot, left, right){
+                        var pivotValue = arr[pivot].area,
+                            partitionIndex = left;
+                     
+                        for(var i = left; i < right; i++){
+                         if(arr[i].area > pivotValue){
+                           swap(arr, i, partitionIndex);
+                           partitionIndex++;
+                         }
+                       }
+                       swap(arr, right, partitionIndex);
+                       return partitionIndex;
+                     }
+
+                     function swap(arr, i, j){
+                        var temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
+                     }
+
+                     let length = this.regions.length;
+                     if(length > 1) {
+                        quickSort(this.regions, 0, this.regions.length - 1);
+                     }
+                }
+
                 selectRegionById(id) {
                     let region = this.lookupRegionByID(id);
                     this.selectRegion(region);
@@ -1202,6 +1279,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         r.move(new base.Point2D(r.x * tw, r.y * th));
                         r.resize(r.rect.width * tw, r.rect.height * th);
                     }
+                    this.redrawAllRegions();
                 }
                 onManipulationBegin_local(region) {
                     this.onManipulationBegin();
@@ -1230,6 +1308,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         if (this.justManipulated) {
                             region.select();
                             this.menu.showOnRegion(region);
+                            this.sortRegionsByArea();
+                            this.redrawAllRegions();
                         }
                     }
                     else if (state == "clicked" && !this.justManipulated) {
@@ -1250,6 +1330,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 this.onRegionSelected("");
                             }
                         }
+                        this.sortRegionsByArea();
                     }
                 }
                 unselectRegions(except) {
@@ -1384,6 +1465,7 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
             class AreaSelector {
                 constructor(svgHost, onSelectionBegin, onSelectionEnd) {
                     this.capturingState = false;
+                    this.exclusiveCapturingState = false;
                     this.isEnabled = true;
                     this.squareMode = false;
                     this.twoPointsMode = false;
@@ -1473,6 +1555,7 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         this.moveCross(this.crossB, p);
                         this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
                     }
+                    this.disableExclusiveMode();
                 }
                 onPointerDown(e) {
                     if (!this.twoPointsMode) {
@@ -1496,6 +1579,7 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         if (typeof this.onSelectionEndCallback === "function") {
                             this.onSelectionEndCallback(this.crossA.x, this.crossA.y, this.crossB.x, this.crossB.y);
                         }
+                        this.disableExclusiveMode();
                     }
                     else if (this.twoPointsMode && !this.capturingState) {
                         this.capturingState = true;
@@ -1514,6 +1598,7 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         }
                         this.moveCross(this.crossA, p);
                         this.moveCross(this.crossB, p);
+                        this.disableExclusiveMode();
                     }
                 }
                 onPointerMove(e) {
@@ -1542,34 +1627,58 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         this.squareMode = true;
                     }
                     if (e.ctrlKey && !this.capturingState) {
-                        this.twoPointsMode = true;
+                            this.twoPointsMode = true;
+                            console.log("TwoPointsMode " + this.twoPointsMode);
                     }
                 }
                 onKeyUp(e) {
                     if (!e.shiftKey) {
                         this.squareMode = false;
                     }
-                    if (!e.ctrlKey && this.twoPointsMode) {
+                    if (!e.ctrlKey && this.twoPointsMode && !this.exclusiveCapturingState) {
                         this.twoPointsMode = false;
+                        console.log("TwoPointsMode exits " + this.twoPointsMode);
                         this.capturingState = false;
                         this.moveCross(this.crossA, this.crossB);
                         this.hideAll([this.crossB, this.selectionBox, this.overlay]);
                     }
+
+                    //Ctrl + N to add new region temporarily disabling all others
+                    if(e.ctrlKey && e.keyCode == 78 && !this.exclusiveCapturingState) {
+                        this.enableExclusiveMode();
+                        this.twoPointsMode = false;
+                        console.log("TwoPointsMode in exclusive mode " + this.twoPointsMode);
+                    } 
+                    //Escape to exit exclusive mode
+                    if(e.keyCode == 27) {
+                        this.disableExclusiveMode();
+                    }
                 }
+
                 subscribeToEvents() {
                     let self = this;
                     let listeners = [
-                        { event: "pointerenter", listener: this.onPointerEnter, base: this.baseParent },
-                        { event: "pointerleave", listener: this.onPointerLeave, base: this.baseParent },
-                        { event: "pointerdown", listener: this.onPointerDown, base: this.baseParent },
-                        { event: "pointerup", listener: this.onPointerUp, base: this.baseParent },
-                        { event: "pointermove", listener: this.onPointerMove, base: this.baseParent },
-                        { event: "keydown", listener: this.onKeyDown, base: window },
-                        { event: "keyup", listener: this.onKeyUp, base: window },
+                        { event: "pointerenter", listener: this.onPointerEnter, base: this.baseParent, bypass: false },
+                        { event: "pointerleave", listener: this.onPointerLeave, base: this.baseParent, bypass: false },
+                        { event: "pointerdown", listener: this.onPointerDown, base: this.baseParent, bypass: false },
+                        { event: "pointerup", listener: this.onPointerUp, base: this.baseParent, bypass: false },
+                        { event: "pointermove", listener: this.onPointerMove, base: this.baseParent, bypass: false },
+                        { event: "keydown", listener: this.onKeyDown, base: window, bypass: false },
+                        { event: "keyup", listener: this.onKeyUp, base: window, bypass: true },
                     ];
                     listeners.forEach(e => {
-                        e.base.addEventListener(e.event, this.enablify(e.listener.bind(this)));
+                        e.base.addEventListener(e.event, this.enablify(e.listener.bind(this), e.bypass));
                     });
+                }
+                enableExclusiveMode() {
+                    this.exclusiveCapturingState = true;
+                    this.showAll([this.overlay]);
+                    this.hideAll([this.selectionBox]);
+                    this.enable();
+                }
+                disableExclusiveMode() {
+                    this.exclusiveCapturingState = false;
+                    this.hideAll([this.overlay]);
                 }
                 moveCross(cross, p, square = false, refCross = null) {
                     cross.move(p, this.paperRect, square, refCross);
@@ -1589,15 +1698,17 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                     });
                 }
                 disable() {
-                    this.isEnabled = false;
-                    this.areaSelectorLayer.attr({
-                        display: "none"
-                    });
+                    if(!this.exclusiveCapturingState) {
+                        this.isEnabled = false;
+                        this.areaSelectorLayer.attr({
+                            display: "none"
+                        });
+                    }
                 }
-                enablify(f) {
+                enablify(f,bypass=false) {
                     let self = this;
                     return function (args) {
-                        if (this.isEnabled) {
+                        if (this.isEnabled || bypass) {
                             f(args);
                         }
                     }.bind(self);
