@@ -141,6 +141,8 @@
         this.imageIndex = 0;
         this.curImg = new Image();
         this.rotation = 0;
+        this.prevFrameIndex = 0;
+        this.shiftKey = false;
 
         //Frame view size
         this.frameWidth = 0;
@@ -358,8 +360,8 @@
                     console.log(`2: ${frameId}`)
                 }
                 if (frameId > 0) {
-                    console.log(this.getCurrentFrameRegions())
-                    this.frames[frameId] = this.getPrevFrameRegionsCopy();
+                    console.log(this.frames[frameId])
+                    this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
                     console.log(this.frames[frameId])
                 }
                 this.playingCallback();
@@ -440,12 +442,19 @@
         return this.getRegions(this.getCurrentFrameId());
     },
 
+    getSelectedRegions: function() {
+        // console.log(this.selectedRegionId)
+        return this.selectedRegionId.map(x =>  this.getRegionById(x))
+    },
+
     getPrevFrameRegionsCopy: function() {
         if(this.imagelist){
             // console.log(this.getRegions(this.imagelist[this.imageIndex - 1].split("\\").pop()))
-            return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.imageIndex - 1].split("\\").pop())));    
+            // console.log(`getprevregcopy: ${this.imagelist[this.imageIndex - 1]}`)
+            console.log(`getprevregcopy: ${this.prevFrameIndex}`)
+            return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.prevFrameIndex].split("\\").pop())));    
         } else {
-            return JSON.parse(JSON.stringify(this.getRegions(this.getCurrentFrameId() - 1)));
+            return JSON.parse(JSON.stringify(this.getRegions(this.prevFrameIndex)));
         }
     },
 
@@ -611,15 +620,22 @@
             multiselection = false;
         }
 
-        this.cleanSelectedElements();
+        if(!this.shiftKey){
+            console.log('clean')
+            this.cleanSelectedElements();
+        }
         //Tags - display the tags of the region and enable editing
         this.optionalTags.toggleEnableButtons(true);
         this.optionalTags.resetSelected();
 
         if (id != "") {
             let region = this.getRegionById(id);
-            if(region) {
-                this.selectedRegionId = [id];
+            console.log(`regionin: ${this.selectedRegionId}`)
+            console.log(this.selectedRegionId.includes(region.UID))
+            if(region && !this.selectedRegionId.includes(region.UID)) {
+                this.selectedRegionId.push(id);
+                console.log('new!')
+                // this.selectedRegionId = [id]
                 var tags = region.tags;
                 this.optionalTags.displaySelectedTags(tags);
             }
@@ -1001,6 +1017,8 @@
     },
     stepFwdClicked: function(fireEvents = true) {       
         if (this.checkRegionLabels()){
+            this.prevFrameIndex = this.imageIndex;
+            this.cleanSelectedElements()
             //raise before next frame  
             if (this.imagelist){//image handling
                 if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
@@ -1027,7 +1045,9 @@
         }
     },
     stepBwdClicked: function(fireEvents = true) {
-        if (!this.canMove) return;    
+        if (!this.canMove) return;
+        this.prevFrameIndex = this.imageIndex;    
+        this.cleanSelectedElements();
         if (this.imagelist){//image handling
             if (this.imageIndex > 0) {
                 this.imageIndex--;

@@ -89,7 +89,7 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
         $(".loader").remove();        
     });
   }
-   else {
+  else {
       alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
   }
       
@@ -162,32 +162,57 @@ document.addEventListener('mousewheel', (e) => {
   }
 });
 
+document.addEventListener('keydown', (e) => {
+  if(e.shiftKey){
+    videotagging.shiftKey = true;
+    console.log('shift: true')
+  }
+});
+
 document.addEventListener('keyup', (e) => {
   console.log(`pressed: ${e.code}`)
+  
+  if(!e.shiftKey){
+    videotagging.shiftKey = false;
+    console.log('shift: false')
+  }
+
   if(videotagging){
-    var currentRegion = videotagging.getRegionById(videotagging.selectedRegionId);
+    var selectedRegions = videotagging.getSelectedRegions();
+    console.log(selectedRegions)
+    // let currentRegion  = selectedRegions[0]
     if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX')){
       console.log('yay! Copying');
-      console.log(`selected region: ${JSON.stringify(currentRegion, null, 4)}`);
+      console.log(`selected region: ${JSON.stringify(selectedRegions, null, 4)}`);
       console.log(`selected region Id: ${videotagging.selectedRegionId}`);
       // var content = currentRegion.box
       // content.tags = currentRegion.tags
 
       var widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
       var heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
-      var content = {
-        x1: currentRegion.x1 * widthRatio,
-        y1: currentRegion.y1 * heightRatio,
-        x2: currentRegion.x2 * widthRatio,
-        y2: currentRegion.y2 * heightRatio,
-        tags: currentRegion.tags
+      var content = [];
+      
+      for(let currentRegion of selectedRegions){
+        content.push(
+          {
+            x1: currentRegion.x1 * widthRatio,
+            y1: currentRegion.y1 * heightRatio,
+            x2: currentRegion.x2 * widthRatio,
+            y2: currentRegion.y2 * heightRatio,
+            tags: currentRegion.tags
+          }
+        )
+
+        if(e.code == 'KeyX'){
+          videotagging.deleteRegionById(currentRegion.UID);
+          // videotagging.showAllRegions();
+          console.log('cut')
+        }
       }
+      
+      console.log(content)
       clipboard.writeText(JSON.stringify(content));
-      if(e.code == 'KeyX'){
-        videotagging.deleteRegionById(videotagging.selectedRegionId);
-        videotagging.showAllRegions();
-        console.log('cut')
-      }
+      videotagging.showAllRegions();
     } 
     if(e.shiftKey && e.code == 'Delete') {
       console.log('kewl');
@@ -200,8 +225,11 @@ document.addEventListener('keyup', (e) => {
     try{
       var content = JSON.parse(clipboard.readText());
       console.log(JSON.stringify(content));
-      videotagging.createRegion(content.x1, content.y1, content.x2, content.y2);
-      videotagging.addTagsToRegion(content.tags);
+
+      for(let currentRegion of content){
+        videotagging.createRegion(currentRegion.x1, currentRegion.y1, currentRegion.x2, currentRegion.y2);
+        videotagging.addTagsToRegion(currentRegion.tags);
+      }
     }catch(error) {
       console.log('ERROR: No bounding box in clipboard')
     }
@@ -445,14 +473,14 @@ function save() {
 }
 
 function deleteFrame(){
-  console.log(videotagging.frames);
+  if(!confirm('This will delete the image from disk and remove it\'s tags from the save file.\nAre you sure you want to delete this image?')) return;
   let currFrameId = videotagging.getCurrentFrameId();
+  
+  fs.unlinkSync(videotagging.imagelist[videotagging.imageIndex]);
   delete videotagging.frames[currFrameId];
-  console.log(`currentframe: ${currFrameId}`);
-  console.log(videotagging.frames);
-  visitedFrames.delete(currFrameId);
-  videotagging.imagelist.splice(currFrameId,1)
-
+  
+  videotagging.imagelist.splice(videotagging.imageIndex,1)
+  
   var delObject = {
     "frames" : videotagging.frames,
     "framerate":$('#framerate').val(),
@@ -468,16 +496,11 @@ function deleteFrame(){
     delLock = true;
     fs.writeFile(`${videotagging.src}.json`, JSON.stringify(delObject),()=>{
       deleState = JSON.stringify(delObject);
-      console.log(`deleted: ${currFrameId}`);
     });
     setTimeout(()=>{delLock=false;}, 500);
   }
-  // console.log(`imglist: ${videotagging.imagelist}`)
-  videotagging.imageIndex--
-  console.log(`imgIndex: ${videotagging.imageIndex}`)
-  fs.unlinkSync(videotagging.imagelist[videotagging.imageIndex]);//, () => {console.log(`deleted: ${currFrameId}`)})
 
-  videotagging.imageIndex--;
+  videotagging.imageIndex--
 
   videotagging.stepFwdClicked({});
   
