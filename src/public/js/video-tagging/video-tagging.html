@@ -142,7 +142,6 @@
         this.curImg = new Image();
         this.rotation = 0;
         this.prevFrameIndex = 0;
-        this.shiftKey = false;
 
         //Frame view size
         this.frameWidth = 0;
@@ -354,15 +353,15 @@
                 break;
             case 68:// d for duplicate
                 let frameId = this.getCurrentFrameId();
-                console.log(`1: ${frameId}`)
+                // console.log(`1: ${frameId}`)
                 if(this.imagelist){
                     frameId = this.imageIndex
-                    console.log(`2: ${frameId}`)
+                    // console.log(`2: ${frameId}`)
                 }
                 if (frameId > 0) {
-                    console.log(this.frames[frameId])
+                    // console.log(this.frames[frameId])
                     this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
-                    console.log(this.frames[frameId])
+                    // console.log(this.frames[frameId])
                 }
                 this.playingCallback();
                 break;
@@ -451,7 +450,7 @@
         if(this.imagelist){
             // console.log(this.getRegions(this.imagelist[this.imageIndex - 1].split("\\").pop()))
             // console.log(`getprevregcopy: ${this.imagelist[this.imageIndex - 1]}`)
-            console.log(`getprevregcopy: ${this.prevFrameIndex}`)
+            // console.log(`getprevregcopy: ${this.prevFrameIndex}`)
             return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.prevFrameIndex].split("\\").pop())));    
         } else {
             return JSON.parse(JSON.stringify(this.getRegions(this.prevFrameIndex)));
@@ -619,8 +618,8 @@
         if (multiselection == undefined) {
             multiselection = false;
         }
-
-        if(!this.shiftKey){
+        console.log(`multi: ${multiselection}`);
+        if(!multiselection){
             console.log('clean')
             this.cleanSelectedElements();
         }
@@ -630,8 +629,8 @@
 
         if (id != "") {
             let region = this.getRegionById(id);
-            console.log(`regionin: ${this.selectedRegionId}`)
-            console.log(this.selectedRegionId.includes(region.UID))
+            // console.log(`regionin: ${this.selectedRegionId}`)
+            // console.log(this.selectedRegionId.includes(region.UID))
             if(region && !this.selectedRegionId.includes(region.UID)) {
                 this.selectedRegionId.push(id);
                 console.log('new!')
@@ -639,6 +638,12 @@
                 var tags = region.tags;
                 this.optionalTags.displaySelectedTags(tags);
             }
+        }
+    },
+
+    selectAllRegions: function(){
+        for(let region of this.getCurrentFrameRegions()){
+          this.selectRegion(region.UID, true);
         }
     },
 

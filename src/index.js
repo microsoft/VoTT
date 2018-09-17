@@ -162,36 +162,26 @@ document.addEventListener('mousewheel', (e) => {
   }
 });
 
-document.addEventListener('keydown', (e) => {
-  if(e.shiftKey){
-    videotagging.shiftKey = true;
-    console.log('shift: true')
-  }
-});
-
 document.addEventListener('keyup', (e) => {
   console.log(`pressed: ${e.code}`)
   
-  if(!e.shiftKey){
-    videotagging.shiftKey = false;
-    console.log('shift: false')
-  }
-
   if(videotagging){
     var selectedRegions = videotagging.getSelectedRegions();
     console.log(selectedRegions)
-    // let currentRegion  = selectedRegions[0]
-    if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX')){
-      console.log('yay! Copying');
-      console.log(`selected region: ${JSON.stringify(selectedRegions, null, 4)}`);
-      console.log(`selected region Id: ${videotagging.selectedRegionId}`);
-      // var content = currentRegion.box
-      // content.tags = currentRegion.tags
+    if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX' || e.code == 'KeyA')){
+      // console.log('yay! Copying');
+      // console.log(`selected region: ${JSON.stringify(selectedRegions, null, 4)}`);
+      // console.log(`selected region Id: ${videotagging.selectedRegionId}`);
 
       var widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
       var heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
       var content = [];
       
+      if(e.code == 'KeyA'){
+        videotagging.selectAllRegions();
+        selectedRegions = videotagging.getSelectedRegions();
+      }
+
       for(let currentRegion of selectedRegions){
         content.push(
           {
@@ -205,26 +195,27 @@ document.addEventListener('keyup', (e) => {
 
         if(e.code == 'KeyX'){
           videotagging.deleteRegionById(currentRegion.UID);
-          // videotagging.showAllRegions();
-          console.log('cut')
+          videotagging.showAllRegions();
+          // console.log('cut')
         }
       }
-      
-      console.log(content)
+
+      // videotagging.showAllRegions();
+
+      // console.log(`content: ${JSON.stringify(content)}`)
       clipboard.writeText(JSON.stringify(content));
-      videotagging.showAllRegions();
     } 
     if(e.shiftKey && e.code == 'Delete') {
-      console.log('kewl');
+      // console.log('kewl');
       e.stopPropagation();
       deleteFrame()
     }
   }
   if(e.ctrlKey && e.code == 'KeyV'){
-    console.log('yay! Pasting');
+    // console.log('yay! Pasting');
     try{
       var content = JSON.parse(clipboard.readText());
-      console.log(JSON.stringify(content));
+      // console.log(JSON.stringify(content));
 
       for(let currentRegion of content){
         videotagging.createRegion(currentRegion.x1, currentRegion.y1, currentRegion.x2, currentRegion.y2);
