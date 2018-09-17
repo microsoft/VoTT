@@ -1035,7 +1035,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let sr = this.regions;
                     this.deleteAllRegions();
                     for(var i = 0; i < sr.length; i++) {
-                        this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tagsDescriptor);
+                        this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tags.tags);
                         if(sr[i].isSelected) {
                             this.selectRegionById(sr[i].ID);
                         }
@@ -1045,7 +1045,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 redrawRegion(region) {
                     let newRegion = region;
                     this.deleteRegion(region);
-                    this.drawRegion(newRegion.x, newRegion.y, newRegion.rect, newRegion.ID, newRegion.tagsDescriptor);
+                    this.drawRegion(newRegion.x, newRegion.y, newRegion.rect, newRegion.ID, newRegion.tags.tags);
                     if(region.isSelected) {
                         this.selectRegionById(region.ID);
                     }
@@ -1057,9 +1057,13 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     region.area = rect.height * rect.width;
                     region.move(new base.Point2D(x, y));
                     region.onChange = this.onRegionUpdate.bind(this);
-                    region.tags.updateTags(tagsDescriptor);
+                    region.tags.updateTags(region.tags.tags);
                     this.regionManagerLayer.add(region.regionGroup);
                     this.regions.push(region);
+                    // Need to do a check for invalid stacking from user generated or older saved json
+                    if(this.regions.length > 1 && region.area > this.regions[this.regions.length - 2]) {
+                        this.redrawAllRegions();
+                    }
                     this.sortRegionsByArea();
                     this.menu.showOnRegion(region);  
                 }
@@ -1070,7 +1074,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let w = Math.abs(pointA.x - pointB.x);
                     let h = Math.abs(pointA.y - pointB.y);
                     this.drawRegion(x, y, new base.Rect(w,h), id, tagsDescriptor);
-                    this.redrawAllRegions();
                     this.unselectRegions();
                     this.selectRegionById(id);
                     //this.updateTagsById(id);
@@ -1279,7 +1282,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         r.move(new base.Point2D(r.x * tw, r.y * th));
                         r.resize(r.rect.width * tw, r.rect.height * th);
                     }
-                    this.redrawAllRegions();
                 }
                 onManipulationBegin_local(region) {
                     this.onManipulationBegin();
