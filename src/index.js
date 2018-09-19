@@ -463,6 +463,7 @@ function save() {
 }
 
 function deleteFrame(){
+  if(!videotagging.imagelist) return;
   if(!confirm('This will delete the image from disk and remove it\'s tags from the save file.\nAre you sure you want to delete this image?')) return;
   let currFrameId = videotagging.getCurrentFrameId();
   
@@ -490,7 +491,9 @@ function deleteFrame(){
     setTimeout(()=>{delLock=false;}, 500);
   }
 
-  videotagging.imageIndex--
+  if(videotagging.imageIndex > 0){
+    videotagging.imageIndex--
+  }
 
   videotagging.stepFwdClicked({});
   
