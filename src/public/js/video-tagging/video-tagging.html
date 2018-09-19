@@ -142,6 +142,7 @@
         this.curImg = new Image();
         this.rotation = 0;
         this.prevFrameIndex = 0;
+        this.multiselection = false;
 
         //Frame view size
         this.frameWidth = 0;
@@ -613,10 +614,10 @@
             multiselection = false;
         }
 
-        if(!multiselection){
-            
+        if(!this.multiselection && !multiselection){
             this.cleanSelectedElements();
         }
+
         //Tags - display the tags of the region and enable editing
         this.optionalTags.toggleEnableButtons(true);
         this.optionalTags.resetSelected();

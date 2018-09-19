@@ -162,7 +162,16 @@ document.addEventListener('mousewheel', (e) => {
   }
 });
 
+document.addEventListener('keydown', (e) => {
+  if(e.shiftKey){
+    videotagging.multiselection = true;
+  }
+});
+
 document.addEventListener('keyup', (e) => {
+  if(!e.shiftKey){
+    videotagging.multiselection = false;
+  }
 
   if(videotagging){
     var selectedRegions = videotagging.getSelectedRegions();
