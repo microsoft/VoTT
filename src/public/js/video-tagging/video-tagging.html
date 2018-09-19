@@ -353,17 +353,16 @@
                 break;
             case 68:// d for duplicate
                 let frameId = this.getCurrentFrameId();
-                // console.log(`1: ${frameId}`)
                 if(this.imagelist){
                     frameId = this.imageIndex
-                    // console.log(`2: ${frameId}`)
                 }
-                if (frameId > 0) {
-                    // console.log(this.frames[frameId])
+                if (frameId > 0) {// space to toggle play/pause
                     this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
-                    // console.log(this.frames[frameId])
                 }
                 this.playingCallback();
+                break;
+            case 32:
+                this.playPauseClicked();
                 break;
             default: return; // exit this handler for other keys
             }
@@ -431,7 +430,6 @@
 
     getCurrentFrameId: function() {
       if (this.imagelist){
-        // return this.imageIndex;
         return (this.imagelist[this.imageIndex].split("\\").pop());
       } 
       return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
@@ -442,15 +440,11 @@
     },
 
     getSelectedRegions: function() {
-        // console.log(this.selectedRegionId)
         return this.selectedRegionId.map(x =>  this.getRegionById(x))
     },
 
     getPrevFrameRegionsCopy: function() {
         if(this.imagelist){
-            // console.log(this.getRegions(this.imagelist[this.imageIndex - 1].split("\\").pop()))
-            // console.log(`getprevregcopy: ${this.imagelist[this.imageIndex - 1]}`)
-            // console.log(`getprevregcopy: ${this.prevFrameIndex}`)
             return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.prevFrameIndex].split("\\").pop())));    
         } else {
             return JSON.parse(JSON.stringify(this.getRegions(this.prevFrameIndex)));
@@ -618,9 +612,9 @@
         if (multiselection == undefined) {
             multiselection = false;
         }
-        console.log(`multi: ${multiselection}`);
+
         if(!multiselection){
-            console.log('clean')
+            
             this.cleanSelectedElements();
         }
         //Tags - display the tags of the region and enable editing
@@ -629,12 +623,10 @@
 
         if (id != "") {
             let region = this.getRegionById(id);
-            // console.log(`regionin: ${this.selectedRegionId}`)
-            // console.log(this.selectedRegionId.includes(region.UID))
+            
             if(region && !this.selectedRegionId.includes(region.UID)) {
                 this.selectedRegionId.push(id);
-                console.log('new!')
-                // this.selectedRegionId = [id]
+                
                 var tags = region.tags;
                 this.optionalTags.displaySelectedTags(tags);
             }

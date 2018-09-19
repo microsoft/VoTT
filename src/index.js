@@ -163,21 +163,17 @@ document.addEventListener('mousewheel', (e) => {
 });
 
 document.addEventListener('keyup', (e) => {
-  console.log(`pressed: ${e.code}`)
-  
+
   if(videotagging){
     var selectedRegions = videotagging.getSelectedRegions();
-    console.log(selectedRegions)
+    
     if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX' || e.code == 'KeyA')){
-      // console.log('yay! Copying');
-      // console.log(`selected region: ${JSON.stringify(selectedRegions, null, 4)}`);
-      // console.log(`selected region Id: ${videotagging.selectedRegionId}`);
 
       var widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
       var heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
       var content = [];
       
-      if(e.code == 'KeyA'){
+      if(e.code == 'KeyA'){ //select all
         videotagging.selectAllRegions();
         selectedRegions = videotagging.getSelectedRegions();
       }
@@ -193,35 +189,29 @@ document.addEventListener('keyup', (e) => {
           }
         )
 
-        if(e.code == 'KeyX'){
+        if(e.code == 'KeyX'){ //cut 
           videotagging.deleteRegionById(currentRegion.UID);
           videotagging.showAllRegions();
-          // console.log('cut')
         }
       }
 
-      // videotagging.showAllRegions();
-
-      // console.log(`content: ${JSON.stringify(content)}`)
       clipboard.writeText(JSON.stringify(content));
     } 
     if(e.shiftKey && e.code == 'Delete') {
-      // console.log('kewl');
       e.stopPropagation();
       deleteFrame()
     }
   }
-  if(e.ctrlKey && e.code == 'KeyV'){
-    // console.log('yay! Pasting');
+  if(e.ctrlKey && e.code == 'KeyV'){ //paste
     try{
       var content = JSON.parse(clipboard.readText());
-      // console.log(JSON.stringify(content));
 
       for(let currentRegion of content){
         videotagging.createRegion(currentRegion.x1, currentRegion.y1, currentRegion.x2, currentRegion.y2);
         videotagging.addTagsToRegion(currentRegion.tags);
       }
     }catch(error) {
+      alert('No bounding box in clipboard')
       console.log('ERROR: No bounding box in clipboard')
     }
   }
