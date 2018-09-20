@@ -953,14 +953,14 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 subscribeToEvents() {
                     window.addEventListener("keyup", (e) => {
                         switch (e.keyCode) {
-                            case 9:
+                            case 9: //Tab - Select Next Region
                                 this.selectNextRegion();
                                 break;
-                            case 46:
-                            case 8:
+                            case 46: //Delete key
+                            case 8:  //Backspace key
                                 this.deleteSelectedRegions();
                                 break;
-                            case 38:
+                            case 38: //Up arrow
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(0, -5);
@@ -973,7 +973,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 40:
+                            case 40: //Down Arrow
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(0, 5);
@@ -986,7 +986,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 37:
+                            case 37: //Left Arrow
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(-5, 0);
@@ -999,7 +999,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 39:
+                            case 39: //Right Arrow
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(5, 0);
@@ -1018,8 +1018,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                     window.addEventListener("keydown", (e) => {
                         switch (e.keyCode) {
-                            case 65:
-                            case 97:
+                            case 65: // "A"
+                            case 97: // "1" on Numpad
                                 if (e.ctrlKey) {
                                     this.selectAllRegions();
                                     e.preventDefault();
