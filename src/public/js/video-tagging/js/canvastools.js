@@ -1630,7 +1630,6 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                     }
                     if (e.ctrlKey && !this.capturingState) {
                             this.twoPointsMode = true;
-                            console.log("TwoPointsMode " + this.twoPointsMode);
                     }
                 }
                 onKeyUp(e) {
@@ -1639,7 +1638,6 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                     }
                     if (!e.ctrlKey && this.twoPointsMode && !this.exclusiveCapturingState) {
                         this.twoPointsMode = false;
-                        console.log("TwoPointsMode exits " + this.twoPointsMode);
                         this.capturingState = false;
                         this.moveCross(this.crossA, this.crossB);
                         this.hideAll([this.crossB, this.selectionBox, this.overlay]);
@@ -1649,7 +1647,6 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                     if(e.ctrlKey && e.keyCode == 78 && !this.exclusiveCapturingState) {
                         this.enableExclusiveMode();
                         this.twoPointsMode = false;
-                        console.log("TwoPointsMode in exclusive mode " + this.twoPointsMode);
                     } 
                     //Escape to exit exclusive mode
                     if(e.keyCode == 27) {
