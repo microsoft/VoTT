@@ -7,9 +7,9 @@
         //.tagStyle [n]
 --> .dragLayer
     --> .dragRectStyle
---> .ancorsLayer
-    --> .ancorStyle [4]
-        .ancorStyle.ghost
+--> .anchorsLayer
+    --> .anchorStyle [4]
+        .anchorStyle.ghost
 --> .menuLayer
     --> .menuRectStyle
 */
@@ -79,11 +79,11 @@
     fill:rgb(7, 189, 143);
 }
 
-.regionStyle:hover .ancorStyle {
+.regionStyle:hover .anchorStyle {
     stroke: #fff;
 }
 
-.regionStyle.selected .ancorStyle {
+.regionStyle.selected .anchorStyle {
     stroke: rgb(7, 189, 143);
 }
 

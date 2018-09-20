@@ -200,6 +200,13 @@
                 self.btools = modules[2].CanvasTools.Base;
 
                 var regionsManager;
+                
+
+                regionsManager = new self.rtools.RegionsManager(self.selectionZone, 
+                    function() { },
+                    function() { })
+                ;
+
                 self.areaSelector = new self.stools.AreaSelector(self.selectionZone, 
                     function(){
                         self.selectionZone.style.zIndex = 300;
@@ -210,14 +217,12 @@
                     }
                 );
 
-                regionsManager = new self.rtools.RegionsManager(self.selectionZone, 
-                    function() {
-                        self.areaSelector.disable();
-                    },
-                    function() {
-                        self.areaSelector.enable();
-                    })
-                ;
+                regionsManager.onManipulationEnd = function() {
+                    self.areaSelector.enable();
+                };
+                regionsManager.onManipulationBegin = function() {
+                    self.areaSelector.disable();
+                };
 
                 regionsManager.onRegionSelected = function(id, multiselection) {                    
                     self.selectRegion(id, multiselection);
@@ -724,7 +729,11 @@
                 
                 this.registerRegion(x1, y1, x2, y2, region.UID, region.tags); ; //add frame                  
             }
+            //Redraws all regions to ensure proper z-order stacking
+            this.regionsManager.redrawAllRegions();
         }
+        //Clears areaSelector state when moving across frames
+        this.regionsManager.onManipulationEnd();
     },
     
     /**
