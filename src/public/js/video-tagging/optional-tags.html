@@ -99,16 +99,17 @@
                 if (index < this.tags.length) {
                     let tag = this.tags[index];
                     let btn = this.getBtnByTag(tag);
+                    if(!btn.disabled) {
+                        if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
+                            this.tagsState[tag] = "full";
+                            self.setSelected(btn);
+                        } else {
+                            this.tagsState[tag] = "empty";
+                            self.setUnselected(btn);
+                        }
 
-                    if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
-                        this.tagsState[tag] = "full";
-                        self.setSelected(btn);
-                    } else {
-                        this.tagsState[tag] = "empty";
-                        self.setUnselected(btn);
+                        self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
                     }
-
-                    self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
                 }                
             }
         });
