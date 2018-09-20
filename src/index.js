@@ -162,18 +162,18 @@ document.addEventListener('mousewheel', (e) => {
   }
 });
 
-document.addEventListener('keydown', (e) => {
-  if(e.shiftKey){
+window.addEventListener('keydown', (e) => {
+  if(e.shiftKey && videotagging){
     videotagging.multiselection = true;
   }
 });
 
-document.addEventListener('keyup', (e) => {
-  if(!e.shiftKey){
-    videotagging.multiselection = false;
-  }
-
+window.addEventListener('keyup', (e) => {
   if(videotagging){
+    if(!e.shiftKey){
+      videotagging.multiselection = false;
+    }
+  
     var selectedRegions = videotagging.getSelectedRegions();
     
     if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX' || e.code == 'KeyA')){
@@ -220,7 +220,6 @@ document.addEventListener('keyup', (e) => {
         videotagging.addTagsToRegion(currentRegion.tags);
       }
     }catch(error) {
-      alert('No bounding box in clipboard')
       console.log('ERROR: No bounding box in clipboard')
     }
   }
@@ -467,7 +466,13 @@ function deleteFrame(){
   if(!confirm('This will delete the image from disk and remove it\'s tags from the save file.\nAre you sure you want to delete this image?')) return;
   let currFrameId = videotagging.getCurrentFrameId();
   
-  fs.unlinkSync(videotagging.imagelist[videotagging.imageIndex]);
+  try{
+    fs.unlinkSync(videotagging.imagelist[videotagging.imageIndex]);
+  }
+  catch(error){
+    console.error(error)
+  }
+  
   delete videotagging.frames[currFrameId];
   
   videotagging.imagelist.splice(videotagging.imageIndex,1)
@@ -485,9 +490,14 @@ function deleteFrame(){
   var delLock;
   if (!delLock){
     delLock = true;
-    fs.writeFile(`${videotagging.src}.json`, JSON.stringify(delObject),()=>{
-      deleState = JSON.stringify(delObject);
-    });
+    try{
+      fs.writeFile(`${videotagging.src}.json`, JSON.stringify(delObject),()=>{
+        deleState = JSON.stringify(delObject);
+      });
+    }
+    catch(error){
+      console.error(error)
+    }
     setTimeout(()=>{delLock=false;}, 500);
   }
 

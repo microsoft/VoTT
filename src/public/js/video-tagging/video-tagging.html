@@ -357,12 +357,12 @@
                 if(this.imagelist){
                     frameId = this.imageIndex
                 }
-                if (frameId > 0) {// space to toggle play/pause
+                if (frameId > 0) {
                     this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
                 }
                 this.playingCallback();
                 break;
-            case 32:
+            case 32:// space to toggle play/pause
                 this.playPauseClicked();
                 break;
             default: return; // exit this handler for other keys
