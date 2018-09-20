@@ -1066,12 +1066,10 @@
                 if (this.imageIndex < this.imagelist.length-1) {
                     this.imageIndex++;
                     this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
-                    //this.playingCallback();
                 }
             } else { //video handling
                 if(!this.video.paused) this.pauseState();
                 if ((this.video.currentTime + this.frameTime) > this.video.duration ){
-                    //this.video.currentTime = this.video.duration;
                     return;
                 }
                 if (!this.canMove ) return; 
@@ -1091,7 +1089,6 @@
             if (this.imageIndex > 0) {
                 this.imageIndex--;
                 this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
-                //this.playingCallback();
             }
         } 
         if (this.video.currentTime > 0) {
@@ -1126,7 +1123,6 @@
             }
     },
     playState: function() {
-        console.log("Playing");
         if(!this.imagelist) {
             this.video.play();
             this.playing = setInterval(function() {
@@ -1148,7 +1144,6 @@
         
     },
     pauseState: function() {
-        console.log("Paused");
         if(!this.imagelist) {
             this.video.pause();
 
@@ -1173,7 +1168,7 @@
                 this.updateFrameCanvas(this.video);
 
             } else{
-                this.frameText.value = `${this.getCurrentFrameId() + 1}`; //${this.imagelist.length}`;
+                this.frameText.value = `${this.getCurrentFrameId() + 1}`;
                 if(!this.seeking){
                     this.updateSeekBar();
                 }
@@ -1185,7 +1180,6 @@
     playImageSquence: function() {
         if(this.sequencePlaying) {
             this.stepFwdClicked();
-            //this.playingCallback();
         }
     },
     displayVideoTime: function() {
