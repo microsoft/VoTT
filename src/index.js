@@ -468,44 +468,41 @@ function deleteFrame(){
   
   try{
     fs.unlinkSync(videotagging.imagelist[videotagging.imageIndex]);
+    delete videotagging.frames[currFrameId];
+    
+    videotagging.imagelist.splice(videotagging.imageIndex,1)
+    
+    var delObject = {
+      "frames" : videotagging.frames,
+      "framerate":$('#framerate').val(),
+      "inputTags": $('#inputtags').val().replace(/\s/g,''),
+      "suggestiontype": $('#suggestiontype').val(),
+      "scd": document.getElementById("scd").checked,
+      "visitedFrames": Array.from(visitedFrames),
+      "tag_colors" : videotagging.optionalTags.colors,
+    };
+  
+    var delLock;
+    if (!delLock){
+      delLock = true;
+      try{
+        fs.writeFile(`${videotagging.src}.json`, JSON.stringify(delObject),()=>{
+          deleState = JSON.stringify(delObject);
+        });
+      }
+      catch(error){
+        console.error(error)
+      }
+      setTimeout(()=>{delLock=false;}, 500);
+    }
+  
+    if(videotagging.imageIndex > 0){
+      videotagging.imageIndex--
+    }
+  
+    videotagging.stepFwdClicked({});
   }
   catch(error){
     console.error(error)
   }
-  
-  delete videotagging.frames[currFrameId];
-  
-  videotagging.imagelist.splice(videotagging.imageIndex,1)
-  
-  var delObject = {
-    "frames" : videotagging.frames,
-    "framerate":$('#framerate').val(),
-    "inputTags": $('#inputtags').val().replace(/\s/g,''),
-    "suggestiontype": $('#suggestiontype').val(),
-    "scd": document.getElementById("scd").checked,
-    "visitedFrames": Array.from(visitedFrames),
-    "tag_colors" : videotagging.optionalTags.colors,
-  };
-
-  var delLock;
-  if (!delLock){
-    delLock = true;
-    try{
-      fs.writeFile(`${videotagging.src}.json`, JSON.stringify(delObject),()=>{
-        deleState = JSON.stringify(delObject);
-      });
-    }
-    catch(error){
-      console.error(error)
-    }
-    setTimeout(()=>{delLock=false;}, 500);
-  }
-
-  if(videotagging.imageIndex > 0){
-    videotagging.imageIndex--
-  }
-
-  videotagging.stepFwdClicked({});
-  
-  // loadTagger();
 }
