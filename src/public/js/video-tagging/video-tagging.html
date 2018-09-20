@@ -466,6 +466,13 @@
         return regions;
     },
 
+    getCurrentFrameNumber: function() {
+      if (this.imagelist){
+        return this.imageIndex;
+      } 
+      return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
+    },
+
     getCurrentFrameId: function() {
       if (this.imagelist){
         return (this.imagelist[this.imageIndex].split("\\").pop());
@@ -1208,7 +1215,7 @@
                 this.updateFrameCanvas(this.video);
 
             } else{
-                this.frameText.value = `${this.getCurrentFrameId() + 1}`;
+                this.frameText.value = `${this.getCurrentFrameNumber() + 1}`;
                 if(!this.seeking){
                     this.updateSeekBar();
                 }
@@ -1234,7 +1241,7 @@
             if (this.imagelist){ //image list handling
                 if(!this.seekBar.max)
                     this.seekBar.max = this.imagelist.length;
-                this.seekBar.value = this.getCurrentFrameId();
+                this.seekBar.value = this.getCurrentFrameNumber();
             } else { //video handling
                 this.seekBar.value = this.video.currentTime;
             }
