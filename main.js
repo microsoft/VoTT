@@ -23,8 +23,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
       width: mainWindowState.width,
       height: mainWindowState.height,
-      x: mainWindowState.x,
-      y: mainWindowState.y,
+      x: 0,
+      y: 0,
       minHeight: 480,
       minWidth: 480,
       icon: __dirname + '/src/public/images/icon.png',

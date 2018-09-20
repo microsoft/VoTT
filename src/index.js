@@ -6,6 +6,7 @@ const fs = require('fs');
 const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
+const {clipboard} = require('electron')
 var trackingEnabled = true;
 var saveState,
     visitedFrames, //keep track of the visited frames
@@ -88,7 +89,7 @@ ipcRenderer.on('review-model', (event, reviewModelConfig) => {
         $(".loader").remove();        
     });
   }
-   else {
+  else {
       alert(`No model found! Please make sure you put your model in the following directory: ${modelLocation}`)
   }
       
@@ -161,6 +162,69 @@ document.addEventListener('mousewheel', (e) => {
   }
 });
 
+window.addEventListener('keydown', (e) => {
+  if(e.shiftKey && videotagging){
+    videotagging.multiselection = true;
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  if(videotagging){
+    if(!e.shiftKey){
+      videotagging.multiselection = false;
+    }
+  
+    var selectedRegions = videotagging.getSelectedRegions();
+    
+    if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX' || e.code == 'KeyA')){
+
+      var widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
+      var heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
+      var content = [];
+      
+      if(e.code == 'KeyA'){ //select all
+        videotagging.selectAllRegions();
+        selectedRegions = videotagging.getSelectedRegions();
+      }
+
+      for(let currentRegion of selectedRegions){
+        content.push(
+          {
+            x1: currentRegion.x1 * widthRatio,
+            y1: currentRegion.y1 * heightRatio,
+            x2: currentRegion.x2 * widthRatio,
+            y2: currentRegion.y2 * heightRatio,
+            tags: currentRegion.tags
+          }
+        )
+
+        if(e.code == 'KeyX'){ //cut 
+          videotagging.deleteRegionById(currentRegion.UID);
+          videotagging.showAllRegions();
+        }
+      }
+
+      clipboard.writeText(JSON.stringify(content));
+    } 
+    if(e.shiftKey && e.code == 'Delete') {
+      e.stopPropagation();
+      deleteFrame()
+    }
+  }
+  if(e.ctrlKey && e.code == 'KeyV'){ //paste
+    try{
+      var content = JSON.parse(clipboard.readText());
+
+      for(let currentRegion of content){
+        videotagging.createRegion(currentRegion.x1, currentRegion.y1, currentRegion.x2, currentRegion.y2);
+        videotagging.addTagsToRegion(currentRegion.tags);
+      }
+    }catch(error) {
+      console.log('ERROR: No bounding box in clipboard')
+    }
+  }
+}, true); 
+
 //adds a loading animation to the tagger
 function addLoader() {
   if(!$('.loader').length) {
@@ -170,7 +234,11 @@ function addLoader() {
 
 //managed the visited frames
 function updateVisitedFrames(){
-  visitedFrames.add(videotagging.getCurrentFrameId());
+  if(videotagging.imagelist){
+    visitedFrames.add(videotagging.imagelist[videotagging.imageIndex].split("\\").pop());
+  } else {
+    visitedFrames.add(videotagging.getCurrentFrameId());
+  }
 }
 
 function checkPointRegion() {
@@ -279,7 +347,18 @@ function openPath(pathName, isDir) {
           visitedFrames = new Set(config.visitedFrames);
         } else {
           videotagging.inputframes = {};
-           visitedFrames =  (isDir) ? new Set([0]) : new Set();
+          if(isDir){
+            var files = fs.readdirSync(pathName);
+            
+            videotagging.imagelist = files.filter(function(file){
+                  return file.match(/.(jpg|jpeg|png|gif)$/i);
+            });
+            console.log(videotagging.imagelist[0])
+            visitedFrames = new Set([videotagging.imagelist[0]]);
+          } else {
+            visitedFrames = new Set();
+          }
+          // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
         } 
 
         if (isDir){
@@ -380,4 +459,50 @@ function save() {
            setTimeout(()=>{saveLock=false;}, 500);
     } 
 
+}
+
+function deleteFrame(){
+  if(!videotagging.imagelist) return;
+  if(!confirm('This will delete the image from disk and remove it\'s tags from the save file.\nAre you sure you want to delete this image?')) return;
+  let currFrameId = videotagging.getCurrentFrameId();
+  
+  try{
+    fs.unlinkSync(videotagging.imagelist[videotagging.imageIndex]);
+    delete videotagging.frames[currFrameId];
+    
+    videotagging.imagelist.splice(videotagging.imageIndex,1)
+    
+    var delObject = {
+      "frames" : videotagging.frames,
+      "framerate":$('#framerate').val(),
+      "inputTags": $('#inputtags').val().replace(/\s/g,''),
+      "suggestiontype": $('#suggestiontype').val(),
+      "scd": document.getElementById("scd").checked,
+      "visitedFrames": Array.from(visitedFrames),
+      "tag_colors" : videotagging.optionalTags.colors,
+    };
+  
+    var delLock;
+    if (!delLock){
+      delLock = true;
+      try{
+        fs.writeFile(`${videotagging.src}.json`, JSON.stringify(delObject),()=>{
+          deleState = JSON.stringify(delObject);
+        });
+      }
+      catch(error){
+        console.error(error)
+      }
+      setTimeout(()=>{delLock=false;}, 500);
+    }
+  
+    if(videotagging.imageIndex > 0){
+      videotagging.imageIndex--
+    }
+  
+    videotagging.stepFwdClicked({});
+  }
+  catch(error){
+    console.error(error)
+  }
 }

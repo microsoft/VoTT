@@ -143,6 +143,8 @@
         this.imageIndex = 0;
         this.curImg = new Image();
         this.rotation = 0;
+        this.prevFrameIndex = 0;
+        this.multiselection = false;
 
         //Frame view size
         this.frameWidth = 0;
@@ -389,12 +391,18 @@
                 break;
             case 68:// d for duplicate
                 let frameId = this.getCurrentFrameId();
+                if(this.imagelist){
+                    frameId = this.imageIndex
+                }
                 if (frameId > 0) {
-                    this.frames[frameId] = this.getPrevFrameRegionsCopy();
+                    this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
                 }
                 this.playingCallback();
                 break;
-                default: return; // exit this handler for other keys
+            case 32:// space to toggle play/pause
+                this.playPauseClicked();
+                break;
+            default: return; // exit this handler for other keys
             }
         e.preventDefault(); // prevent the default action (scroll / move caret)
     },
@@ -446,7 +454,7 @@
 
     getRegions: function(frameId) {
         let regions = null;
-        if (frameId >=0) {
+        if (frameId || frameId == 0) {
             regions = this.frames[frameId];
 
             if (regions == undefined || regions == null) {
@@ -460,7 +468,7 @@
 
     getCurrentFrameId: function() {
       if (this.imagelist){
-        return this.imageIndex;
+        return (this.imagelist[this.imageIndex].split("\\").pop());
       } 
       return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
     },
@@ -469,8 +477,16 @@
         return this.getRegions(this.getCurrentFrameId());
     },
 
+    getSelectedRegions: function() {
+        return this.selectedRegionId.map(x =>  this.getRegionById(x))
+    },
+
     getPrevFrameRegionsCopy: function() {
-        return JSON.parse(JSON.stringify(this.getRegions(this.getCurrentFrameId() - 1)));
+        if(this.imagelist){
+            return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.prevFrameIndex].split("\\").pop())));    
+        } else {
+            return JSON.parse(JSON.stringify(this.getRegions(this.prevFrameIndex)));
+        }
     },
 
     getRegionById: function(regionUID) {
@@ -635,18 +651,29 @@
             multiselection = false;
         }
 
-        this.cleanSelectedElements();
+        if(!this.multiselection && !multiselection){
+            this.cleanSelectedElements();
+        }
+
         //Tags - display the tags of the region and enable editing
         this.optionalTags.toggleEnableButtons(true);
         this.optionalTags.resetSelected();
 
         if (id != "") {
             let region = this.getRegionById(id);
-            if(region) {
-                this.selectedRegionId = [id];
+            
+            if(region && !this.selectedRegionId.includes(region.UID)) {
+                this.selectedRegionId.push(id);
+                
                 var tags = region.tags;
                 this.optionalTags.displaySelectedTags(tags);
             }
+        }
+    },
+
+    selectAllRegions: function(){
+        for(let region of this.getCurrentFrameRegions()){
+          this.selectRegion(region.UID, true);
         }
     },
 
@@ -1069,6 +1096,8 @@
     },
     stepFwdClicked: function(fireEvents = true) {       
         if (this.checkRegionLabels()){
+            this.prevFrameIndex = this.imageIndex;
+            this.cleanSelectedElements()
             //raise before next frame  
             if (this.imagelist){//image handling
                 if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
@@ -1093,7 +1122,9 @@
         }
     },
     stepBwdClicked: function(fireEvents = true) {
-        if (!this.canMove) return;    
+        if (!this.canMove) return;
+        this.prevFrameIndex = this.imageIndex;    
+        this.cleanSelectedElements();
         if (this.imagelist){//image handling
             if (this.imageIndex > 0) {
                 this.imageIndex--;
