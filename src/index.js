@@ -35,6 +35,13 @@ ipcRenderer.on('saveVideo', (event, message) => {
   });
 });
 
+ipcRenderer.on('help', (event, message) => {
+  var args = {
+    type : "help"
+  };
+   ipcRenderer.send('show-popup', args);
+});
+
 ipcRenderer.on('export', (event, message) => {
    var args = {
      type : "export",
