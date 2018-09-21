@@ -1061,10 +1061,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.regionManagerLayer.add(region.regionGroup);
                     this.regions.push(region);
                     // Need to do a check for invalid stacking from user generated or older saved json
-                    if(this.regions.length > 1 && region.area > this.regions[this.regions.length - 2]) {
+                    if(this.regions.length > 1 && region.area > this.regions[this.regions.length - 2].area) {
+                        this.sortRegionsByArea();
                         this.redrawAllRegions();
                     }
-                    this.sortRegionsByArea();
                     this.menu.showOnRegion(region);  
                 }
 
