@@ -43,7 +43,7 @@ function Detection(videotagging, visitedFrames) {
             }
 
             function iterateFrames() {
-                var frameId = self.videotagging.getCurrentFrame();
+                var frameId = self.videotagging.getCurrentFrameNumber();
                 var lastFrame = isLastFrame(frameId);
 
                 if (lastFrame) {
