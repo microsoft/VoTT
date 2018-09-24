@@ -653,11 +653,7 @@
         }
     },
 
-    selectRegion: function(id, multiselection) {
-        if (multiselection == undefined) {
-            multiselection = false;
-        }
-
+    selectRegion: function(id, multiselection = false) {
         if(!this.multiselection && !multiselection){
             this.cleanSelectedElements();
         }
@@ -1068,7 +1064,8 @@
     },
     seekToFrame: function(id, fireEvents = true) {
         if (this.checkRegionLabels()){
-            //raise before next frame  
+            //raise before next frame
+            this.prevFrameIndex = this.getCurrentFrameNumber();  
             if (this.imagelist){//image handling
                 if(this.imageIndex == id - 1) {
                     //Only fire before step if seeking to the next frame
@@ -1103,7 +1100,7 @@
     },
     stepFwdClicked: function(fireEvents = true) {       
         if (this.checkRegionLabels()){
-            this.prevFrameIndex = this.imageIndex;
+            this.prevFrameIndex = this.getCurrentFrameNumber();
             this.cleanSelectedElements()
             //raise before next frame  
             if (this.imagelist){//image handling
@@ -1130,7 +1127,7 @@
     },
     stepBwdClicked: function(fireEvents = true) {
         if (!this.canMove) return;
-        this.prevFrameIndex = this.imageIndex;    
+        this.prevFrameIndex = this.getCurrentFrameNumber();    
         this.cleanSelectedElements();
         if (this.imagelist){//image handling
             if (this.imageIndex > 0) {
@@ -1206,7 +1203,7 @@
     },
     playingCallback: function() { 
             if (!this.imagelist){
-                this.frameText.value = this.getCurrentFrameId();
+                this.frameText.value = this.getCurrentFrameNumber();
                 this.displayVideoTime();
                 if(!this.seeking){
                     this.updateSeekBar();
