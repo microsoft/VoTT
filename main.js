@@ -91,6 +91,15 @@ function createWindow () {
           }));
           break;
 
+        case "help":
+          popup.setSize(500, 500);
+          popup.loadURL(url.format({
+            pathname: path.join(__dirname, 'src/public/html/help-configuration.html'),
+            protocol: 'file:',
+            slashes: true
+          }));
+          break;
+
         default: return; 
       }
       
@@ -166,7 +175,7 @@ function createWindow () {
         },
         {
           label: 'Active Learning',
-          accelerator: 'CmdOrCtrl+A',
+          accelerator: 'CmdOrCtrl+L',
           enabled: false,
           click () { mainWindow.webContents.send('review'); }
         }
@@ -198,7 +207,17 @@ function createWindow () {
           click () { mainWindow.reload(); }
         }
       ]
-    }
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Keyboard Shortcuts',
+          accelerator: 'CmdOrCtrl+H',
+          click () { mainWindow.webContents.send('help');}
+        }
+      ]
+    }	    
   ]
 
 if (process.platform === 'darwin') {
