@@ -151,6 +151,11 @@ function createWindow () {
           click () { mainWindow.webContents.send('openImageDirectory'); }
         },
         {
+          label: 'Open tfRecord Directory...',
+          accelerator: 'CmdOrCtrl+R',
+          click () { mainWindow.webContents.send('openRecordDirectory'); }
+        },
+        {
           label: 'Save',
           accelerator: 'CmdOrCtrl+S',
           enabled: false,
@@ -172,6 +177,12 @@ function createWindow () {
           accelerator: 'CmdOrCtrl+E',
           enabled: false,
           click () { mainWindow.webContents.send('export'); }
+        },
+        {
+          label: 'Export Tags as TFRecords',
+          accelerator: 'CmdOrCtrl+G',
+          enabled: false,
+          click () { mainWindow.webContents.send('export-records'); }
         },
         {
           label: 'Active Learning',
