@@ -502,13 +502,15 @@ function openPath(pathName, isDir, isRecords = false) {
 function getRegionsFromRecord(tfRecord){
   let sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0]
   let sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0]
+  let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
+  let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 
   for (let i = 0; i < tfRecord.features.feature['image/object/bbox/xmin'].floatList.value.length; i++) {
     
-    let x1 = tfRecord.features.feature['image/object/bbox/xmin'].floatList.value[i] * sourceWidth;
-    let y1 = tfRecord.features.feature['image/object/bbox/ymin'].floatList.value[i] * sourceHeight;
-    let x2 = tfRecord.features.feature['image/object/bbox/xmax'].floatList.value[i] * sourceWidth;
-    let y2 = tfRecord.features.feature['image/object/bbox/ymax'].floatList.value[i] * sourceHeight;
+    let x1 = tfRecord.features.feature['image/object/bbox/xmin'].floatList.value[i] * sourceWidth * widthRatio;
+    let y1 = tfRecord.features.feature['image/object/bbox/ymin'].floatList.value[i] * sourceHeight * heightRatio;
+    let x2 = tfRecord.features.feature['image/object/bbox/xmax'].floatList.value[i] * sourceWidth * widthRatio;
+    let y2 = tfRecord.features.feature['image/object/bbox/ymax'].floatList.value[i] * sourceHeight * heightRatio;
     videotagging.createRegion(x1,y1,x2,y2)
     // console.log(`regular: ${JSON.stringify(tfRecord)}`)
     console.log(`decoded: ${decode_Uint8(tfRecord.features.feature['image/object/class/text'].bytesList.value[i])}`)
@@ -604,6 +606,8 @@ function save() {
         let regions = videotagging.getRegions(videotagging.getCurrentFrameId());
         let sourceHeight = videotagging.currTFRecord.features.feature['image/height'].int64List.value[0]
         let sourceWidth = videotagging.currTFRecord.features.feature['image/width'].int64List.value[0]
+        let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
+        let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 
         console.log(`regions: ${JSON.stringify(regions)}`);
         regions.forEach(region => {
