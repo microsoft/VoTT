@@ -6,7 +6,9 @@ const fs = require('fs');
 const DetectionExtension = require('./lib/videotagging_extensions').Detection;
 const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
-const {clipboard} = require('electron')
+const {clipboard} = require('electron');
+const tfrecord = require('tfrecord');
+
 var trackingEnabled = true;
 var saveState,
     visitedFrames, //keep track of the visited frames
@@ -26,6 +28,23 @@ ipcRenderer.on('openVideo', (event, message) => {
 
 ipcRenderer.on('openImageDirectory', (event, message) => {
   folderSelected();
+});
+
+ipcRenderer.on('openRecordDirectory', (event, message) => {
+  recordFolderSelected();
+});
+
+ipcRenderer.on('export-records', (event, message) => {
+  if(videotagging.imagelist && visitedFrames.length > 0){
+    for (let i = 0; i < visitedFrames; i++) {
+      if(videotagging.recordlist){
+
+      }
+      writeRecord(videotagging.imagelist[i],videotagging.recordlist[i]).then(()=>{
+        console.log(`record #: ${i}/${videotagging.recordlist.length} saved`)
+      });
+    }
+  }
 });
 
 ipcRenderer.on('saveVideo', (event, message) => {
@@ -288,7 +307,18 @@ function folderSelected(folderpath) {
 
 }
 
-function openPath(pathName, isDir) {
+function recordFolderSelected(recordfolderpath){
+  $('#load-message-container').hide();
+  dialog.showOpenDialog({
+    filters: [{ name: 'tfRecord Directory'}],
+    properties: ['openDirectory']
+  },function (pathName) {
+    if (pathName) openPath(pathName[0], true, true);
+    else $('#load-message-container').show();
+  });
+}
+
+function openPath(pathName, isDir, isRecords = false) {
     // show configuration
     $('#load-message-container').hide();
     $('#video-tagging-container').hide();
@@ -333,7 +363,7 @@ function openPath(pathName, isDir) {
 
     document.getElementById('loadButton').onclick = loadTagger;
     
-    function loadTagger (e) {
+    async function loadTagger (e) {
       if(framerate.validity.valid && inputtags.validity.valid) {
         $('.bootstrap-tagsinput').last().removeClass( "invalid" );
              
@@ -350,48 +380,74 @@ function openPath(pathName, isDir) {
           if (config.tag_colors){
             videotagging.optionalTags.colors = config.tag_colors;
           }
-            videotagging.inputframes = config.frames;
+          videotagging.inputframes = config.frames;
           visitedFrames = new Set(config.visitedFrames);
         } else {
           videotagging.inputframes = {};
-          if(isDir){
-            var files = fs.readdirSync(pathName);
+          visitedFrames = new Set();
+          // if(isDir){
+          //   var files = fs.readdirSync(pathName);
             
-            videotagging.imagelist = files.filter(function(file){
-                  return file.match(/.(jpg|jpeg|png|gif)$/i);
-            });
-            console.log(videotagging.imagelist[0])
-            visitedFrames = new Set([videotagging.imagelist[0]]);
-          } else {
-            visitedFrames = new Set();
-          }
+          //   videotagging.imagelist = files.filter(function(file){
+          //         return file.match(/.(jpg|jpeg|png|gif)$/i);
+          //   });
+          //   console.log(videotagging.imagelist[0])
+          //   visitedFrames = new Set([videotagging.imagelist[0]]);
+          // } else {
+          //   visitedFrames = new Set();
+          // }
           // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
         } 
 
         if (isDir){
             $('title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
+            if(isRecords) $('title').text(`Image Tagging from Records Job: ${path.dirname(pathName)}`); //set title indicator
 
             //get list of images in directory
             var files = fs.readdirSync(pathName);
             
-            videotagging.imagelist = files.filter(function(file){
-                  return file.match(/.(jpg|jpeg|png|gif)$/i);
-            });
+            if(isRecords){
+              videotagging.imagelist = files.filter(function(file){
+                return file.match(/.(tfrecord)$/i);
+              });
+              let recordlist = videotagging.imagelist.map(async record => {
+                const resp = await readRecord(pathName,record);
+                return resp;
+              })
+              videotagging.recordlist = await Promise.all(recordlist);
+              videotagging.currTFRecord = videotagging.recordlist[0];
+              // getRegionsFromRecord(videotagging.recordlist[0]);
+            }else{
+              videotagging.imagelist = files.filter(function(file){
+                return file.match(/.(jpg|jpeg|png|gif)$/i);
+              });
+            }
 
-            if (videotagging.imagelist.length){
+            if (videotagging.imagelist){
               videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
               videotagging.src = pathName; 
               //track visited frames
               $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
-              $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
+              // $("#video-tagging").on("stepFwdClicked-AfterStep", updateVisitedFrames);
               $("#video-tagging").on("stepFwdClicked-AfterStep", () => {
-                  //update title to match src
-                   $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                //update title to match src
+                if(videotagging.currTFRecord) {
+                  // console.log(videotagging.currTFRecord)
+                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) {getRegionsFromRecord(videotagging.currTFRecord); console.log('adding')}
+                  $('title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                  // getRegionsFromRecord(videotagging.recordlist[0]);
+                } else $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
+                updateVisitedFrames();
               });
               $("#video-tagging").on("stepBwdClicked-AfterStep", () => {
                 //update title to match src
-                 $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                if(videotagging.currTFRecord) {
+                  // console.log(videotagging.currTFRecord)
+                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) getRegionsFromRecord(videotagging.currTFRecord);
+                  $('title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                }
+                else $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
             });
 
@@ -399,6 +455,9 @@ function openPath(pathName, isDir) {
               //auto-save 
               $("#video-tagging").off("stepFwdClicked-BeforeStep");
               $("#video-tagging").on("stepFwdClicked-BeforeStep", save);
+
+              $("#video-tagging").off("stepBwdClicked-BeforeStep");
+              $("#video-tagging").on("stepBwdClicked-BeforeStep", save);
               
             } else {
               alert("No images were in the selected directory. Please choose an Image directory.");
@@ -440,6 +499,79 @@ function openPath(pathName, isDir) {
     }
 }
 
+function getRegionsFromRecord(tfRecord){
+  let sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0]
+  let sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0]
+
+  for (let i = 0; i < tfRecord.features.feature['image/object/bbox/xmin'].floatList.value.length; i++) {
+    
+    let x1 = tfRecord.features.feature['image/object/bbox/xmin'].floatList.value[i] * sourceWidth;
+    let y1 = tfRecord.features.feature['image/object/bbox/ymin'].floatList.value[i] * sourceHeight;
+    let x2 = tfRecord.features.feature['image/object/bbox/xmax'].floatList.value[i] * sourceWidth;
+    let y2 = tfRecord.features.feature['image/object/bbox/ymax'].floatList.value[i] * sourceHeight;
+    videotagging.createRegion(x1,y1,x2,y2)
+    // console.log(`regular: ${JSON.stringify(tfRecord)}`)
+    console.log(`decoded: ${decode_Uint8(tfRecord.features.feature['image/object/class/text'].bytesList.value[i])}`)
+    videotagging.addTagsToRegion([decode_Uint8(tfRecord.features.feature['image/object/class/text'].bytesList.value[i])]);
+  }
+}
+
+async function writeRecord(recordPath, example = null, id = null) {
+  if(!example){
+    if(id){
+      const regions = videotagging.getRegions(id);
+      const builder = tfrecord.createBuilder();
+
+      let xmin = [];
+      let ymin = [];
+      let xmax = [];
+      let ymax = [];
+      let tags = [];
+      // console.log(`regions: ${JSON.stringify(regions)}`);
+      regions.forEach(region => {
+        xmin.push(region.x1)
+        ymin.push(region.y1)
+        xmax.push(region.x2)
+        ymax.push(region.y2)
+        tags.push(region.tags[0])
+        console.log(`tag: ${region.tags[0]}`)
+      });
+
+      builder.setBytes('image/filename', encode_Uint8(id));
+      builder.setBytes('image/encoded', encode_Uint8(id));
+      builder.setBytes('image/format', encode_Uint8(id));
+      builder.setBytes('image/height', encode_Uint8(id));
+      
+      builder.setBytes('image/key/sha526', encode_Uint8(id));
+      
+      builder.setBytes('image/object/class/label', encode_Uint8(id));
+      builder.setBytes('image/object/class/text', encode_Uint8(id));
+
+      builder.setFloats('image/object/bbox/xmin', xmin);
+      builder.setFloats('image/object/bbox/ymin', ymin);
+      builder.setFloats('image/object/bbox/xmax', xmax);
+      builder.setFloats('image/object/bbox/ymax', ymax);
+
+      example = builder.releaseExample();
+    }
+  }
+  
+  const writer = await tfrecord.createWriter(recordPath);
+  await writer.writeExample(example);
+  await writer.close();
+  // console.log(example.features.feature)
+}
+
+async function readRecord(pathname, recordName) {
+  const reader = await tfrecord.createReader(pathname + '\\' + recordName);
+  let example;
+  while (example = await reader.readExample()) {
+    console.log(example.features.feature);
+    return example;
+  }
+  // The reader auto-closes after it reaches the end of the file.
+}
+
 //saves current video to config 
 function save() {
     var saveObject = {
@@ -457,15 +589,64 @@ function save() {
     }
 
     var saveLock;
-    if (!saveLock){
-           saveLock = true;
-           fs.writeFile(`${videotagging.src}.json`, JSON.stringify(saveObject),()=>{
-             saveState = JSON.stringify(saveObject);
-             console.log("saved");
-           });
-           setTimeout(()=>{saveLock=false;}, 500);
-    } 
+    if (!saveLock) {
+      saveLock = true;
+      fs.writeFile(`${videotagging.src}.json`, JSON.stringify(saveObject), () => {
+        saveState = JSON.stringify(saveObject);
+        console.log("saved");
+      });
+      if(videotagging.currTFRecord){
+        let xmin = [];
+        let ymin = [];
+        let xmax = [];
+        let ymax = [];
+        let tags = [];
+        let regions = videotagging.getRegions(videotagging.getCurrentFrameId());
+        let sourceHeight = videotagging.currTFRecord.features.feature['image/height'].int64List.value[0]
+        let sourceWidth = videotagging.currTFRecord.features.feature['image/width'].int64List.value[0]
 
+        console.log(`regions: ${JSON.stringify(regions)}`);
+        regions.forEach(region => {
+          xmin.push(region.x1 / sourceWidth)
+          ymin.push(region.y1 / sourceHeight)
+          xmax.push(region.x2 / sourceWidth)
+          ymax.push(region.y2 / sourceHeight)
+          tags.push(encode_Uint8(region.tags[0]))
+          // console.log(`encoded: ${encode_Uint8(region.tags[0])}`)
+        })
+        
+        console.log(videotagging.currTFRecord.features.feature['image/object/bbox/xmin'].floatList.value)
+        videotagging.currTFRecord.features.feature['image/object/bbox/xmin'].floatList.value = xmin;
+        videotagging.currTFRecord.features.feature['image/object/bbox/xmax'].floatList.value = xmax;
+        videotagging.currTFRecord.features.feature['image/object/bbox/ymin'].floatList.value = ymin;
+        videotagging.currTFRecord.features.feature['image/object/bbox/ymax'].floatList.value = ymax;
+        videotagging.currTFRecord.features.feature['image/object/class/text'].bytesList.value = tags
+        videotagging.currTFRecord.features.feature['image/filename'].bytesList.value = [encode_Uint8('changed')]
+        videotagging.recordlist[videotagging.imageIndex] = videotagging.currTFRecord;
+        console.log(videotagging.currTFRecord.features.feature['image/object/bbox/xmin'].floatList.value)
+        writeRecord(videotagging.imagelist[videotagging.imageIndex],videotagging.currTFRecord).then(()=>{
+          console.log(`record saved: ${videotagging.imagelist[videotagging.imageIndex]}`)
+          
+          // console.log(`videotagging.currTFRecord: ${JSON.stringify(videotagging.currTFRecord)}`);
+        });
+      }
+      setTimeout(() => {
+        saveLock = false;
+      }, 500);
+    }
+
+}
+
+function encode_Uint8(s) {
+  if (!("TextEncoder" in window)) alert("Sorry, this browser does not support TextEncoder...");
+  
+  var enc = new TextEncoder();
+  return enc.encode(s)
+  // return Uint8Array.from(s);
+}
+
+function decode_Uint8(uint8Arr) {
+  return String.fromCharCode.apply(null, uint8Arr);
 }
 
 function deleteFrame(){
