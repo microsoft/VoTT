@@ -194,6 +194,15 @@ function createWindow () {
       ]
     },
     {
+      label: "Filters",
+        submenu: [
+            {
+              label: "Invert", 
+              selector: "invert:", 
+              click () { mainWindow.webContents.send('filter', 'invert_filter');}}
+        ]
+      },
+    {
       label: 'Debug',
       submenu: [
         {

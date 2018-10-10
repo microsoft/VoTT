@@ -306,9 +306,10 @@
            self.pauseState();
       };
       this.video.addEventListener('canplaythrough', function () {
-            window.requestAnimationFrame(function(){
+          self.updateFrameCanvas(self.video);
+            /* window.requestAnimationFrame(function(){
                 self.frameCanvas.getContext('2d').drawImage(self.video, 0, 0, self.frameWidth, self.frameHeight);
-                });
+                }); */
         });
 
       this.seekBar.addEventListener("mousedown", function() {
@@ -1249,17 +1250,38 @@
     updateFrameCanvas: function(source) {
         var context = this.frameCanvas.getContext('2d');
         var self = this;
-        if (source instanceof HTMLVideoElement) {
-            window.requestAnimationFrame(function(){
-                context.drawImage(source, 0, 0, self.frameWidth, self.frameHeight);
-            });
-        } else if (source instanceof HTMLImageElement) {
-            window.requestAnimationFrame(function(){
-                    context.drawImage(source, 0, 0, self.frameWidth, self.frameHeight);
+        if (source instanceof HTMLVideoElement || source instanceof HTMLImageElement) {
+            window.requestAnimationFrame(() => {
+                context.drawImage(source, 0, 0, this.frameWidth, this.frameHeight);
+                this.applyAllFilters();
             });
         }
     },
 
+
+    filters: [],
+
+    addFilterByName(filterName) {
+        switch (filterName) {            
+            case "invert_filter": {
+                //this.applyFilter(this.invertFilter);
+                this.filters.push(() => {
+                    this.applyFilter(this.invertFilter);
+                })
+                break;
+            }
+            default: {
+
+            }
+
+        }
+    },
+
+    applyAllFilters() {
+        this.filters.forEach((f) => {
+            f();
+        });
+    },
 
     // Image filters for frameCanvas (not exposed to interface yet!)
     applyFilter(filter) {
