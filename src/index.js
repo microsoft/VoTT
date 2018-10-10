@@ -567,12 +567,16 @@ async function writeRecord(recordPath, example = null, id = null) {
 
       builder.setBytes('image/filename', encode_Uint8(id));
       builder.setBytes('image/encoded', encode_Uint8(id));
-      builder.setBytes('image/format', encode_Uint8(id));
-      builder.setBytes('image/height', encode_Uint8(id));
+      
+      if(videotagging.currTFRecord) builder.setBytes('image/format', encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-2)[0]));
+      else builder.setBytes('image/format', encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-1)[0]));
+      
+      builder.setIntegers('image/height', videotagging.sourceHeight);
+      builder.setIntegers('image/width', videotagging.sourceWidth);
       
       builder.setBytes('image/key/sha526', encode_Uint8(id));
       
-      builder.setBytes('image/object/class/label', encode_Uint8(id));
+      builder.setIntegers('image/object/class/label', encode_Uint8(id));
       builder.setBytes('image/object/class/text', encode_Uint8(id));
 
       builder.setFloats('image/object/bbox/xmin', xmin);
