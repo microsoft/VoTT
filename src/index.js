@@ -366,9 +366,17 @@ function openPath(pathName, isDir) {
         } else {
           videotagging.inputframes = {};
           if(isDir){
+            var files = fs.readdirSync(pathName);
+            
+            videotagging.imagelist = files.filter(function(file){
+                  return file.match(/.(jpg|jpeg|png|gif)$/i);
+            });
+            console.log(videotagging.imagelist[0])
             visitedFrames = new Set([videotagging.imagelist[0]]);
+            visitedFramesNumber =  new Set([0])
           } else {
             visitedFrames = new Set();
+            visitedFramesNumber =  new Set()
           }
           // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
         } 
