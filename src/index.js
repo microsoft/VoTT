@@ -10,6 +10,7 @@ const {clipboard} = require('electron')
 var trackingEnabled = true;
 var saveState,
     visitedFrames, //keep track of the visited frames
+    visitedFramesNumber,
     videotagging,
     detection,
     trackingExtension,
@@ -243,6 +244,7 @@ function addLoader() {
 function updateVisitedFrames(){
   if(videotagging.imagelist){
     visitedFrames.add(videotagging.imagelist[videotagging.imageIndex].split("\\").pop());
+    visitedFramesNumber.add(videotagging.imageIndex);
   } else {
     visitedFrames.add(videotagging.getCurrentFrameId());
   }
@@ -350,17 +352,12 @@ function openPath(pathName, isDir) {
           if (config.tag_colors){
             videotagging.optionalTags.colors = config.tag_colors;
           }
-            videotagging.inputframes = config.frames;
-          visitedFrames = new Set(config.visitedFrames);
+          videotagging.inputframes = config.frames;
+          visitedFrames =  new Set(config.visitedFrames);
+          visitedFramesNumber =  new Set(Array.from(Array(visitedFrames).keys()));
         } else {
           videotagging.inputframes = {};
           if(isDir){
-            var files = fs.readdirSync(pathName);
-            
-            videotagging.imagelist = files.filter(function(file){
-                  return file.match(/.(jpg|jpeg|png|gif)$/i);
-            });
-            console.log(videotagging.imagelist[0])
             visitedFrames = new Set([videotagging.imagelist[0]]);
           } else {
             visitedFrames = new Set();
@@ -379,6 +376,19 @@ function openPath(pathName, isDir) {
             });
 
             if (videotagging.imagelist.length){
+              //Check if tagging was done in previous version of VOTT
+              console.log(Array.from(visitedFrames));
+              if(!isNaN(Array.from(visitedFrames)[0])){
+                visitedFramesNumber = visitedFrames;
+                visitedFrames = new Set(Array.from(visitedFramesNumber).map(frame => videotagging.imagelist[parseInt(frame)]))
+                
+                //Replace the keys of the frames object
+                Object.keys(videotagging.inputframes).map(function(key, index) {
+                  videotagging.inputframes[videotagging.imagelist[key].split("\\").pop()] = videotagging.inputframes[key];
+                  delete videotagging.inputframes[key];
+                }, this);
+              }
+
               videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
               videotagging.src = pathName; 
               //track visited frames
@@ -428,7 +438,7 @@ function openPath(pathName, isDir) {
         }
 
         //init detection
-        detection = new DetectionExtension(videotagging, visitedFrames);
+        detection = new DetectionExtension(videotagging, visitedFramesNumber);
         
         $('#load-form-container').hide();
         $('#video-tagging-container').show();
