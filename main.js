@@ -7,6 +7,8 @@ const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
 
+app.commandLine.appendSwitch('--ignore-gpu-blacklist');
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -199,7 +201,18 @@ function createWindow () {
             {
               label: "Invert", 
               selector: "invert:", 
-              click () { mainWindow.webContents.send('filter', 'invert_filter');}}
+              click () { mainWindow.webContents.send('filter', 'invert_filter');}
+            },
+            {
+              label: "Distortion", 
+              selector: "distortion:", 
+              click () { mainWindow.webContents.send('filter', 'distortion_filter');}
+            },
+            {
+              label: "Increase Contrast", 
+              selector: "contrast:", 
+              click () { mainWindow.webContents.send('filter', 'contrast_filter');}
+            },
         ]
       },
     {
