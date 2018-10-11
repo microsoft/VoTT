@@ -306,9 +306,10 @@
            self.pauseState();
       };
       this.video.addEventListener('canplaythrough', function () {
-            window.requestAnimationFrame(function(){
+            self.updateFrameCanvas(self.video);
+            /* window.requestAnimationFrame(function(){
                 self.frameCanvas.getContext('2d').drawImage(self.video, 0, 0, self.frameWidth, self.frameHeight);
-                });
+                }); */
         });
 
       this.seekBar.addEventListener("mousedown", function() {
@@ -1249,31 +1250,76 @@
     updateFrameCanvas: function(source) {
         var context = this.frameCanvas.getContext('2d');
         var self = this;
-        if (source instanceof HTMLVideoElement) {
-            window.requestAnimationFrame(function(){
-                context.drawImage(source, 0, 0, self.frameWidth, self.frameHeight);
-            });
-        } else if (source instanceof HTMLImageElement) {
-            window.requestAnimationFrame(function(){
-                    context.drawImage(source, 0, 0, self.frameWidth, self.frameHeight);
+        if (source instanceof HTMLVideoElement || source instanceof HTMLImageElement) {
+            var buff = document.createElement('canvas');
+            buff.width = this.frameWidth;
+            buff.height = this.frameHeight;
+            buff.getContext('2d').drawImage(source, 0, 0, this.frameWidth, this.frameHeight);
+                
+            this.applyAllFilters(buff).then((canvas) => {
+                window.requestAnimationFrame(() => {
+                    context.drawImage(canvas, 0, 0, this.frameWidth, this.frameHeight);
+                });
             });
         }
     },
 
 
-    // Image filters for frameCanvas (not exposed to interface yet!)
-    applyFilter(filter) {
-        var canvas = this.frameCanvas;
-        var context = canvas.getContext('2d');
-        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        imageData = filter(imageData);
+    filters: [],
 
-        window.requestAnimationFrame(function(){
-            context.putImageData(imageData, 0 ,0);
-        });
+    addFilterByName(filterName, params) {
+        switch (filterName) {            
+            case "invert_filter": {
+                this.filters.push({
+                    name: "invertion",
+                    method: this.invertFilter
+                })
+                break;
+            }
+            case "reset": {
+                this.filters = [];
+                break;
+            }
+/*          case "contrast_filter": {
+                this.filters.push({
+                    name: "contrast",
+                    method: (canvas) => { return this.contrastFilter(canvas, 30); }
+                })
+                break;
+            }
+*/
+            default: {
+
+            }
+
+        }
     },
 
-    invertFilter(imageData) {
+    applyAllFilters(canvas) {
+        var context = canvas.getContext('2d');
+
+        var buff = canvas; 
+
+        var promises = [];
+
+        this.filters.forEach((f) => {
+            promises.push(f.method(buff).then((canvas) => {
+                buff = canvas;
+            }));            
+        });
+
+        return Promise.all(promises).then(() => {
+            return buff;
+        });        
+    },
+
+    invertFilter(canvas) {
+        var context = canvas.getContext('2d');
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        var buff = document.createElement("canvas");
+        buff.width = canvas.width;
+        buff.height = canvas.height;
+
         var data = imageData.data;
         for(var i=0;i<data.length;i+=4)
         {
@@ -1282,11 +1328,23 @@
             data[i + 2] = 255 - data[i + 2]; // blue
         }
 
-        return imageData;
+        buff.getContext("2d").putImageData(imageData, 0, 0);
+
+        return new Promise((resolve, reject) => {
+            resolve(buff);
+        });
     },
 
-    contrastFilter(imageData, contrast) {
+/*     contrastFilter(canvas, contrast) {
+        var context = canvas.getContext('2d');
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         var data = imageData.data;
+
+        var buff = document.createElement("canvas");
+        buff.width = canvas.width;
+        buff.height = canvas.height;
+
+
         var factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
 
         for(var i=0;i<data.length;i+=4)
@@ -1296,10 +1354,17 @@
             data[i+2] = factor * (data[i+2] - 128) + 128;
         }
 
-        return imageData;
-    },
+        buff.getContext("2d").putImageData(imageData, 0, 0);
 
-    convoluteFilter(imageData, weights, opaque) {
+        return new Promise((resolve, reject) => {
+            resolve(buff);
+        });
+    }, */
+    
+/*     convoluteFilter(canvas, weights, opaque) {
+        var context = canvas.getContext('2d');
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
         var side = Math.round(Math.sqrt(weights.length));
         var halfSide = Math.floor(side/2);
         var src = imageData.data;
@@ -1342,7 +1407,7 @@
             }
         }
         return output;
-    }
+    } */
 
 });
 </script>

@@ -43,6 +43,14 @@ ipcRenderer.on('help', (event, message) => {
    ipcRenderer.send('show-popup', args);
 });
 
+ipcRenderer.on('filter', (event, message) => {
+    var filter = message;
+
+    if (videotagging !== null) { 
+      videotagging.addFilterByName(filter);
+    }    
+});
+
 ipcRenderer.on('export', (event, message) => {
    var args = {
      type : "export",
