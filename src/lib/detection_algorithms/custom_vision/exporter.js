@@ -86,19 +86,13 @@ function Exporter(exportDirPath, classes, posFramesCount, frameWidth, frameHeigh
                             {
                                 "name": frameFileName,
                                 "contents": frameBuffer.toJSON().data,
-                                "width": self.frameWidth,
-                                "height": self.frameHeight,
                                 "regions": tags.map((tag)=>{
                                     return {
                                         "tagId": self.tagMap[tag.class],
-                                        /* "left": tag.x1/tag.w,
+                                        "left": tag.x1/tag.w,
                                         "top": tag.y1/tag.h,
                                         "width": (tag.x2 - tag.x1)/tag.w,
-                                        "height": (tag.y2 - tag.y1)/tag.h */
-                                        "left": tag.x1/self.frameWidth,
-                                        "top": tag.y1/self.frameHeight,
-                                        "width": Math.abs(tag.x2 - tag.x1)/self.frameWidth,
-                                        "height": Math.abs(tag.y2 - tag.y1)/self.frameHeight
+                                        "height": (tag.y2 - tag.y1)/tag.h
                                     }
                                 })
                             }]

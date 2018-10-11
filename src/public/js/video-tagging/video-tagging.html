@@ -306,7 +306,7 @@
            self.pauseState();
       };
       this.video.addEventListener('canplaythrough', function () {
-            self.updateFrameCanvas(self.video);
+          self.updateFrameCanvas(self.video);
             /* window.requestAnimationFrame(function(){
                 self.frameCanvas.getContext('2d').drawImage(self.video, 0, 0, self.frameWidth, self.frameHeight);
                 }); */
@@ -1251,15 +1251,9 @@
         var context = this.frameCanvas.getContext('2d');
         var self = this;
         if (source instanceof HTMLVideoElement || source instanceof HTMLImageElement) {
-            var buff = document.createElement('canvas');
-            buff.width = this.frameWidth;
-            buff.height = this.frameHeight;
-            buff.getContext('2d').drawImage(source, 0, 0, this.frameWidth, this.frameHeight);
-                
-            this.applyAllFilters(buff).then((canvas) => {
-                window.requestAnimationFrame(() => {
-                    context.drawImage(canvas, 0, 0, this.frameWidth, this.frameHeight);
-                });
+            window.requestAnimationFrame(() => {
+                context.drawImage(source, 0, 0, this.frameWidth, this.frameHeight);
+                this.applyAllFilters();
             });
         }
     },
@@ -1267,26 +1261,12 @@
 
     filters: [],
 
-    addFilterByName(filterName, params) {
+    addFilterByName(filterName) {
         switch (filterName) {            
             case "invert_filter": {
-                this.filters.push({
-                    name: "invertion",
-                    method: this.invertFilter
-                })
-                break;
-            }
-            case "contrast_filter": {
-                this.filters.push({
-                    name: "contrast",
-                    method: (canvas) => { return this.contrastFilter(canvas, 30); }
-                })
-                break;
-            }
-            case "distortion_filter": {
-                this.filters.push({
-                    name: "distortion",
-                    method: this.distortionFilter
+                //this.applyFilter(this.invertFilter);
+                this.filters.push(() => {
+                    this.applyFilter(this.invertFilter);
                 })
                 break;
             }
@@ -1297,32 +1277,25 @@
         }
     },
 
-    applyAllFilters(canvas) {
-        var context = canvas.getContext('2d');
-
-        var buff = canvas; 
-
-        var promises = [];
-
+    applyAllFilters() {
         this.filters.forEach((f) => {
-            promises.push(f.method(buff).then((canvas) => {
-                buff = canvas;
-            }));            
+            f();
         });
-
-        return Promise.all(promises).then(() => {
-            return buff;
-            //context.drawImage(buff, 0, 0, canvas.width, canvas.height);
-        });        
     },
 
-    invertFilter(canvas) {
+    // Image filters for frameCanvas (not exposed to interface yet!)
+    applyFilter(filter) {
+        var canvas = this.frameCanvas;
         var context = canvas.getContext('2d');
         var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        var buff = document.createElement("canvas");
-        buff.width = canvas.width;
-        buff.height = canvas.height;
+        imageData = filter(imageData);
 
+        window.requestAnimationFrame(function(){
+            context.putImageData(imageData, 0 ,0);
+        });
+    },
+
+    invertFilter(imageData) {
         var data = imageData.data;
         for(var i=0;i<data.length;i+=4)
         {
@@ -1331,51 +1304,11 @@
             data[i + 2] = 255 - data[i + 2]; // blue
         }
 
-        buff.getContext("2d").putImageData(imageData, 0, 0);
-
-        return new Promise((resolve, reject) => {
-            resolve(buff);
-        });
+        return imageData;
     },
 
-    distortionFilter(canvas) {
-        var glc = document.createElement('canvas');
-        glc.width = canvas.width;
-        glc.height = canvas.height;
-
-        var distorter = FisheyeGl({
-            image: canvas,
-            selector: glc,
-            lens: {
-                a: 1.4,    // 0 to 4;  default 1
-                b: 1.6,    // 0 to 4;  default 1
-                Fx: 0.53, // 0 to 4;  default 0.0
-                Fy: 0.19, // 0 to 4;  default 0.0
-                scale: 1.5 // 0 to 20; default 1.5
-            },
-            fov: {
-                x: 1, // 0 to 2; default 1
-                y: 1  // 0 to 2; default 1
-            }
-        });
-
-        return new Promise((resolve, reject) => {
-            distorter.setImage(canvas, () => {
-                resolve(distorter.getCanvas());
-            })
-        });
-    },
-
-    contrastFilter(canvas, contrast) {
-        var context = canvas.getContext('2d');
-        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    contrastFilter(imageData, contrast) {
         var data = imageData.data;
-
-        var buff = document.createElement("canvas");
-        buff.width = canvas.width;
-        buff.height = canvas.height;
-
-
         var factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
 
         for(var i=0;i<data.length;i+=4)
@@ -1385,19 +1318,10 @@
             data[i+2] = factor * (data[i+2] - 128) + 128;
         }
 
-        buff.getContext("2d").putImageData(imageData, 0, 0);
-
-        return new Promise((resolve, reject) => {
-            resolve(buff);
-        });
+        return imageData;
     },
 
-
-
-    convoluteFilter(canvas, weights, opaque) {
-        var context = canvas.getContext('2d');
-        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
+    convoluteFilter(imageData, weights, opaque) {
         var side = Math.round(Math.sqrt(weights.length));
         var halfSide = Math.floor(side/2);
         var src = imageData.data;
@@ -1449,5 +1373,4 @@
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
 <script src="js/system.js"></script>
-<script src="js/fisheyegl.js"></script>
 </dom-module>
