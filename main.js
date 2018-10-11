@@ -199,7 +199,19 @@ function createWindow () {
             {
               label: "Invert", 
               selector: "invert:", 
-              click () { mainWindow.webContents.send('filter', 'invert_filter');}}
+              click () { mainWindow.webContents.send('filter', 'invert_filter');}
+            },
+            {
+              label: "Reset filters", 
+              selector: "resetFilters:", 
+              click () { mainWindow.webContents.send('filter', 'reset');}
+            }
+            /* ,
+            {
+              label: "Increase Contrast", 
+              selector: "contrast:", 
+              click () { mainWindow.webContents.send('filter', 'contrast_filter');}
+            } */
         ]
       },
     {

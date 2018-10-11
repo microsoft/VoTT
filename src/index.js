@@ -47,8 +47,7 @@ ipcRenderer.on('filter', (event, message) => {
 
     if (videotagging !== null) { 
       videotagging.addFilterByName(filter);
-    }
-    
+    }    
 });
 
 ipcRenderer.on('export', (event, message) => {
