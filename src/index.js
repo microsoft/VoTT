@@ -8,6 +8,8 @@ const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
 const {clipboard} = require('electron');
 const tfrecord = require('tfrecord');
+// const SHA256 = require("crypto-js/sha256");
+var CryptoJS = require("crypto-js");
 
 var trackingEnabled = true;
 var saveState,
@@ -36,14 +38,18 @@ ipcRenderer.on('openRecordDirectory', (event, message) => {
 });
 
 ipcRenderer.on('export-records', (event, message) => {
-  if(videotagging.imagelist && visitedFrames.length > 0){
-    for (let i = 0; i < visitedFrames; i++) {
+  if(videotagging.imagelist && visitedFrames.size > 0){
+    console.log('yay')
+    for (let i = 0; i < visitedFrames.size; i++) {
       if(videotagging.recordlist){
-
+        writeRecord(videotagging.imagelist[i],videotagging.recordlist[i]).then(()=>{
+          console.log(`record #: ${i}/${videotagging.recordlist.length} saved`)
+        });
+      } else {
+        writeRecord(videotagging.imagelist[i]).then(()=>{
+          console.log(`record #: ${i}/${videotagging.imagelist.length} saved`)
+        });
       }
-      writeRecord(videotagging.imagelist[i],videotagging.recordlist[i]).then(()=>{
-        console.log(`record #: ${i}/${videotagging.recordlist.length} saved`)
-      });
     }
   }
 });
@@ -325,6 +331,7 @@ function recordFolderSelected(recordfolderpath){
   },function (pathName) {
     if (pathName) openPath(pathName[0], true, true);
     else $('#load-message-container').show();
+    // if(videotagging.currTFRecord) {getRegionsFromRecord(videotagging.currTFRecord)}
   });
 }
 
@@ -371,7 +378,17 @@ function openPath(pathName, isDir, isRecords = false) {
       console.log(`Error loading save file ${e.message}`);
     }
 
-    document.getElementById('loadButton').onclick = loadTagger;
+    document.getElementById('loadButton').onclick = loadTaggerAndCheckRegions;
+
+    function loadTaggerAndCheckRegions (e) {
+      loadTagger(e).then(() => {
+        console.log('loaded!'); 
+        console.log(videotagging.getCurrentFrameRegions())
+        if(videotagging.currTFRecord && videotagging.getCurrentFrameRegions().length == 0) {
+          getRegionsFromRecord(videotagging.currTFRecord)
+        }
+      });
+    }
     
     async function loadTagger (e) {
       if(framerate.validity.valid && inputtags.validity.valid) {
@@ -398,10 +415,22 @@ function openPath(pathName, isDir, isRecords = false) {
           visitedFrames = new Set();
           if(isDir){
             var files = fs.readdirSync(pathName);
-            
-            videotagging.imagelist = files.filter(function(file){
-                  return file.match(/.(jpg|jpeg|png|gif)$/i);
-            });
+            if(isRecords){
+              videotagging.imagelist = files.filter(function(file){
+                return file.match(/.(tfrecord)$/i);
+              });
+              let recordlist = videotagging.imagelist.map(async record => {
+                const resp = await readRecord(pathName,record);
+                return resp;
+              })
+              videotagging.recordlist = await Promise.all(recordlist);
+              videotagging.currTFRecord = videotagging.recordlist[0];
+              // if(videotagging.currTFRecord) {console.dir(videotagging.currTFRecord); getRegionsFromRecord(videotagging.currTFRecord)}
+            } else {
+              videotagging.imagelist = files.filter(function(file){
+                return file.match(/.(jpg|jpeg|png|gif)$/i);
+              });
+            }
             console.log(videotagging.imagelist[0])
             visitedFrames = new Set([videotagging.imagelist[0]]);
             visitedFramesNumber =  new Set([0])
@@ -428,6 +457,7 @@ function openPath(pathName, isDir, isRecords = false) {
                 return resp;
               })
               videotagging.recordlist = await Promise.all(recordlist);
+              console.log(videotagging.imagelist.map(record => pathName + '\\' + record))
               videotagging.currTFRecord = videotagging.recordlist[0];
               // getRegionsFromRecord(videotagging.recordlist[0]);
             }else{
@@ -439,6 +469,8 @@ function openPath(pathName, isDir, isRecords = false) {
             if (videotagging.imagelist.length){
               //Check if tagging was done in previous version of VOTT
               console.log(Array.from(visitedFrames));
+              console.log(videotagging.imagelist)
+              if(videotagging.recordlist) console.log(videotagging.recordlist)
               if(!isNaN(Array.from(visitedFrames)[0])){
                 visitedFramesNumber = visitedFrames;
                 visitedFrames = new Set(Array.from(visitedFramesNumber).map(frame => videotagging.imagelist[parseInt(frame)]))
@@ -465,6 +497,7 @@ function openPath(pathName, isDir, isRecords = false) {
                 } else $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
                 updateVisitedFrames();
+
               });
               $("#video-tagging").on("stepBwdClicked-AfterStep", () => {
                 //update title to match src
@@ -519,6 +552,7 @@ function openPath(pathName, isDir, isRecords = false) {
         $('#video-tagging-container').show();
 
         ipcRenderer.send('setFilePath', pathName);
+
       } else {
         $('.bootstrap-tagsinput').last().addClass( "invalid" );
       }
@@ -526,17 +560,22 @@ function openPath(pathName, isDir, isRecords = false) {
 }
 
 function getRegionsFromRecord(tfRecord){
-  let sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0]
-  let sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0]
+  if(videotagging.sourceWidth == 0 || videotagging.sourceHeight == 0){
+    videotagging.sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0];
+    videotagging.sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0];
+  }
   let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
   let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 
+  console.dir(tfRecord); 
+
   for (let i = 0; i < tfRecord.features.feature['image/object/bbox/xmin'].floatList.value.length; i++) {
     
-    let x1 = tfRecord.features.feature['image/object/bbox/xmin'].floatList.value[i] * sourceWidth * widthRatio;
-    let y1 = tfRecord.features.feature['image/object/bbox/ymin'].floatList.value[i] * sourceHeight * heightRatio;
-    let x2 = tfRecord.features.feature['image/object/bbox/xmax'].floatList.value[i] * sourceWidth * widthRatio;
-    let y2 = tfRecord.features.feature['image/object/bbox/ymax'].floatList.value[i] * sourceHeight * heightRatio;
+    let x1 = tfRecord.features.feature['image/object/bbox/xmin'].floatList.value[i] * videotagging.sourceWidth * widthRatio;
+    let y1 = tfRecord.features.feature['image/object/bbox/ymin'].floatList.value[i] * videotagging.sourceHeight * heightRatio;
+    let x2 = tfRecord.features.feature['image/object/bbox/xmax'].floatList.value[i] * videotagging.sourceWidth * widthRatio;
+    let y2 = tfRecord.features.feature['image/object/bbox/ymax'].floatList.value[i] * videotagging.sourceHeight * heightRatio;
+    console.log([x1,x2,y1,y2])
     videotagging.createRegion(x1,y1,x2,y2)
     // console.log(`regular: ${JSON.stringify(tfRecord)}`)
     console.log(`decoded: ${decode_Uint8(tfRecord.features.feature['image/object/class/text'].bytesList.value[i])}`)
@@ -544,61 +583,106 @@ function getRegionsFromRecord(tfRecord){
   }
 }
 
-async function writeRecord(recordPath, example = null, id = null) {
+async function writeRecord(recordPath, example = null) {
+  let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
+  let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
+
+  const id = recordPath.split("\\").pop();
+  let outputDir = recordPath.split("\\").slice(0,-1).join("\\");
+  let recordId = id.split(".").slice(0,-1);
+  recordId.push("tfrecord")
+  recordId = recordId.join(".")
+  let outputPath = outputDir + "\\" + recordId;
+
   if(!example){
-    if(id){
-      const regions = videotagging.getRegions(id);
-      const builder = tfrecord.createBuilder();
+    const regions = videotagging.getRegions(id);
+    const builder = tfrecord.createBuilder();
 
-      let xmin = [];
-      let ymin = [];
-      let xmax = [];
-      let ymax = [];
-      let tags = [];
-      // console.log(`regions: ${JSON.stringify(regions)}`);
-      regions.forEach(region => {
-        xmin.push(region.x1)
-        ymin.push(region.y1)
-        xmax.push(region.x2)
-        ymax.push(region.y2)
-        tags.push(region.tags[0])
-        console.log(`tag: ${region.tags[0]}`)
-      });
+    let xmin = [];
+    let ymin = [];
+    let xmax = [];
+    let ymax = [];
+    let tags = [];
+    let difficult_obj = [];
+    let truncated = [];
+    let poses = [];
+    // console.log(`regions: ${JSON.stringify(regions)}`);
+    regions.forEach(region => {
+      xmin.push(region.x1 / videotagging.sourceWidth)
+      ymin.push(region.y1 / videotagging.sourceHeight)
+      xmax.push(region.x2 / videotagging.sourceWidth)
+      ymax.push(region.y2 / videotagging.sourceHeight)
+      tags.push(region.tags[0])
+      difficult_obj.push(0)
+      truncated.push(0)
+      poses.push(encode_Uint8("Unspecified"))
+      console.log(`tag: ${region.tags[0]}`)
+    });
 
-      builder.setBytes('image/filename', encode_Uint8(id));
-      builder.setBytes('image/encoded', encode_Uint8(id));
+    getDataUri(recordPath).then((data) => {
+      builder.setIntegers('image/height', [videotagging.sourceHeight]);
+      builder.setIntegers('image/width', [videotagging.sourceWidth]);
+
+      builder.setBinaries('image/filename', [encode_Uint8(id)]);
+      builder.setBinaries('image/source_id', [encode_Uint8(id)]);
+
+      builder.setBinaries('image/key/sha256', [CryptoJS.SHA256(data).toString(CryptoJS.enc.Base64)]);
+      // getDataUri(recordPath,(data) => {return data})
       
-      if(videotagging.currTFRecord) builder.setBytes('image/format', encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-2)[0]));
-      else builder.setBytes('image/format', encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-1)[0]));
-      
-      builder.setIntegers('image/height', videotagging.sourceHeight);
-      builder.setIntegers('image/width', videotagging.sourceWidth);
-      
-      builder.setBytes('image/key/sha526', encode_Uint8(id));
-      
-      builder.setIntegers('image/object/class/label', encode_Uint8(id));
-      builder.setBytes('image/object/class/text', encode_Uint8(id));
+      // builder.setBinaries('image/encoded', [videotagging.frameCanvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, '')]);
+      // console.log(getDataUri(recordPath));
+      builder.setBinaries('image/encoded', [data]);
+
+      if(videotagging.currTFRecord) builder.setBytes('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-2)[0])]);
+      else builder.setBinaries('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-1)[0])]);
 
       builder.setFloats('image/object/bbox/xmin', xmin);
       builder.setFloats('image/object/bbox/ymin', ymin);
       builder.setFloats('image/object/bbox/xmax', xmax);
       builder.setFloats('image/object/bbox/ymax', ymax);
 
+      // let tags =  videotagging.getCurrentFrameRegions().map(region => region.tags[0])
+
+      builder.setBinaries('image/object/class/text', tags.map(tag => encode_Uint8(tag)));
+      builder.setIntegers('image/object/class/label', tags.map(tag => videotagging.inputtagsarray.indexOf(tag)));
+
+      builder.setIntegers('image/object/difficult', difficult_obj);
+      builder.setIntegers('image/object/truncated', truncated);
+      builder.setBinaries('image/object/view', poses);
+
       example = builder.releaseExample();
-    }
+    })
   }
   
-  const writer = await tfrecord.createWriter(recordPath);
+  const writer = await tfrecord.createWriter(outputPath);
   await writer.writeExample(example);
   await writer.close();
-  // console.log(example.features.feature)
+  console.log(outputPath)
+}
+
+function getDataUri(url) {
+  return new Promise((resolve,reject) => {
+    var image = new Image();
+
+    image.onload = function () {
+      var canvas = document.createElement('canvas');
+      canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
+      canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+
+      canvas.getContext('2d').drawImage(this, 0, 0);
+
+      // Get raw image data
+      resolve(canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, ''));
+    };
+
+    image.src = url;
+  })
 }
 
 async function readRecord(pathname, recordName) {
   const reader = await tfrecord.createReader(pathname + '\\' + recordName);
   let example;
   while (example = await reader.readExample()) {
-    console.log(example.features.feature);
     return example;
   }
   // The reader auto-closes after it reaches the end of the file.
@@ -634,17 +718,17 @@ function save() {
         let ymax = [];
         let tags = [];
         let regions = videotagging.getRegions(videotagging.getCurrentFrameId());
-        let sourceHeight = videotagging.currTFRecord.features.feature['image/height'].int64List.value[0]
-        let sourceWidth = videotagging.currTFRecord.features.feature['image/width'].int64List.value[0]
+        videotagging.sourceHeight = videotagging.currTFRecord.features.feature['image/height'].int64List.value[0]
+        videotagging.sourceWidth = videotagging.currTFRecord.features.feature['image/width'].int64List.value[0]
         let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
         let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 
         console.log(`regions: ${JSON.stringify(regions)}`);
         regions.forEach(region => {
-          xmin.push(region.x1 / sourceWidth)
-          ymin.push(region.y1 / sourceHeight)
-          xmax.push(region.x2 / sourceWidth)
-          ymax.push(region.y2 / sourceHeight)
+          xmin.push(region.x1 / videotagging.sourceWidth)
+          ymin.push(region.y1 / videotagging.sourceHeight)
+          xmax.push(region.x2 / videotagging.sourceWidth)
+          ymax.push(region.y2 / videotagging.sourceHeight)
           tags.push(encode_Uint8(region.tags[0]))
           // console.log(`encoded: ${encode_Uint8(region.tags[0])}`)
         })
@@ -654,14 +738,11 @@ function save() {
         videotagging.currTFRecord.features.feature['image/object/bbox/xmax'].floatList.value = xmax;
         videotagging.currTFRecord.features.feature['image/object/bbox/ymin'].floatList.value = ymin;
         videotagging.currTFRecord.features.feature['image/object/bbox/ymax'].floatList.value = ymax;
-        videotagging.currTFRecord.features.feature['image/object/class/text'].bytesList.value = tags
-        videotagging.currTFRecord.features.feature['image/filename'].bytesList.value = [encode_Uint8('changed')]
+        videotagging.currTFRecord.features.feature['image/object/class/text'].bytesList.value = tags;
         videotagging.recordlist[videotagging.imageIndex] = videotagging.currTFRecord;
         console.log(videotagging.currTFRecord.features.feature['image/object/bbox/xmin'].floatList.value)
         writeRecord(videotagging.imagelist[videotagging.imageIndex],videotagging.currTFRecord).then(()=>{
           console.log(`record saved: ${videotagging.imagelist[videotagging.imageIndex]}`)
-          
-          // console.log(`videotagging.currTFRecord: ${JSON.stringify(videotagging.currTFRecord)}`);
         });
       }
       setTimeout(() => {

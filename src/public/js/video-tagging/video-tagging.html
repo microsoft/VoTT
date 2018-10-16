@@ -980,8 +980,11 @@
     changeImage: function(imageUrl, isRecord = false){
 
         if(isRecord){
-            let base64Data = btoa(String.fromCharCode.apply(null, imageUrl));
-            this.video.style.backgroundImage = 'data:image/png;base64,' + {base64Data};
+            // let base64Data = btoa(String.fromCharCode.apply(null, imageUrl));
+            let base64Data = btoa(new Uint8Array(imageUrl).reduce(function (data, byte) {
+                                return data + String.fromCharCode(byte);
+                            }, ''));
+            this.video.style.backgroundImage = encodeURI('data:image/png;base64,' + {base64Data});
             this.curImg.src = `${'data:image/png;base64,' + base64Data}`;
         } else {
             this.video.style.backgroundImage = encodeURI(imageUrl);
