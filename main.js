@@ -114,6 +114,10 @@ function createWindow () {
     mainWindow.send('export-tags', arg);
   });
 
+  ipcMain.on('export-records', (event, arg) => {
+    mainWindow.send('export-records', arg);
+  });
+
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
   });
@@ -177,12 +181,6 @@ function createWindow () {
           accelerator: 'CmdOrCtrl+E',
           enabled: false,
           click () { mainWindow.webContents.send('export'); }
-        },
-        {
-          label: 'Export Tags as TFRecords',
-          accelerator: 'CmdOrCtrl+G',
-          enabled: false,
-          click () { mainWindow.webContents.send('export-records'); }
         },
         {
           label: 'Active Learning',
