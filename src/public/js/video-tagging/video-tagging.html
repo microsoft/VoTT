@@ -980,7 +980,6 @@
     changeImage: function(imageUrl, isRecord = false){
 
         if(isRecord){
-            // let base64Data = btoa(String.fromCharCode.apply(null, imageUrl));
             let base64Data = btoa(new Uint8Array(imageUrl).reduce(function (data, byte) {
                                 return data + String.fromCharCode(byte);
                             }, ''));
@@ -992,7 +991,6 @@
         }
 
         this.rotation = 0;
-        // this.curImg.src = `${this.imagelist[this.imageIndex]}`;
         var self = this;
 
         self.curImg.onload = function() {

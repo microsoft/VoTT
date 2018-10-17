@@ -361,7 +361,6 @@ function recordFolderSelected(recordfolderpath){
   },function (pathName) {
     if (pathName) openPath(pathName[0], true, true);
     else $('#load-message-container').show();
-    // if(videotagging.currTFRecord) {getRegionsFromRecord(videotagging.currTFRecord)}
   });
 }
 
