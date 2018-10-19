@@ -962,7 +962,7 @@
         if (!this.imagelist) return;
         //$("#rotate").show();
         // console.log(`record: ${JSON.stringify(this.currTFRecord.features.feature["image/encoded"].bytesList.value)}`)
-        if(this.recordlist) this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);
+        if(this.recordlist) {this.currTFRecord = this.recordlist[0]; this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);}
         else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`); console.log(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`)
         var self = this;
         self.frames = self.inputframes? self.inputframes:{};
