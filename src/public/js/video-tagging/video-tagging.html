@@ -544,7 +544,14 @@
         }
         //this.emitRegionToHost();//Persist
     },
-
+    //Adds new tags found in tfrecord to tags array
+    addNewRecordTags: function(){
+        let recs = []
+        for(let tag of this.currTFRecord.features.feature["image/object/class/text"].bytesList.value){
+            if(!this.inputtagsarray.includes(String.fromCharCode.apply(null, tag))) recs.push(String.fromCharCode.apply(null, tag));
+        }
+        if(recs.length) this.inputtagsarray.push.apply(this.inputtagsarray,recs)
+    },
     buildTagsDescriptor: function(tags) {
 
         
@@ -963,10 +970,12 @@
         //$("#rotate").show();
         // console.log(`record: ${JSON.stringify(this.currTFRecord.features.feature["image/encoded"].bytesList.value)}`)
         if(this.recordlist) {this.currTFRecord = this.recordlist[0]; this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);}
-        else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`); console.log(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`)
+        else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`); 
+        console.log(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
         var self = this;
         self.frames = self.inputframes? self.inputframes:{};
-        self.optionalTags.createTagControls(self.inputtagsarray);
+        if(this.currTFRecord) this.addNewRecordTags();
+        self.optionalTags.createTagControls(this.inputtagsarray);
 
         //self.resetLayout();
         
@@ -1099,6 +1108,8 @@
                     this.imageIndex = id;
                     if(this.recordlist) {
                         this.currTFRecord = this.recordlist[this.imageIndex];
+                        this.addNewRecordTags();
+                        this.optionalTags.createTagControls(this.inputtagsarray);
                         this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);
                     }
                     else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
@@ -1134,6 +1145,8 @@
                     this.imageIndex++;
                     if(this.recordlist){
                         this.currTFRecord = this.recordlist[this.imageIndex];
+                        if(this.currTFRecord) this.addNewRecordTags();
+                        this.optionalTags.createTagControls(this.inputtagsarray);
                         this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);
                     }
                     else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
@@ -1164,6 +1177,8 @@
                     this.imageIndex--;
                     if(this.recordlist) {
                         this.currTFRecord = this.recordlist[this.imageIndex];
+                        this.addNewRecordTags();
+                        this.optionalTags.createTagControls(this.inputtagsarray);
                         this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);
                 }
                     else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);

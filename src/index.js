@@ -729,7 +729,7 @@ function save() {
     var saveObject = {
       "frames" : videotagging.frames,
       "framerate":$('#framerate').val(),
-      "inputTags": $('#inputtags').val().replace(/\s/g,''),
+      "inputTags": videotagging.inputtagsarray.join().replace(/\s/g,''),//$('#inputtags').val().replace(/\s/g,''),
       "suggestiontype": $('#suggestiontype').val(),
       "scd": document.getElementById("scd").checked,
       "visitedFrames": Array.from(visitedFrames),
@@ -810,7 +810,7 @@ function deleteFrame(){
     var delObject = {
       "frames" : videotagging.frames,
       "framerate":$('#framerate').val(),
-      "inputTags": $('#inputtags').val().replace(/\s/g,''),
+      "inputTags": videotagging.inputtagsarray.join().replace(/\s/g,''),//$('#inputtags').val().replace(/\s/g,''),
       "suggestiontype": $('#suggestiontype').val(),
       "scd": document.getElementById("scd").checked,
       "visitedFrames": Array.from(visitedFrames),
