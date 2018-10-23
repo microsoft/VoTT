@@ -8,8 +8,8 @@ const ipcRenderer = require('electron').ipcRenderer;
 const testSetSize = .20;
 const {clipboard} = require('electron');
 const tfrecord = require('tfrecord');
-// const SHA256 = require("crypto-js/sha256");
 var CryptoJS = require("crypto-js");
+var async = require("async");
 
 var trackingEnabled = true;
 var saveState,
@@ -67,22 +67,20 @@ ipcRenderer.on('export-records', async (event, exportConfig) => {
       default:
         break;
     }
-    console.log(`exporting until: ${exportUntil}`)
     let recordPromises = [];
-    for (let i = 0; i < exportUntil; i++) {
-      if(videotagging.recordlist){
-        recordPromises.push(writeRecord(videotagging.imagelist[i],videotagging.recordlist[i],exportConfig.exportPath).then(()=>{
-          console.log(`record #: ${i}/${videotagging.recordlist.length} saved`)
-        }));
-        // if(i >= exportUntil - 1) {$(".loader").remove();}
-      } else {
-        recordPromises.push(writeRecord(videotagging.imagelist[i],null,exportConfig.exportPath).then(()=>{
-          console.log(`record #: ${i}/${videotagging.imagelist.length} saved`)
-        }));
-        // if(i >= exportUntil - 1) {$(".loader").remove();}
-      }
+    let carg = async.queue(async function(tasks, callback){
+      if(videotagging.recordlist) await writeRecord(videotagging.imagelist[tasks.i],videotagging.recordlist[tasks.i],exportConfig.exportPath);
+      else await writeRecord(videotagging.imagelist[tasks.i],null,exportConfig.exportPath);
+      callback();
+    },50)
+    carg.drain = function(){
+      $(".loader").remove();
     }
-    await Promise.all(recordPromises).then(() => {$(".loader").remove();});
+    for (let i = 0; i < exportUntil; i++) {
+      carg.push({i:i},function(err){
+        console.log(`record #: ${i}/${exportUntil} saved`)
+      });
+    }
   }
 });
 
@@ -412,13 +410,11 @@ function openPath(pathName, isDir, isRecords = false) {
     document.getElementById('loadButton').onclick = loadTaggerAndCheckRegions;
 
     function loadTaggerAndCheckRegions (e) {
-      addLoader("load-form-container");
-      console.log('added loader')
+      addLoader("#load-form-container");
       loadTagger(e).then(() => {
         if(videotagging.currTFRecord && videotagging.getCurrentFrameRegions().length == 0) {
           getRegionsFromRecord(videotagging.currTFRecord)
         }
-        console.log('remove loader')
         $(".loader").remove();
       });
     }

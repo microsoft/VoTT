@@ -148,7 +148,6 @@
 
         //Frame view size
         this.frameWidth = 0;
-        this.frameWidth = 0;
         this.frameHeight = 0;
 
         this.sourceWidth = 0;
@@ -559,10 +558,7 @@
         let primaryTag = null;
         let secondaryTags = [];
         if (tags.length > 0) {
-            // console.log(`optional tags: ${this.optionalTags}`)
-            // console.dir(this.optionalTags)
             let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            // console.log(`color ${color}`)
             primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
 
             secondaryTags = [];
@@ -588,7 +584,6 @@
             }
 
             if (tags.length > 0) {
-                // console.log(`tags: ${tags}`)
                 let tagsDescriptor = this.buildTagsDescriptor(tags);
                 this.regionsManager.updateTagsById(region.UID, tagsDescriptor);
             } else {
@@ -968,7 +963,6 @@
     initImageDir: function() {
         if (!this.imagelist) return;
         //$("#rotate").show();
-        // console.log(`record: ${JSON.stringify(this.currTFRecord.features.feature["image/encoded"].bytesList.value)}`)
         if(this.recordlist) {this.currTFRecord = this.recordlist[0]; this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);}
         else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`); 
         console.log(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
@@ -1139,8 +1133,7 @@
             this.cleanSelectedElements()
             //raise before next frame
             if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
-            if (this.imagelist){//image handling
-                // if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+            if (this.imagelist){//image handling    
                 if (this.imageIndex < this.imagelist.length-1) {
                     this.imageIndex++;
                     if(this.recordlist){
@@ -1156,8 +1149,7 @@
                 if ((this.video.currentTime + this.frameTime) > this.video.duration ){
                     return;
                 }
-                if (!this.canMove ) return; 
-                // if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
+                if (!this.canMove ) return;    
                 //if there are no unlabled tags move to next frame
                 this.video.currentTime += this.frameTime;
                 this.playingCallback();            
