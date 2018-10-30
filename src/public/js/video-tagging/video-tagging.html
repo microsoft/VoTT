@@ -1135,7 +1135,7 @@
             this.cleanSelectedElements()
             //raise before next frame
             if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-BeforeStep');    
-            if (this.imagelist){//image handling    
+            if (this.imagelist){//image handling 
                 if (this.imageIndex < this.imagelist.length-1) {
                     this.imageIndex++;
                     if(this.recordlist){
@@ -1151,10 +1151,9 @@
                 if ((this.video.currentTime + this.frameTime) > this.video.duration ){
                     return;
                 }
-                if (!this.canMove ) return;    
                 //if there are no unlabled tags move to next frame
                 this.video.currentTime += this.frameTime;
-                this.playingCallback();            
+                this.playingCallback();
             } 
             //raise after next frame
             if(fireEvents)$('#video-tagging').trigger('stepFwdClicked-AfterStep');
