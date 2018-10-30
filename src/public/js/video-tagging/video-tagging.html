@@ -961,7 +961,9 @@
     },
     //used for init of image directory find way to reduce duplicate code
     initImageDir: function() {
-        if (!this.imagelist) return;
+        if (!this.imagelist){
+
+        }
         //$("#rotate").show();
         if(this.recordlist) {this.currTFRecord = this.recordlist[0]; this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);}
         else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`); 
@@ -1264,8 +1266,12 @@
         this.showAllRegions();
     },
     playImageSquence: function() {
-        if(this.imageIndex == this.imagelist.length - 1) this.pauseState();
-        if(this.sequencePlaying) this.stepFwdClicked();
+        if(this.imageIndex == this.imagelist.length - 1){
+            this.pauseState();
+        } 
+        if(this.sequencePlaying) {
+            this.stepFwdClicked();
+        }
     },
     displayVideoTime: function() {
             var currentTime = Math.round(this.video.currentTime);

@@ -22,7 +22,7 @@ function getExportConfiguration() {
         exportPath: $('#output').val(),
         exportFormat: $('#format').val()
     };
-    if(exportConfig.exportFormat == "tfrecord") {
+    if(exportConfig.exportFormat === "tfrecord") {
         ipcRenderer.send('export-records', exportConfig);     
     } else {
         ipcRenderer.send('export-tags', exportConfig); 
