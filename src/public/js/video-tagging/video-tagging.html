@@ -131,6 +131,8 @@
     },
     // Element Lifecycle
     ready: function() {
+        const path = require('path');
+        
         this.frames = {}; //Holds the data of the tagged frames, their regions and tags
         this.seeking = false; //Flag for enabling control over the seek bar while the video is playing, see playingCallback function
         this.sequencePlaying = false; //Flag for holding playback state of an image sequence
@@ -476,7 +478,7 @@
 
     getCurrentFrameId: function() {
       if (this.imagelist){
-        return (this.imagelist[this.imageIndex].split("\\").pop());
+        return (this.imagelist[this.imageIndex].split(path.sep).pop());
       } 
       return this.video.currentTime === 0 ? 1 : Math.ceil((this.video.currentTime - this.videoStartTime) * this.framerate) + 1 ;
     },
@@ -491,7 +493,7 @@
 
     getPrevFrameRegionsCopy: function() {
         if(this.imagelist){
-            return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.prevFrameIndex].split("\\").pop())));    
+            return JSON.parse(JSON.stringify(this.getRegions(this.imagelist[this.prevFrameIndex].split(path.sep).pop())));    
         } else {
             return JSON.parse(JSON.stringify(this.getRegions(this.prevFrameIndex)));
         }
