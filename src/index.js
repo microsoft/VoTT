@@ -53,7 +53,7 @@ ipcRenderer.on('export-records', async (event, exportConfig) => {
     var exportUntil;
     switch (exportConfig.exportUntil) {
       case "tagged":
-        exportUntil = videotagging.imagelist.map((file) => file.split("\\").pop()).indexOf(Object.keys(self.videotagging.frames)[Object.keys(self.videotagging.frames).length - 1])
+        exportUntil = videotagging.imagelist.map((file) => file.split(path.sep).pop()).indexOf(Object.keys(self.videotagging.frames)[Object.keys(self.videotagging.frames).length - 1])
         break;
 
       case "last":
@@ -306,7 +306,7 @@ function addLoader(appendTo = "#videoWrapper") {
 //managed the visited frames
 function updateVisitedFrames(){
   if(videotagging.imagelist){
-    visitedFrames.add(videotagging.imagelist[videotagging.imageIndex].split("\\").pop());
+    visitedFrames.add(videotagging.imagelist[videotagging.imageIndex].split(path.sep).pop());
     visitedFramesNumber.add(videotagging.imageIndex);
   } else {
     visitedFrames.add(videotagging.getCurrentFrameId());
@@ -485,7 +485,7 @@ function openPath(pathName, isDir, isRecords = false) {
                 return resp;
               })
               videotagging.recordlist = await Promise.all(recordlist);
-              console.log(videotagging.imagelist.map(record => pathName + '\\' + record))
+              console.log(videotagging.imagelist.map(record => pathName + path.sep + record))
               videotagging.currTFRecord = videotagging.recordlist[0];
             }else{
               videotagging.imagelist = files.filter(function(file){
@@ -501,7 +501,7 @@ function openPath(pathName, isDir, isRecords = false) {
                 
                 //Replace the keys of the frames object
                 Object.keys(videotagging.inputframes).map(function(key, index) {
-                  videotagging.inputframes[videotagging.imagelist[key].split("\\").pop()] = videotagging.inputframes[key];
+                  videotagging.inputframes[videotagging.imagelist[key].split(path.sep).pop()] = videotagging.inputframes[key];
                   delete videotagging.inputframes[key];
                 }, this);
               }
@@ -605,12 +605,12 @@ async function writeRecord(recordPath, example = null, outputDir = null) {
     let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
     let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 
-    const id = recordPath.split("\\").pop();
-    outputDir = outputDir ? outputDir : recordPath.split("\\").slice(0,-1).join("\\");
+    const id = recordPath.split(path.sep).pop();
+    outputDir = outputDir ? outputDir : recordPath.split(path.sep).slice(0,-1).join(path.sep);
     let recordId = id.split(".").slice(0,-1);
     recordId.push("tfrecord")
     recordId = recordId.join(".")
-    let outputPath = outputDir + "\\" + recordId;
+    let outputPath = outputDir + path.sep + recordId;
 
     if(!example){
       const regions = videotagging.getRegions(id);
@@ -711,7 +711,7 @@ function getDataUri(url) {
 }
 
 async function readRecord(pathname, recordName) {
-  const reader = await tfrecord.createReader(pathname + '\\' + recordName);
+  const reader = await tfrecord.createReader(pathname + path.sep + recordName);
   let example;
   while (example = await reader.readExample()) {
     console.log('example read');
