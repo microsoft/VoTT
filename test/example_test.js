@@ -1,3 +1,4 @@
+// Fake test - remove when we start adding real tests
 var assert = require('assert');
 describe('Array', function() {
   describe('#indexOf()', function() {
