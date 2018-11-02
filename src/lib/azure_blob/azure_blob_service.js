@@ -1,14 +1,14 @@
 const path = require('path');
 const AzureStorage = require('azure-storage');
 
-class AzureBlobService {
+export class AzureBlobService {
 
     getService(){
         // Uses AZURE_STORAGE_CONNECTION_STRING env variable
         return AzureStorage.createBlobService();
     }
 
-    async createContainer (containerName) {
+    createContainer (containerName) {
         return new Promise((resolve, reject) => {
             this.getService().createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
                 if (err) {
@@ -20,7 +20,7 @@ class AzureBlobService {
         });
     }
 
-    async listContainers () {
+    listContainers () {
         return new Promise((resolve, reject) => {
             this.getService().listContainersSegmented(null, (err, data) => {
                 if (err) {
@@ -32,7 +32,7 @@ class AzureBlobService {
         });
     }
 
-    async listBlobs (containerName) {
+    listBlobs (containerName) {
         return new Promise((resolve, reject) => {
             this.getService().listBlobsSegmented(containerName, null, (err, data) => {
                 if (err) {
@@ -44,7 +44,7 @@ class AzureBlobService {
         });
     }
 
-    async getBlobToText (containerName, blobName) {
+    getBlobToText (containerName, blobName) {
         return new Promise((resolve, reject) => {
             this.getService().getBlobToText(containerName, blobName, (err, data) => {
                 if (err) {
@@ -56,7 +56,7 @@ class AzureBlobService {
         });
     }
 
-    async createBlobFromText (containerName, blobName, text) {
+    createBlobFromText (containerName, blobName, text) {
         return new Promise((resolve, reject) => {
             this.getService().createBlockBlobFromText(containerName, blobName, text, err => {
                 if (err) {
@@ -68,7 +68,7 @@ class AzureBlobService {
         });
     }
 
-    async uploadLocalFile (containerName, filePath) {
+    uploadLocalFile (containerName, filePath) {
         return new Promise((resolve, reject) => {
             const fullPath = path.resolve(filePath);
             const blobName = path.basename(filePath);
@@ -83,7 +83,7 @@ class AzureBlobService {
     }
 
     
-    async deleteContainer (containerName) {
+    deleteContainer (containerName) {
         return new Promise((resolve, reject) => {
             this.getService().deleteContainer(containerName, err => {
                 if (err) {
@@ -95,7 +95,7 @@ class AzureBlobService {
         });
     }    
 
-    async deleteBlob (containerName, blobName) {
+    deleteBlob (containerName, blobName) {
         return new Promise((resolve, reject) => {
             this.getService().deleteBlobIfExists(containerName, blobName, err => {
                 if (err) {
@@ -107,5 +107,3 @@ class AzureBlobService {
         });
     }
 }
-
-module.exports = AzureBlobService;

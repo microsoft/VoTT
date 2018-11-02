@@ -8,6 +8,8 @@ function stringify(p){
     );
 }
 
+let containers = await blobService.listContainers();
+
 stringify(blobService.listContainers());
 stringify(blobService.listBlobs("new-container"));
 stringify(blobService.createContainer("another-container"));
