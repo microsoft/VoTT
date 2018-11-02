@@ -114,6 +114,10 @@ function createWindow () {
     mainWindow.send('export-tags', arg);
   });
 
+  ipcMain.on('export-records', (event, arg) => {
+    mainWindow.send('export-records', arg);
+  });
+
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
   });
@@ -149,6 +153,11 @@ function createWindow () {
           label: 'Open Image Directory...',
           accelerator: 'CmdOrCtrl+I',
           click () { mainWindow.webContents.send('openImageDirectory'); }
+        },
+        {
+          label: 'Open tfRecord Directory...',
+          accelerator: 'CmdOrCtrl+R',
+          click () { mainWindow.webContents.send('openRecordDirectory'); }
         },
         {
           label: 'Save',
