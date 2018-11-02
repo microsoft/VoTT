@@ -1,5 +1,6 @@
 {
     "extends": "strongloop",
+    "parser": "babel-eslint",
     "env": {
         "browser": true,
         "commonjs": true,
@@ -40,6 +41,9 @@
         "no-spaced-func": "off",
         "semi-spacing": "off",
         "no-multiple-empty-lines": "off",
-        "quote-props": "off"
+        "quote-props": "off",
+        "no-floating-decimal": "off",
+        "handle-callback-err": "off",
+        "no-unneeded-ternary": "off"
     }
 }

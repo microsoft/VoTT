@@ -4,7 +4,9 @@
   "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pretest": "eslint src/*.js src/lib",
+    "test": "mocha"
   },
   "repository": "https://github.com/CatalystCode/VOTT",
   "keywords": [
@@ -17,7 +19,10 @@
   "author": "aribornstein",
   "license": "MIT",
   "devDependencies": {
-    "bower": "^1.7.2"
+    "babel-eslint": "^10.0.1",
+    "bower": "^1.7.2",
+    "eslint": "^5.8.0",
+    "eslint-config-strongloop": "^2.1.0"
   },
   "dependencies": {
     "async": "^2.1.5",
@@ -29,5 +34,6 @@
     "replace": "^0.3.0",
     "send": "^0.16.2",
     "tfrecord": "^0.2.0"
-  }
+  },
+  "eslintIgnore": ["src/lib/detection_algorithms/detectionUtils.js"]
 }
