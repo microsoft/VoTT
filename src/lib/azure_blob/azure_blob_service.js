@@ -5,6 +5,7 @@ export class AzureBlobService {
 
     getService(){
         // Uses AZURE_STORAGE_CONNECTION_STRING env variable
+        // or AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_ACCOUNT_KEY
         return AzureStorage.createBlobService();
     }
 
