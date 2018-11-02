@@ -22,7 +22,8 @@
     "babel-eslint": "^10.0.1",
     "bower": "^1.7.2",
     "eslint": "^5.8.0",
-    "eslint-config-strongloop": "^2.1.0"
+    "eslint-config-strongloop": "^2.1.0",
+    "mocha": "^5.2.0"
   },
   "dependencies": {
     "async": "^2.1.5",
@@ -35,5 +36,7 @@
     "send": "^0.16.2",
     "tfrecord": "^0.2.0"
   },
-  "eslintIgnore": ["src/lib/detection_algorithms/detectionUtils.js"]
+  "eslintIgnore": [
+    "src/lib/detection_algorithms/detectionUtils.js"
+  ]
 }
