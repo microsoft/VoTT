@@ -24,7 +24,8 @@
     "eslint": "^5.8.0",
     "eslint-config-strongloop": "^2.1.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.1.0"
+    "nyc": "^13.1.0",
+    "spectron": "^5.0.0"
   },
   "dependencies": {
     "async": "^2.1.5",
