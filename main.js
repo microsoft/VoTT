@@ -206,14 +206,25 @@ function createWindow () {
       label: "Filters",
         submenu: [
             {
-              label: "Invert", 
-              selector: "invert:", 
-              click () { mainWindow.webContents.send('filter', 'invert_filter');}
+              label: "Add filter", 
+              submenu: [
+                {
+                  label: "Invert filter", 
+                  selector: "invert:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'invert_filter');
+                  }
+                }
+              ]
             },
+
+            { type: "separator" },
             {
               label: "Reset filters", 
               selector: "resetFilters:", 
-              click () { mainWindow.webContents.send('filter', 'reset');}
+              click () { 
+                mainWindow.webContents.send('filter', 'reset');
+              }
             }
             /* ,
             {
