@@ -214,6 +214,13 @@ function createWindow () {
                   click () { 
                     mainWindow.webContents.send('filter', 'invert_filter');
                   }
+                },
+                {
+                  label: "Grayscale filter", 
+                  selector: "grayscale:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'grayscale_filter');
+                  }
                 }
               ]
             },
