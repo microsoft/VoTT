@@ -33,29 +33,44 @@ define("basetool", ["require", "exports"], function (require, exports) {
             Base.Point2D = Point2D;
             class Tag {
                 constructor(name, colorHue, id = "none") {
+                    this.__colorPure = "";
+                    this.__colorAccent = "";
+                    this.__colorHighlight = "";
+                    this.__colorShadow = "";
+                    this.__colorDark = "";
                     this.name = name;
                     this.colorHue = colorHue;
                     this.id = id;
                 }
                 get colorPure() {
-                    let pure = `hsl(${this.colorHue.toString()}, 100%, 50%)`;
-                    return pure;
+                    if (this.__colorPure == "") {
+                        this.__colorPure = `hsl(${this.colorHue.toString()}, 100%, 50%)`;
+                    }
+                    return this.__colorPure;
                 }
                 get colorAccent() {
-                    let accent = `hsla(${this.colorHue.toString()}, 100%, 50%, 0.5)`;
-                    return accent;
+                    if (this.__colorAccent == "") {
+                        this.__colorAccent = `hsla(${this.colorHue.toString()}, 100%, 50%, 0.5)`;
+                    }
+                    return this.__colorAccent;
                 }
                 get colorHighlight() {
-                    let highlight = `hsla(${this.colorHue.toString()}, 80%, 40%, 0.3)`;
-                    return highlight;
+                    if (this.__colorHighlight == "") {
+                        this.__colorHighlight = `hsla(${this.colorHue.toString()}, 80%, 40%, 0.3)`;
+                    }
+                    return this.__colorHighlight;
                 }
                 get colorShadow() {
-                    let shadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.2)`;
-                    return shadow;
+                    if (this.__colorShadow == "") {
+                        this.__colorShadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.2)`;
+                    }
+                    return this.__colorShadow;
                 }
                 get colorDark() {
-                    let shadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.8)`;
-                    return shadow;
+                    if (this.__colorDark == "") {
+                        this.__colorDark = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.8)`;
+                    }
+                    return this.__colorDark;
                 }
                 static getHueFromColor(color) {
                     var r = parseInt(color.substring(1, 3), 16) / 255;
@@ -96,6 +111,57 @@ define("basetool", ["require", "exports"], function (require, exports) {
         })(Base = CanvasTools.Base || (CanvasTools.Base = {}));
     })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
 });
+define("filtertool", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var CanvasTools;
+    (function (CanvasTools) {
+        var Filter;
+        (function (Filter) {
+            function InvertFilter(canvas) {
+                var context = canvas.getContext('2d');
+                var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                var buff = document.createElement("canvas");
+                buff.width = canvas.width;
+                buff.height = canvas.height;
+                var data = imageData.data;
+                for (var i = 0; i < data.length; i += 4) {
+                    data[i] = 255 - data[i];
+                    data[i + 1] = 255 - data[i + 1];
+                    data[i + 2] = 255 - data[i + 2];
+                }
+                buff.getContext("2d").putImageData(imageData, 0, 0);
+                return new Promise((resolve, reject) => {
+                    return resolve(buff);
+                });
+            }
+            Filter.InvertFilter = InvertFilter;
+            class FilterPipeline {
+                constructor() {
+                    this.pipeline = new Array();
+                }
+                addFilter(filter) {
+                    this.pipeline.push(filter);
+                }
+                clearPipeline() {
+                    this.pipeline = new Array();
+                }
+                applyToCanvas(canvas) {
+                    let promise = new Promise((resolve, reject) => {
+                        return resolve(canvas);
+                    });
+                    if (this.pipeline.length > 0) {
+                        this.pipeline.forEach((filter) => {
+                            promise = promise.then(filter);
+                        });
+                    }
+                    return promise;
+                }
+            }
+            Filter.FilterPipeline = FilterPipeline;
+        })(Filter = CanvasTools.Filter || (CanvasTools.Filter = {}));
+    })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
+});
 define("regiontool", ["require", "exports", "basetool", "./public/js/video-tagging/js/snap.svg.js"], function (require, exports, CT, Snap) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -132,7 +198,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         BR: this.createAnchor(paper, "BR")
                     };
                     this.ghostAnchor = this.createAnchor(paper, "ghost", 7);
-                    this.rearrangeAnchors();
+                    this.rearrangeAnchors(this.x, this.y, this.x + this.rect.width, this.y + this.rect.height);
                     this.anchorsGroup.add(this.anchors.TL);
                     this.anchorsGroup.add(this.anchors.TR);
                     this.anchorsGroup.add(this.anchors.BR);
@@ -148,19 +214,19 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 move(p) {
                     this.x = p.x;
                     this.y = p.y;
-                    this.rearrangeAnchors();
+                    this.rearrangeAnchors(this.x, this.y, this.x + this.rect.width, this.y + this.rect.height);
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
-                    this.rearrangeAnchors();
+                    this.rearrangeAnchors(this.x, this.y, this.x + this.rect.width, this.y + this.rect.height);
                 }
-                rearrangeAnchors() {
+                rearrangeAnchors(x1, y1, x2, y2) {
                     window.requestAnimationFrame(() => {
-                        this.anchors.TL.attr({ cx: this.x, cy: this.y });
-                        this.anchors.TR.attr({ cx: this.x + this.rect.width, cy: this.y });
-                        this.anchors.BR.attr({ cx: this.x + this.rect.width, cy: this.y + this.rect.height });
-                        this.anchors.BL.attr({ cx: this.x, cy: this.y + this.rect.height });
+                        this.anchors.TL.attr({ cx: x1, cy: y1 });
+                        this.anchors.TR.attr({ cx: x2, cy: y1 });
+                        this.anchors.BR.attr({ cx: x2, cy: y2 });
+                        this.anchors.BL.attr({ cx: x1, cy: y2 });
                     });
                 }
                 rearrangeCoord(p1, p2, flipX, flipY) {
@@ -346,7 +412,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
             class TagsElement {
                 constructor(paper, x, y, rect, tags, styleId, styleSheet) {
                     this.styleSheet = null;
-                    //this.tags = tags;
                     this.rect = rect;
                     this.x = x;
                     this.y = y;
@@ -515,6 +580,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 move(p) {
                     this.x = p.x;
                     this.y = p.y;
+                    let size = 6;
+                    let cx = this.x + 0.5 * this.rect.width;
+                    let cy = this.y - size - 5;
                     window.requestAnimationFrame(() => {
                         this.primaryTagRect.attr({
                             x: p.x,
@@ -532,12 +600,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             let length = this.secondaryTags.length;
                             for (let i = 0; i < length; i++) {
                                 let stag = this.secondaryTags[i];
-                                let s = 6;
-                                let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * s - s / 2;
-                                let y = this.y - s - 5;
+                                let x = cx + (2 * i - length + 0.5) * size;
                                 stag.attr({
                                     x: x,
-                                    y: y
+                                    y: cy
                                 });
                             }
                         }
@@ -821,7 +887,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.x = 0;
                     this.y = 0;
                     this.rect = rect;
-                    this.area = 0;
                     this.ID = id;
                     this.tagsDescriptor = tagsDescriptor;
                     if (boundRect !== null) {
@@ -894,9 +959,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
+                    this.area = width * height;
                     this.boundRects.self.width = this.boundRects.host.width - width;
                     this.boundRects.self.height = this.boundRects.host.height - height;
-                    this.area = width * height;
                     this.UI.forEach((element) => {
                         element.resize(width, height);
                     });
@@ -953,14 +1018,14 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 subscribeToEvents() {
                     window.addEventListener("keyup", (e) => {
                         switch (e.keyCode) {
-                            case 9: //Tab - Select Next Region
+                            case 9:
                                 this.selectNextRegion();
                                 break;
-                            case 46: //Delete key
-                            case 8:  //Backspace key
+                            case 46:
+                            case 8:
                                 this.deleteSelectedRegions();
                                 break;
-                            case 38: //Up arrow
+                            case 38:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(0, -5);
@@ -973,7 +1038,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 40: //Down Arrow
+                            case 40:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(0, 5);
@@ -986,7 +1051,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 37: //Left Arrow
+                            case 37:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(-5, 0);
@@ -999,7 +1064,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 39: //Right Arrow
+                            case 39:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(5, 0);
@@ -1018,8 +1083,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                     window.addEventListener("keydown", (e) => {
                         switch (e.keyCode) {
-                            case 65: // "A"
-                            case 97: // "1" on Numpad
+                            case 65:
+                            case 97:
                                 if (e.ctrlKey) {
                                     this.selectAllRegions();
                                     e.preventDefault();
@@ -1030,53 +1095,77 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         }
                     });
                 }
-
-                redrawAllRegions() {
-                    let sr = this.regions;
-                    this.deleteAllRegions();
-                    for(var i = 0; i < sr.length; i++) {
-                        this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tags.tags);
-                        if(sr[i].isSelected) {
-                            this.selectRegionById(sr[i].ID);
-                        }
-                    }
-                }
-
-                redrawRegion(region) {
-                    let newRegion = region;
-                    this.deleteRegion(region);
-                    this.drawRegion(newRegion.x, newRegion.y, newRegion.rect, newRegion.ID, newRegion.tags.tags);
-                    if(region.isSelected) {
-                        this.selectRegionById(region.ID);
-                    }
-                }
-
-                drawRegion(x,y,rect,id,tagsDescriptor) {
+                addRegion(id, pointA, pointB, tagsDescriptor) {
                     this.menu.hide();
-                    let region = new RegionElement(this.paper, rect, this.paperRect, id, tagsDescriptor,this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
+                    let x = (pointA.x < pointB.x) ? pointA.x : pointB.x;
+                    let y = (pointA.y < pointB.y) ? pointA.y : pointB.y;
+                    let w = Math.abs(pointA.x - pointB.x);
+                    let h = Math.abs(pointA.y - pointB.y);
+                    let region = new RegionElement(this.paper, new base.Rect(w, h), this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
+                    region.move(new base.Point2D(x, y));
+                    region.onChange = this.onRegionUpdate.bind(this);
+                    this.unselectRegions();
+                    region.select();
+                    this.regionManagerLayer.add(region.regionGroup);
+                    this.regions.push(region);
+                    this.menu.showOnRegion(region);
+                }
+                drawRegion(x, y, rect, id, tagsDescriptor) {
+                    this.menu.hide();
+                    let region = new RegionElement(this.paper, rect, this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
                     region.area = rect.height * rect.width;
                     region.move(new base.Point2D(x, y));
                     region.onChange = this.onRegionUpdate.bind(this);
                     region.tags.updateTags(region.tags.tags);
                     this.regionManagerLayer.add(region.regionGroup);
                     this.regions.push(region);
-                    // Need to do a check for invalid stacking from user generated or older saved json
-                    if(this.regions.length > 1 && region.area > this.regions[this.regions.length - 2].area) {
+                    if (this.regions.length > 1 && region.area > this.regions[this.regions.length - 2].area) {
                         this.sortRegionsByArea();
                         this.redrawAllRegions();
                     }
-                    this.menu.showOnRegion(region);  
+                    this.menu.showOnRegion(region);
                 }
-
-                addRegion(id, pointA, pointB, tagsDescriptor) {
-                    let x = (pointA.x < pointB.x) ? pointA.x : pointB.x;
-                    let y = (pointA.y < pointB.y) ? pointA.y : pointB.y;
-                    let w = Math.abs(pointA.x - pointB.x);
-                    let h = Math.abs(pointA.y - pointB.y);
-                    this.drawRegion(x, y, new base.Rect(w,h), id, tagsDescriptor);
-                    this.unselectRegions();
-                    this.selectRegionById(id);
-                    //this.updateTagsById(id);
+                redrawAllRegions() {
+                    let sr = this.regions;
+                    this.deleteAllRegions();
+                    for (var i = 0; i < sr.length; i++) {
+                        this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tags.tags);
+                        if (sr[i].isSelected) {
+                            this.selectRegionById(sr[i].ID);
+                        }
+                    }
+                }
+                sortRegionsByArea() {
+                    function quickSort(arr, left, right) {
+                        var len = arr.length, pivot, partitionIndex;
+                        if (left < right) {
+                            pivot = right;
+                            partitionIndex = partition(arr, pivot, left, right);
+                            quickSort(arr, left, partitionIndex - 1);
+                            quickSort(arr, partitionIndex + 1, right);
+                        }
+                        return arr;
+                    }
+                    function partition(arr, pivot, left, right) {
+                        var pivotValue = arr[pivot].area, partitionIndex = left;
+                        for (var i = left; i < right; i++) {
+                            if (arr[i].area > pivotValue) {
+                                swap(arr, i, partitionIndex);
+                                partitionIndex++;
+                            }
+                        }
+                        swap(arr, right, partitionIndex);
+                        return partitionIndex;
+                    }
+                    function swap(arr, i, j) {
+                        var temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
+                    }
+                    let length = this.regions.length;
+                    if (length > 1) {
+                        quickSort(this.regions, 0, this.regions.length - 1);
+                    }
                 }
                 lookupRegionByID(id) {
                     let region = null;
@@ -1167,51 +1256,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         this.menu.showOnRegion(r);
                     }
                 }
-
-                sortRegionsByArea() {
-                    function quickSort(arr, left, right){
-                        var len = arr.length, 
-                        pivot,
-                        partitionIndex;
-                     
-                     
-                       if(left < right){
-                         pivot = right;
-                         partitionIndex = partition(arr, pivot, left, right);
-                         
-                        //sort left and right
-                        quickSort(arr, left, partitionIndex - 1);
-                        quickSort(arr, partitionIndex + 1, right);
-                       }
-                       return arr;
-                     }
-
-                     function partition(arr, pivot, left, right){
-                        var pivotValue = arr[pivot].area,
-                            partitionIndex = left;
-                     
-                        for(var i = left; i < right; i++){
-                         if(arr[i].area > pivotValue){
-                           swap(arr, i, partitionIndex);
-                           partitionIndex++;
-                         }
-                       }
-                       swap(arr, right, partitionIndex);
-                       return partitionIndex;
-                     }
-
-                     function swap(arr, i, j){
-                        var temp = arr[i];
-                        arr[i] = arr[j];
-                        arr[j] = temp;
-                     }
-
-                     let length = this.regions.length;
-                     if(length > 1) {
-                        quickSort(this.regions, 0, this.regions.length - 1);
-                     }
-                }
-
                 selectRegionById(id) {
                     let region = this.lookupRegionByID(id);
                     this.selectRegion(region);
@@ -1332,7 +1376,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 this.onRegionSelected("");
                             }
                         }
-                        this.sortRegionsByArea();
                     }
                 }
                 unselectRegions(except) {
@@ -1557,7 +1600,6 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         this.moveCross(this.crossB, p);
                         this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
                     }
-                    this.disableExclusiveMode();
                 }
                 onPointerDown(e) {
                     if (!this.twoPointsMode) {
@@ -1581,7 +1623,6 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         if (typeof this.onSelectionEndCallback === "function") {
                             this.onSelectionEndCallback(this.crossA.x, this.crossA.y, this.crossB.x, this.crossB.y);
                         }
-                        this.disableExclusiveMode();
                     }
                     else if (this.twoPointsMode && !this.capturingState) {
                         this.capturingState = true;
@@ -1600,7 +1641,6 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         }
                         this.moveCross(this.crossA, p);
                         this.moveCross(this.crossB, p);
-                        this.disableExclusiveMode();
                     }
                 }
                 onPointerMove(e) {
@@ -1629,31 +1669,27 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                         this.squareMode = true;
                     }
                     if (e.ctrlKey && !this.capturingState) {
-                            this.twoPointsMode = true;
+                        this.twoPointsMode = true;
                     }
                 }
                 onKeyUp(e) {
                     if (!e.shiftKey) {
                         this.squareMode = false;
                     }
-                    if (!e.ctrlKey && this.twoPointsMode && !this.exclusiveCapturingState) {
+                    if (!e.ctrlKey && this.twoPointsMode) {
                         this.twoPointsMode = false;
                         this.capturingState = false;
                         this.moveCross(this.crossA, this.crossB);
                         this.hideAll([this.crossB, this.selectionBox, this.overlay]);
                     }
-
-                    //Ctrl + N to add new region temporarily disabling all others
-                    if(e.ctrlKey && e.keyCode == 78 && !this.exclusiveCapturingState) {
+                    if (e.ctrlKey && e.keyCode == 78 && !this.exclusiveCapturingState) {
                         this.enableExclusiveMode();
                         this.twoPointsMode = false;
-                    } 
-                    //Escape to exit exclusive mode
-                    if(e.keyCode == 27) {
+                    }
+                    if (e.keyCode == 27) {
                         this.disableExclusiveMode();
                     }
                 }
-
                 subscribeToEvents() {
                     let self = this;
                     let listeners = [
@@ -1697,14 +1733,14 @@ define("selectiontool", ["require", "exports", "basetool", "./public/js/video-ta
                     });
                 }
                 disable() {
-                    if(!this.exclusiveCapturingState) {
+                    if (!this.exclusiveCapturingState) {
                         this.isEnabled = false;
                         this.areaSelectorLayer.attr({
                             display: "none"
                         });
                     }
                 }
-                enablify(f,bypass=false) {
+                enablify(f, bypass = false) {
                     let self = this;
                     return function (args) {
                         if (this.isEnabled || bypass) {
