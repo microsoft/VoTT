@@ -114,9 +114,6 @@ function createWindow () {
     mainWindow.send('export-tags', arg);
   });
 
-  ipcMain.on('export-records', (event, arg) => {
-    mainWindow.send('export-records', arg);
-  });
 
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
