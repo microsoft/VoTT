@@ -37,6 +37,7 @@ define("basetool", ["require", "exports"], function (require, exports) {
                     this.__colorAccent = "";
                     this.__colorHighlight = "";
                     this.__colorShadow = "";
+                    this.__colorNoColor = "";
                     this.__colorDark = "";
                     this.name = name;
                     this.colorHue = colorHue;
@@ -65,6 +66,12 @@ define("basetool", ["require", "exports"], function (require, exports) {
                         this.__colorShadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.2)`;
                     }
                     return this.__colorShadow;
+                }
+                get colorNoColor() {
+                    if (this.__colorNoColor == "") {
+                        this.__colorNoColor = `rgba(0, 0, 0, 0.0)`;
+                    }
+                    return this.__colorNoColor;
                 }
                 get colorDark() {
                     if (this.__colorDark == "") {
@@ -136,6 +143,25 @@ define("filtertool", ["require", "exports"], function (require, exports) {
                 });
             }
             Filter.InvertFilter = InvertFilter;
+            function GrayscaleFilter(canvas) {
+                var context = canvas.getContext('2d');
+                var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                var buff = document.createElement("canvas");
+                buff.width = canvas.width;
+                buff.height = canvas.height;
+                var data = imageData.data;
+                for (var i = 0; i < data.length; i += 4) {
+                    let gray = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+                    data[i] = gray;
+                    data[i + 1] = gray;
+                    data[i + 2] = gray;
+                }
+                buff.getContext("2d").putImageData(imageData, 0, 0);
+                return new Promise((resolve, reject) => {
+                    return resolve(buff);
+                });
+            }
+            Filter.GrayscaleFilter = GrayscaleFilter;
             class FilterPipeline {
                 constructor() {
                     this.pipeline = new Array();
@@ -410,7 +436,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
             }
             class TagsElement {
-                constructor(paper, x, y, rect, tags, styleId, styleSheet) {
+                constructor(paper, x, y, rect, tags, styleId, styleSheet, tagsUpdateOptions) {
                     this.styleSheet = null;
                     this.rect = rect;
                     this.x = x;
@@ -418,6 +444,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.styleId = styleId;
                     this.styleSheet = styleSheet;
                     this.paper = paper;
+                    this.tagsUpdateOptions = tagsUpdateOptions;
                     this.buildOn(paper, tags);
                 }
                 buildOn(paper, tags) {
@@ -437,9 +464,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.tagsGroup.add(this.primaryTagTextBG);
                     this.tagsGroup.add(this.primaryTagText);
                     this.tagsGroup.add(this.secondaryTagsGroup);
-                    this.updateTags(tags);
+                    this.updateTags(tags, this.tagsUpdateOptions);
                 }
-                updateTags(tags) {
+                updateTags(tags, options) {
                     let keepPrimaryText = false;
                     if (this.tags && this.tags.primary && tags && tags.primary) {
                         keepPrimaryText = (tags.primary.name == this.tags.primary.name);
@@ -447,7 +474,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.tags = tags;
                     this.redrawTagLabels(keepPrimaryText);
                     this.clearColors();
-                    this.applyColors();
+                    let showBackground = (options !== undefined) ? options.showRegionBackground : true;
+                    this.applyColors(showBackground);
                 }
                 redrawTagLabels(keepPrimaryText = true) {
                     for (let i = 0; i < this.secondaryTags.length; i++) {
@@ -520,12 +548,12 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         this.styleSheet.deleteRule(0);
                     }
                 }
-                applyColors() {
+                applyColors(showRegionBackground = true) {
                     if (this.tags && this.tags.primary !== undefined) {
                         let styleMap = [
                             {
                                 rule: `.${this.styleId} .primaryTagRectStyle`,
-                                style: `fill: ${this.tags.primary.colorShadow};
+                                style: `fill: ${showRegionBackground ? this.tags.primary.colorShadow : this.tags.primary.colorNoColor};
                                 stroke:${this.tags.primary.colorAccent};`
                             },
                             {
@@ -881,7 +909,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
             }
             class RegionElement {
-                constructor(paper, rect, boundRect = null, id, tagsDescriptor, onManipulationBegin, onManipulationEnd) {
+                constructor(paper, rect, boundRect = null, id, tagsDescriptor, onManipulationBegin, onManipulationEnd, tagsUpdateOptions) {
                     this.isSelected = false;
                     this.styleSheet = null;
                     this.x = 0;
@@ -908,6 +936,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.regionID = this.s8();
                     this.styleID = `region_${this.regionID}_style`;
                     this.styleSheet = this.insertStyleSheet();
+                    this.tagsUpdateOptions = tagsUpdateOptions;
                     this.buildOn(paper);
                 }
                 buildOn(paper) {
@@ -916,7 +945,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.regionGroup.addClass(this.styleID);
                     this.anchors = new AnchorsElement(paper, this.x, this.y, this.rect, this.boundRects.host, this.onInternalChange.bind(this), this.onManipulationBegin, this.onManipulationEnd);
                     this.drag = new DragElement(paper, this.x, this.y, this.rect, this.boundRects.self, this.onInternalChange.bind(this), this.onManipulationBegin, this.onManipulationEnd);
-                    this.tags = new TagsElement(paper, this.x, this.y, this.rect, this.tagsDescriptor, this.styleID, this.styleSheet);
+                    this.tags = new TagsElement(paper, this.x, this.y, this.rect, this.tagsDescriptor, this.styleID, this.styleSheet, this.tagsUpdateOptions);
                     this.regionGroup.add(this.tags.tagsGroup);
                     this.regionGroup.add(this.drag.dragGroup);
                     this.regionGroup.add(this.anchors.anchorsGroup);
@@ -945,8 +974,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     }
                     this.onChange(this, state, multiSelection);
                 }
-                updateTags(tags) {
-                    this.tags.updateTags(tags);
+                updateTags(tags, options) {
+                    this.tags.updateTags(tags, options);
                 }
                 move(p) {
                     let self = this;
@@ -991,7 +1020,11 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
             }
             class RegionsManager {
                 constructor(svgHost, onManipulationBegin, onManipulationEnd) {
+                    this.tagsUpdateOptions = {
+                        showRegionBackground: true
+                    };
                     this.justManipulated = false;
+                    this.showRegionBackground = true;
                     this.baseParent = svgHost;
                     this.paper = Snap(svgHost);
                     this.paperRect = new base.Rect(svgHost.width.baseVal.value, svgHost.height.baseVal.value);
@@ -1091,6 +1124,13 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     return false;
                                 }
                                 break;
+                            case 66:
+                                if (e.ctrlKey) {
+                                    this.toggleBackground();
+                                    e.preventDefault();
+                                    return false;
+                                }
+                                break;
                             default: return;
                         }
                     });
@@ -1101,7 +1141,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     let y = (pointA.y < pointB.y) ? pointA.y : pointB.y;
                     let w = Math.abs(pointA.x - pointB.x);
                     let h = Math.abs(pointA.y - pointB.y);
-                    let region = new RegionElement(this.paper, new base.Rect(w, h), this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
+                    let region = new RegionElement(this.paper, new base.Rect(w, h), this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this), this.tagsUpdateOptions);
                     region.move(new base.Point2D(x, y));
                     region.onChange = this.onRegionUpdate.bind(this);
                     this.unselectRegions();
@@ -1112,27 +1152,31 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
                 drawRegion(x, y, rect, id, tagsDescriptor) {
                     this.menu.hide();
-                    let region = new RegionElement(this.paper, rect, this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
+                    let region = new RegionElement(this.paper, rect, this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this), this.tagsUpdateOptions);
                     region.area = rect.height * rect.width;
                     region.move(new base.Point2D(x, y));
                     region.onChange = this.onRegionUpdate.bind(this);
-                    region.tags.updateTags(region.tags.tags);
+                    region.tags.updateTags(region.tags.tags, this.tagsUpdateOptions);
                     this.regionManagerLayer.add(region.regionGroup);
                     this.regions.push(region);
                     if (this.regions.length > 1 && region.area > this.regions[this.regions.length - 2].area) {
                         this.sortRegionsByArea();
                         this.redrawAllRegions();
                     }
-                    this.menu.showOnRegion(region);
+                    //this.menu.showOnRegion(region);
                 }
                 redrawAllRegions() {
                     let sr = this.regions;
+                    let selectedID = "";
                     this.deleteAllRegions();
                     for (var i = 0; i < sr.length; i++) {
                         this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tags.tags);
-                        if (sr[i].isSelected) {
-                            this.selectRegionById(sr[i].ID);
+                        if(sr[i].isSelected) {
+                            selectedID = sr[i].ID
                         }
+                    }
+                    if (selectedID !== "") {
+                        this.selectRegionById(selectedID);
                     }
                 }
                 sortRegionsByArea() {
@@ -1224,13 +1268,13 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 updateTagsById(id, tagsDescriptor) {
                     let region = this.lookupRegionByID(id);
                     if (region != null) {
-                        region.updateTags(tagsDescriptor);
+                        region.updateTags(tagsDescriptor, this.tagsUpdateOptions);
                     }
                 }
                 updateTagsForSelectedRegions(tagsDescriptor) {
                     let regions = this.lookupSelectedRegions();
                     regions.forEach(region => {
-                        region.updateTags(tagsDescriptor);
+                        region.updateTags(tagsDescriptor, this.tagsUpdateOptions);
                     });
                 }
                 selectRegion(region) {
@@ -1385,6 +1429,12 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             r.unselect();
                         }
                     }
+                }
+                toggleBackground() {
+                    this.tagsUpdateOptions.showRegionBackground = !this.tagsUpdateOptions.showRegionBackground;
+                    this.regions.forEach((r) => {
+                        r.tags.updateTags(r.tags.tags, this.tagsUpdateOptions);
+                    });
                 }
             }
             Region.RegionsManager = RegionsManager;

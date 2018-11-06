@@ -1323,8 +1323,14 @@
                 this.playingCallback();
                 break;
             }
+            case "grayscale_filter": {
+                this.filterPipeline.addFilter(this.ftools.GrayscaleFilter);
+                this.playingCallback();
+                break;
+            }
             case "reset": {
                 this.filterPipeline.clearPipeline();
+                this.playingCallback();
                 break;
             }
 
