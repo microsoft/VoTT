@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "pretest": "eslint src/*.js src/lib",
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "test:e2e": "node tests/e2e.js"
   },
   "repository": "https://github.com/CatalystCode/VOTT",
   "keywords": [
