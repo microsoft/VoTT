@@ -197,15 +197,13 @@
 
         SystemJS.import("./public/js/video-tagging/js/canvastools.js").then(function(module){
             Promise.all([
-                System.import('selectiontool'),
-                System.import('regiontool'),
-                System.import('basetool'),
-                System.import('filtertool')
+                System.import('CanvasTools')
             ]).then(function(modules){
-                self.stools = modules[0].CanvasTools.Selection;
-                self.rtools = modules[1].CanvasTools.Region;                
-                self.btools = modules[2].CanvasTools.Base;
-                self.ftools = modules[3].CanvasTools.Filter;
+                var ct = modules[0].CanvasTools;
+                self.btools = ct.Base;
+                self.stools = ct.Selection;
+                self.ftools = ct.Filter;
+                self.rtools = ct.Region;
 
                 let regionsManager = new self.rtools.RegionsManager(self.selectionZone, 
                     function() { },
@@ -564,16 +562,16 @@
         let secondaryTags = [];
         if (tags.length > 0) {
             let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            primaryTag = new this.btools.Tag(tags[0], this.btools.Tag.getHueFromColor(color) * 360);
+            primaryTag = new this.btools.Tags.Tag(tags[0], this.btools.Tags.Tag.getHueFromColor(color) * 360);
 
             secondaryTags = [];
             for (var i = 1; i < tags.length; i++) {
                 let c = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[i])];
-                let t = new this.btools.Tag(tags[i], this.btools.Tag.getHueFromColor(c) * 360);
+                let t = new this.btools.Tags.Tag(tags[i], this.btools.Tags.Tag.getHueFromColor(c) * 360);
                 secondaryTags.push(t)
             }                
 
-            tagsDescriptor = new this.btools.TagsDescriptor(primaryTag, secondaryTags);
+            tagsDescriptor = new this.btools.Tags.TagsDescriptor(primaryTag, secondaryTags);
         }
 
         return tagsDescriptor;
