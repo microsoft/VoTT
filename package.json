@@ -7,7 +7,8 @@
     "start": "electron .",
     "pretest": "eslint src/*.js src/lib",
     "test": "nyc mocha",
-    "test:e2e": "node tests/e2e.js"
+    "test:e2e": "node tests/e2e.js",
+    "test:jasmine": "jasmine"
   },
   "repository": "https://github.com/CatalystCode/VOTT",
   "keywords": [
@@ -24,6 +25,7 @@
     "bower": "^1.7.2",
     "eslint": "^5.8.0",
     "eslint-config-strongloop": "^2.1.0",
+    "jasmine-spec-reporter": "^4.2.1",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
     "spectron": "^5.0.0"
@@ -34,6 +36,7 @@
     "crypto-js": "^3.1.9-1",
     "electron": "^1.4.1",
     "electron-window-state": "^4.0.2",
+    "jasmine": "^3.3.0",
     "remote": "^0.2.6",
     "replace": "^0.3.0",
     "send": "^0.16.2",
