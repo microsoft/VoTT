@@ -127,12 +127,14 @@ function Detection(videotagging, visitedFrames) {
             });
 
         function exportFrame(exporter, frameName, frameId, frameCanvas, canvasContext, frameExportCb) {
+            //correct frameId -- for images image name is used as ID now
+            frameId = (self.videotagging.imagelist) ? frameName : frameId;
+            
             if (!self.visitedFrames.has(frameId)) {
                 return frameExportCb();
             }
             var frameTags = [];
-            //correct frameId -- for images image name is used as ID now
-            frameId = (self.videotagging.imagelist) ? frameName : frameId;
+            
             //confirm that frame is tagged and that no tags are unlabeled 
             var frameIsTagged = self.videotagging.frames.hasOwnProperty(frameId) && (self.videotagging.frames[frameId].length);
             if (frameIsTagged && (self.videotagging.getUnlabeledRegionTags(frameId).length != self.videotagging.frames[frameId].length)) {
@@ -141,8 +143,10 @@ function Detection(videotagging, visitedFrames) {
                     if (!region.tags[region.tags.length - 1]) {
                         return console.log(`frame ${frameId} region ${region.name} has no label`);
                     }
-                    var stanW = (self.videotagging.imagelist) ? frameCanvas.width / region.width : self.videotagging.video.videoWidth / region.width;
-                    var stanH = (self.videotagging.imagelist) ? frameCanvas.height / region.height : self.videotagging.video.videoHeight / region.height;
+                    var stanW = self.videotagging.sourceWidth / region.width; // 1.0
+                    var stanH = self.videotagging.sourceHeight / region.height; // 1.0
+                    //var stanW = (self.videotagging.imagelist) ? frameCanvas.width / region.width : self.videotagging.video.videoWidth / region.width;
+                    //var stanH = (self.videotagging.imagelist) ? frameCanvas.height / region.height : self.videotagging.video.videoHeight / region.height;
                     var tag = {
                         class: region.tags[region.tags.length - 1],
                         x1: parseInt(region.x1 * stanW),
