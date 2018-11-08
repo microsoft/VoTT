@@ -1,105 +1,522 @@
-define("basetool", ["require", "exports"], function (require, exports) {
+define("Base/CanvasTools.Base.Interfaces", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+});
+define("Base/CanvasTools.Base.Point2D", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var CanvasTools;
     (function (CanvasTools) {
         var Base;
         (function (Base) {
-            class Rect {
-                constructor(width, height) {
-                    this.resize(width, height);
+            var Point;
+            (function (Point) {
+                class Point2D {
+                    constructor(x, y) {
+                        this.x = x;
+                        this.y = y;
+                    }
+                    boundToRect(r) {
+                        let newp = new Point2D(0, 0);
+                        newp.x = (this.x < 0) ? 0 : ((this.x > r.width) ? r.width : this.x);
+                        newp.y = (this.y < 0) ? 0 : ((this.y > r.height) ? r.height : this.y);
+                        return newp;
+                    }
+                }
+                Point.Point2D = Point2D;
+            })(Point = Base.Point || (Base.Point = {}));
+        })(Base = CanvasTools.Base || (CanvasTools.Base = {}));
+    })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
+});
+define("Base/CanvasTools.Base.Rect", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var CanvasTools;
+    (function (CanvasTools) {
+        var Base;
+        (function (Base) {
+            var Rect;
+            (function (Rect_1) {
+                class Rect {
+                    constructor(width, height) {
+                        this.resize(width, height);
+                    }
+                    resize(width, height) {
+                        this.width = width;
+                        this.height = height;
+                    }
+                    copy() {
+                        return new Rect(this.width, this.height);
+                    }
+                }
+                Rect_1.Rect = Rect;
+            })(Rect = Base.Rect || (Base.Rect = {}));
+        })(Base = CanvasTools.Base || (CanvasTools.Base = {}));
+    })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
+});
+define("Base/CanvasTools.Base.Tags", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var CanvasTools;
+    (function (CanvasTools) {
+        var Base;
+        (function (Base) {
+            var Tags;
+            (function (Tags) {
+                class Tag {
+                    constructor(name, colorHue, id = "none") {
+                        this.__colorPure = "";
+                        this.__colorAccent = "";
+                        this.__colorHighlight = "";
+                        this.__colorShadow = "";
+                        this.__colorNoColor = "";
+                        this.__colorDark = "";
+                        this.name = name;
+                        this.colorHue = colorHue;
+                        this.id = id;
+                    }
+                    get colorPure() {
+                        if (this.__colorPure == "") {
+                            this.__colorPure = `hsl(${this.colorHue.toString()}, 100%, 50%)`;
+                        }
+                        return this.__colorPure;
+                    }
+                    get colorAccent() {
+                        if (this.__colorAccent == "") {
+                            this.__colorAccent = `hsla(${this.colorHue.toString()}, 100%, 50%, 0.5)`;
+                        }
+                        return this.__colorAccent;
+                    }
+                    get colorHighlight() {
+                        if (this.__colorHighlight == "") {
+                            this.__colorHighlight = `hsla(${this.colorHue.toString()}, 80%, 40%, 0.3)`;
+                        }
+                        return this.__colorHighlight;
+                    }
+                    get colorShadow() {
+                        if (this.__colorShadow == "") {
+                            this.__colorShadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.2)`;
+                        }
+                        return this.__colorShadow;
+                    }
+                    get colorNoColor() {
+                        if (this.__colorNoColor == "") {
+                            this.__colorNoColor = `rgba(0, 0, 0, 0.0)`;
+                        }
+                        return this.__colorNoColor;
+                    }
+                    get colorDark() {
+                        if (this.__colorDark == "") {
+                            this.__colorDark = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.8)`;
+                        }
+                        return this.__colorDark;
+                    }
+                    static getHueFromColor(color) {
+                        var r = parseInt(color.substring(1, 3), 16) / 255;
+                        var g = parseInt(color.substring(3, 5), 16) / 255;
+                        var b = parseInt(color.substring(5, 7), 16) / 255;
+                        var max = Math.max(r, g, b), min = Math.min(r, g, b);
+                        var h, s, l = (max + min) / 2;
+                        if (max == min) {
+                            h = s = 0;
+                        }
+                        else {
+                            var d = max - min;
+                            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                            switch (max) {
+                                case r:
+                                    h = (g - b) / d + (g < b ? 6 : 0);
+                                    break;
+                                case g:
+                                    h = (b - r) / d + 2;
+                                    break;
+                                case b:
+                                    h = (r - g) / d + 4;
+                                    break;
+                            }
+                            h /= 6;
+                        }
+                        return h;
+                    }
+                }
+                Tags.Tag = Tag;
+                class TagsDescriptor {
+                    constructor(primaryTag, secondaryTags = []) {
+                        this.primary = primaryTag;
+                        this.secondary = secondaryTags;
+                    }
+                }
+                Tags.TagsDescriptor = TagsDescriptor;
+            })(Tags = Base.Tags || (Base.Tags = {}));
+        })(Base = CanvasTools.Base || (CanvasTools.Base = {}));
+    })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
+});
+define("selectiontool", ["require", "exports", "Base/CanvasTools.Base.Rect", "Base/CanvasTools.Base.Point2D", "./public/js/video-tagging/js/snap.svg.js"], function (require, exports, CTBaseRect, CTBasePoint, Snap) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Rect = CTBaseRect.CanvasTools.Base.Rect.Rect;
+    var Point2D = CTBasePoint.CanvasTools.Base.Point.Point2D;
+    var CanvasTools;
+    (function (CanvasTools) {
+        var Selection;
+        (function (Selection) {
+            class CrossElement {
+                constructor(paper, rect) {
+                    this.build(paper, rect.width, rect.height, 0, 0);
+                }
+                build(paper, width, height, x, y) {
+                    let verticalLine = paper.line(0, 0, 0, height);
+                    let horizontalLine = paper.line(0, 0, width, 0);
+                    this.crossGroup = paper.g();
+                    this.crossGroup.addClass("crossStyle");
+                    this.crossGroup.add(verticalLine);
+                    this.crossGroup.add(horizontalLine);
+                    this.hl = horizontalLine;
+                    this.vl = verticalLine;
+                    this.x = x;
+                    this.y = y;
+                }
+                boundToRect(rect) {
+                    return new Point2D(this.x, this.y).boundToRect(rect);
+                }
+                move(p, rect, square = false, ref = null) {
+                    let np = p.boundToRect(rect);
+                    if (square) {
+                        let dx = Math.abs(np.x - ref.x);
+                        let vx = Math.sign(np.x - ref.x);
+                        let dy = Math.abs(np.y - ref.y);
+                        let vy = Math.sign(np.y - ref.y);
+                        let d = Math.min(dx, dy);
+                        np.x = ref.x + d * vx;
+                        np.y = ref.y + d * vy;
+                    }
+                    this.x = np.x;
+                    this.y = np.y;
+                    this.vl.attr({
+                        x1: np.x,
+                        x2: np.x,
+                        y2: rect.height
+                    });
+                    this.hl.attr({
+                        y1: np.y,
+                        x2: rect.width,
+                        y2: np.y
+                    });
+                }
+                resize(width, height) {
+                    this.vl.attr({
+                        y2: height
+                    });
+                    this.hl.attr({
+                        x2: width,
+                    });
+                }
+                hide() {
+                    this.crossGroup.attr({
+                        visibility: 'hidden'
+                    });
+                }
+                show() {
+                    this.crossGroup.attr({
+                        visibility: 'visible'
+                    });
+                }
+            }
+            class RectElement {
+                constructor(paper, rect) {
+                    this.build(paper, rect.width, rect.height);
+                }
+                build(paper, width, height) {
+                    this.rect = paper.rect(0, 0, width, height);
+                    this.width = width;
+                    this.height = height;
+                }
+                move(p) {
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.rect.attr({
+                            x: p.x,
+                            y: p.y
+                        });
+                    });
                 }
                 resize(width, height) {
                     this.width = width;
                     this.height = height;
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.rect.attr({
+                            width: width,
+                            height: height
+                        });
+                    });
                 }
-                copy() {
-                    return new Rect(this.width, this.height);
+                hide() {
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.rect.attr({
+                            visibility: 'hidden'
+                        });
+                    });
+                }
+                show() {
+                    let self = this;
+                    window.requestAnimationFrame(function () {
+                        self.rect.attr({
+                            visibility: 'visible'
+                        });
+                    });
                 }
             }
-            Base.Rect = Rect;
-            class Point2D {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
+            class AreaSelector {
+                constructor(svgHost, onSelectionBegin, onSelectionEnd) {
+                    this.capturingState = false;
+                    this.exclusiveCapturingState = false;
+                    this.isEnabled = true;
+                    this.squareMode = false;
+                    this.twoPointsMode = false;
+                    this.buildUIElements(svgHost);
+                    this.subscribeToEvents();
+                    this.onSelectionEndCallback = onSelectionEnd;
+                    this.onSelectionBeginCallback = onSelectionBegin;
                 }
-                boundToRect(r) {
-                    let newp = new Point2D(0, 0);
-                    newp.x = (this.x < 0) ? 0 : ((this.x > r.width) ? r.width : this.x);
-                    newp.y = (this.y < 0) ? 0 : ((this.y > r.height) ? r.height : this.y);
-                    return newp;
+                buildUIElements(svgHost) {
+                    this.baseParent = svgHost;
+                    this.paper = Snap(svgHost);
+                    this.paperRect = new Rect(svgHost.width.baseVal.value, svgHost.height.baseVal.value);
+                    this.areaSelectorLayer = this.paper.g();
+                    this.areaSelectorLayer.addClass("areaSelector");
+                    this.overlay = this.createOverlay();
+                    this.mask = this.createMask();
+                    this.selectionBox = this.createSelectionBoxMask();
+                    let combinedMask = this.paper.g();
+                    combinedMask.add(this.mask.rect);
+                    combinedMask.add(this.selectionBox.rect);
+                    this.overlay.rect.attr({
+                        mask: combinedMask
+                    });
+                    this.crossA = this.createCross();
+                    this.crossB = this.createCross();
+                    this.areaSelectorLayer.add(this.overlay.rect);
+                    this.areaSelectorLayer.add(this.crossA.crossGroup);
+                    this.areaSelectorLayer.add(this.crossB.crossGroup);
                 }
-            }
-            Base.Point2D = Point2D;
-            class Tag {
-                constructor(name, colorHue, id = "none") {
-                    this.name = name;
-                    this.colorHue = colorHue;
-                    this.id = id;
+                createOverlay() {
+                    let r = new RectElement(this.paper, this.paperRect);
+                    r.rect.addClass("overlayStyle");
+                    r.hide();
+                    return r;
                 }
-                get colorPure() {
-                    let pure = `hsl(${this.colorHue.toString()}, 100%, 50%)`;
-                    return pure;
+                createMask() {
+                    let r = new RectElement(this.paper, this.paperRect);
+                    r.rect.addClass("overlayMaskStyle");
+                    return r;
                 }
-                get colorAccent() {
-                    let accent = `hsla(${this.colorHue.toString()}, 100%, 50%, 0.5)`;
-                    return accent;
+                createSelectionBoxMask() {
+                    let r = new RectElement(this.paper, new Rect(0, 0));
+                    r.rect.addClass("selectionBoxMaskStyle");
+                    return r;
                 }
-                get colorHighlight() {
-                    let highlight = `hsla(${this.colorHue.toString()}, 80%, 40%, 0.3)`;
-                    return highlight;
+                createCross() {
+                    let cr = new CrossElement(this.paper, this.paperRect);
+                    cr.hide();
+                    return cr;
                 }
-                get colorShadow() {
-                    let shadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.2)`;
-                    return shadow;
-                }
-                get colorDark() {
-                    let shadow = `hsla(${this.colorHue.toString()}, 50%, 30%, 0.8)`;
-                    return shadow;
-                }
-                static getHueFromColor(color) {
-                    var r = parseInt(color.substring(1, 3), 16) / 255;
-                    var g = parseInt(color.substring(3, 5), 16) / 255;
-                    var b = parseInt(color.substring(5, 7), 16) / 255;
-                    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-                    var h, s, l = (max + min) / 2;
-                    if (max == min) {
-                        h = s = 0;
+                resize(width, height) {
+                    if (width !== undefined && height !== undefined) {
+                        this.paperRect.resize(width, height);
+                        this.baseParent.style.width = width.toString();
+                        this.baseParent.style.height = height.toString();
                     }
                     else {
-                        var d = max - min;
-                        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                        switch (max) {
-                            case r:
-                                h = (g - b) / d + (g < b ? 6 : 0);
-                                break;
-                            case g:
-                                h = (b - r) / d + 2;
-                                break;
-                            case b:
-                                h = (r - g) / d + 4;
-                                break;
-                        }
-                        h /= 6;
+                        this.paperRect.resize(this.baseParent.width.baseVal.value, this.baseParent.height.baseVal.value);
                     }
-                    return h;
+                    this.resizeAll([this.overlay, this.mask, this.crossA, this.crossB]);
+                }
+                resizeAll(elementSet) {
+                    elementSet.forEach(element => {
+                        element.resize(this.paperRect.width, this.paperRect.height);
+                    });
+                }
+                showAll(elementSet) {
+                    elementSet.forEach(element => {
+                        element.show();
+                    });
+                }
+                hideAll(elementSet) {
+                    elementSet.forEach(element => {
+                        element.hide();
+                    });
+                }
+                onPointerEnter(e) {
+                    this.crossA.show();
+                }
+                onPointerLeave(e) {
+                    let rect = this.baseParent.getClientRects();
+                    let p = new Point2D(e.clientX - rect[0].left, e.clientY - rect[0].top);
+                    if (!this.twoPointsMode && !this.capturingState) {
+                        this.hideAll([this.crossA, this.crossB, this.selectionBox]);
+                    }
+                    else if (this.twoPointsMode && this.capturingState) {
+                        this.moveCross(this.crossB, p);
+                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
+                    }
+                }
+                onPointerDown(e) {
+                    if (!this.twoPointsMode) {
+                        this.capturingState = true;
+                        this.baseParent.setPointerCapture(e.pointerId);
+                        this.moveCross(this.crossB, this.crossA);
+                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
+                        this.showAll([this.overlay, this.crossB, this.selectionBox]);
+                        if (typeof this.onSelectionBeginCallback === "function") {
+                            this.onSelectionBeginCallback();
+                        }
+                    }
+                }
+                onPointerUp(e) {
+                    let rect = this.baseParent.getClientRects();
+                    let p = new Point2D(e.clientX - rect[0].left, e.clientY - rect[0].top);
+                    if (!this.twoPointsMode) {
+                        this.capturingState = false;
+                        this.baseParent.releasePointerCapture(e.pointerId);
+                        this.hideAll([this.crossB, this.overlay]);
+                        if (typeof this.onSelectionEndCallback === "function") {
+                            this.onSelectionEndCallback(this.crossA.x, this.crossA.y, this.crossB.x, this.crossB.y);
+                        }
+                    }
+                    else if (this.twoPointsMode && !this.capturingState) {
+                        this.capturingState = true;
+                        this.moveCross(this.crossB, p);
+                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
+                        this.showAll([this.crossA, this.crossB, this.selectionBox, this.overlay]);
+                        if (typeof this.onSelectionBeginCallback === "function") {
+                            this.onSelectionBeginCallback();
+                        }
+                    }
+                    else {
+                        this.capturingState = false;
+                        this.hideAll([this.crossB, this.overlay]);
+                        if (typeof this.onSelectionEndCallback === "function") {
+                            this.onSelectionEndCallback(this.crossA.x, this.crossA.y, this.crossB.x, this.crossB.y);
+                        }
+                        this.moveCross(this.crossA, p);
+                        this.moveCross(this.crossB, p);
+                    }
+                }
+                onPointerMove(e) {
+                    let rect = this.baseParent.getClientRects();
+                    let p = new Point2D(e.clientX - rect[0].left, e.clientY - rect[0].top);
+                    this.crossA.show();
+                    if (!this.twoPointsMode && !this.capturingState) {
+                        this.moveCross(this.crossA, p);
+                    }
+                    else if (!this.twoPointsMode && this.capturingState) {
+                        this.moveCross(this.crossB, p, this.squareMode, this.crossA);
+                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
+                    }
+                    else if (this.twoPointsMode && this.capturingState) {
+                        this.moveCross(this.crossB, p, this.squareMode, this.crossA);
+                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
+                    }
+                    else {
+                        this.moveCross(this.crossA, p);
+                        this.moveCross(this.crossB, p);
+                    }
+                    e.preventDefault();
+                }
+                onKeyDown(e) {
+                    if (e.shiftKey) {
+                        this.squareMode = true;
+                    }
+                    if (e.ctrlKey && !this.capturingState) {
+                        this.twoPointsMode = true;
+                    }
+                }
+                onKeyUp(e) {
+                    if (!e.shiftKey) {
+                        this.squareMode = false;
+                    }
+                    if (!e.ctrlKey && this.twoPointsMode) {
+                        this.twoPointsMode = false;
+                        this.capturingState = false;
+                        this.moveCross(this.crossA, this.crossB);
+                        this.hideAll([this.crossB, this.selectionBox, this.overlay]);
+                    }
+                    if (e.ctrlKey && e.keyCode == 78 && !this.exclusiveCapturingState) {
+                        this.enableExclusiveMode();
+                        this.twoPointsMode = false;
+                    }
+                    if (e.keyCode == 27) {
+                        this.disableExclusiveMode();
+                    }
+                }
+                subscribeToEvents() {
+                    let listeners = [
+                        { event: "pointerenter", listener: this.onPointerEnter, base: this.baseParent, bypass: false },
+                        { event: "pointerleave", listener: this.onPointerLeave, base: this.baseParent, bypass: false },
+                        { event: "pointerdown", listener: this.onPointerDown, base: this.baseParent, bypass: false },
+                        { event: "pointerup", listener: this.onPointerUp, base: this.baseParent, bypass: false },
+                        { event: "pointermove", listener: this.onPointerMove, base: this.baseParent, bypass: false },
+                        { event: "keydown", listener: this.onKeyDown, base: window, bypass: false },
+                        { event: "keyup", listener: this.onKeyUp, base: window, bypass: true },
+                    ];
+                    listeners.forEach(e => {
+                        e.base.addEventListener(e.event, this.enablify(e.listener.bind(this), e.bypass));
+                    });
+                }
+                enableExclusiveMode() {
+                    this.exclusiveCapturingState = true;
+                    this.showAll([this.overlay]);
+                    this.hideAll([this.selectionBox]);
+                    this.enable();
+                }
+                disableExclusiveMode() {
+                    this.exclusiveCapturingState = false;
+                    this.hideAll([this.overlay]);
+                }
+                moveCross(cross, p, square = false, refCross = null) {
+                    cross.move(p, this.paperRect, square, refCross);
+                }
+                moveSelectionBox(box, crossA, crossB) {
+                    var x = (crossA.x < crossB.x) ? crossA.x : crossB.x;
+                    var y = (crossA.y < crossB.y) ? crossA.y : crossB.y;
+                    var w = Math.abs(crossA.x - crossB.x);
+                    var h = Math.abs(crossA.y - crossB.y);
+                    box.move(new Point2D(x, y));
+                    box.resize(w, h);
+                }
+                enable() {
+                    this.isEnabled = true;
+                    this.areaSelectorLayer.attr({
+                        display: "block"
+                    });
+                }
+                disable() {
+                    if (!this.exclusiveCapturingState) {
+                        this.isEnabled = false;
+                        this.areaSelectorLayer.attr({
+                            display: "none"
+                        });
+                    }
+                }
+                enablify(f, bypass = false) {
+                    return (args) => {
+                        if (this.isEnabled || bypass) {
+                            f(args);
+                        }
+                    };
                 }
             }
-            Base.Tag = Tag;
-            class TagsDescriptor {
-                constructor(primaryTag, secondaryTags = []) {
-                    this.primary = primaryTag;
-                    this.secondary = secondaryTags;
-                }
-            }
-            Base.TagsDescriptor = TagsDescriptor;
-        })(Base = CanvasTools.Base || (CanvasTools.Base = {}));
+            Selection.AreaSelector = AreaSelector;
+        })(Selection = CanvasTools.Selection || (CanvasTools.Selection = {}));
     })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
 });
-define("regiontool", ["require", "exports", "basetool", "./public/js/video-tagging/js/snap.svg.js"], function (require, exports, CT, Snap) {
+define("regiontool", ["require", "exports", "Base/CanvasTools.Base.Rect", "Base/CanvasTools.Base.Point2D", "./public/js/video-tagging/js/snap.svg.js"], function (require, exports, CTBaseRect, CTBasePoint, Snap) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var base = CT.CanvasTools.Base;
+    var Rect = CTBaseRect.CanvasTools.Base.Rect.Rect;
+    var Point2D = CTBasePoint.CanvasTools.Base.Point.Point2D;
     var CanvasTools;
     (function (CanvasTools) {
         var Region;
@@ -132,7 +549,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         BR: this.createAnchor(paper, "BR")
                     };
                     this.ghostAnchor = this.createAnchor(paper, "ghost", 7);
-                    this.rearrangeAnchors();
+                    this.rearrangeAnchors(this.x, this.y, this.x + this.rect.width, this.y + this.rect.height);
                     this.anchorsGroup.add(this.anchors.TL);
                     this.anchorsGroup.add(this.anchors.TR);
                     this.anchorsGroup.add(this.anchors.BR);
@@ -148,19 +565,19 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 move(p) {
                     this.x = p.x;
                     this.y = p.y;
-                    this.rearrangeAnchors();
+                    this.rearrangeAnchors(this.x, this.y, this.x + this.rect.width, this.y + this.rect.height);
                 }
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
-                    this.rearrangeAnchors();
+                    this.rearrangeAnchors(this.x, this.y, this.x + this.rect.width, this.y + this.rect.height);
                 }
-                rearrangeAnchors() {
+                rearrangeAnchors(x1, y1, x2, y2) {
                     window.requestAnimationFrame(() => {
-                        this.anchors.TL.attr({ cx: this.x, cy: this.y });
-                        this.anchors.TR.attr({ cx: this.x + this.rect.width, cy: this.y });
-                        this.anchors.BR.attr({ cx: this.x + this.rect.width, cy: this.y + this.rect.height });
-                        this.anchors.BL.attr({ cx: this.x, cy: this.y + this.rect.height });
+                        this.anchors.TL.attr({ cx: x1, cy: y1 });
+                        this.anchors.TR.attr({ cx: x2, cy: y1 });
+                        this.anchors.BR.attr({ cx: x2, cy: y2 });
+                        this.anchors.BL.attr({ cx: x1, cy: y2 });
                     });
                 }
                 rearrangeCoord(p1, p2, flipX, flipY) {
@@ -222,7 +639,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             break;
                         }
                     }
-                    return new base.Point2D(x, y);
+                    return new Point2D(x, y);
                 }
                 anchorDragMove(dx, dy, x, y) {
                     let p1, p2;
@@ -261,8 +678,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             break;
                         }
                     }
-                    p1 = new base.Point2D(x1, y1);
-                    p2 = new base.Point2D(x2, y2);
+                    p1 = new Point2D(x1, y1);
+                    p2 = new Point2D(x2, y2);
                     if (this.boundRect !== null) {
                         p1 = p1.boundToRect(this.boundRect);
                         p2 = p2.boundToRect(this.boundRect);
@@ -318,7 +735,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         let p = this.getDragOriginPoint();
                         this.dragOrigin = p;
                         this.rectOrigin = this.rect.copy();
-                        this.pointOrigin = new base.Point2D(this.x, this.y);
+                        this.pointOrigin = new Point2D(this.x, this.y);
                         window.requestAnimationFrame(() => {
                             this.ghostAnchor.attr({
                                 cx: p.x,
@@ -344,15 +761,15 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
             }
             class TagsElement {
-                constructor(paper, x, y, rect, tags, styleId, styleSheet) {
+                constructor(paper, x, y, rect, tags, styleId, styleSheet, tagsUpdateOptions) {
                     this.styleSheet = null;
-                    //this.tags = tags;
                     this.rect = rect;
                     this.x = x;
                     this.y = y;
                     this.styleId = styleId;
                     this.styleSheet = styleSheet;
                     this.paper = paper;
+                    this.tagsUpdateOptions = tagsUpdateOptions;
                     this.buildOn(paper, tags);
                 }
                 buildOn(paper, tags) {
@@ -372,9 +789,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.tagsGroup.add(this.primaryTagTextBG);
                     this.tagsGroup.add(this.primaryTagText);
                     this.tagsGroup.add(this.secondaryTagsGroup);
-                    this.updateTags(tags);
+                    this.updateTags(tags, this.tagsUpdateOptions);
                 }
-                updateTags(tags) {
+                updateTags(tags, options) {
                     let keepPrimaryText = false;
                     if (this.tags && this.tags.primary && tags && tags.primary) {
                         keepPrimaryText = (tags.primary.name == this.tags.primary.name);
@@ -382,7 +799,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.tags = tags;
                     this.redrawTagLabels(keepPrimaryText);
                     this.clearColors();
-                    this.applyColors();
+                    let showBackground = (options !== undefined) ? options.showRegionBackground : true;
+                    this.applyColors(showBackground);
                 }
                 redrawTagLabels(keepPrimaryText = true) {
                     for (let i = 0; i < this.secondaryTags.length; i++) {
@@ -455,12 +873,12 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         this.styleSheet.deleteRule(0);
                     }
                 }
-                applyColors() {
+                applyColors(showRegionBackground = true) {
                     if (this.tags && this.tags.primary !== undefined) {
                         let styleMap = [
                             {
                                 rule: `.${this.styleId} .primaryTagRectStyle`,
-                                style: `fill: ${this.tags.primary.colorShadow};
+                                style: `fill: ${showRegionBackground ? this.tags.primary.colorShadow : this.tags.primary.colorNoColor};
                                 stroke:${this.tags.primary.colorAccent};`
                             },
                             {
@@ -515,6 +933,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 move(p) {
                     this.x = p.x;
                     this.y = p.y;
+                    let size = 6;
+                    let cx = this.x + 0.5 * this.rect.width;
+                    let cy = this.y - size - 5;
                     window.requestAnimationFrame(() => {
                         this.primaryTagRect.attr({
                             x: p.x,
@@ -532,12 +953,10 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                             let length = this.secondaryTags.length;
                             for (let i = 0; i < length; i++) {
                                 let stag = this.secondaryTags[i];
-                                let s = 6;
-                                let x = this.x + this.rect.width / 2 + (2 * i - length + 1) * s - s / 2;
-                                let y = this.y - s - 5;
+                                let x = cx + (2 * i - length + 0.5) * size;
                                 stag.attr({
                                     x: x,
-                                    y: y
+                                    y: cy
                                 });
                             }
                         }
@@ -629,11 +1048,11 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                 }
                 rectDragBegin() {
-                    this.dragOrigin = new base.Point2D(this.x, this.y);
+                    this.dragOrigin = new Point2D(this.x, this.y);
                 }
                 rectDragMove(dx, dy) {
                     if (dx != 0 && dy != 0) {
-                        let p = new base.Point2D(this.dragOrigin.x + dx, this.dragOrigin.y + dy);
+                        let p = new Point2D(this.dragOrigin.x + dx, this.dragOrigin.y + dy);
                         if (this.boundRect !== null) {
                             p = p.boundToRect(this.boundRect);
                         }
@@ -815,19 +1234,18 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
             }
             class RegionElement {
-                constructor(paper, rect, boundRect = null, id, tagsDescriptor, onManipulationBegin, onManipulationEnd) {
+                constructor(paper, rect, boundRect = null, id, tagsDescriptor, onManipulationBegin, onManipulationEnd, tagsUpdateOptions) {
                     this.isSelected = false;
                     this.styleSheet = null;
                     this.x = 0;
                     this.y = 0;
                     this.rect = rect;
-                    this.area = 0;
                     this.ID = id;
                     this.tagsDescriptor = tagsDescriptor;
                     if (boundRect !== null) {
                         this.boundRects = {
                             host: boundRect,
-                            self: new base.Rect(boundRect.width - rect.width, boundRect.height - rect.height)
+                            self: new Rect(boundRect.width - rect.width, boundRect.height - rect.height)
                         };
                     }
                     if (onManipulationBegin !== undefined) {
@@ -843,6 +1261,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.regionID = this.s8();
                     this.styleID = `region_${this.regionID}_style`;
                     this.styleSheet = this.insertStyleSheet();
+                    this.tagsUpdateOptions = tagsUpdateOptions;
                     this.buildOn(paper);
                 }
                 buildOn(paper) {
@@ -851,7 +1270,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.regionGroup.addClass(this.styleID);
                     this.anchors = new AnchorsElement(paper, this.x, this.y, this.rect, this.boundRects.host, this.onInternalChange.bind(this), this.onManipulationBegin, this.onManipulationEnd);
                     this.drag = new DragElement(paper, this.x, this.y, this.rect, this.boundRects.self, this.onInternalChange.bind(this), this.onManipulationBegin, this.onManipulationEnd);
-                    this.tags = new TagsElement(paper, this.x, this.y, this.rect, this.tagsDescriptor, this.styleID, this.styleSheet);
+                    this.tags = new TagsElement(paper, this.x, this.y, this.rect, this.tagsDescriptor, this.styleID, this.styleSheet, this.tagsUpdateOptions);
                     this.regionGroup.add(this.tags.tagsGroup);
                     this.regionGroup.add(this.drag.dragGroup);
                     this.regionGroup.add(this.anchors.anchorsGroup);
@@ -873,15 +1292,15 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 }
                 onInternalChange(x, y, width, height, state, multiSelection = false) {
                     if (this.x != x || this.y != y) {
-                        this.move(new base.Point2D(x, y));
+                        this.move(new Point2D(x, y));
                     }
                     if (this.rect.width != width || this.rect.height != height) {
                         this.resize(width, height);
                     }
                     this.onChange(this, state, multiSelection);
                 }
-                updateTags(tags) {
-                    this.tags.updateTags(tags);
+                updateTags(tags, options) {
+                    this.tags.updateTags(tags, options);
                 }
                 move(p) {
                     let self = this;
@@ -894,9 +1313,9 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 resize(width, height) {
                     this.rect.width = width;
                     this.rect.height = height;
+                    this.area = width * height;
                     this.boundRects.self.width = this.boundRects.host.width - width;
                     this.boundRects.self.height = this.boundRects.host.height - height;
-                    this.area = width * height;
                     this.UI.forEach((element) => {
                         element.resize(width, height);
                     });
@@ -926,10 +1345,13 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
             }
             class RegionsManager {
                 constructor(svgHost, onManipulationBegin, onManipulationEnd) {
+                    this.tagsUpdateOptions = {
+                        showRegionBackground: true
+                    };
                     this.justManipulated = false;
                     this.baseParent = svgHost;
                     this.paper = Snap(svgHost);
-                    this.paperRect = new base.Rect(svgHost.width.baseVal.value, svgHost.height.baseVal.value);
+                    this.paperRect = new Rect(svgHost.width.baseVal.value, svgHost.height.baseVal.value);
                     this.regions = new Array();
                     this.onManipulationBegin = onManipulationBegin;
                     this.onManipulationEnd = onManipulationEnd;
@@ -941,7 +1363,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.regionManagerLayer.addClass("regionManager");
                     this.menuLayer = paper.g();
                     this.menuLayer.addClass("menuManager");
-                    this.menu = new MenuElement(paper, 0, 0, new base.Rect(0, 0), this.paperRect, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
+                    this.menu = new MenuElement(paper, 0, 0, new Rect(0, 0), this.paperRect, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
                     this.menu.addAction("delete", "trash", (region) => {
                         console.log(region.regionID);
                         this.deleteRegion(region);
@@ -953,14 +1375,14 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 subscribeToEvents() {
                     window.addEventListener("keyup", (e) => {
                         switch (e.keyCode) {
-                            case 9: //Tab - Select Next Region
+                            case 9:
                                 this.selectNextRegion();
                                 break;
-                            case 46: //Delete key
-                            case 8:  //Backspace key
+                            case 46:
+                            case 8:
                                 this.deleteSelectedRegions();
                                 break;
-                            case 38: //Up arrow
+                            case 38:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(0, -5);
@@ -973,7 +1395,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 40: //Down Arrow
+                            case 40:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(0, 5);
@@ -986,7 +1408,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 37: //Left Arrow
+                            case 37:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(-5, 0);
@@ -999,7 +1421,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                     }
                                 }
                                 break;
-                            case 39: //Right Arrow
+                            case 39:
                                 if (e.ctrlKey) {
                                     if (!e.shiftKey && !e.altKey) {
                                         this.moveSelectedRegions(5, 0);
@@ -1018,65 +1440,99 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     });
                     window.addEventListener("keydown", (e) => {
                         switch (e.keyCode) {
-                            case 65: // "A"
-                            case 97: // "1" on Numpad
+                            case 65:
+                            case 97:
                                 if (e.ctrlKey) {
                                     this.selectAllRegions();
                                     e.preventDefault();
                                     return false;
                                 }
                                 break;
-                            default: return;
+                            case 66:
+                                if (e.ctrlKey) {
+                                    this.toggleBackground();
+                                    e.preventDefault();
+                                    return false;
+                                }
+                                break;
+                            default: return false;
                         }
                     });
                 }
-
-                redrawAllRegions() {
-                    let sr = this.regions;
-                    this.deleteAllRegions();
-                    for(var i = 0; i < sr.length; i++) {
-                        this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tags.tags);
-                        if(sr[i].isSelected) {
-                            this.selectRegionById(sr[i].ID);
-                        }
-                    }
-                }
-
-                redrawRegion(region) {
-                    let newRegion = region;
-                    this.deleteRegion(region);
-                    this.drawRegion(newRegion.x, newRegion.y, newRegion.rect, newRegion.ID, newRegion.tags.tags);
-                    if(region.isSelected) {
-                        this.selectRegionById(region.ID);
-                    }
-                }
-
-                drawRegion(x,y,rect,id,tagsDescriptor) {
-                    this.menu.hide();
-                    let region = new RegionElement(this.paper, rect, this.paperRect, id, tagsDescriptor,this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this));
-                    region.area = rect.height * rect.width;
-                    region.move(new base.Point2D(x, y));
-                    region.onChange = this.onRegionUpdate.bind(this);
-                    region.tags.updateTags(region.tags.tags);
-                    this.regionManagerLayer.add(region.regionGroup);
-                    this.regions.push(region);
-                    // Need to do a check for invalid stacking from user generated or older saved json
-                    if(this.regions.length > 1 && region.area > this.regions[this.regions.length - 2].area) {
-                        this.sortRegionsByArea();
-                        this.redrawAllRegions();
-                    }
-                    this.menu.showOnRegion(region);  
-                }
-
                 addRegion(id, pointA, pointB, tagsDescriptor) {
+                    this.menu.hide();
                     let x = (pointA.x < pointB.x) ? pointA.x : pointB.x;
                     let y = (pointA.y < pointB.y) ? pointA.y : pointB.y;
                     let w = Math.abs(pointA.x - pointB.x);
                     let h = Math.abs(pointA.y - pointB.y);
-                    this.drawRegion(x, y, new base.Rect(w,h), id, tagsDescriptor);
+                    let region = new RegionElement(this.paper, new Rect(w, h), this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this), this.tagsUpdateOptions);
+                    region.move(new Point2D(x, y));
+                    region.onChange = this.onRegionUpdate.bind(this);
                     this.unselectRegions();
-                    this.selectRegionById(id);
-                    //this.updateTagsById(id);
+                    region.select();
+                    this.regionManagerLayer.add(region.regionGroup);
+                    this.regions.push(region);
+                    this.menu.showOnRegion(region);
+                }
+                drawRegion(x, y, rect, id, tagsDescriptor) {
+                    this.menu.hide();
+                    let region = new RegionElement(this.paper, rect, this.paperRect, id, tagsDescriptor, this.onManipulationBegin_local.bind(this), this.onManipulationEnd_local.bind(this), this.tagsUpdateOptions);
+                    region.area = rect.height * rect.width;
+                    region.move(new Point2D(x, y));
+                    region.onChange = this.onRegionUpdate.bind(this);
+                    region.tags.updateTags(region.tags.tags, this.tagsUpdateOptions);
+                    this.regionManagerLayer.add(region.regionGroup);
+                    this.regions.push(region);
+                    if (this.regions.length > 1 && region.area > this.regions[this.regions.length - 2].area) {
+                        this.sortRegionsByArea();
+                        this.redrawAllRegions();
+                    }
+                }
+                redrawAllRegions() {
+                    let sr = this.regions;
+                    this.deleteAllRegions();
+                    let selectedID = "";
+                    for (var i = 0; i < sr.length; i++) {
+                        this.drawRegion(sr[i].x, sr[i].y, sr[i].rect, sr[i].ID, sr[i].tags.tags);
+                        if (sr[i].isSelected) {
+                            selectedID = sr[i].ID;
+                        }
+                    }
+                    if (selectedID !== "") {
+                        this.selectRegionById(selectedID);
+                    }
+                }
+                sortRegionsByArea() {
+                    function quickSort(arr, left, right) {
+                        var pivot, partitionIndex;
+                        if (left < right) {
+                            pivot = right;
+                            partitionIndex = partition(arr, pivot, left, right);
+                            quickSort(arr, left, partitionIndex - 1);
+                            quickSort(arr, partitionIndex + 1, right);
+                        }
+                        return arr;
+                    }
+                    function partition(arr, pivot, left, right) {
+                        var pivotValue = arr[pivot].area, partitionIndex = left;
+                        for (var i = left; i < right; i++) {
+                            if (arr[i].area > pivotValue) {
+                                swap(arr, i, partitionIndex);
+                                partitionIndex++;
+                            }
+                        }
+                        swap(arr, right, partitionIndex);
+                        return partitionIndex;
+                    }
+                    function swap(arr, i, j) {
+                        var temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
+                    }
+                    let length = this.regions.length;
+                    if (length > 1) {
+                        quickSort(this.regions, 0, this.regions.length - 1);
+                    }
                 }
                 lookupRegionByID(id) {
                     let region = null;
@@ -1135,13 +1591,13 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                 updateTagsById(id, tagsDescriptor) {
                     let region = this.lookupRegionByID(id);
                     if (region != null) {
-                        region.updateTags(tagsDescriptor);
+                        region.updateTags(tagsDescriptor, this.tagsUpdateOptions);
                     }
                 }
                 updateTagsForSelectedRegions(tagsDescriptor) {
                     let regions = this.lookupSelectedRegions();
                     regions.forEach(region => {
-                        region.updateTags(tagsDescriptor);
+                        region.updateTags(tagsDescriptor, this.tagsUpdateOptions);
                     });
                 }
                 selectRegion(region) {
@@ -1167,51 +1623,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         this.menu.showOnRegion(r);
                     }
                 }
-
-                sortRegionsByArea() {
-                    function quickSort(arr, left, right){
-                        var len = arr.length, 
-                        pivot,
-                        partitionIndex;
-                     
-                     
-                       if(left < right){
-                         pivot = right;
-                         partitionIndex = partition(arr, pivot, left, right);
-                         
-                        //sort left and right
-                        quickSort(arr, left, partitionIndex - 1);
-                        quickSort(arr, partitionIndex + 1, right);
-                       }
-                       return arr;
-                     }
-
-                     function partition(arr, pivot, left, right){
-                        var pivotValue = arr[pivot].area,
-                            partitionIndex = left;
-                     
-                        for(var i = left; i < right; i++){
-                         if(arr[i].area > pivotValue){
-                           swap(arr, i, partitionIndex);
-                           partitionIndex++;
-                         }
-                       }
-                       swap(arr, right, partitionIndex);
-                       return partitionIndex;
-                     }
-
-                     function swap(arr, i, j){
-                        var temp = arr[i];
-                        arr[i] = arr[j];
-                        arr[j] = temp;
-                     }
-
-                     let length = this.regions.length;
-                     if(length > 1) {
-                        quickSort(this.regions, 0, this.regions.length - 1);
-                     }
-                }
-
                 selectRegionById(id) {
                     let region = this.lookupRegionByID(id);
                     this.selectRegion(region);
@@ -1253,8 +1664,8 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         x = region.x + dx + (dw < 0 ? 0 : dw);
                         y = region.y + dy + (dh < 0 ? 0 : dh);
                     }
-                    let p1 = new base.Point2D(x, y).boundToRect(this.paperRect);
-                    let p2 = new base.Point2D(x + w, y + h).boundToRect(this.paperRect);
+                    let p1 = new Point2D(x, y).boundToRect(this.paperRect);
+                    let p2 = new Point2D(x + w, y + h).boundToRect(this.paperRect);
                     region.move(p1);
                     region.resize(p2.x - p1.x, p2.y - p1.y);
                 }
@@ -1279,7 +1690,7 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                     this.menu.hide();
                     for (var i = 0; i < this.regions.length; i++) {
                         let r = this.regions[i];
-                        r.move(new base.Point2D(r.x * tw, r.y * th));
+                        r.move(new Point2D(r.x * tw, r.y * th));
                         r.resize(r.rect.width * tw, r.rect.height * th);
                     }
                 }
@@ -1332,7 +1743,6 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                                 this.onRegionSelected("");
                             }
                         }
-                        this.sortRegionsByArea();
                     }
                 }
                 unselectRegions(except) {
@@ -1343,378 +1753,100 @@ define("regiontool", ["require", "exports", "basetool", "./public/js/video-taggi
                         }
                     }
                 }
+                toggleBackground() {
+                    this.tagsUpdateOptions.showRegionBackground = !this.tagsUpdateOptions.showRegionBackground;
+                    this.regions.forEach((r) => {
+                        r.tags.updateTags(r.tags.tags, this.tagsUpdateOptions);
+                    });
+                }
             }
             Region.RegionsManager = RegionsManager;
         })(Region = CanvasTools.Region || (CanvasTools.Region = {}));
     })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
 });
-define("selectiontool", ["require", "exports", "basetool", "./public/js/video-tagging/js/snap.svg.js"], function (require, exports, CT, Snap) {
+define("filtertool", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var base = CT.CanvasTools.Base;
     var CanvasTools;
     (function (CanvasTools) {
-        var Selection;
-        (function (Selection) {
-            class CrossElement {
-                constructor(paper, rect) {
-                    this.build(paper, rect.width, rect.height, 0, 0);
+        var Filter;
+        (function (Filter) {
+            function InvertFilter(canvas) {
+                var context = canvas.getContext('2d');
+                var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                var buff = document.createElement("canvas");
+                buff.width = canvas.width;
+                buff.height = canvas.height;
+                var data = imageData.data;
+                for (var i = 0; i < data.length; i += 4) {
+                    data[i] = 255 - data[i];
+                    data[i + 1] = 255 - data[i + 1];
+                    data[i + 2] = 255 - data[i + 2];
                 }
-                build(paper, width, height, x, y) {
-                    let verticalLine = paper.line(0, 0, 0, height);
-                    let horizontalLine = paper.line(0, 0, width, 0);
-                    this.crossGroup = paper.g();
-                    this.crossGroup.addClass("crossStyle");
-                    this.crossGroup.add(verticalLine);
-                    this.crossGroup.add(horizontalLine);
-                    this.hl = horizontalLine;
-                    this.vl = verticalLine;
-                    this.x = x;
-                    this.y = y;
+                buff.getContext("2d").putImageData(imageData, 0, 0);
+                return new Promise((resolve, reject) => {
+                    return resolve(buff);
+                });
+            }
+            Filter.InvertFilter = InvertFilter;
+            function GrayscaleFilter(canvas) {
+                var context = canvas.getContext('2d');
+                var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                var buff = document.createElement("canvas");
+                buff.width = canvas.width;
+                buff.height = canvas.height;
+                var data = imageData.data;
+                for (var i = 0; i < data.length; i += 4) {
+                    let gray = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+                    data[i] = gray;
+                    data[i + 1] = gray;
+                    data[i + 2] = gray;
                 }
-                boundToRect(rect) {
-                    return new base.Point2D(this.x, this.y).boundToRect(rect);
+                buff.getContext("2d").putImageData(imageData, 0, 0);
+                return new Promise((resolve, reject) => {
+                    return resolve(buff);
+                });
+            }
+            Filter.GrayscaleFilter = GrayscaleFilter;
+            class FilterPipeline {
+                constructor() {
+                    this.pipeline = new Array();
                 }
-                move(p, rect, square = false, ref = null) {
-                    let np = p.boundToRect(rect);
-                    if (square) {
-                        let dx = Math.abs(np.x - ref.x);
-                        let vx = Math.sign(np.x - ref.x);
-                        let dy = Math.abs(np.y - ref.y);
-                        let vy = Math.sign(np.y - ref.y);
-                        let d = Math.min(dx, dy);
-                        np.x = ref.x + d * vx;
-                        np.y = ref.y + d * vy;
+                addFilter(filter) {
+                    this.pipeline.push(filter);
+                }
+                clearPipeline() {
+                    this.pipeline = new Array();
+                }
+                applyToCanvas(canvas) {
+                    let promise = new Promise((resolve, reject) => {
+                        return resolve(canvas);
+                    });
+                    if (this.pipeline.length > 0) {
+                        this.pipeline.forEach((filter) => {
+                            promise = promise.then(filter);
+                        });
                     }
-                    this.x = np.x;
-                    this.y = np.y;
-                    this.vl.attr({
-                        x1: np.x,
-                        x2: np.x,
-                        y2: rect.height
-                    });
-                    this.hl.attr({
-                        y1: np.y,
-                        x2: rect.width,
-                        y2: np.y
-                    });
-                }
-                resize(width, height) {
-                    this.vl.attr({
-                        y2: height
-                    });
-                    this.hl.attr({
-                        x2: width,
-                    });
-                }
-                hide() {
-                    this.crossGroup.attr({
-                        visibility: 'hidden'
-                    });
-                }
-                show() {
-                    this.crossGroup.attr({
-                        visibility: 'visible'
-                    });
+                    return promise;
                 }
             }
-            class RectElement {
-                constructor(paper, rect) {
-                    this.build(paper, rect.width, rect.height);
-                }
-                build(paper, width, height) {
-                    this.rect = paper.rect(0, 0, width, height);
-                    this.width = width;
-                    this.height = height;
-                }
-                move(p) {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.rect.attr({
-                            x: p.x,
-                            y: p.y
-                        });
-                    });
-                }
-                resize(width, height) {
-                    this.width = width;
-                    this.height = height;
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.rect.attr({
-                            width: width,
-                            height: height
-                        });
-                    });
-                }
-                hide() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.rect.attr({
-                            visibility: 'hidden'
-                        });
-                    });
-                }
-                show() {
-                    let self = this;
-                    window.requestAnimationFrame(function () {
-                        self.rect.attr({
-                            visibility: 'visible'
-                        });
-                    });
-                }
-            }
-            class AreaSelector {
-                constructor(svgHost, onSelectionBegin, onSelectionEnd) {
-                    this.capturingState = false;
-                    this.exclusiveCapturingState = false;
-                    this.isEnabled = true;
-                    this.squareMode = false;
-                    this.twoPointsMode = false;
-                    this.buildUIElements(svgHost);
-                    this.subscribeToEvents();
-                    this.onSelectionEndCallback = onSelectionEnd;
-                    this.onSelectionBeginCallback = onSelectionBegin;
-                }
-                buildUIElements(svgHost) {
-                    this.baseParent = svgHost;
-                    this.paper = Snap(svgHost);
-                    this.paperRect = new base.Rect(svgHost.width.baseVal.value, svgHost.height.baseVal.value);
-                    this.areaSelectorLayer = this.paper.g();
-                    this.areaSelectorLayer.addClass("areaSelector");
-                    this.overlay = this.createOverlay();
-                    this.mask = this.createMask();
-                    this.selectionBox = this.createSelectionBoxMask();
-                    let combinedMask = this.paper.g();
-                    combinedMask.add(this.mask.rect);
-                    combinedMask.add(this.selectionBox.rect);
-                    this.overlay.rect.attr({
-                        mask: combinedMask
-                    });
-                    this.crossA = this.createCross();
-                    this.crossB = this.createCross();
-                    this.areaSelectorLayer.add(this.overlay.rect);
-                    this.areaSelectorLayer.add(this.crossA.crossGroup);
-                    this.areaSelectorLayer.add(this.crossB.crossGroup);
-                }
-                createOverlay() {
-                    let r = new RectElement(this.paper, this.paperRect);
-                    r.rect.addClass("overlayStyle");
-                    r.hide();
-                    return r;
-                }
-                createMask() {
-                    let r = new RectElement(this.paper, this.paperRect);
-                    r.rect.addClass("overlayMaskStyle");
-                    return r;
-                }
-                createSelectionBoxMask() {
-                    let r = new RectElement(this.paper, new base.Rect(0, 0));
-                    r.rect.addClass("selectionBoxMaskStyle");
-                    return r;
-                }
-                createCross() {
-                    let cr = new CrossElement(this.paper, this.paperRect);
-                    cr.hide();
-                    return cr;
-                }
-                resize(width, height) {
-                    if (width !== undefined && height !== undefined) {
-                        this.paperRect.resize(width, height);
-                        this.baseParent.style.width = width.toString();
-                        this.baseParent.style.height = height.toString();
-                    }
-                    else {
-                        this.paperRect.resize(this.baseParent.width.baseVal.value, this.baseParent.height.baseVal.value);
-                    }
-                    this.resizeAll([this.overlay, this.mask, this.crossA, this.crossB]);
-                }
-                resizeAll(elementSet) {
-                    elementSet.forEach(element => {
-                        element.resize(this.paperRect.width, this.paperRect.height);
-                    });
-                }
-                showAll(elementSet) {
-                    elementSet.forEach(element => {
-                        element.show();
-                    });
-                }
-                hideAll(elementSet) {
-                    elementSet.forEach(element => {
-                        element.hide();
-                    });
-                }
-                onPointerEnter(e) {
-                    this.crossA.show();
-                }
-                onPointerLeave(e) {
-                    let rect = this.baseParent.getClientRects();
-                    let p = new base.Point2D(e.clientX - rect[0].left, e.clientY - rect[0].top);
-                    if (!this.twoPointsMode && !this.capturingState) {
-                        this.hideAll([this.crossA, this.crossB, this.selectionBox]);
-                    }
-                    else if (this.twoPointsMode && this.capturingState) {
-                        this.moveCross(this.crossB, p);
-                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
-                    }
-                    this.disableExclusiveMode();
-                }
-                onPointerDown(e) {
-                    if (!this.twoPointsMode) {
-                        this.capturingState = true;
-                        this.baseParent.setPointerCapture(e.pointerId);
-                        this.moveCross(this.crossB, this.crossA);
-                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
-                        this.showAll([this.overlay, this.crossB, this.selectionBox]);
-                        if (typeof this.onSelectionBeginCallback === "function") {
-                            this.onSelectionBeginCallback();
-                        }
-                    }
-                }
-                onPointerUp(e) {
-                    let rect = this.baseParent.getClientRects();
-                    let p = new base.Point2D(e.clientX - rect[0].left, e.clientY - rect[0].top);
-                    if (!this.twoPointsMode) {
-                        this.capturingState = false;
-                        this.baseParent.releasePointerCapture(e.pointerId);
-                        this.hideAll([this.crossB, this.overlay]);
-                        if (typeof this.onSelectionEndCallback === "function") {
-                            this.onSelectionEndCallback(this.crossA.x, this.crossA.y, this.crossB.x, this.crossB.y);
-                        }
-                        this.disableExclusiveMode();
-                    }
-                    else if (this.twoPointsMode && !this.capturingState) {
-                        this.capturingState = true;
-                        this.moveCross(this.crossB, p);
-                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
-                        this.showAll([this.crossA, this.crossB, this.selectionBox, this.overlay]);
-                        if (typeof this.onSelectionBeginCallback === "function") {
-                            this.onSelectionBeginCallback();
-                        }
-                    }
-                    else {
-                        this.capturingState = false;
-                        this.hideAll([this.crossB, this.overlay]);
-                        if (typeof this.onSelectionEndCallback === "function") {
-                            this.onSelectionEndCallback(this.crossA.x, this.crossA.y, this.crossB.x, this.crossB.y);
-                        }
-                        this.moveCross(this.crossA, p);
-                        this.moveCross(this.crossB, p);
-                        this.disableExclusiveMode();
-                    }
-                }
-                onPointerMove(e) {
-                    let rect = this.baseParent.getClientRects();
-                    let p = new base.Point2D(e.clientX - rect[0].left, e.clientY - rect[0].top);
-                    this.crossA.show();
-                    if (!this.twoPointsMode && !this.capturingState) {
-                        this.moveCross(this.crossA, p);
-                    }
-                    else if (!this.twoPointsMode && this.capturingState) {
-                        this.moveCross(this.crossB, p, this.squareMode, this.crossA);
-                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
-                    }
-                    else if (this.twoPointsMode && this.capturingState) {
-                        this.moveCross(this.crossB, p, this.squareMode, this.crossA);
-                        this.moveSelectionBox(this.selectionBox, this.crossA, this.crossB);
-                    }
-                    else {
-                        this.moveCross(this.crossA, p);
-                        this.moveCross(this.crossB, p);
-                    }
-                    e.preventDefault();
-                }
-                onKeyDown(e) {
-                    if (e.shiftKey) {
-                        this.squareMode = true;
-                    }
-                    if (e.ctrlKey && !this.capturingState) {
-                            this.twoPointsMode = true;
-                    }
-                }
-                onKeyUp(e) {
-                    if (!e.shiftKey) {
-                        this.squareMode = false;
-                    }
-                    if (!e.ctrlKey && this.twoPointsMode && !this.exclusiveCapturingState) {
-                        this.twoPointsMode = false;
-                        this.capturingState = false;
-                        this.moveCross(this.crossA, this.crossB);
-                        this.hideAll([this.crossB, this.selectionBox, this.overlay]);
-                    }
-
-                    //Ctrl + N to add new region temporarily disabling all others
-                    if(e.ctrlKey && e.keyCode == 78 && !this.exclusiveCapturingState) {
-                        this.enableExclusiveMode();
-                        this.twoPointsMode = false;
-                    } 
-                    //Escape to exit exclusive mode
-                    if(e.keyCode == 27) {
-                        this.disableExclusiveMode();
-                    }
-                }
-
-                subscribeToEvents() {
-                    let self = this;
-                    let listeners = [
-                        { event: "pointerenter", listener: this.onPointerEnter, base: this.baseParent, bypass: false },
-                        { event: "pointerleave", listener: this.onPointerLeave, base: this.baseParent, bypass: false },
-                        { event: "pointerdown", listener: this.onPointerDown, base: this.baseParent, bypass: false },
-                        { event: "pointerup", listener: this.onPointerUp, base: this.baseParent, bypass: false },
-                        { event: "pointermove", listener: this.onPointerMove, base: this.baseParent, bypass: false },
-                        { event: "keydown", listener: this.onKeyDown, base: window, bypass: false },
-                        { event: "keyup", listener: this.onKeyUp, base: window, bypass: true },
-                    ];
-                    listeners.forEach(e => {
-                        e.base.addEventListener(e.event, this.enablify(e.listener.bind(this), e.bypass));
-                    });
-                }
-                enableExclusiveMode() {
-                    this.exclusiveCapturingState = true;
-                    this.showAll([this.overlay]);
-                    this.hideAll([this.selectionBox]);
-                    this.enable();
-                }
-                disableExclusiveMode() {
-                    this.exclusiveCapturingState = false;
-                    this.hideAll([this.overlay]);
-                }
-                moveCross(cross, p, square = false, refCross = null) {
-                    cross.move(p, this.paperRect, square, refCross);
-                }
-                moveSelectionBox(box, crossA, crossB) {
-                    var x = (crossA.x < crossB.x) ? crossA.x : crossB.x;
-                    var y = (crossA.y < crossB.y) ? crossA.y : crossB.y;
-                    var w = Math.abs(crossA.x - crossB.x);
-                    var h = Math.abs(crossA.y - crossB.y);
-                    box.move(new base.Point2D(x, y));
-                    box.resize(w, h);
-                }
-                enable() {
-                    this.isEnabled = true;
-                    this.areaSelectorLayer.attr({
-                        display: "block"
-                    });
-                }
-                disable() {
-                    if(!this.exclusiveCapturingState) {
-                        this.isEnabled = false;
-                        this.areaSelectorLayer.attr({
-                            display: "none"
-                        });
-                    }
-                }
-                enablify(f,bypass=false) {
-                    let self = this;
-                    return function (args) {
-                        if (this.isEnabled || bypass) {
-                            f(args);
-                        }
-                    }.bind(self);
-                }
-            }
-            Selection.AreaSelector = AreaSelector;
-        })(Selection = CanvasTools.Selection || (CanvasTools.Selection = {}));
+            Filter.FilterPipeline = FilterPipeline;
+        })(Filter = CanvasTools.Filter || (CanvasTools.Filter = {}));
+    })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
+});
+define("CanvasTools", ["require", "exports", "Base/CanvasTools.Base.Point2D", "Base/CanvasTools.Base.Rect", "Base/CanvasTools.Base.Tags", "selectiontool", "regiontool", "filtertool"], function (require, exports, Point2D, Rect, Tags, SelectionTool, RegionTool, FilterTool) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var CanvasTools;
+    (function (CanvasTools) {
+        CanvasTools.Base = {
+            Point: Point2D.CanvasTools.Base.Point,
+            Rect: Rect.CanvasTools.Base.Rect,
+            Tags: Tags.CanvasTools.Base.Tags
+        };
+        CanvasTools.Selection = SelectionTool.CanvasTools.Selection;
+        CanvasTools.Region = RegionTool.CanvasTools.Region;
+        CanvasTools.Filter = FilterTool.CanvasTools.Filter;
     })(CanvasTools = exports.CanvasTools || (exports.CanvasTools = {}));
 });
 //# sourceMappingURL=canvastools.js.map

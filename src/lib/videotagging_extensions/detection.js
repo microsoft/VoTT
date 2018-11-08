@@ -101,8 +101,8 @@ function Detection(videotagging, visitedFrames) {
     this.export = function (dir, method, exportUntil, exportPath, testSplit, cb) {
         self.detectionAlgorithmManager.initExporter(method, exportPath, self.videotagging.inputtagsarray,
             Object.keys(self.videotagging.frames).length,
-            self.videotagging.video.videoWidth,
-            self.videotagging.video.videoHeight,
+            self.videotagging.sourceWidth,
+            self.videotagging.sourceHeight,
             testSplit,
             (err, exporter) => {
                 if (err) {
@@ -158,26 +158,32 @@ function Detection(videotagging, visitedFrames) {
             });
 
         function exportFrame(exporter, frameName, frameId, frameCanvas, canvasContext, frameExportCb) {
+            //correct frameId -- for images image name is used as ID now
+            frameId = (self.videotagging.imagelist) ? frameName : frameId;
+            
             if (!self.visitedFrames.has(frameId)) {
                 return frameExportCb();
             }
             var frameTags = [];
+            
             //confirm that frame is tagged and that no tags are unlabeled 
             var frameIsTagged = self.videotagging.frames.hasOwnProperty(frameId) && (self.videotagging.frames[frameId].length);
             if (frameIsTagged && (self.videotagging.getUnlabeledRegionTags(frameId).length != self.videotagging.frames[frameId].length)) {
                 //genereate metadata from tags
-                self.videotagging.frames[frameId].map((tag) => {
-                    if (!tag.tags[tag.tags.length - 1]) {
-                        return console.log(`frame ${frameId} region ${tag.name} has no label`);
+                self.videotagging.frames[frameId].map((region) => {
+                    if (!region.tags[region.tags.length - 1]) {
+                        return console.log(`frame ${frameId} region ${region.name} has no label`);
                     }
-                    var stanW = (self.videotagging.imagelist) ? frameCanvas.width / tag.width : self.videotagging.video.videoWidth / tag.width;
-                    var stanH = (self.videotagging.imagelist) ? frameCanvas.height / tag.height : self.videotagging.video.videoHeight / tag.height;
+                    var stanW = self.videotagging.sourceWidth / region.width; // 1.0
+                    var stanH = self.videotagging.sourceHeight / region.height; // 1.0
+                    //var stanW = (self.videotagging.imagelist) ? frameCanvas.width / region.width : self.videotagging.video.videoWidth / region.width;
+                    //var stanH = (self.videotagging.imagelist) ? frameCanvas.height / region.height : self.videotagging.video.videoHeight / region.height;
                     var tag = {
-                        class: tag.tags[tag.tags.length - 1],
-                        x1: parseInt(tag.x1 * stanW),
-                        y1: parseInt(tag.y1 * stanH),
-                        x2: parseInt(tag.x2 * stanW),
-                        y2: parseInt(tag.y2 * stanH)
+                        class: region.tags[region.tags.length - 1],
+                        x1: parseInt(region.x1 * stanW),
+                        y1: parseInt(region.y1 * stanH),
+                        x2: parseInt(region.x2 * stanW),
+                        y2: parseInt(region.y2 * stanH)
                     };
                     if (self.videotagging.imagelist) {
                         tag.w = parseInt(frameCanvas.width);
