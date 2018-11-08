@@ -199,18 +199,14 @@
             Promise.all([
                 System.import('CanvasTools')
             ]).then(function(modules){
-                var ct = modules[0].CanvasTools;
-                self.btools = ct.Base;
-                self.stools = ct.Selection;
-                self.ftools = ct.Filter;
-                self.rtools = ct.Region;
+                self.CT = modules[0].CanvasTools;
 
-                let regionsManager = new self.rtools.RegionsManager(self.selectionZone, 
+                let regionsManager = new self.CT.Region.RegionsManager(self.selectionZone, 
                     function() { },
                     function() { })
                 ;
 
-                self.areaSelector = new self.stools.AreaSelector(self.selectionZone, 
+                self.areaSelector = new self.CT.Selection.AreaSelector(self.selectionZone, 
                     function(){
                         self.selectionZone.style.zIndex = 300;
                     },
@@ -242,7 +238,7 @@
                 self.regionsManager = regionsManager;
 
                 // Register empty filter pipeline
-                let filterPipeline = new self.ftools.FilterPipeline();
+                let filterPipeline = new self.CT.Filter.FilterPipeline();
                 self.filterPipeline = filterPipeline;
             });
 
@@ -562,16 +558,16 @@
         let secondaryTags = [];
         if (tags.length > 0) {
             let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            primaryTag = new this.btools.Tags.Tag(tags[0], this.btools.Tags.Tag.getHueFromColor(color) * 360);
+            primaryTag = new this.CT.Base.Tags.Tag(tags[0], this.CT.Base.Tags.Tag.getHueFromColor(color) * 360);
 
             secondaryTags = [];
             for (var i = 1; i < tags.length; i++) {
                 let c = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[i])];
-                let t = new this.btools.Tags.Tag(tags[i], this.btools.Tags.Tag.getHueFromColor(c) * 360);
+                let t = new this.CT.Base.Tags.Tag(tags[i], this.CT.Base.Tags.Tag.getHueFromColor(c) * 360);
                 secondaryTags.push(t)
             }                
 
-            tagsDescriptor = new this.btools.Tags.TagsDescriptor(primaryTag, secondaryTags);
+            tagsDescriptor = new this.CT.Base.Tags.TagsDescriptor(primaryTag, secondaryTags);
         }
 
         return tagsDescriptor;
@@ -1317,12 +1313,12 @@
     addFilterByName(filterName, params) {
         switch (filterName) {            
             case "invert_filter": {
-                this.filterPipeline.addFilter(this.ftools.InvertFilter);
+                this.filterPipeline.addFilter(this.CT.Filter.InvertFilter);
                 this.playingCallback();
                 break;
             }
             case "grayscale_filter": {
-                this.filterPipeline.addFilter(this.ftools.GrayscaleFilter);
+                this.filterPipeline.addFilter(this.CT.Filter.GrayscaleFilter);
                 this.playingCallback();
                 break;
             }
