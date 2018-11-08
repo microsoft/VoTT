@@ -18,7 +18,8 @@ var saveState,
     videotagging,
     detection,
     trackingExtension,
-    assetFolder; 
+    assetFolder,
+    sourceDir; 
 
 $(document).ready(() => {//init confirm keys figure out why this doesn't work
   $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
@@ -79,7 +80,7 @@ ipcRenderer.on('export', (event, message) => {
 
 ipcRenderer.on('export-tags', (event, exportConfig) => {
   addLoader();
-  detection.export(videotagging.imagelist, exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
+  detection.export(videotagging.imagelist.map((filepath) => {return path.join(videotagging.sourceDir,filepath)}), exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
      if(!videotagging.imagelist){
        videotagging.video.oncanplay = updateVisitedFrames;
       } 
@@ -345,6 +346,7 @@ function openPath(pathName, isDir, isRecords = false) {
     }
 
     assetFolder = path.join(path.dirname(pathName), `${path.basename(pathName, path.extname(pathName))}_output`);
+    sourceDir = pathName;
     
     try {
       var config = require(`${pathName}.json`);
@@ -392,6 +394,7 @@ function openPath(pathName, isDir, isRecords = false) {
         videotagging.video.currentTime = 0;
         videotagging.framerate = $('#framerate').val();
         videotagging.src = ''; // ensures reload if user opens same video 
+        videotagging.sourceDir = sourceDir;
 
         if (config) {  
           if (config.tag_colors){
@@ -467,7 +470,7 @@ function openPath(pathName, isDir, isRecords = false) {
                 }, this);
               }
 
-              videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
+              // videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
               videotagging.src = pathName; 
               //track visited frames
               $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);

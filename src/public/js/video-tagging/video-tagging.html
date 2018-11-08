@@ -147,6 +147,7 @@
         this.rotation = 0;
         this.prevFrameIndex = 0;
         this.multiselection = false;
+        this.sourceDir = '';
 
         //Frame view size
         this.frameWidth = 0;
@@ -604,7 +605,7 @@
                     } else {
                         this.imageIndex = lastTagIndex;
                     }
-                    this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
+                    this.changeImage(`url(file://${(this.sourceDir + path.sep + this.imagelist[this.imageIndex]).replace(/\\/g,"/")})`);
                     this.playingCallback();
                 }
             } else { //video handling
@@ -967,9 +968,10 @@
 
         }
         //$("#rotate").show();
+        console.log(`url(file://${(this.sourceDir + path.sep + this.imagelist[this.imageIndex]).replace(/\\/g,"/")})`);
         if(this.recordlist) {this.currTFRecord = this.recordlist[0]; this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);}
-        else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`); 
-        console.log(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
+        else this.changeImage(`url(file://${(this.sourceDir + path.sep + this.imagelist[this.imageIndex]).replace(/\\/g,"/")})`); 
+
         var self = this;
         self.frames = self.inputframes? self.inputframes:{};
         if(this.currTFRecord) this.addNewRecordTags();
@@ -994,7 +996,7 @@
             this.curImg.src = `${'data:image/png;base64,' + base64Data}`;
         } else {
             this.video.style.backgroundImage = encodeURI(imageUrl);
-            this.curImg.src = `${this.imagelist[this.imageIndex]}`;
+            this.curImg.src = `${(this.sourceDir + path.sep + this.imagelist[this.imageIndex])}`;
         }
 
         this.rotation = 0;
@@ -1110,7 +1112,7 @@
                         this.optionalTags.createTagControls(this.inputtagsarray);
                         this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);
                     }
-                    else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
+                    else this.changeImage(`url(file://${(this.sourceDir + path.sep + this.imagelist[this.imageIndex]).replace(/\\/g,"/")})`);
                     //this.playingCallback();
                 }
             } else { //video handling
@@ -1146,7 +1148,7 @@
                         this.optionalTags.createTagControls(this.inputtagsarray);
                         this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);
                     }
-                    else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
+                    else this.changeImage(`url(file://${(this.sourceDir + path.sep + this.imagelist[this.imageIndex]).replace(/\\/g,"/")})`);
                 }
             } else { //video handling
                 if(!this.video.paused) this.pauseState();
@@ -1176,7 +1178,7 @@
                         this.optionalTags.createTagControls(this.inputtagsarray);
                         this.changeImage(this.currTFRecord.features.feature['image/encoded'].bytesList.value[0], true);
                 }
-                    else this.changeImage(`url(file://${this.imagelist[this.imageIndex].replace(/\\/g,"/")})`);
+                    else this.changeImage(`url(file://${(this.sourceDir + path.sep + this.imagelist[this.imageIndex]).replace(/\\/g,"/")})`);
                 }
             } 
             if (this.video.currentTime > 0) {
