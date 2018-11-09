@@ -14,7 +14,6 @@ var async = require("async");
 var trackingEnabled = true;
 var saveState,
     visitedFrames, //keep track of the visited frames
-    visitedFramesNumber,
     videotagging,
     detection,
     trackingExtension,
@@ -80,7 +79,10 @@ ipcRenderer.on('export', (event, message) => {
 
 ipcRenderer.on('export-tags', (event, exportConfig) => {
   addLoader();
-  detection.export(videotagging.imagelist.map((filepath) => {return path.join(videotagging.sourceDir,filepath)}), exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
+  if(videotagging.imagelist){
+    videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(videotagging.sourceDir,filepath)})
+  }
+  detection.export(videotagging.imagelist, exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
      if(!videotagging.imagelist){
        videotagging.video.oncanplay = updateVisitedFrames;
       } 
@@ -269,7 +271,6 @@ function addLoader(appendTo = "#videoWrapper") {
 function updateVisitedFrames(){
   if(videotagging.imagelist){
     visitedFrames.add(videotagging.imagelist[videotagging.imageIndex].split(path.sep).pop());
-    visitedFramesNumber.add(videotagging.imageIndex);
   } else {
     visitedFrames.add(videotagging.getCurrentFrameId());
   }
@@ -402,7 +403,6 @@ function openPath(pathName, isDir, isRecords = false) {
           }
           videotagging.inputframes = config.frames;
           visitedFrames =  new Set(config.visitedFrames);
-          visitedFramesNumber =  new Set(Array.from(Array(visitedFrames).keys()));
         } else {
           videotagging.inputframes = {};
           visitedFrames = new Set();
@@ -425,10 +425,8 @@ function openPath(pathName, isDir, isRecords = false) {
               });
             }
             visitedFrames = new Set([videotagging.imagelist[0]]);
-            visitedFramesNumber =  new Set([0])
           } else {
             visitedFrames = new Set();
-            visitedFramesNumber =  new Set();
           }
           // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
         } 
@@ -460,8 +458,7 @@ function openPath(pathName, isDir, isRecords = false) {
             if (videotagging.imagelist.length){
               //Check if tagging was done in previous version of VOTT
               if(!isNaN(Array.from(visitedFrames)[0])){
-                visitedFramesNumber = visitedFrames;
-                visitedFrames = new Set(Array.from(visitedFramesNumber).map(frame => videotagging.imagelist[parseInt(frame)]))
+                visitedFrames = new Set(Array.from(visitedFrames).map(frame => videotagging.imagelist[parseInt(frame)]))
                 
                 //Replace the keys of the frames object
                 Object.keys(videotagging.inputframes).map(function(key, index) {

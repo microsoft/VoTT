@@ -104,8 +104,13 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
 
                     builder.setBinaries('image/encoded', [b64]);
 
-                    if (videotagging.currTFRecord) builder.setBytes('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-2)[0])]);
-                    else builder.setBinaries('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-1)[0])]);
+                    if (videotagging.currTFRecord) {
+                        builder.setBytes('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-2)[0])]);
+                    } else if(videotagging.imagelist){
+                        builder.setBinaries('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-1)[0])]);
+                    } else {
+                        builder.setBinaries('image/format', [encode_Uint8('mp4')]);
+                    }
 
                     function getFirstRegion(frames) {
                         for (frame of Object.keys(frames)) {

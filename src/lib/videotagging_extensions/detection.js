@@ -45,7 +45,6 @@ function Detection(videotagging, visitedFrames) {
             function iterateFrames() {
                 var frameNumber = self.videotagging.getCurrentFrameNumber();
                 var lastFrame = isLastFrame(frameNumber);
-
                 if (lastFrame) {
                     self.videotagging.video.oncanplay = null;
                     resolve();
@@ -113,24 +112,21 @@ function Detection(videotagging, visitedFrames) {
                 if (exportUntil === "tagged") {
                     isLastFrame = function (frameId) {
                         let taggedFrames = Object.keys(self.videotagging.frames).filter(key => self.videotagging.frames[key].length).reduce((res, key) => (res[key] = self.videotagging.frames[key], res), {});
-                        console.log(`Until: ${self.videotagging.imagelist.indexOf(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1])}`);
-                        return (!Object.keys(taggedFrames).length) || (frameId >= self.videotagging.imagelist.indexOf(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1]))//parseInt(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1]));
+                        let condition = (self.videotagging.imagelist) ? self.videotagging.imagelist.indexOf(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1]) : parseInt(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1])
+                        return (!Object.keys(taggedFrames).length) || (frameId >= condition)
                     }
                 }
                 else if (exportUntil === "visited") {
                     isLastFrame = function (frameId) {
-                        var lastVisitedFrameId = Math.max.apply(Math, Array.from(self.visitedFrameNumbers));
-                        console.log(`Until: ${lastVisitedFrameId}`);
+                        let lastVisitedFrameId = (self.videotagging.imagelist) ? self.videotagging.imagelist.indexOf(Array.from(self.visitedFrames)[Array.from(self.visitedFrames).length -1]) : Math.max.apply(Math, Array.from(visitedFrames));
                         return (frameId >= lastVisitedFrameId);
                     }
                 }
                 else { //last
                     isLastFrame = function (frameId) {
                         if(self.videotagging.imagelist){
-                            console.log(`Until: ${self.videotagging.imagelist.length}`);
                             return (self.videotagging.imageIndex >= self.videotagging.imagelist.length);
                         } else{
-                            console.log(`Until: ${self.videotagging.video.duration}`);
                             return (self.videotagging.video.currentTime >= self.videotagging.video.duration);
                         }
                     }
