@@ -46,6 +46,8 @@
             grid-template-columns: 1fr;   
             align-content: center;
             justify-content: center;
+
+            margin: 10px;
         }
 
         #videoWrapper .video-tagging {
@@ -88,9 +90,6 @@
         .frameCanvasStyle {
           position: absolute; 
           z-index: 10;
-          /* border:1px solid green;   */        
-          /* width: auto; */
-          /* height: 100%; */
         }
 
         .selectionZoneStyle {
@@ -98,13 +97,14 @@
             position: absolute; 
             width: 100%;
             height: 100%;
+
+            box-shadow: 0 0 10px #000, 0 0 0.5px #fff;
         }
 
        .videoStyle {
            z-index: 2;
            width: 100%;
            height: 100%;
-           background: #333;
            background-size: contain; 
            background-repeat: no-repeat;
            background-position: 50% 50%;
@@ -197,10 +197,12 @@
 
         /*video controls*/
         .videoControls  {
-            
             width:100%;
-            background-color: black;
             margin-top: 0px;
+
+            box-shadow: 0 0 10px #000;            
+            background-color: #333;
+            border-top: 0.25px solid rgba(64,64,64,0.7)            
         }
 
         .videoControlsTable{
