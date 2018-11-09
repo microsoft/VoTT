@@ -45,6 +45,7 @@ describe('E2E - Video', () => {
                 .then(() => app.client.waitForVisible('#video-tagging-container', 1000))
                 .then(() => app.client.isVisible('#video-tagging-container'))
                 .then(result => expect(result).toBeTruthy())
+                .then(result => app.client.waitForValue('#frameText', 1000))
                 .then(() => app.client.getValue('#frameText'))
                 .then(result => expect(result).toEqual('1'))
                 .then(() => app.client.getCssProperty('#vid', 'backgroundImage'))

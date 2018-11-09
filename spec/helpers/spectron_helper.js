@@ -48,7 +48,7 @@ class SpectronHelper {
             const electron = require('electron');
             const currentWindow = electron.remote.getCurrentWindow();
 
-            return currentWindow.webContents.send('export');
+            return currentWindow.webContents.send(eventName);
         }, eventName);
     }
 

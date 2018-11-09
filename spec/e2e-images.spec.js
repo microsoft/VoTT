@@ -2,8 +2,6 @@ const path = require('path');
 const fakeDialog = require('spectron-fake-dialog');
 const helper = require('./helpers/spectron_helper');
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
-
 describe('E2E - Images', () => {
     let app = null;
 
@@ -88,7 +86,7 @@ describe('E2E - Images', () => {
                 .then(done);
         });
 
-        it('clicking "Object Detection / Export" displays export window', (done) => {
+        it('clicking "Object Detection > Export" displays export window', (done) => {
             helper.send(app, 'export')
                 .then(() => app.client.windowHandles())
                 .then(result => {
