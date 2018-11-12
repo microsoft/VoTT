@@ -2,8 +2,6 @@ const path = require('path');
 const fakeDialog = require('spectron-fake-dialog');
 const helper = require('./helpers/spectron_helper');
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
-
 describe('E2E - Startup', () => {
     describe('Shell', () => {
         let app = null;
