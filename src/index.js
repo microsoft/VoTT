@@ -566,7 +566,8 @@ function openPath(pathName, isDir, isRecords = false) {
         }
 
         //init detection
-        detection = new DetectionExtension(videotagging, visitedFramesNumber);
+        //detection = new DetectionExtension(videotagging, visitedFramesNumber);
+        detection = new DetectionExtension(videotagging, visitedFrames);
         
         $('#load-form-container').hide();
         $('#video-tagging-container').show();
