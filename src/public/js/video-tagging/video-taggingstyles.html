@@ -40,19 +40,11 @@
         }
 
         #videoWrapper {
-            grid-row: 1;   
-            display:grid;
-            grid-template-rows: 1fr;
-            grid-template-columns: 1fr;   
             align-content: center;
             justify-content: center;
-
-            margin: 10px;
         }
 
         #videoWrapper .video-tagging {
-            grid-row: 1;
-            grid-column: 1;
             text-align: center;
         }
 
@@ -76,6 +68,41 @@
             border-width: 1px;
             text-decoration: none;
             border-style: solid;
+        }
+
+        /* CANVAS TOOLS */
+        #ctZone {        
+            display: grid;
+            width: 100%;
+            height: 100%;
+            grid-template-columns: 64px 1fr;
+            grid-template-rows: 1fr;
+            background: rgb(64,64,64);
+        }
+
+        #toolbarZone {
+            grid-row: 1;
+            grid-column: 1/2;
+        }
+
+        #toolbarSVG {
+            width: 64px;
+            height: 100%;
+            margin-right:5px;
+            background: #666;
+            box-shadow: 0 0 0.5px #999, 5px 0px 10px -5px rgb(0,0,0);
+        }
+
+        #selectionZone {
+            grid-row: 1;
+            grid-column: 2/3;
+
+            background: rgb(64,64,64);    
+            padding: 5px;
+
+            width: 100%;
+            height: 100%;
+            display: inline-block;
         }
 
         /*Video area*/
