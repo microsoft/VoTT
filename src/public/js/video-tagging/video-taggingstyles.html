@@ -68,6 +68,14 @@
             grid-row: 3;
         }
 
+        #frameText {
+            background-color: transparent;
+            border-color: #ccc;
+            border-width: 1px;
+            text-decoration: none;
+            border-style: solid;
+        }
+
         /*Video area*/
 
         .overlaystyle {
@@ -192,7 +200,7 @@
             
             width:100%;
             background-color: black;
-            margin-top: -6px;
+            margin-top: 0px;
         }
 
         .videoControlsTable{
@@ -288,6 +296,10 @@
             font-size: 15px;
             border: 1px solid rgb(64,64,64);
             border-radius: 5px;
+            user-select: none;
+        }
+        .tagButtons sup {
+            user-select: none;
         }
 
         .tagOn{

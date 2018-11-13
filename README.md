@@ -194,14 +194,54 @@ There are two options to run a model for active learning within VoTT one is to u
 
 In the latest release we provide support for [Export and Review formats](https://github.com/CatalystCode/VOTT/tree/master/src/lib/detection_algorithms). To add a new object detection format, copy the interface folder and use the Yolo and CNTK implementations as reference. 
 
-## Upcoming Features 
+## Keyboard Shortcuts
+
+- Open Video: Ctrl + O
+- Open Image Directory: Ctrl + I
+- Save Tags: Ctrl + S
+- Toggle Play/Pause: Space
+- Toggle Tracking: Ctrl + T
+- Toggle Exclusive Add Mode: Crtl + N *(For adding smaller regions inside of a large region)*
+- Export Tags: Ctrl + E
+- Active Learning: Ctrl + L
+- Duplicate last frame regions: D
+- Delete Frame: Shift + Del
+- Open Developer Console: Ctrl + D
+- Refresh App: Ctrl + Space
+- Show Help: Ctrl + H
+- Select All: Ctrl + (A or 1 on number pad)
+- Cut: Ctrl + X
+- Copy: Ctrl + C
+- Paste: Ctrl + V
+
+## Mouse Controls
+
+- **Two-point mode:** Hold down Ctrl while creating a region
+- **Square mode:** Hold down Shift while creating a region
+- **Multi-select:** Hold down Shift while selecting regions
+- **Exclusive Tracking mode:** Ctrl + N to block frame UI allowing a user to create a region on top of existing regions
+
+## Region Manipulation with Arrow Keys
+
+VOTT allows you to fine tune the bounding boxes using the arrow keys in a few different ways. While a region is selected:
+
+- **Move region:** Hold Ctrl + Direction
+- **Shrink region:** Hold Ctrl + Alt + Direction
+- **Expand region:** Hold Ctrl + Shift + Direction
+
+## Tagging Controls
+
+Use the number keys to quickly tag a selected region *(Only works for single digits 0-9)*
+
+## Upcoming Features
 
 - Tagging project management
 - Altenative Tracking algorithms such as optical flow.
 - Classification Labeling Support
 - Segmentation Annoatation support.
 - Zoom in and out
------------
+
+---
 
 ## How to Contribute
 

@@ -23,8 +23,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
       width: mainWindowState.width,
       height: mainWindowState.height,
-      x: mainWindowState.x,
-      y: mainWindowState.y,
+      x: 0,
+      y: 0,
       minHeight: 480,
       minWidth: 480,
       icon: __dirname + '/src/public/images/icon.png',
@@ -91,6 +91,15 @@ function createWindow () {
           }));
           break;
 
+        case "help":
+          popup.setSize(500, 500);
+          popup.loadURL(url.format({
+            pathname: path.join(__dirname, 'src/public/html/help-configuration.html'),
+            protocol: 'file:',
+            slashes: true
+          }));
+          break;
+
         default: return; 
       }
       
@@ -103,6 +112,10 @@ function createWindow () {
 
   ipcMain.on('export-tags', (event, arg) => {
     mainWindow.send('export-tags', arg);
+  });
+
+  ipcMain.on('export-records', (event, arg) => {
+    mainWindow.send('export-records', arg);
   });
 
   ipcMain.on('review-model', (event, arg) => {
@@ -142,6 +155,11 @@ function createWindow () {
           click () { mainWindow.webContents.send('openImageDirectory'); }
         },
         {
+          label: 'Open tfRecord Directory...',
+          accelerator: 'CmdOrCtrl+R',
+          click () { mainWindow.webContents.send('openRecordDirectory'); }
+        },
+        {
           label: 'Save',
           accelerator: 'CmdOrCtrl+S',
           enabled: false,
@@ -166,7 +184,7 @@ function createWindow () {
         },
         {
           label: 'Active Learning',
-          accelerator: 'CmdOrCtrl+A',
+          accelerator: 'CmdOrCtrl+L',
           enabled: false,
           click () { mainWindow.webContents.send('review'); }
         }
@@ -185,6 +203,45 @@ function createWindow () {
       ]
     },
     {
+      label: "Filters",
+        submenu: [
+            {
+              label: "Add filter", 
+              submenu: [
+                {
+                  label: "Invert filter", 
+                  selector: "invert:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'invert_filter');
+                  }
+                },
+                {
+                  label: "Grayscale filter", 
+                  selector: "grayscale:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'grayscale_filter');
+                  }
+                }
+              ]
+            },
+
+            { type: "separator" },
+            {
+              label: "Reset filters", 
+              selector: "resetFilters:", 
+              click () { 
+                mainWindow.webContents.send('filter', 'reset');
+              }
+            }
+            /* ,
+            {
+              label: "Increase Contrast", 
+              selector: "contrast:", 
+              click () { mainWindow.webContents.send('filter', 'contrast_filter');}
+            } */
+        ]
+      },
+    {
       label: 'Debug',
       submenu: [
         {
@@ -198,7 +255,17 @@ function createWindow () {
           click () { mainWindow.reload(); }
         }
       ]
-    }
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Keyboard Shortcuts',
+          accelerator: 'CmdOrCtrl+H',
+          click () { mainWindow.webContents.send('help');}
+        }
+      ]
+    }	    
   ]
 
 if (process.platform === 'darwin') {
