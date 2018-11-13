@@ -39,3 +39,5 @@ data_sample
 
 # Local package.json
 package-lock.json
+
+dist/
