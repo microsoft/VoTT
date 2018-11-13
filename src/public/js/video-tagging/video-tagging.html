@@ -13,8 +13,6 @@
   <template>
     <style include="video-taggingstyles"></style>
     <link rel="stylesheet" href="css/sliders.css" />
-    <link rel="stylesheet" href="css/selectiontool.css" />
-    <link rel="stylesheet" href="css/regiontool.css" />
     <link rel="stylesheet" href="../jquery-ui/themes/base/resizable.css">
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
     <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css" />
@@ -195,54 +193,45 @@
         let self = this;
         this.selectionZone = document.getElementById("selectionZone");
 
-        SystemJS.import("./public/js/video-tagging/js/canvastools.js").then(function(module){
-            Promise.all([
-                System.import('CanvasTools')
-            ]).then(function(modules){
-                self.CT = modules[0].CanvasTools;
+        this.CT = CanvasTools.CanvasTools;
 
-                let regionsManager = new self.CT.Region.RegionsManager(self.selectionZone, 
-                    function() { },
-                    function() { })
-                ;
+        this.regionsManager = new self.CT.Region.RegionsManager(this.selectionZone,
+            function () { },
+            function () { })
+            ;
 
-                self.areaSelector = new self.CT.Selection.AreaSelector(self.selectionZone, 
-                    function(){
-                        self.selectionZone.style.zIndex = 300;
-                    },
-                    function(x1, y1, x2, y2){
-                        self.selectionZone.style.zIndex = 30;
-                        self.onNewAreaSelected(x1, y1, x2, y2);
-                    }
-                );
+        this.areaSelector = new self.CT.Selection.AreaSelector(this.selectionZone,
+            function () {
+                self.selectionZone.style.zIndex = 300;
+            },
+            function (x1, y1, x2, y2) {
+                self.selectionZone.style.zIndex = 30;
+                self.onNewAreaSelected(x1, y1, x2, y2);
+            }
+        );
 
-                regionsManager.onManipulationEnd = function() {
-                    self.areaSelector.enable();
-                };
-                regionsManager.onManipulationBegin = function() {
-                    self.areaSelector.disable();
-                };
+        this.regionsManager.onManipulationEnd = function () {
+            self.areaSelector.enable();
+        };
+        this.regionsManager.onManipulationBegin = function () {
+            self.areaSelector.disable();
+        };
 
-                regionsManager.onRegionSelected = function(id, multiselection) {                    
-                    self.selectRegion(id, multiselection);
-                };
+        this.regionsManager.onRegionSelected = function (id, multiselection) {
+            self.selectRegion(id, multiselection);
+        };
 
-                regionsManager.onRegionMove = function(id, x, y, width, height) {
-                    self.regionMoved(id, x, y, width, height);
-                };
+        this.regionsManager.onRegionMove = function (id, x, y, width, height) {
+            self.regionMoved(id, x, y, width, height);
+        };
 
-                regionsManager.onRegionDelete = function(id) {
-                    self.deleteRegionById(id);
-                };
+        this.regionsManager.onRegionDelete = function (id) {
+            self.deleteRegionById(id);
+        };
 
-                self.regionsManager = regionsManager;
+        // Register empty filter pipeline
+        this.filterPipeline = new self.CT.Filter.FilterPipeline();;
 
-                // Register empty filter pipeline
-                let filterPipeline = new self.CT.Filter.FilterPipeline();
-                self.filterPipeline = filterPipeline;
-            });
-
-        })
     },
      /**
        * Events registration and handling
@@ -1340,5 +1329,5 @@
 <script src="../moment/moment.js"></script>
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
-<script src="js/system.js"></script>
+<script src="js/ct.min.js"></script>
 </dom-module>
