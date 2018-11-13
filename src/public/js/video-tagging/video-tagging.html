@@ -260,7 +260,48 @@
         };
 
         // Fulfill toolbar
+        this.toolbar = new this.CT.Toolbar.Toolbar(toolbarSVG);
+        let selectionMode = "rect-select";
 
+        let rectIcont = new this.CT.Toolbar.IconDescription(
+            "rect-select",
+            "public/js/video-tagging/assets/icons/ct/rect-selection.svg",
+            "Select rectangular box (R)",
+            'KeyR');
+
+        this.toolbar.addAction(rectIcont, (action) => {
+            console.log(action);
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
+        });
+
+        let templateIcon = new this.CT.Toolbar.IconDescription(
+            "template-select",
+            "public/js/video-tagging/assets/icons/ct/template-selection.svg",
+            "Select with a template (T)",
+            'KeyT');
+
+        this.toolbar.addAction(templateIcon, (action) => {
+            console.log(action);
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
+        });
+
+        let copyTemplateIcon = new this.CT.Toolbar.IconDescription(
+            "copy-select",
+            "public/js/video-tagging/assets/icons/ct/copy-t-selection.svg",
+            "Copy region as template (Y)",
+            'KeyY');
+
+        this.toolbar.addAction(copyTemplateIcon, (action) => {
+            let rs = this.regionsManager.getSelectedRegionsBounds();
+            if (rs !== undefined && rs.length > 0) {
+                let r = rs[0];
+                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(r.width, r.height) });
+            } else {
+                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
+            }
+        });
+
+        this.toolbar.select("rect-select");
 
         // Register empty filter pipeline
         this.filterPipeline = new this.CT.Filter.FilterPipeline();;
