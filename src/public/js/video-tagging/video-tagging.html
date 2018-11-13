@@ -240,6 +240,14 @@
             }
         );
 
+        this.areaSelector.onLocked = () => {
+            this.regionsManager.freeze();
+        };
+
+        this.areaSelector.onUnlocked = () => {
+            this.regionsManager.unfreeze();
+        }
+
         this.regionsManager.onManipulationEnd = () => {
             this.areaSelector.enable();
         };
