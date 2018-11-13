@@ -1,12 +1,20 @@
 {
   "name": "vott",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "pretest": "eslint src/*.js src/lib",
-    "test": "jasmine"
+    "test": "jasmine",
+    "clean": "rm -rf dist",
+    "clean:osx": "rm -rf dist/osx",
+    "clean:win": "rm -rf dist/win",
+    "clean:linux": "rm -rf dist/linux",
+    "pack": "npm run clean && npm run pack:osx && npm run pack:win && npm run pack:linux",
+    "pack:osx": "./node_modules/.bin/electron-zip-packager . VoTT --overwrite --platform=darwin --arch=x64 --icon=src/public/images/icon.icns --prune=true --out=dist/osx --ignore=dist --ignore=node_modules",
+    "pack:win": "./node_modules/.bin/electron-zip-packager . VoTT --overwrite --asar=true --platform=win32 --arch=x64 --icon=src/public/images/icon.ico --prune=true --out=dist/win --version-string.CompanyName=Microsoft --version-string.ProductName=\"Visual Object Tagging Tool\" --ignore=dist --ignore=node_modules",
+    "pack:linux": "./node_modules/.bin/electron-zip-packager . VoTT --overwrite --asar=true --platform=linux --arch=x64 --icon=src/public/images/icon.icns --prune=true --out=dist/linux --ignore=dist --ignore=node_modules"
   },
   "repository": "https://github.com/CatalystCode/VOTT",
   "keywords": [
@@ -21,6 +29,9 @@
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "bower": "^1.7.2",
+    "electron": "^3.0.8",
+    "electron-packager": "^12.2.0",
+    "electron-zip-packager": "^4.0.2",
     "eslint": "^5.8.0",
     "eslint-config-strongloop": "^2.1.0",
     "jasmine": "^3.3.0",
@@ -32,7 +43,6 @@
     "async": "^2.1.5",
     "cntk-fastercnn": "^0.1.2",
     "crypto-js": "^3.1.9-1",
-    "electron": "^1.4.1",
     "electron-window-state": "^4.0.2",
     "remote": "^0.2.6",
     "replace": "^0.3.0",
