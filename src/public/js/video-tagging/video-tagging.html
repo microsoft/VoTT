@@ -274,29 +274,27 @@
         let rectIcont = new this.CT.Toolbar.IconDescription(
             "rect-select",
             "public/js/video-tagging/assets/icons/ct/rect-selection.svg",
-            "Select rectangular box (R)",
+            "Rectangular box (R)",
             'KeyR');
 
         this.toolbar.addAction(rectIcont, (action) => {
-            console.log(action);
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
         });
 
         let templateIcon = new this.CT.Toolbar.IconDescription(
             "template-select",
             "public/js/video-tagging/assets/icons/ct/template-selection.svg",
-            "Select with a template (T)",
+            "Template-based box (T)",
             'KeyT');
 
         this.toolbar.addAction(templateIcon, (action) => {
-            console.log(action);
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
         });
 
         let copyTemplateIcon = new this.CT.Toolbar.IconDescription(
             "copy-select",
             "public/js/video-tagging/assets/icons/ct/copy-t-selection.svg",
-            "Copy region as template (Y)",
+            "Copy-based box (Y)",
             'KeyY');
 
         this.toolbar.addAction(copyTemplateIcon, (action) => {
