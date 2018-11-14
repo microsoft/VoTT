@@ -11,44 +11,38 @@ matrix:
     - os: linux
       services: docker
       language: generic
-      language: node_js
-      node_js:
-        - "node"
 
-  before_script:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sleep 3; fi
-    - npm install
+cache:
+  directories:
+    - node_modules
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
 
-  script:
-    - npm test
+before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sleep 3; fi
+  - npm install
 
-  cache:
-    directories:
-      - node_modules
-      - $HOME/.cache/electron
-      - $HOME/.cache/electron-builder
+script:
+  - npm test
 
-  before_deploy:
-    - |
-      if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-        docker run --rm \
-          --env-file <(env | grep -vE '\r|\n' | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') \
-          -v ${PWD}:/project \
-          -v ~/.cache/electron:/root/.cache/electron \
-          -v ~/.cache/electron-builder:/root/.cache/electron-builder \
-          electronuserland/builder:wine \
-          /bin/bash -c "npm run dist:winlinux"
-      else
-        npm run dist:mac
-      fi
+before_deploy:
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      docker run --rm \
+        --env-file <(env | grep -vE '\r|\n' | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') \
+        -v ${PWD}:/project \
+        -v ~/.cache/electron:/root/.cache/electron \
+        -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+        electronuserland/builder:wine \
+        /bin/bash -c "npm run dist:winlinux"
+    else
+      npm run dist:mac
+    fi
 
-  before_cache:
-    - rm -rf $HOME/.cache/electron-builder/wine
-
-  deploy:
-    - provider: releases
+deploy:
+  - provider: releases
       api_key: $GITHUB_TOKEN
       skip_cleanup: true
       file:
@@ -57,3 +51,6 @@ matrix:
         - "dist/vott-mac-x64.dmg"
       on:
         tags: true
+
+before_cache:
+  - rm -rf $HOME/.cache/electron-builder/wine
