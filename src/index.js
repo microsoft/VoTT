@@ -372,7 +372,7 @@ function openPath(pathName, isDir, isRecords = false) {
     $('#framerateGroup').show();
     
     //set title indicator
-    $('title').text(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
+    $('head title').text(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
     if (isDir) {
@@ -470,8 +470,8 @@ function openPath(pathName, isDir, isRecords = false) {
         } 
 
         if (isDir){
-            $('title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
-            if(isRecords) $('title').text(`Image Tagging from Records Job: ${path.dirname(pathName)}`); //set title indicator
+            $('head title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
+            if(isRecords) $('head title').text(`Image Tagging from Records Job: ${path.dirname(pathName)}`); //set title indicator
 
             //get list of images in directory
             var files = fs.readdirSync(pathName);
@@ -514,8 +514,8 @@ function openPath(pathName, isDir, isRecords = false) {
                 //update title to match src
                 if(videotagging.currTFRecord) {
                   if(!visitedFrames.has(videotagging.getCurrentFrameId())) getRegionsFromRecord(videotagging.currTFRecord);
-                  $('title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
-                } else $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                  $('head title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                } else $('head title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
                 updateVisitedFrames();
 
@@ -524,9 +524,9 @@ function openPath(pathName, isDir, isRecords = false) {
                 //update title to match src
                 if(videotagging.currTFRecord) {
                   if(!visitedFrames.has(videotagging.getCurrentFrameId())) getRegionsFromRecord(videotagging.currTFRecord);
-                  $('title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                  $('head title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
                 }
-                else $('title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                else $('head title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
             });
 
@@ -543,7 +543,7 @@ function openPath(pathName, isDir, isRecords = false) {
                 return folderSelected();
             }
         } else {
-          $('title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
+          $('head title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
           videotagging.disableImageDir();
           videotagging.src = pathName;
           //set start time
