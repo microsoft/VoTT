@@ -2,21 +2,32 @@
   "name": "vott-react-typescript",
   "version": "0.1.0",
   "private": true,
+  "main": "build/electron/bundle.js",
   "dependencies": {
     "@types/jest": "23.3.9",
     "@types/node": "10.12.7",
     "@types/react": "16.7.6",
     "@types/react-dom": "16.0.9",
+    "@types/redux-logger": "^3.0.6",
+    "@types/redux-thunk": "^2.1.0",
+    "electron": "^3.0.9",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "react-redux": "^5.1.1",
     "react-scripts": "2.1.1",
-    "typescript": "3.1.6"
+    "redux": "^4.0.1",
+    "redux-immutable-state-invariant": "^2.1.0",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "nf start -p 3000",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "electron": "webpack --config ./config/webpack.dev.config.js && electron .",
+    "electron-start": "node src/electron/start",
+    "react-start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -26,5 +37,12 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "foreman": "^3.0.1",
+    "ts-loader": "^5.3.0",
+    "typescript": "^3.1.6",
+    "webpack": "^4.19.1",
+    "webpack-cli": "^3.1.2"
+  }
 }
