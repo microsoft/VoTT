@@ -35,7 +35,7 @@
   },
   "build": {
     "appId": "com.microsoft.vott",
-    "artifactName": "${productName}-${os}-${arch}.${ext}",
+    "artifactName": "${productName}-${os}.${ext}",
     "dmg": {
       "title": "VoTT",
       "icon": "build/icon.icns",

@@ -17,8 +17,15 @@ cache:
     - node_modules
     - $HOME/.cache/electron
     - $HOME/.cache/electron-builder
-
+before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sleep 3; fi
+  - npm install
 script:
+  - npm test
+
+before_deploy:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       docker run --rm \
@@ -31,6 +38,17 @@ script:
     else
       npm run dist:mac
     fi
+
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
+deploy:
+  - provider: releases
+    api_key: $GITHUB_TOKEN
+    file:
+      - "dist/vott-win.exe"
+      - "dist/vott-linux.snap"
+      - "dist/vott-mac.dmg"
+    skip_cleanup: true
+    on:
+      tags: true
 
