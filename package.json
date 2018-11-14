@@ -35,6 +35,7 @@
     "electron": "^1.4.1",
     "electron-window-state": "^4.0.2",
     "remote": "^0.2.6",
+    "remove": "^0.1.5",
     "replace": "^0.3.0",
     "send": "^0.16.2",
     "tfrecord": "^0.2.0"
