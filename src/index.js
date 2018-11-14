@@ -79,10 +79,11 @@ ipcRenderer.on('export', (event, message) => {
 
 ipcRenderer.on('export-tags', (event, exportConfig) => {
   addLoader();
+  let imagePaths;
   if(videotagging.imagelist){
-    videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(videotagging.sourceDir,filepath)})
+    imagePaths = videotagging.imagelist.map((filepath) => {return path.join(videotagging.sourceDir,filepath)})
   }
-  detection.export(videotagging.imagelist, exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
+  detection.export(imagePaths, exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
      if(!videotagging.imagelist){
        videotagging.video.oncanplay = updateVisitedFrames;
       } 

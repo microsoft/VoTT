@@ -111,8 +111,10 @@ function Detection(videotagging, visitedFrames) {
                 var isLastFrame;
                 if (exportUntil === "tagged") {
                     isLastFrame = function (frameId) {
-                        let taggedFrames = Object.keys(self.videotagging.frames).filter(key => self.videotagging.frames[key].length).reduce((res, key) => {(res[key] = self.videotagging.frames[key], res), {}});
+                        let taggedFrames = Object.keys(self.videotagging.frames).filter(key => self.videotagging.frames[key].length).reduce((res, key) => (res[key] = self.videotagging.frames[key], res), {});
+                        // console.log(taggedFrames)
                         let condition = (self.videotagging.imagelist) ? self.videotagging.imagelist.indexOf(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1]) : parseInt(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1])
+                        // console.log(!Object.keys(taggedFrames).length) || (frameId >= condition)
                         return (!Object.keys(taggedFrames).length) || (frameId >= condition)
                     }
                 }

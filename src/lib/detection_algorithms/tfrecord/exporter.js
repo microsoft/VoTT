@@ -78,7 +78,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     let ymin = [];
                     let xmax = [];
                     let ymax = [];
-                    let tags = [];
+                    let classes = [];
                     let difficult_obj = [];
                     let truncated = [];
                     let poses = [];
@@ -88,7 +88,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                         ymin.push(tag.y1 / videotagging.sourceHeight)
                         xmax.push(tag.x2 / videotagging.sourceWidth)
                         ymax.push(tag.y2 / videotagging.sourceHeight)
-                        tags.push(tag.class)
+                        classes.push(tag.class)
                         difficult_obj.push(0)
                         truncated.push(0)
                         poses.push(encode_Uint8("Unspecified"))
@@ -131,8 +131,8 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     builder.setFloats('image/object/bbox/ymin', ymin.map((y) => y / heightMult));
                     builder.setFloats('image/object/bbox/xmax', xmax.map((x) => x / widthMult));
                     builder.setFloats('image/object/bbox/ymax', ymax.map((y) => y / heightMult));
-                    builder.setBinaries('image/object/class/text', tags.map(tag => encode_Uint8(tag)));
-                    builder.setIntegers('image/object/class/label', tags.map(tag => videotagging.inputtagsarray.indexOf(tag)));
+                    builder.setBinaries('image/object/class/text', classes.map(tag => encode_Uint8(tag)));
+                    builder.setIntegers('image/object/class/label', classes.map(tag => videotagging.inputtagsarray.indexOf(tag)));
 
                     builder.setIntegers('image/object/difficult', difficult_obj);
                     builder.setIntegers('image/object/truncated', truncated);
