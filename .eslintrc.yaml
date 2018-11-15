@@ -1,0 +1,20 @@
+extends: "strongloop"
+parser: "babel-eslint"
+env:
+  browser: true
+  commonjs: true
+  es6: true
+  jquery: true
+rules:
+  no-unused-vars: off
+  max-len: off
+  no-undef: off
+  radix: off
+  eqeqeq: off
+  no-sequences: off
+  no-redeclare: off
+  no-cond-assign: off
+  no-inner-declarations: off
+  no-native-reassign: off
+  handle-callback-err: off
+  

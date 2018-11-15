@@ -1,14 +1,17 @@
 {
   "name": "vott",
-  "version": "1.0.0",
+  "version": "1.6.2",
   "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "pretest": "eslint src/*.js src/lib",
-    "test": "nyc mocha"
+    "lintfix": "eslint src/*.js src/lib --fix",
+    "test": "jasmine",
+    "dist:winlinux": "build -wl --x64",
+    "dist:mac": "build -m --x64"
   },
-  "repository": "https://github.com/CatalystCode/VOTT",
+  "repository": "https://github.com/Microsoft/VoTT",
   "keywords": [
     "Video-Tagging",
     "CNTK",
@@ -16,21 +19,35 @@
     "Object-Detection"
   ],
   "readme": "README.md",
-  "author": "aribornstein",
+  "author": "Microsoft",
   "license": "MIT",
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "bower": "^1.7.2",
+    "electron": "^3.0.8",
+    "electron-builder": "^20.34.0",
+    "electron-packager": "^12.2.0",
     "eslint": "^5.8.0",
     "eslint-config-strongloop": "^2.1.0",
-    "mocha": "^5.2.0",
-    "nyc": "^13.1.0"
+    "jasmine": "^3.3.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "spectron": "^5.0.0",
+    "spectron-fake-dialog": "0.0.1"
+  },
+  "build": {
+    "appId": "com.microsoft.vott",
+    "artifactName": "${productName}-${os}.${ext}",
+    "dmg": {
+      "icon": "build/icon.icns"
+    },
+    "win": {
+      "icon": "build/icon.ico"
+    }
   },
   "dependencies": {
     "async": "^2.1.5",
     "cntk-fastercnn": "^0.1.2",
     "crypto-js": "^3.1.9-1",
-    "electron": "^1.4.1",
     "electron-window-state": "^4.0.2",
     "remote": "^0.2.6",
     "replace": "^0.3.0",
