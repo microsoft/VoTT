@@ -77,7 +77,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                 async.waterfall(
                 [
                     //clear old write
-                    async.each.bind(null, [path.join(self.jpgImgsDirPath, frameFileName), `${path.join(self.annDirPath, frameFileName).slice(0, -4)}.xml`], detectionUtils.deleteFileIfExists),
+                    async.each.bind(null, [path.join(self.jpgImgsDirPath, frameFileName), `${path.join(self.annDirPath, frameFileName).slice(0, -4).replace('.','')}.xml`], detectionUtils.deleteFileIfExists),
 
                     function saveImage(cb) {
                         var imageFilePath  = path.join(self.jpgImgsDirPath, frameFileName);
@@ -88,7 +88,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     function saveBboxes(cb) {
                         xmlData = `<annotation verified="yes">
                                     <folder>Annotation</folder>
-                                    <filename>${frameFileName.slice(0, -4)}</filename>
+                                    <filename>${frameFileName.slice(0, -4).replace('.','')}</filename>
                                     <path>${path.join(self.jpgImgsDirPath, frameFileName)}</path>
                                     <source>
                                         <database>Unknown</database>
@@ -105,6 +105,8 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                                     <object>
                                             <name>${tag.class}</name>
                                             <pose>Unspecified</pose>
+                                            <truncated>0</truncated>
+                                            <difficult>0</difficult>
                                             <bndbox>
                                                 <xmin>${tag.x1}</xmin>
                                                 <ymin>${tag.y1}</ymin>
@@ -115,12 +117,12 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                                     `
                         }
                         xmlData += '</annotation\>'
-                        var outpath = `${path.join(self.annDirPath, frameFileName).slice(0, -4)}.xml`
+                        var outpath = `${path.join(self.annDirPath, frameFileName).slice(0, -4).replace('.','')}.xml`
                         fs.writeFile(outpath, xmlData, cb);                 
                     }, 
                     function cleanOldMainData(cb){
                         replace({  
-                            regex: new RegExp(`^${frameFileName.slice(0, -4)}+(.*)\s*[\r\n]`,'m'),
+                            regex: new RegExp(`^${frameFileName.slice(0, -4).replace('.','')}+(.*)\s*[\r\n]`,'m'),
                             replacement: "",
                             paths: [self.mainDirPath],
                             recursive: true,
@@ -138,7 +140,7 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                             var classPath = path.join(self.mainDirPath, element);
                             // determine wheter to write to train or test path
                             var outPath = self.testFrameIndecies.includes(self.posFrameIndex) ? `${classPath}_val.txt` : `${classPath}_train.txt`;
-                            var line = tagsClassSet.has(element) ? `${frameFileName.slice(0, -4)} 1\r\n` : `${frameFileName.slice(0, -4)} -1\r\n` ;
+                            var line = tagsClassSet.has(element) ? `${frameFileName.slice(0, -4).replace('.','')} 1\r\n` : `${frameFileName.slice(0, -4).replace('.','')} -1\r\n` ;
                             outs.push({'outPath':outPath, 'line':line});
                         });
                         async.each(outs, (out, callback)=>{

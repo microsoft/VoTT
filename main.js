@@ -23,8 +23,8 @@ function createWindow () {
   mainWindow = new BrowserWindow({
       width: mainWindowState.width,
       height: mainWindowState.height,
-      x: mainWindowState.x,
-      y: mainWindowState.y,
+      x: 0,
+      y: 0,
       minHeight: 480,
       minWidth: 480,
       icon: __dirname + '/src/public/images/icon.png',
@@ -50,8 +50,8 @@ function createWindow () {
     menu.items[p].submenu.items[3].enabled = true;
     menu.items[p+1].submenu.items[0].enabled = true;
     menu.items[p+1].submenu.items[1].enabled = true;
+    // menu.items[p+1].submenu.items[2].enabled = true;
   });
-
 
   // do this independently for each object
   ipcMain.on('show-popup', function(event, arg) { 
@@ -81,7 +81,25 @@ function createWindow () {
             slashes: true
           }));
           break;
-          
+
+        case "review-endpoint":
+          popup.setSize(359, 150);
+          popup.loadURL(url.format({
+            pathname: path.join(__dirname, 'src/public/html/review-endpoint-configuration.html'),
+            protocol: 'file:',
+            slashes: true
+          }));
+          break;
+
+        case "help":
+          popup.setSize(500, 500);
+          popup.loadURL(url.format({
+            pathname: path.join(__dirname, 'src/public/html/help-configuration.html'),
+            protocol: 'file:',
+            slashes: true
+          }));
+          break;
+
         default: return; 
       }
       
@@ -96,8 +114,16 @@ function createWindow () {
     mainWindow.send('export-tags', arg);
   });
 
+  ipcMain.on('export-records', (event, arg) => {
+    mainWindow.send('export-records', arg);
+  });
+
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
+  });
+
+  ipcMain.on('review-model-endpoint', (event, arg) => {
+    mainWindow.send('review-model-endpoint', arg);
   });
 
   mainWindow.on('ready-to-show', function() {
@@ -129,6 +155,11 @@ function createWindow () {
           click () { mainWindow.webContents.send('openImageDirectory'); }
         },
         {
+          label: 'Open tfRecord Directory...',
+          accelerator: 'CmdOrCtrl+R',
+          click () { mainWindow.webContents.send('openRecordDirectory'); }
+        },
+        {
           label: 'Save',
           accelerator: 'CmdOrCtrl+S',
           enabled: false,
@@ -152,8 +183,8 @@ function createWindow () {
           click () { mainWindow.webContents.send('export'); }
         },
         {
-          label: 'Review Detection Model',
-          accelerator: 'CmdOrCtrl+R',
+          label: 'Active Learning',
+          accelerator: 'CmdOrCtrl+L',
           enabled: false,
           click () { mainWindow.webContents.send('review'); }
         }
@@ -172,10 +203,49 @@ function createWindow () {
       ]
     },
     {
+      label: "Filters",
+        submenu: [
+            {
+              label: "Add filter", 
+              submenu: [
+                {
+                  label: "Invert filter", 
+                  selector: "invert:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'invert_filter');
+                  }
+                },
+                {
+                  label: "Grayscale filter", 
+                  selector: "grayscale:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'grayscale_filter');
+                  }
+                }
+              ]
+            },
+
+            { type: "separator" },
+            {
+              label: "Reset filters", 
+              selector: "resetFilters:", 
+              click () { 
+                mainWindow.webContents.send('filter', 'reset');
+              }
+            }
+            /* ,
+            {
+              label: "Increase Contrast", 
+              selector: "contrast:", 
+              click () { mainWindow.webContents.send('filter', 'contrast_filter');}
+            } */
+        ]
+      },
+    {
       label: 'Debug',
       submenu: [
         {
-          label: 'Toggle Developer Tools',
+          label: 'Developer Console',
           accelerator: 'CmdOrCtrl+D',
           click () { mainWindow.webContents.toggleDevTools(); }
         },
@@ -185,7 +255,17 @@ function createWindow () {
           click () { mainWindow.reload(); }
         }
       ]
-    }
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Keyboard Shortcuts',
+          accelerator: 'CmdOrCtrl+H',
+          click () { mainWindow.webContents.send('help');}
+        }
+      ]
+    }	    
   ]
 
 if (process.platform === 'darwin') {
