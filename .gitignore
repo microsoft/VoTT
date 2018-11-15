@@ -29,6 +29,7 @@ build/Release
 # Dependency directories
 node_modules
 jspm_packages
+data_sample
 
 # Optional npm cache directory
 .npm
@@ -38,3 +39,5 @@ jspm_packages
 
 # Local package.json
 package-lock.json
+
+dist/

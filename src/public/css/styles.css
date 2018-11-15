@@ -37,7 +37,7 @@ html, body {
   margin-left: 20px;
 }
 
-svg:hover path { 
+#load-message-container svg:hover path { 
   fill:red !important;
 }
 
@@ -84,6 +84,8 @@ label {
 
 #video-tagging {
     margin: 0 auto;
+    height: 100%;
+    width: 100%;
 }
 
 #video-tagging-container {

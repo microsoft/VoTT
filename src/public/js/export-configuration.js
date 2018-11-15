@@ -9,6 +9,7 @@ window.onload = function(){
 ipcRenderer.on('configs', (event, configs) => {  
     $('#output').val(configs.assetFolder);
     $('#format').empty(); // remove old options
+    $('#format').append($("<option></option>").attr("value", "tfrecord").text("TF Record"));
     configs.supportedFormats.forEach( (algorithm) => {
         $('#format').append($("<option></option>").attr("value", algorithm).text(algorithm));
     });
@@ -21,8 +22,11 @@ function getExportConfiguration() {
         exportPath: $('#output').val(),
         exportFormat: $('#format').val()
     };
-
-    ipcRenderer.send('export-tags', exportConfig); 
+    if(exportConfig.exportFormat === "tfrecord") {
+        ipcRenderer.send('export-records', exportConfig);     
+    } else {
+        ipcRenderer.send('export-tags', exportConfig); 
+    }
     closeWindow();
 }
 
