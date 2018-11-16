@@ -379,8 +379,18 @@ function openPath(pathName, isDir, isRecords = false) {
     $('#suggestGroup').hide();
   } else {
     $('#framerateGroup').show();
-    $('#suggestGroup').show();
-  }
+
+    //set title indicator
+    $('head title').text(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
+    $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
+
+    if (isDir) {
+      $('#framerateGroup').hide();
+      $('#suggestGroup').hide();
+    } else {
+      $('#framerateGroup').show();
+      $('#suggestGroup').show();
+    }
 
   assetFolder = path.join(path.dirname(pathName), `${path.basename(pathName, path.extname(pathName))}_output`);
 
@@ -468,9 +478,64 @@ function openPath(pathName, isDir, isRecords = false) {
         // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
       }
 
-      if (isDir){
-        $('title').text(`Image Tagging Job: ${path.dirname(pathName)}`); // set title indicator
-        if (isRecords) $('title').text(`Image Tagging from Records Job: ${path.dirname(pathName)}`); // set title indicator
+        if (isDir){
+            $('head title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
+            if(isRecords) $('head title').text(`Image Tagging from Records Job: ${path.dirname(pathName)}`); //set title indicator
+
+            //get list of images in directory
+            var files = fs.readdirSync(pathName);
+            
+            if(isRecords){
+              videotagging.imagelist = files.filter(function(file){
+                return file.match(/.(tfrecord)$/i);
+              });
+              let recordlist = videotagging.imagelist.map(async record => {
+                const resp = await readRecord(pathName,record);
+                return resp;
+              })
+              videotagging.recordlist = await Promise.all(recordlist);
+              console.log(videotagging.imagelist.map(record => pathName + path.sep + record))
+              videotagging.currTFRecord = videotagging.recordlist[0];
+            }else{
+              videotagging.imagelist = files.filter(function(file){
+                return file.match(/.(jpg|jpeg|png|gif)$/i);
+              });
+            }
+
+            if (videotagging.imagelist.length){
+              //Check if tagging was done in previous version of VOTT
+              if(!isNaN(Array.from(visitedFrames)[0])){
+                visitedFramesNumber = visitedFrames;
+                visitedFrames = new Set(Array.from(visitedFramesNumber).map(frame => videotagging.imagelist[parseInt(frame)]))
+                
+                //Replace the keys of the frames object
+                Object.keys(videotagging.inputframes).map(function(key, index) {
+                  videotagging.inputframes[videotagging.imagelist[key].split(path.sep).pop()] = videotagging.inputframes[key];
+                  delete videotagging.inputframes[key];
+                }, this);
+              }
+
+              videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
+              videotagging.src = pathName; 
+              //track visited frames
+              $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
+              $("#video-tagging").on("stepFwdClicked-AfterStep", () => {
+                //update title to match src
+                if(videotagging.currTFRecord) {
+                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) getRegionsFromRecord(videotagging.currTFRecord);
+                  $('head title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                } else $('head title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+
+                updateVisitedFrames();
+
+              });
+              $("#video-tagging").on("stepBwdClicked-AfterStep", () => {
+                //update title to match src
+                if(videotagging.currTFRecord) {
+                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) getRegionsFromRecord(videotagging.currTFRecord);
+                  $('head title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                }
+                else $('head title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
 
         // get list of images in directory
         var files = fs.readdirSync(pathName);
@@ -505,7 +570,16 @@ function openPath(pathName, isDir, isRecords = false) {
             }, this);
           }
 
-          videotagging.imagelist = videotagging.imagelist.map((filepath) => { return path.join(pathName, filepath); });
+              $("#video-tagging").off("stepBwdClicked-BeforeStep");
+              $("#video-tagging").on("stepBwdClicked-BeforeStep", save);
+              
+            } else {
+              alert("No files were in the selected directory. Please choose an Image directory.");
+                return folderSelected();
+            }
+        } else {
+          $('head title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
+          videotagging.disableImageDir();
           videotagging.src = pathName;
           // track visited frames
           $('#video-tagging').off('stepFwdClicked-AfterStep', updateVisitedFrames);
