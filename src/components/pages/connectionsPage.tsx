@@ -57,25 +57,13 @@ const log = (type) => console.log.bind(console, type);
 
 export default class ConnectionPage extends React.Component {
 
-    onChange = (data) => {
-        log("changed");
-    }
-
-    onSubmit = (data) => {
-        log("submitted");
-    }
-
-    onError = (data) => {
-        log("error");
-    }
-
     render() {
         return (
             <Form schema={schema}
                 uiSchema={uiSchema}
-                onChange={this.onChange}
-                onSubmit={this.onSubmit}
-                onError={this.onError} />
+                onChange={log("changed")}
+                onSubmit={log("submitted")}
+                onError={log("error")} />
         );
     }
 }
