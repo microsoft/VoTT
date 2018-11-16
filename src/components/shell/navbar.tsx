@@ -1,36 +1,20 @@
 import React from 'react';
+import { Link, NavLink } from 'react-router-dom';
 
 export default function Navbar() {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-            <a className="navbar-brand" href="#">VoTT</a>
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul className="navbar-nav mr-auto">
-                    <li className="nav-item active">
-                        <a className="nav-link" href="#">File <span className="sr-only">(current)</span></a>
-                    </li>
-                    <li className="nav-item active">
-                        <a className="nav-link" href="#">Object Dectection <span className="sr-only">(current)</span></a>
-                    </li>
-                    <li className="nav-item active">
-                        <a className="nav-link" href="#">Edit <span className="sr-only">(current)</span></a>
-                    </li>
-                    <li className="nav-item active">
-                        <a className="nav-link" href="#">Filters <span className="sr-only">(current)</span></a>
-                    </li>
-                    <li className="nav-item active">
-                        <a className="nav-link" href="#">Debug <span className="sr-only">(current)</span></a>
-                    </li>
-                    <li className="nav-item active">
-                        <a className="nav-link" href="#">Window <span className="sr-only">(current)</span></a>
-                    </li>
-                    <li className="nav-item active">
-                        <a className="nav-link" href="#">Help <span className="sr-only">(current)</span></a>
-                    </li>
+        <nav className="bg-primary app-navbar">
+            <div className="app-navbar-logo">
+                <ul>
+                    <li><Link title="Home" to={`/`}><i className="fas fa-tags"></i></Link></li>
+                </ul>
+            </div>
+            <div className="app-navbar-brand">
+                <span>VoTT</span>
+            </div>
+            <div className="app-navbar-menu">
+                <ul>
+                    <li><NavLink title="Profile Settings" to={`/profile`}><i className="fas fa-user-circle"></i></NavLink></li>
                 </ul>
             </div>
         </nav>

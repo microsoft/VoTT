@@ -1,0 +1,101 @@
+.app {
+    &-shell {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &-main {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
+
+    &-navbar, &-sidebar {
+        .fas {
+            color: #ccc;
+            &:hover {
+                color: #fff;
+            }
+        }
+    }
+
+    &-navbar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 40px;
+        line-height: 40px;
+
+
+        ul, li {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            list-style-type: none;
+
+            a {
+                display: inline-block;
+                padding: 0 10px;
+                max-height: 40px;
+
+                &.active, &:hover {
+                    .fas {
+                        color: #fff;
+                    }
+                    
+                    background-color: #666;
+                }
+            }
+        }
+
+        &-logo {
+            font-size: 20px;
+        }
+
+        &-brand {
+            flex-grow: 1;
+            padding: 0 10px;
+        }
+    }
+
+    &-sidebar {
+        font-size: 20px;
+        display: flex;
+        flex-direction: column;
+
+        &-fill {
+            flex-grow: 1;
+        }
+
+        ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            display: block;
+            text-align: center;
+
+            a {
+                display: inline-block;
+                width: 45px;
+                padding: 5px 10px;
+                
+                &.active, &:hover {
+                    .fas {
+                        color: #fff;
+                    }
+                    
+                    background-color: #666;
+                }
+            }
+        }
+    }
+
+    &-content {
+        flex-grow: 1;
+    }
+}
