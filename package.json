@@ -42,7 +42,10 @@
   ],
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.5.0",
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.7.0",
     "foreman": "^3.0.1",
+    "jest-enzyme": "^7.0.1",
     "node-sass": "^4.10.0",
     "ts-loader": "^5.3.0",
     "typescript": "^3.1.6",
