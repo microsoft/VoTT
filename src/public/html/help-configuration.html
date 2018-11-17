@@ -35,21 +35,37 @@
             <li><strong>Open Developer Console:</strong> Ctrl + D</li>
             <li><strong>Refresh App:</strong> Ctrl + Space</li>
             <li><strong>Show Help:</strong> Ctrl + H</li>
-            <li><strong>Select All:</strong> Ctrl + (A or 1 on number pad)</li>
-            <li><strong>Cut:</strong> Ctrl + X</li>
-            <li><strong>Copy:</strong> Ctrl + C</li>
-            <li><strong>Paste:</strong> Ctrl + V</li>
+            
+
         </ul>
       </div>
-      <div class="mouse-group">
-        <label for="exampleTextarea">Mouse Commands: </label>
+      <div class="selection-group">
+        <label for="exampleTextarea">Region creation: </label>
         <ul>
-            <li><strong>Two-point mode:</strong> Hold down Ctrl while creating a region</li>
-            <li><strong>Square mode:</strong> Hold down Shift while creating a region</li>
-            <li><strong>Multi-select:</strong> Hold down Shift while selecting regions</li>
-            <li><strong>Exclusive Tracking mode:</strong> Crtl + N to block frame UI allowing a user to create a region on top of existing regions</li>
+            <li><strong>Rect box creation:</strong> press R key.
+              <ul>
+                  <li><strong>Two-point mode:</strong> Hold down Ctrl while creating a region</li>
+                  <li><strong>Square mode:</strong> Hold down Shift while creating a region</li>
+              </ul> 
+            </li>
+            <li><strong>Template based box creation:</strong> press T key.</li>
+            <li><strong>Example based box creation:</strong> press Y key. Uses currently selected region as a template for size.</li>
+            <li><strong>Exclusive selection:</strong> press L key to block/unblock regions manipulation.</li>
         </ul>
       </div>
+
+      <div class="manipulation-group">
+          <label for="exampleTextarea">Region selection & copying: </label>
+          <ul>
+              <li><strong>Multi-select:</strong> Hold down Shift while selecting regions</li>
+              <li><strong>Select next:</strong> Tab</li>
+              <li><strong>Select All:</strong> Ctrl + (A or 1 on number pad)</li>
+              <li><strong>Cut:</strong> Ctrl + X</li>
+              <li><strong>Copy:</strong> Ctrl + C</li>
+              <li><strong>Paste:</strong> Ctrl + V</li>
+          </ul>
+        </div>
+
       <div class="arrow-group">
         <label for="exampleTextarea">Region Manipulation with Arrow Keys: </label>
         <p>VOTT allows you to fine tune the bounding boxes using the arrow keys in a few different ways. While a region is selected:</p>
