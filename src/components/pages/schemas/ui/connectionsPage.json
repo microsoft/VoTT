@@ -1,0 +1,14 @@
+{
+    "displayName": {
+        "ui:autofocus": true,
+        "ui:placeholder": "My Data Connection"
+    },
+    "connectionString": {
+        "ui:autofocus": true,
+        "ui:placeholder": "DefaultEndpointsProtocol=https;AccountName=myblobstorage;AccountKey=ABC123"
+    },
+    "containerName": {
+        "ui:autofocus": true,
+        "ui:placeholder": "my-container"
+    }
+}
