@@ -1,17 +1,13 @@
-import { app, BrowserWindow } from 'electron';
-import { Store } from 'redux';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import url from 'url';
-import createReduxStore from '../store/store';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow;
-let store: Store;
 
 function createWindow() {
     // Create the browser window.
-    store = createReduxStore();
     mainWindow = new BrowserWindow({ width: 1024, height: 768 });
 
     // and load the index.html of the app.
@@ -21,7 +17,7 @@ function createWindow() {
         slashes: true
     });
     mainWindow.loadURL(startUrl);
-    
+
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
 
@@ -33,6 +29,18 @@ function createWindow() {
         mainWindow = null
     })
 }
+
+ipcMain.on('RELOAD_APP', () => {
+    mainWindow.reload();
+});
+
+ipcMain.on('TOGGLE_DEV_TOOLS', (sender: any, show: boolean) => {
+    if (show) {
+        mainWindow.webContents.openDevTools();
+    } else {
+        mainWindow.webContents.closeDevTools();
+    }
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
