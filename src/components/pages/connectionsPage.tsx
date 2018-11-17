@@ -3,7 +3,7 @@ import Form from 'react-jsonschema-form'
 
 const schema = {
     title: "Add Storage Connection",
-    required: ['displayName'],
+    required: ['displayName', "storageProvider", "connectionString", "containerName"],
     type: "object",
     properties: {
         displayName: {
