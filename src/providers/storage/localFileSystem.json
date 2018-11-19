@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "folderPath": {
-            "title": "folderPath",
+            "title": "Folder Path",
             "type": "string"
         }
     }

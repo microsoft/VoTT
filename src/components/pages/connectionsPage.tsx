@@ -1,16 +1,15 @@
 import React from 'react';
 import Form from 'react-jsonschema-form'
-
-const pageSchema = require('./schemas/connectionsPage.json');
+import formSchema from './schemas/connectionsPage.json';
 
 export interface IConnectionPageProps {
 
 }
 
 export interface IConnectionPageState {
-    pageSchema: any,
+    formSchema: any,
     providerName: string,
-    providerSchema: any
+    formData: any
 }
 
 export default class ConnectionPage extends React.Component<IConnectionPageProps, IConnectionPageState> {
@@ -18,10 +17,10 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         super(props, context);
 
         this.state = {
-            pageSchema: pageSchema,
+            formSchema: { ...formSchema },
             providerName: null,
-            providerSchema: null
-        }
+            formData: {}
+        };
 
         this.onPageFormChange = this.onPageFormChange.bind(this);
     }
@@ -31,37 +30,32 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     onPageFormChange = (args) => {
-        if (args.formData.storageProvider) {
-            this.setProviderForm(args.formData.storageProvider);
-        }
-    };
+        const storageProvider = args.formData.storageProvider;
 
-    onProviderFormChange = (args) => {
-    }
+        const providerSchema = require(`../../providers/storage/${storageProvider}.json`);
+        const formSchema = { ...this.state.formSchema };
+        formSchema.properties['providerOptions'] = providerSchema;
+
+        this.setState({
+            providerName: storageProvider,
+            formSchema: formSchema,
+            formData: args.formData
+        });
+    };
 
     onProviderFormSubmit = (args) => {
         console.log(args);
-    }
-
-    setProviderForm(providerName: string) {
-        if (this.state.providerName !== providerName) {
-            this.setState({
-                providerName: providerName,
-                providerSchema: require(`../../providers/storage/${providerName}.json`)
-            });
-        }
     }
 
     render() {
         return (
             <div className="m-3 text-light">
                 <h3><i className="fas fa-cog fa-1x"></i><span className="px-2">Connection Settings</span></h3>
-                <Form schema={this.state.pageSchema}
-                    onChange={this.onPageFormChange} />
-
-                {this.state.providerSchema &&
-                    <Form schema={this.state.providerSchema}
-                        onSubmit={this.onProviderFormSubmit} />}
+                <Form ref="form"
+                    schema={this.state.formSchema}
+                    formData={this.state.formData}
+                    onChange={this.onPageFormChange}>
+                </Form>
             </div>
         );
     }

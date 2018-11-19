@@ -22,6 +22,9 @@
                 "Azure Blob Storage",
                 "Local Directory"
             ]
+        },
+        "providerOptions": {
+            "type": "object"
         }
     }
 }
