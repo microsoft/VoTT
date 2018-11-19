@@ -1,6 +1,7 @@
 import React from 'react';
 import Form from 'react-jsonschema-form'
 import formSchema from './schemas/connectionsPage.json';
+import shortid from 'shortid';
 
 export interface IConnectionPageProps {
 
@@ -32,15 +33,17 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     onPageFormChange = (args) => {
         const storageProvider = args.formData.storageProvider;
 
-        const providerSchema = require(`../../providers/storage/${storageProvider}.json`);
-        const formSchema = { ...this.state.formSchema };
-        formSchema.properties['providerOptions'] = providerSchema;
+        if (storageProvider !== this.state.providerName) {
+            const providerSchema = require(`../../providers/storage/${storageProvider}.json`);
+            const formSchema = { ...this.state.formSchema };
+            formSchema.properties['providerOptions'] = providerSchema;
 
-        this.setState({
-            providerName: storageProvider,
-            formSchema: formSchema,
-            formData: args.formData
-        });
+            this.setState({
+                providerName: storageProvider,
+                formSchema: formSchema,
+                formData: { ...args.formData, providerOptions: {} }
+            });
+        }
     };
 
     onProviderFormSubmit = (args) => {
