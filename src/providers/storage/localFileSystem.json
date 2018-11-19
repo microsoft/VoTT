@@ -1,0 +1,13 @@
+{
+    "title": "Local File System",
+    "required": [
+        "folderPath"
+    ],
+    "type": "object",
+    "properties": {
+        "folderPath": {
+            "title": "folderPath",
+            "type": "string"
+        }
+    }
+}
