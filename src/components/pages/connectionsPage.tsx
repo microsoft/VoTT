@@ -1,6 +1,7 @@
 import React from 'react';
 import Form from 'react-jsonschema-form'
 import formSchema from './schemas/connectionsPage.json';
+import './connectionsPage.scss';
 
 export interface IConnectionPageProps {
 
@@ -52,14 +53,26 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
 
     render() {
         return (
-            <div className="m-3 text-light">
-                <h3><i className="fas fa-cog fa-1x"></i><span className="px-2">Connection Settings</span></h3>
-                <Form
-                    schema={this.state.formSchema}
-                    formData={this.state.formData}
-                    onChange={this.onFormChange}
-                    onSubmit={this.onFormSubmit}>
-                </Form>
+            <div className="app-connections-page">
+                <div className="app-connections-page-list bg-secondary p-2">
+                    <h6>Connections</h6>
+                    <ul>
+                        <li>Connection 1</li>
+                        <li>Connection 2</li>
+                        <li>Connection 3</li>
+                        <li>Connection 4</li>
+                    </ul>
+                </div>
+                <div className="app-connections-page-detail m-3 text-light">
+                    <h3><i className="fas fa-plug fa-1x"></i><span className="px-2">Connection Settings</span></h3>
+                    <hr />
+                    <Form
+                        schema={this.state.formSchema}
+                        formData={this.state.formData}
+                        onChange={this.onFormChange}
+                        onSubmit={this.onFormSubmit}>
+                    </Form>
+                </div>
             </div>
         );
     }

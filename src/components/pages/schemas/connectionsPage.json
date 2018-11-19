@@ -1,5 +1,5 @@
 {
-    "title": "Add Storage Connection",
+    "title": "Connection Details",
     "required": [
         "displayName",
         "storageProvider"
