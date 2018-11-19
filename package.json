@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "pretest": "eslint src/*.js src/lib",
+    "lintfix": "eslint src/*.js src/lib --fix",
     "test": "jasmine",
     "dist:winlinux": "build -wl --x64",
     "dist:mac": "build -m --x64"

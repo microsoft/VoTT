@@ -1,1 +1,1 @@
-module.exports.Detection = require('./detection.js').Detection
+module.exports.Detection = require('./detection.js').Detection;
