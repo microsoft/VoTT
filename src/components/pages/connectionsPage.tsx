@@ -22,14 +22,15 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
             formData: {}
         };
 
-        this.onPageFormChange = this.onPageFormChange.bind(this);
+        this.onFormChange = this.onFormChange.bind(this);
+        this.onFormSubmit = this.onFormSubmit.bind(this);
     }
 
     componentDidMount = () => {
 
     }
 
-    onPageFormChange = (args) => {
+    onFormChange = (args) => {
         const storageProvider = args.formData.storageProvider;
 
         if (storageProvider !== this.state.providerName) {
@@ -45,7 +46,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         }
     };
 
-    onProviderFormSubmit = (args) => {
+    onFormSubmit = (args) => {
         console.log(args);
     }
 
@@ -56,7 +57,8 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                 <Form
                     schema={this.state.formSchema}
                     formData={this.state.formData}
-                    onChange={this.onPageFormChange}>
+                    onChange={this.onFormChange}
+                    onSubmit={this.onFormSubmit}>
                 </Form>
             </div>
         );
