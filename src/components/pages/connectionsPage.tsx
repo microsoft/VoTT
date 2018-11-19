@@ -1,7 +1,6 @@
 import React from 'react';
 import Form from 'react-jsonschema-form'
 import formSchema from './schemas/connectionsPage.json';
-import shortid from 'shortid';
 
 export interface IConnectionPageProps {
 
@@ -54,7 +53,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         return (
             <div className="m-3 text-light">
                 <h3><i className="fas fa-cog fa-1x"></i><span className="px-2">Connection Settings</span></h3>
-                <Form ref="form"
+                <Form
                     schema={this.state.formSchema}
                     formData={this.state.formData}
                     onChange={this.onPageFormChange}>
