@@ -1,10 +1,12 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import url from 'url';
+import { IpcMainProxy } from '../common/ipcMainProxy';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow;
+let ipcMainProxy: IpcMainProxy;
 
 function createWindow() {
     // Create the browser window.
@@ -27,20 +29,25 @@ function createWindow() {
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
         mainWindow = null
-    })
+    });
+
+    ipcMainProxy = new IpcMainProxy(mainWindow);
+    ipcMainProxy.register('RELOAD_APP', onReloadApp);
+    ipcMainProxy.register('TOGGLE_DEV_TOOLS', onToggleDevTools);
 }
 
-ipcMain.on('RELOAD_APP', () => {
+function onReloadApp() {
     mainWindow.reload();
-});
+    return true;
+};
 
-ipcMain.on('TOGGLE_DEV_TOOLS', (sender: any, show: boolean) => {
+function onToggleDevTools(sender: any, show: boolean) {
     if (show) {
         mainWindow.webContents.openDevTools();
     } else {
         mainWindow.webContents.closeDevTools();
     }
-});
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

@@ -13,7 +13,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ]
   },
   "include": [
     "src"

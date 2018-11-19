@@ -1,0 +1,22 @@
+{
+    "title": "Azure Blob Storage",
+    "required": [
+        "connectionString",
+        "containerName"
+    ],
+    "type": "object",
+    "properties": {
+        "connectionString": {
+            "title": "Connection String",
+            "type": "string"
+        },
+        "containerName": {
+            "title": "Container Name",
+            "type": "string"
+        },
+        "createContainer": {
+            "title": "Create Container",
+            "type": "boolean"
+        }
+    }
+}

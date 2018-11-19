@@ -1,6 +1,9 @@
 {
-    "title": "Add Storage Connection",
-    "required": ["displayName", "storageProvider", "connectionString", "containerName"],
+    "title": "Connection Details",
+    "required": [
+        "displayName",
+        "storageProvider"
+    ],
     "type": "object",
     "properties": {
         "displayName": {
@@ -11,26 +14,17 @@
             "title": "Provider",
             "type": "string",
             "enum": [
-                "azure-blob-storage",
-                "local"
+                "azureBlobStorage",
+                "localFileSystem"
             ],
-            "default": "azure-blob-storage",
+            "default": "azureBlobStorage",
             "enumNames": [
                 "Azure Blob Storage",
                 "Local Directory"
             ]
         },
-        "connectionString": {
-            "title": "Connection String",
-            "type": "string"
-        },
-        "containerName": {
-            "title": "Container Name",
-            "type": "string"
-        },
-        "createContainer": {
-            "title": "Create Container",
-            "type": "boolean"
+        "providerOptions": {
+            "type": "object"
         }
     }
 }
