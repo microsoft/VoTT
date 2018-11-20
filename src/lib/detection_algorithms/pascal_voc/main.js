@@ -1,2 +1,2 @@
-module.exports.Exporter = require('./exporter.js').Exporter;
-module.exports.displayName = 'Tensorflow Pascal VOC';
+module.exports.Exporter = require('./exporter.js').Exporter
+module.exports.displayName = 'Tensorflow Pascal VOC'
