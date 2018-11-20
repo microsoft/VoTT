@@ -2,3 +2,7 @@
     height: 100vh;
     overflow: hidden;
 }
+
+input[type=file] {
+    display: none;
+}

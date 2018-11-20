@@ -6,8 +6,10 @@ import IProjectActions, * as projectActions from '../../../actions/projectAction
 import ApplicationState, { IProject } from '../../../store/applicationState';
 import CondensedList from '../../common/condensedList';
 import RecentProjectItem from './recentProjectItem';
+import FilePicker from '../../common/filePicker';
+import { Link } from 'react-router-dom';
 
-interface HomepageProps {
+interface HomepageProps extends React.Props<HomePage> {
     recentProjects: IProject[],
     actions: IProjectActions
 }
@@ -30,6 +32,8 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class HomePage extends React.Component<HomepageProps, HomepageState> {
+    private filePicker: React.RefObject<FilePicker>;
+
     constructor(props, context) {
         super(props, context);
 
@@ -37,10 +41,21 @@ export default class HomePage extends React.Component<HomepageProps, HomepageSta
             recentProjects: this.props.recentProjects
         };
 
-        this.onRecentProjecdSelected = this.onRecentProjecdSelected.bind(this);
+        this.filePicker = React.createRef<FilePicker>();
+        this.onRecentProjectSelected = this.onRecentProjectSelected.bind(this);
+        this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
     }
 
-    onRecentProjecdSelected = (project) => {
+    onProjectFileUpload = (e, projectJson) => {
+        const project: IProject = JSON.parse(projectJson);
+        this.props.actions.loadProject(project);
+    }
+
+    onProjectFileUploadError = (e, err) => {
+        console.error(err);
+    }
+
+    onRecentProjectSelected = (project) => {
         this.props.actions.loadProject(project);
     }
 
@@ -50,16 +65,19 @@ export default class HomePage extends React.Component<HomepageProps, HomepageSta
                 <div className="app-homepage-main">
                     <ul>
                         <li>
-                            <a href="#" className="p-5">
+                            <Link to={"/projects/create"} className="p-5">
                                 <i className="fas fa-folder-plus fa-9x"></i>
                                 <h6>New Project</h6>
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="#" className="p-5">
+                            <a onClick={() => this.filePicker.current.upload()} className="p-5">
                                 <i className="fas fa-folder-open fa-9x"></i>
                                 <h6>Open Project</h6>
                             </a>
+                            <FilePicker ref={this.filePicker}
+                                onChange={this.onProjectFileUpload}
+                                onError={this.onProjectFileUploadError} />
                         </li>
                     </ul>
                 </div>
@@ -68,7 +86,7 @@ export default class HomePage extends React.Component<HomepageProps, HomepageSta
                         title="Recent Projects"
                         Component={RecentProjectItem}
                         items={this.state.recentProjects}
-                        onClick={this.onRecentProjecdSelected} />
+                        onClick={this.onRecentProjectSelected} />
                 </div>
             </div>
         );
