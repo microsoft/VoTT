@@ -2,12 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import './homePage.scss';
+import IProjectActions, * as projectActions from '../../../actions/projectActions';
 import ApplicationState, { IProject } from '../../../store/applicationState';
 import CondensedList from '../../common/condensedList';
 import RecentProjectItem from './recentProjectItem';
 
-interface HomepageProps { 
-    recentProjects: IProject[]
+interface HomepageProps {
+    recentProjects: IProject[],
+    actions: IProjectActions
 }
 
 interface HomepageState {
@@ -20,13 +22,13 @@ function mapStateToProps(state: ApplicationState) {
     };
 }
 
-// function mapDispatchToProps(dispatch) {
-//     return {
-//         actions: bindActionCreators(applicationActions, dispatch)
-//     };
-// }
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(projectActions, dispatch)
+    };
+}
 
-@connect(mapStateToProps)
+@connect(mapStateToProps, mapDispatchToProps)
 export default class HomePage extends React.Component<HomepageProps, HomepageState> {
     constructor(props, context) {
         super(props, context);
@@ -38,8 +40,8 @@ export default class HomePage extends React.Component<HomepageProps, HomepageSta
         this.onRecentProjecdSelected = this.onRecentProjecdSelected.bind(this);
     }
 
-    onRecentProjecdSelected = (args) => {
-        console.log('You selected', args);
+    onRecentProjecdSelected = (project) => {
+        this.props.actions.loadProject(project);
     }
 
     render() {
