@@ -1,0 +1,29 @@
+@import '../../assets/sass/theme.scss';
+
+.condensed-list {
+    
+}
+
+.condensed-list-header {
+    font-size: 80%;
+    color: #f1f1f1;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+ul.condensed-list-items {    
+    margin: 0;
+    padding: 0;
+
+    li {
+        list-style-type: none;
+        padding: 0.25em 1em;
+        font-size: 90%;
+        color: #ccc;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $lighter-2;
+        }
+    }    
+}

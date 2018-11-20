@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 export default function Sidebar() {
     return (
-        <div className="bg-primary app-sidebar">
+        <div className="bg-lighter-2 app-sidebar">
             <ul>
                 <li><NavLink title="Tag Editor"  to={`/project/edit`}><i className="fas fa-bookmark"></i></NavLink></li>
                 <li><NavLink title="Connections" to={`/connections`}><i className="fas fa-plug"></i></NavLink></li>

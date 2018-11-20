@@ -1,0 +1,41 @@
+@import '../../../assets/sass/theme.scss';
+
+.app-homepage {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+
+    &-main {
+        flex-grow: 1;
+
+        ul {
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            
+            padding: 0;
+
+            li {
+                list-style-type: none;
+                text-align: center;
+
+                a {
+                    display: inline-block;
+
+                    &.active, &:hover {
+                        color: #fff;
+                        background-color: $lighter-2;
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+    }
+
+    &-recent {
+        min-width: 20vw;
+    }
+}

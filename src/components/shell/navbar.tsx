@@ -3,14 +3,14 @@ import { Link, NavLink } from 'react-router-dom';
 
 export default function Navbar() {
     return (
-        <nav className="bg-primary app-navbar">
+        <nav className="bg-lighter-2 app-navbar">
             <div className="app-navbar-logo">
                 <ul>
                     <li><Link title="Home" to={`/`}><i className="fas fa-tags"></i></Link></li>
                 </ul>
             </div>
             <div className="app-navbar-brand">
-                <span>VoTT</span>
+                <span>Visual Object Tagging Tool</span>
             </div>
             <div className="app-navbar-menu">
                 <ul>

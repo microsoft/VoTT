@@ -1,6 +1,8 @@
 import React from 'react';
 import Form from 'react-jsonschema-form'
-import formSchema from './schemas/connectionsPage.json';
+import formSchema from '../schemas/connectionsPage.json';
+import ConnectionItem from './connectionItem';
+import CondensedList from '../../common/condensedList';
 import './connectionsPage.scss';
 
 export interface IConnectionPageProps {
@@ -10,7 +12,8 @@ export interface IConnectionPageProps {
 export interface IConnectionPageState {
     formSchema: any,
     providerName: string,
-    formData: any
+    formData: any,
+    connections: any[]
 }
 
 export default class ConnectionPage extends React.Component<IConnectionPageProps, IConnectionPageState> {
@@ -20,7 +23,13 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         this.state = {
             formSchema: { ...formSchema },
             providerName: null,
-            formData: {}
+            formData: {},
+            connections: [
+                { id: 1, name: 'Connection 1' },
+                { id: 2, name: 'Connection 2' },
+                { id: 3, name: 'Connection 3' },
+                { id: 4, name: 'Connection 4' },
+            ]
         };
 
         this.onFormChange = this.onFormChange.bind(this);
@@ -35,7 +44,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         const storageProvider = args.formData.storageProvider;
 
         if (storageProvider !== this.state.providerName) {
-            const providerSchema = require(`../../providers/storage/${storageProvider}.json`);
+            const providerSchema = require(`../../../providers/storage/${storageProvider}.json`);
             const formSchema = { ...this.state.formSchema };
             formSchema.properties['providerOptions'] = providerSchema;
 
@@ -54,14 +63,11 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     render() {
         return (
             <div className="app-connections-page">
-                <div className="app-connections-page-list bg-secondary p-2">
-                    <h6>Connections</h6>
-                    <ul>
-                        <li>Connection 1</li>
-                        <li>Connection 2</li>
-                        <li>Connection 3</li>
-                        <li>Connection 4</li>
-                    </ul>
+                <div className="app-connections-page-list bg-lighter-1">
+                    <CondensedList
+                        title="Connections"
+                        Component={ConnectionItem}
+                        items={this.state.connections} />
                 </div>
                 <div className="app-connections-page-detail m-3 text-light">
                     <h3><i className="fas fa-plug fa-1x"></i><span className="px-2">Connection Settings</span></h3>

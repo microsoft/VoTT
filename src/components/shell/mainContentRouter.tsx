@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import HomePage from '../pages/homePage';
+import HomePage from '../pages/homepage/homePage';
 import ActiveLearningPage from '../pages/activeLearningPage';
 import AppSettingsPage from '../pages/appSettingsPage';
-import ConnectionPage from '../pages/connectionsPage';
+import ConnectionPage from '../pages/connections/connectionsPage';
 import EditorPage from '../pages/editorPage';
 import ExportPage from '../pages/exportPage';
 import ProjectSettingsPage from '../pages/projectSettingsPage';

@@ -1,0 +1,48 @@
+$color-yellow: #ffbb00;
+$color-green: #7cbb00;
+$color-blue: #00a1f1;
+$color-red: #f65314;
+
+$lighter-1: rgba(255,255,255,0.05);
+$lighter-2: rgba(255,255,255,0.10);
+$lighter-3: rgba(255,255,255,0.15);
+$lighter-4: rgba(255,255,255,0.20);
+$lighter-5: rgba(255,255,255,0.35);
+
+$darker-1: rgba(0,0,0,0.05);
+$darker-2: rgba(0,0,0,0.10);
+$darker-3: rgba(0,0,0,0.15);
+$darker-4: rgba(0,0,0,0.20);
+$darker-5: rgba(0,0,0,0.25);
+
+.bg-darker-1 {
+    background-color: $darker-1;
+}
+.bg-darker-2 {
+    background-color: $darker-2;
+}
+.bg-darker-3 {
+    background-color: $darker-3;
+}
+.bg-darker-4 {
+    background-color: $darker-4;
+}
+.bg-darker-5 {
+    background-color: $darker-5;
+}
+
+.bg-lighter-1 {
+    background-color: $lighter-1;
+}
+.bg-lighter-2 {
+    background-color: $lighter-2;
+}
+.bg-lighter-3 {
+    background-color: $lighter-3;
+}
+.bg-lighter-4 {
+    background-color: $lighter-4;
+}
+.bg-lighter-5 {
+    background-color: $lighter-5;
+}
