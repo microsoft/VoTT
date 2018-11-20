@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import * as applicationActions from '../../actions/applicationActions';
-import ApplicationState, { IAppSettings } from '../../store/applicationState';
+import IApplicationActions, * as applicationActions from '../../../actions/applicationActions';
+import ApplicationState, { IAppSettings } from '../../../store/applicationState';
 
 interface IAppSettingsProps {
     appSettings: IAppSettings,
-    actions: applicationActions.IApplicationActions
+    actions: IApplicationActions
 }
 
 function mapStateToProps(state: ApplicationState) {

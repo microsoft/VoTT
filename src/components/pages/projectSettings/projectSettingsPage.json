@@ -1,0 +1,42 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "title": "Name",
+            "type": "string"
+        },
+        "sourceConnectionId": {
+            "title": "Data Source",
+            "type": "string"
+        },
+        "targetConnectionId": {
+            "title": "Target Connection",
+            "type": "string"
+        },
+        "exportFormatId": {
+            "title": "Export Format",
+            "type": "string"
+        },
+        "description": {
+            "title": "Description",
+            "type": "string"
+        },
+        "tags": {
+            "title": "Tags",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "color": {
+                        "title": "Color",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

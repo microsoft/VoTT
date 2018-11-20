@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Form from 'react-jsonschema-form'
-import formSchema from '../schemas/connectionsPage.json';
+import formSchema from './connectionsPage.json';
 import ConnectionItem from './connectionItem';
 import CondensedList from '../../common/condensedList';
 import ApplicationState, { IConnection } from '../../../store/applicationState.js';

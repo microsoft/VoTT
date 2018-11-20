@@ -1,7 +1,7 @@
 import * as ActionTypes from './actionTypes';
 import { IpcRendererProxy } from '../common/ipcRendererProxy';
 
-export interface IApplicationActions {
+export default interface IApplicationActions {
     toggleDevTools(show: boolean): void;
     reloadApplication(): void;
 }
