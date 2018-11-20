@@ -1,26 +1,45 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import './homePage.scss';
+import ApplicationState, { IProject } from '../../../store/applicationState';
 import CondensedList from '../../common/condensedList';
 import RecentProjectItem from './recentProjectItem';
 
-interface HomepageProps {}
-interface HomepageState {
-    recentProjects: any[]
+interface HomepageProps { 
+    recentProjects: IProject[]
 }
 
+interface HomepageState {
+    recentProjects: IProject[]
+}
+
+function mapStateToProps(state: ApplicationState) {
+    return {
+        recentProjects: state.recentProjects
+    };
+}
+
+// function mapDispatchToProps(dispatch) {
+//     return {
+//         actions: bindActionCreators(applicationActions, dispatch)
+//     };
+// }
+
+@connect(mapStateToProps)
 export default class HomePage extends React.Component<HomepageProps, HomepageState> {
-    constructor(props, context){
+    constructor(props, context) {
         super(props, context);
 
         this.state = {
-            recentProjects: [
-                { id: 1, name: 'Project 1'},
-                { id: 1, name: 'Project 2'},
-                { id: 1, name: 'Project 3'},
-                { id: 1, name: 'Project 4'},
-                { id: 1, name: 'Project 5'},
-            ]
+            recentProjects: this.props.recentProjects
         };
+
+        this.onRecentProjecdSelected = this.onRecentProjecdSelected.bind(this);
+    }
+
+    onRecentProjecdSelected = (args) => {
+        console.log('You selected', args);
     }
 
     render() {
@@ -43,10 +62,11 @@ export default class HomePage extends React.Component<HomepageProps, HomepageSta
                     </ul>
                 </div>
                 <div className="app-homepage-recent bg-lighter-1">
-                    <CondensedList 
-                        title="Recent Projects" 
-                        Component={RecentProjectItem} 
-                        items={this.state.recentProjects} />
+                    <CondensedList
+                        title="Recent Projects"
+                        Component={RecentProjectItem}
+                        items={this.state.recentProjects}
+                        onClick={this.onRecentProjecdSelected} />
                 </div>
             </div>
         );
