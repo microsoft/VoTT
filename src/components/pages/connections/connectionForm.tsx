@@ -29,7 +29,14 @@ export default class ConnectionForm extends React.Component<ConnectionFormProps,
 
     componentDidUpdate(prevProps) {
         if (prevProps.connection !== this.props.connection) {
+            const providerType = this.props.connection.providerType;
+            const providerSchema = require(`../../../providers/storage/${providerType}.json`);
+            const formSchema = { ...this.state.formSchema };
+            formSchema.properties['providerOptions'] = providerSchema;
+
             this.setState({
+                providerName: providerType,
+                formSchema: formSchema,
                 formData: this.props.connection
             })
         }
