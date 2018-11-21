@@ -16,4 +16,10 @@ export default class LocalFileSystemProxy {
             contents: contents
         });
     }
+
+    async deleteFile(filePath): Promise<void> {
+        return await IpcRendererProxy.send<void, any>('DELETE_LOCAL_FILE', {
+            path: filePath
+        });
+    }
 }

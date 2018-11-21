@@ -69,6 +69,10 @@ export default class ProjectService implements IProjectService {
     delete(project: IProject) {
         return new Promise<void>(async (resolve, reject) => {
             try {
+                const localFileSystem = new LocalFileSystemProxy();
+                const path = `C:\\vott-projects\\${project.name}.json`;
+                await localFileSystem.deleteFile(path);
+
                 let allProjects = await this.getList();
                 allProjects = allProjects.filter(prj => prj.id !== project.id);
                 localStorage.setItem('projects', JSON.stringify(allProjects));

@@ -37,6 +37,7 @@ function createWindow() {
     ipcMainProxy.register('TOGGLE_DEV_TOOLS', onToggleDevTools);
     ipcMainProxy.register('OPEN_LOCAL_FOLDER', onOpenLocalFolder);
     ipcMainProxy.register('WRITE_LOCAL_FILE', onWriteLocalFile);
+    ipcMainProxy.register('DELETE_LOCAL_FILE', onDeleteLocalFile);
 }
 
 function onReloadApp() {
@@ -81,6 +82,21 @@ function onWriteLocalFile(sender, args) {
             resolve();
         })
     });
+}
+
+function onDeleteLocalFile(sender, args) {
+    return new Promise<void>((resolve, reject) => {
+        const exists = fs.existsSync(args.path);
+        if (exists) {
+            fs.unlink(args.path, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve();
+            });
+        }
+    })
 }
 
 // This method will be called when Electron has finished
