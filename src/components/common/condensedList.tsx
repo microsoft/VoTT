@@ -27,6 +27,7 @@ export default class CondensedList extends React.Component<CondensedListProps> {
 
     onItemDelete = (e: SyntheticEvent, item) => {
         e.stopPropagation();
+        e.preventDefault();
 
         if (this.props.onDelete) {
             this.props.onDelete(item);

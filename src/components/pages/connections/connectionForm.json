@@ -10,6 +10,10 @@
             "title": "Display Name",
             "type": "string"
         },
+        "description": {
+            "title": "Description",
+            "type": "string"
+        },
         "providerType": {
             "title": "Provider",
             "type": "string",

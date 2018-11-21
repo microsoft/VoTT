@@ -5,6 +5,7 @@ import IProjectActions, * as projectActions from '../../../actions/projectAction
 import ApplicationState, { IProject } from '../../../store/applicationState';
 import Form from 'react-jsonschema-form'
 import formSchema from './projectSettingsPage.json';
+import uiSchema from './projectSettingsPage.ui.json';
 import { RouteComponentProps } from 'react-router-dom';
 
 interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
@@ -15,6 +16,7 @@ interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<Proj
 interface ProjectSettingsPageState {
     project: IProject;
     formSchema: any;
+    uiSchema: any;
 }
 
 function mapStateToProps(state: ApplicationState) {
@@ -36,7 +38,8 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
 
         this.state = {
             formSchema: { ...formSchema },
-            project: this.props.currentProject
+            uiSchema: { ...uiSchema },
+            project: this.props.currentProject,
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -61,6 +64,7 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
 
                 <Form
                     schema={this.state.formSchema}
+                    uiSchema={this.state.uiSchema}
                     formData={this.state.project}
                     onSubmit={this.onFormSubmit} />
             </div>
