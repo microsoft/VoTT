@@ -30,12 +30,13 @@ function mapDispatchToProps(dispatch) {
 export default class HomePage extends React.Component<HomepageProps> {
     private filePicker: React.RefObject<FilePicker>;
 
-    constructor(props, context) {
+    constructor(props: HomepageProps, context) {
         super(props, context);
 
         this.filePicker = React.createRef<FilePicker>();
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
+        this.deleteProject = this.deleteProject.bind(this);
 
         this.props.actions.closeProject();
         this.props.actions.loadProjects();
@@ -50,9 +51,13 @@ export default class HomePage extends React.Component<HomepageProps> {
         console.error(err);
     }
 
-    loadSelectedProject = (project) => {
+    loadSelectedProject = (project: IProject) => {
         this.props.actions.loadProject(project)
         this.props.history.push(`/projects/${project.id}/settings`);
+    }
+
+    deleteProject = (project: IProject) => {
+        this.props.actions.deleteProject(project);
     }
 
     render() {
@@ -83,7 +88,8 @@ export default class HomePage extends React.Component<HomepageProps> {
                             title="Recent Projects"
                             Component={RecentProjectItem}
                             items={this.props.recentProjects}
-                            onClick={this.loadSelectedProject} />
+                            onClick={this.loadSelectedProject}
+                            onDelete={this.deleteProject} />
                     </div>
                 }
             </div>
