@@ -17,13 +17,19 @@ ul.condensed-list-items {
 
     li {
         list-style-type: none;
-        padding: 0.25em 1em;
         font-size: 90%;
         color: #ccc;
-        cursor: pointer;
 
-        &:hover {
-            background-color: $lighter-2;
+        a {
+            cursor: pointer;
+            width: 100%;
+            padding: 0.25em 1em;
+            display: inline-block;
+            text-decoration: none;
+
+            &.active, &:hover {
+                background-color: $lighter-2;
+            }    
         }
     }    
 }

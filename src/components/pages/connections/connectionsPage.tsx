@@ -1,22 +1,22 @@
 import React from 'react';
+import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Form from 'react-jsonschema-form'
-import formSchema from './connectionsPage.json';
 import ConnectionItem from './connectionItem';
 import CondensedList from '../../common/condensedList';
 import ApplicationState, { IConnection } from '../../../store/applicationState.js';
+import { RouteComponentProps } from 'react-router-dom';
+import IConnectionActions, * as connectionActions from '../../../actions/connectionActions';
+import ConnectionForm from './connectionForm';
 import './connectionsPage.scss';
 
-export interface IConnectionPageProps {
-    connections: IConnection[]
+export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
+    connections: IConnection[];
+    actions: IConnectionActions;
 }
 
 export interface IConnectionPageState {
-    formSchema: any,
-    providerName: string,
-    formData: any,
-    connections: any[]
+    connection: IConnection
 }
 
 function mapStateToProps(state: ApplicationState) {
@@ -25,55 +25,63 @@ function mapStateToProps(state: ApplicationState) {
     };
 }
 
-// function mapDispatchToProps(dispatch) {
-//     return {
-//         actions: bindActionCreators(applicationActions, dispatch)
-//     };
-// }
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(connectionActions, dispatch)
+    };
+}
 
-@connect(mapStateToProps)
+@connect(mapStateToProps, mapDispatchToProps)
 export default class ConnectionPage extends React.Component<IConnectionPageProps, IConnectionPageState> {
     constructor(props, context) {
         super(props, context);
 
         this.state = {
-            formSchema: { ...formSchema },
-            providerName: null,
-            formData: {},
-            connections: this.props.connections
+            connection: null
         };
 
-        this.onFormChange = this.onFormChange.bind(this);
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onConnectionSelected = this.onConnectionSelected.bind(this);
-    }
+        this.props.actions.loadConnections();
 
-    componentDidMount = () => {
-
-    }
-
-    onConnectionSelected = (args) => {
-        console.log('You selected', args);
-    }
-
-    onFormChange = (args) => {
-        const storageProvider = args.formData.storageProvider;
-
-        if (storageProvider !== this.state.providerName) {
-            const providerSchema = require(`../../../providers/storage/${storageProvider}.json`);
-            const formSchema = { ...this.state.formSchema };
-            formSchema.properties['providerOptions'] = providerSchema;
-
-            this.setState({
-                providerName: storageProvider,
-                formSchema: formSchema,
-                formData: { ...args.formData, providerOptions: {} }
-            });
+        const connectionId = this.props.match.params['connectionId'];
+        if (connectionId) {
+            this.loadConnection(connectionId);
         }
-    };
 
-    onFormSubmit = (args) => {
-        console.log(args);
+        this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onConnectionDelete = this.onConnectionDelete.bind(this);
+    }
+
+    loadConnection(connectionId: string) {
+        this.props.actions.loadConnection(connectionId)
+            .then(connection => {
+                this.setState({
+                    connection: connection
+                });
+            })
+            .catch(() => {
+                this.setState({
+                    connection: null
+                });
+            });
+    }
+
+    onConnectionDelete = (connection: IConnection) => {
+        this.props.actions.deleteConnection(connection);
+    }
+
+    componentDidUpdate = (prevProps) => {
+        const prevConnectionId = prevProps.match.params['connectionId'];
+        const newConnectionId = this.props.match.params['connectionId'];
+
+        if (prevConnectionId !== newConnectionId) {
+            this.loadConnection(newConnectionId);
+        }
+    }
+
+    onFormSubmit = (connection: IConnection) => {
+        this.props.actions.saveConnection(connection).then(() => {
+            this.props.history.push('/connections');
+        });
     }
 
     render() {
@@ -82,20 +90,23 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                 <div className="app-connections-page-list bg-lighter-1">
                     <CondensedList
                         title="Connections"
+                        newLinkTo={'/connections/create'}
+                        onDelete={this.onConnectionDelete}
                         Component={ConnectionItem}
-                        items={this.state.connections}
-                        onClick={this.onConnectionSelected} />
+                        items={this.props.connections} />
                 </div>
-                <div className="app-connections-page-detail m-3 text-light">
-                    <h3><i className="fas fa-plug fa-1x"></i><span className="px-2">Connection Settings</span></h3>
-                    <hr />
-                    <Form
-                        schema={this.state.formSchema}
-                        formData={this.state.formData}
-                        onChange={this.onFormChange}
-                        onSubmit={this.onFormSubmit}>
-                    </Form>
-                </div>
+
+                <Route exact path="/connections" render={(props) =>
+                    <div className="app-connections-page-detail m-3 text-light">
+                        <h6>Please select a connection to edit</h6>
+                    </div>
+                } />
+
+                <Route exact path="/connections/:connectionId" render={(props) =>
+                    <ConnectionForm
+                        connection={this.state.connection}
+                        onSubmit={this.onFormSubmit} />
+                } />
             </div>
         );
     }

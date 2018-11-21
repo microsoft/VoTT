@@ -1,16 +1,20 @@
 {
     "title": "Connection Details",
     "required": [
-        "displayName",
-        "storageProvider"
+        "name",
+        "providerType"
     ],
     "type": "object",
     "properties": {
-        "displayName": {
+        "name": {
             "title": "Display Name",
             "type": "string"
         },
-        "storageProvider": {
+        "description": {
+            "title": "Description",
+            "type": "string"
+        },
+        "providerType": {
             "title": "Provider",
             "type": "string",
             "enum": [

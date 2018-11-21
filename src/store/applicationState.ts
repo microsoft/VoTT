@@ -12,7 +12,7 @@ export interface IAppSettings {
 export interface IProject {
     id: string,
     name: string,
-    description: string,
+    description?: string,
     tags: ITag[],
     sourceConnection: IConnection,
     targetConnection: IConnection,
@@ -28,6 +28,7 @@ export interface ITag {
 export interface IConnection {
     id: string,
     name: string,
+    description?: string,
     providerType: string,
     providerOptions: any
 }

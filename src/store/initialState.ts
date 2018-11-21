@@ -8,7 +8,7 @@ const initialState: ApplicationState = {
     appSettings: {
         devToolsEnabled: false,
     },
-    connections: sampleConnections,
+    connections: null, //sampleConnections,
     recentProjects: null, //sampeProjects,
     currentProject: null
 };
