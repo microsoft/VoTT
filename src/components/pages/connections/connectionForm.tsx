@@ -11,7 +11,7 @@ interface ConnectionFormProps extends React.Props<ConnectionForm> {
 interface ConnectionFormState {
     providerName: string;
     formSchema: any;
-    formData: any;
+    formData: IConnection;
 }
 
 export default class ConnectionForm extends React.Component<ConnectionFormProps, ConnectionFormState> {
@@ -29,16 +29,7 @@ export default class ConnectionForm extends React.Component<ConnectionFormProps,
 
     componentDidUpdate(prevProps) {
         if (prevProps.connection !== this.props.connection) {
-            const providerType = this.props.connection.providerType;
-            const providerSchema = require(`../../../providers/storage/${providerType}.json`);
-            const formSchema = { ...this.state.formSchema };
-            formSchema.properties['providerOptions'] = providerSchema;
-
-            this.setState({
-                providerName: providerType,
-                formSchema: formSchema,
-                formData: this.props.connection
-            })
+            this.bindForm(this.props.connection);
         }
     }
 
@@ -46,17 +37,27 @@ export default class ConnectionForm extends React.Component<ConnectionFormProps,
         const providerType = args.formData.providerType;
 
         if (providerType !== this.state.providerName) {
-            const providerSchema = require(`../../../providers/storage/${providerType}.json`);
-            const formSchema = { ...this.state.formSchema };
-            formSchema.properties['providerOptions'] = providerSchema;
-
-            this.setState({
-                providerName: providerType,
-                formSchema: formSchema,
-                formData: { ...args.formData, providerOptions: {} }
-            });
+            this.bindForm(args.formData, true);
         }
     };
+
+    private bindForm(connection: IConnection, resetProviderOptions: boolean = false) {
+        const providerType = connection.providerType;
+        const providerSchema = require(`../../../providers/storage/${providerType}.json`);
+        const formSchema = { ...this.state.formSchema };
+        formSchema.properties['providerOptions'] = providerSchema;
+
+        const formData = { ...connection };
+        if (resetProviderOptions) {
+            formData.providerOptions = {};
+        }
+
+        this.setState({
+            providerName: providerType,
+            formSchema: formSchema,
+            formData: formData
+        });
+    }
 
     render() {
         return (
