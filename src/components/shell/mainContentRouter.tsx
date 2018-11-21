@@ -16,10 +16,11 @@ export default function MainContentRouter() {
             <Route path="/settings" component={AppSettingsPage} />
             <Route path="/profile" component={ProfileSettingsPage} />
             <Route path="/connections" component={ConnectionPage} />
-            <Route path="/project/settings" component={ProjectSettingsPage} />
-            <Route path="/project/edit" component={EditorPage} />
-            <Route path="/project/export" component={ExportPage} />
-            <Route path="/project/active-learning" component={ActiveLearningPage} />
+            <Route path="/projects/:projectId/edit" component={EditorPage} />
+            <Route path="/projects/create" component={ProjectSettingsPage} />
+            <Route path="/projects/:projectId/settings" component={ProjectSettingsPage} />
+            <Route path="/projects/:projectId/export" component={ExportPage} />
+            <Route path="/projects/:projectId/active-learning" component={ActiveLearningPage} />
         </div>
     );
 }

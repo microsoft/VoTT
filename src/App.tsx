@@ -1,31 +1,43 @@
-import React, { Component } from 'react';
-import { Provider } from 'react-redux';
+import React from 'react';
+import { connect } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Navbar from './components/shell/navbar';
 import Sidebar from './components/shell/sidebar';
 import MainContentRouter from './components/shell/mainContentRouter';
-import createReduxStore from './store/store';
+import ApplicationState, { IProject } from './store/applicationState';
 import './App.scss';
-import ApplicationState from './store/applicationState';
-import initialState from './store/initialState';
 
-const defaultState: ApplicationState = initialState;
-const store = createReduxStore(defaultState);
+interface AppProps {
+    currentProject?: IProject
+}
 
-class App extends Component {
+function mapStateToProps(state: ApplicationState) {
+    return {
+        currentProject: state.currentProject
+    };
+}
+
+@connect(mapStateToProps)
+class App extends React.Component<AppProps> {
+    constructor(props, context) {
+        super(props, context);
+
+        this.state = {
+            currentProject: this.props.currentProject
+        };
+    }
+
     render() {
         return (
-            <Provider store={store}>
-                <Router>
-                    <div className="app-shell">
-                        <Navbar />
-                        <div className="app-main">
-                            <Sidebar />
-                            <MainContentRouter />
-                        </div>
+            <Router>
+                <div className="app-shell">
+                    <Navbar />
+                    <div className="app-main">
+                        <Sidebar project={this.props.currentProject} />
+                        <MainContentRouter />
                     </div>
-                </Router>
-            </Provider>
+                </div>
+            </Router>
         );
     }
 }

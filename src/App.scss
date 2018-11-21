@@ -85,7 +85,7 @@
             display: block;
             text-align: center;
 
-            a {
+            a, span {
                 display: inline-block;
                 width: 45px;
                 padding: 5px 10px;
@@ -95,7 +95,19 @@
                         color: #fff;
                     }
                     
-                    background-color: #666;
+                    background-color: $lighter-3;
+                }
+
+                &.disabled {
+                    opacity: 0.25;
+
+                    &:hover {
+                        background-color: transparent;
+                    }
+
+                    &.fas {
+                        color: transparent;
+                    }
                 }
             }
         }

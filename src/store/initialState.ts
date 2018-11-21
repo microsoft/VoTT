@@ -9,7 +9,7 @@ const initialState: ApplicationState = {
         devToolsEnabled: false,
     },
     connections: sampleConnections,
-    recentProjects: sampeProjects,
+    recentProjects: null, //sampeProjects,
     currentProject: null
 };
 

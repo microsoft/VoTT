@@ -5,8 +5,9 @@ import IProjectActions, * as projectActions from '../../../actions/projectAction
 import ApplicationState, { IProject } from '../../../store/applicationState';
 import Form from 'react-jsonschema-form'
 import formSchema from './projectSettingsPage.json';
+import { RouteComponentProps } from 'react-router-dom';
 
-interface ProjectSettingsPageProps {
+interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     currentProject: IProject;
     actions: IProjectActions;
 }
@@ -45,7 +46,10 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
         this.setState({
             project: form.formData
         }, () => {
-            this.props.actions.saveProject(this.state.project);
+            this.props.actions.saveProject(this.state.project)
+                .then(project => {
+                    this.props.history.push(`/projects/${project.id}/edit`);
+                });
         });
     }
 

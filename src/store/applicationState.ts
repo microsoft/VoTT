@@ -20,7 +20,7 @@ export interface IProject {
     autoSave: boolean
 }
 
-export interface ITag{
+export interface ITag {
     name: string,
     color: string
 }

@@ -7,15 +7,11 @@ import ApplicationState, { IProject } from '../../../store/applicationState';
 import CondensedList from '../../common/condensedList';
 import RecentProjectItem from './recentProjectItem';
 import FilePicker from '../../common/filePicker';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 
-interface HomepageProps extends React.Props<HomePage> {
+interface HomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[],
     actions: IProjectActions
-}
-
-interface HomepageState {
-    recentProjects: IProject[]
 }
 
 function mapStateToProps(state: ApplicationState) {
@@ -31,32 +27,32 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class HomePage extends React.Component<HomepageProps, HomepageState> {
+export default class HomePage extends React.Component<HomepageProps> {
     private filePicker: React.RefObject<FilePicker>;
 
     constructor(props, context) {
         super(props, context);
 
-        this.state = {
-            recentProjects: this.props.recentProjects
-        };
-
         this.filePicker = React.createRef<FilePicker>();
-        this.onRecentProjectSelected = this.onRecentProjectSelected.bind(this);
+        this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
+
+        this.props.actions.closeProject();
+        this.props.actions.loadProjects();
     }
 
     onProjectFileUpload = (e, projectJson) => {
         const project: IProject = JSON.parse(projectJson);
-        this.props.actions.loadProject(project);
+        this.loadSelectedProject(project);
     }
 
     onProjectFileUploadError = (e, err) => {
         console.error(err);
     }
 
-    onRecentProjectSelected = (project) => {
-        this.props.actions.loadProject(project);
+    loadSelectedProject = (project) => {
+        this.props.actions.loadProject(project)
+        this.props.history.push(`/projects/${project.id}/settings`);
     }
 
     render() {
@@ -81,13 +77,15 @@ export default class HomePage extends React.Component<HomepageProps, HomepageSta
                         </li>
                     </ul>
                 </div>
-                <div className="app-homepage-recent bg-lighter-1">
-                    <CondensedList
-                        title="Recent Projects"
-                        Component={RecentProjectItem}
-                        items={this.state.recentProjects}
-                        onClick={this.onRecentProjectSelected} />
-                </div>
+                {(this.props.recentProjects && this.props.recentProjects.length > 0) &&
+                    <div className="app-homepage-recent bg-lighter-1">
+                        <CondensedList
+                            title="Recent Projects"
+                            Component={RecentProjectItem}
+                            items={this.props.recentProjects}
+                            onClick={this.loadSelectedProject} />
+                    </div>
+                }
             </div>
         );
     }
