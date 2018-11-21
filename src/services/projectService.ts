@@ -1,5 +1,6 @@
 import shortid from 'shortid';
 import { IProject } from "../store/applicationState";
+import LocalFileSystemProxy from '../providers/storage/localFileSystem';
 
 export interface IProjectService {
     get(id: string): Promise<IProject>;
@@ -49,6 +50,10 @@ export default class ProjectService implements IProjectService {
                 if (!project.id) {
                     project.id = shortid.generate();
                 }
+
+                const localFileSystem = new LocalFileSystemProxy();
+                const path = `C:\\vott-projects\\${project.name}.json`;
+                await localFileSystem.writeFile(path, JSON.stringify(project, null, 4));
 
                 let allProjects = await this.getList();
                 allProjects = [{ ...project }, ...allProjects.filter(prj => prj.id !== project.id)];
