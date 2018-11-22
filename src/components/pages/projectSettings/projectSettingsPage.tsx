@@ -3,11 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import IProjectActions, * as projectActions from '../../../actions/projectActions';
 import ApplicationState, { IProject, IConnection } from '../../../store/applicationState';
-import Form from 'react-jsonschema-form'
-import formSchema from './projectSettingsPage.json';
-import uiSchema from './projectSettingsPage.ui.json';
 import { RouteComponentProps } from 'react-router-dom';
-import ConnectionPicker from '../../common/connectionPicker';
+import ProjectForm from './projectForm'
 
 interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     currentProject: IProject;
@@ -17,8 +14,6 @@ interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<Proj
 
 interface ProjectSettingsPageState {
     project: IProject;
-    formSchema: any;
-    uiSchema: any;
 }
 
 function mapStateToProps(state: ApplicationState) {
@@ -36,17 +31,12 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ProjectSettingsPage extends React.Component<ProjectSettingsPageProps, ProjectSettingsPageState> {
-    private widgets = {
-        connectionPicker: ConnectionPicker
-    }
 
     constructor(props, context) {
         super(props, context);
 
         this.state = {
-            formSchema: { ...formSchema },
-            uiSchema: { ...uiSchema },
-            project: this.props.currentProject,
+            project: this.props.currentProject
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -71,14 +61,9 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
         return (
             <div className="m-3 text-light">
                 <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">Project Settings</span></h3>
-                <hr />
-
-                <Form
-                    widgets={this.widgets}
-                    schema={this.state.formSchema}
-                    uiSchema={this.state.uiSchema}
-                    formData={this.state.project}
-                    onSubmit={this.onFormSubmit} />
+                  <ProjectForm
+                    project={this.state.project}
+                    onSubmit={this.onFormSubmit}/>
             </div>
         );
     }
