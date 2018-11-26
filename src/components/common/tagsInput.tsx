@@ -17,7 +17,7 @@ const KeyCodes = {
     enter: 13,
   };
    
-  const delimiters = [KeyCodes.comma, KeyCodes.enter];
+const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
 export default class TagsInput extends React.Component<TagsInputProps, TagsInputState> {
     constructor(props){

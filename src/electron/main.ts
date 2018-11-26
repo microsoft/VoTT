@@ -35,11 +35,9 @@ function createWindow() {
     ipcMainProxy = new IpcMainProxy(ipcMain, mainWindow);
     ipcMainProxy.register('RELOAD_APP', onReloadApp);
     ipcMainProxy.register('TOGGLE_DEV_TOOLS', onToggleDevTools);
-<<<<<<< HEAD
 
     const localFileSystem = new LocalFileSystem(mainWindow);
     ipcMainProxy.registerProxy('LocalFileSystem', localFileSystem);
-=======
     ipcMainProxy.register('OPEN_LOCAL_FOLDER', onOpenLocalFolder);
 >>>>>>> New tags widget with styling and custom project form component
 }
