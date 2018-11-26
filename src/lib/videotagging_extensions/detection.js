@@ -23,25 +23,6 @@ function Detection(videotagging, visitedFrames) {
             self.videotagging.video.currentTime = 0;
             self.videotagging.playingCallback();
 
-            // //resolve export until
-            // var isLastFrame;
-            // if (until === "tagged") {
-            //     isLastFrame = function (frameId) {
-            //         return (!Object.keys(self.videotagging.frames).length) || (frameId >= parseInt(Object.keys(self.videotagging.frames)[Object.keys(self.videotagging.frames).length - 1]));
-            //     }
-            // }
-            // else if (until === "visited") {
-            //     isLastFrame = function (frameId) {
-            //         var lastVisitedFrameId = Math.max.apply(Math, Array.from(self.visitedFrames));
-            //         return (frameId >= lastVisitedFrameId);
-            //     }
-            // }
-            // else { //last
-            //     isLastFrame = function (frameId) {
-            //         return (self.videotagging.video.currentTime >= self.videotagging.video.duration);
-            //     }
-            // }
-
             function iterateFrames() {
                 var frameNumber = self.videotagging.getCurrentFrameNumber();
                 var lastFrame = isLastFrame(frameNumber);

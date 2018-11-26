@@ -429,7 +429,6 @@ function openPath(pathName, isDir, isRecords = false) {
           } else {
             visitedFrames = new Set();
           }
-          // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
         } 
 
         if (isDir){
@@ -468,7 +467,6 @@ function openPath(pathName, isDir, isRecords = false) {
                 }, this);
               }
 
-              // videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
               videotagging.src = pathName; 
               //track visited frames
               $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
@@ -528,7 +526,6 @@ function openPath(pathName, isDir, isRecords = false) {
         }
 
         //init detection
-        //detection = new DetectionExtension(videotagging, visitedFramesNumber);
         detection = new DetectionExtension(videotagging, visitedFrames);
         
         $('#load-form-container').hide();
@@ -623,9 +620,6 @@ function save() {
         videotagging.currTFRecord.features.feature['image/object/bbox/ymax'].floatList.value = ymax;
         videotagging.currTFRecord.features.feature['image/object/class/text'].bytesList.value = tags;
         videotagging.recordlist[videotagging.imageIndex] = videotagging.currTFRecord;
-        // writeRecord(videotagging.imagelist[videotagging.imageIndex],videotagging.currTFRecord).then(()=>{
-        //   console.log(`record saved: ${videotagging.imagelist[videotagging.imageIndex]}`)
-        // });
       }
       setTimeout(() => {
         saveLock = false;
@@ -639,7 +633,6 @@ function encode_Uint8(s) {
   
   var enc = new TextEncoder();
   return enc.encode(s)
-  // return Uint8Array.from(s);
 }
 
 function decode_Uint8(uint8Arr) {
