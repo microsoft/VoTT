@@ -7,6 +7,7 @@ import Form from 'react-jsonschema-form'
 import formSchema from './projectSettingsPage.json';
 import uiSchema from './projectSettingsPage.ui.json';
 import { RouteComponentProps } from 'react-router-dom';
+import ConnectionPicker from '../../common/connectionPicker';
 
 interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     currentProject: IProject;
@@ -33,6 +34,10 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ProjectSettingsPage extends React.Component<ProjectSettingsPageProps, ProjectSettingsPageState> {
+    private widgets = {
+        connectionPicker: ConnectionPicker
+    }
+
     constructor(props, context) {
         super(props, context);
 
@@ -63,6 +68,7 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
                 <hr />
 
                 <Form
+                    widgets={this.widgets}
                     schema={this.state.formSchema}
                     uiSchema={this.state.uiSchema}
                     formData={this.state.project}

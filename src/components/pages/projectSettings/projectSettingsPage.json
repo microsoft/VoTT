@@ -5,11 +5,11 @@
             "title": "Name",
             "type": "string"
         },
-        "sourceConnectionId": {
+        "sourceConnection": {
             "title": "Data Source",
             "type": "string"
         },
-        "targetConnectionId": {
+        "targetConnection": {
             "title": "Target Connection",
             "type": "string"
         },
