@@ -126,6 +126,14 @@
                 <span id="emptyFrame" title="empty frame" class="icon-share taggingControls controlOff" on-click='emptyFrameClicked'></span>
                 <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff" on-click='lockTagsClicked'></span>
             </div>
+            <div class="addTagControls">
+                <form id="addTagForm">
+                    <input type="text" id="newTag">
+                    <input type="submit" value="Add Tag">
+                </form>
+            </div>
+            <div style="clear: both">
+              </div>
             <div style="clear: both">
             </div>
         </div>
@@ -192,6 +200,9 @@
         this.frameText = this.$$("#frameText");
         this.playbackSpan = this.$$("#playbackSpan");
 
+        //Form
+        this.form = this.$$('#addTagForm'),
+
         // Buttons
         this.playButton = this.$$('#play-pause');
         this.stepfwd = this.$$("#stepfwd");
@@ -225,28 +236,25 @@
 
         this.CT = CanvasTools.CanvasTools;
 
-        this.regionsManager = new this.CT.Region.RegionsManager(this.selectionSVG,
-            function () { },
-            function () { })
-            ;
+        this.regionsManager = new this.CT.Region.RegionsManager(this.selectionSVG, () => { }, () => { });
 
         this.areaSelector = new this.CT.Selection.AreaSelector(this.selectionSVG,
-            () => {
+        {
+            onSelectionBegin: () => {
                 this.selectionSVG.style.zIndex = 300;
             },
-            (x1, y1, x2, y2) => {
+            onSelectionEnd: (commit) => {
+                let r = commit.boundRect;
                 this.selectionSVG.style.zIndex = 30;
-                this.onNewAreaSelected(x1, y1, x2, y2);
+                this.onNewAreaSelected(r.x1, r.y1, r.x2, r.y2);
+            },
+            onLocked: () => {
+                this.regionsManager.freeze();
+            },
+            onUnlocked: () => {
+                this.regionsManager.unfreeze();
             }
-        );
-
-        this.areaSelector.onLocked = () => {
-            this.regionsManager.freeze();
-        };
-
-        this.areaSelector.onUnlocked = () => {
-            this.regionsManager.unfreeze();
-        }
+        });
 
         this.regionsManager.onManipulationEnd = () => {
             this.areaSelector.enable();
@@ -281,21 +289,11 @@
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
         });
 
-        let templateIcon = new this.CT.Toolbar.IconDescription(
-            "template-select",
-            "public/js/video-tagging/assets/icons/ct/template-selection.svg",
-            "Template-based box (T)",
-            'KeyT');
-
-        this.toolbar.addAction(templateIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
-        });
-
         let copyTemplateIcon = new this.CT.Toolbar.IconDescription(
             "copy-select",
             "public/js/video-tagging/assets/icons/ct/copy-t-selection.svg",
-            "Copy-based box (Y)",
-            'KeyY');
+            "Copy-based box (T)",
+            'KeyT');
 
         this.toolbar.addAction(copyTemplateIcon, (action) => {
             let rs = this.regionsManager.getSelectedRegionsBounds();
@@ -305,6 +303,17 @@
             } else {
                 this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
             }
+        });
+
+        let clickTemplateIcon = new this.CT.Toolbar.IconDescription(
+            "click-select",
+            "public/js/video-tagging/assets/icons/ct/click-selection.svg",
+            "Two-Point Mode (P)",
+            'KeyP');
+
+        this.toolbar.addAction(clickTemplateIcon, (action) => {
+            //right now this just does what the first icon does
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
         });
 
         this.toolbar.select("rect-select");
@@ -440,6 +449,12 @@
 
             this.selectRegion(currentRegionUID)
         });
+      this.form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        newTag = document.getElementById("newTag").value;
+        self.inputtagsarray.push(newTag);
+        self.optionalTags.createTagControls(self.inputtagsarray);
+      })
     },
 
     frameInputListener: function(event) {
