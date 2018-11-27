@@ -1,5 +1,5 @@
 import { Deferred } from './deferred';
-import { IpcProxyMessage } from './ipcProxy';
+import { IpcProxyMessage } from '../electron/common/ipcProxy';
 import * as shortid from 'shortid';
 
 export class IpcRendererProxy {

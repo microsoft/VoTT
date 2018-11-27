@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, IpcMain } from 'electron';
+import { BrowserWindow, IpcMain } from 'electron';
 import { IpcProxyMessage } from './ipcProxy';
 
 export type IpcProxyHandler<T> = (sender: any, args: T) => any;
@@ -6,10 +6,9 @@ export type IpcProxyHandler<T> = (sender: any, args: T) => any;
 export class IpcMainProxy {
     private static PROXY_EVENT_NAME: string = 'ipc-renderer-proxy';
 
-    private ipcMain: IpcMain = ipcMain;
-    private handlers: { [type: string]: IpcProxyHandler<any> } = {};
+    handlers: { [type: string]: IpcProxyHandler<any> } = {};
 
-    constructor(private browserWindow: BrowserWindow) {
+    constructor(private ipcMain: IpcMain, private browserWindow: BrowserWindow) {
         this.init();
     }
 
@@ -54,13 +53,14 @@ export class IpcMainProxy {
     }
 
     registerProxy(proxyPrefix, provider) {
-        for (const memberName in provider) {
+        Object.getOwnPropertyNames(provider.__proto__).forEach(memberName => {
             if (typeof (provider[memberName]) === 'function') {
-                this.register(`${proxyPrefix}:${memberName}`, (eventArgs) => {
+                console.log(`Registering ${proxyPrefix}:${memberName}`);
+                this.register(`${proxyPrefix}:${memberName}`, (sender, eventArgs) => {
                     const args = Object.getOwnPropertyNames(eventArgs).map(memberName => eventArgs[memberName]);
                     return provider[memberName].apply(provider, args);
                 });
             }
-        }
+        });
     }
 }
