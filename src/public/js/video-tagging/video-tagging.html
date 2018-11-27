@@ -126,6 +126,14 @@
                 <span id="emptyFrame" title="empty frame" class="icon-share taggingControls controlOff" on-click='emptyFrameClicked'></span>
                 <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff" on-click='lockTagsClicked'></span>
             </div>
+            <div class="addTagControls">
+                <form id="addTagForm">
+                    <input type="text" id="newTag">
+                    <input type="submit" value="Add Tag">
+                </form>
+            </div>
+            <div style="clear: both">
+              </div>
             <div style="clear: both">
             </div>
         </div>
@@ -191,6 +199,9 @@
         this.timeSpan = this.$$('#timeSpan');
         this.frameText = this.$$("#frameText");
         this.playbackSpan = this.$$("#playbackSpan");
+
+        //Form
+        this.form = this.$$('#addTagForm'),
 
         // Buttons
         this.playButton = this.$$('#play-pause');
@@ -440,6 +451,14 @@
 
             this.selectRegion(currentRegionUID)
         });
+      this.form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        console.log("REACHED ADDTAG");
+        newTag = document.getElementById("newTag").value;
+        self.inputtagsarray.push(newTag);
+        console.log(self.inputtagsarray);
+        self.optionalTags.createTagControls(self.inputtagsarray);
+      })
     },
 
     frameInputListener: function(event) {
