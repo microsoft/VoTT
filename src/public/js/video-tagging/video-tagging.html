@@ -453,10 +453,8 @@
         });
       this.form.addEventListener("submit", function(e) {
         e.preventDefault();
-        console.log("REACHED ADDTAG");
         newTag = document.getElementById("newTag").value;
         self.inputtagsarray.push(newTag);
-        console.log(self.inputtagsarray);
         self.optionalTags.createTagControls(self.inputtagsarray);
       })
     },
