@@ -446,6 +446,7 @@
                 }            
                 break;
             case 68:// d for duplicate
+                if(e.ctrlKey) break;
                 let frameId = this.getCurrentFrameId();
                 if(this.imagelist){
                     frameId = this.imageIndex
@@ -457,6 +458,16 @@
                 break;
             case 32:// space to toggle play/pause
                 this.playPauseClicked();
+                break;
+            case 81:// q to go back a frame
+                if (!e.ctrlKey) {
+                    this.stepBwdClicked();
+                }
+                break;
+            case 69:// e to go forward a frame
+                if (!e.ctrlKey) {
+                    this.stepFwdClicked();
+                }
                 break;
             default: return; // exit this handler for other keys
             }
