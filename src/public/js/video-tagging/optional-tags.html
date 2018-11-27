@@ -68,6 +68,14 @@
             btn.disabled = 'disabled';
             var self = this;
             btn.addEventListener("click", (e) => {
+                if(e.ctrlKey){
+                    let videotagging = document.getElementById('video-tagging');
+                    let index = videotagging.inputtagsarray.indexOf(btn.id);
+                    if (index !== -1) videotagging.inputtagsarray.splice(index, 1);
+                    // this.createTagControls(videotagging.inputtagsarray)
+                    btn.remove();
+                    videotagging.checkRemovedTags();
+                }
                 let tag = e.currentTarget.id;
                 if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
                     this.tagsState[tag] = "full";

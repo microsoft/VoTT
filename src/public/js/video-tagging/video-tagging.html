@@ -619,6 +619,15 @@
         }
         if(recs.length) this.inputtagsarray.push.apply(this.inputtagsarray,recs)
     },
+    checkRemovedTags: function() {
+        let regions = this.getCurrentFrameRegions();
+        regions.forEach(region => region.tags.forEach(tag => {
+            if(!this.inputtagsarray.includes(tag)){
+                region.tags.splice(tag,1);
+            }
+        }));
+        this.showAllRegions();
+    },
     buildTagsDescriptor: function(tags) {
 
         
