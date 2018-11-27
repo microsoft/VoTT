@@ -15,7 +15,7 @@ describe('Sidebar Component', () => {
 
         expect(wrapper).not.toBeNull();
 
-        const links = wrapper.find('ul li a');
+        const links = wrapper.find('ul li');
         expect(links.length).toEqual(6);
     });
 });

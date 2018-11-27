@@ -52,4 +52,15 @@ export class IpcMainProxy {
     register<T>(type: string, handler: IpcProxyHandler<T>) {
         this.handlers[type] = handler;
     }
+
+    registerProxy(proxyPrefix, provider) {
+        for (const memberName in provider) {
+            if (typeof (provider[memberName]) === 'function') {
+                this.register(`${proxyPrefix}:${memberName}`, (eventArgs) => {
+                    const args = Object.getOwnPropertyNames(eventArgs).map(memberName => eventArgs[memberName]);
+                    return provider[memberName].apply(provider, args);
+                });
+            }
+        }
+    }
 }
