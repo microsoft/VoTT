@@ -68,16 +68,26 @@
             btn.disabled = 'disabled';
             var self = this;
             btn.addEventListener("click", (e) => {
+                let videotagging = document.getElementById('video-tagging');
                 let tag = e.currentTarget.id;
-                if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
+                if((videotagging.newTagIndex || videotagging.newTagIndex == 0) && e.shiftKey){
+                    let originalIndex = videotagging.inputtagsarray.indexOf(tag)
+                    if(originalIndex != videotagging.newTagIndex){
+                        let temp = videotagging.inputtagsarray[originalIndex];
+                        videotagging.inputtagsarray[originalIndex] = videotagging.inputtagsarray[videotagging.newTagIndex];
+                        videotagging.inputtagsarray[videotagging.newTagIndex] = temp;
+                        this.createTagControls(videotagging.inputtagsarray);
+                        videotagging.showAllRegions()
+                    }
+                } else if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
+                    self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
                 } else {
                     this.tagsState[tag] = "empty";
                     self.setUnselected(e.currentTarget);
-                }
-
-                self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});                 
+                    self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
+                }         
 
             });
             btn.style.color = this.colors[index];
@@ -94,7 +104,7 @@
         }
 
         window.addEventListener("keyup", (e) => {
-            if (e.keyCode >= 49 && e.keyCode <= 57) {
+            if (e.keyCode >= 49 && e.keyCode <= 57 && !e.shiftKey) {
                 let index = e.keyCode - 49;
                 if (index < this.tags.length) {
                     let tag = this.tags[index];
