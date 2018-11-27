@@ -305,6 +305,17 @@
             }
         });
 
+        let clickTemplateIcon = new this.CT.Toolbar.IconDescription(
+            "click-select",
+            "public/js/video-tagging/assets/icons/ct/click-selection.svg",
+            "Two-Point Mode (P)",
+            'KeyP');
+
+        this.toolbar.addAction(clickTemplateIcon, (action) => {
+            //right now this just does what the first icon does
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
+        });
+
         this.toolbar.select("rect-select");
 
         // Register empty filter pipeline
