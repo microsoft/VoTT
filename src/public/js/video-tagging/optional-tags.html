@@ -79,7 +79,7 @@
                     document.getElementById(tag).remove();
                     videotagging.checkRemovedTags();
                 }
-                else if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
+                else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
                 } else {
