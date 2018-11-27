@@ -626,7 +626,6 @@
                 region.tags.splice(tag,1);
             }
         }));
-        this.showAllRegions();
     },
     buildTagsDescriptor: function(tags) {
 
@@ -832,6 +831,7 @@
         this.clearAllRegions();
         var regions = this.getCurrentFrameRegions();
         if(regions && regions.length > 0) {
+            this.checkRemovedTags();
             //Draw all regions for this frame
             for (var i=0; i<regions.length;i++) {
                 var region = regions[i];
