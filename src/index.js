@@ -234,15 +234,26 @@ document.addEventListener('mousewheel', (e) => {
 });
 
 window.addEventListener('keydown', (e) => {
-  if(e.shiftKey && videotagging){
-    videotagging.multiselection = true;
+  if(videotagging){
+    if(e.keyCode >= 49 && e.keyCode <= 57 && e.shiftKey){
+      let index = e.keyCode - 49
+      if(videotagging.newTagIndex != index){
+        videotagging.newTagIndex = index;
+      }
+    } else if(e.shiftKey){
+      videotagging.multiselection = true;
+    }
   }
+  
 });
 
 window.addEventListener('keyup', (e) => {
   if(videotagging){
     if(!e.shiftKey){
       videotagging.multiselection = false;
+    }
+    if(e.keyCode >= 48 && e.keyCode <= 57){
+      videotagging.newTagIndex = null;
     }
   
     var selectedRegions = videotagging.getSelectedRegions();
