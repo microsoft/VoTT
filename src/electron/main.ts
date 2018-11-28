@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, ipcMain, BrowserWindow, dialog } from 'electron';
 import path from 'path';
 import url from 'url';
 import { IpcMainProxy } from './common/ipcMainProxy';

@@ -6,7 +6,7 @@
             "type": "string"
         },
         "sourceConnectionId": {
-            "title": "Data Source",
+            "title": "Source Connection",
             "type": "string"
         },
         "targetConnectionId": {
@@ -23,20 +23,7 @@
         },
         "tags": {
             "title": "Tags",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "color": {
-                        "title": "Color",
-                        "type": "string"
-                    }
-                }
-            }
+            "type": "string"
         }
     }
 }
