@@ -1,8 +1,8 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import path from "path";
-import url from "url";
-import { IpcMainProxy } from "./common/ipcMainProxy";
-import LocalFileSystem from "./providers/storage/localFileSystem";
+import { app, ipcMain, BrowserWindow, dialog } from 'electron';
+import path from 'path';
+import url from 'url';
+import { IpcMainProxy } from './common/ipcMainProxy';
+import LocalFileSystem from './providers/storage/localFileSystem';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
