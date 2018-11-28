@@ -9,6 +9,9 @@ import { RouteComponentProps } from 'react-router-dom';
 import IConnectionActions, * as connectionActions from '../../../actions/connectionActions';
 import ConnectionForm from './connectionForm';
 import './connectionsPage.scss';
+import { AzureCloudStorageService } from '../../../providers/storage/azureBlobStorage'
+import { debug } from 'util';
+
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
@@ -78,7 +81,17 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         }
     }
 
-    onFormSubmit = (connection: IConnection) => {
+    onFormSubmit = async (connection: IConnection) => {
+        
+        if (connection.providerType === 'azureBlobStorage'){
+            var azure = new AzureCloudStorageService(connection.providerOptions.connectionString)
+            var container;
+            if(connection.providerOptions.createContainer){
+                container = await azure.createContainer(connection.providerOptions.containerName);   
+            }else{
+                container = await azure.getContainerName(connection.providerOptions.containerName);
+            }
+        }
         this.props.actions.saveConnection(connection).then(() => {
             this.props.history.push('/connections');
         });

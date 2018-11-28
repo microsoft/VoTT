@@ -1,5 +1,11 @@
 {
     "description": {
         "ui:widget": "textarea"
+    },
+    "sourceConnectionId": {
+        "ui:widget": "connectionPicker"
+    },
+    "targetConnectionId": {
+        "ui:widget": "connectionPicker"
     }
 }

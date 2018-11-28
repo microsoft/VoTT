@@ -7,6 +7,7 @@ const sampeProjects = createSampleProjects();
 const initialState: ApplicationState = {
     appSettings: {
         devToolsEnabled: false,
+        connection: null
     },
     connections: null, //sampleConnections,
     recentProjects: null, //sampeProjects,

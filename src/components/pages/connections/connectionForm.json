@@ -19,7 +19,7 @@
             "type": "string",
             "enum": [
                 "azureBlobStorage",
-                "localFileSystem"
+                "localFileSystemProxy"
             ],
             "default": "azureBlobStorage",
             "enumNames": [
