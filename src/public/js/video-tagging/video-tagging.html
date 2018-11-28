@@ -305,13 +305,13 @@
             }
         });
 
-        let clickTemplateIcon = new this.CT.Toolbar.IconDescription(
+        let twoPointTemplateIcon = new this.CT.Toolbar.IconDescription(
             "click-select",
             "public/js/video-tagging/assets/icons/ct/click-selection.svg",
             "Two-Point Mode (P)",
             'KeyP');
 
-        this.toolbar.addAction(clickTemplateIcon, (action) => {
+        this.toolbar.addAction(twoPointTemplateIcon, (action) => {
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POINT);
         });
 
@@ -450,10 +450,7 @@
         });
         $("#newTag").focus(function() {
             console.log("newtag in focus");
-            // I will make this function?
-            // this.regionsManager.suppressHotkeys();
-            // window.removeEventListener("keyup", self.CT.RegionsManager);
-            // window.removeEventListener("keydown", self.keyUpEventsListenerBinded);
+            this.regionsManager.freeze();
         });
       this.form.addEventListener("submit", function(e) {
         e.preventDefault();
