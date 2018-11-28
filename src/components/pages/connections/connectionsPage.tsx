@@ -40,15 +40,17 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
             connection: null
         };
 
+        this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onConnectionDelete = this.onConnectionDelete.bind(this);
+    }
+
+    componentDidMount() {
         this.props.actions.loadConnections();
 
         const connectionId = this.props.match.params['connectionId'];
         if (connectionId) {
             this.loadConnection(connectionId);
         }
-
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onConnectionDelete = this.onConnectionDelete.bind(this);
     }
 
     loadConnection(connectionId: string) {

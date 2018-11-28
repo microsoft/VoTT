@@ -6,16 +6,30 @@ const projectService = new ProjectService();
 
 export default interface IProjectActions {
     loadProjects(): Promise<IProject[]>;
-    loadProject(project: IProject);
+    loadProject(projectId: string): Promise<IProject>;
+    loadProject(project: IProject): Promise<IProject>;
     saveProject(project: IProject): Promise<IProject>;
     deleteProject(project: IProject): Promise<void>;
     closeProject();
 }
 
-export function loadProject(project: IProject) {
-    return (dispatch) => {
-        dispatch({ type: ActionTypes.LOAD_PROJECT_SUCCESS, project });
-    };
+export function loadProject(value: string | IProject) {
+    return async (dispatch) => {
+        try {
+            let project: IProject = value as IProject;
+
+            if (typeof (value) === 'string') {
+                project = await projectService.get(value);
+            }
+
+            dispatch({ type: ActionTypes.LOAD_PROJECT_SUCCESS, project: project });
+
+            return project;
+        }
+        catch (err) {
+            throw err;
+        }
+    }
 }
 
 export function loadProjects() {

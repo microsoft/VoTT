@@ -1,52 +1,34 @@
 import React from 'react';
-import IApplicationState, { IConnection } from '../../store/applicationState';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import IConnectionActions, * as connectionActions from '../../actions/connectionActions';
+import { IConnection } from '../../store/applicationState';
+import IConnectionActions from '../../actions/connectionActions';
 import { Link } from 'react-router-dom';
 
 interface ConnectionPickerProps {
     id: string;
     value: any;
-    connections: IConnection[];
     onChange: (value) => void;
     actions: IConnectionActions;
+    options?: {
+        connections: IConnection[]
+    }
 }
 
 interface ConnectionPickerState {
-    value: any
+    value: any;
 }
 
-function mapStateToProps(state: IApplicationState) {
-    return {
-        connections: state.connections
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        actions: bindActionCreators(connectionActions, dispatch)
-    };
-}
-
-@connect(mapStateToProps, mapDispatchToProps)
 export default class ConnectionPicker extends React.Component<ConnectionPickerProps, ConnectionPickerState> {
     constructor(props, context) {
         super(props, context);
-
         this.state = {
             value: this.props.value
         };
-
-        if (!this.props.connections) {
-            this.props.actions.loadConnections();
-        }
 
         this.onChange = this.onChange.bind(this);
     }
 
     onChange = (e) => {
-        const selectedConnection = this.props.connections.find(connection => connection.id === e.currentTarget.value);
+        const selectedConnection = this.props.options.connections.find(connection => connection.id === e.currentTarget.value);
 
         if (selectedConnection) {
             this.setState({
@@ -55,11 +37,17 @@ export default class ConnectionPicker extends React.Component<ConnectionPickerPr
         }
     }
 
-    render() {
-        let { id, connections } = this.props;
-        if (!connections) {
-            connections = [];
+    componentDidUpdate(prevProps) {
+        if (prevProps.value !== this.props.value) {
+            this.setState({
+                value: this.props.value
+            });
         }
+    }
+
+    render() {
+        let { id, options } = this.props;
+        const connections = options.connections || [];
 
         const { value } = this.state;
 
