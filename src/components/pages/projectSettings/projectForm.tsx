@@ -34,15 +34,13 @@ export default class ProjectForm extends React.Component<ProjectFormProps, Proje
 
     render() {
         return (
-            <div className="m-3 text-light">
-                <Form
-                    widgets={this.widgets}
-                    schema={this.state.formSchema}
-                    uiSchema={this.state.uiSchema}
-                    formData={this.props.project}
-                    onSubmit={this.props.onSubmit} >
-                </Form>
-            </div>
+            <Form
+                widgets={this.widgets}
+                schema={this.state.formSchema}
+                uiSchema={this.state.uiSchema}
+                formData={this.props.project}
+                onSubmit={this.props.onSubmit} >
+            </Form>
         )
     }
 }

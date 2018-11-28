@@ -61,9 +61,11 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
         return (
             <div className="m-3 text-light">
                 <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">Project Settings</span></h3>
-                  <ProjectForm
-                    project={this.state.project}
-                    onSubmit={this.onFormSubmit}/>
+                <div className="m-3 text-light">
+                    <ProjectForm
+                        project={this.state.project}
+                        onSubmit={this.onFormSubmit} />
+                </div>
             </div>
         );
     }

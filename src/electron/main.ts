@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from 'electron';
+import { app, ipcMain, BrowserWindow, dialog } from 'electron';
 import path from 'path';
 import url from 'url';
 import { IpcMainProxy } from './common/ipcMainProxy';
@@ -38,8 +38,6 @@ function createWindow() {
 
     const localFileSystem = new LocalFileSystem(mainWindow);
     ipcMainProxy.registerProxy('LocalFileSystem', localFileSystem);
-    ipcMainProxy.register('OPEN_LOCAL_FOLDER', onOpenLocalFolder);
->>>>>>> New tags widget with styling and custom project form component
 }
 
 function onReloadApp() {
@@ -54,19 +52,6 @@ function onToggleDevTools(sender: any, show: boolean) {
         mainWindow.webContents.closeDevTools();
     }
 };
-
-function onOpenLocalFolder() {
-    return new Promise<string[]>((resolve, reject) => {
-        dialog.showOpenDialog(mainWindow, {
-            title: 'Select Folder',
-            buttonLabel: 'Choose Folder',
-            properties: ['openDirectory', 'createDirectory']
-        },
-            (filePaths) => {
-                resolve(filePaths)
-            });
-    });
-}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

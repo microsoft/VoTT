@@ -15,12 +15,12 @@ interface TagsInputState {
 const KeyCodes = {
     comma: 188,
     enter: 13,
-  };
-   
+};
+
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
 export default class TagsInput extends React.Component<TagsInputProps, TagsInputState> {
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -31,13 +31,13 @@ export default class TagsInput extends React.Component<TagsInputProps, TagsInput
         this.handleDrag = this.handleDrag.bind(this);
     }
 
-    convertToFlatList(tags){
+    convertToFlatList(tags) {
         return tags.map(element => element.text).join();
     }
 
     handleAddition = (tag) => {
-        this.setState({ 
-            tags: [...this.state.tags, tag] 
+        this.setState({
+            tags: [...this.state.tags, tag]
         }, () => this.props.onChange(this.convertToFlatList(this.state.tags)));
     }
 
@@ -51,12 +51,12 @@ export default class TagsInput extends React.Component<TagsInputProps, TagsInput
     handleDrag = (tag, currPos, newPos) => {
         const tags = [...this.state.tags];
         const newTags = tags.slice();
- 
+
         newTags.splice(currPos, 1);
         newTags.splice(newPos, 0, tag);
- 
+
         // re-render
-        this.setState({tags : newTags }, 
+        this.setState({ tags: newTags },
             () => this.props.onChange(this.convertToFlatList(this.state.tags)));
     }
 
