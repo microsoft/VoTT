@@ -77,7 +77,7 @@
                         videotagging.inputtagsarray[originalIndex] = videotagging.inputtagsarray[videotagging.newTagIndex];
                         videotagging.inputtagsarray[videotagging.newTagIndex] = temp;
                         this.createTagControls(videotagging.inputtagsarray);
-                        videotagging.showAllRegions()
+                        videotagging.showAllRegions();
                     }
                 } else if(e.ctrlKey){
                     let videotagging = document.getElementById('video-tagging');
@@ -87,15 +87,7 @@
                         videotagging.optionalTags.colors.splice(index, 1);
                     }
                     document.getElementById(tag).remove();
-                    videotagging.checkRemovedTags();
-                    if(videotagging.getCurrentFrameNumber() == videotagging.imagelsit.length){
-                        videotagging.stepBwdClicked();
-                        videotagging.stepFwdClicked();
-                    } else {
-                        videotagging.stepFwdClicked();
-                        videotagging.stepBwdClicked();
-                    }
-                    
+                    videotagging.checkRemovedTags();                    
                 }
                 else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
                     this.tagsState[tag] = "full";
