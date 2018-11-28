@@ -126,6 +126,14 @@
                 <span id="emptyFrame" title="empty frame" class="icon-share taggingControls controlOff" on-click='emptyFrameClicked'></span>
                 <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff" on-click='lockTagsClicked'></span>
             </div>
+            <div class="addTagControls">
+                <form id="addTagForm">
+                    <input type="text" id="newTag">
+                    <input type="submit" value="Add Tag">
+                </form>
+            </div>
+            <div style="clear: both">
+              </div>
             <div style="clear: both">
             </div>
         </div>
@@ -171,6 +179,7 @@
         this.rotation = 0;
         this.prevFrameIndex = 0;
         this.multiselection = false;
+        this.newTagIndex = null;
 
         //Frame view size
         this.frameWidth = 0;
@@ -191,6 +200,9 @@
         this.timeSpan = this.$$('#timeSpan');
         this.frameText = this.$$("#frameText");
         this.playbackSpan = this.$$("#playbackSpan");
+
+        //Form
+        this.form = this.$$('#addTagForm'),
 
         // Buttons
         this.playButton = this.$$('#play-pause');
@@ -292,6 +304,17 @@
             } else {
                 this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
             }
+        });
+
+        let clickTemplateIcon = new this.CT.Toolbar.IconDescription(
+            "click-select",
+            "public/js/video-tagging/assets/icons/ct/click-selection.svg",
+            "Two-Point Mode (P)",
+            'KeyP');
+
+        this.toolbar.addAction(clickTemplateIcon, (action) => {
+            //right now this just does what the first icon does
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
         });
 
         this.toolbar.select("rect-select");
@@ -427,6 +450,13 @@
 
             this.selectRegion(currentRegionUID)
         });
+      this.form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        newTag = document.getElementById("newTag").value;
+        self.inputtagsarray.push(newTag);
+        self.optionalTags.createTagControls(self.inputtagsarray);
+        self.showAllRegions();
+      })
     },
 
     frameInputListener: function(event) {
@@ -446,6 +476,7 @@
                 }            
                 break;
             case 68:// d for duplicate
+                if(e.ctrlKey) break;
                 let frameId = this.getCurrentFrameId();
                 if(this.imagelist){
                     frameId = this.imageIndex
@@ -457,6 +488,16 @@
                 break;
             case 32:// space to toggle play/pause
                 this.playPauseClicked();
+                break;
+            case 81:// q to go back a frame
+                if (!e.ctrlKey) {
+                    this.stepBwdClicked();
+                }
+                break;
+            case 69:// e to go forward a frame
+                if (!e.ctrlKey) {
+                    this.stepFwdClicked();
+                }
                 break;
             default: return; // exit this handler for other keys
             }
@@ -605,6 +646,14 @@
             if(!this.inputtagsarray.includes(String.fromCharCode.apply(null, tag))) recs.push(String.fromCharCode.apply(null, tag));
         }
         if(recs.length) this.inputtagsarray.push.apply(this.inputtagsarray,recs)
+    },
+    checkRemovedTags: function() {
+        let regions = this.getCurrentFrameRegions();
+        regions.forEach(region => region.tags.forEach(tag => {
+            if(!this.inputtagsarray.includes(tag)){
+                region.tags.splice(tag,1);
+            }
+        }));
     },
     buildTagsDescriptor: function(tags) {
 
@@ -810,6 +859,7 @@
         this.clearAllRegions();
         var regions = this.getCurrentFrameRegions();
         if(regions && regions.length > 0) {
+            this.checkRemovedTags();
             //Draw all regions for this frame
             for (var i=0; i<regions.length;i++) {
                 var region = regions[i];
