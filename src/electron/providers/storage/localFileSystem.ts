@@ -94,37 +94,6 @@ export default class LocalFileSystem implements IStorageProvider {
         return this.listItems(folderPath, (stats) => stats.isDirectory())
     }
 
-    private listItems(folderPath: string, predicate: (stats: fs.Stats) => boolean) {
-        return new Promise<string[]>((resolve, reject) => {
-            fs.readdir(folderPath, (err: NodeJS.ErrnoException, fileSystemItems: string[]) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                const filteredItems: string[] = [];
-
-                for (let i = 0; i < fileSystemItems.length; i++) {
-                    const filePath = path.join(folderPath, fileSystemItems[i]);
-
-                    fs.stat(filePath, (err, stats: fs.Stats) => {
-                        if (err) {
-                            return reject(err);
-                        }
-
-                        if (predicate(stats)) {
-                            filteredItems.push(filePath);
-                        }
-
-                        // Resolve only after all items have been processed
-                        if (i === fileSystemItems.length - 1) {
-                            resolve(filteredItems);
-                        }
-                    });
-                }
-            });
-        });
-    }
-
     createContainer(folderPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             fs.exists(folderPath, (exists) => {
@@ -158,6 +127,60 @@ export default class LocalFileSystem implements IStorageProvider {
                     resolve();
                 }
             });
+        });
+    }
+
+    
+    /**
+     * Gets a list of file system items matching the specified predicate within the folderPath
+     * @param  {string} folderPath
+     * @param  {(stats:fs.Stats)=>boolean} predicate
+     * @returns {Promise} Resolved list of matching file system items
+     */
+    private listItems(folderPath: string, predicate: (stats: fs.Stats) => boolean) {
+        return new Promise<string[]>((resolve, reject) => {
+            fs.readdir(folderPath, async (err: NodeJS.ErrnoException, fileSystemItems: string[]) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                const getStatsTasks = fileSystemItems.map(name => {
+                    const filePath = path.join(folderPath, name);
+                    return this.getStats(filePath);
+                });
+
+                try {
+                    const statsResults = await Promise.all(getStatsTasks);
+                    const filteredItems = statsResults
+                        .filter(result => predicate(result.stats))
+                        .map(result => result.path);
+
+                    resolve(filteredItems);
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        });
+    }
+
+    /**
+     * Gets the node file system stats for the specified path
+     * @param  {string} path
+     * @returns {Promise} Resolved path and stats
+     */
+    private getStats(path: string): Promise<{ path: string, stats: fs.Stats }> {
+        return new Promise((resolve, reject) => {
+            fs.stat(path, (err, stats: fs.Stats) => {
+                if (err) {
+                    reject(err);
+                }
+
+                resolve({
+                    path: path,
+                    stats: stats
+                });
+            })
         });
     }
 }

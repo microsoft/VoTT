@@ -27,7 +27,7 @@
   "scripts": {
     "start": "nf start -p 3000",
     "build": "react-scripts build",
-    "test": "SET CI=true && react-scripts test --env=jsdom",
+    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "webpack --config ./config/webpack.dev.config.js && electron .",
     "electron-start": "node src/electron/start",

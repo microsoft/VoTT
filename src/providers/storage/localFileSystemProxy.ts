@@ -11,7 +11,7 @@ export class LocalFileSystemProxy implements IStorageProvider {
     constructor(private options?: LocalFileSystemProxyOptions) { }
 
     selectContainer(): Promise<string> {
-        return IpcRendererProxy.send(`${PROXY_NAME}:selectContainer`, Array.from(arguments));
+        return IpcRendererProxy.send(`${PROXY_NAME}:selectContainer`);
     }
 
     readText(fileName: string): Promise<string> {
