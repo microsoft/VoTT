@@ -50,7 +50,8 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
-                const storageProvider = StorageProviderFactory.create(project.targetConnection.providerType, project.targetConnection.providerOptions);
+                const storageProvider = StorageProviderFactory.create(
+                    project.targetConnection.providerType, project.targetConnection.providerOptions);
                 await storageProvider.writeText(`${project.name}.json`, JSON.stringify(project, null, 4));
 
                 let allProjects = await this.getList();
@@ -66,7 +67,8 @@ export default class ProjectService implements IProjectService {
     public delete(project: IProject) {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                const storageProvider = StorageProviderFactory.create(project.targetConnection.providerType, project.targetConnection.providerOptions);
+                const storageProvider = StorageProviderFactory.create(
+                    project.targetConnection.providerType, project.targetConnection.providerOptions);
                 await storageProvider.deleteFile(`${project.name}.json`);
 
                 let allProjects = await this.getList();

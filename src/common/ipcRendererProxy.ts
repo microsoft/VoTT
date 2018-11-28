@@ -31,7 +31,7 @@ export class IpcRendererProxy {
         IpcRendererProxy.initialized = true;
     }
 
-    public static send<TResult, TArgs>(type: string, args: TArgs = undefined): Promise<TResult> {
+    public static send<TResult, TArgs>(type: string, args?: TArgs): Promise<TResult> {
         IpcRendererProxy.initialize();
 
         const id = shortid.generate();

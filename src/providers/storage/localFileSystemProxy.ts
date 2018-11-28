@@ -3,12 +3,12 @@ import { IStorageProvider } from "./storageProvider";
 
 const PROXY_NAME = "LocalFileSystem";
 
-export interface LocalFileSystemProxyOptions {
+export interface ILocalFileSystemProxyOptions {
     folderPath: string;
 }
 
 export class LocalFileSystemProxy implements IStorageProvider {
-    constructor(private options?: LocalFileSystemProxyOptions) { }
+    constructor(private options?: ILocalFileSystemProxyOptions) { }
 
     public selectContainer(): Promise<string> {
         return IpcRendererProxy.send(`${PROXY_NAME}:selectContainer`);
