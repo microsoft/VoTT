@@ -177,6 +177,7 @@
         this.rotation = 0;
         this.prevFrameIndex = 0;
         this.multiselection = false;
+        this.newTagIndex = null;
 
         //Frame view size
         this.frameWidth = 0;
@@ -455,11 +456,11 @@
             // window.removeEventListener("keydown", self.keyUpEventsListenerBinded);
         });
       this.form.addEventListener("submit", function(e) {
-            e.preventDefault();
-            newTag = document.getElementById("newTag").value;
-            self.inputtagsarray.push(newTag);
-            self.optionalTags.createTagControls(self.inputtagsarray);
-            // e.stopPropagation();
+        e.preventDefault();
+        newTag = document.getElementById("newTag").value;
+        self.inputtagsarray.push(newTag);
+        self.optionalTags.createTagControls(self.inputtagsarray);
+        self.showAllRegions();
       })
     },
 
@@ -480,6 +481,7 @@
                 }            
                 break;
             case 68:// d for duplicate
+                if(e.ctrlKey) break;
                 let frameId = this.getCurrentFrameId();
                 if(this.imagelist){
                     frameId = this.imageIndex
@@ -491,6 +493,16 @@
                 break;
             case 32:// space to toggle play/pause
                 this.playPauseClicked();
+                break;
+            case 81:// q to go back a frame
+                if (!e.ctrlKey) {
+                    this.stepBwdClicked();
+                }
+                break;
+            case 69:// e to go forward a frame
+                if (!e.ctrlKey) {
+                    this.stepFwdClicked();
+                }
                 break;
             default: return; // exit this handler for other keys
             }
@@ -639,6 +651,14 @@
             if(!this.inputtagsarray.includes(String.fromCharCode.apply(null, tag))) recs.push(String.fromCharCode.apply(null, tag));
         }
         if(recs.length) this.inputtagsarray.push.apply(this.inputtagsarray,recs)
+    },
+    checkRemovedTags: function() {
+        let regions = this.getCurrentFrameRegions();
+        regions.forEach(region => region.tags.forEach(tag => {
+            if(!this.inputtagsarray.includes(tag)){
+                region.tags.splice(tag,1);
+            }
+        }));
     },
     buildTagsDescriptor: function(tags) {
 
@@ -844,6 +864,7 @@
         this.clearAllRegions();
         var regions = this.getCurrentFrameRegions();
         if(regions && regions.length > 0) {
+            this.checkRemovedTags();
             //Draw all regions for this frame
             for (var i=0; i<regions.length;i++) {
                 var region = regions[i];
