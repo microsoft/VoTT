@@ -2,15 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import IProjectActions, * as projectActions from '../../../actions/projectActions';
-import ApplicationState, { IProject } from '../../../store/applicationState';
+import ApplicationState, { IProject, IConnection } from '../../../store/applicationState';
 import Form from 'react-jsonschema-form'
 import formSchema from './projectSettingsPage.json';
 import uiSchema from './projectSettingsPage.ui.json';
 import { RouteComponentProps } from 'react-router-dom';
+import ConnectionPicker from '../../common/connectionPicker';
 
 interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     currentProject: IProject;
     actions: IProjectActions;
+    connections: IConnection[];
 }
 
 interface ProjectSettingsPageState {
@@ -21,7 +23,8 @@ interface ProjectSettingsPageState {
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        currentProject: state.currentProject
+        currentProject: state.currentProject,
+        connections: state.connections
     };
 }
 
@@ -33,6 +36,10 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ProjectSettingsPage extends React.Component<ProjectSettingsPageProps, ProjectSettingsPageState> {
+    private widgets = {
+        connectionPicker: ConnectionPicker
+    }
+
     constructor(props, context) {
         super(props, context);
 
@@ -47,7 +54,11 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
 
     onFormSubmit = (form) => {
         this.setState({
-            project: form.formData
+            project: {
+                ...form.formData,
+                sourceConnection: this.props.connections.find(connection => connection.id === form.formData.sourceConnectionId),
+                targetConnection: this.props.connections.find(connection => connection.id === form.formData.targetConnectionId)
+            }
         }, () => {
             this.props.actions.saveProject(this.state.project)
                 .then(project => {
@@ -63,6 +74,7 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
                 <hr />
 
                 <Form
+                    widgets={this.widgets}
                     schema={this.state.formSchema}
                     uiSchema={this.state.uiSchema}
                     formData={this.state.project}

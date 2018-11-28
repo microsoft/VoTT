@@ -1,3 +1,5 @@
+import ConnectionForm from "../components/pages/connections/connectionForm";
+
 export default interface IApplicationState {
     appSettings: IAppSettings,
     connections: IConnection[],
@@ -6,7 +8,9 @@ export default interface IApplicationState {
 }
 
 export interface IAppSettings {
-    devToolsEnabled: boolean
+    devToolsEnabled: boolean,
+    connectionId?: string,
+    connection: IConnection
 }
 
 export interface IProject {
@@ -14,7 +18,9 @@ export interface IProject {
     name: string,
     description?: string,
     tags: ITag[],
+    sourceConnectionId?: string,
     sourceConnection: IConnection,
+    targetConnectionId?: string,
     targetConnection: IConnection,
     exportFormat: IExportFormat,
     autoSave: boolean

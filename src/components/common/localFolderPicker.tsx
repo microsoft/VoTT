@@ -1,5 +1,5 @@
 import React from 'react';
-import LocalFileSystemProxy from '../../providers/storage/localFileSystem';
+import { LocalFileSystemProxy } from '../../providers/storage/localFileSystemProxy';
 
 interface LocalFolderPickerProps {
     id: string;

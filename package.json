@@ -11,7 +11,7 @@
     "@types/redux-logger": "^3.0.6",
     "@types/redux-thunk": "^2.1.0",
     "bootstrap": "^4.1.3",
-    "electron": "^3.0.9",
+    "electron": "^3.0.10",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-redux": "^5.1.1",
@@ -21,6 +21,7 @@
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
+    "rimraf": "^2.6.2",
     "shortid": "^2.2.14"
   },
   "scripts": {
