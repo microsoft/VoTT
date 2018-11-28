@@ -125,10 +125,8 @@
             <div class="labelControls">
                 <span id="emptyFrame" title="empty frame" class="icon-share taggingControls controlOff" on-click='emptyFrameClicked'></span>
                 <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff" on-click='lockTagsClicked'></span>
-            </div>
-            <div class="addTagControls">
-                <form id="addTagForm">
-                    <input type="text" id="newTag">
+                <form id="addTagForm" class="addTag">
+                    <input type="text" class="tagInput" id="newTag">
                     <input type="submit" value="Add Tag">
                 </form>
             </div>
@@ -201,7 +199,8 @@
         this.playbackSpan = this.$$("#playbackSpan");
 
         //Form
-        this.form = this.$$('#addTagForm'),
+        this.form = this.$$('#addTagForm');
+        this.textbox = this.$$('#newTag');
 
         // Buttons
         this.playButton = this.$$('#play-pause');
@@ -312,8 +311,7 @@
             'KeyP');
 
         this.toolbar.addAction(clickTemplateIcon, (action) => {
-            //right now this just does what the first icon does
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POINT);
         });
 
         this.toolbar.select("rect-select");
@@ -449,11 +447,19 @@
 
             this.selectRegion(currentRegionUID)
         });
+        $("#newTag").focus(function() {
+            console.log("newtag in focus");
+            // I will make this function?
+            // this.regionsManager.suppressHotkeys();
+            // window.removeEventListener("keyup", self.CT.RegionsManager);
+            // window.removeEventListener("keydown", self.keyUpEventsListenerBinded);
+        });
       this.form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        newTag = document.getElementById("newTag").value;
-        self.inputtagsarray.push(newTag);
-        self.optionalTags.createTagControls(self.inputtagsarray);
+            e.preventDefault();
+            newTag = document.getElementById("newTag").value;
+            self.inputtagsarray.push(newTag);
+            self.optionalTags.createTagControls(self.inputtagsarray);
+            // e.stopPropagation();
       })
     },
 
