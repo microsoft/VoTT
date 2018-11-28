@@ -4,10 +4,14 @@ import fs from 'fs';
 import shortid from 'shortid';
 
 describe('LocalFileSystem Storage Provider', () => {
-    const localFileSystem = new LocalFileSystem(null);
+    let localFileSystem: LocalFileSystem = null;
+
+    beforeEach(() => {
+        localFileSystem = new LocalFileSystem(null);
+    })
 
     it('writes, reads and deletes a file as text', async () => {
-        const filePath = path.join(__dirname, `${shortid.generate()}.json`);
+        const filePath = path.join(process.cwd(), 'test-output', `${shortid.generate()}.json`);
         const contents = {
             a: 1,
             b: 2,
@@ -27,7 +31,7 @@ describe('LocalFileSystem Storage Provider', () => {
     });
 
     it('writes and deletes a container', async () => {
-        const folderPath = path.join(__dirname, shortid.generate());
+        const folderPath = path.join(process.cwd(), 'test-output', shortid.generate());
 
         await localFileSystem.createContainer(folderPath);
         expect(fs.existsSync(folderPath)).toBeTruthy();
@@ -38,7 +42,7 @@ describe('LocalFileSystem Storage Provider', () => {
 
     it('lists files & containers in a provider', async () => {
         const fileFolderCount = 4;
-        const testPath = path.join(__dirname, shortid.generate());
+        const testPath = path.join(process.cwd(), 'test-output', shortid.generate());
         await localFileSystem.createContainer(testPath);
 
         for (let i = 1; i <= fileFolderCount; i++) {
@@ -55,11 +59,6 @@ describe('LocalFileSystem Storage Provider', () => {
         expect(files.length).toEqual(fileFolderCount);
         expect(folders.length).toEqual(fileFolderCount);
 
-        try {
-            await localFileSystem.deleteContainer(testPath);
-        }
-        catch (err) {
-            console.log(err);
-        }
+        await localFileSystem.deleteContainer(testPath);
     });
 });

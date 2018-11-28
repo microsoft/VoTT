@@ -41,8 +41,8 @@ fdescribe('IpcMainProxy', () => {
 
         const handler = proxy.handlers['LocalFileSystem:writeText'];
         const filePath = path.join(__dirname, 'test.json');
-        const args = { filePath: filePath, contents: 'test' };
-        await handler(null, args);
+        const args = [filePath, 'test'];
+        await handler(null, args); 
 
         expect(fs.existsSync(filePath)).toBeTruthy();
         

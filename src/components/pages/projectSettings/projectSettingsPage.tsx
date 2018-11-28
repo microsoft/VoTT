@@ -56,8 +56,8 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
         this.setState({
             project: {
                 ...form.formData,
-                sourceConection: this.props.connections.find(connection => connection.id === form.formData.sourceConnectionId),
-                targetConection: this.props.connections.find(connection => connection.id === form.formData.targetConnectionId)
+                sourceConnection: this.props.connections.find(connection => connection.id === form.formData.sourceConnectionId),
+                targetConnection: this.props.connections.find(connection => connection.id === form.formData.targetConnectionId)
             }
         }, () => {
             this.props.actions.saveProject(this.state.project)

@@ -25,6 +25,8 @@ export class IpcMainProxy {
             };
 
             try {
+                returnArgs.debug = JSON.stringify(message.args);
+
                 const handlerValue = handler(sender, message.args);
                 if (handlerValue && handlerValue.then) {
                     handlerValue
@@ -55,10 +57,8 @@ export class IpcMainProxy {
     registerProxy(proxyPrefix, provider) {
         Object.getOwnPropertyNames(provider.__proto__).forEach(memberName => {
             if (typeof (provider[memberName]) === 'function') {
-                console.log(`Registering ${proxyPrefix}:${memberName}`);
-                this.register(`${proxyPrefix}:${memberName}`, (sender, eventArgs) => {
-                    const args = Object.getOwnPropertyNames(eventArgs).map(memberName => eventArgs[memberName]);
-                    return provider[memberName].apply(provider, args);
+                this.register(`${proxyPrefix}:${memberName}`, (sender: any, eventArgs: any[]) => {
+                    return provider[memberName].apply(provider, eventArgs);
                 });
             }
         });

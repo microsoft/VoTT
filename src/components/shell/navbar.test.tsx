@@ -17,7 +17,7 @@ describe('Sidebar Component', () => {
         expect(logo.length).toEqual(1);
 
         const brand = wrapper.find('.app-navbar-brand span');
-        expect(brand.text()).toEqual('VoTT');
+        expect(brand.text()).toEqual('Visual Object Tagging Tool');
 
         const profile = wrapper.find('.app-navbar-menu ul li a')
         expect(profile.length).toEqual(1);

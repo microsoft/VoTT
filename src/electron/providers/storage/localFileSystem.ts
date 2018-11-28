@@ -62,7 +62,7 @@ export default class LocalFileSystem implements IStorageProvider {
                 }
 
                 resolve();
-            })
+            });
         });
     }
 

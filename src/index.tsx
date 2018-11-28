@@ -10,8 +10,10 @@ import * as serviceWorker from './serviceWorker';
 import createReduxStore from './store/store';
 import initialState from './store/initialState';
 import ApplicationState from './store/applicationState';
+import registerProviders from './registerProviders';
 
 
+registerProviders();
 const defaultState: ApplicationState = initialState;
 const store = createReduxStore(defaultState);
 
