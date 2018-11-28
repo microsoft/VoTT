@@ -7,6 +7,7 @@ import { IConnection } from '../../store/applicationState';
 describe('Connection Picker Component', () => {
     let wrapper: any = null;
     let connections: IConnection[] = null;
+    let onChangeHandler: (value: any) => void;;
 
     beforeEach(() => {
         connections = [
@@ -20,14 +21,14 @@ describe('Connection Picker Component', () => {
             connections: connections
         };
 
-        const onChange = jest.fn();
+        onChangeHandler = jest.fn();
 
         wrapper = mount(
             <Router>
                 <ConnectionPicker
                     value={null}
                     options={options}
-                    onChange={onChange}
+                    onChange={onChangeHandler}
                 />
             </Router>
         );
@@ -43,5 +44,12 @@ describe('Connection Picker Component', () => {
         const optionElements = wrapper.find('option');
         expect(optionElements.length).toEqual(connections.length + 1);
         expect(wrapper.prop('value')).not.toBeDefined();
+    });
+
+    it('raises onChange event when dropdown is modified', () => {
+        const connectionId = '2';
+
+        wrapper.find('select').simulate('change', { target: { value: connectionId } });
+        expect(onChangeHandler).toBeCalledWith(connectionId);
     });
 });

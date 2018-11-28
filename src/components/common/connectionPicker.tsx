@@ -26,7 +26,7 @@ export default class ConnectionPicker extends React.Component<ConnectionPickerPr
     }
 
     onChange = (e) => {
-        const selectedConnection = this.props.options.connections.find(connection => connection.id === e.currentTarget.value);
+        const selectedConnection = this.props.options.connections.find(connection => connection.id === e.target.value);
 
         if (selectedConnection) {
             this.setState({
