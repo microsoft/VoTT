@@ -1,13 +1,11 @@
 import React from 'react';
 import { IConnection } from '../../store/applicationState';
-import IConnectionActions from '../../actions/connectionActions';
 import { Link } from 'react-router-dom';
 
 interface ConnectionPickerProps {
-    id: string;
+    id?: string;
     value: any;
     onChange: (value) => void;
-    actions: IConnectionActions;
     options?: {
         connections: IConnection[]
     }

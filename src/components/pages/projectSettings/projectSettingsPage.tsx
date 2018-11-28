@@ -1,12 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import IProjectActions, * as projectActions from '../../../actions/projectActions';
-import ApplicationState, { IProject, IConnection } from '../../../store/applicationState';
 import { RouteComponentProps } from 'react-router-dom';
 import ProjectForm from './projectForm'
+import IProjectActions, * as projectActions from '../../../actions/projectActions';
+import ApplicationState, { IProject, IConnection } from '../../../store/applicationState';
 import IConnectionActions, * as connectionActions from '../../../actions/connectionActions';
-import deepmerge from 'deepmerge';
 
 interface ProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     currentProject: IProject;
@@ -35,7 +34,6 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ProjectSettingsPage extends React.Component<ProjectSettingsPageProps, ProjectSettingsPageState> {
-
     constructor(props, context) {
         super(props, context);
 
@@ -59,23 +57,6 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
         if (!this.props.connections) {
             await this.props.connectionActions.loadConnections();
         }
-
-        const overrideUiSchema = {
-            sourceConnectionId: {
-                'ui:options': {
-                    connections: this.props.connections
-                }
-            },
-            targetConnectionId: {
-                'ui:options': {
-                    connections: this.props.connections
-                }
-            }
-        };
-
-        this.setState({
-            uiSchema: deepmerge(uiSchema, overrideUiSchema)
-        });
     }
 
     onFormSubmit = (form) => {
@@ -100,6 +81,7 @@ export default class ProjectSettingsPage extends React.Component<ProjectSettings
                 <div className="m-3 text-light">
                     <ProjectForm
                         project={this.state.project}
+                        connections={this.props.connections}
                         onSubmit={this.onFormSubmit} />
                 </div>
             </div>

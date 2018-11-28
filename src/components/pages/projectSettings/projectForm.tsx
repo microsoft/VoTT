@@ -1,14 +1,15 @@
 import React from 'react';
+import Form from 'react-jsonschema-form'
+import deepmerge from 'deepmerge';
 import formSchema from './projectForm.json';
 import uiSchema from './projectForm.ui.json';
-import Form from 'react-jsonschema-form'
 import TagsInput from '../../common/tagsInput'
 import ConnectionPicker from '../../common/connectionPicker';
-import { IProject } from '../../../store/applicationState.js';
-
+import { IProject, IConnection } from '../../../store/applicationState.js';
 
 interface ProjectFormProps extends React.Props<ProjectForm> {
     project: IProject;
+    connections: IConnection[];
     onSubmit: (project: IProject) => void;
 }
 
@@ -27,8 +28,29 @@ export default class ProjectForm extends React.Component<ProjectFormProps, Proje
         super(props, context);
 
         this.state = {
-            formSchema: { ...formSchema },
-            uiSchema: { ...uiSchema }
+            uiSchema: { ...uiSchema },
+            formSchema: { ...formSchema }
+        };
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.connections !== this.props.connections) {
+            const overrideUiSchema = {
+                sourceConnectionId: {
+                    'ui:options': {
+                        connections: this.props.connections
+                    }
+                },
+                targetConnectionId: {
+                    'ui:options': {
+                        connections: this.props.connections
+                    }
+                }
+            };
+
+            this.setState({
+                uiSchema: deepmerge(uiSchema, overrideUiSchema)
+            });
         }
     }
 
@@ -39,7 +61,7 @@ export default class ProjectForm extends React.Component<ProjectFormProps, Proje
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.props.project}
-                onSubmit={this.props.onSubmit} >
+                onSubmit={this.props.onSubmit}>
             </Form>
         )
     }
