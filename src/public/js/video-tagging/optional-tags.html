@@ -69,7 +69,17 @@
             var self = this;
             btn.addEventListener("click", (e) => {
                 let tag = e.currentTarget.id;
-                if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
+                if(e.ctrlKey){
+                    let videotagging = document.getElementById('video-tagging');
+                    let index = videotagging.inputtagsarray.indexOf(tag);
+                    if (index !== -1){
+                        videotagging.inputtagsarray.splice(index, 1);
+                        videotagging.optionalTags.colors.splice(index, 1);
+                    }
+                    document.getElementById(tag).remove();
+                    videotagging.checkRemovedTags();
+                }
+                else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
                 } else {
