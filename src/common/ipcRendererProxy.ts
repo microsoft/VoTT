@@ -1,11 +1,12 @@
 import { Deferred } from './deferred';
-import { IpcProxyMessage } from './ipcProxy';
+import { IpcProxyMessage } from '../electron/common/ipcProxy';
 import * as shortid from 'shortid';
 
 export class IpcRendererProxy {
     private static ipcRenderer;
     private static initialized: boolean = false;
-    private static pending: { [id: string]: Deferred<any> } = {};
+    
+    static pending: { [id: string]: Deferred<any> } = {};
 
     static initialize() {
         if (IpcRendererProxy.initialized) {
@@ -15,6 +16,7 @@ export class IpcRendererProxy {
         IpcRendererProxy.ipcRenderer = (<any>window).require('electron').ipcRenderer;
         IpcRendererProxy.ipcRenderer.on('ipc-renderer-proxy', (sender, message: IpcProxyMessage<any>) => {
             const deferred = IpcRendererProxy.pending[message.id];
+
             if (!deferred) {
                 throw new Error(`Cannot find deferred with id '${message.id}'`)
             }

@@ -1,6 +1,6 @@
 import shortid from 'shortid';
 import { IProject } from "../store/applicationState";
-import LocalFileSystemProxy from '../providers/storage/localFileSystemProxy';
+import { StorageProviderFactory } from '../providers/storage/storageProvider';
 
 export interface IProjectService {
     get(id: string): Promise<IProject>;
@@ -51,9 +51,8 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
-                const localFileSystem = new LocalFileSystemProxy();
-                const path = `C:\\vott-projects\\${project.name}.json`;
-                await localFileSystem.writeText(path, JSON.stringify(project, null, 4));
+                const storageProvider = StorageProviderFactory.create(project.targetConnection.providerType, project.targetConnection.providerOptions);
+                await storageProvider.writeText(`${project.name}.json`, JSON.stringify(project, null, 4));
 
                 let allProjects = await this.getList();
                 allProjects = [{ ...project }, ...allProjects.filter(prj => prj.id !== project.id)];
@@ -61,8 +60,7 @@ export default class ProjectService implements IProjectService {
                 resolve(project);
             }
             catch (err) {
-                debugger;
-                resolve(err);
+                reject(err);
             }
         });
     }
@@ -70,9 +68,8 @@ export default class ProjectService implements IProjectService {
     delete(project: IProject) {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                const localFileSystem = new LocalFileSystemProxy();
-                const path = `C:\\vott-projects\\${project.name}.json`;
-                await localFileSystem.deleteFile(path);
+                const storageProvider = StorageProviderFactory.create(project.targetConnection.providerType, project.targetConnection.providerOptions);
+                await storageProvider.deleteFile(`${project.name}.json`);
 
                 let allProjects = await this.getList();
                 allProjects = allProjects.filter(prj => prj.id !== project.id);
@@ -80,7 +77,7 @@ export default class ProjectService implements IProjectService {
                 resolve();
             }
             catch (err) {
-                resolve(err);
+                reject(err);
             }
         });
     }

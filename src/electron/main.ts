@@ -1,7 +1,7 @@
-import { app, BrowserWindow } from 'electron';
-import path, { dirname } from 'path';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'path';
 import url from 'url';
-import { IpcMainProxy } from '../common/ipcMainProxy';
+import { IpcMainProxy } from './common/ipcMainProxy';
 import LocalFileSystem from './providers/storage/localFileSystem';
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -32,7 +32,7 @@ function createWindow() {
         mainWindow = null
     });
 
-    ipcMainProxy = new IpcMainProxy(mainWindow);
+    ipcMainProxy = new IpcMainProxy(ipcMain, mainWindow);
     ipcMainProxy.register('RELOAD_APP', onReloadApp);
     ipcMainProxy.register('TOGGLE_DEV_TOOLS', onToggleDevTools);
 

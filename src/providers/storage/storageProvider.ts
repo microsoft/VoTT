@@ -1,7 +1,3 @@
-export class StorageProvider {
-
-}
-
 export interface IStorageProvider {
     readText(filePath: string): Promise<string>;
     readBinary(filePath: string): Promise<Buffer>;
@@ -15,4 +11,21 @@ export interface IStorageProvider {
 
     createContainer(folderPath: string): Promise<void>;
     deleteContainer(folderPath: string): Promise<void>;
+}
+
+export class StorageProviderFactory {
+    private static handlers: { [id: string]: (options?: any) => IStorageProvider } = {};
+
+    static register(name: string, factory: (options?: any) => IStorageProvider) {
+        StorageProviderFactory.handlers[name] = factory;
+    }
+
+    static create(name: string, options?: any): IStorageProvider {
+        const handler = StorageProviderFactory.handlers[name];
+        if (!handler) {
+            throw new Error(`No storage provider has been registered with name '${name}'`);
+        }
+
+        return handler(options);
+    }
 }

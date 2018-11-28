@@ -4,4 +4,5 @@ export interface IpcProxyMessage<TResult> {
     args?: any
     error?: string,
     result?: TResult,
+    debug?: string
 }
