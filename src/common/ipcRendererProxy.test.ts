@@ -1,33 +1,33 @@
-import { IpcRendererProxy } from './ipcRendererProxy';
+import { IpcRendererProxy } from "./ipcRendererProxy";
 
-describe('IpcRendererProxy', () => {
-    it('is defined', () => {
+describe("IpcRendererProxy", () => {
+    it("is defined", () => {
         expect(IpcRendererProxy).toBeDefined();
     });
 
-    it('send method forwards request to electron ipcRenderer', () => {
-        const commandName = 'TEST_COMMAND';
+    it("send method forwards request to electron ipcRenderer", () => {
+        const commandName = "TEST_COMMAND";
         const args = {
             a: 1,
-            b: 2
+            b: 2,
         };
 
         const electronMock = {
             ipcRenderer: {
                 send: jest.fn(),
-                on: jest.fn()
-            }
+                on: jest.fn(),
+            },
         };
 
-        (<any>window).require = jest.fn(() => electronMock);
+        (window as any).require = jest.fn(() => electronMock);
         expect(Object.keys(IpcRendererProxy.pending).length).toEqual(0);
 
         IpcRendererProxy.send(commandName, args);
 
-        expect(electronMock.ipcRenderer.send).toBeCalledWith('ipc-main-proxy', {
+        expect(electronMock.ipcRenderer.send).toBeCalledWith("ipc-main-proxy", {
             id: expect.any(String),
             type: commandName,
-            args: args
+            args,
         });
 
         expect(Object.keys(IpcRendererProxy.pending).length).toEqual(1);

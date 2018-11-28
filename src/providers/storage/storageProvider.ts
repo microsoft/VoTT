@@ -14,13 +14,12 @@ export interface IStorageProvider {
 }
 
 export class StorageProviderFactory {
-    private static handlers: { [id: string]: (options?: any) => IStorageProvider } = {};
 
-    static register(name: string, factory: (options?: any) => IStorageProvider) {
+    public static register(name: string, factory: (options?: any) => IStorageProvider) {
         StorageProviderFactory.handlers[name] = factory;
     }
 
-    static create(name: string, options?: any): IStorageProvider {
+    public static create(name: string, options?: any): IStorageProvider {
         const handler = StorageProviderFactory.handlers[name];
         if (!handler) {
             throw new Error(`No storage provider has been registered with name '${name}'`);
@@ -28,4 +27,5 @@ export class StorageProviderFactory {
 
         return handler(options);
     }
+    private static handlers: { [id: string]: (options?: any) => IStorageProvider } = {};
 }
