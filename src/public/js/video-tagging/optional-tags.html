@@ -11,8 +11,8 @@
   <template>
     <style include="video-taggingstyles"></style>
         <div id = "tagsContainer">
-             <div id = "buttonsContainer"></div>
-           </div>
+            <div id = "buttonsContainer"></div>
+        </div>
    </template>
    <script>
 
@@ -79,7 +79,25 @@
                         this.createTagControls(videotagging.inputtagsarray);
                         videotagging.showAllRegions()
                     }
-                } else if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
+                } else if(e.ctrlKey){
+                    let videotagging = document.getElementById('video-tagging');
+                    let index = videotagging.inputtagsarray.indexOf(tag);
+                    if (index !== -1){
+                        videotagging.inputtagsarray.splice(index, 1);
+                        videotagging.optionalTags.colors.splice(index, 1);
+                    }
+                    document.getElementById(tag).remove();
+                    videotagging.checkRemovedTags();
+                    if(videotagging.getCurrentFrameNumber() == videotagging.imagelsit.length){
+                        videotagging.stepBwdClicked();
+                        videotagging.stepFwdClicked();
+                    } else {
+                        videotagging.stepFwdClicked();
+                        videotagging.stepBwdClicked();
+                    }
+                    
+                }
+                else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
                     self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});

@@ -156,7 +156,7 @@ function createWindow () {
         },
         {
           label: 'Open tfRecord Directory...',
-          accelerator: 'CmdOrCtrl+R',
+          accelerator: 'CmdOrCtrl+Space',
           click () { mainWindow.webContents.send('openRecordDirectory'); }
         },
         {
@@ -251,7 +251,7 @@ function createWindow () {
         },
         {
           label: 'Refresh App',
-          accelerator: 'CmdOrCtrl+Space',
+          accelerator: 'CmdOrCtrl+R',
           click () { mainWindow.reload(); }
         }
       ]
