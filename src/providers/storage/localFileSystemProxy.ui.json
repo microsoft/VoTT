@@ -1,5 +1,5 @@
 {
     "folderPath": {
-        "ui:widget": "LocalFolderPicker"
+        "ui:widget": "localFolderPicker"
     }
 }

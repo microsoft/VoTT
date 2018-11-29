@@ -54,7 +54,7 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
     }
 
     public componentDidUpdate(prevProps) {
-        if (this.props.connection && prevProps.connection !== this.props.connection) {
+        if (prevProps.connection !== this.props.connection) {
             this.bindForm(this.props.connection);
         }
     }
@@ -68,15 +68,18 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
     }
 
     private bindForm(connection: IConnection, resetProviderOptions: boolean = false) {
-        const providerType = connection.providerType;
-        const providerSchema = require(`../../../providers/storage/${providerType}.json`);
-        const providerUiSchema = require(`../../../providers/storage/${providerType}.ui.json`);
+        const providerType = connection ? connection.providerType : null;
 
-        const formSchema = { ...this.state.formSchema };
-        formSchema.properties["providerOptions"] = providerSchema;
+        if (providerType) {
+            const providerSchema = require(`../../../providers/storage/${providerType}.json`);
+            const providerUiSchema = require(`../../../providers/storage/${providerType}.ui.json`);
 
-        const uiSchema = { ...this.state.uiSchema };
-        uiSchema["providerOptions"] = providerUiSchema;
+            const formSchema = { ...this.state.formSchema };
+            formSchema.properties["providerOptions"] = providerSchema;
+
+            const uiSchema = { ...this.state.uiSchema };
+            uiSchema["providerOptions"] = providerUiSchema;
+        }
 
         const formData = { ...connection };
         if (resetProviderOptions) {
