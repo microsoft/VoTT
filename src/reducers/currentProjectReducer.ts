@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions/actionTypes';
+import * as ActionTypes from "../actions/actionTypes";
 import { IProject } from "../store/applicationState";
 
 export const reducer = (state: IProject = null, action: any) => {
@@ -17,4 +17,4 @@ export const reducer = (state: IProject = null, action: any) => {
         default:
             return state;
     }
-}
+};

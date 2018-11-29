@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions/actionTypes';
+import * as ActionTypes from "../actions/actionTypes";
 import { IProject } from "../store/applicationState";
 
 export const reducer = (state: IProject[] = [], action: any) => {
@@ -9,11 +9,11 @@ export const reducer = (state: IProject[] = [], action: any) => {
         case ActionTypes.SAVE_PROJECT_SUCCESS:
             return [
                 { ...action.project },
-                ...state.filter(project => project.id !== action.project.id)
+                ...state.filter((project) => project.id !== action.project.id),
             ];
         case ActionTypes.DELETE_PROJECT_SUCCESS:
-            return [...state.filter(project => project.id !== action.project.id)];
+            return [...state.filter((project) => project.id !== action.project.id)];
         default:
             return state;
     }
-}
+};

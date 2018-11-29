@@ -1,4 +1,4 @@
-import shortid from 'shortid';
+import shortid from "shortid";
 import { IConnection } from "../store/applicationState";
 
 export interface IConnectionService {
@@ -9,23 +9,23 @@ export interface IConnectionService {
 }
 
 export default class ConnectionService implements IConnectionService {
-    get(id: string): Promise<IConnection> {
+    public get(id: string): Promise<IConnection> {
         return new Promise<IConnection>(async (resolve, reject) => {
             const allConnections = await this.getList();
-            const filtered = allConnections.filter(connection => connection.id === id);
+            const filtered = allConnections.filter((connection) => connection.id === id);
             if (filtered.length === 1) {
                 resolve(filtered[0]);
             }
 
             reject({
-                message: `No connection found with id: '${id}'`
+                message: `No connection found with id: '${id}'`,
             });
         });
     }
 
-    getList(): Promise<IConnection[]> {
+    public getList(): Promise<IConnection[]> {
         return new Promise<IConnection[]>((resolve, reject) => {
-            const connectionsJson = localStorage.getItem('connections');
+            const connectionsJson = localStorage.getItem("connections");
             if (!connectionsJson) {
                 return resolve([]);
             }
@@ -34,16 +34,15 @@ export default class ConnectionService implements IConnectionService {
 
             try {
                 connections = JSON.parse(connectionsJson);
-            }
-            catch (err) {
-                console.warn('Error loading connections from local storage');
+            } catch (err) {
+                console.warn("Error loading connections from local storage");
             }
 
             resolve(connections);
         });
     }
 
-    save(connection: IConnection) {
+    public save(connection: IConnection) {
         return new Promise<IConnection>(async (resolve, reject) => {
             try {
                 if (!connection.id) {
@@ -51,25 +50,23 @@ export default class ConnectionService implements IConnectionService {
                 }
 
                 let allConnections = await this.getList();
-                allConnections = [{ ...connection }, ...allConnections.filter(prj => prj.id !== connection.id)];
-                localStorage.setItem('connections', JSON.stringify(allConnections));
+                allConnections = [{ ...connection }, ...allConnections.filter((prj) => prj.id !== connection.id)];
+                localStorage.setItem("connections", JSON.stringify(allConnections));
                 resolve(connection);
-            }
-            catch (err) {
+            } catch (err) {
                 resolve(err);
             }
         });
     }
 
-    delete(connection: IConnection) {
+    public delete(connection: IConnection) {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 let allConnections = await this.getList();
-                allConnections = allConnections.filter(prj => prj.id !== connection.id);
-                localStorage.setItem('connections', JSON.stringify(allConnections));
+                allConnections = allConnections.filter((prj) => prj.id !== connection.id);
+                localStorage.setItem("connections", JSON.stringify(allConnections));
                 resolve();
-            }
-            catch (err) {
+            } catch (err) {
                 resolve(err);
             }
         });

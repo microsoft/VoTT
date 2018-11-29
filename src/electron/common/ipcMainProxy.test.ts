@@ -1,10 +1,10 @@
-import path from 'path';
-import fs from 'fs';
-import { IpcMainProxy } from './ipcMainProxy';
-import { IpcMain, BrowserWindow } from 'electron';
-import LocalFileSystem from '../providers/storage/localFileSystem';
+import { BrowserWindow, IpcMain } from "electron";
+import fs from "fs";
+import path from "path";
+import LocalFileSystem from "../providers/storage/localFileSystem";
+import { IpcMainProxy } from "./ipcMainProxy";
 
-fdescribe('IpcMainProxy', () => {
+fdescribe("IpcMainProxy", () => {
     let proxy: IpcMainProxy = null;
 
     beforeEach(() => {
@@ -15,37 +15,37 @@ fdescribe('IpcMainProxy', () => {
         proxy = new IpcMainProxy(ipcMainMock, browserWindowMock);
     });
 
-    it('is defined', () => {
+    it("is defined", () => {
         expect(proxy).toBeDefined();
         expect(proxy).not.toBeNull();
     });
 
-    it('registers a command handler for a single command', () => {
-        const commandName = 'COMMAND_ONE';
+    it("registers a command handler for a single command", () => {
+        const commandName = "COMMAND_ONE";
         proxy.register(commandName, jest.fn());
 
         expect(proxy.handlers[commandName]).toBeDefined();
         expect(proxy.handlers[commandName]).not.toBeNull();
     });
 
-    it('registers a suite of commands for a whole object', () => {
+    it("registers a suite of commands for a whole object", () => {
         const localFileSystem = new LocalFileSystem(null);
-        proxy.registerProxy('LocalFileSystem', localFileSystem);
+        proxy.registerProxy("LocalFileSystem", localFileSystem);
 
         expect(Object.keys(proxy.handlers).length).toBeGreaterThan(0);
     });
 
-    it('calls the methods correctly', async () => {
+    it("calls the methods correctly", async () => {
         const localFileSystem = new LocalFileSystem(null);
-        proxy.registerProxy('LocalFileSystem', localFileSystem);
+        proxy.registerProxy("LocalFileSystem", localFileSystem);
 
-        const handler = proxy.handlers['LocalFileSystem:writeText'];
-        const filePath = path.join(__dirname, 'test.json');
-        const args = [filePath, 'test'];
-        await handler(null, args); 
+        const handler = proxy.handlers["LocalFileSystem:writeText"];
+        const filePath = path.join(__dirname, "test.json");
+        const args = [filePath, "test"];
+        await handler(null, args);
 
         expect(fs.existsSync(filePath)).toBeTruthy();
-        
-        fs.unlinkSync(filePath); 
+
+        fs.unlinkSync(filePath);
     });
 });

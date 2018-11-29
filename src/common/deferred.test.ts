@@ -1,7 +1,7 @@
-import { Deferred } from './deferred';
+import { Deferred } from "./deferred";
 
-describe('Deferred', () => {
-    it('resolve without result', (done) => {
+describe("Deferred", () => {
+    it("resolve without result", (done) => {
         const deferred = new Deferred();
         const promise = deferred.promise;
 
@@ -21,7 +21,7 @@ describe('Deferred', () => {
         }, 100);
     });
 
-    it('reject without error', (done) => {
+    it("reject without error", (done) => {
         const deferred = new Deferred();
         const promise = deferred.promise;
 
@@ -41,7 +41,7 @@ describe('Deferred', () => {
         }, 100);
     });
 
-    it('resolve with result', (done) => {
+    it("resolve with result", (done) => {
         const deferred = new Deferred();
         const promise = deferred.promise;
 
@@ -52,7 +52,7 @@ describe('Deferred', () => {
             .then(thenCallback)
             .catch(catchCallback);
 
-        const expected = 'result';
+        const expected = "result";
         deferred.resolve(expected);
 
         setTimeout(() => {
@@ -62,7 +62,7 @@ describe('Deferred', () => {
         }, 100);
     });
 
-    it('reject with error', (done) => {
+    it("reject with error", (done) => {
         const deferred = new Deferred();
         const promise = deferred.promise;
 
@@ -73,7 +73,7 @@ describe('Deferred', () => {
             .then(thenCallback)
             .catch(catchCallback);
 
-        const error = new Error('Some error');
+        const error = new Error("Some error");
         deferred.reject(error);
 
         setTimeout(() => {

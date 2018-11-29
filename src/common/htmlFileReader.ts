@@ -1,5 +1,5 @@
 export default class HtmlFileReader {
-    readAsText(file: File) {
+    public readAsText(file: File) {
         return new Promise<string | ArrayBuffer>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => {
@@ -8,7 +8,7 @@ export default class HtmlFileReader {
                 } else {
                     reject();
                 }
-            }
+            };
 
             reader.readAsText(file);
         });

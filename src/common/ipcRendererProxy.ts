@@ -1,24 +1,22 @@
-import { Deferred } from './deferred';
-import { IpcProxyMessage } from '../electron/common/ipcProxy';
-import * as shortid from 'shortid';
+import * as shortid from "shortid";
+import { IpcProxyMessage } from "../electron/common/ipcProxy";
+import { Deferred } from "./deferred";
 
 export class IpcRendererProxy {
-    private static ipcRenderer;
-    private static initialized: boolean = false;
-    
-    static pending: { [id: string]: Deferred<any> } = {};
 
-    static initialize() {
+    public static pending: { [id: string]: Deferred<any> } = {};
+
+    public static initialize() {
         if (IpcRendererProxy.initialized) {
             return;
         }
 
-        IpcRendererProxy.ipcRenderer = (<any>window).require('electron').ipcRenderer;
-        IpcRendererProxy.ipcRenderer.on('ipc-renderer-proxy', (sender, message: IpcProxyMessage<any>) => {
+        IpcRendererProxy.ipcRenderer = (window as any).require("electron").ipcRenderer;
+        IpcRendererProxy.ipcRenderer.on("ipc-renderer-proxy", (sender, message: IpcProxyMessage<any>) => {
             const deferred = IpcRendererProxy.pending[message.id];
 
             if (!deferred) {
-                throw new Error(`Cannot find deferred with id '${message.id}'`)
+                throw new Error(`Cannot find deferred with id '${message.id}'`);
             }
 
             if (message.error) {
@@ -33,7 +31,7 @@ export class IpcRendererProxy {
         IpcRendererProxy.initialized = true;
     }
 
-    static send<TResult, TArgs>(type: string, args: TArgs = undefined): Promise<TResult> {
+    public static send<TResult, TArgs>(type: string, args?: TArgs): Promise<TResult> {
         IpcRendererProxy.initialize();
 
         const id = shortid.generate();
@@ -41,13 +39,15 @@ export class IpcRendererProxy {
         IpcRendererProxy.pending[id] = deferred;
 
         const outgoingArgs: IpcProxyMessage<TArgs> = {
-            id: id,
-            type: type,
-            args: args
+            id,
+            type,
+            args,
         };
 
-        IpcRendererProxy.ipcRenderer.send('ipc-main-proxy', outgoingArgs)
+        IpcRendererProxy.ipcRenderer.send("ipc-main-proxy", outgoingArgs);
 
         return deferred.promise;
     }
+    private static ipcRenderer;
+    private static initialized: boolean = false;
 }

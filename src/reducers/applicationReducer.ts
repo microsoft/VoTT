@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions/actionTypes';
+import * as ActionTypes from "../actions/actionTypes";
 
 export const reducer = (state: any = {}, action: any) => {
     switch (action.type) {
@@ -9,4 +9,4 @@ export const reducer = (state: any = {}, action: any) => {
         default:
             return state;
     }
-}
+};
