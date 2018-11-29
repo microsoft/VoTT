@@ -1,8 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import deepmerge from "deepmerge";
 import IApplicationActions, * as applicationActions from "../../../actions/applicationActions";
-import ApplicationState, { IAppSettings } from "../../../store/applicationState";
+import IConnectionActions, * as connectionActions from "../../../actions/connectionActions";
+import ApplicationState, { IAppSettings, IConnection } from "../../../store/applicationState";
 import Form from "react-jsonschema-form";
 import formSchema from "./appSettings.json";
 import uiSchema from "./appSettings.ui.json";
@@ -11,7 +13,9 @@ import ConnectionPicker from "../../common/connectionPicker";
 
 interface IAppSettingsProps {
     appSettings: IAppSettings;
-    actions: IApplicationActions;
+    connections: IConnection[];
+    applicationActions: IApplicationActions;
+    connectionActions: IConnectionActions;
 }
 
 interface IAppSettingsState {
@@ -22,13 +26,15 @@ interface IAppSettingsState {
 
 function mapStateToProps(state: ApplicationState) {
     return {
+        connections: state.connections,
         appSettings: state.appSettings,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(applicationActions, dispatch),
+        applicationActions: bindActionCreators(applicationActions, dispatch),
+        connectionActions: bindActionCreators(connectionActions, dispatch),
     };
 }
 
@@ -43,13 +49,27 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
 
         this.state = {
             formSchema: { ...formSchema },
-            uiSchema: { ...uiSchema },
+            uiSchema: this.getUiSchema(),
             appSettings: { ...this.props.appSettings },
         };
 
         this.toggleDevTools = this.toggleDevTools.bind(this);
         this.reloadApp = this.reloadApp.bind(this);
         this.onFormSubmit = this.onFormSubmit.bind(this);
+    }
+
+    public async componentDidMount() {
+        if (!this.props.connections) {
+            await this.props.connectionActions.loadConnections();
+        }
+    }
+
+    public componentDidUpdate(prevProps) {
+        if (prevProps.connections !== this.props.connections) {
+            this.setState({
+                uiSchema: this.getUiSchema(),
+            });
+        }
     }
 
     public render() {
@@ -85,15 +105,27 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
         );
     }
 
+    private getUiSchema(): any {
+        const overrideUiSchema = {
+            connectionId: {
+                "ui:options": {
+                    connections: this.props.connections,
+                },
+            },
+        };
+
+        return deepmerge(uiSchema, overrideUiSchema);
+    }
+
     private onFormSubmit = (form) => {
         // TODO: Submit form
     }
 
     private toggleDevTools = () => {
-        this.props.actions.toggleDevTools(!this.props.appSettings.devToolsEnabled);
+        this.props.applicationActions.toggleDevTools(!this.props.appSettings.devToolsEnabled);
     }
 
     private reloadApp = () => {
-        this.props.actions.reloadApplication();
+        this.props.applicationActions.reloadApplication();
     }
 }

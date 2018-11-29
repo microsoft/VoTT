@@ -1,6 +1,6 @@
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
-import { LocalFileSystemProxy, LocalFileSystemProxyOptions } from "./localFileSystemProxy";
-import { IStorageProvider, StorageProviderFactory } from "./storageProvider";
+import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "./localFileSystemProxy";
+import { StorageProviderFactory } from "./storageProvider";
 
 describe("LocalFileSystem Proxy Storage Provider", () => {
     it("Provider is registered with the StorageProviderFactory", () => {
@@ -10,7 +10,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
 
     describe("Methods", () => {
         let provider: LocalFileSystemProxy = null;
-        const options: LocalFileSystemProxyOptions = {
+        const options: ILocalFileSystemProxyOptions = {
             folderPath: "C:\\test",
         };
 

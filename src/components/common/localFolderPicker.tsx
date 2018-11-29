@@ -42,6 +42,14 @@ export default class LocalFolderPicker extends React.Component<ILocalFolderPicke
         );
     }
 
+    public componentDidUpdate(prevProps) {
+        if (prevProps.value !== this.props.value) {
+            this.setState({
+                value: this.props.value,
+            });
+        }
+    }
+
     private selectLocalFolder = async () => {
         const filePath = await this.localFileSystem.selectContainer();
         if (filePath) {
