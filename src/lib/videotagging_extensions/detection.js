@@ -313,9 +313,6 @@ function Detection(videotagging, visitedFrames) {
                     self.videotagging.showAllRegions();
                     detectCb();
                 });
-                if(data.frames[`${frameId}.jpg`].regions.length==0){
-                    detectCb();
-                }
             }).catch((err)=>{
                 detectCb(err);
             }); 
