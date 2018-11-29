@@ -1,24 +1,24 @@
-import React from 'react';
-import ConnectionPicker from './connectionPicker';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { mount } from 'enzyme';
-import { IConnection } from '../../store/applicationState';
+import React from "react";
+import ConnectionPicker from "./connectionPicker";
+import { BrowserRouter as Router } from "react-router-dom";
+import { mount } from "enzyme";
+import { IConnection } from "../../store/applicationState";
 
-describe('Connection Picker Component', () => {
+describe("Connection Picker Component", () => {
     let wrapper: any = null;
     let connections: IConnection[] = null;
-    let onChangeHandler: (value: any) => void;;
+    let onChangeHandler: (value: any) => void;
 
     beforeEach(() => {
         connections = [
-            { id: '1', 'name': 'Connection 1', providerType: 'localFileSystemProxy', providerOptions: null },
-            { id: '2', 'name': 'Connection 2', providerType: 'localFileSystemProxy', providerOptions: null },
-            { id: '3', 'name': 'Connection 3', providerType: 'localFileSystemProxy', providerOptions: null },
-            { id: '4', 'name': 'Connection 4', providerType: 'localFileSystemProxy', providerOptions: null },
+            { id: "1", name: "Connection 1", providerType: "localFileSystemProxy", providerOptions: null },
+            { id: "2", name: "Connection 2", providerType: "localFileSystemProxy", providerOptions: null },
+            { id: "3", name: "Connection 3", providerType: "localFileSystemProxy", providerOptions: null },
+            { id: "4", name: "Connection 4", providerType: "localFileSystemProxy", providerOptions: null },
         ];
 
         const options = {
-            connections: connections
+            connections,
         };
 
         onChangeHandler = jest.fn();
@@ -26,30 +26,30 @@ describe('Connection Picker Component', () => {
         wrapper = mount(
             <Router>
                 <ConnectionPicker
-                    value={null}
+                    value=""
                     options={options}
                     onChange={onChangeHandler}
                 />
-            </Router>
+            </Router>,
         );
     });
 
-    it('renders a default "Select Connection" option', () => {
-        const firstOption = wrapper.find('option').first();
-        expect(firstOption.text()).toEqual('Select Connection');
+    it("renders a default 'Select Connection' option", () => {
+        const firstOption = wrapper.find("option").first();
+        expect(firstOption.text()).toEqual("Select Connection");
     });
 
-    it('renders options from connection props', () => {
+    it("renders options from connection props", () => {
         expect(wrapper).not.toBeNull();
-        const optionElements = wrapper.find('option');
+        const optionElements = wrapper.find("option");
         expect(optionElements.length).toEqual(connections.length + 1);
-        expect(wrapper.prop('value')).not.toBeDefined();
+        expect(wrapper.prop("value")).not.toBeDefined();
     });
 
-    it('raises onChange event when dropdown is modified', () => {
-        const connectionId = '2';
+    it("raises onChange event when dropdown is modified", () => {
+        const connectionId = "2";
 
-        wrapper.find('select').simulate('change', { target: { value: connectionId } });
+        wrapper.find("select").simulate("change", { target: { value: connectionId } });
         expect(onChangeHandler).toBeCalledWith(connectionId);
     });
 });

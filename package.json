@@ -28,7 +28,7 @@
   "scripts": {
     "start": "nf start -p 3000",
     "build": "react-scripts build",
-    "pretest": "./node_modules/.bin/tslint 'src/**/*.ts'",
+    "pretest": "./node_modules/.bin/tslint 'src/**/*.ts*'",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "webpack --config ./config/webpack.dev.config.js && electron .",

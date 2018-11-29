@@ -1,17 +1,17 @@
-import React, { SyntheticEvent } from 'react'
-import './condensedList.scss';
-import { Link } from 'react-router-dom';
+import React, { SyntheticEvent } from "react";
+import "./condensedList.scss";
+import { Link } from "react-router-dom";
 
-interface CondensedListProps {
-    title: string,
-    items: any[],
-    newLinkTo?: string,
+interface ICondensedListProps {
+    title: string;
+    items: any[];
+    newLinkTo?: string;
     onClick?: (item) => void;
     onDelete?: (item) => void;
-    Component: any
+    Component: any;
 }
 
-export default class CondensedList extends React.Component<CondensedListProps> {
+export default class CondensedList extends React.Component<ICondensedListProps> {
     constructor(props, context) {
         super(props, context);
 
@@ -19,22 +19,7 @@ export default class CondensedList extends React.Component<CondensedListProps> {
         this.onItemDelete = this.onItemDelete.bind(this);
     }
 
-    onItemClick = (e, item) => {
-        if (this.props.onClick) {
-            this.props.onClick(item);
-        }
-    }
-
-    onItemDelete = (e: SyntheticEvent, item) => {
-        e.stopPropagation();
-        e.preventDefault();
-
-        if (this.props.onDelete) {
-            this.props.onDelete(item);
-        }
-    }
-
-    render() {
+    public render() {
         const { title, items, newLinkTo, Component } = this.props;
 
         return (
@@ -57,10 +42,28 @@ export default class CondensedList extends React.Component<CondensedListProps> {
                 }
                 {(items && items.length > 0) &&
                     <ul className="condensed-list-items">
-                        {items.map(item => <Component key={item.id} item={item} onClick={(e) => this.onItemClick(e, item)} onDelete={(e) => this.onItemDelete(e, item)} />)}
+                        {items.map((item) => <Component key={item.id}
+                            item={item}
+                            onClick={(e) => this.onItemClick(e, item)}
+                            onDelete={(e) => this.onItemDelete(e, item)} />)}
                     </ul>
                 }
             </div>
         );
+    }
+
+    private onItemClick = (e, item) => {
+        if (this.props.onClick) {
+            this.props.onClick(item);
+        }
+    }
+
+    private onItemDelete = (e: SyntheticEvent, item) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (this.props.onDelete) {
+            this.props.onDelete(item);
+        }
     }
 }
