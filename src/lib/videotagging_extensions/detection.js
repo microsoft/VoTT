@@ -38,7 +38,7 @@ function Detection(videotagging, visitedFrames) {
             }
             else { //last
                 isLastFrame = function (frameId) {
-                    return (self.videotagging.video.currentTime >= self.videotagging.video.duration);
+                    return (self.videotagging.video.currentTime + 1 >= self.videotagging.video.duration);
                 }
             }
 
@@ -313,6 +313,9 @@ function Detection(videotagging, visitedFrames) {
                     self.videotagging.showAllRegions();
                     detectCb();
                 });
+                if(data.frames[`${frameId}.jpg`].regions.length==0){
+                    detectCb();
+                }
             }).catch((err)=>{
                 detectCb(err);
             }); 
