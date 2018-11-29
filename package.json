@@ -11,6 +11,7 @@
     "@types/redux-logger": "^3.0.6",
     "@types/redux-thunk": "^2.1.0",
     "bootstrap": "^4.1.3",
+    "deepmerge": "^2.2.1",
     "electron": "^3.0.10",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
@@ -27,7 +28,7 @@
   "scripts": {
     "start": "nf start -p 3000",
     "build": "react-scripts build",
-    "pretest": "./node_modules/.bin/tslint 'src/**/*.ts'",
+    "pretest": "./node_modules/.bin/tslint 'src/**/*.ts*'",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "webpack --config ./config/webpack.dev.config.js && electron .",

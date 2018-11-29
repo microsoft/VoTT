@@ -7,10 +7,14 @@ export const reducer = (state: IProject[] = [], action: any) => {
             return [...action.projects];
         case ActionTypes.LOAD_PROJECT_SUCCESS:
         case ActionTypes.SAVE_PROJECT_SUCCESS:
-            return [
-                { ...action.project },
+            if (state) {
+                return [
+                    { ...action.project },
                 ...state.filter((project) => project.id !== action.project.id),
-            ];
+                ];
+            } else {
+                return [{ ...action.project }];
+            }
         case ActionTypes.DELETE_PROJECT_SUCCESS:
             return [...state.filter((project) => project.id !== action.project.id)];
         default:
