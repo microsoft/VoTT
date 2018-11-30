@@ -299,9 +299,9 @@
             let rs = this.regionsManager.getSelectedRegionsBounds();
             if (rs !== undefined && rs.length > 0) {
                 let r = rs[0];
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(r.width, r.height) });
+                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(r.width, r.height) });
             } else {
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
+                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(40, 40) });
             }
         });
 
@@ -313,6 +313,17 @@
 
         this.toolbar.addAction(twoPointTemplateIcon, (action) => {
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POINT);
+        });
+
+        let selectionLockIcon = new this.CT.Toolbar.IconDescription(
+            "selection-lock",
+            "public/js/video-tagging/assets/icons/ct/selection-lock.svg",
+            "Lock/unlock selection (L)",
+            'KeyL',
+            true);
+
+        this.toolbar.addAction(selectionLockIcon, (action) => {
+            this.areaSelector.toggleLockState();
         });
 
         this.toolbar.select("rect-select");
@@ -1452,5 +1463,6 @@
 <script src="../moment/moment.js"></script>
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
-<script src="js/ct.min.js"></script>
+<!-- <script src="js/ct.min.js"></script> -->
+<script src="js/ct.js"></script>
 </dom-module>
