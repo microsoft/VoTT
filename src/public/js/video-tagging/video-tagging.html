@@ -331,11 +331,10 @@
             this.toolbar.disableHotkeys();
             this.toolbar.disableHotkeys()
             this.regionsManager.freeze();
+            window.removeEventListener("keyup", listener);
             newTag = document.getElementById("newTag").value;
             this.inputtagsarray.push(newTag);
             self.optionalTags.createTagControls(this.inputtagsarray);
-            
-            self.showAllRegions();
         })
 
         this.toolbar.select("rect-select");
