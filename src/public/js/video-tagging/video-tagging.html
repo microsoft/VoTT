@@ -153,6 +153,7 @@
       imagelist: Object,
       inputtagsarray:Object,
       inputframes: Object,
+      hotKeysEnabled: Boolean,
       src: {
         type: String,
         value: '',
@@ -202,6 +203,7 @@
         //Form
         this.form = this.$$('#addTagForm');
         this.textbox = this.$$('#newTag');
+        this.hotKeysEnabled = true;
 
         // Buttons
         this.playButton = this.$$('#play-pause');
@@ -331,6 +333,7 @@
             this.toolbar.disableHotkeys();
             this.toolbar.disableHotkeys()
             this.regionsManager.freeze();
+            this.hotKeysEnabled = false;
             window.removeEventListener("keyup", listener);
             newTag = document.getElementById("newTag").value;
             this.inputtagsarray.push(newTag);
@@ -478,43 +481,45 @@
         event.stopPropagation();
     },
 
-    keyUpEventsListener: function(e) {
-        switch (e.keyCode) {
-            case 37:  // left
-                if (!e.ctrlKey) {
-                    this.stepBwdClicked();
+    keyUpEventsListener: (e) => {
+        if (hotKeysEnabled){
+            switch (e.keyCode) {
+                case 37:  // left
+                    if (!e.ctrlKey) {
+                        this.stepBwdClicked();
+                    }
+                    break;
+                case 39: // right
+                    if (!e.ctrlKey) {
+                        this.stepFwdClicked();
+                    }            
+                    break;
+                case 68:// d for duplicate
+                    if(e.ctrlKey) break;
+                    let frameId = this.getCurrentFrameId();
+                    if(this.imagelist){
+                        frameId = this.imageIndex
+                    }
+                    if (frameId > 0) {
+                        this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
+                    }
+                    this.playingCallback();
+                    break;
+                case 32:// space to toggle play/pause
+                    this.playPauseClicked();
+                    break;
+                case 81:// q to go back a frame
+                    if (!e.ctrlKey) {
+                        this.stepBwdClicked();
+                    }
+                    break;
+                case 69:// e to go forward a frame
+                    if (!e.ctrlKey) {
+                        this.stepFwdClicked();
+                    }
+                    break;
+                default: return; // exit this handler for other keys
                 }
-                break;
-            case 39: // right
-                if (!e.ctrlKey) {
-                    this.stepFwdClicked();
-                }            
-                break;
-            case 68:// d for duplicate
-                if(e.ctrlKey) break;
-                let frameId = this.getCurrentFrameId();
-                if(this.imagelist){
-                    frameId = this.imageIndex
-                }
-                if (frameId > 0) {
-                    this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
-                }
-                this.playingCallback();
-                break;
-            case 32:// space to toggle play/pause
-                this.playPauseClicked();
-                break;
-            case 81:// q to go back a frame
-                if (!e.ctrlKey) {
-                    this.stepBwdClicked();
-                }
-                break;
-            case 69:// e to go forward a frame
-                if (!e.ctrlKey) {
-                    this.stepFwdClicked();
-                }
-                break;
-            default: return; // exit this handler for other keys
             }
         e.preventDefault(); // prevent the default action (scroll / move caret)
     },
