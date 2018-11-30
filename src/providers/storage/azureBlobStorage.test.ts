@@ -1,6 +1,6 @@
 // import * as AzureStorageBlob from './azurestoragejs/azure-storage.blob.js'
 import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js";
-import { AzureCloudStorageService, AzureCloudStorageOptions } from "./azureBlobStorage";
+import { AzureCloudStorageService, IAzureCloudStorageOptions } from "./azureBlobStorage";
 import { StorageProviderFactory, IStorageProvider } from "./storageProvider";
 
 const content = "This is the content";
@@ -24,7 +24,7 @@ class FakeBlobService {
 describe("Azure blob functions", () => {
 
     let provider: AzureCloudStorageService = null;
-    const options: AzureCloudStorageOptions = {
+    const options: IAzureCloudStorageOptions = {
         connectionString: "fake connection string",
     };
 
