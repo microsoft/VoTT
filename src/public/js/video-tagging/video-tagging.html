@@ -127,7 +127,7 @@
                 <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff" on-click='lockTagsClicked'></span>
                 <form id="addTagForm" class="addTag">
                     <input type="text" class="tagInput" id="newTag">
-                    <input type="submit" value="Add Tag">
+                    <input type="button" value="Add Tag" id="submitTag">
                 </form>
             </div>
             <div style="clear: both">
@@ -203,6 +203,7 @@
         //Form
         this.form = this.$$('#addTagForm');
         this.textbox = this.$$('#newTag');
+        this.submitTag = this.$$('#submitTag');
         this.hotKeysEnabled = true;
 
         // Buttons
@@ -331,10 +332,15 @@
         this.textbox.addEventListener("focus", (e) => {
             e.preventDefault();
             this.toolbar.disableHotkeys();
-            this.toolbar.disableHotkeys()
             this.regionsManager.freeze();
             this.hotKeysEnabled = false;
-            window.removeEventListener("keyup", listener);
+            // window.removeEventListener("keyup", listener);
+        });
+
+        this.submitTag.addEventListener("click", (e) => {
+            this.toolbar.enableHotkeys();
+            this.regionsManager.unfreeze();
+            this.hotKeysEnabled = true;
             newTag = document.getElementById("newTag").value;
             this.inputtagsarray.push(newTag);
             self.optionalTags.createTagControls(this.inputtagsarray);
@@ -482,7 +488,7 @@
     },
 
     keyUpEventsListener: (e) => {
-        if (hotKeysEnabled){
+        if (this.hotKeysEnabled){
             switch (e.keyCode) {
                 case 37:  // left
                     if (!e.ctrlKey) {
