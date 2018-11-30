@@ -317,6 +317,14 @@
 
         this.toolbar.select("rect-select");
 
+        this.toolbar.disableHotkeys();
+
+        $("#newTag").focus(function() {
+            console.log("newtag in focus");
+            // this.regionsManager.freeze();
+            // below should be recognized as a function
+        });
+
         // Register empty filter pipeline
         this.filterPipeline = new this.CT.Filter.FilterPipeline();;
     },
@@ -447,10 +455,6 @@
             }
 
             this.selectRegion(currentRegionUID)
-        });
-        $("#newTag").focus(function() {
-            console.log("newtag in focus");
-            this.regionsManager.freeze();
         });
       this.form.addEventListener("submit", function(e) {
         e.preventDefault();
