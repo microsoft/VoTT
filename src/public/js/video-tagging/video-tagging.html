@@ -326,15 +326,19 @@
             this.areaSelector.toggleLockState();
         });
 
+        this.textbox.addEventListener("focus", (e) => {
+            e.preventDefault();
+            this.toolbar.disableHotkeys();
+            this.toolbar.disableHotkeys()
+            this.regionsManager.freeze();
+            newTag = document.getElementById("newTag").value;
+            this.inputtagsarray.push(newTag);
+            self.optionalTags.createTagControls(this.inputtagsarray);
+            
+            self.showAllRegions();
+        })
+
         this.toolbar.select("rect-select");
-
-        this.toolbar.disableHotkeys();
-
-        $("#newTag").focus(function() {
-            console.log("newtag in focus");
-            // this.regionsManager.freeze();
-            // below should be recognized as a function
-        });
 
         // Register empty filter pipeline
         this.filterPipeline = new this.CT.Filter.FilterPipeline();;
@@ -467,13 +471,8 @@
 
             this.selectRegion(currentRegionUID)
         });
-      this.form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        newTag = document.getElementById("newTag").value;
-        self.inputtagsarray.push(newTag);
-        self.optionalTags.createTagControls(self.inputtagsarray);
-        self.showAllRegions();
-      })
+
+      
     },
 
     frameInputListener: function(event) {
