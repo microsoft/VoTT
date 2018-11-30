@@ -1,16 +1,16 @@
-import React from 'react';
-import { Route } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import ConnectionItem from './connectionItem';
-import CondensedList from '../../common/condensedList';
-import ApplicationState, { IConnection } from '../../../store/applicationState.js';
-import { RouteComponentProps } from 'react-router-dom';
-import IConnectionActions, * as connectionActions from '../../../actions/connectionActions';
-import ConnectionForm from './connectionForm';
-import './connectionsPage.scss';
-import { AzureCloudStorageService } from '../../../providers/storage/azureBlobStorage'
-import { debug } from 'util';
+import React from "react";
+import { Route } from "react-router-dom";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import ConnectionItem from "./connectionItem";
+import CondensedList from "../../common/condensedList";
+import ApplicationState, { IConnection } from "../../../store/applicationState.js";
+import { RouteComponentProps } from "react-router-dom";
+import IConnectionActions, * as connectionActions from "../../../actions/connectionActions";
+import ConnectionForm from "./connectionForm";
+import "./connectionsPage.scss";
+import { AzureCloudStorageService } from "../../../providers/storage/azureBlobStorage";
+import { debug } from "util";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];

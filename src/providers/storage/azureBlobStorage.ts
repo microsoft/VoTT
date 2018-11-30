@@ -1,56 +1,55 @@
-import { IStorageProvider } from './storageProvider'
-import AzureStorageBlob from '../../vendor/azurestoragejs/azure-storage.blob.js'
+import { IStorageProvider } from "./storageProvider";
+import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js";
 
-export interface AzureCloudStorageOptions {
+export interface IAzureCloudStorageOptions {
     connectionString: string;
 }
 
 export class AzureCloudStorageService implements IStorageProvider {
-    connectionString = null;
+    public connectionString = null;
 
-    constructor(private options?: AzureCloudStorageOptions){
+    constructor(private options?: IAzureCloudStorageOptions) {
         this.connectionString = options.connectionString;
     }
 
-    getService() {
+    public getService() {
         return AzureStorageBlob.createBlobService(this.connectionString);
     }
 
-    getContainerName(path: string){
-        return path.substring(0, path.indexOf('/'));
+    public getContainerName(path: string) {
+        return path.substring(0, path.indexOf("/"));
     }
 
-    getFileName(path: string){
-        return path.substring(path.indexOf('/') + 1);
+    public getFileName(path: string) {
+        return path.substring(path.indexOf("/") + 1);
     }
 
-    readText(path: string){
+    public readText(path: string) {
         return new Promise<string>((resolve, reject) => {
             this.getService().getBlobToText(
-                this.getContainerName(path), 
-                this.getFileName(path), 
+                this.getContainerName(path),
+                this.getFileName(path),
                 (err, data) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve(data);
                     }
-                }
+                },
             );
         });
     }
 
-    async readBinary(path: string){
-        var text = await this.readText(path);
+    public async readBinary(path: string) {
+        const text = await this.readText(path);
         return Buffer.from(text);
     }
 
-    
-    writeText(path: string, contents: string | Buffer){
+    public writeText(path: string, contents: string | Buffer) {
         return new Promise<void>((resolve, reject) => {
             this.getService().createBlockBlobFromText(
-                this.getContainerName(path), 
-                this.getFileName(path), 
+                this.getContainerName(path),
+                this.getFileName(path),
                 contents,
                 (err, data) => {
                     if (err) {
@@ -58,47 +57,47 @@ export class AzureCloudStorageService implements IStorageProvider {
                     } else {
                         resolve(data);
                     }
-                }
+                },
             );
         });
     }
 
-    writeBinary(path: string, contents: Buffer){
+    public writeBinary(path: string, contents: Buffer) {
         return this.writeText(path, contents);
     }
 
-    deleteFile(path: string){
+    public deleteFile(path: string) {
         return new Promise<void>((resolve, reject) => {
             this.getService().deleteBlobIfExists(
-                this.getContainerName(path), 
-                this.getFileName(path), 
+                this.getContainerName(path),
+                this.getFileName(path),
                 (err, data) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve(data);
                     }
-                }
+                },
             );
         });
     }
 
-    listFiles(path: string){
+    public listFiles(path: string) {
         return new Promise<string[]>((resolve, reject) => {
             this.getService().listBlobsSegmented(
-                this.getContainerName(path), 
+                this.getContainerName(path),
                 (err, results) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve(results);
                     }
-                }
+                },
             );
         });
     }
 
-    listContainers(path: string){
+    public listContainers(path: string) {
         return new Promise<string[]>((resolve, reject) => {
             this.getService().listContainersSegmented(null, (err, results) => {
                 if (err) {
@@ -110,34 +109,34 @@ export class AzureCloudStorageService implements IStorageProvider {
         });
     }
 
-    createContainer(path: string){
+    public createContainer(path: string) {
         return new Promise<void>((resolve, reject) => {
-            var service = this.getService();
+            const service = this.getService();
             service.createContainerIfNotExists(
-                this.getContainerName(path), 
-                { publicAccessLevel: 'blob' }, 
-                err => {
+                this.getContainerName(path),
+                { publicAccessLevel: "blob" },
+                (err) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve();
                     }
-                }
+                },
             );
         });
     }
 
-    deleteContainer(path: string){
+    public deleteContainer(path: string) {
         return new Promise<void>((resolve, reject) => {
             this.getService().deleteContainer(
                 this.getContainerName(path),
-                err => {
+                (err) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve();
                     }
-                }
+                },
             );
         });
     }
