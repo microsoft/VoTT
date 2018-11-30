@@ -16,14 +16,6 @@ export class AzureCloudStorageService implements IStorageProvider {
         return AzureStorageBlob.createBlobService(this.connectionString);
     }
 
-    public getContainerName(path: string) {
-        return path.substring(0, path.indexOf("/"));
-    }
-
-    public getFileName(path: string) {
-        return path.substring(path.indexOf("/") + 1);
-    }
-
     public readText(path: string) {
         return new Promise<string>((resolve, reject) => {
             this.getService().getBlobToText(
@@ -139,5 +131,13 @@ export class AzureCloudStorageService implements IStorageProvider {
                 },
             );
         });
+    }
+
+    private getContainerName(path: string) {
+        return path.substring(0, path.indexOf("/"));
+    }
+
+    private getFileName(path: string) {
+        return path.substring(path.indexOf("/") + 1);
     }
 }

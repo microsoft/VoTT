@@ -49,11 +49,6 @@ describe("Azure blob functions", () => {
             expect(storageProvider).not.toBeNull();
         });
 
-        it("Helper methods should give correct container and filename", () => {
-            expect(provider.getContainerName(path)).toBe(containerName);
-            expect(provider.getFileName(path)).toBe(fileName);
-        });
-
         it("Get Blob to Text", () =>  {
             provider.readText(path)
                 .then((text) => {
