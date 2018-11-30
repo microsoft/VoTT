@@ -1,18 +1,18 @@
-import fs from 'fs';
-import path from 'path';
-import { IStorageProvider } from '../../../providers/storage/storageProvider';
-import { dialog, BrowserWindow } from 'electron';
-import rimraf from 'rimraf';
+import { BrowserWindow, dialog } from "electron";
+import fs from "fs";
+import path from "path";
+import rimraf from "rimraf";
+import { IStorageProvider } from "../../../providers/storage/storageProvider";
 
 export default class LocalFileSystem implements IStorageProvider {
     constructor(private browserWindow: BrowserWindow) { }
 
-    selectContainer(): Promise<string> {
+    public selectContainer(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             dialog.showOpenDialog(this.browserWindow, {
-                title: 'Select Folder',
-                buttonLabel: 'Choose Folder',
-                properties: ['openDirectory', 'createDirectory']
+                title: "Select Folder",
+                buttonLabel: "Choose Folder",
+                properties: ["openDirectory", "createDirectory"],
             },
                 (filePaths) => {
                     if (!filePaths || filePaths.length !== 1) {
@@ -24,7 +24,7 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    readText(filePath: string): Promise<string> {
+    public readText(filePath: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             fs.readFile(filePath, (err: NodeJS.ErrnoException, data: Buffer) => {
                 if (err) {
@@ -36,7 +36,7 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    readBinary(filePath: string): Promise<Buffer> {
+    public readBinary(filePath: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
             fs.readFile(filePath, (err: NodeJS.ErrnoException, data: Buffer) => {
                 if (err) {
@@ -45,10 +45,10 @@ export default class LocalFileSystem implements IStorageProvider {
 
                 resolve(data);
             });
-        })
+        });
     }
 
-    writeBinary(filePath: string, contents: Buffer): Promise<void> {
+    public writeBinary(filePath: string, contents: Buffer): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const containerName: fs.PathLike = path.dirname(filePath);
             const exists = fs.existsSync(containerName);
@@ -66,12 +66,12 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    writeText(filePath: string, contents: string): Promise<void> {
+    public writeText(filePath: string, contents: string): Promise<void> {
         const buffer = Buffer.alloc(contents.length, contents);
         return this.writeBinary(filePath, buffer);
     }
 
-    deleteFile(filePath: string): Promise<void> {
+    public deleteFile(filePath: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const exists = fs.existsSync(filePath);
             if (exists) {
@@ -86,15 +86,15 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    listFiles(folderPath: string): Promise<string[]> {
-        return this.listItems(folderPath, (stats) => !stats.isDirectory())
+    public listFiles(folderPath: string): Promise<string[]> {
+        return this.listItems(folderPath, (stats) => !stats.isDirectory());
     }
 
-    listContainers(folderPath: string): Promise<string[]> {
-        return this.listItems(folderPath, (stats) => stats.isDirectory())
+    public listContainers(folderPath: string): Promise<string[]> {
+        return this.listItems(folderPath, (stats) => stats.isDirectory());
     }
 
-    createContainer(folderPath: string): Promise<void> {
+    public createContainer(folderPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             fs.exists(folderPath, (exists) => {
                 if (exists) {
@@ -106,13 +106,13 @@ export default class LocalFileSystem implements IStorageProvider {
                         }
 
                         resolve();
-                    })
+                    });
                 }
             });
         });
     }
 
-    deleteContainer(folderPath: string): Promise<void> {
+    public deleteContainer(folderPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             fs.exists(folderPath, (exists) => {
                 if (exists) {
@@ -130,7 +130,6 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    
     /**
      * Gets a list of file system items matching the specified predicate within the folderPath
      * @param  {string} folderPath
@@ -144,7 +143,7 @@ export default class LocalFileSystem implements IStorageProvider {
                     return reject(err);
                 }
 
-                const getStatsTasks = fileSystemItems.map(name => {
+                const getStatsTasks = fileSystemItems.map((name) => {
                     const filePath = path.join(folderPath, name);
                     return this.getStats(filePath);
                 });
@@ -152,12 +151,11 @@ export default class LocalFileSystem implements IStorageProvider {
                 try {
                     const statsResults = await Promise.all(getStatsTasks);
                     const filteredItems = statsResults
-                        .filter(result => predicate(result.stats))
-                        .map(result => result.path);
+                        .filter((result) => predicate(result.stats))
+                        .map((result) => result.path);
 
                     resolve(filteredItems);
-                }
-                catch (err) {
+                } catch (err) {
                     reject(err);
                 }
             });
@@ -177,10 +175,10 @@ export default class LocalFileSystem implements IStorageProvider {
                 }
 
                 resolve({
-                    path: path,
-                    stats: stats
+                    path,
+                    stats,
                 });
-            })
+            });
         });
     }
 }

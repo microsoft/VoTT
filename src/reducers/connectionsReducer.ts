@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions/actionTypes';
+import * as ActionTypes from "../actions/actionTypes";
 import { IConnection } from "../store/applicationState";
 
 export const reducer = (state: IConnection[] = [], action: any) => {
@@ -8,11 +8,11 @@ export const reducer = (state: IConnection[] = [], action: any) => {
         case ActionTypes.SAVE_CONNECTION_SUCCESS:
             return [
                 { ...action.connection },
-                ...state.filter(connection => connection.id !== action.connection.id)
+                ...state.filter((connection) => connection.id !== action.connection.id),
             ];
         case ActionTypes.DELETE_CONNECTION_SUCCESS:
-            return [...state.filter(connection => connection.id !== action.connection.id)];
+            return [...state.filter((connection) => connection.id !== action.connection.id)];
         default:
             return state;
     }
-}
+};

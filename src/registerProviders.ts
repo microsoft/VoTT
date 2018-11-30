@@ -1,5 +1,5 @@
 import { LocalFileSystemProxy } from './providers/storage/localFileSystemProxy';
-import { AzureCloudStorageOptions, AzureCloudStorageService } from './providers/storage/azureBlobStorage';
+import { AzureCloudStorageService } from './providers/storage/azureBlobStorage';
 import { StorageProviderFactory } from './providers/storage/storageProvider';
 
 export default function registerProviders() {

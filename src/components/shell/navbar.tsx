@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import React from "react";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar() {
     return (
@@ -14,7 +14,11 @@ export default function Navbar() {
             </div>
             <div className="app-navbar-menu">
                 <ul>
-                    <li><NavLink title="Profile Settings" to={`/profile`}><i className="fas fa-user-circle"></i></NavLink></li>
+                    <li>
+                        <NavLink title="Profile Settings" to={`/profile`}>
+                            <i className="fas fa-user-circle"></i>
+                        </NavLink>
+                    </li>
                 </ul>
             </div>
         </nav>

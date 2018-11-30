@@ -12,25 +12,24 @@ import './connectionsPage.scss';
 import { AzureCloudStorageService } from '../../../providers/storage/azureBlobStorage'
 import { debug } from 'util';
 
-
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
     actions: IConnectionActions;
 }
 
 export interface IConnectionPageState {
-    connection: IConnection
+    connection: IConnection;
 }
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        connections: state.connections
+        connections: state.connections,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(connectionActions, dispatch)
+        actions: bindActionCreators(connectionActions, dispatch),
     };
 }
 
@@ -40,60 +39,38 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         super(props, context);
 
         this.state = {
-            connection: null
+            connection: null,
         };
-
-        this.props.actions.loadConnections();
-
-        const connectionId = this.props.match.params['connectionId'];
-        if (connectionId) {
-            this.loadConnection(connectionId);
-        }
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onConnectionDelete = this.onConnectionDelete.bind(this);
     }
 
-    loadConnection(connectionId: string) {
-        this.props.actions.loadConnection(connectionId)
-            .then(connection => {
-                this.setState({
-                    connection: connection
-                });
-            })
-            .catch(() => {
-                this.setState({
-                    connection: null
-                });
-            });
+    public componentDidMount() {
+        this.props.actions.loadConnections();
+
+        const connectionId = this.props.match.params["connectionId"];
+        if (connectionId) {
+            this.loadConnection(connectionId);
+        }
     }
 
-    onConnectionDelete = (connection: IConnection) => {
-        this.props.actions.deleteConnection(connection);
-    }
-
-    componentDidUpdate = (prevProps) => {
-        const prevConnectionId = prevProps.match.params['connectionId'];
-        const newConnectionId = this.props.match.params['connectionId'];
+    public componentDidUpdate = (prevProps) => {
+        const prevConnectionId = prevProps.match.params["connectionId"];
+        const newConnectionId = this.props.match.params["connectionId"];
 
         if (prevConnectionId !== newConnectionId) {
             this.loadConnection(newConnectionId);
         }
     }
 
-    onFormSubmit = (connection: IConnection) => {
-        this.props.actions.saveConnection(connection).then(() => {
-            this.props.history.push('/connections');
-        });
-    }
-
-    render() {
+    public render() {
         return (
             <div className="app-connections-page">
                 <div className="app-connections-page-list bg-lighter-1">
                     <CondensedList
                         title="Connections"
-                        newLinkTo={'/connections/create'}
+                        newLinkTo={"/connections/create"}
                         onDelete={this.onConnectionDelete}
                         Component={ConnectionItem}
                         items={this.props.connections} />
@@ -112,5 +89,29 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                 } />
             </div>
         );
+    }
+
+    private loadConnection(connectionId: string) {
+        this.props.actions.loadConnection(connectionId)
+            .then((connection) => {
+                this.setState({
+                    connection,
+                });
+            })
+            .catch(() => {
+                this.setState({
+                    connection: null,
+                });
+            });
+    }
+
+    private onConnectionDelete = (connection: IConnection) => {
+        this.props.actions.deleteConnection(connection);
+    }
+
+    private onFormSubmit = (connection: IConnection) => {
+        this.props.actions.saveConnection(connection).then(() => {
+            this.props.history.push("/connections");
+        });
     }
 }

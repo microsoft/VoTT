@@ -1,5 +1,5 @@
 import { IStorageProvider } from './storageProvider'
-var AzureStorageBlob = require('./azurestoragejs/azure-storage.blob.js')
+import AzureStorageBlob from '../../vendor/azurestoragejs/azure-storage.blob.js'
 
 export interface AzureCloudStorageOptions {
     connectionString: string;

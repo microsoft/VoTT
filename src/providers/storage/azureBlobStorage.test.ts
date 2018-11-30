@@ -1,5 +1,5 @@
 //import * as AzureStorageBlob from './azurestoragejs/azure-storage.blob.js'
-var AzureStorageBlob = require('./azurestoragejs/azure-storage.blob.js')
+import AzureStorageBlob from '../../vendor/azurestoragejs/azure-storage.blob.js'
 import { AzureCloudStorageService, AzureCloudStorageOptions } from './azureBlobStorage'
 import { StorageProviderFactory, IStorageProvider } from './storageProvider';
 
@@ -32,7 +32,7 @@ describe("Azure blob functions", () => {
         it("Create blob service", () =>  {
             AzureStorageBlob.createBlobService = jest.fn(() => Promise.resolve());
             var azure = new AzureCloudStorageService(options);
-            var service = azure.getService();
+            azure.listContainers(null);
             expect(AzureStorageBlob.createBlobService).toBeCalledWith(options.connectionString);
         })
     })
@@ -88,7 +88,6 @@ describe("Azure blob functions", () => {
         })
     
         it("Delete file", () =>  {
-    
             provider.deleteFile(path);
             expect(FakeBlobService.deleteBlobIfExists).toBeCalledWith(
                 containerName,

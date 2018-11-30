@@ -1,36 +1,36 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import './homePage.scss';
-import IProjectActions, * as projectActions from '../../../actions/projectActions';
-import ApplicationState, { IProject } from '../../../store/applicationState';
-import CondensedList from '../../common/condensedList';
-import RecentProjectItem from './recentProjectItem';
-import FilePicker from '../../common/filePicker';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import "./homePage.scss";
+import IProjectActions, * as projectActions from "../../../actions/projectActions";
+import ApplicationState, { IProject } from "../../../store/applicationState";
+import CondensedList from "../../common/condensedList";
+import RecentProjectItem from "./recentProjectItem";
+import FilePicker from "../../common/filePicker";
+import { Link, RouteComponentProps } from "react-router-dom";
 
-interface HomepageProps extends RouteComponentProps, React.Props<HomePage> {
-    recentProjects: IProject[],
-    actions: IProjectActions
+interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
+    recentProjects: IProject[];
+    actions: IProjectActions;
 }
 
 function mapStateToProps(state: ApplicationState) {
     return {
-        recentProjects: state.recentProjects
+        recentProjects: state.recentProjects,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(projectActions, dispatch)
+        actions: bindActionCreators(projectActions, dispatch),
     };
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class HomePage extends React.Component<HomepageProps> {
+export default class HomePage extends React.Component<IHomepageProps> {
     private filePicker: React.RefObject<FilePicker>;
 
-    constructor(props: HomepageProps, context) {
+    constructor(props: IHomepageProps, context) {
         super(props, context);
 
         this.filePicker = React.createRef<FilePicker>();
@@ -42,25 +42,7 @@ export default class HomePage extends React.Component<HomepageProps> {
         this.props.actions.loadProjects();
     }
 
-    onProjectFileUpload = (e, projectJson) => {
-        const project: IProject = JSON.parse(projectJson);
-        this.loadSelectedProject(project);
-    }
-
-    onProjectFileUploadError = (e, err) => {
-        console.error(err);
-    }
-
-    loadSelectedProject = (project: IProject) => {
-        this.props.actions.loadProject(project)
-        this.props.history.push(`/projects/${project.id}/settings`);
-    }
-
-    deleteProject = (project: IProject) => {
-        this.props.actions.deleteProject(project);
-    }
-
-    render() {
+    public render() {
         return (
             <div className="app-homepage">
                 <div className="app-homepage-main">
@@ -94,5 +76,24 @@ export default class HomePage extends React.Component<HomepageProps> {
                 }
             </div>
         );
+    }
+
+    private onProjectFileUpload = (e, projectJson) => {
+        const project: IProject = JSON.parse(projectJson);
+        this.loadSelectedProject(project);
+    }
+
+    private onProjectFileUploadError = (e, err) => {
+        console.error(err);
+    }
+
+    private loadSelectedProject = (project: IProject) => {
+        this.props.actions.loadProject(project).then(() => {
+            this.props.history.push(`/projects/${project.id}/settings`);
+        });
+    }
+
+    private deleteProject = (project: IProject) => {
+        this.props.actions.deleteProject(project);
     }
 }

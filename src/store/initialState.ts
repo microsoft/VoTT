@@ -1,5 +1,5 @@
-import shortid from 'shortid';
-import ApplicationState, { IConnection, IProject, ITag } from './applicationState';
+import shortid from "shortid";
+import ApplicationState, { IConnection, IProject, ITag } from "./applicationState";
 
 const sampleConnections = createSampleConnections();
 const sampeProjects = createSampleProjects();
@@ -7,11 +7,11 @@ const sampeProjects = createSampleProjects();
 const initialState: ApplicationState = {
     appSettings: {
         devToolsEnabled: false,
-        connection: null
+        connection: null,
     },
-    connections: null, //sampleConnections,
-    recentProjects: null, //sampeProjects,
-    currentProject: null
+    connections: null, // sampleConnections,
+    recentProjects: null, // sampeProjects,
+    currentProject: null,
 };
 
 function createSampleConnections(count: number = 5): IConnection[] {
@@ -20,9 +20,9 @@ function createSampleConnections(count: number = 5): IConnection[] {
         connections.push({
             id: shortid.generate(),
             name: `Connection ${i}`,
-            providerType: 'sample',
-            providerOptions: {}
-        })
+            providerType: "sample",
+            providerOptions: {},
+        });
     }
 
     return connections;
@@ -36,16 +36,16 @@ function createSampleProjects(count: number = 5): IProject[] {
             name: `Project ${i}`,
             description: `Sample description for connection ${i}`,
             exportFormat: {
-                id: 'export-format-1',
-                name: 'Custom Vision Service',
-                providerType: 'CVS',
-                providerOptions: {}
+                id: "export-format-1",
+                name: "Custom Vision Service",
+                providerType: "CVS",
+                providerOptions: {},
             },
             sourceConnection: getRandomConnection(sampleConnections),
             targetConnection: getRandomConnection(sampleConnections),
             tags: createSampleTags(),
-            autoSave: true
-        })
+            autoSave: true,
+        });
     }
 
     return projects;
@@ -61,7 +61,7 @@ function createSampleTags(count: number = 10): ITag[] {
     for (let i = 1; i <= count; i++) {
         tags.push({
             name: `tag-${i}`,
-            color: '#333'
+            color: "#333",
         });
     }
 
