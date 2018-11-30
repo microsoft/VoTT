@@ -1,11 +1,15 @@
 import { IStorageProvider } from './storageProvider'
 var AzureStorageBlob = require('./azurestoragejs/azure-storage.blob.js')
 
+export interface AzureCloudStorageOptions {
+    connectionString: string;
+}
+
 export class AzureCloudStorageService implements IStorageProvider {
     connectionString = null;
 
-    constructor(connectionString){
-        this.connectionString = connectionString;
+    constructor(private options?: AzureCloudStorageOptions){
+        this.connectionString = options.connectionString;
     }
 
     getService() {

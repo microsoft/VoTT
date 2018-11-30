@@ -81,17 +81,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         }
     }
 
-    onFormSubmit = async (connection: IConnection) => {
-        
-        if (connection.providerType === 'azureBlobStorage'){
-            var azure = new AzureCloudStorageService(connection.providerOptions.connectionString)
-            var container;
-            if(connection.providerOptions.createContainer){
-                container = await azure.createContainer(connection.providerOptions.containerName);   
-            }else{
-                container = await azure.getContainerName(connection.providerOptions.containerName);
-            }
-        }
+    onFormSubmit = (connection: IConnection) => {
         this.props.actions.saveConnection(connection).then(() => {
             this.props.history.push('/connections');
         });
