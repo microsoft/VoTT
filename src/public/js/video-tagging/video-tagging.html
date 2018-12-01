@@ -475,44 +475,46 @@
     },
 
     keyUpEventsListener: function(e) {
-        switch (e.keyCode) {
-            case 37:  // left
-                if (!e.ctrlKey) {
-                    this.stepBwdClicked();
-                }
-                break;
-            case 39: // right
-                if (!e.ctrlKey) {
-                    this.stepFwdClicked();
-                }            
-                break;
-            case 68:// d for duplicate
-                if(e.ctrlKey) break;
-                let frameId = this.getCurrentFrameId();
-                if(this.imagelist){
-                    frameId = this.imageIndex
-                }
-                if (frameId > 0) {
-                    this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
-                }
-                this.playingCallback();
-                break;
-            case 32:// space to toggle play/pause
-                this.playPauseClicked();
-                break;
-            case 81:// q to go back a frame
-                if (!e.ctrlKey) {
-                    this.stepBwdClicked();
-                }
-                break;
-            case 69:// e to go forward a frame
-                if (!e.ctrlKey) {
-                    this.stepFwdClicked();
-                }
-                break;
-            default: return; // exit this handler for other keys
+        if (!(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement) && !(e.target instanceof HTMLSelectElement)) {
+            switch (e.keyCode) {
+                case 37:  // left
+                    if (!e.ctrlKey) {
+                        this.stepBwdClicked();
+                    }
+                    break;
+                case 39: // right
+                    if (!e.ctrlKey) {
+                        this.stepFwdClicked();
+                    }
+                    break;
+                case 68:// d for duplicate
+                    if (e.ctrlKey) break;
+                    let frameId = this.getCurrentFrameId();
+                    if (this.imagelist) {
+                        frameId = this.imageIndex
+                    }
+                    if (frameId > 0) {
+                        this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
+                    }
+                    this.playingCallback();
+                    break;
+                case 32:// space to toggle play/pause
+                    this.playPauseClicked();
+                    break;
+                case 81:// q to go back a frame
+                    if (!e.ctrlKey) {
+                        this.stepBwdClicked();
+                    }
+                    break;
+                case 69:// e to go forward a frame
+                    if (!e.ctrlKey) {
+                        this.stepFwdClicked();
+                    }
+                    break;
+                default: return; // exit this handler for other keys
             }
-        e.preventDefault(); // prevent the default action (scroll / move caret)
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+        }
     },
 
     keyUpEventsListenerBinded: null,
