@@ -315,7 +315,9 @@
             'KeyP');
 
         this.toolbar.addAction(twoPointTemplateIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POINT);
+            // right now this icon does the same as the rect icon
+            // SelectionMode.POINT is not implemented yet
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
         });
 
         let selectionLockIcon = new this.CT.Toolbar.IconDescription(
@@ -328,6 +330,8 @@
         this.toolbar.addAction(selectionLockIcon, (action) => {
             this.areaSelector.toggleLockState();
         });
+
+        this.toolbar.select("rect-select");
 
         this.textbox.addEventListener("focus", (e) => {
             e.preventDefault();
@@ -345,8 +349,6 @@
             this.inputtagsarray.push(newTag);
             self.optionalTags.createTagControls(this.inputtagsarray);
         })
-
-        this.toolbar.select("rect-select");
 
         // Register empty filter pipeline
         this.filterPipeline = new this.CT.Filter.FilterPipeline();;
