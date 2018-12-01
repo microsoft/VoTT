@@ -490,7 +490,9 @@
     },
 
     keyUpEventsListener: (e) => {
+      if (!(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement) && !(e.target instanceof HTMLSelectElement)) {
         if (this.hotKeysEnabled){
+
             switch (e.keyCode) {
                 case 37:  // left
                     if (!e.ctrlKey) {
@@ -500,12 +502,12 @@
                 case 39: // right
                     if (!e.ctrlKey) {
                         this.stepFwdClicked();
-                    }            
+                    }
                     break;
                 case 68:// d for duplicate
-                    if(e.ctrlKey) break;
+                    if (e.ctrlKey) break;
                     let frameId = this.getCurrentFrameId();
-                    if(this.imagelist){
+                    if (this.imagelist) {
                         frameId = this.imageIndex
                     }
                     if (frameId > 0) {
@@ -527,9 +529,11 @@
                     }
                     break;
                 default: return; // exit this handler for other keys
-                }
+
             }
-        e.preventDefault(); // prevent the default action (scroll / move caret)
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+        }
+      }
     },
 
     keyUpEventsListenerBinded: null,
