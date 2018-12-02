@@ -1,0 +1,33 @@
+<?xml version="1.0" standalone="no"?><!-- Generator: Gravit.io -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="0 0 64 64" width="64" height="64">
+    <defs>
+        <clipPath id="_clipPath_xT69JNLss05WYPqZrC8QiRch78i8vo4U">
+            <rect width="64" height="64"/>
+        </clipPath>
+    </defs>
+    <g clip-path="url(#_clipPath_xT69JNLss05WYPqZrC8QiRch78i8vo4U)">
+        <g/>
+        <line x1="0" y1="0" x2="0" y2="0" stroke-width="1" stroke="rgb(0,0,0)" />
+        <g>
+            <circle cx="12" cy="28" r="4" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
+            <circle cx="12" cy="52" r="4" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
+            <circle cx="52" cy="52" r="4" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
+        </g>
+        <line x1="12" y1="32" x2="12" y2="48" stroke-width="1" stroke="rgb(0,0,0)" />
+        <line x1="16" y1="52" x2="48" y2="52" stroke-width="1" stroke="rgb(0,0,0)" />
+        <line x1="16" y1="28" x2="28" y2="28" stroke-width="1" stroke="rgb(0,0,0)" />
+        <path class="accent-f" d=" M 39 38 L 42 37 L 39 28 L 46 29 L 32 12 L 31 34 L 36 29 L 39 38 Z " fill="rgb(255,255,255)" stroke-width="1" stroke="rgb(0,0,0)" />
+        <g>
+            <path d=" M 28 12 C 28 9.725 29.831 8 32 8 C 34.169 8 36 9.962 36 12" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
+            <line x1="12" y1="12" x2="12" y2="16" stroke-width="1" stroke="rgb(0,0,0)" />
+            <line x1="12" y1="12" x2="16" y2="12" stroke-width="1" stroke="rgb(0,0,0)" />
+            <line x1="20" y1="12" x2="24" y2="12" stroke-width="1" stroke="rgb(0,0,0)" />
+            <line x1="12" y1="20" x2="12" y2="24" stroke-width="1" stroke="rgb(0,0,0)" />
+            <line x1="32" y1="52" x2="32" y2="48" stroke-width="1" stroke="rgb(0,0,0)" />
+            <line x1="32" y1="44" x2="32" y2="40" stroke-width="1" stroke="rgb(0,0,0)" />
+        </g>
+        <line x1="52" y1="48" x2="52" y2="28.5" stroke-width="1" stroke="rgb(0,0,0)" />
+        <line x1="50" y1="28" x2="52" y2="28" stroke-width="1" stroke="rgb(0,0,0)" />
+    </g>
+</svg>
