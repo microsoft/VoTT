@@ -248,12 +248,6 @@
                 let r = commit.boundRect;
                 this.selectionSVG.style.zIndex = 30;
                 this.onNewAreaSelected(r.x1, r.y1, r.x2, r.y2);
-            },
-            onLocked: () => {
-                this.regionsManager.freeze();
-            },
-            onUnlocked: () => {
-                this.regionsManager.unfreeze();
             }
         });
 
@@ -364,7 +358,7 @@
         };
 
         this.toolbar.addSwitch(selectionLockIcon, (action) => {
-            this.areaSelector.toggleLockState();
+            this.regionsManager.toggleFreezeMode();
         });
 
         this.toolbar.setSwitch("selection-lock", false);
