@@ -300,6 +300,7 @@ window.addEventListener('keyup', (e) => {
       for(let currentRegion of content){
         videotagging.createRegion(currentRegion.x1, currentRegion.y1, currentRegion.x2, currentRegion.y2);
         videotagging.addTagsToRegion(currentRegion.tags);
+        videotagging.showAllRegions();
       }
     }catch(error) {
       console.log('ERROR: No bounding box in clipboard')
