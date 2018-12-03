@@ -1,4 +1,4 @@
-import ConnectionForm from "../components/pages/connections/connectionForm";
+import ConnectionForm from "../../react/components/pages/connections/connectionForm";
 
 export default interface IApplicationState {
     appSettings: IAppSettings;

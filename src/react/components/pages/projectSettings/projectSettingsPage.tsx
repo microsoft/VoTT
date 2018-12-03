@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { RouteComponentProps } from "react-router-dom";
 import ProjectForm from "./projectForm";
-import IProjectActions, * as projectActions from "../../../actions/projectActions";
-import ApplicationState, { IProject, IConnection } from "../../../store/applicationState";
-import IConnectionActions, * as connectionActions from "../../../actions/connectionActions";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import ApplicationState, { IProject, IConnection } from "../../../../redux/store/applicationState";
+import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 
 interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     currentProject: IProject;

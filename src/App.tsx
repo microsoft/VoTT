@@ -1,10 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
-import Navbar from "./components/shell/navbar";
-import Sidebar from "./components/shell/sidebar";
-import MainContentRouter from "./components/shell/mainContentRouter";
-import ApplicationState, { IProject } from "./store/applicationState";
+import Navbar from "./react/components/shell/navbar";
+import Sidebar from "./react/components/shell/sidebar";
+import MainContentRouter from "./react/components/shell/mainContentRouter";
+import ApplicationState, { IProject } from "./redux/store/applicationState";
 import "./App.scss";
 
 interface IAppProps {

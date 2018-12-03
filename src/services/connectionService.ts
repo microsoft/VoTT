@@ -1,5 +1,5 @@
 import shortid from "shortid";
-import { IConnection } from "../store/applicationState";
+import { IConnection } from "../redux/store/applicationState";
 
 export interface IConnectionService {
     get(id: string): Promise<IConnection>;
