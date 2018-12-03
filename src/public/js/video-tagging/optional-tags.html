@@ -122,7 +122,6 @@
         videotagging.hotkeysAssigned = true;
     }, 
     assignHotkeys(e){
-        let self = videotagging.optionalTags;
             if (e.keyCode >= 49 && e.keyCode <= 57 && !e.shiftKey) {
                 // debugger;
                 let index = e.keyCode - 49;
@@ -132,13 +131,13 @@
                     if(!btn.disabled) {
                         if (videotagging.optionalTags.tagsState[tag] == "empty" || videotagging.optionalTags.tagsState[tag] == "partial") {
                             videotagging.optionalTags.tagsState[tag] = "full";
-                            self.setSelected(btn);
+                            videotagging.optionalTags.setSelected(btn);
                         } else {
                             videotagging.optionalTags.tagsState[tag] = "empty";
-                            self.setUnselected(btn);
+                            videotagging.optionalTags.setUnselected(btn);
                         }
 
-                        self.fire("ontagschanged", { selected: videotagging.optionalTags.projectSelectedTags(), state: videotagging.optionalTags.tagsState});
+                        videotagging.optionalTags.fire("ontagschanged", { selected: videotagging.optionalTags.projectSelectedTags(), state: videotagging.optionalTags.tagsState});
                     }
                 }                
             }
