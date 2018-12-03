@@ -126,6 +126,14 @@
                 <span id="emptyFrame" title="empty frame" class="icon-share taggingControls controlOff" on-click='emptyFrameClicked'></span>
                 <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff" on-click='lockTagsClicked'></span>
             </div>
+            <div class="addTagControls">
+                <form id="addTagForm">
+                    <input type="text" id="newTag">
+                    <input type="submit" value="Add Tag">
+                </form>
+            </div>
+            <div style="clear: both">
+              </div>
             <div style="clear: both">
             </div>
         </div>
@@ -171,6 +179,7 @@
         this.rotation = 0;
         this.prevFrameIndex = 0;
         this.multiselection = false;
+        this.newTagIndex = null;
 
         //Frame view size
         this.frameWidth = 0;
@@ -191,6 +200,9 @@
         this.timeSpan = this.$$('#timeSpan');
         this.frameText = this.$$("#frameText");
         this.playbackSpan = this.$$("#playbackSpan");
+
+        //Form
+        this.form = this.$$('#addTagForm'),
 
         // Buttons
         this.playButton = this.$$('#play-pause');
@@ -225,28 +237,19 @@
 
         this.CT = CanvasTools.CanvasTools;
 
-        this.regionsManager = new this.CT.Region.RegionsManager(this.selectionSVG,
-            function () { },
-            function () { })
-            ;
+        this.regionsManager = new this.CT.Region.RegionsManager(this.selectionSVG, () => { }, () => { });
 
         this.areaSelector = new this.CT.Selection.AreaSelector(this.selectionSVG,
-            () => {
+        {
+            onSelectionBegin: () => {
                 this.selectionSVG.style.zIndex = 300;
             },
-            (x1, y1, x2, y2) => {
+            onSelectionEnd: (commit) => {
+                let r = commit.boundRect;
                 this.selectionSVG.style.zIndex = 30;
-                this.onNewAreaSelected(x1, y1, x2, y2);
+                this.onNewAreaSelected(r.x1, r.y1, r.x2, r.y2);
             }
-        );
-
-        this.areaSelector.onLocked = () => {
-            this.regionsManager.freeze();
-        };
-
-        this.areaSelector.onUnlocked = () => {
-            this.regionsManager.unfreeze();
-        }
+        });
 
         this.regionsManager.onManipulationEnd = () => {
             this.areaSelector.enable();
@@ -271,42 +274,94 @@
         this.toolbar = new this.CT.Toolbar.Toolbar(toolbarSVG);
         let selectionMode = "rect-select";
 
-        let rectIcont = new this.CT.Toolbar.IconDescription(
-            "rect-select",
-            "public/js/video-tagging/assets/icons/ct/rect-selection.svg",
-            "Rectangular box (R)",
-            'KeyR');
+        let noneIcon = {
+            action: "none-select",
+            iconUrl: "public/js/video-tagging/assets/icons/ct/none-selection.svg",
+            tooltip: "Regions Manipulation (M)",
+            keycode: 'KeyM'
+        }
+        
+        this.toolbar.addSelector(noneIcon, (action) => {
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.NONE);
+        });
 
-        this.toolbar.addAction(rectIcont, (action) => {
+        this.toolbar.addSeparator();
+
+        let pointIcon = {
+            action: "point-select",
+            iconUrl: "public/js/video-tagging/assets/icons/ct/point-selection.svg",
+            tooltip: "Point-selection (P)",
+            keycode: 'KeyP'
+        }
+
+        this.toolbar.addSelector(pointIcon, (action) => {
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POINT);
+        });
+
+        let rectIcont = {
+            action: "rect-select",
+            iconUrl: "public/js/video-tagging/assets/icons/ct/rect-selection.svg",
+            tooltip: "Rectangular box (R)",
+            keycode: 'KeyR'
+        }
+
+        this.toolbar.addSelector(rectIcont, (action) => {
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
         });
 
-        let templateIcon = new this.CT.Toolbar.IconDescription(
-            "template-select",
-            "public/js/video-tagging/assets/icons/ct/template-selection.svg",
-            "Template-based box (T)",
-            'KeyT');
+        let copyTemplateIcon = {
+            action: "copy-select",
+            iconUrl: "public/js/video-tagging/assets/icons/ct/copy-t-selection.svg",
+            tooltip: "Template-based box (T)",
+            keycode: 'KeyT'
+        };
 
-        this.toolbar.addAction(templateIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
-        });
-
-        let copyTemplateIcon = new this.CT.Toolbar.IconDescription(
-            "copy-select",
-            "public/js/video-tagging/assets/icons/ct/copy-t-selection.svg",
-            "Copy-based box (Y)",
-            'KeyY');
-
-        this.toolbar.addAction(copyTemplateIcon, (action) => {
+        this.toolbar.addSelector(copyTemplateIcon, (action) => {
             let rs = this.regionsManager.getSelectedRegionsBounds();
             if (rs !== undefined && rs.length > 0) {
                 let r = rs[0];
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(r.width, r.height) });
+                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(r.width, r.height) });
             } else {
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.CENTRALPOINT, { template: new this.CT.Base.Rect.Rect(40, 40) });
+                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(40, 40) });
             }
         });
 
+        let polylineIcon = {
+            action: "polyline-select",
+            iconUrl: "public/js/video-tagging/assets/icons/ct/polyline-selection.svg",
+            tooltip: "Polyline-selection (Y)",
+            keycode: 'KeyY'
+        };
+
+        this.toolbar.addSelector(polylineIcon, (action) => {
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POLYLINE);
+        });
+
+        /* let clickTemplateIcon = new this.CT.Toolbar.IconDescription(
+            "click-select",
+            "public/js/video-tagging/assets/icons/ct/click-selection.svg",
+            "Two-Point Mode (U)",
+            'KeyU');
+
+        this.toolbar.addAction(clickTemplateIcon, (action) => {
+            //right now this just does what the first icon does
+            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
+        }); */
+
+        this.toolbar.addSeparator();
+
+        let selectionLockIcon = {
+            action: "selection-lock",
+            iconUrl: "public/js/video-tagging/assets/icons/ct/selection-lock.svg",
+            tooltip: "Lock/unlock regions (L)",
+            keycode: 'KeyL',
+        };
+
+        this.toolbar.addSwitch(selectionLockIcon, (action) => {
+            this.regionsManager.toggleFreezeMode();
+        });
+
+        this.toolbar.setSwitch("selection-lock", false);
         this.toolbar.select("rect-select");
 
         // Register empty filter pipeline
@@ -433,13 +488,20 @@
                 let tagsDescriptor = this.buildTagsDescriptor(tags);
                 region.tags = tags;
                 this.regionsManager.updateTagsById(currentRegionUID, tagsDescriptor);
-            } else {
+            } else if (region !== null) {
                 region.tags = [];
                 this.regionsManager.updateTagsById(currentRegionUID, null);
             }
 
             this.selectRegion(currentRegionUID)
         });
+      this.form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        newTag = document.getElementById("newTag").value;
+        self.inputtagsarray.push(newTag);
+        self.optionalTags.createTagControls(self.inputtagsarray);
+        self.showAllRegions();
+      })
     },
 
     frameInputListener: function(event) {
@@ -447,33 +509,46 @@
     },
 
     keyUpEventsListener: function(e) {
-        switch (e.keyCode) {
-            case 37:  // left
-                if (!e.ctrlKey) {
-                    this.stepBwdClicked();
-                }
-                break;
-            case 39: // right
-                if (!e.ctrlKey) {
-                    this.stepFwdClicked();
-                }            
-                break;
-            case 68:// d for duplicate
-                let frameId = this.getCurrentFrameId();
-                if(this.imagelist){
-                    frameId = this.imageIndex
-                }
-                if (frameId > 0) {
-                    this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
-                }
-                this.playingCallback();
-                break;
-            case 32:// space to toggle play/pause
-                this.playPauseClicked();
-                break;
-            default: return; // exit this handler for other keys
+        if (!(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement) && !(e.target instanceof HTMLSelectElement)) {
+            switch (e.keyCode) {
+                case 37:  // left
+                    if (!e.ctrlKey) {
+                        this.stepBwdClicked();
+                    }
+                    break;
+                case 39: // right
+                    if (!e.ctrlKey) {
+                        this.stepFwdClicked();
+                    }
+                    break;
+                case 68:// d for duplicate
+                    if (e.ctrlKey) break;
+                    let frameId = this.getCurrentFrameId();
+                    if (this.imagelist) {
+                        frameId = this.imageIndex
+                    }
+                    if (frameId > 0) {
+                        this.frames[this.getCurrentFrameId()] = this.getPrevFrameRegionsCopy();
+                    }
+                    this.playingCallback();
+                    break;
+                case 32:// space to toggle play/pause
+                    this.playPauseClicked();
+                    break;
+                case 81:// q to go back a frame
+                    if (!e.ctrlKey) {
+                        this.stepBwdClicked();
+                    }
+                    break;
+                case 69:// e to go forward a frame
+                    if (!e.ctrlKey) {
+                        this.stepFwdClicked();
+                    }
+                    break;
+                default: return; // exit this handler for other keys
             }
-        e.preventDefault(); // prevent the default action (scroll / move caret)
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+        }
     },
 
     keyUpEventsListenerBinded: null,
@@ -618,6 +693,14 @@
             if(!this.inputtagsarray.includes(String.fromCharCode.apply(null, tag))) recs.push(String.fromCharCode.apply(null, tag));
         }
         if(recs.length) this.inputtagsarray.push.apply(this.inputtagsarray,recs)
+    },
+    checkRemovedTags: function() {
+        let regions = this.getCurrentFrameRegions();
+        regions.forEach(region => region.tags.forEach(tag => {
+            if(!this.inputtagsarray.includes(tag)){
+                region.tags.splice(tag,1);
+            }
+        }));
     },
     buildTagsDescriptor: function(tags) {
 
@@ -823,6 +906,7 @@
         this.clearAllRegions();
         var regions = this.getCurrentFrameRegions();
         if(regions && regions.length > 0) {
+            this.checkRemovedTags();
             //Draw all regions for this frame
             for (var i=0; i<regions.length;i++) {
                 var region = regions[i];
@@ -1409,5 +1493,6 @@
 <script src="../moment/moment.js"></script>
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
-<script src="js/ct.min.js"></script>
+<!-- <script src="js/ct.min.js"></script> -->
+<script src="js/ct.js"></script>
 </dom-module>
