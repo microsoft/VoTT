@@ -24,7 +24,10 @@
         <ul>
             <li><strong>Open Video:</strong> Ctrl + O</li>
             <li><strong>Open Image Directory:</strong> Ctrl + I</li>
+            <li><strong>Open TFRecord Directory:</strong> Ctrl + Space</li>
             <li><strong>Save Tags:</strong> Ctrl + S</li>
+            <li><strong>Next Frame:</strong>Right Arrow or E</li>
+            <li><strong>Previous Frame:</strong>Left Arrow or Q</li>
             <li><strong>Toggle Play/Pause:</strong> Space</li>
             <li><strong>Toggle Tracking:</strong> Ctrl + T</li>
             <li><strong>Toggle Exclusive Add Mode:</strong> Crtl + N</li>
@@ -33,7 +36,7 @@
             <li><strong>Duplicate last frame regions:</strong> D</li>
             <li><strong>Delete Frame:</strong> Shift + Del</li>
             <li><strong>Open Developer Console:</strong> Ctrl + D</li>
-            <li><strong>Refresh App:</strong> Ctrl + Space</li>
+            <li><strong>Refresh App:</strong> Ctrl + R</li>
             <li><strong>Show Help:</strong> Ctrl + H</li>
             
 
@@ -49,7 +52,6 @@
               </ul> 
             </li>
             <li><strong>Template based box creation:</strong> press T key.</li>
-            <li><strong>Example based box creation:</strong> press Y key. Uses currently selected region as a template for size.</li>
             <li><strong>Exclusive selection:</strong> press L key to block/unblock regions manipulation.</li>
         </ul>
       </div>
@@ -85,6 +87,9 @@
       <div class="tag-group">
         <label for="exampleTextarea">Tagging: </label>
         <p>Use the number keys to quickly tag a selected region <br><i>(Only works for single digits 0-9</i>)</p>
+        <p><strong>Changing Tags</strong></p>
+        <p>To change which tags are mapped to the hotkeys, hold Shift+(0-9) and click on the tag that you want to assign to that hotkey</p>
+        <p>To delete tags from list, use ctrl+left click on the tag you want removed. It will remove the tag from the list and untag any images that use that tag.</p>
       </div>
        <div id="cancelButton" class="btn btn-primary" style="display:inline-block;">Cancel</div>
      </div>        
