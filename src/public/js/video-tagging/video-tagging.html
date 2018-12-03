@@ -340,18 +340,6 @@
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POLYLINE);
         });
 
-        /* let clickTemplateIcon = new this.CT.Toolbar.IconDescription(
-            "click-select",
-            "public/js/video-tagging/assets/icons/ct/click-selection.svg",
-            "Two-Point Mode (U)",
-            'KeyU');
-
-        this.toolbar.addAction(twoPointTemplateIcon, (action) => {
-            // right now this icon does the same as the rect icon
-            // SelectionMode.POINT is not implemented yet
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
-        }); */
-
         this.toolbar.addSeparator();
 
         let selectionLockIcon = {
@@ -369,21 +357,17 @@
         this.toolbar.select("rect-select");
 
         this.textbox.addEventListener("focus", (e) => {
-            e.preventDefault();
-            this.toolbar.disableHotkeys();
             this.regionsManager.freeze();
-            this.hotKeysEnabled = false;
-            // window.removeEventListener("keyup", listener);
         });
 
-        this.submitTag.addEventListener("click", (e) => {
-            this.toolbar.enableHotkeys();
-            this.regionsManager.unfreeze();
-            this.hotKeysEnabled = true;
-            newTag = document.getElementById("newTag").value;
-            this.inputtagsarray.push(newTag);
-            self.optionalTags.createTagControls(this.inputtagsarray);
-        })
+        // this.submitTag.addEventListener("click", (e) => {
+            // this.toolbar.enableHotkeys();
+            // this.regionsManager.unfreeze();
+            // this.hotKeysEnabled = true;
+        //     newTag = document.getElementById("newTag").value;
+        //     this.inputtagsarray.push(newTag);
+        //     self.optionalTags.createTagControls(this.inputtagsarray);
+        // })
 
         // Register empty filter pipeline
         this.filterPipeline = new this.CT.Filter.FilterPipeline();;
@@ -516,7 +500,14 @@
 
             this.selectRegion(currentRegionUID)
         });
-
+        this.form.addEventListener("submit", (e) => {	
+            e.preventDefault();
+            this.regionsManager.unfreeze();  
+            newTag = document.getElementById("newTag").value;	
+            self.inputtagsarray.push(newTag);	
+            self.optionalTags.createTagControls(self.inputtagsarray);	
+            self.showAllRegions();	
+        })
       
     },
 
@@ -536,12 +527,6 @@
                     if (!e.ctrlKey) {
                         this.stepFwdClicked();
                     }            
-                    break;
-                case 68:// d for duplicate
-                    if(e.ctrlKey) break;
-                    let frameId = this.getCurrentFrameId();
-                    if(this.imagelist){
-                    }
                     break;
                 case 68:// d for duplicate
                     if (e.ctrlKey) break;
