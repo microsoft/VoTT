@@ -54,6 +54,7 @@
     createTagControls: function(tagsArray)  {
         this.tags = tagsArray;
         this.clearTagsState();
+        let videotagging = document.getElementById('video-tagging');
 
         $('#buttonsContainer').empty();
         if (!this.colors){
@@ -68,7 +69,6 @@
             btn.disabled = 'disabled';
             var self = this;
             btn.addEventListener("click", (e) => {
-                let videotagging = document.getElementById('video-tagging');
                 let tag = e.currentTarget.id;
                 if((videotagging.newTagIndex || videotagging.newTagIndex == 0) && e.shiftKey){
                     let originalIndex = videotagging.inputtagsarray.indexOf(tag)
@@ -76,11 +76,13 @@
                         let temp = videotagging.inputtagsarray[originalIndex];
                         videotagging.inputtagsarray[originalIndex] = videotagging.inputtagsarray[videotagging.newTagIndex];
                         videotagging.inputtagsarray[videotagging.newTagIndex] = temp;
+                        temp = this.colors[originalIndex];
+                        this.colors[originalIndex] = this.colors[videotagging.newTagIndex];
+                        this.colors[videotagging.newTagIndex] = temp;
                         this.createTagControls(videotagging.inputtagsarray);
                         videotagging.showAllRegions();
                     }
                 } else if(e.ctrlKey){
-                    let videotagging = document.getElementById('video-tagging');
                     let index = videotagging.inputtagsarray.indexOf(tag);
                     if (index !== -1){
                         videotagging.inputtagsarray.splice(index, 1);
@@ -92,12 +94,11 @@
                 else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
-                    self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
                 } else {
                     this.tagsState[tag] = "empty";
                     self.setUnselected(e.currentTarget);
-                    self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
-                }         
+                } 
+                self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});        
 
             });
             btn.style.color = this.colors[index];
@@ -113,27 +114,34 @@
             Polymer.dom(this.$.buttonsContainer).appendChild(btn);  
         }
 
-        window.addEventListener("keyup", (e) => {
+        if(videotagging.hotkeysAssigned){
+            window.removeEventListener("keyup", this.assignHotkeys);
+        } 
+
+        window.addEventListener("keyup",  this.assignHotkeys);
+        videotagging.hotkeysAssigned = true;
+    }, 
+    assignHotkeys(e){
             if (e.keyCode >= 49 && e.keyCode <= 57 && !e.shiftKey) {
+                // debugger;
                 let index = e.keyCode - 49;
-                if (index < this.tags.length) {
-                    let tag = this.tags[index];
-                    let btn = this.getBtnByTag(tag);
+                if (index < videotagging.optionalTags.tags.length) {
+                    let tag = videotagging.optionalTags.tags[index];
+                    let btn = videotagging.optionalTags.getBtnByTag(tag);
                     if(!btn.disabled) {
-                        if (this.tagsState[tag] == "empty" || this.tagsState[tag] == "partial") {
-                            this.tagsState[tag] = "full";
-                            self.setSelected(btn);
+                        if (videotagging.optionalTags.tagsState[tag] == "empty" || videotagging.optionalTags.tagsState[tag] == "partial") {
+                            videotagging.optionalTags.tagsState[tag] = "full";
+                            videotagging.optionalTags.setSelected(btn);
                         } else {
-                            this.tagsState[tag] = "empty";
-                            self.setUnselected(btn);
+                            videotagging.optionalTags.tagsState[tag] = "empty";
+                            videotagging.optionalTags.setUnselected(btn);
                         }
 
-                        self.fire("ontagschanged", { selected: this.projectSelectedTags(), state: this.tagsState});
+                        videotagging.optionalTags.fire("ontagschanged", { selected: videotagging.optionalTags.projectSelectedTags(), state: videotagging.optionalTags.tagsState});
                     }
                 }                
             }
-        });
-    }, 
+    },
 
     getBtnByTag(tag) {
         for (var i=0;i<this.buttonsContainer.childNodes.length;i++) {                      
