@@ -125,11 +125,9 @@
             <div class="labelControls">
                 <span id="emptyFrame" title="empty frame" class="icon-share taggingControls controlOff" on-click='emptyFrameClicked'></span>
                 <span id="lockTag" title="lock tags" class="icon-pushpin taggingControls lockTag controlOff" on-click='lockTagsClicked'></span>
-            </div>
-            <div class="addTagControls">
-                <form id="addTagForm">
-                    <input type="text" id="newTag">
-                    <input type="submit" value="Add Tag">
+                <form id="addTagForm" class="addTag">
+                    <input type="text" class="tagInput" id="newTag">
+                    <input type="button" value="Add Tag" id="submitTag">
                 </form>
             </div>
             <div style="clear: both">
@@ -155,6 +153,7 @@
       imagelist: Object,
       inputtagsarray:Object,
       inputframes: Object,
+      hotKeysEnabled: Boolean,
       src: {
         type: String,
         value: '',
@@ -203,7 +202,10 @@
         this.playbackSpan = this.$$("#playbackSpan");
 
         //Form
-        this.form = this.$$('#addTagForm'),
+        this.form = this.$$('#addTagForm');
+        this.textbox = this.$$('#newTag');
+        this.submitTag = this.$$('#submitTag');
+        this.hotKeysEnabled = true;
 
         // Buttons
         this.playButton = this.$$('#play-pause');
@@ -338,17 +340,6 @@
             this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POLYLINE);
         });
 
-        /* let clickTemplateIcon = new this.CT.Toolbar.IconDescription(
-            "click-select",
-            "public/js/video-tagging/assets/icons/ct/click-selection.svg",
-            "Two-Point Mode (U)",
-            'KeyU');
-
-        this.toolbar.addAction(clickTemplateIcon, (action) => {
-            //right now this just does what the first icon does
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
-        }); */
-
         this.toolbar.addSeparator();
 
         let selectionLockIcon = {
@@ -364,6 +355,19 @@
 
         this.toolbar.setSwitch("selection-lock", false);
         this.toolbar.select("rect-select");
+
+        this.textbox.addEventListener("focus", (e) => {
+            this.regionsManager.freeze();
+        });
+
+        // this.submitTag.addEventListener("click", (e) => {
+            // this.toolbar.enableHotkeys();
+            // this.regionsManager.unfreeze();
+            // this.hotKeysEnabled = true;
+        //     newTag = document.getElementById("newTag").value;
+        //     this.inputtagsarray.push(newTag);
+        //     self.optionalTags.createTagControls(this.inputtagsarray);
+        // })
 
         // Register empty filter pipeline
         this.filterPipeline = new this.CT.Filter.FilterPipeline();;
@@ -496,13 +500,15 @@
 
             this.selectRegion(currentRegionUID)
         });
-      this.form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        newTag = document.getElementById("newTag").value;
-        self.inputtagsarray.push(newTag);
-        self.optionalTags.createTagControls(self.inputtagsarray);
-        self.showAllRegions();
-      })
+        this.form.addEventListener("submit", (e) => {	
+            e.preventDefault();
+            this.regionsManager.unfreeze();  
+            newTag = document.getElementById("newTag").value;	
+            self.inputtagsarray.push(newTag);	
+            self.optionalTags.createTagControls(self.inputtagsarray);	
+            self.showAllRegions();	
+        })
+      
     },
 
     frameInputListener: function(event) {
@@ -520,7 +526,7 @@
                 case 39: // right
                     if (!e.ctrlKey) {
                         this.stepFwdClicked();
-                    }
+                    }            
                     break;
                 case 68:// d for duplicate
                     if (e.ctrlKey) break;
@@ -547,10 +553,10 @@
                     }
                     break;
                 default: return; // exit this handler for other keys
+                }
             }
             e.preventDefault(); // prevent the default action (scroll / move caret)
-        }
-    },
+        },
 
     keyUpEventsListenerBinded: null,
 
