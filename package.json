@@ -23,10 +23,10 @@
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "bower": "^1.7.2",
-    "electron": "^3.0.8",
-    "electron-builder": "^20.34.0",
+    "electron": "^3.0.10",
+    "electron-builder": "^20.38.2",
     "electron-packager": "^12.2.0",
-    "eslint": "^5.8.0",
+    "eslint": "^5.9.0",
     "eslint-config-strongloop": "^2.1.0",
     "jasmine": "^3.3.0",
     "jasmine-spec-reporter": "^4.2.1",
@@ -44,10 +44,11 @@
     }
   },
   "dependencies": {
-    "async": "^2.1.5",
+    "async": "^2.6.1",
     "cntk-fastercnn": "^0.1.2",
     "crypto-js": "^3.1.9-1",
     "electron-window-state": "^4.0.2",
+    "reload": "^2.3.1",
     "remote": "^0.2.6",
     "replace": "^0.3.0",
     "rimraf": "^2.6.2",
