@@ -1,4 +1,4 @@
-import ProjectService from "../services/projectService";
+import ProjectService from "../../services/projectService";
 import { IProject } from "../store/applicationState";
 import * as ActionTypes from "./actionTypes";
 

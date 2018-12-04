@@ -1,6 +1,6 @@
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProvider";
-import { IProject } from "../store/applicationState";
+import { IProject } from "../redux/store/applicationState";
 
 export interface IProjectService {
     get(id: string): Promise<IProject>;

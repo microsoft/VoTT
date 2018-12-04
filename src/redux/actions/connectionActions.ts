@@ -1,4 +1,4 @@
-import ConnectionService from "../services/connectionService";
+import ConnectionService from "../../services/connectionService";
 import { IConnection } from "../store/applicationState";
 import * as ActionTypes from "./actionTypes";
 

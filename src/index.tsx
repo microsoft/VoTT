@@ -7,9 +7,9 @@ import "./assets/css/bootstrap-theme-slate.css";
 import "./index.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import createReduxStore from "./store/store";
-import initialState from "./store/initialState";
-import ApplicationState from "./store/applicationState";
+import createReduxStore from "./redux/store/store";
+import initialState from "./redux/store/initialState";
+import ApplicationState from "./redux/store/applicationState";
 import registerProviders from "./registerProviders";
 
 registerProviders();

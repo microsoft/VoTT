@@ -2,7 +2,7 @@ import React from "react";
 import formSchema from "./connectionForm.json";
 import uiSchema from "./connectionForm.ui.json";
 import Form from "react-jsonschema-form";
-import { IConnection } from "../../../store/applicationState.js";
+import { IConnection } from "../../../../redux/store/applicationState.js";
 import LocalFolderPicker from "../../common/localFolderPicker";
 
 interface IConnectionFormProps extends React.Props<ConnectionForm> {
@@ -71,8 +71,8 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         const providerType = connection ? connection.providerType : null;
 
         if (providerType) {
-            const providerSchema = require(`../../../providers/storage/${providerType}.json`);
-            const providerUiSchema = require(`../../../providers/storage/${providerType}.ui.json`);
+            const providerSchema = require(`../../../../providers/storage/${providerType}.json`);
+            const providerUiSchema = require(`../../../../providers/storage/${providerType}.ui.json`);
 
             const formSchema = { ...this.state.formSchema };
             formSchema.properties["providerOptions"] = providerSchema;

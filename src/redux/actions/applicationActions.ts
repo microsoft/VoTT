@@ -1,4 +1,4 @@
-import { IpcRendererProxy } from "../common/ipcRendererProxy";
+import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import * as ActionTypes from "./actionTypes";
 
 export default interface IApplicationActions {
