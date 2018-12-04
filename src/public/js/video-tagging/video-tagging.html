@@ -240,134 +240,38 @@
 
         this.CT = CanvasTools.CanvasTools;
 
-        this.regionsManager = new this.CT.Region.RegionsManager(this.selectionSVG, () => { }, () => { });
+        var editor = new this.CT.Editor(this.selectionSVG);
+        editor.addToolbar(this.toolbarSVG, this.CT.Editor.FullToolbarSet, "public/js/video-tagging/assets/icons/ct/");
 
-        this.areaSelector = new this.CT.Selection.AreaSelector(this.selectionSVG,
-        {
-            onSelectionBegin: () => {
-                this.selectionSVG.style.zIndex = 300;
-            },
-            onSelectionEnd: (commit) => {
-                let r = commit.boundRect;
-                this.selectionSVG.style.zIndex = 30;
-                this.onNewAreaSelected(r.x1, r.y1, r.x2, r.y2);
-            }
-        });
-
-        this.regionsManager.onManipulationEnd = () => {
-            this.areaSelector.enable();
-        };
-        this.regionsManager.onManipulationBegin = () => {
-            this.areaSelector.disable();
+        editor.onSelectionBegin = () => {
         };
 
-        this.regionsManager.onRegionSelected = (id, multiselection) => {
+        editor.onSelectionEnd = (commit) => {
+            let r = commit.boundRect;
+            this.onNewAreaSelected(r.x1, r.y1, r.x2, r.y2);
+        };
+
+        editor.onRegionManipulationBegin = () => {
+
+        };
+
+        editor.onRegionManipulationEnd = () => {
+
+        };
+
+        editor.onRegionSelected = (id, multiselection) => {
             this.selectRegion(id, multiselection);
         };
 
-        this.regionsManager.onRegionMove = (id, x, y, width, height) => {
+        editor.onRegionMove = (id, x, y, width, height) => {
             this.regionMoved(id, x, y, width, height);
         };
 
-        this.regionsManager.onRegionDelete = (id) => {
+        editor.onRegionDelete = (id) => {
             this.deleteRegionById(id);
         };
 
-        // Fulfill toolbar
-        this.toolbar = new this.CT.Toolbar.Toolbar(toolbarSVG);
-        let selectionMode = "rect-select";
-
-        let noneIcon = {
-            action: "none-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/none-selection.svg",
-            tooltip: "Regions Manipulation (M)",
-            keycode: 'KeyM'
-        }
-        
-        this.toolbar.addSelector(noneIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.NONE);
-        });
-
-        this.toolbar.addSeparator();
-
-        let pointIcon = {
-            action: "point-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/point-selection.svg",
-            tooltip: "Point-selection (P)",
-            keycode: 'KeyP'
-        }
-
-        this.toolbar.addSelector(pointIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POINT);
-        });
-
-        let rectIcont = {
-            action: "rect-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/rect-selection.svg",
-            tooltip: "Rectangular box (R)",
-            keycode: 'KeyR'
-        }
-
-        this.toolbar.addSelector(rectIcont, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
-        });
-
-        let copyTemplateIcon = {
-            action: "copy-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/copy-t-selection.svg",
-            tooltip: "Template-based box (T)",
-            keycode: 'KeyT'
-        };
-
-        this.toolbar.addSelector(copyTemplateIcon, (action) => {
-            let rs = this.regionsManager.getSelectedRegionsBounds();
-            if (rs !== undefined && rs.length > 0) {
-                let r = rs[0];
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(r.width, r.height) });
-            } else {
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(40, 40) });
-            }
-        });
-
-        let polylineIcon = {
-            action: "polyline-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/polyline-selection.svg",
-            tooltip: "Polyline-selection (Y)",
-            keycode: 'KeyY'
-        };
-
-        this.toolbar.addSelector(polylineIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POLYLINE);
-        });
-
-        this.toolbar.addSeparator();
-
-        let selectionLockIcon = {
-            action: "selection-lock",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/selection-lock.svg",
-            tooltip: "Lock/unlock regions (L)",
-            keycode: 'KeyL',
-        };
-
-        this.toolbar.addSwitch(selectionLockIcon, (action) => {
-            this.regionsManager.toggleFreezeMode();
-        });
-
-        this.toolbar.setSwitch("selection-lock", false);
-        this.toolbar.select("rect-select");
-
-        this.textbox.addEventListener("focus", (e) => {
-            this.regionsManager.freeze();
-        });
-
-        // this.submitTag.addEventListener("click", (e) => {
-            // this.toolbar.enableHotkeys();
-            // this.regionsManager.unfreeze();
-            // this.hotKeysEnabled = true;
-        //     newTag = document.getElementById("newTag").value;
-        //     this.inputtagsarray.push(newTag);
-        //     self.optionalTags.createTagControls(this.inputtagsarray);
-        // })
+        this.editor = editor;
 
         // Register empty filter pipeline
         this.filterPipeline = new this.CT.Filter.FilterPipeline();;
@@ -492,17 +396,17 @@
             if (tags.length > 0 && region != null) {
                 let tagsDescriptor = this.buildTagsDescriptor(tags);
                 region.tags = tags;
-                this.regionsManager.updateTagsById(currentRegionUID, tagsDescriptor);
+                this.editor.RM.updateTagsById(currentRegionUID, tagsDescriptor);
             } else if (region !== null) {
                 region.tags = [];
-                this.regionsManager.updateTagsById(currentRegionUID, null);
+                this.editor.RM.updateTagsById(currentRegionUID, null);
             }
 
             this.selectRegion(currentRegionUID)
         });
         this.form.addEventListener("submit", (e) => {	
             e.preventDefault();
-            this.regionsManager.unfreeze();  
+            //this.regionsManager.unfreeze();  
             newTag = document.getElementById("newTag").value;	
             self.inputtagsarray.push(newTag);	
             self.optionalTags.createTagControls(self.inputtagsarray);	
@@ -743,9 +647,9 @@
 
             if (tags.length > 0) {
                 let tagsDescriptor = this.buildTagsDescriptor(tags);
-                this.regionsManager.updateTagsById(region.UID, tagsDescriptor);
+                this.editor.RM.updateTagsById(region.UID, tagsDescriptor);
             } else {
-                this.regionsManager.updateTagsById(region.UID, null);
+                this.editor.RM.updateTagsById(region.UID, null);
             }
         }
     },
@@ -880,7 +784,7 @@
         // Regions Manager
         let tagsDescriptor = this.buildTagsDescriptor(tags);
         
-        this.regionsManager.addRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
+        this.editor.RM.addRectRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
 
         this.selectRegion(regionUID);
     },
@@ -902,7 +806,7 @@
 
     clearAllRegions: function() {
         // Regions Manager
-        this.regionsManager.deleteAllRegions();
+        this.editor.RM.deleteAllRegions();
 
         // ** Old code **
         this.clearFrameElements();//Clear canvas and tags
@@ -961,10 +865,10 @@
                 this.registerRegion(x1, y1, x2, y2, region.UID, region.tags); ; //add frame                  
             }
             //Redraws all regions to ensure proper z-order stacking
-            this.regionsManager.redrawAllRegions();
+            this.editor.RM.redrawAllRegions();
         }
         //Clears areaSelector state when moving across frames
-        this.regionsManager.onManipulationEnd();
+        this.editor.RM.onManipulationEnd();
     },
     
     /**
@@ -1222,8 +1126,7 @@
         this.frameCanvas.width = this.frameWidth;
         this.frameCanvas.height = this.frameHeight;
 
-        this.areaSelector.resize(width, height);
-        this.regionsManager.resize(width, height);
+        this.editor.resize(width, height);
     },
 
     resetLayout: function(){
