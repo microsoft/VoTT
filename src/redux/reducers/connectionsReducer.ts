@@ -1,5 +1,5 @@
 import * as ActionTypes from "../actions/actionTypes";
-import { IConnection } from "../store/applicationState";
+import { IConnection } from "../../models/applicationState";
 
 export const reducer = (state: IConnection[] = [], action: any) => {
     switch (action.type) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { IConnection } from "../../../redux/store/applicationState";
+import { IConnection } from "../../../models/applicationState";
 import { Link } from "react-router-dom";
 
 interface IConnectionPickerProps {

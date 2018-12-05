@@ -1,5 +1,5 @@
 import ConnectionService from "../../services/connectionService";
-import { IConnection } from "../store/applicationState";
+import { IConnection } from "../../models/applicationState";
 import * as ActionTypes from "./actionTypes";
 
 const connectionService = new ConnectionService();

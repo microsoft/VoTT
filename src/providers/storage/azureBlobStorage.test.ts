@@ -1,7 +1,7 @@
-// import * as AzureStorageBlob from './azurestoragejs/azure-storage.blob.js'
 import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js";
 import { AzureCloudStorageService, IAzureCloudStorageOptions } from "./azureBlobStorage";
-import { StorageProviderFactory, IStorageProvider } from "./storageProvider";
+import { StorageProviderFactory } from "./storageProvider";
+import registerProviders from "../../registerProviders";
 
 const content = "This is the content";
 const containers = ["container1", "container2", "container3"];
@@ -10,16 +10,15 @@ const path = "container/filename.txt";
 const containerName = "container";
 const fileName = "filename.txt";
 
-class FakeBlobService {
-
-    public static getBlobToText = jest.fn(() => Promise.resolve(content));
-    public static deleteBlobIfExists = jest.fn(() => Promise.resolve());
-    public static createBlockBlobFromText = jest.fn(() => Promise.resolve());
-    public static createContainerIfNotExists = jest.fn(() => Promise.resolve());
-    public static listBlobsSegmented = jest.fn(() => Promise.resolve(files));
-    public static listContainersSegmented = jest.fn(() => Promise.resolve(containers));
-    public static deleteContainer = jest.fn(() => Promise.resolve());
-}
+const fakeBlobService = {
+    getBlobToText: jest.fn((container, filename, callback) => callback(null, content)),
+    deleteBlobIfExists: jest.fn((container, filename, callback) => callback(null)),
+    createBlockBlobFromText: jest.fn((container, filename, content, callback) => callback(null)),
+    createContainerIfNotExists: jest.fn((container, options, callback) => callback(null)),
+    listBlobsSegmented: jest.fn((container, callback) => callback(null, files)),
+    listContainersSegmented: jest.fn((options, callback) => callback(null, containers)),
+    deleteContainer: jest.fn((container, callback) => callback(null)),
+};
 
 describe("Azure blob functions", () => {
 
@@ -28,20 +27,23 @@ describe("Azure blob functions", () => {
         connectionString: "fake connection string",
     };
 
+    registerProviders();
+
+    beforeEach(() => {
+        AzureStorageBlob.createBlobService = jest.fn(() => fakeBlobService);
+    });
+
     describe("Initializing Connection", () => {
-        it("Create blob service", () =>  {
-            AzureStorageBlob.createBlobService = jest.fn(() => Promise.resolve());
+        it("Create blob service", async () => {
             const azure = new AzureCloudStorageService(options);
-            azure.listContainers(null);
+            await azure.listContainers(null);
             expect(AzureStorageBlob.createBlobService).toBeCalledWith(options.connectionString);
         });
     });
 
     describe("After connection is initialized", () => {
-
         beforeEach(() => {
             provider = new AzureCloudStorageService(options);
-            provider.getService = jest.fn(() => FakeBlobService);
         });
 
         it("Provider is registered with the StorageProviderFactory", () => {
@@ -49,25 +51,23 @@ describe("Azure blob functions", () => {
             expect(storageProvider).not.toBeNull();
         });
 
-        it("Get Blob to Text", () =>  {
-            provider.readText(path)
-                .then((text) => {
-                    expect(text).toBe(content);
-                });
-            expect(FakeBlobService.getBlobToText).toBeCalledWith(
+        it("Get Blob to Text", async () => {
+            const result = await provider.readText(path);
+            expect(result).toBe(content);
+            expect(fakeBlobService.getBlobToText).toBeCalledWith(
                 containerName,
                 fileName,
                 expect.any(Function),
             );
         });
 
-        it("Get Blob to Binary", () =>  {
+        it("Get Blob to Binary", () => {
             // Skipping for now
         });
 
-        it("Write text", () =>  {
-            provider.writeText(path, content);
-            expect(FakeBlobService.createBlockBlobFromText).toBeCalledWith(
+        it("Write text", async () => {
+            await provider.writeText(path, content);
+            expect(fakeBlobService.createBlockBlobFromText).toBeCalledWith(
                 containerName,
                 fileName,
                 content,
@@ -75,49 +75,44 @@ describe("Azure blob functions", () => {
             );
         });
 
-        it("Write binary", () =>  {
+        it("Write binary", () => {
             // Skipping for now, but 'createBlockBlobFromText' also takes a buffer
         });
 
-        it("Delete file", () =>  {
-            provider.deleteFile(path);
-            expect(FakeBlobService.deleteBlobIfExists).toBeCalledWith(
+        it("Delete file", async () => {
+            await provider.deleteFile(path);
+            expect(fakeBlobService.deleteBlobIfExists).toBeCalledWith(
                 containerName,
                 fileName,
                 expect.any(Function),
             );
         });
 
-        it("List files", () =>  {
-            provider.listFiles(path)
-                .then((result) => {
-                    expect(result).toBe(files);
-                });
-            expect(FakeBlobService.listBlobsSegmented).toBeCalledWith(
+        it("List files", async () => {
+            const result = await provider.listFiles(path);
+            expect(result).toBe(files);
+            expect(fakeBlobService.listBlobsSegmented).toBeCalledWith(
                 containerName,
                 expect.any(Function),
             );
         });
 
-        it("List containers", () =>  {
-            provider.listContainers(path)
-                .then((result) => {
-                    expect(result).toBe(containers);
-                });
-            expect(FakeBlobService.listContainersSegmented).toBeCalledWith(
+        it("List containers", async () => {
+            const result = await provider.listContainers(path);
+            expect(result).toBe(containers);
+            expect(fakeBlobService.listContainersSegmented).toBeCalledWith(
                 null,
                 expect.any(Function),
             );
         });
 
-        it("Create container", () =>  {
-            provider.createContainer(path);
-            expect(FakeBlobService.createContainerIfNotExists).toBeCalledWith(
+        it("Create container", async () => {
+            await provider.createContainer(path);
+            expect(fakeBlobService.createContainerIfNotExists).toBeCalledWith(
                 containerName,
                 { publicAccessLevel: "blob" },
                 expect.any(Function),
             );
         });
     });
-
 });

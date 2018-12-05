@@ -9,11 +9,11 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import createReduxStore from "./redux/store/store";
 import initialState from "./redux/store/initialState";
-import ApplicationState from "./redux/store/applicationState";
+import { IApplicationState } from "./models/applicationState";
 import registerProviders from "./registerProviders";
 
 registerProviders();
-const defaultState: ApplicationState = initialState;
+const defaultState: IApplicationState = initialState;
 const store = createReduxStore(defaultState);
 
 ReactDOM.render(

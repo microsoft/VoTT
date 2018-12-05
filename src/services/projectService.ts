@@ -1,6 +1,7 @@
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProvider";
-import { IProject } from "../redux/store/applicationState";
+import { IProject } from "../models/applicationState";
+import Guard from "../common/guard";
 
 export interface IProjectService {
     get(id: string): Promise<IProject>;
@@ -11,6 +12,8 @@ export interface IProjectService {
 
 export default class ProjectService implements IProjectService {
     public get(id: string): Promise<IProject> {
+        Guard.emtpy(id);
+
         return new Promise<IProject>(async (resolve, reject) => {
             const allProjects = await this.getList();
             const filtered = allProjects.filter((project) => project.id === id);
@@ -25,7 +28,7 @@ export default class ProjectService implements IProjectService {
     }
 
     public getList(): Promise<IProject[]> {
-        return new Promise<IProject[]>((resolve, reject) => {
+        return new Promise<IProject[]>((resolve) => {
             const projectsJson = localStorage.getItem("projects");
             if (!projectsJson) {
                 return resolve([]);
@@ -44,6 +47,8 @@ export default class ProjectService implements IProjectService {
     }
 
     public save(project: IProject) {
+        Guard.null(project);
+
         return new Promise<IProject>(async (resolve, reject) => {
             try {
                 if (!project.id) {
@@ -65,6 +70,8 @@ export default class ProjectService implements IProjectService {
     }
 
     public delete(project: IProject) {
+        Guard.null(project);
+
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const storageProvider = StorageProviderFactory.create(

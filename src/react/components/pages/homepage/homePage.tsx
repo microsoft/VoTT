@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import "./homePage.scss";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import ApplicationState, { IProject } from "../../../../redux/store/applicationState";
+import { IApplicationState, IProject } from "../../../../models/applicationState";
 import CondensedList from "../../common/condensedList";
 import RecentProjectItem from "./recentProjectItem";
 import FilePicker from "../../common/filePicker";
@@ -14,7 +14,7 @@ interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     actions: IProjectActions;
 }
 
-function mapStateToProps(state: ApplicationState) {
+function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
     };
@@ -89,7 +89,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private loadSelectedProject = (project: IProject) => {
         this.props.actions.loadProject(project).then(() => {
-            this.props.history.push(`/projects/${project.id}/settings`);
+            this.props.history.push(`/projects/${project.id}/edit`);
         });
     }
 

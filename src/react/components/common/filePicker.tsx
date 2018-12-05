@@ -33,8 +33,7 @@ export default class FilePicker extends React.Component<IFilePickerProps> {
             this.props.onError(e, "No files were selected");
         }
 
-        const reader = new HtmlFileReader();
-        reader.readAsText(e.currentTarget.files[0])
+        HtmlFileReader.readAsText(e.currentTarget.files[0])
             .then((fileText) => this.props.onChange(e, fileText))
             .catch((err) => this.props.onError(e, err));
     }

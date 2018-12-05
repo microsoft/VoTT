@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import deepmerge from "deepmerge";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
-import ApplicationState, { IAppSettings, IConnection } from "../../../../redux/store/applicationState";
+import { IApplicationState, IAppSettings, IConnection } from "../../../../models/applicationState";
 import Form from "react-jsonschema-form";
 import formSchema from "./appSettings.json";
 import uiSchema from "./appSettings.ui.json";
@@ -24,7 +24,7 @@ interface IAppSettingsState {
     appSettings: IAppSettings;
 }
 
-function mapStateToProps(state: ApplicationState) {
+function mapStateToProps(state: IApplicationState) {
     return {
         connections: state.connections,
         appSettings: state.appSettings,

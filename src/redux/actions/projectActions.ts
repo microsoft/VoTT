@@ -1,6 +1,7 @@
 import ProjectService from "../../services/projectService";
-import { IProject } from "../store/applicationState";
+import { IProject, IAsset } from "../../models/applicationState";
 import * as ActionTypes from "./actionTypes";
+import { AssetProviderFactory } from "../../providers/storage/assetProvider";
 
 const projectService = new ProjectService();
 
@@ -10,6 +11,8 @@ export default interface IProjectActions {
     saveProject(project: IProject): Promise<IProject>;
     deleteProject(project: IProject): Promise<void>;
     closeProject();
+    loadAssets(project: IProject): Promise<IAsset[]>;
+    saveAsset(asset: IAsset): IAsset;
 }
 
 export function loadProject(value: string | IProject) {
@@ -43,7 +46,6 @@ export function saveProject(project: IProject) {
     return async (dispatch) => {
         project = await projectService.save(project);
         dispatch({ type: ActionTypes.SAVE_PROJECT_SUCCESS, project });
-        dispatch({ type: ActionTypes.LOAD_PROJECT_SUCCESS, project });
 
         return project;
     };
@@ -59,5 +61,26 @@ export function deleteProject(project: IProject) {
 export function closeProject() {
     return (dispatch) => {
         dispatch({ type: ActionTypes.CLOSE_PROJECT_SUCCESS });
+    };
+}
+
+export function loadAssets(project: IProject) {
+    return async (dispatch) => {
+        const assetProvider = AssetProviderFactory.create(
+            project.sourceConnection.providerType,
+            project.sourceConnection.providerOptions,
+        );
+        const assets = await assetProvider.getAssets();
+
+        dispatch({ type: ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS, assets });
+
+        return assets;
+    };
+}
+
+export function saveAsset(asset: IAsset) {
+    return (dispatch) => {
+        dispatch({ type: ActionTypes.SAVE_ASSET_SUCCESS, asset });
+        return asset;
     };
 }

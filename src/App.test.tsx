@@ -4,10 +4,10 @@ import App from "./App";
 import { Provider } from "react-redux";
 import createReduxStore from "./redux/store/store";
 import initialState from "./redux/store/initialState";
-import ApplicationState from "./redux/store/applicationState";
+import { IApplicationState } from "./models//applicationState";
 
 it("renders without crashing", () => {
-    const defaultState: ApplicationState = initialState;
+    const defaultState: IApplicationState = initialState;
     const store = createReduxStore(defaultState);
     const div = document.createElement("div");
 

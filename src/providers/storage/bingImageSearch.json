@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "title": "Bing Image Search Options",
+    "required": ["apiKey","query"],
+    "properties": {
+        "apiKey": {
+            "type": "string",
+            "title": "API Key"
+        },
+        "query": {
+            "type": "string",
+            "title": "Query"
+        },
+        "aspectRatio": {
+            "type": "string",
+            "title": "Aspect Ratio",
+            "enum": [
+                "all",
+                "square",
+                "wide",
+                "tall"
+            ],
+            "default": "all",
+            "enumNames": [
+                "All",
+                "Square",
+                "Wide",
+                "Tall"
+            ]
+        }
+    }
+}

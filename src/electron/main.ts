@@ -10,15 +10,17 @@ let mainWindow: BrowserWindow;
 let ipcMainProxy: IpcMainProxy;
 
 function createWindow() {
-    // Create the browser window.
-    mainWindow = new BrowserWindow({ width: 1024, height: 768 });
-
     // and load the index.html of the app.
     const startUrl = process.env.ELECTRON_START_URL || url.format({
         pathname: path.join(__dirname, "/../build/index.html"),
         protocol: "file:",
         slashes: true,
     });
+
+    const webSecurityEnabled = !(!!process.env.ELECTRON_START_URL);
+
+    // Create the browser window.
+    mainWindow = new BrowserWindow({ width: 1024, height: 768, webPreferences: { webSecurity: webSecurityEnabled } });
     mainWindow.loadURL(startUrl);
 
     // Open the DevTools.

@@ -6,6 +6,14 @@
     ],
     "type": "object",
     "properties": {
+        "accountName": {
+            "title": "Account Name",
+            "type": "string"
+        },
+        "accountKey": {
+            "title": "Account Key",
+            "type": "string"
+        },
         "connectionString": {
             "title": "Connection String",
             "type": "string"

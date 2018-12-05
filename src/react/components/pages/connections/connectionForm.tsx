@@ -2,7 +2,7 @@ import React from "react";
 import formSchema from "./connectionForm.json";
 import uiSchema from "./connectionForm.ui.json";
 import Form from "react-jsonschema-form";
-import { IConnection } from "../../../../redux/store/applicationState.js";
+import { IConnection } from "../../../../models/applicationState.js";
 import LocalFolderPicker from "../../common/localFolderPicker";
 
 interface IConnectionFormProps extends React.Props<ConnectionForm> {
@@ -35,6 +35,12 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         this.onFormChange = this.onFormChange.bind(this);
     }
 
+    public componentDidUpdate(prevProps) {
+        if (prevProps.connection !== this.props.connection) {
+            this.bindForm(this.props.connection);
+        }
+    }
+
     public render() {
         return (
             <div className="app-connections-page-detail m-3 text-light">
@@ -53,12 +59,6 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         );
     }
 
-    public componentDidUpdate(prevProps) {
-        if (prevProps.connection !== this.props.connection) {
-            this.bindForm(this.props.connection);
-        }
-    }
-
     private onFormChange = (args) => {
         const providerType = args.formData.providerType;
 
@@ -69,16 +69,18 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
 
     private bindForm(connection: IConnection, resetProviderOptions: boolean = false) {
         const providerType = connection ? connection.providerType : null;
+        let newFormSchema: any = this.state.formSchema;
+        let newUiSchema: any = this.state.uiSchema;
 
         if (providerType) {
             const providerSchema = require(`../../../../providers/storage/${providerType}.json`);
             const providerUiSchema = require(`../../../../providers/storage/${providerType}.ui.json`);
 
-            const formSchema = { ...this.state.formSchema };
-            formSchema.properties["providerOptions"] = providerSchema;
+            newFormSchema = { ...formSchema };
+            newFormSchema.properties["providerOptions"] = providerSchema;
 
-            const uiSchema = { ...this.state.uiSchema };
-            uiSchema["providerOptions"] = providerUiSchema;
+            newUiSchema = { ...uiSchema };
+            newUiSchema["providerOptions"] = providerUiSchema;
         }
 
         const formData = { ...connection };
@@ -88,8 +90,8 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
 
         this.setState({
             providerName: providerType,
-            formSchema,
-            uiSchema,
+            formSchema: newFormSchema,
+            uiSchema: newUiSchema,
             formData,
         });
     }

@@ -2,7 +2,7 @@ import React from "react";
 import Sidebar from "./sidebar";
 import { BrowserRouter as Router } from "react-router-dom";
 import { mount } from "enzyme";
-import { IProject } from "../../store/applicationState";
+import { IProject } from "../../../models/applicationState";
 
 describe("Sidebar Component", () => {
     it("renders correctly", () => {

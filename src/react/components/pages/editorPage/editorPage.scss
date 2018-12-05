@@ -1,0 +1,124 @@
+@import '../../../../assets/sass/theme.scss';
+
+.editor-page {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    height: 100%;
+
+    &-sidebar {
+        overflow-y: scroll;
+    }
+
+    &-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+
+        &-header {
+            flex-basis: 50px;
+        }
+
+        &-body {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            background-color: $darker-5;
+
+            .canvas-container {
+                width: 100%;
+                text-align: center;
+
+                img, video {
+                    max-width: 80vw;
+                    max-height: 80vh;
+                }
+            }
+        }
+
+        &-footer {
+            flex-basis: 100px;
+        }
+    }
+
+    .asset-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .asset-item:first-child {
+        padding: 1em;
+    }
+
+    .asset-item {
+        padding: 0.5em 1em;
+        border-bottom: 1px solid $lighter-3;
+
+        &:hover {
+            position: relative;
+            background-color: $lighter-3;
+            cursor: pointer;
+        }
+
+        &.selected {
+            color: #fff;
+            background-color: $lighter-4;
+            font-weight: 600;
+        }
+
+        &-image {
+            width: 260px;
+            height: 195px;
+            overflow: hidden;
+            outline: 1px solid $lighter-2;
+            background-color: $darker-5;
+            text-align: center;
+            position: relative;
+
+            .asset-preview {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+            }
+
+            &:hover {
+                &::after {
+                    content: ' ';
+                    position: absolute;
+                    height: 100%;
+                    width: 100%;
+                    background-color: $lighter-3;
+                    z-index: 1;
+                }            
+            }
+
+            img, video {
+                display: inline-block;
+                margin: auto;
+                max-width: 100%;
+                max-height: 100%;
+            }
+
+            .asset-loading {
+                position: absolute;
+                top: 45%;
+                left: 50%;
+            }
+        }
+
+        &-metadata {
+            font-size: 80%;
+
+            .asset-filename {
+                max-width: 175px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+                white-space: nowrap;
+            }
+        }
+    }
+}

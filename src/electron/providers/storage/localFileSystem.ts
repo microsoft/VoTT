@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import { IStorageProvider } from "../../../providers/storage/storageProvider";
+import { IAsset, AssetType } from "../../../models/applicationState";
+import { AssetService } from "../../../services/assetService";
 
 export default class LocalFileSystem implements IStorageProvider {
     constructor(private browserWindow: BrowserWindow) { }
@@ -128,6 +130,12 @@ export default class LocalFileSystem implements IStorageProvider {
                 }
             });
         });
+    }
+
+    public async getAssets(folderPath?: string): Promise<IAsset[]> {
+        return (await this.listFiles(folderPath))
+            .map((filePath) => AssetService.createAssetFromFilePath(filePath))
+            .filter((asset) => asset.type !== AssetType.Unknown);
     }
 
     /**

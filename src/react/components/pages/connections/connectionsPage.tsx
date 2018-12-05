@@ -4,13 +4,11 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import ConnectionItem from "./connectionItem";
 import CondensedList from "../../common/condensedList";
-import ApplicationState, { IConnection } from "../../../../redux/store/applicationState.js";
+import { IApplicationState, IConnection } from "../../../../models/applicationState.js";
 import { RouteComponentProps } from "react-router-dom";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
-import { AzureCloudStorageService } from "../../../providers/storage/azureBlobStorage";
-import { debug } from "util";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
@@ -21,7 +19,7 @@ export interface IConnectionPageState {
     connection: IConnection;
 }
 
-function mapStateToProps(state: ApplicationState) {
+function mapStateToProps(state: IApplicationState) {
     return {
         connections: state.connections,
     };

@@ -1,5 +1,9 @@
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IStorageProvider } from "./storageProvider";
+import { IAssetProvider } from "./assetProvider";
+import { IAsset, AssetType } from "../../models/applicationState";
+import { AssetService } from "../../services/assetService";
+import Guard from "../../common/guard";
 
 const PROXY_NAME = "LocalFileSystem";
 
@@ -7,8 +11,10 @@ export interface ILocalFileSystemProxyOptions {
     folderPath: string;
 }
 
-export class LocalFileSystemProxy implements IStorageProvider {
-    constructor(private options?: ILocalFileSystemProxyOptions) { }
+export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
+    constructor(private options?: ILocalFileSystemProxyOptions) {
+        Guard.null(options);
+    }
 
     public selectContainer(): Promise<string> {
         return IpcRendererProxy.send(`${PROXY_NAME}:selectContainer`);
@@ -39,13 +45,13 @@ export class LocalFileSystemProxy implements IStorageProvider {
         return IpcRendererProxy.send(`${PROXY_NAME}:writeBinary`, [filePath, contents]);
     }
 
-    public listFiles(folderName: string): Promise<string[]> {
-        const folderPath = [this.options.folderPath, folderName].join("\\");
+    public listFiles(folderName?: string): Promise<string[]> {
+        const folderPath = folderName ? [this.options.folderPath, folderName].join("\\") : this.options.folderPath;
         return IpcRendererProxy.send(`${PROXY_NAME}:listFiles`, [folderPath]);
     }
 
-    public listContainers(folderName: string): Promise<string[]> {
-        const folderPath = [this.options.folderPath, folderName].join("\\");
+    public listContainers(folderName?: string): Promise<string[]> {
+        const folderPath = folderName ? [this.options.folderPath, folderName].join("\\") : this.options.folderPath;
         return IpcRendererProxy.send(`${PROXY_NAME}:listContainers`, [folderPath]);
     }
 
@@ -57,5 +63,10 @@ export class LocalFileSystemProxy implements IStorageProvider {
     public deleteContainer(folderName: string): Promise<void> {
         const folderPath = [this.options.folderPath, folderName].join("\\");
         return IpcRendererProxy.send(`${PROXY_NAME}:deleteContainer`, [folderPath]);
+    }
+
+    public getAssets(folderName?: string): Promise<IAsset[]> {
+        const folderPath = [this.options.folderPath, folderName].join("\\");
+        return IpcRendererProxy.send(`${PROXY_NAME}:getAssets`, [folderPath]);
     }
 }

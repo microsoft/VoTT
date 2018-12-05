@@ -4,14 +4,14 @@ import { BrowserRouter as Router } from "react-router-dom";
 import Navbar from "./react/components/shell/navbar";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
-import ApplicationState, { IProject } from "./redux/store/applicationState";
+import { IApplicationState, IProject } from "./models/applicationState";
 import "./App.scss";
 
 interface IAppProps {
     currentProject?: IProject;
 }
 
-function mapStateToProps(state: ApplicationState) {
+function mapStateToProps(state: IApplicationState) {
     return {
         currentProject: state.currentProject,
     };

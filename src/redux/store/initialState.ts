@@ -1,10 +1,10 @@
 import shortid from "shortid";
-import ApplicationState, { IConnection, IProject, ITag } from "./applicationState";
+import { IConnection, IProject, ITag, IApplicationState } from "../../models/applicationState";
 
 const sampleConnections = createSampleConnections();
 const sampeProjects = createSampleProjects();
 
-const initialState: ApplicationState = {
+const initialState: IApplicationState = {
     appSettings: {
         devToolsEnabled: false,
         connection: null,

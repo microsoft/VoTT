@@ -1,5 +1,6 @@
 import shortid from "shortid";
-import { IConnection } from "../redux/store/applicationState";
+import { IConnection } from "../models/applicationState";
+import Guard from "../common/guard";
 
 export interface IConnectionService {
     get(id: string): Promise<IConnection>;
@@ -10,6 +11,8 @@ export interface IConnectionService {
 
 export default class ConnectionService implements IConnectionService {
     public get(id: string): Promise<IConnection> {
+        Guard.emtpy(id);
+
         return new Promise<IConnection>(async (resolve, reject) => {
             const allConnections = await this.getList();
             const filtered = allConnections.filter((connection) => connection.id === id);
@@ -43,6 +46,8 @@ export default class ConnectionService implements IConnectionService {
     }
 
     public save(connection: IConnection) {
+        Guard.null(connection);
+
         return new Promise<IConnection>(async (resolve, reject) => {
             try {
                 if (!connection.id) {
@@ -60,6 +65,8 @@ export default class ConnectionService implements IConnectionService {
     }
 
     public delete(connection: IConnection) {
+        Guard.null(connection);
+
         return new Promise<void>(async (resolve, reject) => {
             try {
                 let allConnections = await this.getList();

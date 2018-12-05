@@ -4,11 +4,11 @@ import { bindActionCreators } from "redux";
 import { RouteComponentProps } from "react-router-dom";
 import ProjectForm from "./projectForm";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import ApplicationState, { IProject, IConnection } from "../../../../redux/store/applicationState";
+import { IApplicationState, IProject, IConnection } from "../../../../models/applicationState";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 
 interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
-    currentProject: IProject;
+    project: IProject;
     projectActions: IProjectActions;
     connectionActions: IConnectionActions;
     connections: IConnection[];
@@ -18,9 +18,9 @@ interface IProjectSettingsPageState {
     project: IProject;
 }
 
-function mapStateToProps(state: ApplicationState) {
+function mapStateToProps(state: IApplicationState) {
     return {
-        currentProject: state.currentProject,
+        project: state.currentProject,
         connections: state.connections,
     };
 }
@@ -38,25 +38,19 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         super(props, context);
 
         this.state = {
-            project: this.props.currentProject,
+            project: this.props.project,
         };
 
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-    }
-
-    public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
-        if (!this.state.project && projectId) {
-            const currentProject = await this.props.projectActions.loadProject(projectId);
-
-            this.setState({
-                project: currentProject,
-            });
+        if (!this.props.project && projectId) {
+            this.props.projectActions.loadProject(projectId);
         }
 
         if (!this.props.connections) {
-            await this.props.connectionActions.loadConnections();
+            this.props.connectionActions.loadConnections();
         }
+
+        this.onFormSubmit = this.onFormSubmit.bind(this);
     }
 
     public render() {

@@ -1,5 +1,5 @@
 import * as ActionTypes from "../actions/actionTypes";
-import { IProject } from "../store/applicationState";
+import { IProject } from "../../models/applicationState";
 
 export const reducer = (state: IProject[] = [], action: any) => {
     switch (action.type) {
@@ -10,7 +10,7 @@ export const reducer = (state: IProject[] = [], action: any) => {
             if (state) {
                 return [
                     { ...action.project },
-                ...state.filter((project) => project.id !== action.project.id),
+                    ...state.filter((project) => project.id !== action.project.id),
                 ];
             } else {
                 return [{ ...action.project }];
