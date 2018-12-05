@@ -552,10 +552,8 @@ function openPath(pathName, isDir, isRecords = false) {
 }
 
 function getRegionsFromRecord(tfRecord){
-  if(videotagging.sourceWidth == 0 || videotagging.sourceHeight == 0){
-    videotagging.sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0];
-    videotagging.sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0];
-  }
+  videotagging.sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0];
+  videotagging.sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0];
   let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
   let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 

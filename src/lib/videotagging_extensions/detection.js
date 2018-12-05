@@ -157,15 +157,13 @@ function Detection(videotagging, visitedFrames) {
                     //var stanH = (self.videotagging.imagelist) ? frameCanvas.height / region.height : self.videotagging.video.videoHeight / region.height;
                     var tag = {
                         class: region.tags[region.tags.length - 1],
-                        x1: parseInt(region.x1 * stanW),
-                        y1: parseInt(region.y1 * stanH),
-                        x2: parseInt(region.x2 * stanW),
-                        y2: parseInt(region.y2 * stanH)
+                        x1: region.box.x1,
+                        y1: region.box.y1,
+                        x2: region.box.x2,
+                        y2: region.box.y2,
+                        w: region.width,
+                        h: region.height
                     };
-                    if (self.videotagging.imagelist) {
-                        tag.w = parseInt(frameCanvas.width);
-                        tag.h = parseInt(frameCanvas.height);
-                    }
                     frameTags.push(tag);
 
                 });

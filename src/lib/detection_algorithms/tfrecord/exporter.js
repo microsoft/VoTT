@@ -84,18 +84,23 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                     let poses = [];
 
                     tags.forEach(tag => {
-                        xmin.push(tag.x1 / videotagging.sourceWidth)
-                        ymin.push(tag.y1 / videotagging.sourceHeight)
-                        xmax.push(tag.x2 / videotagging.sourceWidth)
-                        ymax.push(tag.y2 / videotagging.sourceHeight)
+                        xmin.push(tag.x1 / tag.w)
+                        ymin.push(tag.y1 / tag.h)
+                        xmax.push(tag.x2 / tag.w)
+                        ymax.push(tag.y2 / tag.h)
                         classes.push(tag.class)
                         difficult_obj.push(0)
                         truncated.push(0)
                         poses.push(encode_Uint8("Unspecified"))
                     });
-
-                    builder.setIntegers('image/height', [videotagging.sourceHeight]);
-                    builder.setIntegers('image/width', [videotagging.sourceWidth]);
+                    if(tags.length){
+                        builder.setIntegers('image/height', [tags[0].h]);
+                        builder.setIntegers('image/width', [tags[0].w]);
+                    } else {
+                        builder.setIntegers('image/height', [self.frameHeight]);
+                        builder.setIntegers('image/width', [self.frameWidth]);
+                    }
+                    
 
                     builder.setBinaries('image/filename', [encode_Uint8(frameName)]);
                     builder.setBinaries('image/source_id', [encode_Uint8(frameName)]);
@@ -112,25 +117,11 @@ function Exporter(exportDirPath, classes, taggedFramesCount, frameWidth, frameHe
                         builder.setBinaries('image/format', [encode_Uint8('mp4')]);
                     }
 
-                    function getFirstRegion(frames) {
-                        for (frame of Object.keys(frames)) {
-                            if (frames[frame] && frames[frame].length){
-                                return frames[frame][0];
-                            }
-                        }
-                        return {
-                            width: videotagging.sourceWidth,
-                            height: videotagging.sourceHeight
-                        }
-                    }
-
-                    let firstRegion = getFirstRegion(videotagging.frames)
-                    let widthMult = firstRegion.width / videotagging.sourceWidth;
-                    let heightMult = firstRegion.height / videotagging.sourceHeight;
-                    builder.setFloats('image/object/bbox/xmin', xmin.map((x) => x / widthMult));
-                    builder.setFloats('image/object/bbox/ymin', ymin.map((y) => y / heightMult));
-                    builder.setFloats('image/object/bbox/xmax', xmax.map((x) => x / widthMult));
-                    builder.setFloats('image/object/bbox/ymax', ymax.map((y) => y / heightMult));
+                    
+                    builder.setFloats('image/object/bbox/xmin', xmin);
+                    builder.setFloats('image/object/bbox/ymin', ymin);
+                    builder.setFloats('image/object/bbox/xmax', xmax);
+                    builder.setFloats('image/object/bbox/ymax', ymax);
                     builder.setBinaries('image/object/class/text', classes.map(tag => encode_Uint8(tag)));
                     builder.setIntegers('image/object/class/label', classes.map(tag => videotagging.inputtagsarray.indexOf(tag)));
 
