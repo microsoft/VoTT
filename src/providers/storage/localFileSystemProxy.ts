@@ -13,7 +13,11 @@ export interface ILocalFileSystemProxyOptions {
 
 export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
     constructor(private options?: ILocalFileSystemProxyOptions) {
-        Guard.null(options);
+        if (!this.options) {
+            this.options = {
+                folderPath: null,
+            };
+        }
     }
 
     public selectContainer(): Promise<string> {

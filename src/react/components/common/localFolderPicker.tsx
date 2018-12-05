@@ -18,7 +18,7 @@ export default class LocalFolderPicker extends React.Component<ILocalFolderPicke
         super(props, context);
 
         this.state = {
-            value: this.props.value,
+            value: this.props.value || "",
         };
 
         this.localFileSystem = new LocalFileSystemProxy();

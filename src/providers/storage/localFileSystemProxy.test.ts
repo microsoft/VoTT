@@ -6,7 +6,12 @@ import registerProviders from "../../registerProviders";
 describe("LocalFileSystem Proxy Storage Provider", () => {
     it("Provider is registered with the StorageProviderFactory", () => {
         registerProviders();
-        const storageProvider = StorageProviderFactory.create("localFileSystemProxy", {});
+        const storageProvider = StorageProviderFactory.create("localFileSystemProxy");
+        expect(storageProvider).not.toBeNull();
+    });
+
+    it("creates an instance without options", () => {
+        const storageProvider = new LocalFileSystemProxy();
         expect(storageProvider).not.toBeNull();
     });
 
