@@ -81,7 +81,7 @@ ipcRenderer.on('export-tags', (event, exportConfig) => {
   addLoader();
   let imagePaths;
   if(videotagging.imagelist){
-    imagePaths = videotagging.imagelist.map((filepath) => {return path.join(videotagging.sourceDir,filepath)})
+    imagePaths = videotagging.imagelist.map((filepath) => path.join(videotagging.sourceDir,filepath))
   }
   detection.export(imagePaths, exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
      if(!videotagging.imagelist){
