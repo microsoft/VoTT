@@ -90,8 +90,9 @@
                     }
                     document.getElementById(tag).remove();
                     videotagging.checkRemovedTags();                    
-                }
-                else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
+                } else if (e.altKey) {
+                    self.toggleAutoState(e.currentTarget);
+                } else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
                 } else {
@@ -106,7 +107,9 @@
 
             // Add indexes to map keyboard
             if (index <= 9) {
-                btn.innerHTML = `${tagsArray[index]}<sup>[${index < 10 ? index + 1 : ""}]</sup>`;
+                btn.innerHTML = `${tagsArray[index]}<span>${index < 10 ? index + 1 : ""}</span>`;
+                btn.dataset.hotkey = index + 1;
+                btn.classList.add("hotkey");
             } else {
                 btn.innerHTML = `${tagsArray[index]}`;
             }
@@ -143,6 +146,10 @@
             }
     },
 
+    toggleAutoState(btn) {
+        btn.classList.toggle('auto');
+    },
+
     getBtnByTag(tag) {
         for (var i=0;i<this.buttonsContainer.childNodes.length;i++) {                      
             if(tag === this.buttonsContainer.childNodes[i].value){
@@ -177,6 +184,10 @@
     getSelectedTags :function(){ 
         return $(this.buttonsContainer).find(".tagOn");
     },
+    getAutoTags :function(){ 
+        return $(this.buttonsContainer).find(".auto");
+    },
+
     resetSelected: function(){
         var self = this;
         $(this.buttonsContainer).find('.tagButtons').each(function(index){

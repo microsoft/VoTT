@@ -574,12 +574,23 @@
         var ry2 = y2 / heightRatio;
 
         var region = this.addRegion(rx1, ry1, rx2, ry2);//Add to in-memory collection
+
+        let autoTags = this.optionalTags.getAutoTags();
+        if (autoTags !== null && autoTags.length > 0) {
+            let tags = [];
+            for (var i = 0; i < autoTags.length; i++) {
+                tags.push(autoTags[i].id);
+            }
+            region.tags = tags;            
+        }
+
         this.registerRegion(x1, y1, x2, y2, region.UID, region.tags); //add frame
 
         //if there is only one tag enable it by default
         if ($(`#${this.optionalTags.id}`).find('.tagButtons').size() == 1){
             $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
         }
+
         if(this.lockTagsEnabled) {
             //Get all selected tags and add them to current region automatically
             //this.selectedTags was populated in this.lockTagsClicked
