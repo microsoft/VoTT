@@ -2,7 +2,7 @@ import React from "react";
 import { LocalFileSystemProxy } from "../../../providers/storage/localFileSystemProxy";
 
 interface ILocalFolderPickerProps {
-    id: string;
+    id?: string;
     value: any;
     onChange: (value) => void;
 }

@@ -1,9 +1,13 @@
 import { IAsset, AssetType } from "../models/applicationState";
+import Guard from "./guard";
 
 export default class HtmlFileReader {
     public static readAsText(file: File): Promise<string | ArrayBuffer> {
+        Guard.null(file);
+
         return new Promise<string | ArrayBuffer>((resolve, reject) => {
             const reader = new FileReader();
+            reader.onerror = reject;
             reader.onload = () => {
                 if (reader.result) {
                     resolve(reader.result);
@@ -12,11 +16,17 @@ export default class HtmlFileReader {
                 }
             };
 
-            reader.readAsText(file);
+            try {
+                reader.readAsText(file);
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 
     public static async readAssetAttributes(asset: IAsset): Promise<any> {
+        Guard.null(asset);
+
         switch (asset.type) {
             case AssetType.Image:
                 return await this.readImageAttributes(asset.path);
