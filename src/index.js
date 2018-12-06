@@ -14,11 +14,11 @@ var async = require("async");
 var trackingEnabled = true;
 var saveState,
     visitedFrames, //keep track of the visited frames
-    visitedFramesNumber,
     videotagging,
     detection,
     trackingExtension,
-    assetFolder; 
+    assetFolder,
+    sourceDir; 
 
 $(document).ready(() => {//init confirm keys figure out why this doesn't work
   $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
@@ -44,45 +44,6 @@ const mkdirSync = function (dirPath) {
     if (err.code !== 'EEXIST') throw err
   }
 }
-
-ipcRenderer.on('export-records', async (event, exportConfig) => {
-  addLoader();
-  if(videotagging.imagelist && visitedFrames.size > 0){
-    mkdirSync(exportConfig.exportPath);
-    var isLastFrame;
-    var exportUntil;
-    switch (exportConfig.exportUntil) {
-      case "tagged":
-        exportUntil = videotagging.imagelist.map((file) => file.split(path.sep).pop()).indexOf(Object.keys(self.videotagging.frames)[Object.keys(self.videotagging.frames).length - 1])
-        break;
-
-      case "last":
-        exportUntil = videotagging.imagelist.length;
-        break;
-
-      case "visited":
-        exportUntil = visitedFrames.size;
-        break;
-
-      default:
-        break;
-    }
-    let recordPromises = [];
-    let carg = async.queue(async function(tasks, callback){
-      if(videotagging.recordlist) await writeRecord(videotagging.imagelist[tasks.i],videotagging.recordlist[tasks.i],exportConfig.exportPath);
-      else await writeRecord(videotagging.imagelist[tasks.i],null,exportConfig.exportPath);
-      callback();
-    },50)
-    carg.drain = function(){
-      $(".loader").remove();
-    }
-    for (let i = 0; i < exportUntil; i++) {
-      carg.push({i:i},function(err){
-        console.log(`record #: ${i}/${exportUntil} saved`)
-      });
-    }
-  }
-});
 
 ipcRenderer.on('saveVideo', (event, message) => {
   save();
@@ -118,7 +79,11 @@ ipcRenderer.on('export', (event, message) => {
 
 ipcRenderer.on('export-tags', (event, exportConfig) => {
   addLoader();
-  detection.export(videotagging.imagelist, exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
+  let imagePaths;
+  if(videotagging.imagelist){
+    imagePaths = videotagging.imagelist.map((filepath) => path.join(videotagging.sourceDir,filepath))
+  }
+  detection.export(imagePaths, exportConfig.exportFormat, exportConfig.exportUntil, exportConfig.exportPath, testSetSize, () => {
      if(!videotagging.imagelist){
        videotagging.video.oncanplay = updateVisitedFrames;
       } 
@@ -319,7 +284,6 @@ function addLoader(appendTo = "#videoWrapper") {
 function updateVisitedFrames(){
   if(videotagging.imagelist){
     visitedFrames.add(videotagging.imagelist[videotagging.imageIndex].split(path.sep).pop());
-    visitedFramesNumber.add(videotagging.imageIndex);
   } else {
     visitedFrames.add(videotagging.getCurrentFrameId());
   }
@@ -396,6 +360,7 @@ function openPath(pathName, isDir, isRecords = false) {
     }
 
     assetFolder = path.join(path.dirname(pathName), `${path.basename(pathName, path.extname(pathName))}_output`);
+    sourceDir = pathName;
     
     try {
       var config = require(`${pathName}.json`);
@@ -443,6 +408,7 @@ function openPath(pathName, isDir, isRecords = false) {
         videotagging.video.currentTime = 0;
         videotagging.framerate = $('#framerate').val();
         videotagging.src = ''; // ensures reload if user opens same video 
+        videotagging.sourceDir = sourceDir;
 
         if (config) {  
           if (config.tag_colors){
@@ -450,7 +416,6 @@ function openPath(pathName, isDir, isRecords = false) {
           }
           videotagging.inputframes = config.frames;
           visitedFrames =  new Set(config.visitedFrames);
-          visitedFramesNumber =  new Set(Array.from(Array(visitedFrames).keys()));
         } else {
           videotagging.inputframes = {};
           visitedFrames = new Set();
@@ -473,12 +438,9 @@ function openPath(pathName, isDir, isRecords = false) {
               });
             }
             visitedFrames = new Set([videotagging.imagelist[0]]);
-            visitedFramesNumber =  new Set([0])
           } else {
             visitedFrames = new Set();
-            visitedFramesNumber =  new Set();
           }
-          // visitedFrames =  (isDir) ? new Set([pathName]) : new Set();
         } 
 
         if (isDir){
@@ -508,8 +470,7 @@ function openPath(pathName, isDir, isRecords = false) {
             if (videotagging.imagelist.length){
               //Check if tagging was done in previous version of VOTT
               if(!isNaN(Array.from(visitedFrames)[0])){
-                visitedFramesNumber = visitedFrames;
-                visitedFrames = new Set(Array.from(visitedFramesNumber).map(frame => videotagging.imagelist[parseInt(frame)]))
+                visitedFrames = new Set(Array.from(visitedFrames).map(frame => videotagging.imagelist[parseInt(frame)]))
                 
                 //Replace the keys of the frames object
                 Object.keys(videotagging.inputframes).map(function(key, index) {
@@ -518,7 +479,6 @@ function openPath(pathName, isDir, isRecords = false) {
                 }, this);
               }
 
-              videotagging.imagelist = videotagging.imagelist.map((filepath) => {return path.join(pathName,filepath)});
               videotagging.src = pathName; 
               //track visited frames
               $("#video-tagging").off("stepFwdClicked-AfterStep", updateVisitedFrames);
@@ -578,7 +538,6 @@ function openPath(pathName, isDir, isRecords = false) {
         }
 
         //init detection
-        //detection = new DetectionExtension(videotagging, visitedFramesNumber);
         detection = new DetectionExtension(videotagging, visitedFrames);
         
         $('#load-form-container').hide();
@@ -593,10 +552,8 @@ function openPath(pathName, isDir, isRecords = false) {
 }
 
 function getRegionsFromRecord(tfRecord){
-  if(videotagging.sourceWidth == 0 || videotagging.sourceHeight == 0){
-    videotagging.sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0];
-    videotagging.sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0];
-  }
+  videotagging.sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0];
+  videotagging.sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0];
   let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
   let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 
@@ -613,115 +570,6 @@ function getRegionsFromRecord(tfRecord){
   }
 }
 
-async function writeRecord(recordPath, example = null, outputDir = null) {
-  return new Promise(async (resolve, reject) => {
-    let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
-    let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
-
-    const id = recordPath.split(path.sep).pop();
-    outputDir = outputDir ? outputDir : recordPath.split(path.sep).slice(0,-1).join(path.sep);
-    let recordId = id.split(".").slice(0,-1);
-    recordId.push("tfrecord")
-    recordId = recordId.join(".")
-    let outputPath = outputDir + path.sep + recordId;
-
-    if(!example){
-      const regions = videotagging.getRegions(id);
-      const builder = tfrecord.createBuilder();
-
-      let xmin = [];
-      let ymin = [];
-      let xmax = [];
-      let ymax = [];
-      let tags = [];
-      let difficult_obj = [];
-      let truncated = [];
-      let poses = [];
-      
-      regions.forEach(region => {
-        xmin.push(region.x1 / videotagging.sourceWidth)
-        ymin.push(region.y1 / videotagging.sourceHeight)
-        xmax.push(region.x2 / videotagging.sourceWidth)
-        ymax.push(region.y2 / videotagging.sourceHeight)
-        tags.push(region.tags[0])
-        difficult_obj.push(0)
-        truncated.push(0)
-        poses.push(encode_Uint8("Unspecified"))
-      });
-
-      getDataUri(recordPath).then((data) => {
-        builder.setIntegers('image/height', [videotagging.sourceHeight]);
-        builder.setIntegers('image/width', [videotagging.sourceWidth]);
-
-        builder.setBinaries('image/filename', [encode_Uint8(id)]);
-        builder.setBinaries('image/source_id', [encode_Uint8(id)]);
-
-        builder.setBinaries('image/key/sha256', [encode_Uint8(CryptoJS.SHA256(data).toString(CryptoJS.enc.Base64))]);
-
-        builder.setBinaries('image/encoded', [data]);
-
-        if(videotagging.currTFRecord) builder.setBytes('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-2)[0])]);
-        else builder.setBinaries('image/format', [encode_Uint8(videotagging.getCurrentFrameId().split(".").slice(-1)[0])]);
-
-        function getFirstRegion(frames){
-          for(frame of Object.keys(frames)){
-            if(frames[frame] && frames[frame].length) return frames[frame][0]
-          }
-          return {width: videotagging.sourceWidth, height: videotagging.sourceHeight}
-        }
-
-        let firstRegion = getFirstRegion(videotagging.frames)
-        let widthMult = firstRegion.width / videotagging.sourceWidth;
-        let heightMult = firstRegion.height / videotagging.sourceHeight;
-        builder.setFloats('image/object/bbox/xmin', xmin.map((x) => x / widthMult));
-        builder.setFloats('image/object/bbox/ymin', ymin.map((y) => y / heightMult));
-        builder.setFloats('image/object/bbox/xmax', xmax.map((x) => x / widthMult));
-        builder.setFloats('image/object/bbox/ymax', ymax.map((y) => y / heightMult));
-        builder.setBinaries('image/object/class/text', tags.map(tag => encode_Uint8(tag)));
-        builder.setIntegers('image/object/class/label', tags.map(tag => videotagging.inputtagsarray.indexOf(tag)));
-
-        builder.setIntegers('image/object/difficult', difficult_obj);
-        builder.setIntegers('image/object/truncated', truncated);
-        builder.setBinaries('image/object/view', poses);
-
-        example = builder.releaseExample();
-
-        console.log('new example built')
-        return example
-      }).then(async (example) => {
-        // console.log(example)
-        const writer = await tfrecord.createWriter(outputPath);
-        await writer.writeExample(example);
-        await writer.close();
-        resolve();
-      });
-    } else{
-      const writer = await tfrecord.createWriter(outputPath);
-      await writer.writeExample(example);
-      await writer.close();
-      resolve();
-    }
-  });
-}
-
-function getDataUri(url) {
-  return new Promise((resolve,reject) => {
-    var image = new Image();
-
-    image.onload = function () {
-      var canvas = document.createElement('canvas');
-      canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
-      canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
-
-      canvas.getContext('2d').drawImage(this, 0, 0);
-
-      // Get raw image data
-      resolve(canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, ''));
-    };
-
-    image.src = url;
-  })
-}
 
 async function readRecord(pathname, recordName) {
   const reader = await tfrecord.createReader(pathname + path.sep + recordName);
@@ -782,9 +630,6 @@ function save() {
         videotagging.currTFRecord.features.feature['image/object/bbox/ymax'].floatList.value = ymax;
         videotagging.currTFRecord.features.feature['image/object/class/text'].bytesList.value = tags;
         videotagging.recordlist[videotagging.imageIndex] = videotagging.currTFRecord;
-        // writeRecord(videotagging.imagelist[videotagging.imageIndex],videotagging.currTFRecord).then(()=>{
-        //   console.log(`record saved: ${videotagging.imagelist[videotagging.imageIndex]}`)
-        // });
       }
       setTimeout(() => {
         saveLock = false;
@@ -798,7 +643,6 @@ function encode_Uint8(s) {
   
   var enc = new TextEncoder();
   return enc.encode(s)
-  // return Uint8Array.from(s);
 }
 
 function decode_Uint8(uint8Arr) {
