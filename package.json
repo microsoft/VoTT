@@ -1,6 +1,6 @@
 {
   "name": "vott",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
