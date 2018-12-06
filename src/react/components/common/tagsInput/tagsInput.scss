@@ -11,22 +11,24 @@ div.ReactTags__tagInput {
 }
 div.ReactTags__tagInput input.ReactTags__tagInputField,
 div.ReactTags__tagInput input.ReactTags__tagInputField:focus {
-    height: 31px;
+    height: 1200%;
     margin: 0;
-    font-size: 12px;
+    font-size: 110%;
     width: 100%;
     border: 1px solid #eee;
-    padding: 0 4px;
+    padding: 5px;
+    margin: 5px 5px;
 }
 
 /* Styles for selected tags */
 div.ReactTags__selected span.ReactTags__tag {
     border: 1px solid #ddd;
+    border-radius: 10%;
     background: #000000;
-    font-size: 12px;
+    font-size: 110%;
     display: inline-block;
     padding: 5px;
-    margin: 0 5px;
+    margin: 5px 5px;
     cursor: move;
     border-radius: 2px;
 }
@@ -60,3 +62,12 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     background: #b7cfe0;
     cursor: pointer;
 }
+
+.tag_color_box {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    margin-left: 2px;
+    vertical-align: baseline;
+}
+

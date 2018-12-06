@@ -3,7 +3,7 @@ import Form from "react-jsonschema-form";
 import deepmerge from "deepmerge";
 import formSchema from "./projectForm.json";
 import uiSchema from "./projectForm.ui.json";
-import TagsInput from "../../common/tagsInput";
+import TagsInput from "../../common/tagsInput/tagsInput";
 import ConnectionPicker from "../../common/connectionPicker";
 import { IProject, IConnection } from "../../../../models/applicationState.js";
 

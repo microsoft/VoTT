@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "title": "Tag Name",
+            "type": "string"
+        },
+        "color": {
+            "title": "Tag Color",
+            "type": "string",
+            "enum": [
+                "#FFFFFF", "#808080", "#FF0000", "#800000", "#FFFF00", "#808000",
+                "#00FF00", "#008000", "#00FFFF", "#008080", "#0000FF", "#000080", "#FF00FF" 
+            ],
+            "default": "white",
+            "enumNames": [
+                "White", "Gray", "Red", "Maroon", "Yellow", "Olive",
+                "Green", "Aqua", "Teal", "Blue", "Navy", "Fuschia", "Purple" 
+            ]
+        }
+    }
+}
