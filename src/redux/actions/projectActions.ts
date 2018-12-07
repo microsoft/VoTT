@@ -1,7 +1,8 @@
 import ProjectService from "../../services/projectService";
-import { IProject, IAsset } from "../../models/applicationState";
+import { IProject, IAsset, IAssetMetadata } from "../../models/applicationState";
 import * as ActionTypes from "./actionTypes";
-import { AssetProviderFactory } from "../../providers/storage/assetProvider";
+import { AssetService } from "../../services/assetService";
+import { JsonExportProvider } from "../../providers/export/jsonExportProvider";
 
 const projectService = new ProjectService();
 
@@ -11,8 +12,10 @@ export default interface IProjectActions {
     saveProject(project: IProject): Promise<IProject>;
     deleteProject(project: IProject): Promise<void>;
     closeProject();
+    exportProject(project: IProject): Promise<void>;
     loadAssets(project: IProject): Promise<IAsset[]>;
-    saveAsset(asset: IAsset): IAsset;
+    loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
+    saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
 }
 
 export function loadProject(value: string | IProject) {
@@ -66,21 +69,39 @@ export function closeProject() {
 
 export function loadAssets(project: IProject) {
     return async (dispatch) => {
-        const assetProvider = AssetProviderFactory.create(
-            project.sourceConnection.providerType,
-            project.sourceConnection.providerOptions,
-        );
-        const assets = await assetProvider.getAssets();
-
+        const assetService = new AssetService(project);
+        const assets = await assetService.getAssets();
         dispatch({ type: ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS, assets });
 
         return assets;
     };
 }
 
-export function saveAsset(asset: IAsset) {
-    return (dispatch) => {
-        dispatch({ type: ActionTypes.SAVE_ASSET_SUCCESS, asset });
-        return asset;
+export function loadAssetMetadata(project: IProject, asset: IAsset) {
+    return async (dispatch) => {
+        const assetService = new AssetService(project);
+        const assetMetadata = await assetService.getAssetMetadata(asset);
+        dispatch({ type: ActionTypes.LOAD_ASSET_METADATA_SUCCESS, assetMetadata });
+
+        return assetMetadata;
+    };
+}
+
+export function saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata) {
+    return async (dispatch) => {
+        const assetService = new AssetService(project);
+        const savedMetadata = await assetService.save(assetMetadata);
+        dispatch({ type: ActionTypes.SAVE_ASSET_METADATA_SUCCESS, assetMetadata: savedMetadata });
+
+        return savedMetadata;
+    };
+}
+
+export function exportProject(project: IProject) {
+    return async (dispatch) => {
+        const exportProvider = new JsonExportProvider(project, { foo: "bar" });
+        await exportProvider.export();
+
+        dispatch({ type: ActionTypes.EXPORT_PROJECT_SUCCESS });
     };
 }

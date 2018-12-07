@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState, IProject, IAsset } from "../../../../models/applicationState";
+import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { RouteComponentProps } from "react-router-dom";
 import HtmlFileReader from "../../../../common/htmlFileReader";
@@ -17,7 +17,7 @@ interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageP
 interface IEditorPageState {
     project: IProject;
     assets: IAsset[];
-    selectedAsset?: IAsset;
+    selectedAsset?: IAssetMetadata;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -76,7 +76,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="asset-list">
                         {
                             assets.map((asset) =>
-                                <div className={selectedAsset && asset.id === selectedAsset.id
+                                <div className={selectedAsset && asset.id === selectedAsset.asset.id
                                     ? "asset-item selected"
                                     : "asset-item"}
                                     onClick={() => this.selectAsset(asset)} key={asset.id}>
@@ -102,11 +102,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="editor-page-content-body">
                         {selectedAsset &&
                             <div className="canvas-container">
-                                <AssetPreview asset={selectedAsset} />
-                                {selectedAsset.size &&
+                                <AssetPreview asset={selectedAsset.asset} />
+                                {selectedAsset.asset.size &&
                                     <div>
-                                        Width: {selectedAsset.size.width}
-                                        Height: {selectedAsset.size.height}
+                                        Width: {selectedAsset.asset.size.width}
+                                        Height: {selectedAsset.asset.size.height}
                                     </div>
                                 }
                             </div>
@@ -121,22 +121,26 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private async selectAsset(asset: IAsset) {
-        const selectedAsset = { ...asset };
+        const assetMetadata = await this.props.projectActions.loadAssetMetadata(this.props.project, asset);
+        if (assetMetadata.asset.state === AssetState.NotVisited) {
+            assetMetadata.asset.state = AssetState.Visited;
+        }
 
         try {
-            const props = await HtmlFileReader.readAssetAttributes(selectedAsset);
-            selectedAsset.size = { width: props.width, height: props.height };
-            this.props.projectActions.saveAsset(selectedAsset);
+            if (!assetMetadata.asset.size) {
+                const assetProps = await HtmlFileReader.readAssetAttributes(asset);
+                assetMetadata.asset.size = { width: assetProps.width, height: assetProps.height };
+            }
         } catch (err) {
             console.error(err);
         }
 
+        await this.props.projectActions.saveAssetMetadata(this.props.project, assetMetadata);
+        await this.props.projectActions.saveProject(this.props.project);
+        await this.props.projectActions.exportProject(this.props.project);
+
         this.setState({
-            selectedAsset: null,
-        }, () => {
-            this.setState({
-                selectedAsset,
-            }, async () => await this.props.projectActions.saveProject(this.props.project));
+            selectedAsset: assetMetadata,
         });
     }
 

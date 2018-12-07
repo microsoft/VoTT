@@ -95,7 +95,7 @@ export interface IExportFormat {
     id: string;
     name: string;
     providerType: string;
-    providerOptions: object;
+    providerOptions: any;
 }
 
 /**
@@ -111,6 +111,7 @@ export interface IExportFormat {
 export interface IAsset {
     id: string;
     type: AssetType;
+    state: AssetState;
     name: string;
     path: string;
     size: ISize;
@@ -187,6 +188,19 @@ export enum AssetType {
     Unknown = 0,
     Image = 1,
     Video = 2,
+}
+
+/**
+ * @name - Asset State
+ * @description - Defines the state of the asset with regard to the tagging process
+ * @member NotVisited - Specifies as asset that has not yet been visited or tagged
+ * @member Visited - Specifies an asset has been visited, but not yet tagged
+ * @member Tagged - Specifies an asset has been visited and tagged
+ */
+export enum AssetState {
+    NotVisited = 0,
+    Visited = 1,
+    Tagged = 2,
 }
 
 /**

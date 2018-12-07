@@ -1,6 +1,8 @@
-import { IAsset, AssetType } from "../models/applicationState";
 import MD5 from "md5.js";
 import Guard from "../common/guard";
+import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../models/applicationState";
+import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProvider";
+import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProvider";
 
 export class AssetService {
     public static createAssetFromFilePath(filePath: string): IAsset {
@@ -16,6 +18,7 @@ export class AssetService {
         return {
             id: md5Hash,
             format: assetFormat,
+            state: AssetState.NotVisited,
             type: assetType,
             name: fileName,
             path: filePath,
@@ -42,6 +45,64 @@ export class AssetService {
                 return AssetType.Video;
             default:
                 return AssetType.Unknown;
+        }
+    }
+
+    private assetProviderInstance: IAssetProvider;
+    private storageProviderInstance: IStorageProvider;
+
+    constructor(private project: IProject) {
+        Guard.null(project);
+    }
+
+    protected get assetProvider(): IAssetProvider {
+        if (!this.assetProviderInstance) {
+            this.assetProviderInstance = AssetProviderFactory.create(
+                this.project.sourceConnection.providerType,
+                this.project.sourceConnection.providerOptions,
+            );
+
+            return this.assetProviderInstance;
+        }
+    }
+
+    protected get storageProvider(): IStorageProvider {
+        if (!this.storageProviderInstance) {
+            this.storageProviderInstance = StorageProviderFactory.create(
+                this.project.targetConnection.providerType,
+                this.project.targetConnection.providerOptions,
+            );
+        }
+
+        return this.storageProviderInstance;
+    }
+
+    public async getAssets(): Promise<IAsset[]> {
+        return await this.assetProvider.getAssets();
+    }
+
+    public async save(metadata: IAssetMetadata): Promise<IAssetMetadata> {
+        Guard.null(metadata);
+
+        const fileName = `${metadata.asset.id}.json`;
+        await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
+
+        return metadata;
+    }
+
+    public async getAssetMetadata(asset: IAsset): Promise<IAssetMetadata> {
+        Guard.null(asset);
+
+        const fileName = `${asset.id}.json`;
+        try {
+            const json = await this.storageProvider.readText(fileName);
+            return JSON.parse(json) as IAssetMetadata;
+        } catch (err) {
+            return {
+                asset,
+                regions: [],
+                timestamp: null,
+            };
         }
     }
 }

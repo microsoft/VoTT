@@ -3,6 +3,8 @@ import { AzureCloudStorageService } from "./providers/storage/azureBlobStorage";
 import { StorageProviderFactory } from "./providers/storage/storageProvider";
 import { BingImageSearch } from "./providers/storage/bingImageSearch";
 import { AssetProviderFactory } from "./providers/storage/assetProvider";
+import { ExportProviderFactory } from "./providers/export/exportProviderFactory";
+import { JsonExportProvider } from "./providers/export/jsonExportProvider";
 
 export default function registerProviders() {
     // Storage Providers
@@ -13,4 +15,7 @@ export default function registerProviders() {
     AssetProviderFactory.register("azureBlobStorage", (options) => new AzureCloudStorageService(options));
     AssetProviderFactory.register("localFileSystemProxy", (options) => new LocalFileSystemProxy(options));
     AssetProviderFactory.register("bingImageSearch", (options) => new BingImageSearch(options));
+
+    // Export Providers
+    ExportProviderFactory.register("json", (project, options) => new JsonExportProvider(project, options));
 }
