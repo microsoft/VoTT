@@ -8,7 +8,7 @@ export interface IJsonExportOptions {
 }
 
 export class JsonExportProvider extends ExportProvider<IJsonExportOptions> {
-    constructor(project: IProject, options: IJsonExportOptions) {
+    constructor(project: IProject, options?: IJsonExportOptions) {
         super(project, options);
     }
 

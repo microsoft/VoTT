@@ -2,7 +2,6 @@ import React from "react";
 import LocalFolderPicker from "./localFolderPicker";
 import { mount } from "enzyme";
 
-// Creates an auto
 jest.mock("../../../providers/storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../../../providers/storage/localFileSystemProxy";
 

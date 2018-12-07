@@ -52,7 +52,7 @@ export interface IProject {
     targetConnection: IConnection;
     exportFormat: IExportFormat;
     autoSave: boolean;
-    assets?: { id: string, IAsset };
+    assets?: { [index: string]: IAsset };
 }
 
 /**
