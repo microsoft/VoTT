@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { JsonExportProvider } from "./jsonExportProvider";
+import { VottJsonExportProvider, IVottJsonExportOptions } from "./vottJson";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import { IProject, IAssetMetadata, IAsset, AssetType, AssetState } from "../../models/applicationState";
@@ -10,15 +10,13 @@ import { AssetService } from "../../services/assetService";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 
-describe("Json Export Provider", () => {
+describe("VoTT Json Export Provider", () => {
     const testProject: IProject = {
         id: "1",
         name: "Test Project",
         autoSave: true,
         assets: createTestAssets(10),
         exportFormat: {
-            id: "export-provider-1",
-            name: "JSON Export Provider",
             providerType: "json",
             providerOptions: {},
         },
@@ -37,18 +35,22 @@ describe("Json Export Provider", () => {
         tags: [],
     };
 
+    const options: IVottJsonExportOptions = {
+        assetState: "all",
+    };
+
     beforeEach(() => {
         registerProviders();
     });
 
     it("Is defined", () => {
-        expect(JsonExportProvider).toBeDefined();
+        expect(VottJsonExportProvider).toBeDefined();
     });
 
     it("Can be instantiated through the factory", () => {
-        const exportProvider = ExportProviderFactory.create("json", testProject);
+        const exportProvider = ExportProviderFactory.create("vottJson", testProject, options);
         expect(exportProvider).not.toBeNull();
-        expect(exportProvider).toBeInstanceOf(JsonExportProvider);
+        expect(exportProvider).toBeInstanceOf(VottJsonExportProvider);
     });
 
     it("Exports a vott project into a single JSON file", async () => {
@@ -63,7 +65,7 @@ describe("Json Export Provider", () => {
             return Promise.resolve(assetMetadata);
         });
 
-        const exportProvider = new JsonExportProvider(testProject);
+        const exportProvider = new VottJsonExportProvider(testProject, options);
         await exportProvider.export();
 
         const storageProviderMock = LocalFileSystemProxy as any;

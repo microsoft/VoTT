@@ -92,8 +92,6 @@ export interface IConnection {
  * @member providerOptions - The provider specific option required to export data
  */
 export interface IExportFormat {
-    id: string;
-    name: string;
     providerType: string;
     providerOptions: any;
 }

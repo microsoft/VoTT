@@ -137,7 +137,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         await this.props.projectActions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.projectActions.saveProject(this.props.project);
-        await this.props.projectActions.exportProject(this.props.project);
 
         this.setState({
             selectedAsset: assetMetadata,

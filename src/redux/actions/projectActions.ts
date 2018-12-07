@@ -2,7 +2,8 @@ import ProjectService from "../../services/projectService";
 import { IProject, IAsset, IAssetMetadata } from "../../models/applicationState";
 import * as ActionTypes from "./actionTypes";
 import { AssetService } from "../../services/assetService";
-import { JsonExportProvider } from "../../providers/export/jsonExportProvider";
+import { VottJsonExportProvider } from "../../providers/export/vottJson";
+import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 
 const projectService = new ProjectService();
 
@@ -99,9 +100,15 @@ export function saveAssetMetadata(project: IProject, assetMetadata: IAssetMetada
 
 export function exportProject(project: IProject) {
     return async (dispatch) => {
-        const exportProvider = new JsonExportProvider(project, { foo: "bar" });
-        await exportProvider.export();
+        if (project.exportFormat && project.exportFormat.providerType) {
+            const exportProvider = ExportProviderFactory.create(
+                project.exportFormat.providerType,
+                project,
+                project.exportFormat.providerOptions);
 
-        dispatch({ type: ActionTypes.EXPORT_PROJECT_SUCCESS });
+            await exportProvider.export();
+
+            dispatch({ type: ActionTypes.EXPORT_PROJECT_SUCCESS });
+        }
     };
 }

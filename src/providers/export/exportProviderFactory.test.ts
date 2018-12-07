@@ -8,8 +8,6 @@ describe("Export Provider Factory", () => {
         name: "Test Project",
         autoSave: true,
         exportFormat: {
-            id: "export-provider-1",
-            name: "TestExportProvider",
             providerType: "TestExportProvider",
             providerOptions: {},
         },

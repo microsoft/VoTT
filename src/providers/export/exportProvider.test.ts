@@ -9,8 +9,6 @@ describe("Export Provider Base", () => {
         name: "Test Project",
         autoSave: true,
         exportFormat: {
-            id: "export-provider-1",
-            name: "JSON Export Provider",
             providerType: "json",
             providerOptions: {},
         },

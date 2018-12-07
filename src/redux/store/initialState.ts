@@ -36,9 +36,7 @@ function createSampleProjects(count: number = 5): IProject[] {
             name: `Project ${i}`,
             description: `Sample description for connection ${i}`,
             exportFormat: {
-                id: "export-format-1",
-                name: "Custom Vision Service",
-                providerType: "CVS",
+                providerType: "azureCustomVision",
                 providerOptions: {},
             },
             sourceConnection: getRandomConnection(sampleConnections),

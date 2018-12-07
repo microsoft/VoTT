@@ -16,8 +16,6 @@ describe("Connection Picker Component", () => {
     const store = createReduxStore(defaultState);
     let wrapper: any = null;
     let recentProjects: IProject[] = null;
-    const executor = () => { return; };
-    const loadSelectedProject = () => { return; };
     const actions: IProjectActions = null;
     let source: IConnection;
     const tags: ITag[] = [];
@@ -36,8 +34,6 @@ describe("Connection Picker Component", () => {
             providerOptions: {},
         };
         format = {
-            id: "1",
-            name: "format",
             providerType: "provider",
             providerOptions: {},
         };

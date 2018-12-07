@@ -5,7 +5,7 @@ import ActiveLearningPage from "../pages/activeLearningPage";
 import AppSettingsPage from "../pages/appSettings/appSettingsPage";
 import ConnectionPage from "../pages/connections/connectionsPage";
 import EditorPage from "../pages/editorPage/editorPage";
-import ExportPage from "../pages/exportPage";
+import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
 import ProfileSettingsPage from "../pages/profileSettingsPage";
 

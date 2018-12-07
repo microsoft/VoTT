@@ -4,7 +4,7 @@ import { StorageProviderFactory } from "./providers/storage/storageProvider";
 import { BingImageSearch } from "./providers/storage/bingImageSearch";
 import { AssetProviderFactory } from "./providers/storage/assetProvider";
 import { ExportProviderFactory } from "./providers/export/exportProviderFactory";
-import { JsonExportProvider } from "./providers/export/jsonExportProvider";
+import { VottJsonExportProvider } from "./providers/export/vottJson";
 
 export default function registerProviders() {
     // Storage Providers
@@ -17,5 +17,5 @@ export default function registerProviders() {
     AssetProviderFactory.register("bingImageSearch", (options) => new BingImageSearch(options));
 
     // Export Providers
-    ExportProviderFactory.register("json", (project, options) => new JsonExportProvider(project, options));
+    ExportProviderFactory.register("vottJson", (project, options) => new VottJsonExportProvider(project, options));
 }
