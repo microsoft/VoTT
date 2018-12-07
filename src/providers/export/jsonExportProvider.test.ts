@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { JsonExportProvider } from "./jsonExportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
@@ -8,20 +9,13 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
-import { Dictionary } from "lodash";
 
 describe("Json Export Provider", () => {
     const testProject: IProject = {
         id: "1",
         name: "Test Project",
         autoSave: true,
-        assets: {
-            "a": {
-                id: "a",
-                name: "Image 1",
-                path: ""
-            }
-        }
+        assets: createTestAssets(10),
         exportFormat: {
             id: "export-provider-1",
             name: "JSON Export Provider",
@@ -58,27 +52,34 @@ describe("Json Export Provider", () => {
     });
 
     it("Exports a vott project into a single JSON file", async () => {
-        const assetMetadata: IAssetMetadata = {
-            asset: null,
-            regions: [],
-            timestamp: null,
-        };
+        const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
+        assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
+            const assetMetadata: IAssetMetadata = {
+                asset,
+                regions: [],
+                timestamp: null,
+            };
 
-        const mock = AssetService as jest.Mocked<typeof AssetService>;
-        mock.prototype.getAssetMetadata = jest.fn(() => Promise.resolve(assetMetadata));
+            return Promise.resolve(assetMetadata);
+        });
 
         const exportProvider = new JsonExportProvider(testProject);
         await exportProvider.export();
 
-        expect(LocalFileSystemProxy.prototype.writeText).toBeCalled();
+        const storageProviderMock = LocalFileSystemProxy as any;
+        const exportJson = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
+        const exportObject = JSON.parse(exportJson);
+
+        expect(Object.keys(exportObject.assets).length).toEqual(Object.keys(testProject.assets).length);
+        expect(LocalFileSystemProxy.prototype.writeText).toBeCalledWith("Test-Project-export.json", expect.any(String));
     });
 });
 
-function createTestAssets(count: number): Dictionary<IAsset> {
+function createTestAssets(count: number): { [index: string]: IAsset } {
     const assets: IAsset[] = [];
     for (let i = 1; i <= count; i++) {
         assets.push({
-            id: `Asset-${i}`,
+            id: `asset-${i}`,
             format: "jpg",
             name: `Asset ${i}`,
             path: `C:\\Desktop\\asset${i}.jpg`,
@@ -89,7 +90,7 @@ function createTestAssets(count: number): Dictionary<IAsset> {
                 height: 600,
             },
         });
-
-        return _.keyBy(assets, (asset) => asset.id);
     }
+
+    return _.keyBy(assets, (asset) => asset.id);
 }
