@@ -12,6 +12,7 @@ import EditorFooter from "./editorFooter";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import Canvas from "./canvas";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -113,8 +114,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     </div>
                     <div>
                         <EditorFooter
-                            tags={this.props.project.tags}
+                            tags={this.props.project.tags}                        
                             onTagsChanged={this.onFooterChange} />
+                        <Canvas asset={selectedAsset}></Canvas>
                     </div>
                 </div>
             </div>
