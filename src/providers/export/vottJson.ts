@@ -4,8 +4,14 @@ import { IProject, AssetState, AssetType, IAsset } from "../../models/applicatio
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 
+export enum VottExportAssetState {
+    All = "all",
+    Visited = "visited",
+    Tagged = "tagged",
+}
+
 export interface IVottJsonExportOptions {
-    assetState: string;
+    assetState: VottExportAssetState;
 }
 
 export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOptions> {
@@ -20,13 +26,13 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOption
         let predicate: (asset: IAsset) => boolean = null;
 
         switch (this.options.assetState) {
-            case "all":
+            case VottExportAssetState.All:
                 predicate = (asset) => true;
                 break;
-            case "visited":
-                predicate = (asset) => asset.state === AssetState.Visited;
+            case VottExportAssetState.Visited:
+                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
                 break;
-            case "tagged":
+            case VottExportAssetState.Tagged:
                 predicate = (asset) => asset.state === AssetState.Tagged;
                 break;
         }
