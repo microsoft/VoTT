@@ -4,16 +4,31 @@ import { IProject, AssetState, AssetType, IAsset } from "../../models/applicatio
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 
+/**
+ * @name - Vott Export Asset State
+ * @description - Defines the asset type export option
+ * @member All - Specifies that all assets will be exported
+ * @member Visited - Specifies that visited (including tagged) assets will be exported
+ * @member Tagged - Specifies that only tagged assets will be exported
+ */
 export enum VottExportAssetState {
     All = "all",
     Visited = "visited",
     Tagged = "tagged",
 }
 
+/**
+ * @name - IVottJsonExportOptions
+ * @description - Defines the configurable options for the Vott JSON Export provider
+ */
 export interface IVottJsonExportOptions {
     assetState: VottExportAssetState;
 }
 
+/**
+ * @name - Vott Json Export Provider
+ * @description - Exports a project into a single JSON file that include all configured assets
+ */
 export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOptions> {
     constructor(project: IProject, options: IVottJsonExportOptions) {
         super(project, options);

@@ -3,11 +3,26 @@ import { IProject } from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProvider";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProvider";
 
+/**
+ * @name - IExportProvider
+ * @description - Defines the required interface for all VoTT export providers
+ */
 export interface IExportProvider {
+    /**
+     * Gets or set the project to be exported
+     */
     project: IProject;
+
+    /**
+     * Exports the configured project for specified export configuration
+     */
     export(): Promise<void>;
 }
 
+/**
+ * Base class implementation for all VoTT export providers
+ * Provides quick access to the configured projects asset & storage providers
+ */
 export abstract class ExportProvider<TOptions> implements IExportProvider {
     private storageProviderInstance: IStorageProvider;
     private assetProviderInstance: IAssetProvider;
