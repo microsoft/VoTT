@@ -4,12 +4,12 @@ import formSchema from "./exportForm.json";
 import uiSchema from "./exportForm.ui.json";
 import { IExportFormat } from "../../../../models/applicationState.js";
 
-interface IExportFormProps extends React.Props<ExportForm> {
+export interface IExportFormProps extends React.Props<ExportForm> {
     settings: IExportFormat;
     onSubmit: (exportFormat: IExportFormat) => void;
 }
 
-interface IExportFormState {
+export interface IExportFormState {
     providerName: string;
     formSchema: any;
     uiSchema: any;
@@ -17,10 +17,6 @@ interface IExportFormState {
 }
 
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
-    private widgets: { [index: string]: React.Component } = {
-
-    };
-
     constructor(props, context) {
         super(props, context);
 
@@ -48,7 +44,6 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
     public render() {
         return (
             <Form
-                widgets={this.widgets}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
