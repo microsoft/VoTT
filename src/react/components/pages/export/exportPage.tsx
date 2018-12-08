@@ -6,12 +6,12 @@ import IProjectActions, * as projectActions from "../../../../redux/actions/proj
 import ExportForm from "./exportForm";
 import { IProject, IApplicationState, IExportFormat } from "../../../../models/applicationState";
 
-interface IExportPageProps extends RouteComponentProps, React.Props<ExportPage> {
+export interface IExportPageProps extends RouteComponentProps, React.Props<ExportPage> {
     project: IProject;
     actions: IProjectActions;
 }
 
-interface IExportPageState {
+export interface IExportPageState {
     project: IProject;
 }
 

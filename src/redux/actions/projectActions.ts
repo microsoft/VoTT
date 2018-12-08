@@ -2,10 +2,7 @@ import ProjectService from "../../services/projectService";
 import { IProject, IAsset, IAssetMetadata } from "../../models/applicationState";
 import * as ActionTypes from "./actionTypes";
 import { AssetService } from "../../services/assetService";
-import { VottJsonExportProvider } from "../../providers/export/vottJson";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
-
-const projectService = new ProjectService();
 
 export default interface IProjectActions {
     loadProjects(): Promise<IProject[]>;
@@ -25,6 +22,7 @@ export function loadProject(value: string | IProject) {
             let project: IProject = value as IProject;
 
             if (typeof (value) === "string") {
+                const projectService = new ProjectService();
                 project = await projectService.get(value);
             }
 
@@ -39,6 +37,7 @@ export function loadProject(value: string | IProject) {
 
 export function loadProjects() {
     return async (dispatch) => {
+        const projectService = new ProjectService();
         const projects = await projectService.getList();
         dispatch({ type: ActionTypes.LOAD_PROJECTS_SUCCESS, projects });
 
@@ -48,6 +47,7 @@ export function loadProjects() {
 
 export function saveProject(project: IProject) {
     return async (dispatch) => {
+        const projectService = new ProjectService();
         project = await projectService.save(project);
         dispatch({ type: ActionTypes.SAVE_PROJECT_SUCCESS, project });
 
@@ -57,6 +57,7 @@ export function saveProject(project: IProject) {
 
 export function deleteProject(project: IProject) {
     return async (dispatch) => {
+        const projectService = new ProjectService();
         await projectService.delete(project);
         dispatch({ type: ActionTypes.DELETE_PROJECT_SUCCESS, project });
     };

@@ -9,7 +9,7 @@
                 "azureCustomVision",
                 "tensorFlowRecords"
             ],
-            "default": "jsonExportProvider",
+            "default": "vottJson",
             "enumNames": [
                 "VoTT JSON",
                 "Azure Custom Vision Service",

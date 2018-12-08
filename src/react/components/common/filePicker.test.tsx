@@ -37,10 +37,10 @@ describe("File Picker Component", () => {
 
         wrapper.find("input").first().simulate("change", event);
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(onChangeHandler).toBeCalledWith(expect.anything(), expectedContent);
             done();
-        }, 100);
+        });
     });
 
     it("Calls the onError handler on errored / cancelled file upload", (done) => {
@@ -52,9 +52,9 @@ describe("File Picker Component", () => {
 
         wrapper.find("input").first().simulate("change", event);
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(onErrorHandler).toBeCalledWith(expect.anything(), "No files were selected");
             done();
-        }, 100);
+        });
     });
 });

@@ -47,9 +47,9 @@ describe("Local Folder Picker Component", () => {
         const wrapper = createComponent(null, onChangeHandler);
         wrapper.find("button").simulate("click");
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(onChangeHandler).toBeCalledWith(expectedValue);
             done();
-        }, 100);
+        });
     });
 });
