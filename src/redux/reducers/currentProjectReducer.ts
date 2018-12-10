@@ -22,10 +22,10 @@ export const reducer = (state: IProject = null, action: any) => {
             } else {
                 return state;
             }
-        case ActionTypes.SAVE_ASSET_SUCCESS:
+        case ActionTypes.SAVE_ASSET_METADATA_SUCCESS:
             if (state) {
                 const updatedAssets = { ...state.assets } || {};
-                updatedAssets[action.asset.id] = { ...action.asset };
+                updatedAssets[action.assetMetadata.asset.id] = { ...action.assetMetadata.asset };
                 return { ...state, assets: updatedAssets };
             } else {
                 return state;

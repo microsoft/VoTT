@@ -14,11 +14,11 @@ describe("Deferred", () => {
 
         deferred.resolve();
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(thenCallback).toBeCalled();
             expect(catchCallback).not.toBeCalled();
             done();
-        }, 100);
+        });
     });
 
     it("reject without error", (done) => {
@@ -34,11 +34,11 @@ describe("Deferred", () => {
 
         deferred.reject();
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(thenCallback).not.toBeCalled();
             expect(catchCallback).toBeCalled();
             done();
-        }, 100);
+        });
     });
 
     it("resolve with result", (done) => {
@@ -55,11 +55,11 @@ describe("Deferred", () => {
         const expected = "result";
         deferred.resolve(expected);
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(thenCallback).toBeCalledWith(expected);
             expect(catchCallback).not.toBeCalled();
             done();
-        }, 100);
+        });
     });
 
     it("reject with error", (done) => {
@@ -76,10 +76,10 @@ describe("Deferred", () => {
         const error = new Error("Some error");
         deferred.reject(error);
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(thenCallback).not.toBeCalled();
             expect(catchCallback).toBeCalledWith(error);
             done();
-        }, 100);
+        });
     });
 });

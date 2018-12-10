@@ -2,7 +2,6 @@ import React from "react";
 import LocalFolderPicker from "./localFolderPicker";
 import { mount } from "enzyme";
 
-// Creates an auto
 jest.mock("../../../providers/storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../../../providers/storage/localFileSystemProxy";
 
@@ -48,9 +47,9 @@ describe("Local Folder Picker Component", () => {
         const wrapper = createComponent(null, onChangeHandler);
         wrapper.find("button").simulate("click");
 
-        setTimeout(() => {
+        setImmediate(() => {
             expect(onChangeHandler).toBeCalledWith(expectedValue);
             done();
-        }, 100);
+        });
     });
 });

@@ -13,10 +13,6 @@
             "title": "Target Connection",
             "type": "string"
         },
-        "exportFormatId": {
-            "title": "Export Format",
-            "type": "string"
-        },
         "description": {
             "title": "Description",
             "type": "string"
