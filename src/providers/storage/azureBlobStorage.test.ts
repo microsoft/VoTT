@@ -15,7 +15,7 @@ const fakeBlobService = {
     deleteBlobIfExists: jest.fn((container, filename, callback) => callback(null)),
     createBlockBlobFromText: jest.fn((container, filename, content, callback) => callback(null)),
     createContainerIfNotExists: jest.fn((container, options, callback) => callback(null)),
-    listBlobsSegmented: jest.fn((container, callback) => callback(null, files)),
+    listBlobsSegmented: jest.fn((container, options, callback) => callback(null, files)),
     listContainersSegmented: jest.fn((options, callback) => callback(null, containers)),
     deleteContainer: jest.fn((container, callback) => callback(null)),
 };
@@ -95,6 +95,7 @@ describe("Azure blob functions", () => {
             expect(result).toBe(files);
             expect(fakeBlobService.listBlobsSegmented).toBeCalledWith(
                 containerName,
+                null,
                 expect.any(Function),
             );
         });
