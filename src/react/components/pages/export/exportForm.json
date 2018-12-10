@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "properties": {
+        "providerType": {
+            "title": "Provider",
+            "type": "string",
+            "enum": [
+                "vottJson",
+                "azureCustomVision",
+                "tensorFlowRecords"
+            ],
+            "default": "vottJson",
+            "enumNames": [
+                "VoTT JSON",
+                "Azure Custom Vision Service",
+                "Tensor Flow Records"
+            ]
+        },
+        "providerOptions": {
+            "type": "object"
+        }
+    }
+}

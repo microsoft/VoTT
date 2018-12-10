@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BingImageSearch, IBingImageSearchOptions, BingImageSearchAspectRatio } from "./bingImageSearch";
-import { IAsset, AssetType } from "../../models/applicationState";
+import { IAsset, AssetType, AssetState } from "../../models/applicationState";
 import MD5 from "md5.js";
 
 describe("Bing Image Search", () => {
@@ -47,6 +47,7 @@ describe("Bing Image Search", () => {
             name: "image1.jpg",
             path: "http://images.com/image1.jpg",
             type: AssetType.Image,
+            state: AssetState.NotVisited,
             size: null,
         };
 

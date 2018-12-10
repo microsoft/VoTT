@@ -28,9 +28,13 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         this.state = {
             formSchema: { ...formSchema },
             uiSchema: { ...uiSchema },
-            providerName: null,
+            providerName: this.props.connection ? this.props.connection.providerType : null,
             formData: this.props.connection,
         };
+
+        if (this.props.connection) {
+            this.bindForm(this.props.connection);
+        }
 
         this.onFormChange = this.onFormChange.bind(this);
     }
@@ -45,15 +49,16 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         return (
             <div className="app-connections-page-detail m-3 text-light">
                 <h3><i className="fas fa-plug fa-1x"></i><span className="px-2">Connection Settings</span></h3>
-                <hr />
-                <Form
-                    widgets={this.widgets}
-                    schema={this.state.formSchema}
-                    uiSchema={this.state.uiSchema}
-                    formData={this.state.formData}
-                    onChange={this.onFormChange}
-                    onSubmit={(form) => this.props.onSubmit(form.formData)}>
-                </Form>
+                <div className="m-3 text-light">
+                    <Form
+                        widgets={this.widgets}
+                        schema={this.state.formSchema}
+                        uiSchema={this.state.uiSchema}
+                        formData={this.state.formData}
+                        onChange={this.onFormChange}
+                        onSubmit={(form) => this.props.onSubmit(form.formData)}>
+                    </Form>
+                </div>
             </div>
 
         );

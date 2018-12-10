@@ -6,9 +6,9 @@ import IApplicationActions, * as applicationActions from "../../../../redux/acti
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import { IApplicationState, IAppSettings, IConnection } from "../../../../models/applicationState";
 import Form from "react-jsonschema-form";
-import formSchema from "./appSettings.json";
-import uiSchema from "./appSettings.ui.json";
-import "./appSettings.scss";
+import formSchema from "./appSettingsPage.json";
+import uiSchema from "./appSettingsPage.ui.json";
+import "./appSettingsPage.scss";
 import ConnectionPicker from "../../common/connectionPicker";
 
 interface IAppSettingsProps {
@@ -76,7 +76,6 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
         return (
             <div className="m-3 text-light">
                 <h3><i className="fas fa-cog fa-1x"></i><span className="px-2">Application Settings</span></h3>
-                <hr />
                 <div className="app-settings-page">
                     <div className="app-settings-page-form">
                         <Form
