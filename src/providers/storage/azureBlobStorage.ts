@@ -171,7 +171,7 @@ export class AzureCloudStorageService implements IStorageProvider {
     }
 
     private getAccountName(connectionString: string) : string {
-        const regex = /AccountName=([a-zA-Z]*)/g;
+        const regex = /AccountName=([a-zA-Z0-9-]*)/g;
         const match = regex.exec(connectionString);
         return match[0];
     }
