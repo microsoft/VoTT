@@ -6,6 +6,8 @@ const BrowserWindow = electron.BrowserWindow;
 const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
+// To access the version defined in package.json
+require('pkginfo')(module, 'version');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -262,7 +264,7 @@ function createWindow () {
           click () { mainWindow.webContents.send('help');}
         },
         {
-          label: 'Version: ' + process.env.npm_package_version
+          label: 'Version: ' + module.exports.version
         }
       ]
     }	    
