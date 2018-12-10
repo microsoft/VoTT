@@ -1,12 +1,14 @@
 import { IStorageProvider } from "./storageProvider";
 import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js";
-import { IAsset } from "../../models/applicationState";
+import { IAsset, AssetType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 
 export interface IAzureCloudStorageOptions {
     connectionString: string;
     containerName: string;
     createContainer: boolean;
+    accountName?: string;
+    accountKey?: string;
 }
 
 export class AzureCloudStorageService implements IStorageProvider {
@@ -78,6 +80,7 @@ export class AzureCloudStorageService implements IStorageProvider {
         return new Promise<string[]>((resolve, reject) => {
             this.getService().listBlobsSegmented(
                 this.options.containerName,
+                null,
                 (err, results) => {
                     if (err) {
                         reject(err);
@@ -138,11 +141,36 @@ export class AzureCloudStorageService implements IStorageProvider {
             path = path ? [this.options.containerName, path].join("/") : this.options.containerName;
         }
         const files = await this.listFiles(path);
-        return files.map((blobPath) => AssetService.createAssetFromFilePath(blobPath));
+        let result: IAsset[] = []
+        for(let f in files.entries){
+            let url = this.getService().getUrl(
+                this.options.containerName,
+                files.entries[f].name,
+                null,
+                this.getHostName(this.options.connectionString)
+            );
+            let asset = AssetService.createAssetFromFilePath(url);
+            if(asset.type === AssetType.Image || asset.type === AssetType.Video){
+                result.push(asset);
+            }
+        }
+        return result;
+        // return files.entries.map((blobPath) => AssetService.createAssetFromFilePath(blobPath));
     }
 
     private getService() {
         return AzureStorageBlob.createBlobService(this.options.connectionString);
+    }
+
+    private getHostName(connectionString: string) : string {
+        const accountName = this.getAccountName(connectionString);
+        return `https://${accountName}.blob.core.windows.net`
+    }
+
+    private getAccountName(connectionString: string) : string {
+        const regex = /AccountName=([a-zA-Z]*)/g;
+        const match = regex.exec(connectionString);
+        return match[0];
     }
 
     private getContainerName(path: string) {
