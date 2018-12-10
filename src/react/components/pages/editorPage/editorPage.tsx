@@ -13,7 +13,6 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import Canvas from "./canvas";
-import CanvasContainer from "./canvasContainer";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
