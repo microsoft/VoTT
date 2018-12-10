@@ -142,24 +142,27 @@ export class AzureCloudStorageService implements IStorageProvider {
         }
         const files = await this.listFiles(path);
         let result: IAsset[] = []
-        for(let f in files.entries){
-            let url = this.getService().getUrl(
-                this.options.containerName,
-                files.entries[f].name,
-                null,
-                this.getHostName(this.options.connectionString)
-            );
+        for(let key in files.entries){
+            let url = this.getUrl(files.entries[key].name);
             let asset = AssetService.createAssetFromFilePath(url);
             if(asset.type === AssetType.Image || asset.type === AssetType.Video){
                 result.push(asset);
             }
         }
         return result;
-        // return files.entries.map((blobPath) => AssetService.createAssetFromFilePath(blobPath));
     }
 
     private getService() {
         return AzureStorageBlob.createBlobService(this.options.connectionString);
+    }
+
+    private getUrl(blobName: string) {
+        return this.getService().getUrl(
+            this.options.containerName,
+            blobName,
+            null,
+            this.getHostName(this.options.connectionString)
+        );
     }
 
     private getHostName(connectionString: string) : string {
