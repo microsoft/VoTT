@@ -260,6 +260,9 @@ function createWindow () {
           label: 'Keyboard Shortcuts',
           accelerator: 'CmdOrCtrl+H',
           click () { mainWindow.webContents.send('help');}
+        },
+        {
+          label: 'Version: ' + process.env.npm_package_version
         }
       ]
     }	    
