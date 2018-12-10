@@ -141,11 +141,11 @@ export class AzureCloudStorageService implements IStorageProvider {
             path = path ? [this.options.containerName, path].join("/") : this.options.containerName;
         }
         const files = await this.listFiles(path);
-        let result: IAsset[] = []
-        for(let key in files.entries){
-            let url = this.getUrl(files.entries[key].name);
-            let asset = AssetService.createAssetFromFilePath(url);
-            if(asset.type === AssetType.Image || asset.type === AssetType.Video){
+        const result: IAsset[] = [];
+        for (const key of Object.keys(files.entries)) {
+            const url = this.getUrl(files.entries[key].name);
+            const asset = AssetService.createAssetFromFilePath(url);
+            if (asset.type === AssetType.Image || asset.type === AssetType.Video) {
                 result.push(asset);
             }
         }
@@ -161,16 +161,16 @@ export class AzureCloudStorageService implements IStorageProvider {
             this.options.containerName,
             blobName,
             null,
-            this.getHostName(this.options.connectionString)
+            this.getHostName(this.options.connectionString),
         );
     }
 
-    private getHostName(connectionString: string) : string {
+    private getHostName(connectionString: string): string {
         const accountName = this.getAccountName(connectionString);
-        return `https://${accountName}.blob.core.windows.net`
+        return `https://${accountName}.blob.core.windows.net`;
     }
 
-    private getAccountName(connectionString: string) : string {
+    private getAccountName(connectionString: string): string {
         const regex = /AccountName=([a-zA-Z0-9-]*)/g;
         const match = regex.exec(connectionString);
         return match[0];
