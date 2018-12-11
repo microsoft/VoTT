@@ -1,12 +1,13 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { AutoSizer, List } from "react-virtualized";
 import { IAsset } from "../../../../models/applicationState";
 import AssetPreview from "./assetPreview";
 
 export interface IEditorSideBarProps {
     assets: IAsset[];
-    selectedAsset?: IAsset;
     onAssetSelected: (asset: IAsset) => void;
+    selectedAsset?: IAsset;
+    style?: CSSProperties;
 }
 
 export interface IEditorSideBarState {
@@ -30,7 +31,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     public render() {
         return (
-            <div className="editor-page-sidebar-nav">
+            <div className="editor-page-sidebar-nav" style={this.props.style}>
                 <AutoSizer>
                     {({ height, width }) => (
                         <List
