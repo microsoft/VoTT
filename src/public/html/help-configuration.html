@@ -18,80 +18,100 @@
   <body>
     <title>Help</title>
      <div id ='help-container' style = "padding: 20px 20px 20px 20px;">
-  
-      <div class="key-group">
-        <label for="exampleTextarea" title="(Which keys to press to make stuff happen)">Keyboard Shortcuts: </label>
+      <h2>App/Frame level shortcuts</h2>
+      <div class="app-group">
+        <h3>Open a file or directory</h3>
         <ul>
             <li><strong>Open Video:</strong> Ctrl + O</li>
             <li><strong>Open Image Directory:</strong> Ctrl + I</li>
             <li><strong>Open TFRecord Directory:</strong> Ctrl + Space</li>
-            <li><strong>Save Tags:</strong> Ctrl + S</li>
+        </ul>
+
+        <h3>Frame control</h3>
+        <ul>
             <li><strong>Next Frame:</strong>Right Arrow or E</li>
             <li><strong>Previous Frame:</strong>Left Arrow or Q</li>
-            <li><strong>Toggle Play/Pause:</strong> Space</li>
-            <li><strong>Toggle Tracking:</strong> Ctrl + T</li>
-            <li><strong>Toggle Exclusive Add Mode:</strong> Crtl + N</li>
-            <li><strong>Export Tags:</strong> Ctrl + E</li>
-            <li><strong>Active Learning:</strong> Ctrl + L</li>
             <li><strong>Duplicate last frame regions:</strong> D</li>
             <li><strong>Delete Frame:</strong> Shift + Del</li>
+            <li><strong>Active Learning:</strong> Ctrl + L</li>
+        </ul>
+
+        <h3>Tags collection</h3>
+        <ul>
+            <li><strong>Save Tags:</strong> Ctrl + S</li>
+            <li><strong>Export Tags:</strong> Ctrl + E</li>
+        </ul>
+
+        <h3>Play control</h3>
+        <ul>
+          <li><strong>Toggle Play/Pause:</strong> Space</li>
+          <li><strong>Toggle Tracking:</strong> Ctrl + T</li>
+        </ul>
+
+        <h3>App control</h3>
+        <ul>
             <li><strong>Open Developer Console:</strong> Ctrl + D</li>
             <li><strong>Refresh App:</strong> Ctrl + R</li>
             <li><strong>Show Help:</strong> Ctrl + H</li>
-            
-
         </ul>
       </div>
+      <h2>Region level shortcuts</h2>
       <div class="selection-group">
-        <label for="exampleTextarea">Region creation: </label>
+        <h3>Region creation tools (rectangular)</h3>
         <ul>
-            <li><strong>Rect box creation:</strong> press R key.
+            <li><strong>Rectangular box:</strong> R key.
               <ul>
                   <li><strong>Two-point mode:</strong> Hold down Ctrl while creating a region</li>
                   <li><strong>Square mode:</strong> Hold down Shift while creating a region</li>
               </ul> 
             </li>
-            <li><strong>Template based box creation:</strong> press T key.</li>
-            <li><strong>Exclusive selection:</strong> press L key to block/unblock regions manipulation.</li>
+            <li><strong>Template based box:</strong> T key.</li>
+            <li><strong>Point surrounding box:</strong> P key.</li>
+            <li><strong>Polyline surrounding box:</strong> Y key.</li>
+            <li><strong>Exclusive selection:</strong> L key to block/unblock regions manipulation.</li>
         </ul>
       </div>
 
       <div class="manipulation-group">
-          <label for="exampleTextarea">Region selection & copying: </label>
+          <h3>Region selection & copying</h3>
           <ul>
               <li><strong>Multi-select:</strong> Hold down Shift while selecting regions</li>
               <li><strong>Select next:</strong> Tab</li>
-              <li><strong>Select All:</strong> Ctrl + (A or 1 on number pad)</li>
+              <li><strong>Select All:</strong> Ctrl + A</li>
               <li><strong>Cut:</strong> Ctrl + X</li>
               <li><strong>Copy:</strong> Ctrl + C</li>
               <li><strong>Paste:</strong> Ctrl + V</li>
           </ul>
-        </div>
 
-      <div class="arrow-group">
-        <label for="exampleTextarea">Region Manipulation with Arrow Keys: </label>
-        <p>VOTT allows you to fine tune the bounding boxes using the arrow keys in a few different ways. While a region is selected:</p>
-        <ul>
-          <li><strong>Move region:</strong> Hold Ctrl + Direction</li>
-          <li><strong>Shrink region::</strong> Hold Ctrl + Alt + Direction</li>
-          <li><strong>Expand region:</strong> Hold Ctrl + Shift + Direction</li>
-        </ul>
+          <h3>Region Manipulation with Arrow Keys</h3>
+          <p>VOTT allows you to fine tune the bounding boxes using the arrow keys in a few different ways. While a region is selected:</p>
+          <ul>
+            <li><strong>Move region:</strong> Hold Ctrl + Direction</li>
+            <li><strong>Shrink region::</strong> Hold Ctrl + Alt + Direction</li>
+            <li><strong>Expand region:</strong> Hold Ctrl + Shift + Direction</li>
+          </ul>
+
+          <h3>Styling and Visual manipulations</h3>
+          <p>Tuning visual display of regions:
+            <ul>
+              <li><strong>Toggle region background:</strong> Ctrl + B</li>
+            </ul>
       </div>
-      <div class="visual-group">
-        <label for="exampleTextarea">Styling and Visual manipulations: </label>
-        <p>Tuning visual display of regions:
-        <ul>
-          <li><strong>Toggle region background:</strong> Ctrl + B</li>
-        </ul>
-      </div>
+
+      <h2>Tags level shortcuts</h2>
       <div class="tag-group">
-        <label for="exampleTextarea">Tagging: </label>
-        <p>Use the number keys to quickly tag a selected region <br><i>(Only works for single digits 0-9</i>)</p>
-        <p><strong>Changing Tags</strong></p>
-        <p>To change which tags are mapped to the hotkeys, hold Shift+(0-9) and click on the tag that you want to assign to that hotkey</p>
-        <p>To delete tags from list, use ctrl+left click on the tag you want removed. It will remove the tag from the list and untag any images that use that tag.</p>
+        <h3>Tagging: </h3>
+        <ul>
+          <li><strong>Quick access to tags</strong>: 1-9 numeric keys</li>
+          <li><strong>Auto applying a tag</strong>: Alt + 1-9 numeric key</li>
+        </ul>
+        
+        <h3>Changing Tags</h3>
+        <ul>
+          <li><strong>Change mapped hotkey</strong>: hold Shift + 1-9 numeric key <i>and</i> click on the tag that you want to assign to that hotkey.</li>
+          <li><strong>Delete tag from the list</strong>: Ctrl + click on the tag you want removed. It will remove the tag from the list and untag any images that use that tag.</li>
+        </ul>
       </div>
-       <div id="cancelButton" class="btn btn-primary" style="display:inline-block;">Cancel</div>
      </div>        
    </body>
 </html>
