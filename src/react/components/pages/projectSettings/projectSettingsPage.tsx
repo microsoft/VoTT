@@ -6,14 +6,14 @@ import ProjectForm from "./projectForm";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject, IConnection } from "../../../../models/applicationState";
 
-interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
+export interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     project: IProject;
     recentProjects: IProject[];
     actions: IProjectActions;
     connections: IConnection[];
 }
 
-interface IProjectSettingsPageState {
+export interface IProjectSettingsPageState {
     project: IProject;
 }
 
@@ -63,22 +63,18 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         );
     }
 
-    private onFormSubmit = (form) => {
-        if (form.formData.tags) {
-            form.formData.tags = JSON.parse(form.formData.tags);
+    private onFormSubmit = async (formData) => {
+        if (formData.tags !== undefined) {
+            formData.tags = JSON.parse(formData.tags);
         }
-
-        this.setState({
-            project: {
-                ...form.formData,
+        const projectToUpdate: IProject = {
+            ...formData,
                 sourceConnection: this.props.connections
-                    .find((connection) => connection.id === form.formData.sourceConnectionId),
+                    .find((connection) => connection.id === formData.sourceConnectionId),
                 targetConnection: this.props.connections
-                    .find((connection) => connection.id === form.formData.targetConnectionId),
-            },
-        }, async () => {
-            await this.props.actions.saveProject(this.state.project);
-            this.props.history.push(`/projects/${this.state.project.id}/edit`);
-        });
+                    .find((connection) => connection.id === formData.targetConnectionId),
+        }
+        await this.props.projectActions.saveProject(projectToUpdate);
+        this.props.history.goBack();
     }
 }

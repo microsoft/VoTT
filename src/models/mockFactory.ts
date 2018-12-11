@@ -1,4 +1,5 @@
-import ProjectSettingsPage from "../react/components/pages/projectSettings/projectSettingsPage";
+import ProjectSettingsPage, 
+{ IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import { IProject, IConnection, IExportFormat,
     ITag, IAsset, IApplicationState, IAppSettings,
     IAssetMetadata, ISize } from "../models/applicationState";
@@ -65,19 +66,38 @@ export class MockFactory {
     }
 
     public project(): IProject {
+        return this.recentProjects()[0];
+    }
+
+    public recentProjects(): IProject[] {
         const connections = this.connections();
-        return {
-            id: "id",
-            name: "Test Project",
-            description: "This is my project",
-            tags: this.tags(),
-            sourceConnection: connections[0],
-            sourceConnectionId: connections[0].id,
-            targetConnection: connections[1],
-            targetConnectionId: connections[1].id,
-            exportFormat: this.exportFormat(),
-            autoSave: true,
-        };
+
+        return [
+            {
+                id: "project1",
+                name: "Test Project",
+                description: "This is my project",
+                tags: this.tags(),
+                sourceConnection: connections[0],
+                sourceConnectionId: connections[0].id,
+                targetConnection: connections[1],
+                targetConnectionId: connections[1].id,
+                exportFormat: this.exportFormat(),
+                autoSave: true,
+            },
+            {
+                id: "project2",
+                name: "Test Project 2",
+                description: "This is my other project",
+                tags: this.tags(),
+                sourceConnection: connections[0],
+                sourceConnectionId: connections[0].id,
+                targetConnection: connections[1],
+                targetConnectionId: connections[1].id,
+                exportFormat: this.exportFormat(),
+                autoSave: true,
+            },
+        ];
     }
 
     public projectService(): IProjectService {
@@ -113,14 +133,68 @@ export class MockFactory {
         };
     }
 
-    public match() {
+    public appSettings(): IAppSettings {
+        return {
+            devToolsEnabled: false,
+            connection: this.connections()[0],
+            connectionId: this.connections()[0].id,
+        };
+    }
+
+    public projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
+        return {
+            project: null,
+            projectActions: this.projectActions(),
+            connectionActions: this.connectionActions(),
+            connections: this.connections(),
+            history: this.history(),
+            location: this.location(),
+            match: this.match(projectId),
+        };
+    }
+
+    public initialState(): IApplicationState {
+        return {
+            appSettings: this.appSettings(),
+            connections: this.connections(),
+            recentProjects: this.recentProjects(),
+            currentProject: this.recentProjects()[0],
+        };
+    }
+
+    public match(projectId?: string) {
         return {
             params: {
-                projectId: null,
+                projectId,
             },
-            isExact: null,
-            path: null,
-            url: null,
+            isExact: true,
+            path: `https://localhost:3000/projects/${projectId}/export`,
+            url: `https://localhost:3000/projects/${projectId}/export`,
+        };
+    }
+
+    public history() {
+        return {
+            length: 0,
+            action: null,
+            location: null,
+            push: jest.fn(),
+            replace: jest.fn(),
+            go: jest.fn(),
+            goBack: jest.fn(),
+            goForward: jest.fn(),
+            block: jest.fn(),
+            listen: jest.fn(),
+            createHref: jest.fn(),
+        };
+    }
+
+    public location() {
+        return {
+            hash: null,
+            pathname: null,
+            search: null,
+            state: null,
         };
     }
 }
