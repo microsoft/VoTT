@@ -27,6 +27,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     constructor(props, context) {
         super(props, context);
+        debugger;
 
         this.state = {
             uiSchema: this.createUiSchema(),
@@ -57,7 +58,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     }
 
     private onFormSubmit(args) {
-        this.props.onSubmit(args.formData);
+        debugger;
+        this.props.onSubmit(args.formData)
     }
 
     private createUiSchema(): any {

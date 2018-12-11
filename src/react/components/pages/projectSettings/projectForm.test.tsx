@@ -70,6 +70,8 @@ describe("Project Form Component", () => {
         });
 
         it("should have tags loaded correctly", () => {
+            expect(project.tags.length).toBeGreaterThan(0);
+            expect(wrapper.find("div.inline-block.tag_color_box")).toHaveLength(project.tags.length);
             expect(
                 wrapper.state().formData.tags,
             ).toEqual(
@@ -83,6 +85,12 @@ describe("Project Form Component", () => {
             expect(wrapper.state().formData.name).toEqual(project.name);
             wrapper.find("input#root_name").simulate("change", {target: {value: newName}});
             expect(wrapper.state().formData.name).toEqual(newName);
+        });
+
+        it("should call onChangeHandler on submission", () => {
+            const form = wrapper.find("form")
+            form.simulate("submit");
+            expect(onSubmit).toBeCalled();
         });
     });
 

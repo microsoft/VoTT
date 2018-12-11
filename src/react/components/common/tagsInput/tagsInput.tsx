@@ -38,8 +38,10 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
 
     constructor(props) {
         super(props);
+        const iTags = (typeof props.tags === 'string' || props.tags instanceof String) 
+            ? JSON.parse(props.tags) : props.tags; 
         this.state = {
-            tags: (props.tags) ? props.tags.map((element: ITag) => this.toReactTag(element)) : [],
+            tags: (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [],
             currentTagColorIndex: randomIntInRange(0, tagColors.length),
             selectedTag: null,
             showModal: false,

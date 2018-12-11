@@ -73,7 +73,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                     .find((connection) => connection.id === formData.sourceConnectionId),
                 targetConnection: this.props.connections
                     .find((connection) => connection.id === formData.targetConnectionId),
-        }
+        };
         await this.props.projectActions.saveProject(projectToUpdate);
         this.props.history.goBack();
     }

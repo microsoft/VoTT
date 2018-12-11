@@ -1,4 +1,4 @@
-import ProjectSettingsPage, 
+import ProjectSettingsPage,
 { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import { IProject, IConnection, IExportFormat,
     ITag, IAsset, IApplicationState, IAppSettings,
