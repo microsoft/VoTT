@@ -9,6 +9,7 @@ import HtmlFileReader from "../../../../common/htmlFileReader";
 import "./editorPage.scss";
 import AssetPreview from "./assetPreview";
 import EditorFooter from "./editorFooter";
+import EditorSideBar from "./editorSideBar";
 
 interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
     project: IProject;
@@ -75,27 +76,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         return (
             <div className="editor-page">
                 <div className="editor-page-sidebar bg-lighter-1">
-                    <div className="asset-list">
-                        {
-                            assets.map((asset) =>
-                                <div className={selectedAsset && asset.id === selectedAsset.asset.id
-                                    ? "asset-item selected"
-                                    : "asset-item"}
-                                    onClick={() => this.selectAsset(asset)} key={asset.id}>
-                                    <div className="asset-item-image">
-                                        <AssetPreview asset={asset} />
-                                    </div>
-                                    <div className="asset-item-metadata">
-                                        <span className="asset-filename" title={asset.name}>{asset.name}</span>
-                                        {asset.size &&
-                                            <span className="float-right">
-                                                {asset.size.width} x {asset.size.height}
-                                            </span>
-                                        }
-                                    </div>
-                                </div>)
-                        }
-                    </div>
+                    <EditorSideBar
+                        assets={assets}
+                        selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                        onAssetSelected={this.selectAsset}
+                    />
                 </div>
                 <div className="editor-page-content">
                     <div className="editor-page-content-header">
