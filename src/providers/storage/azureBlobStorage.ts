@@ -7,11 +7,24 @@ export interface IAzureCloudStorageOptions {
     connectionString: string;
     containerName: string;
     createContainer: boolean;
-    accountName?: string;
-    accountKey?: string;
 }
 
 export class AzureCloudStorageService implements IStorageProvider {
+
+    private static getHostName(connectionString: string): string {
+        const accountName = AzureCloudStorageService.getAccountName(connectionString);
+        return `https://${accountName}.blob.core.windows.net`;
+    }
+
+    private static getAccountName(connectionString: string): string {
+        const regex = /AccountName=([a-zA-Z0-9-]*)/g;
+        const match = regex.exec(connectionString);
+        return match[1];
+    }
+
+    private static getFileName(path: string) {
+        return path.substring(path.indexOf("/") + 1);
+    }
     constructor(private options?: IAzureCloudStorageOptions) {
     }
 
@@ -19,7 +32,7 @@ export class AzureCloudStorageService implements IStorageProvider {
         return new Promise<string>((resolve, reject) => {
             this.getService().getBlobToText(
                 this.options.containerName,
-                this.getFileName(path),
+                AzureCloudStorageService.getFileName(path),
                 (err, data) => {
                     if (err) {
                         reject(err);
@@ -43,7 +56,7 @@ export class AzureCloudStorageService implements IStorageProvider {
         return new Promise<void>((resolve, reject) => {
             this.getService().createBlockBlobFromText(
                 this.options.containerName,
-                this.getFileName(path),
+                AzureCloudStorageService.getFileName(path),
                 contents,
                 (err, data) => {
                     if (err) {
@@ -64,7 +77,7 @@ export class AzureCloudStorageService implements IStorageProvider {
         return new Promise<void>((resolve, reject) => {
             this.getService().deleteBlobIfExists(
                 this.options.containerName,
-                this.getFileName(path),
+                AzureCloudStorageService.getFileName(path),
                 (err, data) => {
                     if (err) {
                         reject(err);
@@ -145,7 +158,7 @@ export class AzureCloudStorageService implements IStorageProvider {
         for (const key of Object.keys(files.entries)) {
             const url = this.getUrl(files.entries[key].name);
             const asset = AssetService.createAssetFromFilePath(url);
-            if (asset.type === AssetType.Image || asset.type === AssetType.Video) {
+            if (asset.type !== AssetType.Unknown) {
                 result.push(asset);
             }
         }
@@ -161,26 +174,7 @@ export class AzureCloudStorageService implements IStorageProvider {
             this.options.containerName,
             blobName,
             null,
-            this.getHostName(this.options.connectionString),
+            AzureCloudStorageService.getHostName(this.options.connectionString),
         );
-    }
-
-    private getHostName(connectionString: string): string {
-        const accountName = this.getAccountName(connectionString);
-        return `https://${accountName}.blob.core.windows.net`;
-    }
-
-    private getAccountName(connectionString: string): string {
-        const regex = /AccountName=([a-zA-Z0-9-]*)/g;
-        const match = regex.exec(connectionString);
-        return match[0];
-    }
-
-    private getContainerName(path: string) {
-        return path.indexOf("/") > -1 ? path.substring(0, path.indexOf("/")) : path;
-    }
-
-    private getFileName(path: string) {
-        return path.substring(path.indexOf("/") + 1);
     }
 }

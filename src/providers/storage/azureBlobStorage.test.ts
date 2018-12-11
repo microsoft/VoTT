@@ -2,10 +2,24 @@ import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js"
 import { AzureCloudStorageService, IAzureCloudStorageOptions } from "./azureBlobStorage";
 import { StorageProviderFactory } from "./storageProvider";
 import registerProviders from "../../registerProviders";
+import { AssetType } from "../../models/applicationState.js";
 
 const content = "This is the content";
 const containers = ["container1", "container2", "container3"];
-const files = ["file1.txt", "file2.txt", "file3.txt"];
+
+const files = {
+    entries: {
+        "file1.jpg": {
+            name: "file1.jpg",
+        },
+        "file2.jpg": {
+            name: "file2.jpg",
+        },
+        "file3.jpg": {
+            name: "file3.jpg",
+        },
+    },
+};
 const path = "container/filename.txt";
 const containerName = "container";
 const fileName = "filename.txt";
@@ -18,13 +32,15 @@ const fakeBlobService = {
     listBlobsSegmented: jest.fn((container, options, callback) => callback(null, files)),
     listContainersSegmented: jest.fn((options, callback) => callback(null, containers)),
     deleteContainer: jest.fn((container, callback) => callback(null)),
+    getUrl: jest.fn((container, blobName, sasToken, hostName) => `${hostName}/${container}/${blobName}`),
 };
 
 describe("Azure blob functions", () => {
 
     let provider: AzureCloudStorageService = null;
     const options: IAzureCloudStorageOptions = {
-        connectionString: "fake connection string",
+        connectionString: "DefaultEndpointsProtocol=https;AccountName=accountname;AccountKey=thisismyaccountkey;"
+                            + "EndpointSuffix=core.windows.net",
         containerName: "container",
         createContainer: false,
     };
@@ -116,6 +132,18 @@ describe("Azure blob functions", () => {
                 { publicAccessLevel: "blob" },
                 expect.any(Function),
             );
+        });
+
+        it("Azure blob creates assets", async () => {
+            const assets = await provider.getAssets(options.containerName);
+            for (const asset of assets) {
+                expect(
+                    asset.path,
+                ).toEqual(
+                    `https://accountname.blob.core.windows.net/${containerName}/${asset.name}`,
+                );
+                expect(asset.type).not.toEqual(AssetType.Unknown);
+            }
         });
     });
 });
