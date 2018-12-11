@@ -5,7 +5,7 @@ import AssetPreview from "./assetPreview";
 
 export interface IEditorSideBarProps {
     assets: IAsset[];
-    selectedAsset: IAsset;
+    selectedAsset?: IAsset;
     onAssetSelected: (asset: IAsset) => void;
 }
 
