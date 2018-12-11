@@ -14,6 +14,7 @@ interface IProjectFormProps extends React.Props<ProjectForm> {
 }
 
 interface IProjectFormState {
+    formData: any;
     formSchema: any;
     uiSchema: any;
 }
@@ -30,7 +31,9 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         this.state = {
             uiSchema: this.createUiSchema(),
             formSchema: { ...formSchema },
+            formData: this.props.project,
         };
+        this.onFormSubmit = this.onFormSubmit.bind(this);
     }
 
     public componentDidUpdate(prevProps) {
@@ -47,10 +50,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 widgets={this.widgets}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
-                formData={this.props.project}
-                onSubmit={this.props.onSubmit}>
+                formData={this.state.formData}
+                onSubmit={this.onFormSubmit}>
             </Form>
         );
+    }
+
+    private onFormSubmit(args) {
+        this.props.onSubmit(args.formData);
     }
 
     private createUiSchema(): any {
