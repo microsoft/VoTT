@@ -17,55 +17,20 @@
     <link rel="stylesheet" href="css/imgareaselect-animated.css" />
     <link rel="stylesheet" href="../bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="assets/icons/style.css">
+    <link rel="stylesheet" href="css/video-tagging.css">
 
     <div id="controlWrapper" class="controlWrapper">
         <playback-control id="playSpeedControl" class="playSpeedControl"></playback-control>
         <div id='videoWrapper' class="relativeDiv">
             <div id="ctZone">
-                <div id="toolbarZone">
-                    <svg id="toolbarSVG">
-                        <defs>
-                            <filter id="black-glow">
-                                <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
-                                <feOffset dx="0" dy="0" result="offsetblur" />
-                                <feComponentTransfer>
-                                    <feFuncA type="linear" slope="0.8" />
-                                </feComponentTransfer>
-                                <feMerge>
-                                    <feMergeNode />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                    </svg>
+                <div id="toolbarZone" class="toolbarStyle">
                 </div>
                 <div id="selectionZone">
-                    <svg id="selectionSVG" class="selectionZoneStyle">
-                        <defs>
-                            <filter id="black-glow">
-                                <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
-                                <feOffset dx="0" dy="0" result="offsetblur" />
-                                <feComponentTransfer>
-                                    <feFuncA type="linear" slope="0.8" />
-                                </feComponentTransfer>
-                                <feMerge>
-                                    <feMergeNode />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                    </svg>
-                    <canvas id="overlay" on-click='videoClicked' class="overlaystyle" width="100" height="100">
-                        Your browser does not support the HTML5 canvas location.
-                    </canvas>
-                    <canvas id='frameCanvas' class="frameCanvasStyle" width="100" height="100">
-
-                    </canvas>
-
-                    <video id='vid' class="videoStyle">
-                        Your browser does not support the video location.
-                    </video>
+                    <div id="editorZone"></div>
                 </div>
+                <video id='vid' class="videoStyle">
+                        Your browser does not support the video location.
+                </video>
             </div>
         </div>
         <div id="videoControls" class="videoControls">
@@ -182,19 +147,21 @@
         this.newTagIndex = null;
         this.hotkeysAssigned = false;
 
-        //Frame view size
+        // Frame view size
         this.frameWidth = 0;
         this.frameHeight = 0;
+        this.frameRatio = 1.0;
 
+        // Source actual size
         this.sourceWidth = 0;
         this.sourceHeight = 0;
+        this.sourceRatio = 1.0;
 
         //Divs and spans
         this.controlWrapper= this.$$('#controlWrapper');
         this.videoWrapper= this.$$('#videoWrapper');
-        this.overlay = this.$$('#overlay');
         this.video= this.$$('#vid');
-        this.frameCanvas = this.$$('#frameCanvas');
+       /*  this.frameCanvas = this.$$('#frameCanvas'); */
 
         this.optionalTags= this.$$('#optionalTags');
         this.regionLabelSpan = this.$$('#regionLabelSpan');
@@ -227,7 +194,6 @@
         this.seekStyle = document.createElement('style');
         Polymer.dom(this.root).appendChild(this.seekStyle);
         this.playing = null;
-        this.ctx = this.overlay.getContext("2d");
         this.aspect = 0;
         this.snapWidth = 0;
 
@@ -236,142 +202,43 @@
     },
 
     initCanvasTools() {
-        this.selectionSVG = document.getElementById("selectionSVG");
-        this.toolbarSVG = document.getElementById("toolbarSVG");
+        this.editorDiv = document.getElementById("editorZone");
+        this.toolbarDiv = document.getElementById("toolbarZone");
 
         this.CT = CanvasTools.CanvasTools;
 
-        this.regionsManager = new this.CT.Region.RegionsManager(this.selectionSVG, () => { }, () => { });
+        var editor = new this.CT.Editor(this.editorDiv);
+        editor.addToolbar(this.toolbarDiv, this.CT.Editor.FullToolbarSet, "public/js/video-tagging/assets/icons/ct/");
 
-        this.areaSelector = new this.CT.Selection.AreaSelector(this.selectionSVG,
-        {
-            onSelectionBegin: () => {
-                this.selectionSVG.style.zIndex = 300;
-            },
-            onSelectionEnd: (commit) => {
-                let r = commit.boundRect;
-                this.selectionSVG.style.zIndex = 30;
-                this.onNewAreaSelected(r.x1, r.y1, r.x2, r.y2);
-            }
-        });
-
-        this.regionsManager.onManipulationEnd = () => {
-            this.areaSelector.enable();
-        };
-        this.regionsManager.onManipulationBegin = () => {
-            this.areaSelector.disable();
+        editor.onSelectionBegin = () => {
         };
 
-        this.regionsManager.onRegionSelected = (id, multiselection) => {
+        editor.onSelectionEnd = (commit) => {
+            let r = commit.boundRect;
+            this.onNewAreaSelected(r.x1, r.y1, r.x2, r.y2);
+        };
+
+        editor.onRegionManipulationBegin = () => {
+
+        };
+
+        editor.onRegionManipulationEnd = () => {
+
+        };
+
+        editor.onRegionSelected = (id, multiselection) => {
             this.selectRegion(id, multiselection);
         };
 
-        this.regionsManager.onRegionMove = (id, x, y, width, height) => {
+        editor.onRegionMove = (id, x, y, width, height) => {
             this.regionMoved(id, x, y, width, height);
         };
 
-        this.regionsManager.onRegionDelete = (id) => {
+        editor.onRegionDelete = (id) => {
             this.deleteRegionById(id);
         };
 
-        // Fulfill toolbar
-        this.toolbar = new this.CT.Toolbar.Toolbar(toolbarSVG);
-        let selectionMode = "rect-select";
-
-        let noneIcon = {
-            action: "none-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/none-selection.svg",
-            tooltip: "Regions Manipulation (M)",
-            keycode: 'KeyM'
-        }
-        
-        this.toolbar.addSelector(noneIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.NONE);
-        });
-
-        this.toolbar.addSeparator();
-
-        let pointIcon = {
-            action: "point-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/point-selection.svg",
-            tooltip: "Point-selection (P)",
-            keycode: 'KeyP'
-        }
-
-        this.toolbar.addSelector(pointIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POINT);
-        });
-
-        let rectIcont = {
-            action: "rect-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/rect-selection.svg",
-            tooltip: "Rectangular box (R)",
-            keycode: 'KeyR'
-        }
-
-        this.toolbar.addSelector(rectIcont, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
-        });
-
-        let copyTemplateIcon = {
-            action: "copy-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/copy-t-selection.svg",
-            tooltip: "Template-based box (T)",
-            keycode: 'KeyT'
-        };
-
-        this.toolbar.addSelector(copyTemplateIcon, (action) => {
-            let rs = this.regionsManager.getSelectedRegionsBounds();
-            if (rs !== undefined && rs.length > 0) {
-                let r = rs[0];
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(r.width, r.height) });
-            } else {
-                this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.COPYRECT, { template: new this.CT.Base.Rect.Rect(40, 40) });
-            }
-        });
-
-        let polylineIcon = {
-            action: "polyline-select",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/polyline-selection.svg",
-            tooltip: "Polyline-selection (Y)",
-            keycode: 'KeyY'
-        };
-
-        this.toolbar.addSelector(polylineIcon, (action) => {
-            this.areaSelector.setSelectionMode(this.CT.Selection.SelectionMode.POLYLINE);
-        });
-
-        this.toolbar.addSeparator();
-
-        let selectionLockIcon = {
-            action: "selection-lock",
-            iconUrl: "public/js/video-tagging/assets/icons/ct/selection-lock.svg",
-            tooltip: "Lock/unlock regions (L)",
-            keycode: 'KeyL',
-        };
-
-        this.toolbar.addSwitch(selectionLockIcon, (action) => {
-            this.regionsManager.toggleFreezeMode();
-        });
-
-        this.toolbar.setSwitch("selection-lock", false);
-        this.toolbar.select("rect-select");
-
-        this.textbox.addEventListener("focus", (e) => {
-            this.regionsManager.freeze();
-        });
-
-        // this.submitTag.addEventListener("click", (e) => {
-            // this.toolbar.enableHotkeys();
-            // this.regionsManager.unfreeze();
-            // this.hotKeysEnabled = true;
-        //     newTag = document.getElementById("newTag").value;
-        //     this.inputtagsarray.push(newTag);
-        //     self.optionalTags.createTagControls(this.inputtagsarray);
-        // })
-
-        // Register empty filter pipeline
-        this.filterPipeline = new this.CT.Filter.FilterPipeline();;
+        this.editor = editor;
     },
 
     /**
@@ -381,111 +248,94 @@
        * Events registration and handling
        */
     attached: function() {
-        //Reset all variables to new src
-        this.video.addEventListener( "loadedmetadata", init);
-        var self = this;
-      
-        function init() {
-            self.controlWrapper.style.display = "grid";
+        this.video.addEventListener("loadedmetadata", () => {
+            this.controlWrapper.style.display = "grid";
             //Init variables and controls
-            self.frames = self.inputframes? self.inputframes:{};
-            self.frameTime = 1/self.framerate;
-            self.optionalTags.createTagControls(self.inputtagsarray);
+            this.frames = this.inputframes ? this.inputframes : {};
+            this.frameTime = 1 / this.framerate;
+            this.optionalTags.createTagControls(this.inputtagsarray);
             //Take the raw video aspect ratio
-            self.sourceWidth = self.video.videoWidth;
-            self.sourceHeight = self.video.videoHeight;
-            self.aspect = self.sourceWidth / self.sourceHeight;
+            this.sourceWidth = this.video.videoWidth;
+            this.sourceHeight = this.video.videoHeight;
+            this.sourceRatio = this.sourceWidth / this.sourceHeight;
             //self.snapToAspectRatio();
             //Init sliders
-            self.volumeSlider.value = 0.5;
-            self.seekBar.max = self.video.duration;  
-
-            // Update frame size to video size     
-            self.resetLayout();                          
-            let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
-            self.resizeFrame(scaleByPortrait, self.aspect);         
-
-            self.playingCallback();   
+            this.volumeSlider.value = 0.5;
+            this.seekBar.max = this.video.duration;
+  
+            this.playingCallback();
 
             //fix resize bug
             $(window).off("resize");
-            $(window).resize( function(){
-                if (self.video.offsetWidth !== undefined){
-                    //self.snapToAspectRatio();
-                    // Update frame size to video size  
-                    self.resetLayout();                  
-                    
-                    let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
-                    self.resizeFrame(scaleByPortrait, self.aspect);
-
-                    //resize the region boxes
-                    // self.showAllRegions();                    
-                }
+            $(window).resize(() => {
+                this.playingCallback();
             });
 
             //bind keys (note this currently overrides any listener on the parent controls needs a more elegant way to work only when control is in focus)
-            if (self.keyUpEventsListenerBinded != null) {
-                window.removeEventListener("keyup", self.keyUpEventsListenerBinded);
+            if (this.keyUpEventsListenerBinded != null) {
+                window.removeEventListener("keyup", this.keyUpEventsListenerBinded);
             }
-            self.keyUpEventsListenerBinded = self.keyUpEventsListener.bind(self);        
-            window.addEventListener("keyup", self.keyUpEventsListenerBinded, false);
-        }
-
-      this.video.onended = function(){
-           self.pauseState();
-      };
-      this.video.addEventListener('canplaythrough', function () {
-            self.updateFrameCanvas(self.video);
-            /* window.requestAnimationFrame(function(){
-                self.frameCanvas.getContext('2d').drawImage(self.video, 0, 0, self.frameWidth, self.frameHeight);
-                }); */
+            this.keyUpEventsListenerBinded = this.keyUpEventsListener.bind(this);
+            window.addEventListener("keyup", this.keyUpEventsListenerBinded, false);
         });
 
-      this.seekBar.addEventListener("mousedown", function() {
-            self.seeking = true;
-          });
-      this.seekBar.addEventListener("mouseup", function() {
-            self.seeking = false;
-          });
-      this.seekBar.addEventListener("change", function() {
-            self.seeking = false;
-            if (self.imagelist){ //image list handling
-                 var seekToFrameId =  Math.floor(self.seekBar.value);//keep the frame in sync
-                 self.seekToFrame(seekToFrameId);
-            } else { //video handling
-                self.video.currentTime =  Math.floor(self.seekBar.value/self.frameTime) * self.frameTime;//keep the frame in sync 
-            }
-            self.playingCallback();
-          });
-      this.volumeSlider.addEventListener("change", function() {
-            if (!self.imagelist){
-                self.video.volume = self.volumeSlider.value;
-                var perc =  100 * self.volumeSlider.value / self.volumeSlider.max;
-                self.volumeStyle.textContent = '.volume::-webkit-slider-runnable-track{background-size:'+ perc +'% 100%} ';
-                self.volumeStyle.textContent += '.volume::-moz-range-track{background-size:'+ perc +'% 100%} ';
-            }
-          });
-      this.frameText.addEventListener("keydown", self.frameInputListener);
-      this.frameText.addEventListener("keyup", self.frameInputListener);
+        this.video.addEventListener("ended", () => {
+            this.pauseState();
+        });
 
-      this.frameText.addEventListener("input", function(event) {
-            if (self.imagelist){
-                if(self.frameText.value > 0 && self.frameText.value <= self.imagelist.length) {
-                    var seekToFrameId =  Math.min(self.imagelist.length, self.frameText.value);//keep the frame in sync
-                    self.seekToFrame(seekToFrameId - 1);
+        this.video.addEventListener('canplaythrough', () => {
+            this.updateFrameCanvas(this.video);
+        });
+
+        this.seekBar.addEventListener("mousedown", () => {
+            this.seeking = true;
+        });
+ 
+        this.seekBar.addEventListener("mouseup", () => {
+            this.seeking = false;
+        });
+ 
+        this.seekBar.addEventListener("change", () => {
+            this.seeking = false;
+            if (this.imagelist) { //image list handling
+                var seekToFrameId = Math.floor(this.seekBar.value);//keep the frame in sync
+                this.seekToFrame(seekToFrameId);
+            } else { //video handling
+                this.video.currentTime = Math.floor(this.seekBar.value / this.frameTime) * this.frameTime;//keep the frame in sync 
+            }
+            this.playingCallback();
+        });
+        this.volumeSlider.addEventListener("change", function () {
+            if (!this.imagelist) {
+                this.video.volume = this.volumeSlider.value;
+                var perc = 100 * this.volumeSlider.value / this.volumeSlider.max;
+                this.volumeStyle.textContent = '.volume::-webkit-slider-runnable-track{background-size:' + perc + '% 100%} ';
+                this.volumeStyle.textContent += '.volume::-moz-range-track{background-size:' + perc + '% 100%} ';
+            }
+        });
+  
+        this.frameText.addEventListener("keydown", this.frameInputListener);
+        this.frameText.addEventListener("keyup", this.frameInputListener);
+
+        this.frameText.addEventListener("input", (event) => {
+            if (this.imagelist) {
+                if (this.frameText.value > 0 && this.frameText.value <= this.imagelist.length) {
+                    var seekToFrameId = Math.min(this.imagelist.length, this.frameText.value);//keep the frame in sync
+                    this.seekToFrame(seekToFrameId - 1);
                 }
             } else {
-                if(self.frameText.value > 0 && self.frameText.value <= (self.video.duration * self.framerate)) {
-                    self.video.currentTime = ((self.frameText.value - 1) * self.frameTime) + self.videoStartTime;
+                if (this.frameText.value > 0 && this.frameText.value <= (this.video.duration * this.framerate)) {
+                    this.video.currentTime = ((this.frameText.value - 1) * this.frameTime) + this.videoStartTime;
                 }
             }
-            self.playingCallback();
+            this.playingCallback();
             event.stopPropagation();
-          });
-      this.addEventListener("playSpeedSelected", function(e) {
-            self.playback(e.detail.playbackValue, e.detail.playbackText);
-          });
-      
+        });
+   
+        this.addEventListener("playSpeedSelected", (e) => {
+            this.playback(e.detail.playbackValue, e.detail.playbackText);
+        });
+
         this.addEventListener("ontagschanged", (tagsStateEvent) => {
             let tags = tagsStateEvent.detail.selected;
             let currentRegionUID = this.selectedRegionId[0];
@@ -493,23 +343,24 @@
             if (tags.length > 0 && region != null) {
                 let tagsDescriptor = this.buildTagsDescriptor(tags);
                 region.tags = tags;
-                this.regionsManager.updateTagsById(currentRegionUID, tagsDescriptor);
+                this.editor.RM.updateTagsById(currentRegionUID, tagsDescriptor);
             } else if (region !== null) {
                 region.tags = [];
-                this.regionsManager.updateTagsById(currentRegionUID, null);
+                this.editor.RM.updateTagsById(currentRegionUID, null);
             }
 
             this.selectRegion(currentRegionUID)
         });
-        this.form.addEventListener("submit", (e) => {	
+    
+        this.form.addEventListener("submit", (e) => {
             e.preventDefault();
-            this.regionsManager.unfreeze();  
-            newTag = document.getElementById("newTag").value;	
-            self.inputtagsarray.push(newTag);	
-            self.optionalTags.createTagControls(self.inputtagsarray);	
-            self.showAllRegions();	
+            //this.regionsManager.unfreeze();  
+            newTag = document.getElementById("newTag").value;
+            this.inputtagsarray.push(newTag);
+            this.optionalTags.createTagControls(this.inputtagsarray);
+            this.showAllRegions();
         })
-      
+
     },
 
     frameInputListener: function(event) {
@@ -562,7 +413,7 @@
     keyUpEventsListenerBinded: null,
 
     onNewAreaSelected: function(x1, y1, x2, y2){
-        var threshold = 20;
+        var threshold = 5;
         var dx, dy;
         var r = {};
         if (x1 < x2) {
@@ -662,8 +513,8 @@
     },        
 
     createRegion: function(x1, y1, x2, y2) {
-        let widthRatio = this.overlay.width / this.sourceWidth;
-        let heightRatio = this.overlay.height / this.sourceHeight;
+        let widthRatio = this.frameWidth / this.sourceWidth;
+        let heightRatio = this.frameHeight / this.sourceHeight;
 
         var rx1 = x1 / widthRatio;
         var ry1 = y1 / heightRatio;
@@ -671,12 +522,23 @@
         var ry2 = y2 / heightRatio;
 
         var region = this.addRegion(rx1, ry1, rx2, ry2);//Add to in-memory collection
+
+        let autoTags = this.optionalTags.getAutoTags();
+        if (autoTags !== null && autoTags.length > 0) {
+            let tags = [];
+            for (var i = 0; i < autoTags.length; i++) {
+                tags.push(autoTags[i].id);
+            }
+            region.tags = tags;            
+        }
+
         this.registerRegion(x1, y1, x2, y2, region.UID, region.tags); //add frame
 
         //if there is only one tag enable it by default
         if ($(`#${this.optionalTags.id}`).find('.tagButtons').size() == 1){
             $(`#${this.optionalTags.id}`).find('.tagButtons')[0].click();
         }
+
         if(this.lockTagsEnabled) {
             //Get all selected tags and add them to current region automatically
             //this.selectedTags was populated in this.lockTagsClicked
@@ -744,9 +606,9 @@
 
             if (tags.length > 0) {
                 let tagsDescriptor = this.buildTagsDescriptor(tags);
-                this.regionsManager.updateTagsById(region.UID, tagsDescriptor);
+                this.editor.RM.updateTagsById(region.UID, tagsDescriptor);
             } else {
-                this.regionsManager.updateTagsById(region.UID, null);
+                this.editor.RM.updateTagsById(region.UID, null);
             }
         }
     },
@@ -798,8 +660,8 @@
     regionMoved: function(id, x, y, width, height) {
         let region = this.getRegionById(id);
 
-        let widthRatio = this.overlay.width / this.sourceWidth;
-        let heightRatio = this.overlay.height / this.sourceHeight;
+        let widthRatio = this.frameWidth / this.sourceWidth;
+        let heightRatio = this.frameHeight / this.sourceHeight;
 
         var rx1 = x / widthRatio;
         var ry1 = y / heightRatio;
@@ -852,7 +714,7 @@
     deleteRegionById: function(id) {
         var regions = this.getCurrentFrameRegions();
         this.frames[this.getCurrentFrameId()] = regions.filter((r) => {return r.UID != id;});
-        //this.emitRegionToHost();        
+  
         if (id == this.selectedRegionId[0]) {
             this.selectedRegionId = [];
         }
@@ -861,27 +723,13 @@
     clearRegions: function(e) {
           this.frames[this.getCurrentFrameId()]=[];
           this.clearAllRegions();
-          // this.showAllRegions();
-          //this.emitRegionToHost();
     },
-    /**
-       * @method emitRegionToHost
-       * Fires an event to send the array of regions.
-       * The host html page can listen to this event.
-       */
-    //emitRegionToHost: function() {
-    //      this.fire('onregionchanged', {frame: {frameIndex: this.getCurrentFrameId(), regions:this.getCurrentFrameRegions()}});
-    //},
-    /**
-       * @method addDivToRegion
-       * Adds a transparent div to the region, the size of the region.
-       * Used for click events, hover, etc..
-       */
+
     registerRegion: function(x1, y1, x2, y2, regionUID, tags) {
         // Regions Manager
         let tagsDescriptor = this.buildTagsDescriptor(tags);
         
-        this.regionsManager.addRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
+        this.editor.RM.addRectRegion(regionUID, {x:x1, y:y1}, {x:x2, y:y2}, tagsDescriptor);
 
         this.selectRegion(regionUID);
     },
@@ -903,7 +751,7 @@
 
     clearAllRegions: function() {
         // Regions Manager
-        this.regionsManager.deleteAllRegions();
+        this.editor.RM.deleteAllRegions();
 
         // ** Old code **
         this.clearFrameElements();//Clear canvas and tags
@@ -911,6 +759,7 @@
     },
 
     showAllRegions: function() {
+        console.log(`showAllRegions: ${this.frameWidth} ${this.frameHeight}`);
         this.clearAllRegions();
         var regions = this.getCurrentFrameRegions();
         if(regions && regions.length > 0) {
@@ -924,8 +773,8 @@
                     continue;
                 }
 
-                var widthRatio = this.overlay.width / this.sourceWidth;
-                var heightRatio = this.overlay.height / this.sourceHeight;
+                var widthRatio = this.frameWidth / this.sourceWidth;
+                var heightRatio = this.frameHeight / this.sourceHeight;
 
                 let x1, y1, x2, y2;
                 if (region.box != undefined) {
@@ -962,10 +811,10 @@
                 this.registerRegion(x1, y1, x2, y2, region.UID, region.tags); ; //add frame                  
             }
             //Redraws all regions to ensure proper z-order stacking
-            this.regionsManager.redrawAllRegions();
+            this.editor.RM.redrawAllRegions();
         }
         //Clears areaSelector state when moving across frames
-        this.regionsManager.onManipulationEnd();
+        this.editor.RM.onManipulationEnd();
     },
     
     /**
@@ -1133,8 +982,6 @@
         self.frames = self.inputframes? self.inputframes:{};
         if(this.currTFRecord) this.addNewRecordTags();
         self.optionalTags.createTagControls(this.inputtagsarray);
-
-        //self.resetLayout();
         
         //bind keys (note this currently overrides any listener on the parent controls needs a more elegant way to work only when control is in focus)
         if (self.keyUpEventsListenerBinded != null) {
@@ -1163,76 +1010,24 @@
             self.controlWrapper.style.display = "grid";
             self.sourceWidth = self.curImg.width;
             self.sourceHeight = self.curImg.height;
-            self.aspect = self.sourceWidth / self.sourceHeight;
-            //Size canvas as image
-            let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
-            
-            self.resizeFrame(scaleByPortrait, self.aspect);
-
+            self.sourceRatio = self.sourceWidth / self.sourceHeight;
+           
             //Init variables and controls
             self.playingCallback();
 
             //fix resize bug
             $(window).off("resize");
             $(window).resize(function(){
-                if (self.video.offsetWidth !== undefined){
-                    //self.snapToAspectRatio();
-
-                    let scaleByPortrait = ((videotagging.video.offsetWidth/videotagging.video.offsetHeight) >= self.aspect);
-                    self.resizeFrame(scaleByPortrait, self.aspect);
-                    
-                    //resize the region boxes
-                    //self.showAllRegions();
-                    //reposition selectedRegion Label
-                    self.playingCallback();
-                }
+                self.playingCallback();
             });
         }
 
     },
 
-    resizeFrame(isPortrait, imgRatio) {
-        if (isPortrait) {
-            this.resizeFrameSize(parseFloat(this.video.offsetHeight * imgRatio), this.video.offsetHeight);
-            //shift the overlay
-            var leftShift = `${((this.video.offsetWidth/2) - (this.overlay.width/2))}px`;
-            this.overlay.style.left = leftShift;
-            this.overlay.style.top  = '0px';
-
-            this.frameCanvas.style.margin = "0px " + leftShift; 
-            this.selectionSVG.style.margin = "0px " + leftShift;  
-
-        } else {
-            this.resizeFrameSize(this.video.offsetWidth, parseFloat(this.video.offsetWidth / imgRatio));
-            //shift the overlay
-            var topShift = `${((this.video.offsetHeight/2) - (this.overlay.height/2))}px`
-            this.overlay.style.top = topShift;
-            this.overlay.style.left  = '0px';
-
-            this.frameCanvas.style.margin = topShift + " 0px"; 
-            this.selectionSVG.style.margin = topShift + " 0px"; 
-        }
-    },
-
-    resizeFrameSize: function(width, height) {
-        this.frameWidth = width;
-        this.frameHeight = height;
-
-        this.overlay.width = this.frameWidth;
-        this.overlay.height = this.frameHeight;
-                        
-        this.frameCanvas.width = this.frameWidth;
-        this.frameCanvas.height = this.frameHeight;
-
-        this.areaSelector.resize(width, height);
-        this.regionsManager.resize(width, height);
-    },
-
     resetLayout: function(){
-        this.overlay.style.top = "";
-        this.overlay.style.left = "";
-        this.frameCanvas.style.margin = "";
-        this.selectionSVG.style.margin = "";
+        this.frameWidth = this.editorDiv.querySelector("svg").clientWidth;
+        this.frameHeight = this.editorDiv.querySelector("svg").clientHeight;
+        this.frameRatio = this.frameWidth/this.frameHeight;
     },
 
     disableImageDir: function() {       
@@ -1362,13 +1157,6 @@
     },
     videoClicked: function(e) {
             this.cleanSelectedElements();
-            if(!((this.regiontype.toLowerCase() === "square") || (this.regiontype.toLowerCase() === "rectangle")))
-            {
-                var rect = this.overlay.getBoundingClientRect();
-                var x1 = (e.clientX-rect.left)/(rect.right-rect.left)*this.overlay.width;
-                var y1 = (e.clientY-rect.top)/(rect.bottom-rect.top)*this.overlay.height;
-                this.createRegion(x1, y1, null, null);
-            }
     },
     playState: function() {
         if(!this.imagelist) {
@@ -1406,6 +1194,7 @@
         // $('canvas#overlay').imgAreaSelect({disable: false});//enable canvas
     },
     playingCallback: function() { 
+        let updatePromise;
         if (!this.imagelist){
             this.frameText.value = this.getCurrentFrameNumber();
             this.displayVideoTime();
@@ -1413,7 +1202,7 @@
                 this.updateSeekBar();
             }
             // Update canvas image based on new video frame
-            this.updateFrameCanvas(this.video);
+            updatePromise = this.updateFrameCanvas(this.video);
 
         } else{
             this.frameText.value = `${this.getCurrentFrameNumber() + 1}`;
@@ -1421,9 +1210,13 @@
                 this.updateSeekBar();
             }
             // Update canvas image based on new video frame
-            this.updateFrameCanvas(this.curImg);
-        }           
-        this.showAllRegions();
+            updatePromise = this.updateFrameCanvas(this.curImg);
+        }
+
+        updatePromise.then(() => {
+            this.resetLayout();           
+            this.showAllRegions();
+        });        
     },
     playImageSquence: function() {
         if(this.imageIndex == this.imagelist.length - 1){
@@ -1454,38 +1247,32 @@
             this.seekStyle.textContent += '.seek::-moz-range-track{background-size:'+perc+'% 100%}';
     },
     updateFrameCanvas: function(source) {
-        var context = this.frameCanvas.getContext('2d');
-        var self = this;
         if (source instanceof HTMLVideoElement || source instanceof HTMLImageElement) {
             var buff = document.createElement('canvas');
-            buff.width = this.frameWidth;
-            buff.height = this.frameHeight;
-            buff.getContext('2d').drawImage(source, 0, 0, this.frameWidth, this.frameHeight);
+            buff.width = this.sourceWidth;
+            buff.height = this.sourceHeight;
+            buff.getContext('2d').drawImage(source, 0, 0, this.sourceWidth, this.sourceHeight);
 
-            this.filterPipeline.applyToCanvas(buff).then((bcnvs) => {
-                // Copy buffer to the canvas on screen
-                this.frameCanvas.width = bcnvs.width;
-                this.frameCanvas.height = bcnvs.height;
-                let imgContext = this.frameCanvas.getContext("2d");
-                imgContext.drawImage(bcnvs, 0, 0, bcnvs.width, bcnvs.height);
-            });
+            return this.editor.addContentSource(buff);
+        } else {
+            return new Promise();
         }
     },
 
     addFilterByName(filterName, params) {
         switch (filterName) {            
             case "invert_filter": {
-                this.filterPipeline.addFilter(this.CT.Filter.InvertFilter);
+                this.editor.FilterPipeline.addFilter(this.CT.Filter.InvertFilter);
                 this.playingCallback();
                 break;
             }
             case "grayscale_filter": {
-                this.filterPipeline.addFilter(this.CT.Filter.GrayscaleFilter);
+                this.editor.FilterPipeline.addFilter(this.CT.Filter.GrayscaleFilter);
                 this.playingCallback();
                 break;
             }
             case "reset": {
-                this.filterPipeline.clearPipeline();
+                this.editor.FilterPipeline.clearPipeline();
                 this.playingCallback();
                 break;
             }

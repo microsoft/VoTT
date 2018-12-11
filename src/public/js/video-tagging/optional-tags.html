@@ -90,8 +90,9 @@
                     }
                     document.getElementById(tag).remove();
                     videotagging.checkRemovedTags();                    
-                }
-                else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
+                } else if (e.altKey) {
+                    self.toggleAutoState(e.currentTarget);
+                } else if (this.tagsState[tag] === 'empty' || this.tagsState[tag] === 'partial') {
                     this.tagsState[tag] = "full";
                     self.setSelected(e.currentTarget);
                 } else {
@@ -106,7 +107,9 @@
 
             // Add indexes to map keyboard
             if (index <= 9) {
-                btn.innerHTML = `${tagsArray[index]}<sup>[${index < 10 ? index + 1 : ""}]</sup>`;
+                btn.innerHTML = `${tagsArray[index]}<span>${index < 10 ? index + 1 : ""}</span>`;
+                btn.dataset.hotkey = index + 1;
+                btn.classList.add("hotkey");
             } else {
                 btn.innerHTML = `${tagsArray[index]}`;
             }
@@ -121,14 +124,22 @@
         window.addEventListener("keyup",  this.assignHotkeys);
         videotagging.hotkeysAssigned = true;
     }, 
-    assignHotkeys(e){
-            if (e.keyCode >= 49 && e.keyCode <= 57 && !e.shiftKey) {
+    assignHotkeys(e) {
+        if (e.keyCode >= 49 && e.keyCode <= 57) {
+            if (e.altKey) {
+                let index = e.keyCode - 49;
+                if (index < videotagging.optionalTags.tags.length) {
+                    let tag = videotagging.optionalTags.tags[index];
+                    let btn = videotagging.optionalTags.getBtnByTag(tag);
+                    videotagging.optionalTags.toggleAutoState(btn);
+                }
+            } else if (!e.shiftKey) {
                 // debugger;
                 let index = e.keyCode - 49;
                 if (index < videotagging.optionalTags.tags.length) {
                     let tag = videotagging.optionalTags.tags[index];
                     let btn = videotagging.optionalTags.getBtnByTag(tag);
-                    if(!btn.disabled) {
+                    if (!btn.disabled) {
                         if (videotagging.optionalTags.tagsState[tag] == "empty" || videotagging.optionalTags.tagsState[tag] == "partial") {
                             videotagging.optionalTags.tagsState[tag] = "full";
                             videotagging.optionalTags.setSelected(btn);
@@ -137,10 +148,15 @@
                             videotagging.optionalTags.setUnselected(btn);
                         }
 
-                        videotagging.optionalTags.fire("ontagschanged", { selected: videotagging.optionalTags.projectSelectedTags(), state: videotagging.optionalTags.tagsState});
+                        videotagging.optionalTags.fire("ontagschanged", { selected: videotagging.optionalTags.projectSelectedTags(), state: videotagging.optionalTags.tagsState });
                     }
-                }                
+                }
             }
+        }
+    },
+
+    toggleAutoState(btn) {
+        btn.classList.toggle('auto');
     },
 
     getBtnByTag(tag) {
@@ -177,6 +193,10 @@
     getSelectedTags :function(){ 
         return $(this.buttonsContainer).find(".tagOn");
     },
+    getAutoTags :function(){ 
+        return $(this.buttonsContainer).find(".auto");
+    },
+
     resetSelected: function(){
         var self = this;
         $(this.buttonsContainer).find('.tagButtons').each(function(index){
