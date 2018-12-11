@@ -2,7 +2,7 @@ import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js"
 import { AzureCloudStorageService, IAzureCloudStorageOptions } from "./azureBlobStorage";
 import { StorageProviderFactory } from "./storageProvider";
 import registerProviders from "../../registerProviders";
-import { AssetType } from "../../models/applicationState.js";
+import { AssetType } from "../../models/applicationState";
 
 const content = "This is the content";
 const containers = ["container1", "container2", "container3"];
