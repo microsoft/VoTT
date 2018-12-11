@@ -1245,16 +1245,7 @@
             this.seekStyle.textContent += '.seek::-moz-range-track{background-size:'+perc+'% 100%}';
     },
     updateFrameCanvas: function(source) {
-        if (source instanceof HTMLVideoElement || source instanceof HTMLImageElement) {
-            var buff = document.createElement('canvas');
-            buff.width = this.sourceWidth;
-            buff.height = this.sourceHeight;
-            buff.getContext('2d').drawImage(source, 0, 0, this.sourceWidth, this.sourceHeight);
-
-            return this.editor.addContentSource(buff);
-        } else {
-            return new Promise();
-        }
+        return this.editor.addContentSource(source);
     },
 
     addFilterByName(filterName, params) {
