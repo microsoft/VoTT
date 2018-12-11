@@ -1,6 +1,6 @@
 import React from "react";
 import EditorFooter from "./editorFooter";
-import {mount} from "enzyme";
+import { mount } from "enzyme";
 import TagColors from "../../common/tagsInput/tagColors.json";
 
 describe("Footer Component", () => {
@@ -23,7 +23,7 @@ describe("Footer Component", () => {
         wrapper = mount(
             <EditorFooter
                 tags={originalTags}
-                onTagsChanged={onChangeHandler}/>,
+                onTagsChanged={onChangeHandler} />,
         );
     });
 
@@ -36,16 +36,16 @@ describe("Footer Component", () => {
         const emptyWrapper = mount(
             <EditorFooter
                 tags={[]}
-                onTagsChanged={onChangeHandler}/>,
+                onTagsChanged={onChangeHandler} />,
         );
-        const stateTags = emptyWrapper.state().tags;
+        const stateTags = emptyWrapper.state()["tags"];
         expect(stateTags).toEqual([]);
     });
 
     it("create a new tag from text box", () => {
         const newTagName = "My new tag";
-        wrapper.find("input").simulate("change", {target: {value: newTagName}});
-        wrapper.find("input").simulate("keyDown", {keyCode: 13});
+        wrapper.find("input").simulate("change", { target: { value: newTagName } });
+        wrapper.find("input").simulate("keyDown", { keyCode: 13 });
         expect(onChangeHandler).toBeCalled();
         expect(wrapper.state().tags).toHaveLength(3);
         expect(wrapper.state().tags[2].name).toEqual(newTagName);
@@ -65,7 +65,7 @@ describe("Footer Component", () => {
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
         wrapper.find("div.inline-block.tagtext")
             .first()
-            .simulate("dblclick", { target: { innerText: originalTags[0].name}});
+            .simulate("dblclick", { target: { innerText: originalTags[0].name } });
         wrapper.find("button")
             .last()
             .simulate("click");
@@ -75,7 +75,7 @@ describe("Footer Component", () => {
     it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
         wrapper.find("div.inline-block.tagtext")
             .first()
-            .simulate("dblclick", { target: { innerText: originalTags[0].name}});
+            .simulate("dblclick", { target: { innerText: originalTags[0].name } });
         wrapper.find("button")
             .first()
             .simulate("click");
