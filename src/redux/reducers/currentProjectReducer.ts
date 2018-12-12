@@ -16,12 +16,6 @@ export const reducer = (state: IProject = null, action: any) => {
             } else {
                 return state;
             }
-        case ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS:
-            if (state) {
-                return deepmerge(state, { assets: _.keyBy(action.assets, "id") });
-            } else {
-                return state;
-            }
         case ActionTypes.SAVE_ASSET_METADATA_SUCCESS:
             if (state) {
                 const updatedAssets = { ...state.assets } || {};
