@@ -554,8 +554,8 @@ function openPath(pathName, isDir, isRecords = false) {
 function getRegionsFromRecord(tfRecord){
   videotagging.sourceWidth = tfRecord.features.feature['image/width'].int64List.value[0];
   videotagging.sourceHeight = tfRecord.features.feature['image/height'].int64List.value[0];
-  let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
-  let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
+  let widthRatio = videotagging.frameWidth / videotagging.sourceWidth;
+  let heightRatio = videotagging.frameHeight / videotagging.sourceHeight;
 
   for (let i = 0; i < tfRecord.features.feature['image/object/bbox/xmin'].floatList.value.length; i++) {
     
@@ -613,8 +613,6 @@ function save() {
         let regions = videotagging.getRegions(videotagging.getCurrentFrameId());
         videotagging.sourceHeight = videotagging.currTFRecord.features.feature['image/height'].int64List.value[0]
         videotagging.sourceWidth = videotagging.currTFRecord.features.feature['image/width'].int64List.value[0]
-        let widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
-        let heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
 
         regions.forEach(region => {
           xmin.push(region.x1 / videotagging.sourceWidth)
