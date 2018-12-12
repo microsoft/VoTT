@@ -2,7 +2,8 @@ import _ from "lodash";
 import { VottJsonExportProvider, IVottJsonExportOptions, VottExportAssetState } from "./vottJson";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, IAsset, AssetType, AssetState } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
+import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
@@ -16,10 +17,10 @@ describe("VoTT Json Export Provider", () => {
         name: "Test Project",
         autoSave: true,
         assets: {
-            "asset-1": createTestAsset("1", AssetState.Tagged),
-            "asset-2": createTestAsset("2", AssetState.Tagged),
-            "asset-3": createTestAsset("3", AssetState.Visited),
-            "asset-4": createTestAsset("4", AssetState.NotVisited),
+            "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
+            "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
+            "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
+            "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
         },
         exportFormat: {
             providerType: "json",
@@ -136,27 +137,3 @@ describe("VoTT Json Export Provider", () => {
         });
     });
 });
-
-function createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
-    return {
-        id: `asset-${name}`,
-        format: "jpg",
-        name: `Asset ${name}`,
-        path: `C:\\Desktop\\asset${name}.jpg`,
-        state: assetState,
-        type: AssetType.Image,
-        size: {
-            width: 800,
-            height: 600,
-        },
-    };
-}
-
-function createTestAssets(count: number): { [index: string]: IAsset } {
-    const assets: IAsset[] = [];
-    for (let i = 1; i <= count; i++) {
-        assets.push(createTestAsset(i.toString()));
-    }
-
-    return _.keyBy(assets, (asset) => asset.id);
-}

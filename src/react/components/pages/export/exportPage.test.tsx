@@ -8,6 +8,7 @@ import { IApplicationState, IProject } from "../../../../models/applicationState
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
 import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
+import MockFactory from "../../../../common/mockFactory";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -30,7 +31,7 @@ describe("Export Page", () => {
     });
 
     it("Sets project state from redux store", () => {
-        const testProject = createProject();
+        const testProject = MockFactory.createTestProject();
         const store = createStore(testProject);
         const props = createProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
@@ -43,7 +44,7 @@ describe("Export Page", () => {
     });
 
     it("Sets project state from route params", (done) => {
-        const testProject = createProject();
+        const testProject = MockFactory.createTestProject();
         const store = createStore();
         const props = createProps(testProject.id);
 
@@ -61,7 +62,7 @@ describe("Export Page", () => {
     });
 
     it("Calls save and export project actions on form submit", (done) => {
-        const testProject = createProject();
+        const testProject = MockFactory.createTestProject();
         const store = createStore(testProject);
         const props = createProps(testProject.id);
 
@@ -90,29 +91,6 @@ describe("Export Page", () => {
         });
     });
 });
-
-function createProject(): IProject {
-    return {
-        id: "project-1",
-        name: "Project 1",
-        assets: {},
-        exportFormat: null,
-        sourceConnection: {
-            id: "connection-1",
-            name: "Connection 1",
-            providerType: "test",
-            providerOptions: {},
-        },
-        targetConnection: {
-            id: "connection-1",
-            name: "Connection 1",
-            providerType: "test",
-            providerOptions: {},
-        },
-        tags: [],
-        autoSave: true,
-    };
-}
 
 function createProps(projectId: string): IExportPageProps {
     return {

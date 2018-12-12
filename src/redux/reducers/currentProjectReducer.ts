@@ -2,7 +2,7 @@ import _ from "lodash";
 import * as ActionTypes from "../actions/actionTypes";
 import { IProject } from "../../models/applicationState";
 
-export const reducer = (state: IProject = null, action: any) => {
+export const reducer = (state: IProject = null, action: any): IProject => {
     switch (action.type) {
         case ActionTypes.DELETE_PROJECT_SUCCESS:
         case ActionTypes.CLOSE_PROJECT_SUCCESS:
