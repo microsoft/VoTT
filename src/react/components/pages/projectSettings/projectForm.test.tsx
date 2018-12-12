@@ -31,7 +31,8 @@ describe("Project Form Component", () => {
                         <ProjectForm
                             project={project}
                             connections={connections}
-                            onSubmit={onSubmit}/>
+                            onSubmit={onSubmit}
+                            />
                     </Router>
                 </Provider>,
             ).find(ProjectForm).childAt(0);
@@ -69,14 +70,18 @@ describe("Project Form Component", () => {
             );
         });
 
-        it("should have tags loaded correctly", () => {
+        it("Loads tags into state", () => {
             expect(project.tags.length).toBeGreaterThan(0);
-            expect(wrapper.find("div.inline-block.tag_color_box")).toHaveLength(project.tags.length);
             expect(
-                wrapper.state().formData.tags,
+                JSON.parse(wrapper.state().formData.tags),
             ).toEqual(
                 project.tags,
             );
+        });
+
+        it("Renders appropriate tag boxes", () => {
+            expect(project.tags.length).toBeGreaterThan(0);
+            expect(wrapper.find(".tag-wrapper")).toHaveLength(project.tags.length);
         });
 
         it("should update name upon submission", () => {
@@ -85,12 +90,73 @@ describe("Project Form Component", () => {
             expect(wrapper.state().formData.name).toEqual(project.name);
             wrapper.find("input#root_name").simulate("change", {target: {value: newName}});
             expect(wrapper.state().formData.name).toEqual(newName);
+
+            const form = wrapper.find("form");
+            form.simulate("submit");
+            expect(onSubmit).toBeCalledWith({
+                ...project,
+                tags: JSON.stringify(project.tags),
+                name: newName,
+            });
+        });
+
+        it("should update description upon submission", () => {
+            const newDescription = "My new description";
+            expect(wrapper.state().formData.description).not.toEqual(newDescription);
+            expect(wrapper.state().formData.description).toEqual(project.description);
+            wrapper.find("textarea#root_description").simulate("change", {target: {value: newDescription}});
+            expect(wrapper.state().formData.description).toEqual(newDescription);
+
+            const form = wrapper.find("form");
+            form.simulate("submit");
+            expect(onSubmit).toBeCalledWith({
+                ...project,
+                tags: JSON.stringify(project.tags),
+                description: newDescription,
+            });
+        });
+
+        it("should update source connection ID upon submission", () => {
+            const newConnectionId = "2";
+            expect(wrapper.state().formData.sourceConnectionId).not.toEqual(newConnectionId);
+            expect(wrapper.state().formData.sourceConnectionId).toEqual(project.sourceConnectionId);
+            expect(wrapper.find("select#root_sourceConnectionId").exists()).toBe(true);
+            wrapper.find("select#root_sourceConnectionId").simulate("change", {target: {value: newConnectionId}});
+
+            expect(wrapper.state().formData.sourceConnectionId).toEqual(newConnectionId);
+            const form = wrapper.find("form");
+            form.simulate("submit");
+            expect(onSubmit).toBeCalledWith({
+                ...project,
+                tags: JSON.stringify(project.tags),
+                sourceConnectionId: newConnectionId,
+            });
+
+        });
+
+        it("should update target connection ID upon submission", () => {
+            const newConnectionId = "1";
+            expect(wrapper.state().formData.targetConnectionId).not.toEqual(newConnectionId);
+            expect(wrapper.state().formData.targetConnectionId).toEqual(project.targetConnectionId);
+            expect(wrapper.find("select#root_targetConnectionId").exists()).toBe(true);
+            wrapper.find("select#root_targetConnectionId").simulate("change", {target: {value: newConnectionId}});
+            expect(wrapper.state().formData.targetConnectionId).toEqual(newConnectionId);
+            const form = wrapper.find("form");
+            form.simulate("submit");
+            expect(onSubmit).toBeCalledWith({
+                ...project,
+                tags: JSON.stringify(project.tags),
+                targetConnectionId: newConnectionId,
+            });
         });
 
         it("should call onChangeHandler on submission", () => {
-            const form = wrapper.find("form")
+            const form = wrapper.find("form");
             form.simulate("submit");
-            expect(onSubmit).toBeCalled();
+            expect(onSubmit).toBeCalledWith({
+                ...project,
+                tags: JSON.stringify(project.tags),
+            });
         });
     });
 
@@ -148,6 +214,10 @@ describe("Project Form Component", () => {
             ).toBe(
                 undefined,
             );
+        });
+
+        it("renders no tag boxes", () => {
+            expect(wrapper.find(".tag-wrapper")).toHaveLength(0);
         });
     });
 });

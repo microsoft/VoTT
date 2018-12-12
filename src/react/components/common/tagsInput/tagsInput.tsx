@@ -7,7 +7,6 @@ import { randomIntInRange } from "../../../../common/utils";
 import { TagEditorModal } from "./tagEditorModal/tagEditorModal";
 import deepmerge from "deepmerge";
 import { ITag } from "../../../../models/applicationState";
-import { connect } from "tls";
 
 export interface IReactTag {
     id: string;
@@ -16,7 +15,7 @@ export interface IReactTag {
 }
 
 interface ITagsInputProps {
-    tags: ITag[];
+    tags: ITag[] | string;
     onChange: (value) => void;
 }
 
@@ -38,10 +37,9 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
 
     constructor(props) {
         super(props);
-        const iTags = (typeof props.tags === 'string' || props.tags instanceof String) 
-            ? JSON.parse(props.tags) : props.tags; 
+
         this.state = {
-            tags: (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [],
+            tags: this.getReactTags(props),
             currentTagColorIndex: randomIntInRange(0, tagColors.length),
             selectedTag: null,
             showModal: false,
@@ -156,6 +154,12 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
 
     private addHtml(tag: IReactTag): void {
         tag.text = this.ReactTagHtml(tag.id, tag.color);
+    }
+
+    private getReactTags(props): IReactTag[] {
+        const tags = (props.tags) ? props.tags : props.value;
+        const iTags = (typeof tags === "string") ? JSON.parse(tags) : tags;
+        return (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [];
     }
 
     private toReactTag(tag: ITag): IReactTag {

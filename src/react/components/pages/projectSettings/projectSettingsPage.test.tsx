@@ -7,6 +7,7 @@ import { MockFactory } from "../../../../models/mockFactory";
 import initialState from "../../../../redux/store/initialState";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectSettingsPage, { IProjectSettingsPageProps } from "./projectSettingsPage";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -30,20 +31,16 @@ describe("Project settings page", () => {
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
     });
 
-    it("Sets project state from redux store", (done) => {
-        const project = mockFactory.project();
+    it("Form submission calls save project action", (done) => {
         const store = createReduxStore(mockFactory.initialState());
         const props = mockFactory.projectSettingsProps();
         const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
         const wrapper = createCompoent(store, props);
         wrapper.find("form").simulate("submit");
-
         setImmediate(() => {
             expect(saveProjectSpy).toBeCalled();
             done();
         });
-
     });
-
 });

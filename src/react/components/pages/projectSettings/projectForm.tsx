@@ -27,12 +27,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     constructor(props, context) {
         super(props, context);
-        debugger;
-
+        const normalizedTags = this.normalizeTags(this.props.project);
         this.state = {
             uiSchema: this.createUiSchema(),
             formSchema: { ...formSchema },
-            formData: this.props.project,
+            formData: {
+                ...this.props.project,
+                tags: normalizedTags,
+            },
         };
         this.onFormSubmit = this.onFormSubmit.bind(this);
     }
@@ -58,8 +60,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     }
 
     private onFormSubmit(args) {
-        debugger;
-        this.props.onSubmit(args.formData)
+        this.props.onSubmit(args.formData);
     }
 
     private createUiSchema(): any {
@@ -77,5 +78,12 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         };
 
         return deepmerge(uiSchema, overrideUiSchema);
+    }
+
+    private normalizeTags(project: IProject) {
+        if (project && project.tags) {
+            return JSON.stringify(project.tags);
+        }
+        return undefined;
     }
 }
