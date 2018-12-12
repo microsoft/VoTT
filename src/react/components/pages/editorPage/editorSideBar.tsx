@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
 import { AutoSizer, List } from "react-virtualized";
-import { IAsset } from "../../../../models/applicationState";
+import { IAsset, AssetState } from "../../../../models/applicationState";
 import AssetPreview from "./assetPreview";
 
 export interface IEditorSideBarProps {
@@ -72,9 +72,8 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         const { selectedAsset } = this.state;
 
         return (
-            <div key={key} style={style} className={selectedAsset && selectedAsset.id === asset.id
-                ? "asset-item selected"
-                : "asset-item"}
+            <div key={key} style={style}
+                className={this.getAssetCssClassNames(asset, selectedAsset)}
                 onClick={() => this.onAssetClicked(asset)}>
                 <div className="asset-item-image">
                     <AssetPreview asset={asset} />
@@ -89,5 +88,26 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                 </div>
             </div>
         );
+    }
+
+    private getAssetCssClassNames(asset: IAsset, selectedAsset: IAsset = null): string {
+        const cssClasses = ["asset-item"];
+        if (selectedAsset && selectedAsset.id === asset.id) {
+            cssClasses.push("selected");
+        }
+
+        switch (asset.state) {
+            case AssetState.NotVisited:
+                cssClasses.push("not-visited");
+                break;
+            case AssetState.Visited:
+                cssClasses.push("visited");
+                break;
+            case AssetState.Tagged:
+                cssClasses.push("tagged");
+                break;
+        }
+
+        return cssClasses.join(" ");
     }
 }

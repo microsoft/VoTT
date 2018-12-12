@@ -36,6 +36,8 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
+    private loadingProjectAssets: boolean = false;
+
     constructor(props, context) {
         super(props, context);
 
@@ -138,15 +140,19 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.setState({
             selectedAsset: assetMetadata,
+            assets: _.values(this.props.project.assets),
         });
     }
 
     private async loadProjectAssets() {
-        if (this.state.assets.length > 0) {
+        if (this.loadingProjectAssets || this.state.assets.length > 0) {
             return;
         }
 
-        const assets = await this.props.projectActions.loadAssets(this.props.project);
+        this.loadingProjectAssets = true;
+
+        await this.props.projectActions.loadAssets(this.props.project);
+        const assets = _.values(this.props.project.assets);
 
         this.setState({
             assets,
@@ -154,6 +160,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             if (assets.length > 0) {
                 await this.selectAsset(assets[0]);
             }
+            this.loadingProjectAssets = false;
         });
     }
 }

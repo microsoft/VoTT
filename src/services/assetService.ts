@@ -99,7 +99,7 @@ export class AssetService {
             return JSON.parse(json) as IAssetMetadata;
         } catch (err) {
             return {
-                asset,
+                asset: { ...asset },
                 regions: [],
                 timestamp: null,
             };
