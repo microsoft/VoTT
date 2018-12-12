@@ -77,11 +77,13 @@
         }
 
         &.visited::after {
-            background-color: rgba(255,255,0,0.15);
+            background-color: rgba(255,255,0,0.10);
+            border: 1px solid rgba(255,255,0,0.25);
         }
 
         &.tagged::after {
-            background-color: rgba(0,128,0, 0.15);
+            background-color: rgba(0,128,0, 0.10);
+            border: 1px solid rgba(0,128,0,0.25);
         }
 
         &-image {

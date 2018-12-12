@@ -1,7 +1,6 @@
 import _ from "lodash";
 import * as ActionTypes from "../actions/actionTypes";
 import { IProject } from "../../models/applicationState";
-import deepmerge from "deepmerge";
 
 export const reducer = (state: IProject = null, action: any) => {
     switch (action.type) {
@@ -16,11 +15,31 @@ export const reducer = (state: IProject = null, action: any) => {
             } else {
                 return state;
             }
+        case ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS:
+            if (state) {
+                const currentAssets = { ...state.assets } || {};
+                action.assets.forEach((asset) => {
+                    if (!currentAssets[asset.id]) {
+                        currentAssets[asset.id] = asset;
+                    }
+                });
+
+                return {
+                    ...state,
+                    assets: currentAssets,
+                };
+            } else {
+                return state;
+            }
         case ActionTypes.SAVE_ASSET_METADATA_SUCCESS:
             if (state) {
                 const updatedAssets = { ...state.assets } || {};
                 updatedAssets[action.assetMetadata.asset.id] = { ...action.assetMetadata.asset };
-                return { ...state, assets: updatedAssets };
+
+                return {
+                    ...state,
+                    assets: updatedAssets,
+                };
             } else {
                 return state;
             }

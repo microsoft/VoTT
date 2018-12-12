@@ -85,7 +85,7 @@ export function loadAssetMetadata(project: IProject, asset: IAsset) {
         const assetMetadata = await assetService.getAssetMetadata(asset);
         dispatch({ type: ActionTypes.LOAD_ASSET_METADATA_SUCCESS, assetMetadata });
 
-        return assetMetadata;
+        return { ...assetMetadata };
     };
 }
 
@@ -95,7 +95,7 @@ export function saveAssetMetadata(project: IProject, assetMetadata: IAssetMetada
         const savedMetadata = await assetService.save(assetMetadata);
         dispatch({ type: ActionTypes.SAVE_ASSET_METADATA_SUCCESS, assetMetadata: savedMetadata });
 
-        return savedMetadata;
+        return { ...savedMetadata };
     };
 }
 

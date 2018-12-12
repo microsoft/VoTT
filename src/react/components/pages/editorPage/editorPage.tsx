@@ -2,10 +2,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
-import deepmerge from "deepmerge";
-import { RouteComponentProps } from "react-router-dom";
 import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import { RouteComponentProps } from "react-router-dom";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import "./editorPage.scss";
 import AssetPreview from "./assetPreview";
@@ -37,7 +36,7 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
-    private loadingAssets: boolean = false;
+    private loadingProjectAssets: boolean = false;
 
     constructor(props, context) {
         super(props, context);
@@ -122,12 +121,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private async selectAsset(asset: IAsset) {
-        if (asset.state === AssetState.NotVisited) {
-            asset.state = AssetState.Visited;
-        }
-
         const assetMetadata = await this.props.projectActions.loadAssetMetadata(this.props.project, asset);
-        assetMetadata.asset.state = asset.state;
+        if (assetMetadata.asset.state === AssetState.NotVisited) {
+            assetMetadata.asset.state = AssetState.Visited;
+        }
 
         try {
             if (!assetMetadata.asset.size) {
@@ -143,38 +140,19 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.setState({
             selectedAsset: assetMetadata,
+            assets: _.values(this.props.project.assets),
         });
     }
 
     private async loadProjectAssets() {
-        if (this.loadingAssets || this.state.assets.length > 0) {
+        if (this.loadingProjectAssets || this.state.assets.length > 0) {
             return;
         }
 
-        this.loadingAssets = true;
+        this.loadingProjectAssets = true;
 
-        // Get current project assets
-        const projectAssets = { ...this.props.project.assets } || {};
-        // Merge in any new assets from the asset provider
-        const providerAssets = await this.props.projectActions.loadAssets(this.props.project);
-        let newAssets = 0;
-        providerAssets.forEach((providerAsset) => {
-            if (!projectAssets[providerAsset.id]) {
-                projectAssets[providerAsset.id] = providerAsset;
-                newAssets++;
-            }
-        });
-
-        // Update project with newly found assets
-        if (newAssets > 0) {
-            const projectUpdates = {
-                ...this.props.project,
-                assets: deepmerge({}, projectAssets),
-            };
-            await this.props.projectActions.saveProject(projectUpdates);
-        }
-
-        const assets = _.values(projectAssets);
+        await this.props.projectActions.loadAssets(this.props.project);
+        const assets = _.values(this.props.project.assets);
 
         this.setState({
             assets,
@@ -182,7 +160,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             if (assets.length > 0) {
                 await this.selectAsset(assets[0]);
             }
-            this.loadingAssets = false;
+            this.loadingProjectAssets = false;
         });
     }
 }
