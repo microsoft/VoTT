@@ -31,7 +31,7 @@ describe("Export Page", () => {
     });
 
     it("Sets project state from redux store", () => {
-        const testProject = MockFactory.createTestProject();
+        const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject);
         const props = createProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
@@ -44,7 +44,7 @@ describe("Export Page", () => {
     });
 
     it("Sets project state from route params", (done) => {
-        const testProject = MockFactory.createTestProject();
+        const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore();
         const props = createProps(testProject.id);
 
@@ -62,7 +62,7 @@ describe("Export Page", () => {
     });
 
     it("Calls save and export project actions on form submit", (done) => {
-        const testProject = MockFactory.createTestProject();
+        const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject);
         const props = createProps(testProject.id);
 

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { AssetState, IAsset, AssetType, IProject } from "../models/applicationState";
+import { AssetState, IAsset, AssetType, IProject, IConnection } from "../models/applicationState";
 
 export default class MockFactory {
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
@@ -26,26 +26,48 @@ export default class MockFactory {
         return assets;
     }
 
-    public static createTestProject(): IProject {
+    public static createTestProjects(count: number = 10): IProject[] {
+        const projects: IProject[] = [];
+        for (let i = 1; i <= count; i++) {
+            projects.push(MockFactory.createTestProject(i.toString()));
+        }
+
+        return projects;
+    }
+
+    public static createTestProject(name: string): IProject {
+        const connection = MockFactory.createTestConnection(name);
+
         return {
-            id: "project-1",
-            name: "Project 1",
+            id: `project-${name}`,
+            name: `Project ${name}`,
             assets: {},
             exportFormat: null,
-            sourceConnection: {
-                id: "connection-1",
-                name: "Connection 1",
-                providerType: "test",
-                providerOptions: {},
-            },
-            targetConnection: {
-                id: "connection-1",
-                name: "Connection 1",
-                providerType: "test",
-                providerOptions: {},
-            },
+            sourceConnection: connection,
+            sourceConnectionId: connection.id,
+            targetConnection: connection,
+            targetConnectionId: connection.id,
             tags: [],
             autoSave: true,
+        };
+    }
+
+    public static createTestConnections(count: number = 10): IConnection[] {
+        const connections: IConnection[] = [];
+        for (let i = 1; i <= count; i++) {
+            connections.push(MockFactory.createTestConnection(i.toString()));
+        }
+
+        return connections;
+    }
+
+    public static createTestConnection(name: string, providerType: string = "test"): IConnection {
+        return {
+            id: `connection-${name}`,
+            name: `Connection ${name}`,
+            description: `Description for Connection ${name}`,
+            providerType,
+            providerOptions: {},
         };
     }
 }

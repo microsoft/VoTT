@@ -5,9 +5,13 @@ import thunk from "redux-thunk";
 import rootReducer from "../reducers";
 
 export default function createReduxStore(initialState?: any): Store {
+    const middleware = window
+        ? applyMiddleware(thunk, reduxImmutableStateInvarient(), createLogger())
+        : applyMiddleware(thunk);
+
     return createStore(
         rootReducer,
         initialState,
-        applyMiddleware(thunk, reduxImmutableStateInvarient(), createLogger()),
+        middleware,
     );
 }
