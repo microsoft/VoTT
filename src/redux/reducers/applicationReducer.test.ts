@@ -1,6 +1,7 @@
 import { reducer } from "./applicationReducer";
 import { IAppSettings } from "../../models/applicationState";
-import * as ActionTypes from "../actions/actionTypes";
+import { toggleDevToolsAction, refreshApplicationAction } from "../actions/applicationActions";
+import { anyOtherAction } from "../actions/actionCreators";
 
 describe("Application Reducer", () => {
     it("Toggle dev tools sets correct state", () => {
@@ -9,14 +10,11 @@ describe("Application Reducer", () => {
             connection: null,
         };
 
-        const action = {
-            type: ActionTypes.TOGGLE_DEV_TOOLS_SUCCESS,
-            value: true,
-        };
+        const action = toggleDevToolsAction(true);
 
         const result = reducer(state, action);
         expect(result).not.toBe(state);
-        expect(result.devToolsEnabled).toBe(action.value);
+        expect(result.devToolsEnabled).toBe(action.payload);
     });
 
     it("Refreshing app clones state", () => {
@@ -25,10 +23,7 @@ describe("Application Reducer", () => {
             connection: null,
         };
 
-        const action = {
-            type: ActionTypes.REFRESH_APP_SUCCESS,
-        };
-
+        const action = refreshApplicationAction();
         const result = reducer(state, action);
         expect(result).not.toBe(state);
     });
@@ -39,10 +34,7 @@ describe("Application Reducer", () => {
             connection: null,
         };
 
-        const action = {
-            type: "UNKNOWN",
-        };
-
+        const action = anyOtherAction();
         const result = reducer(state, action);
         expect(result).toBe(state);
     });

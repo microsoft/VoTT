@@ -1,8 +1,9 @@
 import _ from "lodash";
-import * as ActionTypes from "../actions/actionTypes";
+import { ActionTypes } from "../actions/actionTypes";
 import { IProject } from "../../models/applicationState";
+import { AnyAction } from "../actions/actionCreators";
 
-export const reducer = (state: IProject[] = [], action: any): IProject[] => {
+export const reducer = (state: IProject[] = [], action: AnyAction): IProject[] => {
     if (!state) {
         state = [];
     }
@@ -11,25 +12,25 @@ export const reducer = (state: IProject[] = [], action: any): IProject[] => {
 
     switch (action.type) {
         case ActionTypes.LOAD_PROJECTS_SUCCESS:
-            newState = _.unionBy(state, action.projects, (project) => project.id);
+            newState = _.unionBy(state, action.payload, (project) => project.id);
             localStorage.setItem("projects", JSON.stringify(newState));
             return newState;
         case ActionTypes.LOAD_PROJECT_SUCCESS:
         case ActionTypes.SAVE_PROJECT_SUCCESS:
             return [
-                { ...action.project },
-                ...state.filter((project) => project.id !== action.project.id),
+                { ...action.payload },
+                ...state.filter((project) => project.id !== action.payload.id),
             ];
         case ActionTypes.DELETE_PROJECT_SUCCESS:
-            return [...state.filter((project) => project.id !== action.project.id)];
+            return [...state.filter((project) => project.id !== action.payload.id)];
         case ActionTypes.SAVE_CONNECTION_SUCCESS:
             newState = state.map((project) => {
                 const updatedProject = { ...project };
-                if (project.sourceConnection.id === action.connection.id) {
-                    updatedProject.sourceConnection = { ...action.connection };
+                if (project.sourceConnection.id === action.payload.id) {
+                    updatedProject.sourceConnection = { ...action.payload };
                 }
-                if (project.targetConnection.id === action.connection.id) {
-                    updatedProject.targetConnection = { ...action.connection };
+                if (project.targetConnection.id === action.payload.id) {
+                    updatedProject.targetConnection = { ...action.payload };
                 }
                 return updatedProject;
             });

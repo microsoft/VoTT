@@ -1,16 +1,15 @@
 import { reducer } from "./connectionsReducer";
-import * as ActionTypes from "../actions/actionTypes";
 import { IConnection } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
+import { loadConnectionsAction, saveConnectionAction, deleteConnectionAction } from "../actions/connectionActions";
+import { loadProjectAction } from "../actions/projectActions";
+import { anyOtherAction } from "../actions/actionCreators";
 
 describe("Connections Reducer", () => {
     it("Load Connections returns new array of connections", () => {
         const state: IConnection[] = null;
         const testConnections = MockFactory.createTestConnections();
-        const action = {
-            type: ActionTypes.LOAD_CONNECTIONS_SUCCESS,
-            connections: testConnections,
-        };
+        const action = loadConnectionsAction(testConnections);
 
         const result = reducer(state, action);
         expect(result).not.toBe(state);
@@ -21,10 +20,7 @@ describe("Connections Reducer", () => {
         const testConnections = MockFactory.createTestConnections();
         const state: IConnection[] = testConnections;
         const newConnection = MockFactory.createTestConnection("11");
-        const action = {
-            type: ActionTypes.SAVE_CONNECTION_SUCCESS,
-            connection: newConnection,
-        };
+        const action = saveConnectionAction(newConnection);
 
         const result = reducer(state, action);
         expect(result).not.toBe(state);
@@ -35,10 +31,7 @@ describe("Connections Reducer", () => {
         const testConnections = MockFactory.createTestConnections();
         const state: IConnection[] = testConnections;
         const updatedConnection = { ...testConnections[0] };
-        const action = {
-            type: ActionTypes.SAVE_CONNECTION_SUCCESS,
-            connection: updatedConnection,
-        };
+        const action = saveConnectionAction(updatedConnection);
 
         const result = reducer(state, action);
         expect(result).not.toBe(state);
@@ -50,10 +43,7 @@ describe("Connections Reducer", () => {
         const testConnections = MockFactory.createTestConnections();
         const state: IConnection[] = testConnections;
         const deletedConnection = { ...testConnections[0] };
-        const action = {
-            type: ActionTypes.DELETE_CONNECTION_SUCCESS,
-            connection: deletedConnection,
-        };
+        const action = deleteConnectionAction(deletedConnection);
 
         const result = reducer(state, action);
         expect(result).not.toBe(state);
@@ -67,11 +57,7 @@ describe("Connections Reducer", () => {
 
         const state: IConnection[] = [];
 
-        const action = {
-            type: ActionTypes.LOAD_PROJECT_SUCCESS,
-            project: testProject,
-        };
-
+        const action = loadProjectAction(testProject);
         const result = reducer(state, action);
         expect(result.length).toEqual(2);
         expect(result[0]).toEqual(testProject.sourceConnection);
@@ -87,12 +73,7 @@ describe("Connections Reducer", () => {
         testProject.targetConnection.name += " Updated";
 
         const state: IConnection[] = testConnections;
-
-        const action = {
-            type: ActionTypes.LOAD_PROJECT_SUCCESS,
-            project: testProject,
-        };
-
+        const action = loadProjectAction(testProject);
         const result = reducer(state, action);
         expect(result.length).toEqual(testConnections.length);
         expect(result[0]).toEqual(testProject.sourceConnection);
@@ -101,9 +82,7 @@ describe("Connections Reducer", () => {
 
     it("Unknown action performs a noop", () => {
         const state: IConnection[] = MockFactory.createTestConnections();
-        const action = {
-            type: "UNKNOWN",
-        };
+        const action = anyOtherAction();
 
         const result = reducer(state, action);
         expect(result).toBe(state);

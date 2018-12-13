@@ -1,18 +1,16 @@
 import { reducer } from "./recentProjectsReducer";
-import * as ActionTypes from "../actions/actionTypes";
 import { IProject } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
+import { loadProjectsAction, saveProjectAction, deleteProjectAction } from "../actions/projectActions";
+import { saveConnectionAction } from "../actions/connectionActions";
+import { anyOtherAction } from "../actions/actionCreators";
 
 describe("Recent Projects Reducer", () => {
     it("Load Projects returns a new array of projects", () => {
         const testProjects = MockFactory.createTestProjects();
         const state: IProject[] = null;
 
-        const action = {
-            type: ActionTypes.LOAD_PROJECTS_SUCCESS,
-            projects: testProjects,
-        };
-
+        const action = loadProjectsAction(testProjects);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result).toEqual(testProjects);
@@ -23,11 +21,7 @@ describe("Recent Projects Reducer", () => {
         const state: IProject[] = testProjects;
         const newProject = MockFactory.createTestProject("11");
 
-        const action = {
-            type: ActionTypes.SAVE_PROJECT_SUCCESS,
-            project: newProject,
-        };
-
+        const action = saveProjectAction(newProject);
         const result = reducer(state, action);
         expect(result.length).toEqual(testProjects.length + 1);
         expect(result[0]).toEqual(newProject);
@@ -38,11 +32,7 @@ describe("Recent Projects Reducer", () => {
         const state: IProject[] = testProjects;
         const udpatedProject = { ...testProjects[0] };
 
-        const action = {
-            type: ActionTypes.SAVE_PROJECT_SUCCESS,
-            project: udpatedProject,
-        };
-
+        const action = saveProjectAction(udpatedProject);
         const result = reducer(state, action);
         expect(result.length).toEqual(testProjects.length);
         expect(result[0]).toEqual(udpatedProject);
@@ -53,11 +43,7 @@ describe("Recent Projects Reducer", () => {
         const state: IProject[] = testProjects;
         const deletedProject = { ...testProjects[0] };
 
-        const action = {
-            type: ActionTypes.DELETE_PROJECT_SUCCESS,
-            project: deletedProject,
-        };
-
+        const action = deleteProjectAction(deletedProject);
         const result = reducer(state, action);
         expect(result.length).toEqual(testProjects.length - 1);
     });
@@ -69,11 +55,7 @@ describe("Recent Projects Reducer", () => {
         const updatedConnection = { ...testProjects[0].sourceConnection };
         updatedConnection.name += "Updated";
 
-        const action = {
-            type: ActionTypes.SAVE_CONNECTION_SUCCESS,
-            connection: updatedConnection,
-        };
-
+        const action = saveConnectionAction(updatedConnection);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result[0].sourceConnection).toEqual(updatedConnection);
@@ -82,10 +64,7 @@ describe("Recent Projects Reducer", () => {
     it("Unknown action performs a noop", () => {
         const state = MockFactory.createTestProjects();
 
-        const action = {
-            type: "UNKNOWN",
-        };
-
+        const action = anyOtherAction();
         const result = reducer(state, action);
         expect(result).toBe(state);
     });

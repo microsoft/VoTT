@@ -1,19 +1,23 @@
 import _ from "lodash";
 import { reducer } from "./currentProjectReducer";
 import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
-import * as ActionTypes from "../actions/actionTypes";
 import MockFactory from "../../common/mockFactory";
+import {
+    loadProjectAction,
+    saveProjectAction,
+    closeProjectAction,
+    deleteProjectAction,
+    loadProjectAssetsAction,
+    saveAssetMetadataAction,
+} from "../actions/projectActions";
+import { anyOtherAction } from "../actions/actionCreators";
 
 describe("Current Project Reducer", () => {
     it("Load project sets current project state", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const state: IProject = null;
 
-        const action = {
-            type: ActionTypes.LOAD_PROJECT_SUCCESS,
-            project: testProject,
-        };
-
+        const action = loadProjectAction(testProject);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result).toEqual(testProject);
@@ -24,12 +28,7 @@ describe("Current Project Reducer", () => {
         const updatedProject = { ...currentProject, name: currentProject.name += "Updated" };
 
         const state: IProject = currentProject;
-
-        const action = {
-            type: ActionTypes.SAVE_PROJECT_SUCCESS,
-            project: updatedProject,
-        };
-
+        const action = saveProjectAction(updatedProject);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result).toEqual(updatedProject);
@@ -40,12 +39,7 @@ describe("Current Project Reducer", () => {
         const updatedProject = MockFactory.createTestProject("2");
 
         const state: IProject = currentProject;
-
-        const action = {
-            type: ActionTypes.SAVE_PROJECT_SUCCESS,
-            project: updatedProject,
-        };
-
+        const action = saveProjectAction(updatedProject);
         const result = reducer(state, action);
         expect(result).toBe(state);
     });
@@ -53,11 +47,7 @@ describe("Current Project Reducer", () => {
     it("Close project clears out current project", () => {
         const currentProject = MockFactory.createTestProject("1");
         const state: IProject = currentProject;
-
-        const action = {
-            type: ActionTypes.CLOSE_PROJECT_SUCCESS,
-        };
-
+        const action = closeProjectAction();
         const result = reducer(state, action);
         expect(result).toBeNull();
     });
@@ -65,11 +55,7 @@ describe("Current Project Reducer", () => {
     it("Delete project clears out currnet project", () => {
         const currentProject = MockFactory.createTestProject("1");
         const state: IProject = currentProject;
-
-        const action = {
-            type: ActionTypes.CLOSE_PROJECT_SUCCESS,
-        };
-
+        const action = deleteProjectAction(currentProject);
         const result = reducer(state, action);
         expect(result).toBeNull();
     });
@@ -78,11 +64,7 @@ describe("Current Project Reducer", () => {
         const state: IProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets();
 
-        const action = {
-            type: ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS,
-            assets: testAssets,
-        };
-
+        const action = loadProjectAssetsAction(testAssets);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(Object.keys(result.assets).length).toEqual(testAssets.length);
@@ -106,11 +88,7 @@ describe("Current Project Reducer", () => {
             timestamp: null,
         };
 
-        const action = {
-            type: ActionTypes.SAVE_ASSET_METADATA_SUCCESS,
-            assetMetadata,
-        };
-
+        const action = saveAssetMetadataAction(assetMetadata);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result.assets[testAssets[0].id]).toEqual(assetMetadata.asset);
@@ -118,9 +96,7 @@ describe("Current Project Reducer", () => {
 
     it("Unknown action performs a noop", () => {
         const state: IProject = MockFactory.createTestProject("TestProject");
-        const action = {
-            type: "UNKNOWN",
-        };
+        const action = anyOtherAction();
 
         const result = reducer(state, action);
         expect(result).toBe(state);

@@ -1,6 +1,8 @@
 import ConnectionService from "../../services/connectionService";
 import { IConnection } from "../../models/applicationState";
-import * as ActionTypes from "./actionTypes";
+import { ActionTypes } from "./actionTypes";
+import { IPayloadAction, createPayloadAction } from "./actionCreators";
+import { Dispatch } from "redux";
 
 const connectionService = new ConnectionService();
 
@@ -13,10 +15,10 @@ export default interface IConnectionActions {
 }
 
 export function loadConnection(connectionId: string) {
-    return async (dispatch) => {
+    return async (dispatch: Dispatch) => {
         try {
             const connection = await connectionService.get(connectionId);
-            dispatch({ type: ActionTypes.LOAD_CONNECTION_SUCCESS, connection });
+            dispatch(loadConnectionaction(connection));
 
             return connection;
         } catch (err) {
@@ -26,27 +28,49 @@ export function loadConnection(connectionId: string) {
 }
 
 export function loadConnections() {
-    return async (dispatch) => {
+    return async (dispatch: Dispatch) => {
         const connections = await connectionService.getList();
-        dispatch({ type: ActionTypes.LOAD_CONNECTIONS_SUCCESS, connections });
+        dispatch(loadConnectionsAction(connections));
 
         return connections;
     };
 }
 
 export function saveConnection(connection: IConnection) {
-    return async (dispatch) => {
+    return async (dispatch: Dispatch) => {
         connection = await connectionService.save(connection);
-        dispatch({ type: ActionTypes.SAVE_CONNECTION_SUCCESS, connection });
-        dispatch({ type: ActionTypes.LOAD_CONNECTION_SUCCESS, connection });
+        dispatch(saveConnectionAction(connection));
+        dispatch(loadConnectionaction(connection));
 
         return connection;
     };
 }
 
 export function deleteConnection(connection: IConnection) {
-    return async (dispatch) => {
+    return async (dispatch: Dispatch) => {
         await connectionService.delete(connection);
-        dispatch({ type: ActionTypes.DELETE_CONNECTION_SUCCESS, connection });
+        dispatch(deleteConnectionAction(connection));
     };
 }
+
+export interface ILoadConnectionsAction extends IPayloadAction<string, IConnection[]> {
+    type: ActionTypes.LOAD_CONNECTIONS_SUCCESS;
+}
+
+export interface ILoadConnectionAction extends IPayloadAction<string, IConnection> {
+    type: ActionTypes.LOAD_CONNECTION_SUCCESS;
+}
+
+export interface ISaveConnectionAction extends IPayloadAction<string, IConnection> {
+    type: ActionTypes.SAVE_CONNECTION_SUCCESS;
+}
+
+export interface IDeleteConnectionAction extends IPayloadAction<string, IConnection> {
+    type: ActionTypes.DELETE_CONNECTION_SUCCESS;
+}
+
+export const loadConnectionsAction = createPayloadAction<ILoadConnectionsAction>(ActionTypes.LOAD_CONNECTIONS_SUCCESS);
+export const loadConnectionaction = createPayloadAction<ILoadConnectionAction>(ActionTypes.LOAD_CONNECTION_SUCCESS);
+export const saveConnectionAction = createPayloadAction<ISaveConnectionAction>(ActionTypes.SAVE_CONNECTION_SUCCESS);
+export const deleteConnectionAction =
+    createPayloadAction<IDeleteConnectionAction>(ActionTypes.DELETE_CONNECTION_SUCCESS);
