@@ -3,11 +3,12 @@ import React from "react";
 import MockFactory from "../../../../common/mockFactory";
 import { IApplicationState } from "../../../../models/applicationState";
 import initialState from "../../../../redux/store/initialState";
-import createReduxStore from "../../../../redux/store/store";
+import { Provider } from "react-redux";
+import { BrowserRouter as Router } from "react-router-dom";
 import ProjectForm, { IProjectFormProps } from "./projectForm";
+import createReduxStore from "../../../../redux/store/store";
 
 describe("Project Form Component", () => {
-    let onSubmit: (value: any) => void;
 
     const project = MockFactory.project();
     const connections = MockFactory.connections();
@@ -16,61 +17,48 @@ describe("Project Form Component", () => {
 
     function createComponent(props: IProjectFormProps) {
         return mount(
-            <ProjectForm {...props} />,
-        );
+            <Provider store={store}>
+                <Router>
+                    <ProjectForm
+                        {...props}/>
+                </Router>
+            </Provider>,
+        ).find(ProjectForm).childAt(0);
     }
 
     describe("Existing project", () => {
-        onSubmit = jest.fn();
-        let wrapper: any = null;
-
-        beforeEach(() => {
-            wrapper = createComponent({
-                project: project,
-                connections: connections,
-                onSubmit: onSubmit
-            });
-        });
+        const onSubmit = jest.fn();
 
         it("has initial state loaded correctly", () => {
-            expect(
-                wrapper.state().formData.name,
-            ).toEqual(
-                project.name,
-            );
-
-            expect(
-                wrapper.state().formData.sourceConnection,
-            ).toEqual(
-                project.sourceConnection,
-            );
-
-            expect(
-                wrapper.state().formData.targetConnection,
-            ).toEqual(
-                project.targetConnection,
-            );
-
-            expect(
-                wrapper.state().formData.description,
-            ).toEqual(
-                project.description,
-            );
-
+            const wrapper = createComponent({
+                project,
+                connections,
+                onSubmit,
+            });
+            expect(wrapper.state().formData.name).toEqual(project.name);
+            expect(wrapper.state().formData.sourceConnection).toEqual(project.sourceConnection);
+            expect(wrapper.state().formData.targetConnection).toEqual(project.targetConnection);
+            expect(wrapper.state().formData.description).toEqual(project.description);
             expect(project.tags.length).toBeGreaterThan(0);
-            expect(
-                JSON.parse(wrapper.state().formData.tags),
-            ).toEqual(
-                project.tags,
-            );
+            expect(JSON.parse(wrapper.state().formData.tags)).toEqual(project.tags);
         });
 
         it("has correct initial rendering", () => {
+            const wrapper = createComponent({
+                project,
+                connections,
+                onSubmit,
+            });
             expect(project.tags.length).toBeGreaterThan(0);
             expect(wrapper.find(".tag-wrapper")).toHaveLength(project.tags.length);
         });
 
         it("should update name upon submission", () => {
+            const wrapper = createComponent({
+                project,
+                connections,
+                onSubmit,
+            });
             const newName = "My new name";
             expect(wrapper.state().formData.name).not.toEqual(newName);
             expect(wrapper.state().formData.name).toEqual(project.name);
@@ -87,6 +75,11 @@ describe("Project Form Component", () => {
         });
 
         it("should update description upon submission", () => {
+            const wrapper = createComponent({
+                project,
+                connections,
+                onSubmit,
+            });
             const newDescription = "My new description";
             expect(wrapper.state().formData.description).not.toEqual(newDescription);
             expect(wrapper.state().formData.description).toEqual(project.description);
@@ -103,6 +96,11 @@ describe("Project Form Component", () => {
         });
 
         it("should update source connection ID upon submission", () => {
+            const wrapper = createComponent({
+                project,
+                connections,
+                onSubmit,
+            });
             const newConnectionId = "2";
             expect(wrapper.state().formData.sourceConnectionId).not.toEqual(newConnectionId);
             expect(wrapper.state().formData.sourceConnectionId).toEqual(project.sourceConnectionId);
@@ -121,6 +119,11 @@ describe("Project Form Component", () => {
         });
 
         it("should update target connection ID upon submission", () => {
+            const wrapper = createComponent({
+                project,
+                connections,
+                onSubmit,
+            });
             const newConnectionId = "1";
             expect(wrapper.state().formData.targetConnectionId).not.toEqual(newConnectionId);
             expect(wrapper.state().formData.targetConnectionId).toEqual(project.targetConnectionId);
@@ -137,6 +140,11 @@ describe("Project Form Component", () => {
         });
 
         it("should call onChangeHandler on submission with stringified tags", () => {
+            const wrapper = createComponent({
+                project,
+                connections,
+                onSubmit,
+            });
             const form = wrapper.find("form");
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
@@ -147,59 +155,40 @@ describe("Project Form Component", () => {
     });
 
     describe("Empty project", () => {
-        let wrapper: any = null;
 
-        beforeEach(() => {
-            wrapper = mount(
-                <ProjectForm
-                    project={null}
-                    connections={connections}
-                    onSubmit={onSubmit}/>
-            );
+        const onSubmit = jest.fn();
+
+        it("has initial state loaded correctly", () => {
+            const wrapper = createComponent({
+                project: null,
+                connections,
+                onSubmit,
+            });
+            expect(wrapper.state().formData.name).toBe(undefined);
+            expect(wrapper.state().formData.sourceConnectionId).toBe(undefined);
+            expect(wrapper.state().formData.targetConnectionId).toBe(undefined);
+            expect(wrapper.state().formData.description).toBe(undefined);
+            expect(wrapper.state().formData.tags).toBe(undefined);
         });
 
-        it("should have name loaded correctly", () => {
-            expect(
-                wrapper.state().formData.name,
-            ).toBe(
-                undefined,
-            );
-        });
-
-        it("should have source connection loaded correctly", () => {
-            expect(
-                wrapper.state().formData.sourceConnectionId,
-            ).toBe(
-                undefined,
-            );
-        });
-
-        it("should have target connection loaded correctly", () => {
-            expect(
-                wrapper.state().formData.targetConnectionId,
-            ).toBe(
-                undefined,
-            );
-        });
-
-        it("should have description loaded correctly", () => {
-            expect(
-                wrapper.state().formData.description,
-            ).toBe(
-                undefined,
-            );
-        });
-
-        it("should have tags loaded correctly", () => {
-            expect(
-                wrapper.state().formData.tags,
-            ).toBe(
-                undefined,
-            );
-        });
-
-        it("renders no tag boxes", () => {
+        it("has correct initial rendering", () => {
+            const wrapper = createComponent({
+                project: null,
+                connections,
+                onSubmit,
+            });
             expect(wrapper.find(".tag-wrapper")).toHaveLength(0);
+        });
+
+        it("should not call onChangeHandler on submission because of empty required values", () => {
+            const wrapper = createComponent({
+                project: null,
+                connections,
+                onSubmit,
+            });
+            const form = wrapper.find("form");
+            form.simulate("submit");
+            expect(onSubmit).not.toBeCalled();
         });
     });
 });
