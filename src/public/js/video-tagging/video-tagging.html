@@ -1,4 +1,3 @@
-
 <!--
        * video-tagging control for video tagging
        * Main file of the video-tagging module.
@@ -580,16 +579,16 @@
         let secondaryTags = [];
         if (tags.length > 0) {
             let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            primaryTag = new this.CT.Base.Tags.Tag(tags[0], this.CT.Base.Tags.Tag.getHueFromColor(color) * 360);
+            primaryTag = new this.CT.Core.Tag(tags[0], this.CT.Core.Tag.getHueFromColor(color) * 360);
 
             secondaryTags = [];
             for (var i = 1; i < tags.length; i++) {
                 let c = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[i])];
-                let t = new this.CT.Base.Tags.Tag(tags[i], this.CT.Base.Tags.Tag.getHueFromColor(c) * 360);
+                let t = new this.CT.Core.Tag(tags[i], this.CT.Core.Tag.getHueFromColor(c) * 360);
                 secondaryTags.push(t)
             }                
 
-            tagsDescriptor = new this.CT.Base.Tags.TagsDescriptor(primaryTag, secondaryTags);
+            tagsDescriptor = new this.CT.Core.TagsDescriptor(primaryTag, secondaryTags);
         }
 
         return tagsDescriptor;
@@ -1253,12 +1252,12 @@
     addFilterByName(filterName, params) {
         switch (filterName) {            
             case "invert_filter": {
-                this.editor.FilterPipeline.addFilter(this.CT.Filter.InvertFilter);
+                this.editor.FilterPipeline.addFilter(this.CT.Filters.InvertFilter);
                 this.playingCallback();
                 break;
             }
             case "grayscale_filter": {
-                this.editor.FilterPipeline.addFilter(this.CT.Filter.GrayscaleFilter);
+                this.editor.FilterPipeline.addFilter(this.CT.Filters.GrayscaleFilter);
                 this.playingCallback();
                 break;
             }
@@ -1280,6 +1279,7 @@
 <script src="../moment/moment.js"></script>
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
-<!-- <script src="js/ct.min.js"></script> -->
-<script src="js/ct.js"></script>
+<script>
+        window.CanvasTools = require("vott-ct");
+    </script>
 </dom-module>
