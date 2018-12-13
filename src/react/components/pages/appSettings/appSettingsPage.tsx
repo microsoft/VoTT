@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import deepmerge from "deepmerge";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
-import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import { IApplicationState, IAppSettings, IConnection } from "../../../../models/applicationState";
 import Form from "react-jsonschema-form";
 import formSchema from "./appSettingsPage.json";
@@ -14,8 +13,7 @@ import ConnectionPicker from "../../common/connectionPicker";
 interface IAppSettingsProps {
     appSettings: IAppSettings;
     connections: IConnection[];
-    applicationActions: IApplicationActions;
-    connectionActions: IConnectionActions;
+    actions: IApplicationActions;
 }
 
 interface IAppSettingsState {
@@ -33,8 +31,7 @@ function mapStateToProps(state: IApplicationState) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        applicationActions: bindActionCreators(applicationActions, dispatch),
-        connectionActions: bindActionCreators(connectionActions, dispatch),
+        actions: bindActionCreators(applicationActions, dispatch),
     };
 }
 
@@ -56,12 +53,6 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
         this.toggleDevTools = this.toggleDevTools.bind(this);
         this.reloadApp = this.reloadApp.bind(this);
         this.onFormSubmit = this.onFormSubmit.bind(this);
-    }
-
-    public async componentDidMount() {
-        if (!this.props.connections) {
-            await this.props.connectionActions.loadConnections();
-        }
     }
 
     public componentDidUpdate(prevProps) {
@@ -121,10 +112,10 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
     }
 
     private toggleDevTools = () => {
-        this.props.applicationActions.toggleDevTools(!this.props.appSettings.devToolsEnabled);
+        this.props.actions.toggleDevTools(!this.props.appSettings.devToolsEnabled);
     }
 
     private reloadApp = () => {
-        this.props.applicationActions.reloadApplication();
+        this.props.actions.reloadApplication();
     }
 }

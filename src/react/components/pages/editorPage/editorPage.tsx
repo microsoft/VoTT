@@ -13,6 +13,7 @@ import EditorSideBar from "./editorSideBar";
 
 interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
     project: IProject;
+    recentProjects: IProject[];
     projectActions: IProjectActions;
 }
 
@@ -24,6 +25,7 @@ interface IEditorPageState {
 
 function mapStateToProps(state: IApplicationState) {
     return {
+        recentProjects: state.recentProjects,
         project: state.currentProject,
     };
 }
@@ -48,7 +50,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
-            this.props.projectActions.loadProject(projectId);
+            const project = this.props.recentProjects.find((project) => project.id === projectId);
+            this.props.projectActions.loadProject(project);
         }
 
         this.selectAsset = this.selectAsset.bind(this);

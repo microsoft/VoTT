@@ -1,17 +1,37 @@
-import * as ActionTypes from "../actions/actionTypes";
+import _ from "lodash";
+import { ActionTypes } from "../actions/actionTypes";
 import { IConnection } from "../../models/applicationState";
+import { AnyAction } from "../actions/actionCreators";
 
-export const reducer = (state: IConnection[] = [], action: any) => {
+export const reducer = (state: IConnection[] = [], action: AnyAction): IConnection[] => {
+    if (!state) {
+        state = [];
+    }
+
     switch (action.type) {
-        case ActionTypes.LOAD_CONNECTIONS_SUCCESS:
-            return [...action.connections];
         case ActionTypes.SAVE_CONNECTION_SUCCESS:
             return [
-                { ...action.connection },
-                ...state.filter((connection) => connection.id !== action.connection.id),
+                { ...action.payload },
+                ...state.filter((connection) => connection.id !== action.payload.id),
             ];
         case ActionTypes.DELETE_CONNECTION_SUCCESS:
-            return [...state.filter((connection) => connection.id !== action.connection.id)];
+            return [...state.filter((connection) => connection.id !== action.payload.id)];
+        case ActionTypes.LOAD_PROJECT_SUCCESS:
+            const isSourceTargetEqual = action.payload.sourceConnection.id === action.payload.targetConnection.id;
+            if (isSourceTargetEqual) {
+                return [
+                    { ...action.payload.sourceConnection },
+                    ...state.filter((connection) => connection.id !== action.payload.sourceConnection.id),
+                ];
+            }
+
+            return [
+                { ...action.payload.sourceConnection },
+                { ...action.payload.targetConnection },
+                ...state.filter((connection) => {
+                    return connection.id !== action.payload.sourceConnection.id &&
+                        connection.id !== action.payload.targetConnection.id;
+                })];
         default:
             return state;
     }

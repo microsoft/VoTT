@@ -1,26 +1,77 @@
 import _ from "lodash";
 import { reducer } from "./currentProjectReducer";
 import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
-import * as ActionTypes from "../actions/actionTypes";
 import MockFactory from "../../common/mockFactory";
+import {
+    loadProjectAction,
+    saveProjectAction,
+    closeProjectAction,
+    deleteProjectAction,
+    loadProjectAssetsAction,
+    saveAssetMetadataAction,
+} from "../actions/projectActions";
+import { anyOtherAction } from "../actions/actionCreators";
 
 describe("Current Project Reducer", () => {
-    it("LOAD_PROJECT_ASSETS merges assets into current asset set", () => {
-        const state: IProject = MockFactory.createTestProject();
+    it("Load project sets current project state", () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const state: IProject = null;
+
+        const action = loadProjectAction(testProject);
+        const result = reducer(state, action);
+        expect(result).not.toBe(state);
+        expect(result).toEqual(testProject);
+    });
+
+    it("Save project updates current project when project ids matches", () => {
+        const currentProject = MockFactory.createTestProject("TestProject");
+        const updatedProject = { ...currentProject, name: currentProject.name += "Updated" };
+
+        const state: IProject = currentProject;
+        const action = saveProjectAction(updatedProject);
+        const result = reducer(state, action);
+        expect(result).not.toBe(state);
+        expect(result).toEqual(updatedProject);
+    });
+
+    it("Save project is noop when project ids do not match", () => {
+        const currentProject = MockFactory.createTestProject("1");
+        const updatedProject = MockFactory.createTestProject("2");
+
+        const state: IProject = currentProject;
+        const action = saveProjectAction(updatedProject);
+        const result = reducer(state, action);
+        expect(result).toBe(state);
+    });
+
+    it("Close project clears out current project", () => {
+        const currentProject = MockFactory.createTestProject("1");
+        const state: IProject = currentProject;
+        const action = closeProjectAction();
+        const result = reducer(state, action);
+        expect(result).toBeNull();
+    });
+
+    it("Delete project clears out currnet project", () => {
+        const currentProject = MockFactory.createTestProject("1");
+        const state: IProject = currentProject;
+        const action = deleteProjectAction(currentProject);
+        const result = reducer(state, action);
+        expect(result).toBeNull();
+    });
+
+    it("Load Project Assets merges assets into current asset set", () => {
+        const state: IProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets();
 
-        const action = {
-            type: ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS,
-            assets: testAssets,
-        };
-
+        const action = loadProjectAssetsAction(testAssets);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(Object.keys(result.assets).length).toEqual(testAssets.length);
     });
 
-    it("SAVE_ASSET_METADATA_SUCCESS updates project asset state", () => {
-        const state: IProject = MockFactory.createTestProject();
+    it("Save Asset Metadata updates project asset state", () => {
+        const state: IProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets();
         state.assets = _.keyBy(testAssets, "id");
 
@@ -37,13 +88,17 @@ describe("Current Project Reducer", () => {
             timestamp: null,
         };
 
-        const action = {
-            type: ActionTypes.SAVE_ASSET_METADATA_SUCCESS,
-            assetMetadata,
-        };
-
+        const action = saveAssetMetadataAction(assetMetadata);
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result.assets[testAssets[0].id]).toEqual(assetMetadata.asset);
+    });
+
+    it("Unknown action performs a noop", () => {
+        const state: IProject = MockFactory.createTestProject("TestProject");
+        const action = anyOtherAction();
+
+        const result = reducer(state, action);
+        expect(result).toBe(state);
     });
 });
