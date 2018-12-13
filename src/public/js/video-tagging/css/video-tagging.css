@@ -288,6 +288,8 @@ z-index: 10;
   float: left;
   width: 85%;
   margin: 1em 0 0 1.5em;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .labelControls {
