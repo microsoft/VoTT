@@ -6,7 +6,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",
-    "canvastools": "github:PIC123/CanvasTools-for-VOTT#ts-fix",
     "deepmerge": "^2.2.1",
     "lodash": "^4.17.11",
     "md5.js": "^1.3.5",
@@ -22,7 +21,7 @@
     "redux-thunk": "^2.3.0",
     "rimraf": "^2.6.2",
     "shortid": "^2.2.14",
-    "vott-ct": "^2.0.4"
+    "vott-ct": "^2.0.10"
   },
   "scripts": {
     "start": "nf start -p 3000",
