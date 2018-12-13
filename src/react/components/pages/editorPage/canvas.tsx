@@ -1,9 +1,11 @@
 import React from "react";
 import { IAssetMetadata } from "../../../../models/applicationState";
 import * as CanvasTools from "canvastools";
+// import * as CanvasTools from "vott-ct"
 
 interface ICanvasProps {
     selectedAsset: IAssetMetadata;
+    addRegion: Function;
 }
 
 interface ICanvasState {
@@ -59,6 +61,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             } else {
                 this.editor.RM.addRectRegion((incrementalRegionID++).toString(), new ct.Base.Point.Point2D(r.x1, r.y1), new ct.Base.Point.Point2D(r.x2, r.y2), tags);
             }
+
+            this.props.addRegion()
         }
         
         this.editor.onRegionMove = (id, x, y, width, height) => {
