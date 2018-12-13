@@ -1,19 +1,13 @@
 import { mount } from "enzyme";
 import React from "react";
-import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState } from "../../../../models/applicationState";
-import initialState from "../../../../redux/store/initialState";
-import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
+import MockFactory from "../../../../common/mockFactory";
 import ProjectForm, { IProjectFormProps } from "./projectForm";
-import createReduxStore from "../../../../redux/store/store";
 
 describe("Project Form Component", () => {
 
     const project = MockFactory.project();
     const connections = MockFactory.connections();
-    const defaultState: IApplicationState = initialState;
-    const store = createReduxStore(defaultState);
 
     function createComponent(props: IProjectFormProps) {
         return mount(
