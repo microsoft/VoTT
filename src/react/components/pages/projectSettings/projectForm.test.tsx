@@ -1,76 +1,62 @@
-import React from "react";
-import ProjectForm from "./projectForm";
 import { mount } from "enzyme";
-import { MockFactory } from "../../../../models/mockFactory";
-import TagColors from "../../common/tagsInput/tagColors.json";
-
-import { Provider } from "react-redux";
-import { BrowserRouter as Router } from "react-router-dom";
+import React from "react";
+import MockFactory from "../../../../common/mockFactory";
 import { IApplicationState } from "../../../../models/applicationState";
 import initialState from "../../../../redux/store/initialState";
 import createReduxStore from "../../../../redux/store/store";
-import ProjectSettingsPage from "./projectSettingsPage";
+import ProjectForm, { IProjectFormProps } from "./projectForm";
 
 describe("Project Form Component", () => {
     let onSubmit: (value: any) => void;
 
-    const mockFactory = new MockFactory();
-    const project = mockFactory.project();
-    const connections = mockFactory.connections();
+    const project = MockFactory.project();
+    const connections = MockFactory.connections();
     const defaultState: IApplicationState = initialState;
     const store = createReduxStore(defaultState);
+
+    function createComponent(props: IProjectFormProps) {
+        return mount(
+            <ProjectForm {...props} />,
+        );
+    }
 
     describe("Existing project", () => {
         onSubmit = jest.fn();
         let wrapper: any = null;
 
         beforeEach(() => {
-            wrapper = mount(
-                <Provider store={store}>
-                    <Router>
-                        <ProjectForm
-                            project={project}
-                            connections={connections}
-                            onSubmit={onSubmit}
-                            />
-                    </Router>
-                </Provider>,
-            ).find(ProjectForm).childAt(0);
+            wrapper = createComponent({
+                project: project,
+                connections: connections,
+                onSubmit: onSubmit
+            });
         });
 
-        it("should have name loaded correctly", () => {
+        it("has initial state loaded correctly", () => {
             expect(
                 wrapper.state().formData.name,
             ).toEqual(
                 project.name,
             );
-        });
 
-        it("should have source connection loaded correctly", () => {
             expect(
                 wrapper.state().formData.sourceConnection,
             ).toEqual(
                 project.sourceConnection,
             );
-        });
 
-        it("should have target connection loaded correctly", () => {
             expect(
                 wrapper.state().formData.targetConnection,
             ).toEqual(
                 project.targetConnection,
             );
-        });
 
-        it("should have description loaded correctly", () => {
             expect(
                 wrapper.state().formData.description,
             ).toEqual(
                 project.description,
             );
-        });
 
-        it("Loads tags into state", () => {
             expect(project.tags.length).toBeGreaterThan(0);
             expect(
                 JSON.parse(wrapper.state().formData.tags),
@@ -79,7 +65,7 @@ describe("Project Form Component", () => {
             );
         });
 
-        it("Renders appropriate tag boxes", () => {
+        it("has correct initial rendering", () => {
             expect(project.tags.length).toBeGreaterThan(0);
             expect(wrapper.find(".tag-wrapper")).toHaveLength(project.tags.length);
         });
@@ -150,7 +136,7 @@ describe("Project Form Component", () => {
             });
         });
 
-        it("should call onChangeHandler on submission", () => {
+        it("should call onChangeHandler on submission with stringified tags", () => {
             const form = wrapper.find("form");
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
@@ -165,15 +151,11 @@ describe("Project Form Component", () => {
 
         beforeEach(() => {
             wrapper = mount(
-                <Provider store={store}>
-                    <Router>
-                        <ProjectForm
-                            project={null}
-                            connections={connections}
-                            onSubmit={onSubmit}/>
-                    </Router>
-                </Provider>,
-            ).find(ProjectForm).childAt(0);
+                <ProjectForm
+                    project={null}
+                    connections={connections}
+                    onSubmit={onSubmit}/>
+            );
         });
 
         it("should have name loaded correctly", () => {

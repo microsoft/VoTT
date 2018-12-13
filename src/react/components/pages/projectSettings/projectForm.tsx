@@ -7,13 +7,13 @@ import TagsInput from "../../common/tagsInput/tagsInput";
 import ConnectionPicker from "../../common/connectionPicker";
 import { IProject, IConnection } from "../../../../models/applicationState.js";
 
-interface IProjectFormProps extends React.Props<ProjectForm> {
+export interface IProjectFormProps extends React.Props<ProjectForm> {
     project: IProject;
     connections: IConnection[];
     onSubmit: (project: IProject) => void;
 }
 
-interface IProjectFormState {
+export interface IProjectFormState {
     formData: any;
     formSchema: any;
     uiSchema: any;
