@@ -37,6 +37,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             },
         };
         this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onTagsChange = this.onTagsChange.bind(this);
     }
 
     public componentDidUpdate(prevProps) {
@@ -59,6 +60,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         );
     }
 
+    private onTagsChange(tagsJson) {
+        this.setState({
+            formData: {
+                tags: tagsJson,
+            },
+        });
+    }
+
     private onFormSubmit(args) {
         this.props.onSubmit(args.formData);
     }
@@ -73,6 +82,15 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             targetConnectionId: {
                 "ui:options": {
                     connections: this.props.connections,
+                },
+            },
+            tags: {
+                "ui:widget": (props) => {
+                    return (
+                        <TagsInput
+                            tags={this.state.formData.tags}
+                            onChange={this.onTagsChange}/>
+                    );
                 },
             },
         };

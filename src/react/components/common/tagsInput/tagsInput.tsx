@@ -44,6 +44,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
             selectedTag: null,
             showModal: false,
         };
+
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.handleDrag = this.handleDrag.bind(this);
@@ -157,7 +158,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     private getReactTags(props): IReactTag[] {
-        const tags = (props.tags) ? props.tags : props.value;
+        const tags = props.tags;
         const iTags = (typeof tags === "string") ? JSON.parse(tags) : tags;
         return (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [];
     }
