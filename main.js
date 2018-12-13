@@ -6,6 +6,8 @@ const BrowserWindow = electron.BrowserWindow;
 const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
+// To access the version defined in package.json
+require('pkginfo')(module, 'version');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -134,9 +136,6 @@ function createWindow () {
     mainWindow.send('export-tags', arg);
   });
 
-  ipcMain.on('export-records', (event, arg) => {
-    mainWindow.send('export-records', arg);
-  });
 
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
@@ -283,6 +282,9 @@ function createWindow () {
           label: 'Keyboard Shortcuts',
           accelerator: 'CmdOrCtrl+H',
           click () { mainWindow.webContents.send('help');}
+        },
+        {
+          label: 'Version: ' + module.exports.version
         }
       ]
     }	    

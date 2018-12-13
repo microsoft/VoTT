@@ -1,6 +1,6 @@
 {
   "name": "vott",
-  "version": "1.6.2",
+  "version": "1.7.1",
   "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
@@ -51,6 +51,7 @@
     "reload": "^2.3.1",
     "remote": "^0.2.6",
     "replace": "^0.3.0",
+    "rimraf": "^2.6.2",
     "send": "^0.16.2",
     "tfrecord": "^0.2.0"
   },
