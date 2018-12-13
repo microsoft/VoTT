@@ -1,15 +1,14 @@
 import { Action } from "redux";
 import { IToggleDevToolsAction, IRefreshApplicationAction } from "./applicationActions";
+import { ActionTypes } from "./actionTypes";
 import {
     ILoadConnectionAction,
-    ILoadConnectionsAction,
     ISaveConnectionAction,
     IDeleteConnectionAction,
 } from "./connectionActions";
 import {
     ILoadProjectAction,
     ICloseProjectAction,
-    ILoadProjectsAction,
     ISaveProjectAction,
     ILoadProjectAssetsAction,
     ISaveAssetMetadataAction,
@@ -17,7 +16,6 @@ import {
     IExportProjectAction,
     IDeleteProjectAction,
 } from "./projectActions";
-import { ActionTypes } from "./actionTypes";
 
 export interface IPayloadAction<TType, TPayload> extends Action<TType> {
     payload: TPayload;
@@ -48,11 +46,9 @@ export type AnyAction = IOtherAction |
     IToggleDevToolsAction |
     IRefreshApplicationAction |
     ILoadConnectionAction |
-    ILoadConnectionsAction |
     ISaveConnectionAction |
     IDeleteConnectionAction |
     ILoadProjectAction |
-    ILoadProjectsAction |
     ICloseProjectAction |
     ISaveProjectAction |
     IDeleteProjectAction |

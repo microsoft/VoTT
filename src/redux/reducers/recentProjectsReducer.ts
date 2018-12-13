@@ -11,10 +11,6 @@ export const reducer = (state: IProject[] = [], action: AnyAction): IProject[] =
     let newState: IProject[] = null;
 
     switch (action.type) {
-        case ActionTypes.LOAD_PROJECTS_SUCCESS:
-            newState = _.unionBy(state, action.payload, (project) => project.id);
-            localStorage.setItem("projects", JSON.stringify(newState));
-            return newState;
         case ActionTypes.LOAD_PROJECT_SUCCESS:
         case ActionTypes.SAVE_PROJECT_SUCCESS:
             return [

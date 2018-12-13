@@ -1,21 +1,11 @@
 import { reducer } from "./connectionsReducer";
 import { IConnection } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
-import { loadConnectionsAction, saveConnectionAction, deleteConnectionAction } from "../actions/connectionActions";
+import { saveConnectionAction, deleteConnectionAction } from "../actions/connectionActions";
 import { loadProjectAction } from "../actions/projectActions";
 import { anyOtherAction } from "../actions/actionCreators";
 
 describe("Connections Reducer", () => {
-    it("Load Connections returns new array of connections", () => {
-        const state: IConnection[] = null;
-        const testConnections = MockFactory.createTestConnections();
-        const action = loadConnectionsAction(testConnections);
-
-        const result = reducer(state, action);
-        expect(result).not.toBe(state);
-        expect(result).toEqual(testConnections);
-    });
-
     it("Save Connection with new connection appends to list", () => {
         const testConnections = MockFactory.createTestConnections();
         const state: IConnection[] = testConnections;

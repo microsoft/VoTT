@@ -9,10 +9,6 @@ export const reducer = (state: IConnection[] = [], action: AnyAction): IConnecti
     }
 
     switch (action.type) {
-        case ActionTypes.LOAD_CONNECTIONS_SUCCESS:
-            const newState = _.unionBy(state, action.payload, (connection) => connection.id);
-            localStorage.setItem("connections", JSON.stringify(newState));
-            return newState;
         case ActionTypes.SAVE_CONNECTION_SUCCESS:
             return [
                 { ...action.payload },

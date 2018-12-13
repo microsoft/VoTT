@@ -7,8 +7,7 @@ import { ExportProviderFactory } from "../../providers/export/exportProviderFact
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 
 export default interface IProjectActions {
-    loadProjects(): Promise<IProject[]>;
-    loadProject(value: IProject | string): Promise<IProject>;
+    loadProject(project: IProject): Promise<IProject>;
     saveProject(project: IProject): Promise<IProject>;
     deleteProject(project: IProject): Promise<void>;
     closeProject();
@@ -18,32 +17,10 @@ export default interface IProjectActions {
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
 }
 
-export function loadProject(value: string | IProject) {
-    return async (dispatch: Dispatch) => {
-        try {
-            let project: IProject = value as IProject;
-
-            if (typeof (value) === "string") {
-                const projectService = new ProjectService();
-                project = await projectService.get(value);
-            }
-
-            dispatch(loadProjectAction(project));
-
-            return project;
-        } catch (err) {
-            throw err;
-        }
-    };
-}
-
-export function loadProjects() {
-    return async (dispatch: Dispatch) => {
-        const projectService = new ProjectService();
-        const projects = await projectService.getList();
-        dispatch(loadProjectsAction(projects));
-
-        return projects;
+export function loadProject(project: IProject) {
+    return (dispatch: Dispatch) => {
+        dispatch(loadProjectAction(project));
+        return Promise.resolve(project);
     };
 }
 
@@ -52,7 +29,6 @@ export function saveProject(project: IProject) {
         const projectService = new ProjectService();
         project = await projectService.save(project);
         dispatch(saveProjectAction(project));
-
         return project;
     };
 }
@@ -124,10 +100,6 @@ export interface ICloseProjectAction extends Action<string> {
     type: ActionTypes.CLOSE_PROJECT_SUCCESS;
 }
 
-export interface ILoadProjectsAction extends IPayloadAction<string, IProject[]> {
-    type: ActionTypes.LOAD_PROJECTS_SUCCESS;
-}
-
 export interface ISaveProjectAction extends IPayloadAction<string, IProject> {
     type: ActionTypes.SAVE_PROJECT_SUCCESS;
 }
@@ -153,7 +125,6 @@ export interface IExportProjectAction extends IPayloadAction<string, IProject> {
 }
 
 export const loadProjectAction = createPayloadAction<ILoadProjectAction>(ActionTypes.LOAD_PROJECT_SUCCESS);
-export const loadProjectsAction = createPayloadAction<ILoadProjectsAction>(ActionTypes.LOAD_PROJECTS_SUCCESS);
 export const closeProjectAction = createAction<ICloseProjectAction>(ActionTypes.CLOSE_PROJECT_SUCCESS);
 export const saveProjectAction = createPayloadAction<ISaveProjectAction>(ActionTypes.SAVE_PROJECT_SUCCESS);
 export const deleteProjectAction = createPayloadAction<IDeleteProjectAction>(ActionTypes.DELETE_PROJECT_SUCCESS);

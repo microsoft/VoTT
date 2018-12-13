@@ -7,7 +7,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { mount } from "enzyme";
 import { Link } from "react-router-dom";
 import { IApplicationState, IProject, ITag, IExportFormat, IConnection } from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import IProjectActions from "../../../../redux/actions/projectActions";
 import CondensedList from "../../common/condensedList";
 import FilePicker from "../../common/filePicker";
 

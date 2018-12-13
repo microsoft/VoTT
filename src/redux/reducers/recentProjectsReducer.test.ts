@@ -1,21 +1,11 @@
 import { reducer } from "./recentProjectsReducer";
 import { IProject } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
-import { loadProjectsAction, saveProjectAction, deleteProjectAction } from "../actions/projectActions";
+import { saveProjectAction, deleteProjectAction } from "../actions/projectActions";
 import { saveConnectionAction } from "../actions/connectionActions";
 import { anyOtherAction } from "../actions/actionCreators";
 
 describe("Recent Projects Reducer", () => {
-    it("Load Projects returns a new array of projects", () => {
-        const testProjects = MockFactory.createTestProjects();
-        const state: IProject[] = null;
-
-        const action = loadProjectsAction(testProjects);
-        const result = reducer(state, action);
-        expect(result).not.toBe(state);
-        expect(result).toEqual(testProjects);
-    });
-
     it("Loading / Saving new project appends to the list", () => {
         const testProjects = MockFactory.createTestProjects();
         const state: IProject[] = testProjects;

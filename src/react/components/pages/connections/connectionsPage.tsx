@@ -45,8 +45,6 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     public async componentDidMount() {
-        await this.props.actions.loadConnections();
-
         const connectionId = this.props.match.params["connectionId"];
         if (connectionId) {
             this.loadConnection(connectionId);
@@ -90,10 +88,10 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     private async loadConnection(connectionId: string) {
-        try {
-            const connection = await this.props.actions.loadConnection(connectionId);
+        const connection = this.props.connections.find((connection) => connection.id === connectionId);
+        if (connection) {
             this.setState({ connection });
-        } catch (err) {
+        } else {
             this.setState({ connection: null });
         }
     }
