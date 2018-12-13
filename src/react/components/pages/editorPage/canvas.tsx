@@ -1,9 +1,9 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../../models/applicationState";
+import { IAssetMetadata } from "../../../../models/applicationState";
 import * as CanvasTools from "canvastools";
 
 interface ICanvasProps {
-    selectedAsset: IAsset;
+    selectedAsset: IAssetMetadata;
 }
 
 interface ICanvasState {
@@ -11,6 +11,7 @@ interface ICanvasState {
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
+    private editor;
     constructor(props, context) {
         super(props, context);
 
@@ -19,7 +20,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         };
 
         
-    }
+    } 
 
     public componentDidMount(){
         var ct = CanvasTools.CanvasTools;
@@ -27,8 +28,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         var tz = document.getElementById("toolbarzone")as unknown as HTMLDivElement;
 
         // @ts-ignore
-        var editor = new ct.Editor(sz);
-        editor.addToolbar(tz, ct.Editor.FullToolbarSet, "../../../images/icons/");
+        this.editor = new ct.Editor(sz);
+        this.editor.addToolbar(tz, ct.Editor.FullToolbarSet, "../../../images/icons/");
 
         var incrementalRegionID = 100;
 
@@ -42,7 +43,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             (Math.random() > 0.5) ? "one" : "two",
             Math.floor(Math.random() * 360.0));
 
-        editor.onSelectionEnd = (commit) => {
+        this.editor.onSelectionEnd = (commit) => {
             let r = commit.boundRect;
             
             let tags = 
@@ -54,43 +55,24 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
             if (commit.meta !== undefined && commit.meta.point !== undefined) {
                 let point = commit.meta.point;
-                editor.RM.addPointRegion((incrementalRegionID++).toString(), new ct.Base.Point.Point2D(point.x, point.y), tags);
+                this.editor.RM.addPointRegion((incrementalRegionID++).toString(), new ct.Base.Point.Point2D(point.x, point.y), tags);
             } else {
-                editor.RM.addRectRegion((incrementalRegionID++).toString(), new ct.Base.Point.Point2D(r.x1, r.y1), new ct.Base.Point.Point2D(r.x2, r.y2), tags);
+                this.editor.RM.addRectRegion((incrementalRegionID++).toString(), new ct.Base.Point.Point2D(r.x1, r.y1), new ct.Base.Point.Point2D(r.x2, r.y2), tags);
             }
         }
         
-        editor.onRegionMove = (id, x, y, width, height) => {
+        this.editor.onRegionMove = (id, x, y, width, height) => {
             console.log(`Moved ${id}: {${x}, ${y}} x {${width}, ${height}}`);
         }
 
         // Upload background image for selection
-        let image = new Image();
-        image.addEventListener("load", (e) => {
-            // Create buffer
-            let buffCnvs = document.createElement("canvas");
-            let context = buffCnvs.getContext("2d");
-            // @ts-ignore
-            buffCnvs.width = e.target.width;
-            // @ts-ignore
-            buffCnvs.height = e.target.height;
-            // Fill buffer
-            // @ts-ignore
-            context.drawImage(e.target, 0, 0, buffCnvs.width, buffCnvs.height);
+        this.updateEditor(this.editor);
+    }
 
-            editor.addContentSource(buffCnvs);
-            // let filter = new ct.Filter.FilterPipeline();
-            // //filter.addFilter(ct.Filter.InvertFilter);
-            // //filter.addFilter(ct.Filter.GrayscaleFilter);
-            // filter.applyToCanvas(buffCnvs).then((bcnvs) => {
-            //     // Copy buffer to the canvas on screen
-            //     imageCnvs.width = bcnvs.width;
-            //     imageCnvs.height = bcnvs.height;
-            //     let imgContext = imageCnvs.getContext("2d");
-            //     imgContext.drawImage(bcnvs, 0, 0, bcnvs.width, bcnvs.height);
-            // });
-        });
-        image.src = this.props.selectedAsset.path;
+    public componentDidUpdate(prevProps){
+        if(this.props.selectedAsset.asset.path !== prevProps.selectedAsset.asset.path){
+            this.updateEditor(this.editor);
+        }
     }
 
     public render() {
@@ -106,5 +88,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 </div>
             </div>
         );
+    }
+
+    private updateEditor = (editor) => {
+        let image = new Image();
+        image.addEventListener("load", (e) => {
+            console.log("loading")
+            //@ts-ignore
+            editor.addContentSource(e.target);
+        });
+        image.src = this.props.selectedAsset.asset.path;
     }
 }
