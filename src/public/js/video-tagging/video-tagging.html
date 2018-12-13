@@ -204,7 +204,7 @@
         this.editorDiv = document.getElementById("editorZone");
         this.toolbarDiv = document.getElementById("toolbarZone");
 
-        this.CT = CanvasTools.CanvasTools;
+        this.CT = CanvasTools;
 
         var editor = new this.CT.Editor(this.editorDiv);
         editor.addToolbar(this.toolbarDiv, this.CT.Editor.FullToolbarSet, "public/js/video-tagging/assets/icons/ct/");
@@ -1280,6 +1280,6 @@
 <script src="js/jquery.imgareaselect.js"></script>
 <script src="../jquery-ui/jquery-ui.min.js"></script>
 <script>
-        window.CanvasTools = require("vott-ct");
-    </script>
+    window.CanvasTools = require("vott-ct").CanvasTools;
+</script>
 </dom-module>
