@@ -17,12 +17,10 @@ describe("Project Form Component", () => {
 
     function createComponent(props: IProjectFormProps) {
         return mount(
-            <Provider store={store}>
-                <Router>
-                    <ProjectForm
-                        {...props}/>
-                </Router>
-            </Provider>,
+            <Router>
+                <ProjectForm
+                    {...props}/>
+            </Router>,
         ).find(ProjectForm).childAt(0);
     }
 
