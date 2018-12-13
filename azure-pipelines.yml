@@ -1,5 +1,5 @@
 trigger: 
-  none # disable CI build for branch
+  v2 # disable CI build for branch except v2
 pr:
   - v2 # only kick off for pr targeting v2
 resources:
