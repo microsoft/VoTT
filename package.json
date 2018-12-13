@@ -6,7 +6,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",
-    "canvastools": "github:kichinsky/CanvasTools-for-VOTT#master",
     "deepmerge": "^2.2.1",
     "electron": "^3.0.10",
     "lodash": "^4.17.11",
