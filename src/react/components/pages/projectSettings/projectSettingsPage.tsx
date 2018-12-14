@@ -6,15 +6,11 @@ import ProjectForm from "./projectForm";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject, IConnection } from "../../../../models/applicationState";
 
-interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
+export interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     project: IProject;
     recentProjects: IProject[];
     actions: IProjectActions;
     connections: IConnection[];
-}
-
-interface IProjectSettingsPageState {
-    project: IProject;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -32,13 +28,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps, IProjectSettingsPageState> {
+export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps> {
     constructor(props, context) {
         super(props, context);
-
-        this.state = {
-            project: this.props.project,
-        };
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
@@ -55,7 +47,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                 <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">Project Settings</span></h3>
                 <div className="m-3 text-light">
                     <ProjectForm
-                        project={this.state.project}
+                        project={this.props.project}
                         connections={this.props.connections}
                         onSubmit={this.onFormSubmit} />
                 </div>
@@ -63,22 +55,19 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         );
     }
 
-    private onFormSubmit = (form) => {
-        if (form.formData.tags) {
-            form.formData.tags = JSON.parse(form.formData.tags);
+    private onFormSubmit = async (formData) => {
+        if (formData.tags !== undefined) {
+            formData.tags = JSON.parse(formData.tags);
         }
+        const projectToUpdate: IProject = {
+            ...formData,
+            sourceConnection: this.props.connections
+                .find((connection) => connection.id === formData.sourceConnectionId),
+            targetConnection: this.props.connections
+                .find((connection) => connection.id === formData.targetConnectionId),
+        };
 
-        this.setState({
-            project: {
-                ...form.formData,
-                sourceConnection: this.props.connections
-                    .find((connection) => connection.id === form.formData.sourceConnectionId),
-                targetConnection: this.props.connections
-                    .find((connection) => connection.id === form.formData.targetConnectionId),
-            },
-        }, async () => {
-            await this.props.actions.saveProject(this.state.project);
-            this.props.history.push(`/projects/${this.state.project.id}/edit`);
-        });
+        await this.props.actions.saveProject(projectToUpdate);
+        this.props.history.goBack();
     }
 }
