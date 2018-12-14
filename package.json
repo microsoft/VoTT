@@ -25,7 +25,7 @@
   "build": {
     "appId": "com.microsoft.vott",
     "artifactName": "${productName}-${os}.${ext}",
-    "publish": "never",
+    "extends": null,
     "dmg": {
       "icon": "build/dist/icon.icns"
     },
