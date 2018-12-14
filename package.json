@@ -2,7 +2,7 @@
   "name": "vott-react-typescript",
   "version": "0.1.0",
   "private": true,
-  "main": "build/electron/bundle.js",
+  "main": "src/electron/main.ts",
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",
@@ -25,11 +25,17 @@
   "build": {
     "appId": "com.microsoft.vott",
     "artifactName": "${productName}-${os}.${ext}",
+    "extends": null,
     "dmg": {
       "icon": "build/dist/icon.icns"
     },
     "win": {
       "icon": "build/dist/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "snap"
+      ]
     }
   },
   "scripts": {
@@ -39,6 +45,7 @@
     "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
     "test": "react-scripts test --env=jsdom",
     "test:ci": "CI=true react-scripts test --env=jsdom",
+    "dist": "electron-builder",
     "dist:winlinux": "build -wl --x64",
     "dist:mac": "build -m --x64",
     "coverage": "react-scripts test --env=jsdom --coverage",
@@ -72,7 +79,9 @@
     "enzyme-adapter-react-16": "^1.7.0",
     "foreman": "^3.0.1",
     "jest-enzyme": "^7.0.1",
+    "jquery": "^3.3.1",
     "node-sass": "^4.10.0",
+    "popper.js": "^1.14.6",
     "react-jsonschema-form": "^1.0.6",
     "react-modal": "^3.6.1",
     "react-tag-input": "^6.1.0",
@@ -81,5 +90,6 @@
     "typescript": "^3.1.6",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.2"
-  }
+  },
+  "postinstall": "electron-builder install-app-deps"
 }
