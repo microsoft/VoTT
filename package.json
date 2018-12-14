@@ -33,7 +33,8 @@
     "eject": "react-scripts eject",
     "electron": "webpack --config ./config/webpack.dev.config.js && electron .",
     "electron-start": "node src/electron/start",
-    "react-start": "react-scripts start"
+    "react-start": "react-scripts start",
+    "compile": "tsc"
   },
   "eslintConfig": {
     "extends": "react-app"
