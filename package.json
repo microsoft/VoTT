@@ -23,6 +23,16 @@
     "rimraf": "^2.6.2",
     "shortid": "^2.2.14"
   },
+  "build": {
+    "appId": "com.microsoft.vott",
+    "artifactName": "${productName}-${os}.${ext}",
+    "dmg": {
+      "icon": "build/icon.icns"
+    },
+    "win": {
+      "icon": "build/icon.ico"
+    }
+  },
   "scripts": {
     "start": "nf start -p 3000",
     "build": "react-scripts build",
