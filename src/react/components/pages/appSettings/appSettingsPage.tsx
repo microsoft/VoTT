@@ -5,10 +5,12 @@ import deepmerge from "deepmerge";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { IApplicationState, IAppSettings, IConnection } from "../../../../models/applicationState";
 import Form from "react-jsonschema-form";
-import formSchema from "./appSettingsPage.json";
-import uiSchema from "./appSettingsPage.ui.json";
 import "./appSettingsPage.scss";
 import ConnectionPicker from "../../common/connectionPicker";
+// tslint:disable-next-line:no-var-requires
+const formSchema = require("./appSettingsPage.json");
+// tslint:disable-next-line:no-var-requires
+const uiSchema = require("./appSettingsPage.ui.json");
 
 interface IAppSettingsProps {
     appSettings: IAppSettings;

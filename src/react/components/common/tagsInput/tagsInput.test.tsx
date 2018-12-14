@@ -1,8 +1,9 @@
 import React from "react";
 import TagsInput from "./tagsInput";
 import { mount } from "enzyme";
-import TagColors from "./tagColors.json";
 import { ITag } from "../../../../models/applicationState";
+// tslint:disable-next-line:no-var-requires
+const TagColors = require("./tagColors.json");
 
 describe("Tags Input Component", () => {
     let wrapper: any = null;

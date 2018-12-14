@@ -1,7 +1,8 @@
 import React from "react";
 import EditorFooter from "./editorFooter";
 import { mount } from "enzyme";
-import TagColors from "../../common/tagsInput/tagColors.json";
+// tslint:disable-next-line:no-var-requires
+const TagColors = require("../../common/tagsInput/tagColors.json");
 
 describe("Footer Component", () => {
     let wrapper: any = null;

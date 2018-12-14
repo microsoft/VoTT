@@ -1,8 +1,10 @@
 import React from "react";
 import Form from "react-jsonschema-form";
-import formSchema from "./exportForm.json";
-import uiSchema from "./exportForm.ui.json";
 import { IExportFormat } from "../../../../models/applicationState.js";
+// tslint:disable-next-line:no-var-requires
+const formSchema = require("./exportForm.json");
+// tslint:disable-next-line:no-var-requires
+const uiSchema = require("./exportForm.ui.json");
 
 export interface IExportFormProps extends React.Props<ExportForm> {
     settings: IExportFormat;

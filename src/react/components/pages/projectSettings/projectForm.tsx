@@ -1,11 +1,13 @@
 import React from "react";
 import Form from "react-jsonschema-form";
 import deepmerge from "deepmerge";
-import formSchema from "./projectForm.json";
-import uiSchema from "./projectForm.ui.json";
 import TagsInput from "../../common/tagsInput/tagsInput";
 import ConnectionPicker from "../../common/connectionPicker";
 import { IProject, IConnection } from "../../../../models/applicationState.js";
+// tslint:disable-next-line:no-var-requires
+const formSchema = require("./projectForm.json");
+// tslint:disable-next-line:no-var-requires
+const uiSchema = require("./projectForm.ui.json");
 
 export interface IProjectFormProps extends React.Props<ProjectForm> {
     project: IProject;

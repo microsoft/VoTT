@@ -22,6 +22,7 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sleep 3; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm install; fi
 script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then tsc; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm test; fi
 
 before_deploy:
