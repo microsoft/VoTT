@@ -13,19 +13,15 @@ interface ICanvasState {
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
     private editor;
-    private ct;
     constructor(props, context) {
         super(props, context);
 
         this.state = {
             loaded: false,
         };
-
-        this.ct = require('vott-ct').CanvasTools;
     } 
 
     public componentDidMount(){
-        // var ct = ct; //this.ct; //CanvasTools.CanvasTools;
         var sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
         var tz = document.getElementById("toolbarzone")as unknown as HTMLDivElement;
 
@@ -44,6 +40,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         let ternaryTag = new ct.Core.Tag(
             (Math.random() > 0.5) ? "one" : "two",
             Math.floor(Math.random() * 360.0));
+
+        if(this.props.selectedAsset.regions.length){
+            //draw the regions
+        }
 
         this.editor.onSelectionEnd = (commit) => {
             let r = commit.boundRect;
