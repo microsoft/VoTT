@@ -10,7 +10,6 @@ jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 
 describe("Project settings page", () => {
-    const wrapper: any = null;
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
     function createCompoent(store, props: IProjectSettingsPageProps): ReactWrapper {
@@ -30,7 +29,7 @@ describe("Project settings page", () => {
     it("Form submission calls save project action", (done) => {
         const store = createReduxStore(MockFactory.initialState());
         const props = MockFactory.projectSettingsProps();
-        const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
+        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
         const wrapper = createCompoent(store, props);
         wrapper.find("form").simulate("submit");

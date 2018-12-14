@@ -40,7 +40,7 @@ describe("Export Page", () => {
         const exportPage = wrapper.find(ExportPage).childAt(0);
 
         expect(loadProjectSpy).not.toBeCalled();
-        expect(exportPage.state()["project"]).toEqual(testProject);
+        expect(exportPage.prop("project")).toEqual(testProject);
     });
 
     it("Sets project state from route params", (done) => {
@@ -54,7 +54,7 @@ describe("Export Page", () => {
 
         setImmediate(() => {
             expect(loadProjectSpy).toHaveBeenCalledWith(testProject);
-            expect(exportPage.state()["project"]).toEqual(testProject);
+            expect(exportPage.prop("project")).toEqual(testProject);
             done();
         });
     });
@@ -77,14 +77,15 @@ describe("Export Page", () => {
 
         const wrapper = createCompoent(store, props);
         wrapper.find("form").simulate("submit");
+        wrapper.update();
 
         setImmediate(() => {
             expect(saveProjectSpy).toBeCalled();
             expect(exportProjectSpy).toBeCalled();
             expect(props.history.goBack).toBeCalled();
 
-            const updatedProject = wrapper.find(ExportPage).childAt(0).state()["project"] as IProject;
-            expect(updatedProject.exportFormat).not.toBeNull();
+            const state = store.getState() as IApplicationState;
+            expect(state.currentProject.exportFormat).not.toBeNull();
             done();
         });
     });

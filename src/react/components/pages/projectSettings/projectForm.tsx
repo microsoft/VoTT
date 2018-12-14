@@ -41,6 +41,12 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     }
 
     public componentDidUpdate(prevProps) {
+        if (prevProps.project !== this.props.project) {
+            this.setState({
+                formData: { ...this.props.project },
+            });
+        }
+
         if (prevProps.connections !== this.props.connections) {
             this.setState({
                 uiSchema: this.createUiSchema(),
@@ -63,6 +69,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     private onTagsChange(tagsJson) {
         this.setState({
             formData: {
+                ...this.state.formData,
                 tags: tagsJson,
             },
         });
@@ -89,7 +96,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     return (
                         <TagsInput
                             tags={this.state.formData.tags}
-                            onChange={this.onTagsChange}/>
+                            onChange={this.onTagsChange} />
                     );
                 },
             },

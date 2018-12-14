@@ -1,12 +1,21 @@
-import { AssetState, AssetType, IApplicationState, IAppSettings,
-    IAsset, IAssetMetadata, IConnection, IExportFormat, IProject, ITag } from "../models/applicationState";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import {
+    AssetState,
+    AssetType,
+    IApplicationState,
+    IAppSettings,
+    IAsset,
+    IAssetMetadata,
+    IConnection,
+    IExportFormat,
+    IProject,
+    ITag,
+} from "../models/applicationState";
 
 export default class MockFactory {
-
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
         return {
             id: `asset-${name}`,
@@ -52,8 +61,24 @@ export default class MockFactory {
             sourceConnectionId: connection.id,
             targetConnection: connection,
             targetConnectionId: connection.id,
-            tags: [],
+            tags: MockFactory.createTestTags(),
             autoSave: true,
+        };
+    }
+
+    public static createTestTags(count: number = 5): ITag[] {
+        const tags: ITag[] = [];
+        for (let i = 1; i < count; i++) {
+            tags.push(MockFactory.createTestTag(i.toString()));
+        }
+
+        return tags;
+    }
+
+    public static createTestTag(name: string): ITag {
+        return {
+            name: `Tag ${name}`,
+            color: MockFactory.randomColor(),
         };
     }
 
@@ -76,31 +101,6 @@ export default class MockFactory {
         };
     }
 
-    public static connections(): IConnection[] {
-        return [
-            {
-                id: "1",
-                name: "My source connection",
-                description: "This is my connection",
-                providerType: "azureBlobStorage",
-                providerOptions: {
-                    connectionString: "myconnectionstring",
-                    containerName: "container",
-                    createContainer: true,
-                },
-            },
-            {
-                id: "2",
-                name: "My target connection",
-                description: "This is my connection",
-                providerType: "localFileSystemProxy",
-                providerOptions: {
-                    folderPath: "my path",
-                },
-            },
-        ];
-    }
-
     public static exportFormat(): IExportFormat {
         return {
             providerType: "Fake",
@@ -108,45 +108,8 @@ export default class MockFactory {
         };
     }
 
-    public static project(): IProject {
-        return this.recentProjects()[0];
-    }
-
-    public static recentProjects(): IProject[] {
-        const connections = this.connections();
-
-        return [
-            {
-                id: "project1",
-                name: "Test Project",
-                description: "This is my project",
-                tags: this.tags(),
-                sourceConnection: connections[0],
-                sourceConnectionId: connections[0].id,
-                targetConnection: connections[1],
-                targetConnectionId: connections[1].id,
-                exportFormat: this.exportFormat(),
-                autoSave: true,
-            },
-            {
-                id: "project2",
-                name: "Test Project 2",
-                description: "This is my other project",
-                tags: this.tags(),
-                sourceConnection: connections[0],
-                sourceConnectionId: connections[0].id,
-                targetConnection: connections[1],
-                targetConnectionId: connections[1].id,
-                exportFormat: this.exportFormat(),
-                autoSave: true,
-            },
-        ];
-    }
-
     public static projectService(): IProjectService {
         return {
-            get: jest.fn((id: string) => Promise.resolve()),
-            getList: jest.fn(() => Promise.resolve()),
             save: jest.fn((project: IProject) => Promise.resolve()),
             delete: jest.fn((project: IProject) => Promise.resolve()),
         };
@@ -154,8 +117,7 @@ export default class MockFactory {
 
     public static projectActions(): IProjectActions {
         return {
-            loadProjects: jest.fn(() => Promise.resolve()),
-            loadProject: jest.fn((value: IProject | string) => Promise.resolve()),
+            loadProject: jest.fn((project: IProject) => Promise.resolve()),
             saveProject: jest.fn((project: IProject) => Promise.resolve()),
             deleteProject: jest.fn((project: IProject) => Promise.resolve()),
             closeProject: jest.fn(() => Promise.resolve()),
@@ -168,28 +130,28 @@ export default class MockFactory {
 
     public static connectionActions(): IConnectionActions {
         return {
-            loadConnections: jest.fn(() => Promise.resolve()),
-            loadConnection: jest.fn((connectionId: string) => Promise.resolve()),
-            saveConnection: jest.fn((connectionId: string) => Promise.resolve()),
-            deleteConnection: jest.fn((connectionId: string) => Promise.resolve()),
-            closeConnection: jest.fn(() => Promise.resolve()),
+            loadConnection: jest.fn((connection: IConnection) => Promise.resolve()),
+            saveConnection: jest.fn((connection: IConnection) => Promise.resolve()),
+            deleteConnection: jest.fn((connection: IConnection) => Promise.resolve()),
         };
     }
 
     public static appSettings(): IAppSettings {
+        const testConnection = MockFactory.createTestConnection("Test");
+
         return {
             devToolsEnabled: false,
-            connection: this.connections()[0],
-            connectionId: this.connections()[0].id,
+            connection: testConnection,
+            connectionId: testConnection.id,
         };
     }
 
     public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
         return {
             project: null,
-            projectActions: (projectActions as any) as IProjectActions,
-            connectionActions: this.connectionActions(),
-            connections: this.connections(),
+            recentProjects: MockFactory.createTestProjects(),
+            actions: (projectActions as any) as IProjectActions,
+            connections: MockFactory.createTestConnections(),
             history: this.history(),
             location: this.location(),
             match: this.match(projectId),
@@ -197,11 +159,14 @@ export default class MockFactory {
     }
 
     public static initialState(): IApplicationState {
+        const testProjects = MockFactory.createTestProjects();
+        const testConnections = MockFactory.createTestConnections();
+
         return {
-            appSettings: this.appSettings(),
-            connections: this.connections(),
-            recentProjects: this.recentProjects(),
-            currentProject: this.recentProjects()[0],
+            appSettings: MockFactory.appSettings(),
+            connections: testConnections,
+            recentProjects: testProjects,
+            currentProject: testProjects[0],
         };
     }
 
@@ -239,5 +204,19 @@ export default class MockFactory {
             search: null,
             state: null,
         };
+    }
+
+    private static randomColor(): string {
+        return [
+            "#",
+            MockFactory.randomColorSegment(),
+            MockFactory.randomColorSegment(),
+            MockFactory.randomColorSegment(),
+        ].join("");
+    }
+
+    private static randomColorSegment(): string {
+        const num = Math.floor(Math.random() * 255);
+        return num.toString(16);
     }
 }

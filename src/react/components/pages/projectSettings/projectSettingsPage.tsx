@@ -13,10 +13,6 @@ export interface IProjectSettingsPageProps extends RouteComponentProps, React.Pr
     connections: IConnection[];
 }
 
-export interface IProjectSettingsPageState {
-    project: IProject;
-}
-
 function mapStateToProps(state: IApplicationState) {
     return {
         project: state.currentProject,
@@ -32,13 +28,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps, IProjectSettingsPageState> {
+export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps> {
     constructor(props, context) {
         super(props, context);
-
-        this.state = {
-            project: this.props.project,
-        };
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
@@ -55,7 +47,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                 <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">Project Settings</span></h3>
                 <div className="m-3 text-light">
                     <ProjectForm
-                        project={this.state.project}
+                        project={this.props.project}
                         connections={this.props.connections}
                         onSubmit={this.onFormSubmit} />
                 </div>
@@ -69,12 +61,13 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         }
         const projectToUpdate: IProject = {
             ...formData,
-                sourceConnection: this.props.connections
-                    .find((connection) => connection.id === formData.sourceConnectionId),
-                targetConnection: this.props.connections
-                    .find((connection) => connection.id === formData.targetConnectionId),
+            sourceConnection: this.props.connections
+                .find((connection) => connection.id === formData.sourceConnectionId),
+            targetConnection: this.props.connections
+                .find((connection) => connection.id === formData.targetConnectionId),
         };
-        await this.props.projectActions.saveProject(projectToUpdate);
+
+        await this.props.actions.saveProject(projectToUpdate);
         this.props.history.goBack();
     }
 }

@@ -6,21 +6,20 @@ import ProjectForm, { IProjectFormProps } from "./projectForm";
 
 describe("Project Form Component", () => {
 
-    const project = MockFactory.project();
-    const connections = MockFactory.connections();
+    const project = MockFactory.createTestProject("TestProject");
+    const connections = MockFactory.createTestConnections();
 
     function createComponent(props: IProjectFormProps) {
         return mount(
             <Router>
                 <ProjectForm
-                    {...props}/>
+                    {...props} />
             </Router>,
         ).find(ProjectForm).childAt(0);
     }
 
     describe("Existing project", () => {
         const onSubmit = jest.fn();
-
         it("has initial state loaded correctly", () => {
             const wrapper = createComponent({
                 project,
@@ -54,7 +53,7 @@ describe("Project Form Component", () => {
             const newName = "My new name";
             expect(wrapper.state().formData.name).not.toEqual(newName);
             expect(wrapper.state().formData.name).toEqual(project.name);
-            wrapper.find("input#root_name").simulate("change", {target: {value: newName}});
+            wrapper.find("input#root_name").simulate("change", { target: { value: newName } });
             expect(wrapper.state().formData.name).toEqual(newName);
 
             const form = wrapper.find("form");
@@ -75,7 +74,7 @@ describe("Project Form Component", () => {
             const newDescription = "My new description";
             expect(wrapper.state().formData.description).not.toEqual(newDescription);
             expect(wrapper.state().formData.description).toEqual(project.description);
-            wrapper.find("textarea#root_description").simulate("change", {target: {value: newDescription}});
+            wrapper.find("textarea#root_description").simulate("change", { target: { value: newDescription } });
             expect(wrapper.state().formData.description).toEqual(newDescription);
 
             const form = wrapper.find("form");
@@ -93,11 +92,11 @@ describe("Project Form Component", () => {
                 connections,
                 onSubmit,
             });
-            const newConnectionId = "2";
+            const newConnectionId = connections[1].id;
             expect(wrapper.state().formData.sourceConnectionId).not.toEqual(newConnectionId);
             expect(wrapper.state().formData.sourceConnectionId).toEqual(project.sourceConnectionId);
             expect(wrapper.find("select#root_sourceConnectionId").exists()).toBe(true);
-            wrapper.find("select#root_sourceConnectionId").simulate("change", {target: {value: newConnectionId}});
+            wrapper.find("select#root_sourceConnectionId").simulate("change", { target: { value: newConnectionId } });
 
             expect(wrapper.state().formData.sourceConnectionId).toEqual(newConnectionId);
             const form = wrapper.find("form");
@@ -116,11 +115,11 @@ describe("Project Form Component", () => {
                 connections,
                 onSubmit,
             });
-            const newConnectionId = "1";
+            const newConnectionId = connections[1].id;
             expect(wrapper.state().formData.targetConnectionId).not.toEqual(newConnectionId);
             expect(wrapper.state().formData.targetConnectionId).toEqual(project.targetConnectionId);
             expect(wrapper.find("select#root_targetConnectionId").exists()).toBe(true);
-            wrapper.find("select#root_targetConnectionId").simulate("change", {target: {value: newConnectionId}});
+            wrapper.find("select#root_targetConnectionId").simulate("change", { target: { value: newConnectionId } });
             expect(wrapper.state().formData.targetConnectionId).toEqual(newConnectionId);
             const form = wrapper.find("form");
             form.simulate("submit");
@@ -147,7 +146,6 @@ describe("Project Form Component", () => {
     });
 
     describe("Empty project", () => {
-
         const onSubmit = jest.fn();
 
         it("has initial state loaded correctly", () => {
