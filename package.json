@@ -26,13 +26,11 @@
     "appId": "com.microsoft.vott",
     "artifactName": "${productName}-${os}.${ext}",
     "extends": null,
-    "mac": {
-      "icon": "build/dist/icon.icns",
-      "target": "dmg"
+    "dmg": {
+      "icon": "build/dist/icon.icns"
     },
     "win": {
-      "icon": "build/dist/icon.ico",
-      "target": "exe"
+      "icon": "build/dist/icon.ico"
     },
     "linux": {
       "target": [
