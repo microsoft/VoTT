@@ -29,6 +29,7 @@ interface ITagsInputState {
 const KeyCodes = {
     comma: 188,
     enter: 13,
+    backspace: 8,
 };
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
@@ -134,7 +135,10 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
             () => this.props.onChange(this.normalize(this.state.tags)));
     }
 
-    private handleDelete(i: number): void {
+    private handleDelete(i: number, event): void {
+        if (event.keyCode === KeyCodes.backspace) {
+            return;
+        }
         const { tags } = this.state;
         this.setState((prevState) => {
             return {
