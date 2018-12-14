@@ -20,7 +20,10 @@
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
-    "rimraf": "^2.6.2",
+    "@azure/storage-blob": "^10.2.0-preview",
+    "@fortawesome/fontawesome-free": "^5.5.0",
+    "react-modal": "^3.6.1",
+    "react-tag-input": "^6.1.0",
     "shortid": "^2.2.14"
   },
   "scripts": {
@@ -45,7 +48,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.5.0",
     "@types/axios": "^0.14.0",
     "@types/enzyme": "^3.1.15",
     "@types/react-router-dom": "^4.3.1",
@@ -55,15 +57,13 @@
     "@types/react-dom": "16.0.9",
     "@types/redux-logger": "^3.0.6",
     "@types/redux-thunk": "^2.1.0",
-    "@azure/storage-blob": "^10.2.0-preview",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.7.0",
     "foreman": "^3.0.1",
     "jest-enzyme": "^7.0.1",
     "node-sass": "^4.10.0",
     "react-jsonschema-form": "^1.0.6",
-    "react-modal": "^3.6.1",
-    "react-tag-input": "^6.1.0",
+    "rimraf": "^2.6.2",
     "ts-loader": "^5.3.0",
     "tslint": "^5.11.0",
     "typescript": "^3.1.6",
