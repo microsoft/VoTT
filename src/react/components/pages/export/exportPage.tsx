@@ -12,10 +12,6 @@ export interface IExportPageProps extends RouteComponentProps, React.Props<Expor
     actions: IProjectActions;
 }
 
-export interface IExportPageState {
-    project: IProject;
-}
-
 function mapStateToProps(state: IApplicationState) {
     return {
         project: state.currentProject,
@@ -30,7 +26,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class ExportPage extends React.Component<IExportPageProps, IExportPageState> {
+export default class ExportPage extends React.Component<IExportPageProps> {
     private emptyExportFormat: IExportFormat = {
         providerType: "",
         providerOptions: {},
@@ -38,10 +34,6 @@ export default class ExportPage extends React.Component<IExportPageProps, IExpor
 
     constructor(props, context) {
         super(props, context);
-
-        this.state = {
-            project: this.props.project,
-        };
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
@@ -52,16 +44,8 @@ export default class ExportPage extends React.Component<IExportPageProps, IExpor
         this.onFormSubmit = this.onFormSubmit.bind(this);
     }
 
-    public componentDidUpdate(prevProps) {
-        if (prevProps.project !== this.props.project) {
-            this.setState({
-                project: this.props.project,
-            });
-        }
-    }
-
     public render() {
-        const exportFormat = this.state.project ? this.state.project.exportFormat : { ...this.emptyExportFormat };
+        const exportFormat = this.props.project ? this.props.project.exportFormat : { ...this.emptyExportFormat };
 
         return (
             <div className="m-3 text-light">
@@ -77,12 +61,12 @@ export default class ExportPage extends React.Component<IExportPageProps, IExpor
 
     private onFormSubmit = async (exportFormat: IExportFormat) => {
         const projectToUpdate: IProject = {
-            ...this.state.project,
+            ...this.props.project,
             exportFormat,
         };
 
         await this.props.actions.saveProject(projectToUpdate);
-        await this.props.actions.exportProject(this.state.project);
+        await this.props.actions.exportProject(this.props.project);
         this.props.history.goBack();
     }
 }
