@@ -46,10 +46,20 @@ describe("Tags Input Component", () => {
         expect(wrapper.find("input")).toHaveLength(1);
     });
 
-    it("create a new tag from text box", () => {
+    it("create a new tag from text box - enter key", () => {
         const newTagName = "My new tag";
         wrapper.find("input").simulate("change", {target: {value: newTagName}});
-        wrapper.find("input").simulate("keyDown", {keyCode: 13});
+        wrapper.find("input").simulate("keyDown", {keyCode: 13}); // enter
+        expect(onChangeHandler).toBeCalled();
+        expect(wrapper.state().tags).toHaveLength(3);
+        expect(wrapper.state().tags[2].id).toEqual(newTagName);
+        expect(TagColors).toContain(wrapper.state().tags[2].color);
+    });
+
+    it("create a new tag from text box - comma key", () => {
+        const newTagName = "My new tag";
+        wrapper.find("input").simulate("change", {target: {value: newTagName}});
+        wrapper.find("input").simulate("keyDown", {keyCode: 188}); // comma
         expect(onChangeHandler).toBeCalled();
         expect(wrapper.state().tags).toHaveLength(3);
         expect(wrapper.state().tags[2].id).toEqual(newTagName);
@@ -102,5 +112,13 @@ describe("Tags Input Component", () => {
             .simulate("click");
         expect(wrapper.state().showModal).toBeFalsy();
         expect(onChangeHandler).not.toBeCalled();
+    });
+
+    it("typing backspace on empty field does NOT delete tag", () => {
+        // Root component calls handleDelete when backspace is pressed
+        // Component should handle backspace and return, not deleting and not calling onChange
+        wrapper.find("input").simulate("keyDown", {keyCode: 8}); // backspace
+        expect(onChangeHandler).not.toBeCalled();
+        expect(wrapper.state().tags).toHaveLength(originalTags.length);
     });
 });
