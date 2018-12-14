@@ -1,9 +1,10 @@
 import React from "react";
 import ReactModal from "react-modal";
-import formSchema from "./tagEditorModal.json";
 import Form from "react-jsonschema-form";
 import "./tagEditorModal.scss";
 import { ITag } from "../../../../../models/applicationState";
+// tslint:disable-next-line:no-var-requires
+const formSchema = require("./tagEditorModal.json");
 
 const customStyles = {
     content : {

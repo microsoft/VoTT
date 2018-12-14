@@ -1,9 +1,11 @@
 import React from "react";
-import formSchema from "./connectionForm.json";
-import uiSchema from "./connectionForm.ui.json";
 import Form from "react-jsonschema-form";
 import { IConnection } from "../../../../models/applicationState.js";
 import LocalFolderPicker from "../../common/localFolderPicker";
+// tslint:disable-next-line:no-var-requires
+const formSchema = require("./connectionForm.json");
+// tslint:disable-next-line:no-var-requires
+const uiSchema = require("./connectionForm.ui.json");
 
 interface IConnectionFormProps extends React.Props<ConnectionForm> {
     connection: IConnection;

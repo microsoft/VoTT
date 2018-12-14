@@ -1,12 +1,13 @@
 import React from "react";
 import "./tagsInput.scss";
 import "../common.scss";
-import tagColors from "./tagColors.json";
 import { WithContext as ReactTags } from "react-tag-input";
 import { randomIntInRange } from "../../../../common/utils";
 import { TagEditorModal } from "./tagEditorModal/tagEditorModal";
 import deepmerge from "deepmerge";
 import { ITag } from "../../../../models/applicationState";
+// tslint:disable-next-line:no-var-requires
+const TagColors = require("./tagColors.json");
 
 export interface IReactTag {
     id: string;
@@ -41,7 +42,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
 
         this.state = {
             tags: this.getReactTags(props),
-            currentTagColorIndex: randomIntInRange(0, tagColors.length),
+            currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
         };
@@ -102,12 +103,12 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     private handleAddition(reactTag: IReactTag): void {
-        reactTag.color = tagColors[this.state.currentTagColorIndex];
+        reactTag.color = TagColors[this.state.currentTagColorIndex];
         this.addHtml(reactTag);
         this.setState((prevState) => {
             return {
                 tags: [...this.state.tags, reactTag],
-                currentTagColorIndex: (prevState.currentTagColorIndex + 1) % tagColors.length,
+                currentTagColorIndex: (prevState.currentTagColorIndex + 1) % TagColors.length,
             };
         }, () => this.props.onChange(this.normalize(this.state.tags)));
     }
