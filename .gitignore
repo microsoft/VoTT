@@ -12,7 +12,7 @@
 /coverage
 
 # production
-/build
+/build/electron
 
 # misc
 .DS_Store

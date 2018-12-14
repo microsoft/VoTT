@@ -5,12 +5,11 @@ import { RouteComponentProps } from "react-router-dom";
 import ProjectForm from "./projectForm";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject, IConnection } from "../../../../models/applicationState";
-import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 
 interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     project: IProject;
-    projectActions: IProjectActions;
-    connectionActions: IConnectionActions;
+    recentProjects: IProject[];
+    actions: IProjectActions;
     connections: IConnection[];
 }
 
@@ -22,13 +21,13 @@ function mapStateToProps(state: IApplicationState) {
     return {
         project: state.currentProject,
         connections: state.connections,
+        recentProjects: state.recentProjects,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        projectActions: bindActionCreators(projectActions, dispatch),
-        connectionActions: bindActionCreators(connectionActions, dispatch),
+        actions: bindActionCreators(projectActions, dispatch),
     };
 }
 
@@ -43,11 +42,8 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
-            this.props.projectActions.loadProject(projectId);
-        }
-
-        if (!this.props.connections) {
-            this.props.connectionActions.loadConnections();
+            const project = this.props.recentProjects.find((project) => project.id === projectId);
+            this.props.actions.loadProject(project);
         }
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -80,11 +76,9 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                 targetConnection: this.props.connections
                     .find((connection) => connection.id === form.formData.targetConnectionId),
             },
-        }, () => {
-            this.props.projectActions.saveProject(this.state.project)
-                .then((project) => {
-                    this.props.history.push(`/projects/${project.id}/edit`);
-                });
+        }, async () => {
+            await this.props.actions.saveProject(this.state.project);
+            this.props.history.push(`/projects/${this.state.project.id}/edit`);
         });
     }
 }

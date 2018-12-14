@@ -1,149 +1,167 @@
-import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js";
-import { AzureCloudStorageService, IAzureCloudStorageOptions } from "./azureBlobStorage";
-import { StorageProviderFactory } from "./storageProvider";
+import MockFactory from "../../common/mockFactory";
 import registerProviders from "../../registerProviders";
+import { AzureCloudStorageService } from "./azureBlobStorage";
+jest.mock("@azure/storage-blob");
+import { BlockBlobURL, ContainerURL, ServiceURL, Aborter } from "@azure/storage-blob";
+jest.mock("../../services/assetService");
+import { AssetService } from "../../services/assetService";
 import { AssetType } from "../../models/applicationState";
-
-const content = "This is the content";
-const containers = ["container1", "container2", "container3"];
-
-const files = {
-    entries: {
-        "file1.jpg": {
-            name: "file1.jpg",
-        },
-        "file2.jpg": {
-            name: "file2.jpg",
-        },
-        "file3.jpg": {
-            name: "file3.jpg",
-        },
-    },
-};
-const path = "container/filename.txt";
-const containerName = "container";
-const fileName = "filename.txt";
-
-const fakeBlobService = {
-    getBlobToText: jest.fn((container, filename, callback) => callback(null, content)),
-    deleteBlobIfExists: jest.fn((container, filename, callback) => callback(null)),
-    createBlockBlobFromText: jest.fn((container, filename, content, callback) => callback(null)),
-    createContainerIfNotExists: jest.fn((container, options, callback) => callback(null)),
-    listBlobsSegmented: jest.fn((container, options, callback) => callback(null, files)),
-    listContainersSegmented: jest.fn((options, callback) => callback(null, containers)),
-    deleteContainer: jest.fn((container, callback) => callback(null)),
-    getUrl: jest.fn((container, blobName, sasToken, hostName) => `${hostName}/${container}/${blobName}`),
-};
 
 describe("Azure blob functions", () => {
 
-    let provider: AzureCloudStorageService = null;
-    const options: IAzureCloudStorageOptions = {
-        connectionString: "DefaultEndpointsProtocol=https;AccountName=accountname;AccountKey=thisismyaccountkey;"
-                            + "EndpointSuffix=core.windows.net",
-        containerName: "container",
-        createContainer: false,
-    };
+    const ad = MockFactory.fakeAzureData();
+    const options = ad.options;
+    const provider: AzureCloudStorageService = new AzureCloudStorageService(options);
+
+    const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
+    serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers));
+
+    ContainerURL.fromServiceURL = jest.fn(() => new ContainerURL(null, null));
+    const containerURL = ContainerURL as jest.Mocked<typeof ContainerURL>;
+    containerURL.prototype.delete = jest.fn(() => Promise.resolve());
+    containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(ad.blobs));
+
+    BlockBlobURL.fromContainerURL = jest.fn(() => new BlockBlobURL(null, null));
 
     registerProviders();
 
-    beforeEach(() => {
-        AzureStorageBlob.createBlobService = jest.fn(() => fakeBlobService);
+    it("Reads text from a blob", async () => {
+        const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
+
+        const blob = MockFactory.blob(ad.blobName, ad.blobText, ad.fileType);
+        blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
+            blobBody: Promise.resolve(blob),
+        }));
+
+        const content = await provider.readText(ad.blobName);
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
+            expect.any(ContainerURL),
+            ad.blobName,
+        );
+        expect(content).toEqual(ad.blobText);
     });
 
-    describe("Initializing Connection", () => {
-        it("Create blob service", async () => {
-            const azure = new AzureCloudStorageService(options);
-            await azure.listContainers(null);
-            expect(AzureStorageBlob.createBlobService).toBeCalledWith(options.connectionString);
-        });
+    it("Reads buffer from a blob", async () => {
+        const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
+
+        const blob = MockFactory.blob(
+            ad.blobName, Buffer.from(ad.blobText), ad.fileType,
+        );
+        blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
+            blobBody: Promise.resolve(blob),
+        }));
+
+        const content = await provider.readBinary(ad.blobName);
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
+            expect.any(ContainerURL),
+            ad.blobName,
+        );
+        expect(content).toEqual(Buffer.from(ad.blobText));
     });
 
-    describe("After connection is initialized", () => {
-        beforeEach(() => {
-            provider = new AzureCloudStorageService(options);
-        });
+    it("Writes text to a blob", () => {
+        const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
+        const blob = MockFactory.blob(ad.blobName, ad.blobText, ad.fileType);
+        blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
+            blobBody: Promise.resolve(blob),
+        }));
 
-        it("Provider is registered with the StorageProviderFactory", () => {
-            const storageProvider = StorageProviderFactory.create("azureBlobStorage", options);
-            expect(storageProvider).not.toBeNull();
-        });
-
-        it("Get Blob to Text", async () => {
-            const result = await provider.readText(path);
-            expect(result).toBe(content);
-            expect(fakeBlobService.getBlobToText).toBeCalledWith(
-                containerName,
-                fileName,
-                expect.any(Function),
-            );
-        });
-
-        it("Get Blob to Binary", () => {
-            // Skipping for now
-        });
-
-        it("Write text", async () => {
-            await provider.writeText(path, content);
-            expect(fakeBlobService.createBlockBlobFromText).toBeCalledWith(
-                containerName,
-                fileName,
-                content,
-                expect.any(Function),
-            );
-        });
-
-        it("Write binary", () => {
-            // Skipping for now, but 'createBlockBlobFromText' also takes a buffer
-        });
-
-        it("Delete file", async () => {
-            await provider.deleteFile(path);
-            expect(fakeBlobService.deleteBlobIfExists).toBeCalledWith(
-                containerName,
-                fileName,
-                expect.any(Function),
-            );
-        });
-
-        it("List files", async () => {
-            const result = await provider.listFiles(path);
-            expect(result).toBe(files);
-            expect(fakeBlobService.listBlobsSegmented).toBeCalledWith(
-                containerName,
-                null,
-                expect.any(Function),
-            );
-        });
-
-        it("List containers", async () => {
-            const result = await provider.listContainers(path);
-            expect(result).toBe(containers);
-            expect(fakeBlobService.listContainersSegmented).toBeCalledWith(
-                null,
-                expect.any(Function),
-            );
-        });
-
-        it("Create container", async () => {
-            await provider.createContainer(path);
-            expect(fakeBlobService.createContainerIfNotExists).toBeCalledWith(
-                containerName,
-                { publicAccessLevel: "blob" },
-                expect.any(Function),
-            );
-        });
-
-        it("Azure blob creates assets", async () => {
-            const assets = await provider.getAssets(options.containerName);
-            for (const asset of assets) {
-                expect(
-                    asset.path,
-                ).toEqual(
-                    `https://accountname.blob.core.windows.net/${containerName}/${asset.name}`,
-                );
-                expect(asset.type).not.toEqual(AssetType.Unknown);
-            }
-        });
+        provider.writeText(ad.blobName, ad.blobText);
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
+            expect.any(ContainerURL),
+            ad.blobName,
+        );
+        expect(blockBlobURL.prototype.upload).toBeCalledWith(
+            Aborter.none,
+            ad.blobText,
+            ad.blobText.length,
+        );
     });
+
+    it("Writes a buffer to a blob", () => {
+        const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
+
+        provider.writeText(ad.blobName, Buffer.from(ad.blobText));
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
+            expect.any(ContainerURL),
+            ad.blobName,
+        );
+        expect(blockBlobURL.prototype.upload).toBeCalledWith(
+            Aborter.none,
+            Buffer.from(ad.blobText),
+            ad.blobText.length,
+        );
+    });
+
+    it("Lists the blobs within a container", async () => {
+        const blobs = await provider.listFiles(null);
+        expect(containerURL.prototype.listBlobFlatSegment).toBeCalled();
+        expect(blobs).toEqual(ad.blobs.segment.blobItems.map((element) => element.name));
+    });
+
+    it("Deletes a blob within a container", async () => {
+        const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
+
+        provider.deleteFile(ad.blobName);
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
+            expect.any(ContainerURL),
+            ad.blobName,
+        );
+        expect(blockBlobURL.prototype.delete).toBeCalledWith(Aborter.none);
+    });
+
+    it("Lists the containers within an account", async () => {
+        const containers = await provider.listContainers(null);
+        expect(serviceURL.prototype.listContainersSegment).toBeCalled();
+        expect(containers).toEqual(ad.containers.containerItems.map((element) => element.name));
+    });
+
+    it("Creates a container in the account", () => {
+        const container = provider.createContainer(null);
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(containerURL.prototype.create).toBeCalled();
+    });
+
+    it("Deletes a container in the account", () => {
+        provider.deleteContainer(null);
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(containerURL.prototype.delete).toBeCalled();
+    });
+
+    it("getAssets", async () => {
+        AssetService.createAssetFromFilePath = jest.fn(() => {
+            return {
+                type: AssetType.Image,
+            };
+        });
+        const assets = await provider.getAssets();
+        expect(assets).toHaveLength(ad.blobs.segment.blobItems.length);
+    });
+
 });

@@ -8,6 +8,7 @@ import { IProject, IApplicationState, IExportFormat } from "../../../../models/a
 
 export interface IExportPageProps extends RouteComponentProps, React.Props<ExportPage> {
     project: IProject;
+    recentProjects: IProject[];
     actions: IProjectActions;
 }
 
@@ -18,6 +19,7 @@ export interface IExportPageState {
 function mapStateToProps(state: IApplicationState) {
     return {
         project: state.currentProject,
+        recentProjects: state.recentProjects,
     };
 }
 
@@ -43,7 +45,8 @@ export default class ExportPage extends React.Component<IExportPageProps, IExpor
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
-            this.props.actions.loadProject(projectId);
+            const project = this.props.recentProjects.find((project) => project.id === projectId);
+            this.props.actions.loadProject(project);
         }
 
         this.onFormSubmit = this.onFormSubmit.bind(this);

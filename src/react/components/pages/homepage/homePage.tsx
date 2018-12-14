@@ -39,7 +39,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.deleteProject = this.deleteProject.bind(this);
 
         this.props.actions.closeProject();
-        this.props.actions.loadProjects();
     }
 
     public render() {
@@ -87,13 +86,12 @@ export default class HomePage extends React.Component<IHomepageProps> {
         console.error(err);
     }
 
-    private loadSelectedProject = (project: IProject) => {
-        this.props.actions.loadProject(project).then(() => {
-            this.props.history.push(`/projects/${project.id}/edit`);
-        });
+    private loadSelectedProject = async (project: IProject) => {
+        await this.props.actions.loadProject(project);
+        this.props.history.push(`/projects/${project.id}/edit`);
     }
 
-    private deleteProject = (project: IProject) => {
-        this.props.actions.deleteProject(project);
+    private deleteProject = async (project: IProject) => {
+        await this.props.actions.deleteProject(project);
     }
 }

@@ -1,8 +1,9 @@
 {
     "title": "Azure Blob Storage",
     "required": [
-        "connectionString",
-        "containerName"
+        "accountName",
+        "containerName",
+        "token"
     ],
     "type": "object",
     "properties": {
@@ -10,16 +11,12 @@
             "title": "Account Name",
             "type": "string"
         },
-        "accountKey": {
-            "title": "Account Key",
-            "type": "string"
-        },
-        "connectionString": {
-            "title": "Connection String",
-            "type": "string"
-        },
         "containerName": {
             "title": "Container Name",
+            "type": "string"
+        },
+        "token": {
+            "title": "SAS Token",
             "type": "string"
         },
         "createContainer": {

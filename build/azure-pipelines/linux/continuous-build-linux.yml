@@ -1,0 +1,29 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+steps:
+- script: |
+    set -e
+    
+    sudo apt-get update
+    sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 libgconf-2-4 dbus xvfb libgtk-3-0
+    sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+    sudo chmod +x /etc/init.d/xvfb
+    sudo update-rc.d xvfb defaults
+    sudo service xvfb start
+  displayName: 'Install dependencies'
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    set -e
+
+    export DISPLAY=:99.0
+
+    npm install
+    CI=true npm test # don't watch and just run all the tests
+  displayName: 'Run tests'

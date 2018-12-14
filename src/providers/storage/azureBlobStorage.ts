@@ -1,46 +1,35 @@
 import { IStorageProvider } from "./storageProvider";
-import AzureStorageBlob from "../../vendor/azurestoragejs/azure-storage.blob.js";
 import { IAsset, AssetType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
+import { TokenCredential, AnonymousCredential,
+    ContainerURL, StorageURL, ServiceURL, Credential, Aborter,
+    BlobURL, BlockBlobURL } from "@azure/storage-blob";
 
 export interface IAzureCloudStorageOptions {
-    connectionString: string;
+    accountName: string;
     containerName: string;
     createContainer: boolean;
+    token?: string;
 }
 
 export class AzureCloudStorageService implements IStorageProvider {
 
-    private static getHostName(connectionString: string): string {
-        const accountName = AzureCloudStorageService.getAccountName(connectionString);
-        return `https://${accountName}.blob.core.windows.net`;
-    }
-
-    private static getAccountName(connectionString: string): string {
-        const regex = /AccountName=([a-zA-Z0-9-]*)/g;
-        const match = regex.exec(connectionString);
-        return match[1];
-    }
-
     private static getFileName(path: string) {
         return path.substring(path.indexOf("/") + 1);
     }
-    constructor(private options?: IAzureCloudStorageOptions) {
-    }
 
-    public readText(path: string) {
-        return new Promise<string>((resolve, reject) => {
-            this.getService().getBlobToText(
-                this.options.containerName,
-                AzureCloudStorageService.getFileName(path),
-                (err, data) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(data);
-                    }
-                },
-            );
+    constructor(private options?: IAzureCloudStorageOptions) {}
+
+    public readText(blobName: string): Promise<string> {
+        return new Promise<string>(async (resolve, reject) => {
+            try {
+                const blockBlobURL = this.getBlockBlobURL(blobName);
+                const downloadResponse = await blockBlobURL.download(Aborter.none, 0);
+                const downloadString = await this.bodyToString(downloadResponse);
+                resolve(downloadString);
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
@@ -49,114 +38,112 @@ export class AzureCloudStorageService implements IStorageProvider {
         return Buffer.from(text);
     }
 
-    public async writeText(path: string, contents: string | Buffer) {
-        if (this.options.createContainer) {
-            await this.createContainer(this.options.containerName);
-        }
-        return new Promise<void>((resolve, reject) => {
-            this.getService().createBlockBlobFromText(
-                this.options.containerName,
-                AzureCloudStorageService.getFileName(path),
-                contents,
-                (err, data) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(data);
-                    }
-                },
-            );
+    public async writeText(blobName: string, content: string | Buffer) {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                const blockBlobURL = this.getBlockBlobURL(blobName);
+                const uploadBlobResponse = await blockBlobURL.upload(
+                    Aborter.none,
+                    content,
+                    content.length,
+                );
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
-    public writeBinary(path: string, contents: Buffer) {
-        return this.writeText(path, contents);
+    public writeBinary(blobName: string, content: Buffer) {
+        return this.writeText(blobName, content);
     }
 
-    public deleteFile(path: string) {
-        return new Promise<void>((resolve, reject) => {
-            this.getService().deleteBlobIfExists(
-                this.options.containerName,
-                AzureCloudStorageService.getFileName(path),
-                (err, data) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(data);
-                    }
-                },
-            );
+    public deleteFile(blobName: string): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                await this.getBlockBlobURL(blobName).delete(Aborter.none);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
-    public listFiles(path: string) {
-        return new Promise<string[]>((resolve, reject) => {
-            this.getService().listBlobsSegmented(
-                this.options.containerName,
-                null,
-                (err, results) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(results);
+    public listFiles(path: string): Promise<string[]> {
+        return new Promise<string[]>(async (resolve, reject) => {
+            try {
+                const result: string[] = [];
+                let marker;
+                const containerURL = this.getContainerURL();
+                do {
+                    const listBlobsResponse = await containerURL.listBlobFlatSegment(
+                        Aborter.none,
+                        marker,
+                    );
+                    marker = listBlobsResponse.nextMarker;
+                    for (const blob of listBlobsResponse.segment.blobItems) {
+                        result.push(blob.name);
                     }
-                },
-            );
+                } while (marker);
+                resolve(result);
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
     public listContainers(path: string) {
-        return new Promise<string[]>((resolve, reject) => {
-            this.getService().listContainersSegmented(null, (err, results) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
-    }
-
-    public createContainer(path: string) {
-        return new Promise<void>((resolve, reject) => {
-            const service = this.getService();
-            service.createContainerIfNotExists(
-                this.options.containerName,
-                { publicAccessLevel: "blob" },
-                (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
+        return new Promise<string[]>(async (resolve, reject) => {
+            try {
+                const result: string[] = [];
+                let marker;
+                do {
+                    const listContainersResponse = await this.getServiceURL().listContainersSegment(
+                        Aborter.none,
+                        marker,
+                    );
+                    marker = listContainersResponse.nextMarker;
+                    for (const container of listContainersResponse.containerItems) {
+                        result.push(container.name);
                     }
-                },
-            );
+                } while (marker);
+                resolve(result);
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 
-    public deleteContainer(path: string) {
-        return new Promise<void>((resolve, reject) => {
-            this.getService().deleteContainer(
-                this.options.containerName,
-                (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                },
-            );
+    public createContainer(containerName: string): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                const containerURL = this.getContainerURL();
+                const createContainerResponse = await containerURL.create(Aborter.none);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+
         });
     }
 
-    public async getAssets(path?: string): Promise<IAsset[]> {
-        if (this.options.containerName) {
-            path = path ? [this.options.containerName, path].join("/") : this.options.containerName;
-        }
-        const files = await this.listFiles(path);
+    public deleteContainer(path: string): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                await this.getContainerURL().delete(Aborter.none);
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    public async getAssets(containerName?: string): Promise<IAsset[]> {
+        containerName = (containerName) ? containerName : this.options.containerName;
+        const files = await this.listFiles(containerName);
         const result: IAsset[] = [];
-        for (const key of Object.keys(files.entries)) {
-            const url = this.getUrl(files.entries[key].name);
+        for (const file of files) {
+            const url = this.getUrl(file);
             const asset = AssetService.createAssetFromFilePath(url);
             if (asset.type !== AssetType.Unknown) {
                 result.push(asset);
@@ -165,16 +152,67 @@ export class AzureCloudStorageService implements IStorageProvider {
         return result;
     }
 
-    private getService() {
-        return AzureStorageBlob.createBlobService(this.options.connectionString);
+    private getHostName(): string {
+        return `https://${this.options.accountName}.blob.core.windows.net`;
     }
 
-    private getUrl(blobName: string) {
-        return this.getService().getUrl(
-            this.options.containerName,
-            blobName,
-            null,
-            AzureCloudStorageService.getHostName(this.options.connectionString),
+    private getCredential(): Credential {
+        if (this.options.token) {
+            return new TokenCredential(this.options.token);
+        } else {
+            return new AnonymousCredential();
+        }
+    }
+
+    private getServiceURL(): ServiceURL {
+        const credential = this.getCredential();
+        const pipeline = StorageURL.newPipeline(credential);
+        const serviceUrl = new ServiceURL(
+            this.getHostName(),
+            pipeline,
         );
+        return serviceUrl;
+    }
+
+    private getContainerURL(serviceURL?: ServiceURL, containerName?: string): ContainerURL {
+        return ContainerURL.fromServiceURL(
+            (serviceURL) ? serviceURL : this.getServiceURL(),
+            (containerName) ? containerName : this.options.containerName,
+        );
+    }
+
+    private getBlockBlobURL(blobName: string): BlockBlobURL {
+        const containerURL = this.getContainerURL();
+        return BlockBlobURL.fromContainerURL(
+            containerURL,
+            blobName,
+        );
+    }
+
+    private getUrl(blobName: string): string {
+        return this.getBlockBlobURL(blobName).url;
+    }
+
+    private async bodyToString(
+        response: {
+          readableStreamBody?: NodeJS.ReadableStream;
+          blobBody?: Promise<Blob>;
+        },
+        // tslint:disable-next-line:variable-name
+        _length?: number,
+      ): Promise<string> {
+        const blob = await response.blobBody!;
+        return this.blobToString(blob);
+    }
+
+    private async blobToString(blob: Blob): Promise<string> {
+        const fileReader = new FileReader();
+        return new Promise<string>((resolve, reject) => {
+            fileReader.onloadend = (ev: any) => {
+                resolve(ev.target!.result);
+            };
+            fileReader.onerror = reject;
+            fileReader.readAsText(blob);
+        });
     }
 }

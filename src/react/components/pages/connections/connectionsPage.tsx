@@ -44,9 +44,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         this.onConnectionDelete = this.onConnectionDelete.bind(this);
     }
 
-    public componentDidMount() {
-        this.props.actions.loadConnections();
-
+    public async componentDidMount() {
         const connectionId = this.props.match.params["connectionId"];
         if (connectionId) {
             this.loadConnection(connectionId);
@@ -89,27 +87,21 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         );
     }
 
-    private loadConnection(connectionId: string) {
-        this.props.actions.loadConnection(connectionId)
-            .then((connection) => {
-                this.setState({
-                    connection,
-                });
-            })
-            .catch(() => {
-                this.setState({
-                    connection: null,
-                });
-            });
+    private async loadConnection(connectionId: string) {
+        const connection = this.props.connections.find((connection) => connection.id === connectionId);
+        if (connection) {
+            this.setState({ connection });
+        } else {
+            this.setState({ connection: null });
+        }
     }
 
-    private onConnectionDelete = (connection: IConnection) => {
-        this.props.actions.deleteConnection(connection);
+    private onConnectionDelete = async (connection: IConnection) => {
+        await this.props.actions.deleteConnection(connection);
     }
 
-    private onFormSubmit = (connection: IConnection) => {
-        this.props.actions.saveConnection(connection).then(() => {
-            this.props.history.push("/connections");
-        });
+    private onFormSubmit = async (connection: IConnection) => {
+        await this.props.actions.saveConnection(connection);
+        this.props.history.push("/connections");
     }
 }

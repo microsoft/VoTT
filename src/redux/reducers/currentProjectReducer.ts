@@ -1,24 +1,25 @@
 import _ from "lodash";
-import * as ActionTypes from "../actions/actionTypes";
+import { ActionTypes } from "../actions/actionTypes";
 import { IProject } from "../../models/applicationState";
+import { AnyAction } from "../actions/actionCreators";
 
-export const reducer = (state: IProject = null, action: any): IProject => {
+export const reducer = (state: IProject = null, action: AnyAction): IProject => {
     switch (action.type) {
         case ActionTypes.DELETE_PROJECT_SUCCESS:
         case ActionTypes.CLOSE_PROJECT_SUCCESS:
             return null;
         case ActionTypes.LOAD_PROJECT_SUCCESS:
-            return { ...action.project };
+            return { ...action.payload };
         case ActionTypes.SAVE_PROJECT_SUCCESS:
-            if (state && state.id === action.project.id) {
-                return { ...action.project };
+            if (state && state.id === action.payload.id) {
+                return { ...action.payload };
             } else {
                 return state;
             }
         case ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS:
             if (state) {
                 const currentAssets = { ...state.assets } || {};
-                action.assets.forEach((asset) => {
+                action.payload.forEach((asset) => {
                     if (!currentAssets[asset.id]) {
                         currentAssets[asset.id] = asset;
                     }
@@ -34,7 +35,7 @@ export const reducer = (state: IProject = null, action: any): IProject => {
         case ActionTypes.SAVE_ASSET_METADATA_SUCCESS:
             if (state) {
                 const updatedAssets = { ...state.assets } || {};
-                updatedAssets[action.assetMetadata.asset.id] = { ...action.assetMetadata.asset };
+                updatedAssets[action.payload.asset.id] = { ...action.payload.asset };
 
                 return {
                     ...state,
