@@ -1,4 +1,4 @@
-import { AssetState, AssetType, IApplicationState, IAppSettings, 
+import { AssetState, AssetType, IApplicationState, IAppSettings,
     IAsset, IAssetMetadata, IConnection, IExportFormat, IProject, ITag } from "../models/applicationState";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
