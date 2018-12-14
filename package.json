@@ -26,11 +26,13 @@
     "appId": "com.microsoft.vott",
     "artifactName": "${productName}-${os}.${ext}",
     "extends": null,
-    "dmg": {
-      "icon": "build/dist/icon.icns"
+    "mac": {
+      "icon": "build/dist/icon.icns",
+      "target": "dmg"
     },
     "win": {
-      "icon": "build/dist/icon.ico"
+      "icon": "build/dist/icon.ico",
+      "target": "exe"
     },
     "linux": {
       "target": [
@@ -45,7 +47,7 @@
     "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
     "test": "react-scripts test --env=jsdom",
     "test:ci": "CI=true react-scripts test --env=jsdom",
-    "dist": "electron-builder",
+    "dist": "electron-builder --publish never",
     "dist:winlinux": "build -wl --x64",
     "dist:mac": "build -m --x64",
     "coverage": "react-scripts test --env=jsdom --coverage",
