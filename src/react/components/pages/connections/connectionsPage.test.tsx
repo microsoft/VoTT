@@ -5,8 +5,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
 import createReduxStore from "../../../../redux/store/store";
 import initialState from "../../../../redux/store/initialState";
-import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
+import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
+import CondensedList from "../../common/condensedList";
+import { Link } from "react-router-dom";
 
 describe("Connections Page", () => {
     function createComponent(store, props: IConnectionPageProps): ReactWrapper {
@@ -19,58 +21,72 @@ describe("Connections Page", () => {
         );
     }
 
-    const store = createStore();
-    const props = createProps();
-    const wrapper = createComponent(store, props);
-    let connectionsPage;
+    let wrapper: any = null;
+    let connectionsPage: any = null;
 
-    it("isn't null", () => {
+    beforeEach(() => {
+        wrapper = createComponent(createStore(), createProps());
         expect(wrapper).not.toBeNull();
+        connectionsPage = wrapper.find(ConnectionPage);
+        expect(connectionsPage.exists()).toBe(true);
     });
 
     it("mounted the component", () => {
-        connectionsPage = wrapper.find(ConnectionPage).childAt(0);
-        expect(connectionsPage).not.toBeNull();
-
         const page = connectionsPage.find(".app-connections-page");
-        expect(page.length).toEqual(1);
-        // TODO: idk why this is 3 and not 2...
+        expect(page.exists()).toBe(true);
         expect(page.children()).toHaveLength(3);
     });
 
     describe("without any connections", () => {
 
         it("renders connections list correctly", () => {
-            const list = connectionsPage.find(".app-connections-page-list .condensed-list");
-            expect(list.length).toEqual(1);
+            const wrapper = createComponent(createStore(), createProps());
+            const connectionsPage = wrapper.find(ConnectionPage);
 
-            const listHeader = list.find(".condensed-list-header span");
-            expect(listHeader.text()).toEqual("Connections");
+            const listRoot = connectionsPage.find("div.app-connections-page-list");
+            expect(listRoot.exists()).toBe(true);
 
-            const listButton = list.find(".condensed-list-header a");
-            expect(listButton.prop("href")).toEqual("/connections/create");
+            const list = connectionsPage.find(CondensedList);
+            const props = list.props();
+            expect(props.title).toEqual("Connections");
+            expect(props.items).toEqual(null);
 
-            // TODO: why is listItems 2?
-            // Why is the text "ConnectionsNo items found"?
-            // const listItems = list.find("div");
-            // expect(listItems.first().text()).toEqual("No items found");
+            const listButton = list.find(Link);
+            expect(listButton.props().to).toEqual("/connections/create");
         });
 
-        it("renders connection details correctly", () => {
-            // TODO: why does this not work?
-            // const details = connectionsPage.find(".app-connections-page-detail h6");
-            // expect(details.text()).toEqual("Please select a connection to edit");
+        it("renders connection form correctly", () => {
+            const wrapper = createComponent(createStore(), createProps());
+            const connectionsPage = wrapper.find(ConnectionPage);
+
+            const text = connectionsPage.find("h6");
+            expect(text.exists()).toBe(true);
+
+            // TODO pick up from here ;) (see connectionForm.tsx)
+            // TODO: not sure why this doesn't work
+            // expect(text.text()).toBe("Please select a connection to edit");
         });
     });
 
     describe("adding a connection", () => {
 
-        it("opens a details pane when + button is hit", () => {
-            // TODO
-            // shows up as it should
+        it("opens a form pane when + button is hit", () => {
+            const wrapper = createComponent(createStore(), createProps());
+            const connectionsPage = wrapper.find(ConnectionPage);
+
+            const list = connectionsPage.find(CondensedList);
+            const listButton = list.find(Link);
+            listButton.simulate('click');
+
+            expect(handler).toBeCalled();
+
+            // TODO: shows up as it should
+            // - get plus button
+            // - hit it
+            // - validate form shows up
         });
 
-        it("sets details in the state", () => {
+        it("sets form in the state", () => {
             // TODO
             // changing fields works
         });
