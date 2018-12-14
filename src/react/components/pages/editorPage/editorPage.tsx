@@ -62,11 +62,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.selectAsset = this.selectAsset.bind(this);
         this.onFooterChange = this.onFooterChange.bind(this);
-        let addRegion = this.addRegion.bind(this);
+        this.onAssetMetadataChanged = this.addRegion.bind(this);
     }
 
-    private addRegion(region: IRegion){
-        
+    private async addRegion(region: IRegion){
+
     }
 
     public async componentDidMount() {
@@ -116,8 +116,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     </div>
                                 } */}
                                 <Canvas 
-                                    selectedAsset={this.state.selectedAsset}
-                                    addRegion={this.addRegion}/>
+                                    selectedAsset={this.state.selectedAsset}/>
+                                    {/* onAssetMetadataChanegd={this.onAssetMetadataChanged.bind(this)}/> */}
                             </div>
                         }
                     </div>
@@ -129,6 +129,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
             </div>
         );
+    }
+
+    private onAssetMetadataChanged(){
+
     }
 
     private onFooterChange(footerState) {

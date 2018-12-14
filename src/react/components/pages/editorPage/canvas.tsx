@@ -1,10 +1,11 @@
 import React from "react";
 import { IAssetMetadata } from "../../../../models/applicationState";
-const ct = require('vott-ct').CanvasTools
+// const ct = require('vott-ct').CanvasTools
+import * as CanvasTools from "vott-ct"
 
 interface ICanvasProps {
     selectedAsset: IAssetMetadata;
-    addRegion: Function;
+    // assetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
 }
 
 interface ICanvasState {
@@ -22,6 +23,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     } 
 
     public componentDidMount(){
+        var ct = CanvasTools.CanvasTools;
         var sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
         var tz = document.getElementById("toolbarzone")as unknown as HTMLDivElement;
 
@@ -62,7 +64,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 this.editor.RM.addRectRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(r.x1, r.y1), new ct.Core.Point2D(r.x2, r.y2), tags);
             }
 
-            this.props.addRegion()
+            // this.props.assetMetadataChanged(assetMetadata);
         }
         
         this.editor.onRegionMove = (id, x, y, width, height) => {
