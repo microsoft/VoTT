@@ -46,7 +46,7 @@ describe("Project Service", () => {
         await expect(projectSerivce.save(testProject)).rejects.toEqual(expectedError);
     });
 
-    it("Delete calls project storage proivder to delete project", async () => {
+    it("Delete calls project storage provider to delete project", async () => {
         await projectSerivce.delete(testProject);
 
         expect(StorageProviderFactory.create).toBeCalledWith(
