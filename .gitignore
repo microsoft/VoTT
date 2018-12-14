@@ -15,7 +15,7 @@
 /build/electron
 
 # packaging
-dist/
+/dist/
 
 # misc
 .DS_Store
