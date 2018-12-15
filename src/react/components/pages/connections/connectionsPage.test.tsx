@@ -1,37 +1,42 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { AnyAction, Store } from "redux";
-import { BrowserRouter as Router } from "react-router-dom";
+import { Route, Link, StaticRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
+import Form from "react-jsonschema-form";
 import createReduxStore from "../../../../redux/store/store";
 import initialState from "../../../../redux/store/initialState";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
 import CondensedList from "../../common/condensedList";
-import { Link } from "react-router-dom";
+import ConnectionForm from "./connectionForm";
+import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../../../../providers/storage/bingImageSearch"
 
 describe("Connections Page", () => {
-    function createComponent(store, props: IConnectionPageProps): ReactWrapper {
+
+    let wrapper: any = null;
+    let connectionsPage: any = null;
+
+    function createComponent(route, store, props: IConnectionPageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
-                <Router>
+                <Router location={route}>
                     <ConnectionPage {...props} />
                 </Router>
             </Provider>,
         );
     }
 
-    let wrapper: any = null;
-    let connectionsPage: any = null;
-
-    beforeEach(() => {
-        wrapper = createComponent(createStore(), createProps());
+    function init(path: string, props: any = { }): void {
+        wrapper = createComponent(path, createStore(), createProps(path, props));
         expect(wrapper).not.toBeNull();
         connectionsPage = wrapper.find(ConnectionPage);
         expect(connectionsPage.exists()).toBe(true);
-    });
+    }
 
     it("mounted the component", () => {
+        init("/connections");
+
         const page = connectionsPage.find(".app-connections-page");
         expect(page.exists()).toBe(true);
         expect(page.children()).toHaveLength(3);
@@ -40,8 +45,7 @@ describe("Connections Page", () => {
     describe("without any connections", () => {
 
         it("renders connections list correctly", () => {
-            const wrapper = createComponent(createStore(), createProps());
-            const connectionsPage = wrapper.find(ConnectionPage);
+            init("/connections");
 
             const listRoot = connectionsPage.find("div.app-connections-page-list");
             expect(listRoot.exists()).toBe(true);
@@ -56,13 +60,14 @@ describe("Connections Page", () => {
         });
 
         it("renders connection form correctly", () => {
-            const wrapper = createComponent(createStore(), createProps());
-            const connectionsPage = wrapper.find(ConnectionPage);
+            init("/connections");
+
+            const route = connectionsPage.find(Route);
+            expect(route.last().prop("path")).toEqual("/connections/:connectionId");
 
             const text = connectionsPage.find("h6");
             expect(text.exists()).toBe(true);
 
-            // TODO pick up from here ;) (see connectionForm.tsx)
             // TODO: not sure why this doesn't work
             // expect(text.text()).toBe("Please select a connection to edit");
         });
@@ -70,39 +75,71 @@ describe("Connections Page", () => {
 
     describe("adding a connection", () => {
 
-        it("opens a form pane when + button is hit", () => {
-            const wrapper = createComponent(createStore(), createProps());
-            const connectionsPage = wrapper.find(ConnectionPage);
+        it("create form button exists", () => {
+            init("/connections");
+
+            const form = connectionsPage.find(ConnectionForm);
+            expect(form.exists()).toBe(false);
 
             const list = connectionsPage.find(CondensedList);
-            const listButton = list.find(Link);
-            listButton.simulate('click');
-
-            expect(handler).toBeCalled();
-
-            // TODO: shows up as it should
-            // - get plus button
-            // - hit it
-            // - validate form shows up
+            expect(list.exists()).toBe(true);
+            expect(list.props().newLinkTo).toBe("/connections/create");
         });
 
-        it("sets form in the state", () => {
-            // TODO
-            // changing fields works
+        it("ConnectionForm mounts correctly", () => {
+            init("/connections/create", { connectionId: "create" });
+
+            const form = connectionsPage.find(ConnectionForm);
+            expect(form.exists()).toBe(true);
+        });
+
+        it.only("editing the form works", () => {
+            init("/connections/create", { connectionId: "create" });
+
+            const connectionForm = connectionsPage.find(ConnectionForm);
+            const form = connectionForm.find(Form);
+
+            // simulate setting the name
+            form.simulate("change", { target: { name: "Foo" } });
+            expect(connectionForm.state().formData.name).toBe("Foo");
+
+            // simulate setting the provider type
+            form.simulate("change", { target: { providerType: "bingImageSearch" } });
+            expect(connectionForm.state().formData.providerType).toBe("bingImageSearch");
+
+            // Ensure provider options are set
+            const providerOptions = connectionForm.state().formData.providerOptions;
+            expect('apiKey' in providerOptions).toBe(true);
+            expect('query' in providerOptions).toBe(true);
+            expect('aspectRatio' in providerOptions).toBe(true);
         });
 
         it("adds connection when submit is hit", () => {
-            // TODO
-            // gets added to the right place, view resets correctly?
+            init("/connections/create", { connectionId: "create" });
+
+            const connectionForm = connectionsPage.find(ConnectionForm);
+            const form = connectionForm.find(Form);
+
+            form.simulate("change", { target: { name: "Foo" } });
+            form.simulate("change", { target: { providerType: "bingImageSearch" } });
+
+            const bingOptions = connectionForm.state().formData.providerOptions as IBingImageSearchOptions;
+            bingOptions.apiKey = "key";
+            bingOptions.query = "query";
+            bingOptions.aspectRatio = BingImageSearchAspectRatio.Square;
+
+            // simulate click on submit button
+            // // watch connectionForm.props.onSubmit, make sure it's called, validate formData
+
+            // TODO: ensure it gets put into the connections list? Should I be tracking the test through to the action?
         });
     });
 
-    // TODO update with changes works (and updates existing) (onchange handler is called) (onsubmit handelr was called)
     // TODO delete
     // TODO fix bug, after delete, form shows (add test)
 });
 
-function createProps(): IConnectionPageProps {
+function createProps(route: string, params: any): IConnectionPageProps {
     return {
         history: {
             length: 0,
@@ -124,10 +161,10 @@ function createProps(): IConnectionPageProps {
             state: null,
         },
         match: {
-            params: {},
+            params: params,
             isExact: true,
-            path: `https://localhost:3000/connections`,
-            url: `https://localhost:3000/connections`,
+            path: `https://localhost:3000${route}`,
+            url: `https://localhost:3000${route}`,
         },
         connections: [],
         actions: (connectionActions as any) as IConnectionActions,
