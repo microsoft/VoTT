@@ -4,6 +4,7 @@ import { BingImageSearch } from "./providers/storage/bingImageSearch";
 import { AssetProviderFactory } from "./providers/storage/assetProvider";
 import { ExportProviderFactory } from "./providers/export/exportProviderFactory";
 import { VottJsonExportProvider } from "./providers/export/vottJson";
+import { TFPascalVocJsonExportProvider } from "./providers/export/tensorFlowRecords";
 import registerToolbar from "./registerToolbar";
 
 export default function registerProviders() {
@@ -16,6 +17,7 @@ export default function registerProviders() {
 
     // Export Providers
     ExportProviderFactory.register("vottJson", (project, options) => new VottJsonExportProvider(project, options));
+    ExportProviderFactory.register("tensorFlowRecords", (project, options) => new TFPascalVocJsonExportProvider(project, options));
 
     registerToolbar();
 }
