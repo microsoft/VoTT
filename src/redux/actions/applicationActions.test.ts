@@ -27,7 +27,7 @@ describe("Application Actions", () => {
     it("Reload application action forwards call to IpcRenderer proxy", () => {
         const action = refreshApplicationAction();
         expect(action.type).toEqual(ActionTypes.REFRESH_APP_SUCCESS);
-        
+
         store.dispatch(action);
         const actions = store.getActions();
 
