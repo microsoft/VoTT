@@ -1,3 +1,5 @@
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/CanvasTools.Tags";
+
 /**
  * @name - Application State
  * @description - Defines the root level application state
@@ -116,11 +118,12 @@ export interface IAsset {
  * @name - Asset Metadata
  * @description - Format to store asset metadata for each asset within a project
  * @member asset - References an asset within the project
+ * @member regions - The list of regions drawn on the asset
  * @member timestamp - The timestamp of the asset typically used for video durations / frames
  */
 export interface IAssetMetadata {
     asset: IAsset;
-    regions: [];
+    regions: IRegion[];
     timestamp?: string;
 }
 
@@ -146,7 +149,7 @@ export interface ISize {
 export interface IRegion {
     id: string;
     type: RegionType;
-    tags: ITagMetadata[];
+    tags: TagsDescriptor;
     points: IPoint[];
 }
 

@@ -1,11 +1,12 @@
 import React from "react";
-import { IAssetMetadata } from "../../../../models/applicationState";
+import { IAssetMetadata, IRegion, RegionType, AssetState } from "../../../../models/applicationState";
 // const ct = require('vott-ct').CanvasTools
-import * as CanvasTools from "vott-ct"
+// import * as CanvasTools from "vott-ct"
+import {CanvasTools} from "vott-ct"
 
 interface ICanvasProps {
     selectedAsset: IAssetMetadata;
-    // assetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
+    onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
 }
 
 interface ICanvasState {
@@ -23,7 +24,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     } 
 
     public componentDidMount(){
-        var ct = CanvasTools.CanvasTools;
+        var ct = CanvasTools;
         var sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
         var tz = document.getElementById("toolbarzone")as unknown as HTMLDivElement;
 
@@ -64,11 +65,29 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 this.editor.RM.addRectRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(r.x1, r.y1), new ct.Core.Point2D(r.x2, r.y2), tags);
             }
 
-            // this.props.assetMetadataChanged(assetMetadata);
+            let newRegion = {
+                id: incrementalRegionID.toString(),
+                type: RegionType.Rectangle,
+                tags: tags,
+                points: [new ct.Core.Point2D(r.x1, r.y1), new ct.Core.Point2D(r.x2, r.y2)]
+            }
+
+            let currentAssetMetadata = this.props.selectedAsset;
+            currentAssetMetadata.regions.push(newRegion)
+            if(currentAssetMetadata.regions.length){
+                currentAssetMetadata.asset.state = AssetState.Tagged;
+            }
+
+            this.props.onAssetMetadataChanged(currentAssetMetadata);
         }
         
         this.editor.onRegionMove = (id, x, y, width, height) => {
             console.log(`Moved ${id}: {${x}, ${y}} x {${width}, ${height}}`);
+            let movedRegionIndex = this.props.selectedAsset.regions.findIndex(region => {return region.id == id})
+            let movedRegion = this.props.selectedAsset.regions[movedRegionIndex]
+            if(movedRegion){
+                movedRegion.points = [new ct.Core.Point2D(x, y), new ct.Core.Point2D(x + width, y + height)]
+            }
         }
 
         // Upload background image for selection
@@ -97,12 +116,19 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private updateEditor = (editor) => {
+        debugger;
+        editor.RM.deleteAllRegions();
         let image = new Image();
         image.addEventListener("load", (e) => {
             console.log("loading")
             //@ts-ignore
             editor.addContentSource(e.target);
         });
-        image.src = this.props.selectedAsset.asset.path;
+        image.src = this.props.selectedAsset.asset.path; 
+        if(this.props.selectedAsset.regions.length){
+            this.props.selectedAsset.regions.forEach(region => {
+                this.editor.RM.addRectRegion(region.id, region.points[0], region.points[1], region.tags);
+            });
+        }
     }
 }
