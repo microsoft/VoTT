@@ -14,6 +14,9 @@
 # production
 /build/electron
 
+# release
+/dist/
+
 # misc
 .DS_Store
 .env.local
