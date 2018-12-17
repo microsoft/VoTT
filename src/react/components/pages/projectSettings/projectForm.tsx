@@ -3,7 +3,7 @@ import Form from "react-jsonschema-form";
 import deepmerge from "deepmerge";
 import TagsInput from "../../common/tagsInput/tagsInput";
 import ConnectionPicker from "../../common/connectionPicker";
-import { IProject, IConnection } from "../../../../models/applicationState.js";
+import { IProject, IConnection, ITag } from "../../../../models/applicationState.js";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
@@ -17,6 +17,7 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
 
 export interface IProjectFormState {
     formData: any;
+    tags: ITag[];
     formSchema: any;
     uiSchema: any;
 }
@@ -29,14 +30,13 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     constructor(props, context) {
         super(props, context);
-        const normalizedTags = this.normalizeTags(this.props.project);
         this.state = {
             uiSchema: this.createUiSchema(),
             formSchema: { ...formSchema },
             formData: {
-                ...this.props.project,
-                tags: normalizedTags,
+                ...this.props.project
             },
+            tags: (this.props.project) ? this.props.project.tags : null
         };
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onTagsChange = this.onTagsChange.bind(this);
@@ -63,22 +63,23 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
+                noValidate={true}
                 onSubmit={this.onFormSubmit}>
             </Form>
         );
     }
 
-    private onTagsChange(tagsJson) {
-        this.setState({
-            formData: {
-                ...this.state.formData,
-                tags: tagsJson,
-            },
-        });
+    private onTagsChange(tags) {
+        debugger;
+        this.setState({tags});
     }
 
     private onFormSubmit(args) {
-        this.props.onSubmit(args.formData);
+        const project: IProject = {
+            ...args.formData,
+            tags: this.state.tags
+        }
+        this.props.onSubmit(project);
     }
 
     private createUiSchema(): any {
@@ -97,7 +98,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 "ui:widget": (props) => {
                     return (
                         <TagsInput
-                            tags={this.state.formData.tags}
+                            tags={this.state.tags}
                             onChange={this.onTagsChange} />
                     );
                 },
@@ -105,12 +106,5 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         };
 
         return deepmerge(uiSchema, overrideUiSchema);
-    }
-
-    private normalizeTags(project: IProject) {
-        if (project && project.tags) {
-            return JSON.stringify(project.tags);
-        }
-        return undefined;
     }
 }

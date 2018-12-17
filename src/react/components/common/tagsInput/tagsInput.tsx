@@ -163,8 +163,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     private getReactTags(props): IReactTag[] {
-        const tags = props.tags;
-        const iTags = (typeof tags === "string") ? JSON.parse(tags) : tags;
+        const iTags = props.tags;
         return (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [];
     }
 
@@ -201,6 +200,6 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
 
     private normalize(tags): string {
         const itags = tags.map((element: IReactTag) => this.toItag(element));
-        return JSON.stringify(itags);
+        return itags;
     }
 }

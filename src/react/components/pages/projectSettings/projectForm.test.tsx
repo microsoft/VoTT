@@ -31,7 +31,7 @@ describe("Project Form Component", () => {
             expect(wrapper.state().formData.targetConnection).toEqual(project.targetConnection);
             expect(wrapper.state().formData.description).toEqual(project.description);
             expect(project.tags.length).toBeGreaterThan(0);
-            expect(JSON.parse(wrapper.state().formData.tags)).toEqual(project.tags);
+            expect((wrapper.state().formData.tags)).toEqual(project.tags);
         });
 
         it("has correct initial rendering", () => {
