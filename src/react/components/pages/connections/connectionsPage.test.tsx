@@ -93,14 +93,16 @@ describe("Connections Page", () => {
             expect(form.exists()).toBe(true);
         });
 
-        it.only("editing the form works", () => {
+        fit("editing the form works", () => {
             init("/connections/create", { connectionId: "create" });
 
             const connectionForm = connectionsPage.find(ConnectionForm);
             const form = connectionForm.find(Form);
 
-            // simulate setting the name
-            form.simulate("change", { target: { name: "Foo" } });
+            const nameField = form.find("#root_name").first();
+            expect(nameField.exists()).toBe(true);
+
+            nameField.simulate("change", { target: { value: "Foo" } });
             expect(connectionForm.state().formData.name).toBe("Foo");
 
             // simulate setting the provider type
@@ -128,10 +130,16 @@ describe("Connections Page", () => {
             bingOptions.query = "query";
             bingOptions.aspectRatio = BingImageSearchAspectRatio.Square;
 
-            // simulate click on submit button
-            // // watch connectionForm.props.onSubmit, make sure it's called, validate formData
+            // save the original onSubmit fn
+            const formProps = form.props();
+            const onSubmit = formProps.onSubmit;
+            formProps.onSubmit = jest.fn((form) => onSubmit(form));
 
+            // TODO: does this work?
+            form.simulate("submit");
+            formProps.onSubmi
             // TODO: ensure it gets put into the connections list? Should I be tracking the test through to the action?
+
         });
     });
 
