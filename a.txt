@@ -1,0 +1,26 @@
+ Volume in drive C is OSDisk
+ Volume Serial Number is F4FB-A388
+
+ Directory of C:\work\willsmythe\VoTT
+
+12/17/2018  03:59 PM    <DIR>          .
+12/17/2018  03:59 PM    <DIR>          ..
+12/17/2018  02:49 PM               389 .gitignore
+12/17/2018  02:49 PM             1,660 .travis.yml
+12/17/2018  03:59 PM                 0 a.txt
+12/17/2018  02:50 PM               517 azure-pipelines.yml
+12/17/2018  02:49 PM    <DIR>          build
+12/17/2018  02:49 PM    <DIR>          config
+12/17/2018  02:49 PM    <DIR>          docs
+12/17/2018  02:49 PM           722,418 package-lock.json
+12/17/2018  02:49 PM             2,185 package.json
+12/17/2018  02:49 PM                60 Procfile
+12/17/2018  02:49 PM    <DIR>          public
+12/17/2018  02:49 PM             2,347 README.md
+12/17/2018  02:49 PM    <DIR>          src
+12/17/2018  02:49 PM               536 tsconfig.json
+12/17/2018  02:49 PM               348 tslint.json
+12/17/2018  02:49 PM    <DIR>          typings
+12/17/2018  02:49 PM               129 typings.json
+              11 File(s)        730,589 bytes
+               8 Dir(s)  13,651,443,712 bytes free
