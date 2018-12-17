@@ -10,12 +10,13 @@ import IConnectionActions, * as connectionActions from "../../../../redux/action
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
 import CondensedList from "../../common/condensedList";
 import ConnectionForm from "./connectionForm";
-import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../../../../providers/storage/bingImageSearch"
+import ConnectionItem from "./connectionItem";
+import MockFactory from "../../../../common/mockFactory";
 
 describe("Connections Page", () => {
 
-    let wrapper: any = null;
-    let connectionsPage: any = null;
+    const connectionsRoute: string = "/connections";
+    const connectionCreateRoute: string = "/connections/create";
 
     function createComponent(route, store, props: IConnectionPageProps): ReactWrapper {
         return mount(
@@ -27,15 +28,17 @@ describe("Connections Page", () => {
         );
     }
 
-    function init(path: string, props: any = { }): void {
-        wrapper = createComponent(path, createStore(), createProps(path, props));
-        expect(wrapper).not.toBeNull();
-        connectionsPage = wrapper.find(ConnectionPage);
-        expect(connectionsPage.exists()).toBe(true);
-    }
-
     it("mounted the component", () => {
-        init("/connections");
+        const wrapper = createComponent(
+            connectionsRoute,
+            createStore(),
+            createProps(connectionsRoute),
+        );
+
+        expect(wrapper).not.toBeNull();
+
+        const connectionsPage = wrapper.find(ConnectionPage);
+        expect(connectionsPage.exists()).toBe(true);
 
         const page = connectionsPage.find(".app-connections-page");
         expect(page.exists()).toBe(true);
@@ -45,7 +48,12 @@ describe("Connections Page", () => {
     describe("without any connections", () => {
 
         it("renders connections list correctly", () => {
-            init("/connections");
+            const wrapper = createComponent(
+                connectionsRoute,
+                createStore(),
+                createProps(connectionsRoute),
+            );
+            const connectionsPage = wrapper.find(ConnectionPage);
 
             const listRoot = connectionsPage.find("div.app-connections-page-list");
             expect(listRoot.exists()).toBe(true);
@@ -53,14 +61,19 @@ describe("Connections Page", () => {
             const list = connectionsPage.find(CondensedList);
             const props = list.props();
             expect(props.title).toEqual("Connections");
-            expect(props.items).toEqual(null);
+            expect(props.items).toEqual([]);
 
             const listButton = list.find(Link);
-            expect(listButton.props().to).toEqual("/connections/create");
+            expect(listButton.props().to).toEqual(connectionCreateRoute);
         });
 
         it("renders connection form correctly", () => {
-            init("/connections");
+            const wrapper = createComponent(
+                connectionsRoute,
+                createStore(),
+                createProps(connectionsRoute),
+            );
+            const connectionsPage = wrapper.find(ConnectionPage);
 
             const route = connectionsPage.find(Route);
             expect(route.last().prop("path")).toEqual("/connections/:connectionId");
@@ -75,79 +88,97 @@ describe("Connections Page", () => {
 
     describe("adding a connection", () => {
 
-        it("create form button exists", () => {
-            init("/connections");
+        it("create connection button exists", () => {
+            const wrapper = createComponent(
+                connectionsRoute,
+                createStore(),
+                createProps(connectionsRoute),
+            );
+            const connectionsPage = wrapper.find(ConnectionPage);
 
             const form = connectionsPage.find(ConnectionForm);
             expect(form.exists()).toBe(false);
 
             const list = connectionsPage.find(CondensedList);
             expect(list.exists()).toBe(true);
-            expect(list.props().newLinkTo).toBe("/connections/create");
+            expect(list.props().newLinkTo).toBe(connectionCreateRoute);
         });
 
         it("ConnectionForm mounts correctly", () => {
-            init("/connections/create", { connectionId: "create" });
+            const props = createProps(connectionCreateRoute);
+            props.match.params = { connectionId: "create" };
 
+            const wrapper = createComponent(connectionCreateRoute, createStore(), props);
+            const connectionsPage = wrapper.find(ConnectionPage);
             const form = connectionsPage.find(ConnectionForm);
             expect(form.exists()).toBe(true);
         });
 
-        fit("editing the form works", () => {
-            init("/connections/create", { connectionId: "create" });
+        it("adds connection when submit button is hit", () => {
+            const props = createProps(connectionCreateRoute);
+            props.match.params = { connectionId: "create" };
 
+            const saveConnection = jest.spyOn(props.actions, "saveConnection");
+
+            const wrapper = createComponent(connectionCreateRoute, createStore(), props);
+            const connectionsPage = wrapper.find(ConnectionPage);
             const connectionForm = connectionsPage.find(ConnectionForm);
-            const form = connectionForm.find(Form);
 
-            const nameField = form.find("#root_name").first();
-            expect(nameField.exists()).toBe(true);
+            connectionForm.find("input#root_name")
+                          .simulate("change", { target: { value: "test" } });
+            connectionForm.find("select#root_providerType")
+                          .simulate("change", { target: { value: "azureBlobStorage" } });
+            connectionForm.find("input#root_providerOptions_connectionString")
+                          .simulate("change", { target: { value: "test" } });
+            connectionForm.find("input#root_providerOptions_containerName")
+                          .simulate("change", { target: { value: "test" } });
 
-            nameField.simulate("change", { target: { value: "Foo" } });
-            expect(connectionForm.state().formData.name).toBe("Foo");
+            connectionForm.find(Form).simulate("submit");
+            connectionForm.update();
 
-            // simulate setting the provider type
-            form.simulate("change", { target: { providerType: "bingImageSearch" } });
-            expect(connectionForm.state().formData.providerType).toBe("bingImageSearch");
-
-            // Ensure provider options are set
-            const providerOptions = connectionForm.state().formData.providerOptions;
-            expect('apiKey' in providerOptions).toBe(true);
-            expect('query' in providerOptions).toBe(true);
-            expect('aspectRatio' in providerOptions).toBe(true);
+            expect(saveConnection).toBeCalled();
         });
 
-        it("adds connection when submit is hit", () => {
-            init("/connections/create", { connectionId: "create" });
+        it("renders connections in the list correctly", () => {
+            const props = createProps(connectionCreateRoute);
+            props.connections = MockFactory.createTestConnections(8);
 
-            const connectionForm = connectionsPage.find(ConnectionForm);
-            const form = connectionForm.find(Form);
+            const wrapper = createComponent(connectionsRoute, createStore(), props);
+            const connectionsPage = wrapper.find(ConnectionPage);
+            const items = connectionsPage.find(ConnectionItem);
 
-            form.simulate("change", { target: { name: "Foo" } });
-            form.simulate("change", { target: { providerType: "bingImageSearch" } });
-
-            const bingOptions = connectionForm.state().formData.providerOptions as IBingImageSearchOptions;
-            bingOptions.apiKey = "key";
-            bingOptions.query = "query";
-            bingOptions.aspectRatio = BingImageSearchAspectRatio.Square;
-
-            // save the original onSubmit fn
-            const formProps = form.props();
-            const onSubmit = formProps.onSubmit;
-            formProps.onSubmit = jest.fn((form) => onSubmit(form));
-
-            // TODO: does this work?
-            form.simulate("submit");
-            formProps.onSubmi
-            // TODO: ensure it gets put into the connections list? Should I be tracking the test through to the action?
-
+            expect(items.length).toEqual(8);
         });
+
+        // TODO: renders the form correctly when a new connection is selected
+        // init with 2
+        // ensure no form is drawn
+        // select first
+        // ensure first form is drawm
+        // select second
+        // ensure second form is drawn
     });
 
-    // TODO delete
-    // TODO fix bug, after delete, form shows (add test)
+    describe("removing a connection", () => {
+
+        // TODO delete `connectionPage.props().actions.deleteConnection`
+        it("removes connection when delete button is hit", () => {
+            // init with 1 connection
+            // hit the button
+            // make sure 0 connections are in the list or drawn
+        });
+
+        // TODO fix bug, after delete, form shows (add test)
+        it("stops drawing the form when a connection is removed", () => {
+            // init with 1 connection
+            // make sure form shows
+            // delete it
+            // make sure form goes
+        });
+    });
 });
 
-function createProps(route: string, params: any): IConnectionPageProps {
+function createProps(route: string): IConnectionPageProps {
     return {
         history: {
             length: 0,
@@ -169,7 +200,7 @@ function createProps(route: string, params: any): IConnectionPageProps {
             state: null,
         },
         match: {
-            params: params,
+            params: null,
             isExact: true,
             path: `https://localhost:3000${route}`,
             url: `https://localhost:3000${route}`,
