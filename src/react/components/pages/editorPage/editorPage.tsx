@@ -11,6 +11,7 @@ import AssetPreview from "./assetPreview";
 import EditorFooter from "./editorFooter";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 
 interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
     project: IProject;
@@ -40,6 +41,7 @@ function mapDispatchToProps(dispatch) {
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     private loadingProjectAssets: boolean = false;
+    private toolbarItems: IToolbarItemRegistration[] = [];
 
     constructor(props, context) {
         super(props, context);
@@ -48,6 +50,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             project: this.props.project,
             assets: [],
         };
+
+        this.toolbarItems = ToolbarItemFactory.getToolbarItems();
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
@@ -90,7 +94,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
                 <div className="editor-page-content">
                     <div className="editor-page-content-header">
-                        <EditorToolbar project={this.props.project} actions={this.props.actions} />
+                        <EditorToolbar project={this.props.project}
+                            items={this.toolbarItems}
+                            actions={this.props.actions} />
                     </div>
                     <div className="editor-page-content-body">
                         {selectedAsset &&

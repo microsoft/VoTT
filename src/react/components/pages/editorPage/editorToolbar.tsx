@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { ToolbarItemFactory, IComponentRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
+import { ToolbarItemFactory, IToolbarItemRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions from "../../../../redux/actions/projectActions";
 import { IProject } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
@@ -10,6 +10,7 @@ import { Select } from "../../toolbar/select";
 export interface IEditorToolbarProps {
     project: IProject;
     actions: IProjectActions;
+    items: IToolbarItemRegistration[];
 }
 
 export interface IEditorToolbarState {
@@ -28,8 +29,7 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
     }
 
     public render() {
-        const toolbarItems = ToolbarItemFactory.getToolbarItems();
-        const groups = _(toolbarItems)
+        const groups = _(this.props.items)
             .groupBy("config.group")
             .values()
             .value();
@@ -42,7 +42,7 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
                             const toolbarItemProps: IToolbarItemProps = {
                                 ...this.props,
                                 ...registration.config,
-                                key: registration.key,
+                                key: registration.config.name,
                                 active: this.isComponentActive(this.state.selectedItem, registration),
                                 onClick: this.onToolbarItemSelected,
                             };
@@ -62,7 +62,7 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
         });
     }
 
-    private isComponentActive(selected: any, componentRegistration: IComponentRegistration) {
+    private isComponentActive(selected: any, componentRegistration: IToolbarItemRegistration) {
         return selected
             ? selected === componentRegistration.component.prototype &&
             componentRegistration.config.type === ToolbarItemType.State

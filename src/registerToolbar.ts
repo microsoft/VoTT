@@ -10,7 +10,7 @@ import { ZoomOut } from "./react/components/toolbar/zoomOut";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
 
 export default function registerToolbar() {
-    ToolbarItemFactory.register("selectCanvas", Select, {
+    ToolbarItemFactory.register(Select, {
         name: "selectCanvas",
         tooltip: "Select",
         icon: "fa-mouse-pointer",
@@ -18,7 +18,7 @@ export default function registerToolbar() {
         type: ToolbarItemType.State,
     });
 
-    ToolbarItemFactory.register("panCanvas", Pan, {
+    ToolbarItemFactory.register(Pan, {
         name: "panCanvas",
         tooltip: "Pan",
         icon: "fa-arrows-alt",
@@ -26,7 +26,7 @@ export default function registerToolbar() {
         type: ToolbarItemType.State,
     });
 
-    ToolbarItemFactory.register("drawRectangle", DrawRectangle, {
+    ToolbarItemFactory.register(DrawRectangle, {
         name: "drawRectangle",
         tooltip: "Draw Rectangle",
         icon: "fa-vector-square",
@@ -34,7 +34,7 @@ export default function registerToolbar() {
         type: ToolbarItemType.State,
     });
 
-    ToolbarItemFactory.register("drawPolygon", DrawPolygon, {
+    ToolbarItemFactory.register(DrawPolygon, {
         name: "drawPolygon",
         tooltip: "Draw Polygon",
         icon: "fa-draw-polygon",
@@ -42,7 +42,7 @@ export default function registerToolbar() {
         type: ToolbarItemType.State,
     });
 
-    ToolbarItemFactory.register("zoomInCanvas", ZoomIn, {
+    ToolbarItemFactory.register(ZoomIn, {
         name: "zoomInCanvas",
         tooltip: "Zoom In",
         icon: "fa-search-plus",
@@ -50,7 +50,7 @@ export default function registerToolbar() {
         type: ToolbarItemType.Action,
     });
 
-    ToolbarItemFactory.register("zoomOutCanvas", ZoomOut, {
+    ToolbarItemFactory.register(ZoomOut, {
         name: "zoomOutCanvas",
         tooltip: "Zoom Out",
         icon: "fa-search-minus",
@@ -58,7 +58,7 @@ export default function registerToolbar() {
         type: ToolbarItemType.Action,
     });
 
-    ToolbarItemFactory.register("saveProject", SaveProject, {
+    ToolbarItemFactory.register(SaveProject, {
         name: "saveProject",
         tooltip: "Save Project",
         icon: "fa-save",
@@ -66,7 +66,7 @@ export default function registerToolbar() {
         type: ToolbarItemType.Action,
     });
 
-    ToolbarItemFactory.register("exportProject", ExportProject, {
+    ToolbarItemFactory.register(ExportProject, {
         name: "exportProject",
         tooltip: "Export Project",
         icon: "fa-external-link-square-alt",
