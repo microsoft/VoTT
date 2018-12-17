@@ -5,32 +5,32 @@ import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 
 /**
- * @name - TF Pascal Voc Records Export Asset State
+ * @name - TF Pascal VOC Records Export Asset State
  * @description - Defines the asset type export option
  * @member All - Specifies that all assets will be exported
  * @member Visited - Specifies that visited (including tagged) assets will be exported
  * @member Tagged - Specifies that only tagged assets will be exported
  */
-export enum TFPascalVocExportAssetState {
+export enum TFPascalVOCExportAssetState {
     All = "all",
     Visited = "visited",
     Tagged = "tagged",
 }
 
 /**
- * @name - ITFPascalVocJsonExportOptions
+ * @name - ITFPascalVOCJsonExportOptions
  * @description - Defines the configurable options for the Vott JSON Export provider
  */
-export interface ITFPascalVocJsonExportOptions {
-    assetState: TFPascalVocExportAssetState;
+export interface ITFPascalVOCJsonExportOptions {
+    assetState: TFPascalVOCExportAssetState;
 }
 
 /**
- * @name - TFPascalVoc Json Export Provider
+ * @name - TFPascalVOC Json Export Provider
  * @description - Exports a project into a single JSON file that include all configured assets
  */
-export class TFPascalVocJsonExportProvider extends ExportProvider<ITFPascalVocJsonExportOptions> {
-    constructor(project: IProject, options: ITFPascalVocJsonExportOptions) {
+export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJsonExportOptions> {
+    constructor(project: IProject, options: ITFPascalVOCJsonExportOptions) {
         super(project, options);
         Guard.null(options);
     }
@@ -41,13 +41,13 @@ export class TFPascalVocJsonExportProvider extends ExportProvider<ITFPascalVocJs
         let predicate: (asset: IAsset) => boolean = null;
 
         switch (this.options.assetState) {
-            case TFPascalVocExportAssetState.All:
+            case TFPascalVOCExportAssetState.All:
                 predicate = (asset) => true;
                 break;
-            case TFPascalVocExportAssetState.Visited:
+            case TFPascalVOCExportAssetState.Visited:
                 predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
                 break;
-            case TFPascalVocExportAssetState.Tagged:
+            case TFPascalVOCExportAssetState.Tagged:
                 predicate = (asset) => asset.state === AssetState.Tagged;
                 break;
         }
@@ -60,7 +60,7 @@ export class TFPascalVocJsonExportProvider extends ExportProvider<ITFPascalVocJs
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(results, (assetMetadata) => assetMetadata.asset.id);
 
-        const folderName = `${this.project.name.replace(" ", "-")}-TFPascalVoc-export`;
+        const folderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
         await this.storageProvider.createContainer(folderName);
 
         const fileName = `${folderName}/file.json`;
