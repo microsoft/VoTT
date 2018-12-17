@@ -21,7 +21,7 @@
     "redux-thunk": "^2.3.0",
     "rimraf": "^2.6.2",
     "shortid": "^2.2.14",
-    "vott-ct": "github:PIC123/CanvasTools-for-VOTT#no-bundle-w-types"
+    "vott-ct": "^2.0.15"
   },
   "scripts": {
     "start": "nf start -p 3000",
