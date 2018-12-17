@@ -15,8 +15,7 @@ export enum ToolbarItemType {
     State = 1,
 }
 
-export interface IToolbarItemProps extends IToolbarItemMetadata, React.Props<ToolbarItem> {
-    key: string;
+export interface IToolbarItemProps extends IToolbarItemMetadata {
     actions: IProjectActions;
     project: IProject;
     active: boolean;
