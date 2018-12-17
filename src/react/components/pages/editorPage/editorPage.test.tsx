@@ -7,13 +7,7 @@ import { Store, AnyAction } from "redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
 import { IApplicationState,
-         IProject,
-         IAsset,
-         ITag,
-         IConnection,
-         IExportFormat,
-         AssetState,
-         IAssetMetadata} from "../../../../models/applicationState";
+         IProject} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 // import IProjectActions from "../../../../redux/actions/projectActions";
 import AssetPreview from "./assetPreview";
