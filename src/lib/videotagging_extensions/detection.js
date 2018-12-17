@@ -10,7 +10,7 @@ function Detection(videotagging, visitedFrames) {
     var self = this;
 
     //maps every frame in the video to an imageCanvas until a specified point NOTE mapVideo clears the oncanplay eventListener
-    this.mapVideo = function (frameHandler, until) {
+    this.mapVideo = function (frameHandler, isLastFrame) {
         return new Promise((resolve, reject) => {
             //init canvas buffer
             var frameCanvas = document.createElement("canvas");
@@ -23,36 +23,16 @@ function Detection(videotagging, visitedFrames) {
             self.videotagging.video.currentTime = 0;
             self.videotagging.playingCallback();
 
-            //resolve export until
-            var isLastFrame;
-            if (until === "tagged") {
-                isLastFrame = function (frameId) {
-                    return (!Object.keys(self.videotagging.frames).length) || (frameId >= parseInt(Object.keys(self.videotagging.frames)[Object.keys(self.videotagging.frames).length - 1]));
-                }
-            }
-            else if (until === "visited") {
-                isLastFrame = function (frameId) {
-                    var lastVisitedFrameId = Math.max.apply(Math, Array.from(self.visitedFrames));
-                    return (frameId >= lastVisitedFrameId);
-                }
-            }
-            else { //last
-                isLastFrame = function (frameId) {
-                    return (self.videotagging.video.currentTime + 1 >= self.videotagging.video.duration);
-                }
-            }
-
             function iterateFrames() {
-                var frameId = self.videotagging.getCurrentFrameNumber();
-                var lastFrame = isLastFrame(frameId);
-
+                var frameNumber = self.videotagging.getCurrentFrameNumber();
+                var lastFrame = isLastFrame(frameNumber);
                 if (lastFrame) {
                     self.videotagging.video.oncanplay = null;
                     resolve();
                 }
 
-                var frameName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameId}.jpg`
-                frameHandler(frameName, frameId, frameCanvas, canvasContext, (err) => {
+                var frameName = `${path.basename(self.videotagging.src, path.extname(self.videotagging.src))}_frame_${frameNumber}.jpg`
+                frameHandler(frameName, frameNumber, frameCanvas, canvasContext, (err) => {
                     if (err) {
                         reject(err);
                     }
@@ -65,28 +45,32 @@ function Detection(videotagging, visitedFrames) {
     }
 
     //this maps dir of images for exporting
-    this.mapDir = function (frameHandler, dir) {
+    this.mapDir = function (frameHandler, dir, isLastFrame) {
         return new Promise((resolve, reject) => {
             imagesProcessed = 0;
             dir.forEach((imagePath, index) => {
-                var img = new Image();
-                img.src = imagePath;
-                img.onload = function () {
-                    var frameCanvas = document.createElement("canvas");
-                    frameCanvas.width = img.width;
-                    frameCanvas.height = img.height;
-                    // Copy the image contents to the canvas
-                    var canvasContext = frameCanvas.getContext("2d");
-                    canvasContext.drawImage(img, 0, 0);
-                    frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext, (err) => {
-                        if (err) {
-                            reject(err);
-                        }
-                        imagesProcessed += 1;
-                        if (imagesProcessed == dir.length) {
-                            resolve();
-                        }
-                    });
+                if(!isLastFrame(index)){
+                    var img = new Image();
+                    img.src = imagePath;
+                    img.onload = function () {
+                        var frameCanvas = document.createElement("canvas");
+                        frameCanvas.width = img.width;
+                        frameCanvas.height = img.height;
+                        // Copy the image contents to the canvas
+                        var canvasContext = frameCanvas.getContext("2d");
+                        canvasContext.drawImage(img, 0, 0);
+                        frameHandler(path.basename(imagePath), index, frameCanvas, canvasContext, (err) => {
+                            if (err) {
+                                reject(err);
+                            }
+                            imagesProcessed += 1;
+                            if (isLastFrame(imagesProcessed)) {
+                                resolve();
+                            }
+                        });
+                    }
+                } else {
+                    resolve();
                 }
             });
         });
@@ -104,14 +88,40 @@ function Detection(videotagging, visitedFrames) {
                 if (err) {
                     cb(err);
                 }
+                //resolve export until
+                var isLastFrame;
+                if (exportUntil === "tagged") {
+                    isLastFrame = function (frameId) {
+                        let taggedFrames = Object.keys(self.videotagging.frames)
+                            .filter(key => self.videotagging.frames[key].length)
+                            .reduce((res, key) => (res[key] = self.videotagging.frames[key], res), {}); // eslint-disable-line
+                        let condition = (self.videotagging.imagelist) ? self.videotagging.imagelist.indexOf(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1]) : parseInt(Object.keys(taggedFrames)[Object.keys(taggedFrames).length - 1])
+                        return (!Object.keys(taggedFrames).length) || (frameId >= condition)
+                    }
+                }
+                else if (exportUntil === "visited") {
+                    isLastFrame = function (frameId) {
+                        let lastVisitedFrameId = (self.videotagging.imagelist) ? self.videotagging.imagelist.indexOf(Array.from(self.visitedFrames)[Array.from(self.visitedFrames).length -1]) : Math.max.apply(Math, Array.from(visitedFrames));
+                        return (frameId >= lastVisitedFrameId);
+                    }
+                }
+                else { //last
+                    isLastFrame = function (frameId) {
+                        if(self.videotagging.imagelist){
+                            return (self.videotagging.imageIndex >= self.videotagging.imagelist.length);
+                        } else{
+                            return (self.videotagging.video.currentTime + 1 >= self.videotagging.video.duration);
+                        }
+                    }
+                }
                 if (dir) {
-                    this.mapDir(exportFrame.bind(err, exporter), dir).then(exportFinished, (err) => {
+                    this.mapDir(exportFrame.bind(err, exporter), dir, isLastFrame).then(exportFinished, (err) => {
                         console.info(`Error on ${method} init:`, err);
                         cb(err);
                     });
 
                 } else {
-                    this.mapVideo(exportFrame.bind(err, exporter), exportUntil).then(exportFinished, (err) => {
+                    this.mapVideo(exportFrame.bind(err, exporter), isLastFrame).then(exportFinished, (err) => {
                         console.info(`Error on ${method} init:`, err);
                         cb(err);
                     });
@@ -149,15 +159,13 @@ function Detection(videotagging, visitedFrames) {
                     //var stanH = (self.videotagging.imagelist) ? frameCanvas.height / region.height : self.videotagging.video.videoHeight / region.height;
                     var tag = {
                         class: region.tags[region.tags.length - 1],
-                        x1: parseInt(region.x1 * stanW),
-                        y1: parseInt(region.y1 * stanH),
-                        x2: parseInt(region.x2 * stanW),
-                        y2: parseInt(region.y2 * stanH)
+                        x1: region.box.x1,
+                        y1: region.box.y1,
+                        x2: region.box.x2,
+                        y2: region.box.y2,
+                        w: region.width,
+                        h: region.height
                     };
-                    if (self.videotagging.imagelist) {
-                        tag.w = parseInt(frameCanvas.width);
-                        tag.h = parseInt(frameCanvas.height);
-                    }
                     frameTags.push(tag);
 
                 });

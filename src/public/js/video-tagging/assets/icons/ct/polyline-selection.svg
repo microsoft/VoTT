@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" width="64" height="64">
+    <g >
+        <path d=" M 12 12 L 28 24 L 32 52 L 40 36 L 52 24" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
+        <circle class="accent-f" cx="52" cy="24" r="4" fill="white" stroke-width="1" stroke="rgb(0,0,0)" />
+        <circle class="accent-f" cx="12" cy="12" r="4" fill="white" stroke-width="1" stroke="rgb(0,0,0)" />
+        <circle class="accent-f" cx="28" cy="24" r="4" fill="white" stroke-width="1" stroke="rgb(0,0,0)" />
+        <circle class="accent-f" cx="32" cy="52" r="4" fill="white" stroke-width="1" stroke="rgb(0,0,0)" />
+        <circle class="accent-f" cx="40" cy="36" r="4" fill="white" stroke-width="1" stroke="rgb(0,0,0)" />
+    </g>
+</svg>

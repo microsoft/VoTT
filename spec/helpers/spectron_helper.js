@@ -1,3 +1,6 @@
+const tfrecord = require('tfrecord');
+const path = require('path');
+
 class SpectronHelper {
     initializeSpectron() {
         var Application = require('spectron').Application
@@ -50,6 +53,15 @@ class SpectronHelper {
 
             return currentWindow.webContents.send(eventName);
         }, eventName);
+    }
+
+    async readRecord(pathname, recordName) {
+        const reader = await tfrecord.createReader(pathname + path.sep + recordName);
+        let example;
+        while (example = await reader.readExample()) {
+            return example;
+        }
+        // The reader auto-closes after it reaches the end of the file.
     }
 
     isApplicationMenuItemEnabled(app, ...menuPath) {

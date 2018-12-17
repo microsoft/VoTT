@@ -6,6 +6,8 @@ const BrowserWindow = electron.BrowserWindow;
 const windowStateKeeper = require('electron-window-state');
 const path = require('path');
 const url = require('url');
+// To access the version defined in package.json
+require('pkginfo')(module, 'version');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -55,58 +57,78 @@ function createWindow () {
 
   // do this independently for each object
   ipcMain.on('show-popup', function(event, arg) { 
-      let popup = new BrowserWindow({
-        parent: mainWindow, 
-        modal: true, 
-        show: false, 
-        frame: false,
-        autoHideMenuBar : true
-      });
-      
-      switch (arg.type) {
-        case "export":
-            popup.setSize(359, 300);
+      if (arg.type === "help") {
+        let helpPopup = new BrowserWindow({
+          parent: mainWindow,
+          modal: false,
+          show: false,
+          frame: true,
+          autoHideMenuBar: true
+        });
+
+        helpPopup.setSize(500, 500);
+        helpPopup.loadURL(url.format({
+          pathname: path.join(__dirname, 'src/public/html/help-configuration.html'),
+          protocol: 'file:',
+          slashes: true
+        }));
+
+        helpPopup.once('ready-to-show', () => {
+          helpPopup.send('configs', arg);
+          helpPopup.show();
+        });
+
+
+      } else {
+        let popup = new BrowserWindow({
+          parent: mainWindow, 
+          modal: true, 
+          show: false, 
+          frame: false,
+          autoHideMenuBar : true
+        });
+
+        switch (arg.type) {
+          case "export":
+              popup.setSize(359, 300);
+              popup.loadURL(url.format({
+                pathname: path.join(__dirname, 'src/public/html/export-configuration.html'),
+                protocol: 'file:',
+                slashes: true
+              }));
+            break;
+  
+          case "review":
+            popup.setSize(359, 310);
             popup.loadURL(url.format({
-              pathname: path.join(__dirname, 'src/public/html/export-configuration.html'),
+              pathname: path.join(__dirname, 'src/public/html/review-configuration.html'),
               protocol: 'file:',
               slashes: true
             }));
-          break;
-
-        case "review":
-          popup.setSize(359, 310);
-          popup.loadURL(url.format({
-            pathname: path.join(__dirname, 'src/public/html/review-configuration.html'),
-            protocol: 'file:',
-            slashes: true
-          }));
-          break;
-
-        case "review-endpoint":
-          popup.setSize(359, 150);
-          popup.loadURL(url.format({
-            pathname: path.join(__dirname, 'src/public/html/review-endpoint-configuration.html'),
-            protocol: 'file:',
-            slashes: true
-          }));
-          break;
-
-        case "help":
-          popup.setSize(500, 500);
-          popup.loadURL(url.format({
-            pathname: path.join(__dirname, 'src/public/html/help-configuration.html'),
-            protocol: 'file:',
-            slashes: true
-          }));
-          break;
-
-        default: return; 
+            break;
+  
+          case "review-endpoint":
+            popup.setSize(359, 150);
+            popup.loadURL(url.format({
+              pathname: path.join(__dirname, 'src/public/html/review-endpoint-configuration.html'),
+              protocol: 'file:',
+              slashes: true
+            }));
+            break;
+  
+          default: return; 
+        }
+        
+        popup.once('ready-to-show', () => {
+          popup.send('configs', arg);
+          popup.show();
+        });
+  
       }
+
+    
       
-      popup.once('ready-to-show', () => {
-        popup.send('configs', arg);
-        popup.show();
-      });
+      
 
   });
 
@@ -114,9 +136,6 @@ function createWindow () {
     mainWindow.send('export-tags', arg);
   });
 
-  ipcMain.on('export-records', (event, arg) => {
-    mainWindow.send('export-records', arg);
-  });
 
   ipcMain.on('review-model', (event, arg) => {
     mainWindow.send('review-model', arg);
@@ -263,6 +282,9 @@ function createWindow () {
           label: 'Keyboard Shortcuts',
           accelerator: 'CmdOrCtrl+H',
           click () { mainWindow.webContents.send('help');}
+        },
+        {
+          label: 'Version: ' + module.exports.version
         }
       ]
     }	    
