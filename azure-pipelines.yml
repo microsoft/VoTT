@@ -11,4 +11,5 @@ jobs:
   steps:
   - checkout: self # self represents the repo where the initial Pipelines YAML file was found
     fetchDepth: 1  # the depth of commits to ask Git to fetch
+  - script: echo Hello World
   - template: build/azure-pipelines/linux/continuous-build-linux.yml
