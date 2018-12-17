@@ -1,19 +1,31 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+jobs:
+- job: Linux
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+  steps:
+  - checkout: self
+    fetchDepth: 1
 
-trigger:
-- master
+  - script: |
+      set -e 
+      sudo apt-get update
+      sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 libgconf-2-4 dbus xvfb libgtk-3-0
+      sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+      sudo chmod +x /etc/init.d/xvfb
+      sudo update-rc.d xvfb defaults
+      sudo service xvfb start
+    displayName: 'Install dependencies'
 
-pool:
-  vmImage: 'Ubuntu-16.04'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+    displayName: 'Install Node.js'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  - script: |
+      set -e
+      export DISPLAY=:99.0
+      npm install
+      npm run compile
+      CI=true npm test # don't watch and just run all the tests
+    displayName: 'Run tests'
