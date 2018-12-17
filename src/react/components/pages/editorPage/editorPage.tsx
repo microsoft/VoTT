@@ -10,11 +10,13 @@ import "./editorPage.scss";
 import AssetPreview from "./assetPreview";
 import EditorFooter from "./editorFooter";
 import EditorSideBar from "./editorSideBar";
+import { EditorToolbar } from "./editorToolbar";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 
 interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
     project: IProject;
     recentProjects: IProject[];
-    projectActions: IProjectActions;
+    actions: IProjectActions;
 }
 
 interface IEditorPageState {
@@ -32,13 +34,14 @@ function mapStateToProps(state: IApplicationState) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        projectActions: bindActionCreators(projectActions, dispatch),
+        actions: bindActionCreators(projectActions, dispatch),
     };
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     private loadingProjectAssets: boolean = false;
+    private toolbarItems: IToolbarItemRegistration[] = [];
 
     constructor(props, context) {
         super(props, context);
@@ -48,10 +51,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             assets: [],
         };
 
+        this.toolbarItems = ToolbarItemFactory.getToolbarItems();
+
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
             const project = this.props.recentProjects.find((project) => project.id === projectId);
-            this.props.projectActions.loadProject(project);
+            this.props.actions.loadProject(project);
         }
 
         this.selectAsset = this.selectAsset.bind(this);
@@ -89,7 +94,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
                 <div className="editor-page-content">
                     <div className="editor-page-content-header">
-                        Header
+                        <EditorToolbar project={this.props.project}
+                            items={this.toolbarItems}
+                            actions={this.props.actions} />
                     </div>
                     <div className="editor-page-content-body">
                         {selectedAsset &&
@@ -124,7 +131,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private async selectAsset(asset: IAsset) {
-        const assetMetadata = await this.props.projectActions.loadAssetMetadata(this.props.project, asset);
+        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
         if (assetMetadata.asset.state === AssetState.NotVisited) {
             assetMetadata.asset.state = AssetState.Visited;
         }
@@ -138,8 +145,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.error(err);
         }
 
-        await this.props.projectActions.saveAssetMetadata(this.props.project, assetMetadata);
-        await this.props.projectActions.saveProject(this.props.project);
+        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+        await this.props.actions.saveProject(this.props.project);
 
         this.setState({
             selectedAsset: assetMetadata,
@@ -154,7 +161,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.loadingProjectAssets = true;
 
-        await this.props.projectActions.loadAssets(this.props.project);
+        await this.props.actions.loadAssets(this.props.project);
         const assets = _.values(this.props.project.assets);
 
         this.setState({
