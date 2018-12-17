@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { ToolbarItemFactory, IToolbarItemRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
+import { IToolbarItemRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions from "../../../../redux/actions/projectActions";
 import { IProject } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
