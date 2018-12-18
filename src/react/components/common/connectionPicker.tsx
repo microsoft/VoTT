@@ -35,7 +35,7 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
 
     public render() {
         const { id, options } = this.props;
-        const connections = options.connections || [];
+        const connections = options && options.connections ? options.connections : [];
 
         const { value } = this.state;
 

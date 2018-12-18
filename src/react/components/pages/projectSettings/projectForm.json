@@ -5,13 +5,13 @@
             "title": "Name",
             "type": "string"
         },
-        "sourceConnectionId": {
+        "sourceConnection": {
             "title": "Source Connection",
-            "type": "string"
+            "type": "object"
         },
-        "targetConnectionId": {
+        "targetConnection": {
             "title": "Target Connection",
-            "type": "string"
+            "type": "object"
         },
         "description": {
             "title": "Description",
@@ -33,5 +33,9 @@
             }
         }
     },
-    "required": ["name", "sourceConnectionId", "targetConnectionId"]
+    "required": [
+        "name",
+        "sourceConnectionId",
+        "targetConnectionId"
+    ]
 }

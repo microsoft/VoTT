@@ -29,6 +29,10 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         tagsInput: TagsInput,
     };
 
+    private fields = {
+        connection: ConnectionPicker,
+    };
+
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -59,6 +63,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         return (
             <Form
                 widgets={this.widgets}
+                fields={this.fields}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 fields={fields}
@@ -77,12 +82,12 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     private createUiSchema(): any {
         const overrideUiSchema = {
-            sourceConnectionId: {
+            sourceConnection: {
                 "ui:options": {
                     connections: this.props.connections,
                 },
             },
-            targetConnectionId: {
+            targetConnection: {
                 "ui:options": {
                     connections: this.props.connections,
                 },
