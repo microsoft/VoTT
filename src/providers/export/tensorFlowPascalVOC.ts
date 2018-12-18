@@ -64,23 +64,10 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const exportFolderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
         await this.storageProvider.createContainer(exportFolderName);
 
-        // Create Annotations Sub Folder
-        const annotationsFolderName = `${exportFolderName}/Annotations`;
-        await this.storageProvider.createContainer(annotationsFolderName);
-
-        // Save Annotations
-
-        // Create ImageSets Sub Folder (Main ?)
-        const imageSetsFolderName = `${exportFolderName}/ImageSets`;
-        await this.storageProvider.createContainer(imageSetsFolderName);
-
-        // Save ImageSets (Main ?)
-
+        await this.exporAnnotations(exportFolderName, results);
+        await this.exportImageSets(exportFolderName, results);
         await this.exportImages(exportFolderName, results);
-
-        // Save pascal_label_map.pbtxt
-        const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
-        await this.storageProvider.writeText(pbtxtFileName, JSON.stringify(exportObject, null, 4));
+        await this.exportPBTXT(exportFolderName, results);
     }
 
     private async exportImages(exportFolderName: string, results: IAssetMetadata[]) {
@@ -119,5 +106,31 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
             //       the number of files succesfully exported out of total
             console.log(err);
         }
+    }
+
+    private async exporAnnotations(exportFolderName: string, results: IAssetMetadata[]) {
+        // Create Annotations Sub Folder
+        const annotationsFolderName = `${exportFolderName}/Annotations`;
+        await this.storageProvider.createContainer(annotationsFolderName);
+
+        // Save Annotations
+        // TODO
+    }
+
+    private async exportImageSets(exportFolderName: string, results: IAssetMetadata[]) {
+        // Create ImageSets Sub Folder (Main ?)
+        const imageSetsFolderName = `${exportFolderName}/ImageSets`;
+        await this.storageProvider.createContainer(imageSetsFolderName);
+
+        // Save ImageSets (Main ?)
+        // TODO
+    }
+
+    private async exportPBTXT(exportFolderName: string, results: IAssetMetadata[]) {
+        // Save pascal_label_map.pbtxt
+        const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
+
+        // TODO
+        await this.storageProvider.writeText(pbtxtFileName, JSON.stringify("TODO", null, 4));
     }
 }
