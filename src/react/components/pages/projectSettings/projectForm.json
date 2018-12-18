@@ -35,7 +35,7 @@
     },
     "required": [
         "name",
-        "sourceConnectionId",
-        "targetConnectionId"
+        "sourceConnection",
+        "targetConnection"
     ]
 }
