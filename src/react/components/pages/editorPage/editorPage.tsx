@@ -126,8 +126,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private async onAssetMetadataChanged(assetMetadata: IAssetMetadata){
-        await this.props.projectActions.saveAssetMetadata(this.props.project, assetMetadata);
-        await this.props.projectActions.saveProject(this.props.project);
+        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+        await this.props.actions.saveProject(this.props.project);
     }
 
     private onFooterChange(footerState) {
