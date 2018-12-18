@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { ExportProvider } from "./exportProvider";
-import { IProject, AssetState, AssetType, IAsset } from "../../models/applicationState";
+import { IProject, AssetState, AssetType, IAsset, IAssetMetadata } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 
@@ -76,6 +76,14 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
 
         // Save ImageSets (Main ?)
 
+        await this.exportImages(exportFolderName, results);
+
+        // Save pascal_label_map.pbtxt
+        const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
+        await this.storageProvider.writeText(pbtxtFileName, JSON.stringify(exportObject, null, 4));
+    }
+
+    private async exportImages(exportFolderName: string, results: IAssetMetadata[]) {
         // Create JPEGImages Sub Folder
         const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
         await this.storageProvider.createContainer(jpegImagesFolderName);
@@ -111,9 +119,5 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
             //       the number of files succesfully exported out of total
             console.log(err);
         }
-
-        // Save pascal_label_map.pbtxt
-        const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
-        await this.storageProvider.writeText(pbtxtFileName, JSON.stringify(exportObject, null, 4));
     }
 }
