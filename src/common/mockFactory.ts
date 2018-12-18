@@ -84,7 +84,7 @@ export default class MockFactory {
         return tags;
     }
 
-    public static createTestTag(name: string): ITag {
+    public static createTestTag(name: string= "Test Tag"): ITag {
         return {
             name: `Tag ${name}`,
             color: MockFactory.randomColor(),

@@ -18,26 +18,24 @@ const customStyles = {
     },
   };
 
-interface ITagEditorModalProps {
+export interface ITagEditorModalProps {
     tag: ITag;
     showModal: boolean;
-    onOk: (value) => void;
+    onOk: (tag: ITag) => void;
     onCancel: (value) => void;
 }
 
-interface ITagEditorModalState {
+export interface ITagEditorModalState {
     tag: ITag;
-    formData: any;
     isOpen: boolean;
 }
 
-export class TagEditorModal extends React.Component<ITagEditorModalProps, ITagEditorModalState> {
+export default class TagEditorModal extends React.Component<ITagEditorModalProps, ITagEditorModalState> {
 
     constructor(props: ITagEditorModalProps) {
         super(props);
         this.state = {
             tag: props.tag,
-            formData: {},
             isOpen: false,
         };
         this.handleFormChange = this.handleFormChange.bind(this);
@@ -52,12 +50,9 @@ export class TagEditorModal extends React.Component<ITagEditorModalProps, ITagEd
         }
     }
 
-    public handleFormChange(results) {
+    public handleFormChange(args) {
         this.setState({
-            tag: {
-                name: results.formData.name,
-                color: results.formData.color,
-            },
+            tag: args.formData,
         });
     }
 
@@ -71,16 +66,11 @@ export class TagEditorModal extends React.Component<ITagEditorModalProps, ITagEd
                 <ReactModal
                     isOpen={this.props.showModal}
                     ariaHideApp={false}
-                    style={customStyles}
-                    >
-
+                    style={customStyles}>
                     <Form
                         schema={formSchema}
                         onChange={this.handleFormChange}
-                        formData={{
-                            name: (this.state.tag) ? this.state.tag.name : null,
-                            color: (this.state.tag) ? this.state.tag.color : null,
-                        }}>
+                        formData={this.state.tag}>
                         <button type="button" onClick={this.props.onCancel}>Close</button>
                         <button type="button" onClick={this.handleOk}>OK</button>
                     </Form>

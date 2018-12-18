@@ -3,7 +3,7 @@ import "./tagsInput.scss";
 import "../common.scss";
 import { WithContext as ReactTags } from "react-tag-input";
 import { randomIntInRange } from "../../../../common/utils";
-import { TagEditorModal } from "./tagEditorModal/tagEditorModal";
+import TagEditorModal from "./tagEditorModal/tagEditorModal";
 import deepmerge from "deepmerge";
 import { ITag } from "../../../../models/applicationState";
 // tslint:disable-next-line:no-var-requires
