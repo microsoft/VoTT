@@ -11,7 +11,7 @@ import AssetPreview from "./assetPreview";
 import EditorFooter from "./editorFooter";
 import EditorSideBar from "./editorSideBar";
 
-export interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
+export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
     recentProjects: IProject[];
     actions: IProjectActions;
