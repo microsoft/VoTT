@@ -163,7 +163,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     private getReactTags(props): IReactTag[] {
-        const iTags = props.tags;
+        const iTags = (props.tags) ? props.tags : props.formData; // Form component populates props.formData with tags
         return (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [];
     }
 

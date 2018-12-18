@@ -17,10 +17,11 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
 
 export interface IProjectFormState {
     formData: any;
-    tags: ITag[];
     formSchema: any;
     uiSchema: any;
 }
+
+const fields = {tagsInput: TagsInput};
 
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
     private widgets = {
@@ -34,13 +35,10 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             uiSchema: this.createUiSchema(),
             formSchema: { ...formSchema },
             formData: {
-                ...this.props.project
+                ...this.props.project,
             },
-            tags: (this.props.project) ? this.props.project.tags : null
         };
         this.onFormSubmit = this.onFormSubmit.bind(this);
-        // this.onFormChange = this.onFormChange.bind(this);
-        this.onTagsChange = this.onTagsChange.bind(this);
     }
 
     public componentDidUpdate(prevProps) {
@@ -63,30 +61,17 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 widgets={this.widgets}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
+                fields={fields}
                 formData={this.state.formData}
-                // noValidate={true}
-                // onChange={this.onFormChange}
                 onSubmit={this.onFormSubmit}>
             </Form>
         );
     }
 
-    private onTagsChange(tags) {
-        this.setState({tags});
-    }
-
-    // private onFormChange(args) {
-    //     if(args.formData !== this.state.formData){
-    //         this.setState({formData: args.formData});
-    //     }
-    // }
-
     private onFormSubmit(args) {
-        debugger;
         const project: IProject = {
             ...args.formData,
-            tags: this.state.tags
-        }
+        };
         this.props.onSubmit(project);
     }
 
@@ -102,17 +87,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     connections: this.props.connections,
                 },
             },
-            tags: {
-                "ui:field": (props) => {
-                    return (
-                        <TagsInput
-                            tags={this.state.tags}
-                            onChange={this.onTagsChange} />
-                    );
-                },
-            },
         };
-
         return deepmerge(uiSchema, overrideUiSchema);
     }
 }
