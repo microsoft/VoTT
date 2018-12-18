@@ -12,6 +12,7 @@ import CondensedList from "../../common/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import MockFactory from "../../../../common/mockFactory";
+import { IApplicationState } from "../../../../models/applicationState";
 
 describe("Connections Page", () => {
 
@@ -141,9 +142,13 @@ describe("Connections Page", () => {
 
         it("renders connections in the list correctly", () => {
             const props = createProps(connectionCreateRoute);
-            props.connections = MockFactory.createTestConnections(8);
 
-            const wrapper = createComponent(connectionsRoute, createStore(), props);
+            let state = initialState;
+            state.connections = MockFactory.createTestConnections(8);
+
+            const store = createStore(state);
+
+            const wrapper = createComponent(connectionsRoute, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
             const items = connectionsPage.find(ConnectionItem);
 
@@ -210,6 +215,6 @@ function createProps(route: string): IConnectionPageProps {
     };
 }
 
-function createStore(): Store<any, AnyAction> {
-    return createReduxStore(initialState);
+function createStore(overrideStore?: IApplicationState): Store<any, AnyAction> {
+    return createReduxStore(overrideStore ? overrideStore : initialState);
 }
