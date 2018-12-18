@@ -83,15 +83,21 @@ export class TagEditorModal extends React.Component<ITagEditorModalProps, ITagEd
         }
     }
 
-    private handleFormChange(results) {
+    /**
+     * Called when change made to modal form
+     */
+    private handleFormChange(args) {
         this.setState({
             tag: {
-                name: results.formData.name,
-                color: results.formData.color,
+                name: args.formData.name,
+                color: args.formData.color,
             },
         });
     }
 
+    /**
+     * Called when 'Ok' is clicked
+     */
     private handleOk() {
         this.props.onOk(this.state.tag);
     }
