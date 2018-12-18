@@ -19,7 +19,7 @@ describe("Project Redux Actions", () => {
         const middleware = [thunk];
         store = createMockStore(middleware)();
     });
-    it("Load Project action resolves a promise", async () => {
+    it("Load Project action resolves a promise and dispatches redux action", async () => {
         const project = MockFactory.createTestProject("Project1");
         const result = await projectActions.loadProject(project)(store.dispatch);
         const actions = store.getActions();
@@ -32,7 +32,7 @@ describe("Project Redux Actions", () => {
         expect(result).toEqual(project);
     });
 
-    it("Save Project actdion resolves a promise", async () => {
+    it("Save Project action calls project service and dispatches redux action", async () => {
         const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 
@@ -49,7 +49,7 @@ describe("Project Redux Actions", () => {
         expect(projectServiceMock.prototype.save).toBeCalledWith(project);
     });
 
-    it("Delete Project resolves an empty promise", async () => {
+    it("Delete Project action calls project service and dispatches redux action", async () => {
         const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
 
@@ -65,7 +65,7 @@ describe("Project Redux Actions", () => {
         expect(projectServiceMock.prototype.delete).toBeCalledWith(project);
     });
 
-    it("Close project dispatches close project action", () => {
+    it("Close project dispatches redux action", () => {
         projectActions.closeProject()(store.dispatch);
         const actions = store.getActions();
 

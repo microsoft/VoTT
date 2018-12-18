@@ -11,7 +11,7 @@ describe("Conneciton Redux Actions", () => {
         const middleware = [thunk];
         store = createMockStore(middleware)();
     });
-    it("Load Connection action resolves a promise", async () => {
+    it("Load Connection action resolves a promise and dispatches redux action", async () => {
         const connection = MockFactory.createTestConnection("Connection1");
         const result = await connectionActions.loadConnection(connection)(store.dispatch);
         const actions = store.getActions();
@@ -24,7 +24,7 @@ describe("Conneciton Redux Actions", () => {
         expect(result).toEqual(connection);
     });
 
-    it("Save Connection actdion resolves a promise", async () => {
+    it("Save Connection action resolves a promise and dispatches redux action", async () => {
         const connection = MockFactory.createTestConnection("Connection1");
         const result = await connectionActions.saveConnection(connection)(store.dispatch);
         const actions = store.getActions();
@@ -37,7 +37,7 @@ describe("Conneciton Redux Actions", () => {
         expect(result).toEqual(connection);
     });
 
-    it("Delete connection resolves an empty promise", async () => {
+    it("Delete connection action resolves an empty promise and dispatches redux action", async () => {
         const connection = MockFactory.createTestConnection("Connection1");
         await connectionActions.deleteConnection(connection)(store.dispatch);
         const actions = store.getActions();

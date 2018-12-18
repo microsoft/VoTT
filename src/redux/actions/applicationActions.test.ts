@@ -13,7 +13,7 @@ describe("Application Redux Actions", () => {
         store = createMockStore(middleware)();
     });
 
-    it("Toggle Dev Tools action forwards call to IpcRenderer proxy", async () => {
+    it("Toggle Dev Tools action forwards call to IpcRenderer proxy and dispatches redux action", async () => {
         const payload = true;
         await applicationActions.toggleDevTools(payload)(store.dispatch);
         const actions = store.getActions();
@@ -27,7 +27,7 @@ describe("Application Redux Actions", () => {
         expect(IpcRendererProxy.send).toBeCalledWith("TOGGLE_DEV_TOOLS", payload);
     });
 
-    it("Reload application action forwards call to IpcRenderer proxy", async () => {
+    it("Reload application action forwards call to IpcRenderer proxy and dispatches redux action", async () => {
         await applicationActions.reloadApplication()(store.dispatch);
         const actions = store.getActions();
 
