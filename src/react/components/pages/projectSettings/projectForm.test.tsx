@@ -60,8 +60,7 @@ describe("Project Form Component", () => {
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
                 ...project,
-                tags: JSON.stringify(project.tags),
-                name: newName,
+\                name: newName,
             });
         });
 
@@ -81,7 +80,6 @@ describe("Project Form Component", () => {
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
                 ...project,
-                tags: JSON.stringify(project.tags),
                 description: newDescription,
             });
         });
@@ -103,7 +101,6 @@ describe("Project Form Component", () => {
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
                 ...project,
-                tags: JSON.stringify(project.tags),
                 sourceConnectionId: newConnectionId,
             });
 
@@ -125,7 +122,6 @@ describe("Project Form Component", () => {
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
                 ...project,
-                tags: JSON.stringify(project.tags),
                 targetConnectionId: newConnectionId,
             });
         });
@@ -140,7 +136,6 @@ describe("Project Form Component", () => {
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
                 ...project,
-                tags: JSON.stringify(project.tags),
             });
         });
     });
