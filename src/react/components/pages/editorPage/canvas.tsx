@@ -3,6 +3,7 @@ import { IAssetMetadata, IRegion, RegionType, AssetState } from "../../../../mod
 // const ct = require('vott-ct').CanvasTools
 // import * as CanvasTools from "vott-ct"
 import {CanvasTools} from "vott-ct"
+import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -14,7 +15,7 @@ interface ICanvasState {
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
-    private editor;
+    private editor: Editor;
     constructor(props, context) {
         super(props, context);
 
@@ -24,15 +25,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     } 
 
     public componentDidMount(){
-        var ct = CanvasTools;
-        var sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
-        var tz = document.getElementById("toolbarzone")as unknown as HTMLDivElement;
+        const ct = CanvasTools;
+        const sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
+        const tz = document.getElementById("toolbarzone")as unknown as HTMLDivElement;
 
         // @ts-ignore
         this.editor = new ct.Editor(sz);
         this.editor.addToolbar(tz, ct.Editor.FullToolbarSet, "../../../images/icons/");
 
-        var incrementalRegionID = 100;
+        let incrementalRegionID = 100;
 
         let primaryTag = new ct.Core.Tag(
             (Math.random() > 0.5) ? "Awesome" : "Brilliante",
@@ -60,9 +61,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
             if (commit.meta !== undefined && commit.meta.point !== undefined) {
                 let point = commit.meta.point;
-                this.editor.RM.addPointRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(point.x, point.y), tags);
+                this.addPointRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(point.x, point.y), tags);
             } else {
-                this.editor.RM.addRectRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(r.x1, r.y1), new ct.Core.Point2D(r.x2, r.y2), tags);
+                this.addRectRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(r.x1, r.y1), new ct.Core.Point2D(r.x2, r.y2), tags);
             }
 
             let newRegion = {
@@ -90,13 +91,24 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             }
         }
 
+        this.editor.onRegionDelete = (id) => {
+            this.deleteRegionById(id)
+            let currentAssetMetadata = this.props.selectedAsset;
+            let deletedRegionIndex = this.props.selectedAsset.regions.findIndex(region => {return region.id == id})
+            currentAssetMetadata.regions.splice(deletedRegionIndex,1);
+            if(!currentAssetMetadata.regions.length){
+                currentAssetMetadata.asset.state = AssetState.Visited;
+            }
+            this.props.onAssetMetadataChanged(currentAssetMetadata);
+        };
+
         // Upload background image for selection
-        this.updateEditor(this.editor);
+        this.updateEditor();
     }
 
     public componentDidUpdate(prevProps){
         if(this.props.selectedAsset.asset.path !== prevProps.selectedAsset.asset.path){
-            this.updateEditor(this.editor);
+            this.updateEditor();
         }
     }
 
@@ -115,20 +127,38 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         );
     }
 
-    private updateEditor = (editor) => {
-        debugger;
-        editor.RM.deleteAllRegions();
+    private updateEditor = () => {
+        this.deleteAllRegions();
         let image = new Image();
         image.addEventListener("load", (e) => {
             console.log("loading")
             //@ts-ignore
-            editor.addContentSource(e.target);
+            this.editor.addContentSource(e.target);
         });
         image.src = this.props.selectedAsset.asset.path; 
         if(this.props.selectedAsset.regions.length){
             this.props.selectedAsset.regions.forEach(region => {
-                this.editor.RM.addRectRegion(region.id, region.points[0], region.points[1], region.tags);
+                //@ts-ignore
+                this.addRectRegion(region.id, region.points[0], region.points[1], region.tags);
             });
         }
     }
+
+    //Region Manager Methods
+    public addPointRegion = this.editor.RM.addPointRegion;
+    public addPolylineRegion = this.editor.RM.addPolylineRegion;
+    public addRectRegion = this.editor.RM.addRectRegion;
+    public deleteAllRegions = this.editor.RM.deleteAllRegions;
+    public deleteRegionById = this.editor.RM.deleteRegionById;
+    public drawRegion = this.editor.RM.drawRegion;
+    public freeze = this.editor.RM.freeze;
+    public getSelectedRegionsBounds = this.editor.RM.getSelectedRegionsBounds;
+    public redrawAllRegions = this.editor.RM.redrawAllRegions;
+    public resize = this.editor.RM.resize;
+    public selectRegionById = this.editor.RM.selectRegionById;
+    public toggleFreezeMode = this.editor.RM.toggleFreezeMode;
+    public unfreeze = this.editor.RM.unfreeze;
+    public updateTagsById = this.editor.RM.updateTagsById;
+    public updateTagsForSelectedRegions = this.editor.RM.updateTagsForSelectedRegions;
+
 }
