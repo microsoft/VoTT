@@ -14,6 +14,7 @@ import {
     IProject,
     ITag,
 } from "../models/applicationState";
+import { VottExportAssetState } from "../providers/export/vottJson";
 
 export default class MockFactory {
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
@@ -40,6 +41,14 @@ export default class MockFactory {
         return assets;
     }
 
+    public static createTestAssetMetadata(asset: IAsset): IAssetMetadata {
+        return {
+            asset,
+            regions: [],
+            timestamp: null,
+        };
+    }
+
     public static createTestProjects(count: number = 10): IProject[] {
         const projects: IProject[] = [];
         for (let i = 1; i <= count; i++) {
@@ -56,7 +65,7 @@ export default class MockFactory {
             id: `project-${name}`,
             name: `Project ${name}`,
             assets: {},
-            exportFormat: null,
+            exportFormat: MockFactory.exportFormat(),
             sourceConnection: connection,
             sourceConnectionId: connection.id,
             targetConnection: connection,
@@ -103,8 +112,10 @@ export default class MockFactory {
 
     public static exportFormat(): IExportFormat {
         return {
-            providerType: "Fake",
-            providerOptions: {},
+            providerType: "vottJson",
+            providerOptions: {
+                assetState: VottExportAssetState.Tagged,
+            },
         };
     }
 

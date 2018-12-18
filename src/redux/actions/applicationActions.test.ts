@@ -1,38 +1,40 @@
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
-import { toggleDevToolsAction, refreshApplicationAction } from "./applicationActions";
-import { IpcRendererProxy } from "../../common/ipcRendererProxy";
+import thunk from "redux-thunk";
+import * as applicationActions from "./applicationActions";
 import { ActionTypes } from "./actionTypes";
+import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 
-describe("Application Actions", () => {
+describe("Application Redux Actions", () => {
     let store: MockStoreEnhanced;
 
     beforeEach(() => {
         IpcRendererProxy.send = jest.fn(() => Promise.resolve());
-        store = createMockStore()();
+        const middleware = [thunk];
+        store = createMockStore(middleware)();
     });
 
-    it("Toggle Dev Tools action forwards call to IpcRenderer proxy", () => {
-        const action = toggleDevToolsAction(true);
-        expect(action.type).toEqual(ActionTypes.TOGGLE_DEV_TOOLS_SUCCESS);
-
-        store.dispatch(action);
+    it("Toggle Dev Tools action forwards call to IpcRenderer proxy", async () => {
+        const payload = true;
+        await applicationActions.toggleDevTools(payload)(store.dispatch);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
-        expect(actions[0]).toEqual(action);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.TOGGLE_DEV_TOOLS_SUCCESS,
+            payload,
+        });
 
-        expect(IpcRendererProxy.send).toBeCalledWith("TOGGLE_DEV_TOOLS", action.payload);
+        expect(IpcRendererProxy.send).toBeCalledWith("TOGGLE_DEV_TOOLS", payload);
     });
 
-    it("Reload application action forwards call to IpcRenderer proxy", () => {
-        const action = refreshApplicationAction();
-        expect(action.type).toEqual(ActionTypes.REFRESH_APP_SUCCESS);
-
-        store.dispatch(action);
+    it("Reload application action forwards call to IpcRenderer proxy", async () => {
+        await applicationActions.reloadApplication()(store.dispatch);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
-        expect(action[0]).toEqual(action);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.REFRESH_APP_SUCCESS,
+        });
 
         expect(IpcRendererProxy.send).toBeCalledWith("RELOAD_APP");
     });

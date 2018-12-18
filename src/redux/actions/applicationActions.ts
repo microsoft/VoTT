@@ -8,18 +8,18 @@ export default interface IApplicationActions {
     reloadApplication(): void;
 }
 
-export function toggleDevTools(show: boolean) {
+export function toggleDevTools(show: boolean): (dipatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
-        IpcRendererProxy.send("TOGGLE_DEV_TOOLS", show)
+        return IpcRendererProxy.send("TOGGLE_DEV_TOOLS", show)
             .then(() => {
                 dispatch(toggleDevToolsAction(show));
             });
     };
 }
 
-export function reloadApplication() {
+export function reloadApplication(): (dipatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
-        IpcRendererProxy.send("RELOAD_APP")
+        return IpcRendererProxy.send("RELOAD_APP")
             .then(() => {
                 dispatch(refreshApplicationAction());
             });
