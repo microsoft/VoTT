@@ -1,26 +1,41 @@
+import deepmerge from "deepmerge";
 import React from "react";
 import Form from "react-jsonschema-form";
-import deepmerge from "deepmerge";
-import TagsInput from "../../common/tagsInput/tagsInput";
+import { IConnection, IProject } from "../../../../models/applicationState.js";
 import ConnectionPicker from "../../common/connectionPicker";
-import { IProject, IConnection } from "../../../../models/applicationState.js";
+import TagsInput from "../../common/tagsInput/tagsInput";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
 const uiSchema = require("./projectForm.ui.json");
 
+/**
+ * Required properties for Project Settings form
+ * project: IProject - project to fill form
+ * connections: IConnection[] - array of connections to use in project
+ * onSubmit: function to call on form submit
+ */
 export interface IProjectFormProps extends React.Props<ProjectForm> {
     project: IProject;
     connections: IConnection[];
     onSubmit: (project: IProject) => void;
 }
 
+/**
+ * Project Form State
+ * formData - data containing details of project
+ * formSchema - json schema of form
+ * uiSchema - json UI schema of form
+ */
 export interface IProjectFormState {
     formData: any;
     formSchema: any;
     uiSchema: any;
 }
 
+/**
+ * Form for editing or creating VoTT projects
+ */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
     private widgets = {
         connectionPicker: ConnectionPicker,
@@ -29,19 +44,19 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     constructor(props, context) {
         super(props, context);
-        const normalizedTags = this.normalizeTags(this.props.project);
         this.state = {
             uiSchema: this.createUiSchema(),
             formSchema: { ...formSchema },
             formData: {
                 ...this.props.project,
-                tags: normalizedTags,
             },
         };
         this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onTagsChange = this.onTagsChange.bind(this);
     }
-
+    /**
+     * Updates state if project from properties has changed
+     * @param prevProps - previously set properties
+     */
     public componentDidUpdate(prevProps) {
         if (prevProps.project !== this.props.project) {
             this.setState({
@@ -62,25 +77,26 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 widgets={this.widgets}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
+                fields={{tagsInput: TagsInput}}
                 formData={this.state.formData}
                 onSubmit={this.onFormSubmit}>
             </Form>
         );
     }
 
-    private onTagsChange(tagsJson) {
-        this.setState({
-            formData: {
-                ...this.state.formData,
-                tags: tagsJson,
-            },
-        });
+    /**
+     * Called when form is submitted
+     */
+    private onFormSubmit(args: IProjectFormState) {
+        const project: IProject = {
+            ...args.formData,
+        };
+        this.props.onSubmit(project);
     }
 
-    private onFormSubmit(args) {
-        this.props.onSubmit(args.formData);
-    }
-
+    /**
+     * Dynamically create UI schema by loading available connections
+     */
     private createUiSchema(): any {
         const overrideUiSchema = {
             sourceConnectionId: {
@@ -93,24 +109,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     connections: this.props.connections,
                 },
             },
-            tags: {
-                "ui:widget": (props) => {
-                    return (
-                        <TagsInput
-                            tags={this.state.formData.tags}
-                            onChange={this.onTagsChange} />
-                    );
-                },
-            },
         };
-
         return deepmerge(uiSchema, overrideUiSchema);
-    }
-
-    private normalizeTags(project: IProject) {
-        if (project && project.tags) {
-            return JSON.stringify(project.tags);
-        }
-        return undefined;
     }
 }

@@ -9,21 +9,21 @@ export default interface IConnectionActions {
     deleteConnection(connection: IConnection): Promise<void>;
 }
 
-export function loadConnection(connection: IConnection) {
+export function loadConnection(connection: IConnection): (dispatch: Dispatch) => Promise<IConnection> {
     return (dispatch: Dispatch) => {
-        dispatch(loadConnectionaction(connection));
+        dispatch(loadConnectionAction(connection));
         return Promise.resolve(connection);
     };
 }
 
-export function saveConnection(connection: IConnection) {
+export function saveConnection(connection: IConnection): (dispatch: Dispatch) => Promise<IConnection> {
     return (dispatch: Dispatch) => {
         dispatch(saveConnectionAction(connection));
         return Promise.resolve(connection);
     };
 }
 
-export function deleteConnection(connection: IConnection) {
+export function deleteConnection(connection: IConnection): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
         dispatch(deleteConnectionAction(connection));
         return Promise.resolve();
@@ -42,7 +42,7 @@ export interface IDeleteConnectionAction extends IPayloadAction<string, IConnect
     type: ActionTypes.DELETE_CONNECTION_SUCCESS;
 }
 
-export const loadConnectionaction = createPayloadAction<ILoadConnectionAction>(ActionTypes.LOAD_CONNECTION_SUCCESS);
+export const loadConnectionAction = createPayloadAction<ILoadConnectionAction>(ActionTypes.LOAD_CONNECTION_SUCCESS);
 export const saveConnectionAction = createPayloadAction<ISaveConnectionAction>(ActionTypes.SAVE_CONNECTION_SUCCESS);
 export const deleteConnectionAction =
     createPayloadAction<IDeleteConnectionAction>(ActionTypes.DELETE_CONNECTION_SUCCESS);

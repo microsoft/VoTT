@@ -9,6 +9,6 @@
         "ui:widget": "connectionPicker"
     },
     "tags": {
-        "ui:widget": "tagsInput"
+        "ui:field": "tagsInput"
     }
 }

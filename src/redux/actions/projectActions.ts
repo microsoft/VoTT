@@ -17,14 +17,14 @@ export default interface IProjectActions {
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
 }
 
-export function loadProject(project: IProject) {
+export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<IProject> {
     return (dispatch: Dispatch) => {
         dispatch(loadProjectAction(project));
         return Promise.resolve(project);
     };
 }
 
-export function saveProject(project: IProject) {
+export function saveProject(project: IProject): (dispatch: Dispatch) => Promise<IProject> {
     return async (dispatch: Dispatch) => {
         const projectService = new ProjectService();
         project = await projectService.save(project);
@@ -33,7 +33,7 @@ export function saveProject(project: IProject) {
     };
 }
 
-export function deleteProject(project: IProject) {
+export function deleteProject(project: IProject): (dispatch: Dispatch) => Promise<void> {
     return async (dispatch: Dispatch) => {
         const projectService = new ProjectService();
         await projectService.delete(project);
@@ -41,13 +41,13 @@ export function deleteProject(project: IProject) {
     };
 }
 
-export function closeProject() {
+export function closeProject(): (dispatch: Dispatch) => void {
     return (dispatch: Dispatch) => {
         dispatch({ type: ActionTypes.CLOSE_PROJECT_SUCCESS });
     };
 }
 
-export function loadAssets(project: IProject) {
+export function loadAssets(project: IProject): (dispatch: Dispatch) => Promise<IAsset[]> {
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const assets = await assetService.getAssets();
@@ -57,7 +57,7 @@ export function loadAssets(project: IProject) {
     };
 }
 
-export function loadAssetMetadata(project: IProject, asset: IAsset) {
+export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: Dispatch) => Promise<IAssetMetadata> {
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const assetMetadata = await assetService.getAssetMetadata(asset);
@@ -67,7 +67,9 @@ export function loadAssetMetadata(project: IProject, asset: IAsset) {
     };
 }
 
-export function saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata) {
+export function saveAssetMetadata(
+    project: IProject,
+    assetMetadata: IAssetMetadata): (dispatch: Dispatch) => Promise<IAssetMetadata> {
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const savedMetadata = await assetService.save(assetMetadata);
@@ -77,7 +79,7 @@ export function saveAssetMetadata(project: IProject, assetMetadata: IAssetMetada
     };
 }
 
-export function exportProject(project: IProject) {
+export function exportProject(project: IProject): (dispatch: Dispatch) => Promise<void> {
     return async (dispatch: Dispatch) => {
         if (project.exportFormat && project.exportFormat.providerType) {
             const exportProvider = ExportProviderFactory.create(

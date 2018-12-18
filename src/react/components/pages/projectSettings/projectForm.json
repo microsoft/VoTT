@@ -19,7 +19,18 @@
         },
         "tags": {
             "title": "Tags",
-            "type": "string"
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "color": {
+                        "type": "string"
+                    }
+                }
+            }
         }
     },
     "required": ["name", "sourceConnectionId", "targetConnectionId"]
