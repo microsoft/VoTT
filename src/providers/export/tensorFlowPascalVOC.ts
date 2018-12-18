@@ -82,8 +82,19 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
 
         await results.forEach(async (element) => {
             const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
+
             // Get image
-            await this.storageProvider.writeText(imageFileName, JSON.stringify(exportObject, null, 4));
+            fetch(element.asset.path)
+            .then(async (response) => {
+                // Get buffer
+                const buffer = new Buffer(await response.arrayBuffer());
+
+                // Write Binary
+                await this.storageProvider.writeBinary(imageFileName, buffer);
+            })
+            .catch(() => {
+                console.log(`Error downloading ${imageFileName}`);
+            });
         });
 
         // Save pascal_label_map.pbtxt
