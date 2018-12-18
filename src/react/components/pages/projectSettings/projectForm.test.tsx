@@ -60,7 +60,7 @@ describe("Project Form Component", () => {
             form.simulate("submit");
             expect(onSubmit).toBeCalledWith({
                 ...project,
-\                name: newName,
+                name: newName,
             });
         });
 

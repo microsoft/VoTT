@@ -1,9 +1,9 @@
+import deepmerge from "deepmerge";
 import React from "react";
 import Form from "react-jsonschema-form";
-import deepmerge from "deepmerge";
-import TagsInput from "../../common/tagsInput/tagsInput";
+import { IConnection, IProject, ITag } from "../../../../models/applicationState.js";
 import ConnectionPicker from "../../common/connectionPicker";
-import { IProject, IConnection, ITag } from "../../../../models/applicationState.js";
+import TagsInput from "../../common/tagsInput/tagsInput";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
@@ -39,6 +39,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             tags: (this.props.project) ? this.props.project.tags : null
         };
         this.onFormSubmit = this.onFormSubmit.bind(this);
+        // this.onFormChange = this.onFormChange.bind(this);
         this.onTagsChange = this.onTagsChange.bind(this);
     }
 
@@ -63,18 +64,25 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
-                noValidate={true}
+                // noValidate={true}
+                // onChange={this.onFormChange}
                 onSubmit={this.onFormSubmit}>
             </Form>
         );
     }
 
     private onTagsChange(tags) {
-        debugger;
         this.setState({tags});
     }
 
+    // private onFormChange(args) {
+    //     if(args.formData !== this.state.formData){
+    //         this.setState({formData: args.formData});
+    //     }
+    // }
+
     private onFormSubmit(args) {
+        debugger;
         const project: IProject = {
             ...args.formData,
             tags: this.state.tags
@@ -95,7 +103,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 },
             },
             tags: {
-                "ui:widget": (props) => {
+                "ui:field": (props) => {
                     return (
                         <TagsInput
                             tags={this.state.tags}
