@@ -13,7 +13,7 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 
-interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
+export interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
     project: IProject;
     recentProjects: IProject[];
     actions: IProjectActions;
