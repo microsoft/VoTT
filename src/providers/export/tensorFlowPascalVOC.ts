@@ -60,10 +60,34 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(results, (assetMetadata) => assetMetadata.asset.id);
 
-        const folderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
-        await this.storageProvider.createContainer(folderName);
+        // Create Export Folder
+        const exportFolderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
+        await this.storageProvider.createContainer(exportFolderName);
 
-        const fileName = `${folderName}/file.json`;
-        await this.storageProvider.writeText(fileName, JSON.stringify(exportObject, null, 4));
+        // Create Annotations Sub Folder
+        const annotationsFolderName = `${exportFolderName}/Annotations`;
+        await this.storageProvider.createContainer(annotationsFolderName);
+
+        // Save Annotations
+
+        // Create ImageSets Sub Folder (Main ?)
+        const imageSetsFolderName = `${exportFolderName}/ImageSets`;
+        await this.storageProvider.createContainer(imageSetsFolderName);
+
+        // Save ImageSets (Main ?)
+
+        // Create JPEGImages Sub Folder
+        const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
+        await this.storageProvider.createContainer(jpegImagesFolderName);
+
+        await results.forEach(async (element) => {
+            const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
+            // Get image
+            await this.storageProvider.writeText(imageFileName, JSON.stringify(exportObject, null, 4));
+        });
+
+        // Save pascal_label_map.pbtxt
+        const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
+        await this.storageProvider.writeText(pbtxtFileName, JSON.stringify(exportObject, null, 4));
     }
 }
