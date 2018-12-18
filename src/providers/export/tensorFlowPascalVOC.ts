@@ -80,22 +80,37 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
-        await results.forEach(async (element) => {
+        const allImgaeExports = results.map((element) => {
             const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
 
-            // Get image
-            fetch(element.asset.path)
-            .then(async (response) => {
-                // Get buffer
-                const buffer = new Buffer(await response.arrayBuffer());
+            return new Promise((resolve, reject) => {
+                // Get image
+                fetch(element.asset.path)
+                .then(async (response) => {
+                    // Get buffer
+                    const buffer = new Buffer(await response.arrayBuffer());
 
-                // Write Binary
-                await this.storageProvider.writeBinary(imageFileName, buffer);
-            })
-            .catch(() => {
-                console.log(`Error downloading ${imageFileName}`);
+                    // Write Binary
+                    await this.storageProvider.writeBinary(imageFileName, buffer);
+
+                    resolve();
+                })
+                .catch((err) => {
+                    console.log(`Error downloading ${imageFileName}`);
+                    reject(err);
+                });
             });
         });
+
+        try {
+            await Promise.all(allImgaeExports);
+        } catch (err) {
+            // Ignore the error at the moment
+            // TODO: Refactor ExportProvider abstract class export() method
+            //       to return Promise<object> with an object containing
+            //       the number of files succesfully exported out of total
+            console.log(err);
+        }
 
         // Save pascal_label_map.pbtxt
         const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
