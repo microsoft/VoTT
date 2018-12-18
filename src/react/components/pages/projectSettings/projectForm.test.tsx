@@ -26,12 +26,13 @@ describe("Project Form Component", () => {
             connections,
             onSubmit,
         });
-        expect(wrapper.state().formData.name).toEqual(project.name);
-        expect(wrapper.state().formData.sourceConnection).toEqual(project.sourceConnection);
-        expect(wrapper.state().formData.targetConnection).toEqual(project.targetConnection);
-        expect(wrapper.state().formData.description).toEqual(project.description);
+        const formData = wrapper.state().formData;
+        expect(formData.name).toEqual(project.name);
+        expect(formData.sourceConnection).toEqual(project.sourceConnection);
+        expect(formData.targetConnection).toEqual(project.targetConnection);
+        expect(formData.description).toEqual(project.description);
         expect(project.tags.length).toBeGreaterThan(0);
-        expect((wrapper.state().formData.tags)).toEqual(project.tags);
+        expect(formData.tags).toEqual(project.tags);
     });
 
     it("starting project has correct initial rendering", () => {
@@ -53,8 +54,9 @@ describe("Project Form Component", () => {
             onSubmit,
         });
         const newName = "My new name";
-        expect(wrapper.state().formData.name).not.toEqual(newName);
-        expect(wrapper.state().formData.name).toEqual(project.name);
+        const currentName = wrapper.state().formData.name;
+        expect(currentName).not.toEqual(newName);
+        expect(currentName).toEqual(project.name);
         wrapper.find("input#root_name").simulate("change", { target: { value: newName } });
         expect(wrapper.state().formData.name).toEqual(newName);
 
@@ -74,8 +76,9 @@ describe("Project Form Component", () => {
             onSubmit,
         });
         const newDescription = "My new description";
-        expect(wrapper.state().formData.description).not.toEqual(newDescription);
-        expect(wrapper.state().formData.description).toEqual(project.description);
+        const currentDescription = wrapper.state().formData.description;
+        expect(currentDescription).not.toEqual(newDescription);
+        expect(currentDescription).toEqual(project.description);
         wrapper.find("textarea#root_description").simulate("change", { target: { value: newDescription } });
         expect(wrapper.state().formData.description).toEqual(newDescription);
 
@@ -95,8 +98,9 @@ describe("Project Form Component", () => {
             onSubmit,
         });
         const newConnectionId = connections[1].id;
-        expect(wrapper.state().formData.sourceConnectionId).not.toEqual(newConnectionId);
-        expect(wrapper.state().formData.sourceConnectionId).toEqual(project.sourceConnectionId);
+        const currentConnectionId = wrapper.state().formData.sourceConnectionId;
+        expect(currentConnectionId).not.toEqual(newConnectionId);
+        expect(currentConnectionId).toEqual(project.sourceConnectionId);
         expect(wrapper.find("select#root_sourceConnectionId").exists()).toBe(true);
         wrapper.find("select#root_sourceConnectionId").simulate("change", { target: { value: newConnectionId } });
 
@@ -118,13 +122,13 @@ describe("Project Form Component", () => {
             onSubmit,
         });
         const newConnectionId = connections[1].id;
-        expect(wrapper.state().formData.targetConnectionId).not.toEqual(newConnectionId);
-        expect(wrapper.state().formData.targetConnectionId).toEqual(project.targetConnectionId);
+        const currentConnectionId = wrapper.state().formData.targetConnectionId;
+        expect(currentConnectionId).not.toEqual(newConnectionId);
+        expect(currentConnectionId).toEqual(project.targetConnectionId);
         expect(wrapper.find("select#root_targetConnectionId").exists()).toBe(true);
         wrapper.find("select#root_targetConnectionId").simulate("change", { target: { value: newConnectionId } });
         expect(wrapper.state().formData.targetConnectionId).toEqual(newConnectionId);
-        const form = wrapper.find("form");
-        form.simulate("submit");
+        wrapper.find("form").simulate("submit");
         expect(onSubmit).toBeCalledWith({
             ...project,
             targetConnectionId: newConnectionId,
@@ -191,11 +195,12 @@ describe("Project Form Component", () => {
             connections,
             onSubmit,
         });
-        expect(wrapper.state().formData.name).toBe(undefined);
-        expect(wrapper.state().formData.sourceConnectionId).toBe(undefined);
-        expect(wrapper.state().formData.targetConnectionId).toBe(undefined);
-        expect(wrapper.state().formData.description).toBe(undefined);
-        expect(wrapper.state().formData.tags).toBe(undefined);
+        const formData = wrapper.state().formData;
+        expect(formData.name).toBe(undefined);
+        expect(formData.sourceConnectionId).toBe(undefined);
+        expect(formData.targetConnectionId).toBe(undefined);
+        expect(formData.description).toBe(undefined);
+        expect(formData.tags).toBe(undefined);
     });
 
     it("empty project has correct initial rendering", () => {
