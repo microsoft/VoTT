@@ -2,7 +2,7 @@ import React from "react";
 import { IAssetMetadata, IRegion, RegionType, AssetState } from "../../../../models/applicationState";
 // const ct = require('vott-ct').CanvasTools
 // import * as CanvasTools from "vott-ct"
-import {CanvasTools} from "vott-ct"
+import { CanvasTools } from "vott-ct"
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 interface ICanvasProps {
@@ -137,8 +137,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         });
         image.src = this.props.selectedAsset.asset.path; 
         if(this.props.selectedAsset.regions.length){
-            this.props.selectedAsset.regions.forEach(region => {
-                //@ts-ignore
+            this.props.selectedAsset.regions.forEach((region: IRegion) => {
                 this.addRectRegion(region.id, region.points[0], region.points[1], region.tags);
             });
         }

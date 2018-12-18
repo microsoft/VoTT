@@ -1,4 +1,5 @@
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/CanvasTools.Tags";
+import { IPoint2D } from "vott-ct/lib/js/CanvasTools/Interface/IPoint2D";
 
 /**
  * @name - Application State
@@ -150,7 +151,7 @@ export interface IRegion {
     id: string;
     type: RegionType;
     tags: TagsDescriptor;
-    points: IPoint[];
+    points: IPoint2D[];
 }
 
 /**
