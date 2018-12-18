@@ -19,5 +19,6 @@ export default function registerProviders() {
 
     // Export Providers
     ExportProviderFactory.register("vottJson", (project, options) => new VottJsonExportProvider(project, options));
-    ExportProviderFactory.register("tensorFlowPascalVOC", (project, options) => new TFPascalVOCJsonExportProvider(project, options));
+    ExportProviderFactory.register("tensorFlowPascalVOC",
+        (project, options) => new TFPascalVOCJsonExportProvider(project, options));
 }
