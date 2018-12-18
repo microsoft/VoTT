@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
 import ProjectForm, { IProjectFormProps } from "./projectForm";
+import { IProject } from "../../../../models/applicationState"
 
 describe("Project Form Component", () => {
 
@@ -126,7 +127,7 @@ describe("Project Form Component", () => {
             });
         });
 
-        it("should call onChangeHandler on submission with stringified tags", () => {
+        it("should call onChangeHandler on submission", () => {
             const wrapper = createComponent({
                 project,
                 connections,
@@ -174,6 +175,43 @@ describe("Project Form Component", () => {
             const form = wrapper.find("form");
             form.simulate("submit");
             expect(onSubmit).not.toBeCalled();
+        });
+
+        it("should populate fields and submit project", () => {
+            const wrapper = createComponent({
+                project: null,
+                connections,
+                onSubmit,
+            });
+            
+            const newName = "My new name"
+            const newConnectionId = connections[1].id;
+            const newDescription = "My new description";
+            const newTagName = "My new tag";
+
+            wrapper.find("input#root_name").simulate("change", { target: { value: newName } });
+            wrapper.find("select#root_sourceConnectionId").simulate("change", { target: { value: newConnectionId } });
+            wrapper.find("select#root_targetConnectionId").simulate("change", { target: { value: newConnectionId } });
+            wrapper.find("textarea#root_description").simulate("change", { target: { value: newDescription } });
+            wrapper.find("input.ReactTags__tagInputField").simulate("change", {target: {value: newTagName}});
+            wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", {keyCode: 13}); // enter
+            
+            const form = wrapper.find("form");
+            form.simulate("submit");
+            expect(onSubmit).toBeCalledWith(
+                expect.objectContaining({
+                    name: newName,
+                    sourceConnectionId: newConnectionId,
+                    targetConnectionId: newConnectionId,
+                    description: newDescription,
+                    tags: expect.arrayContaining([
+                        {
+                            name: newTagName,
+                            color: expect.stringMatching(/^#([0-9a-fA-F]{3}){1,2}$/i)
+                        }
+                    ])
+                })
+            )
         });
     });
 });

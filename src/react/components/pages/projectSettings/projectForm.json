@@ -33,5 +33,5 @@
             }
         }
     },
-    "required": ["name"]
+    "required": ["name", "sourceConnectionId", "targetConnectionId"]
 }
