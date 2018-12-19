@@ -86,7 +86,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                 })
                 .then(async (response) => {
                     // Get buffer
-                    const buffer = new Buffer(await response.data);
+                    const buffer = new Buffer(response.data);
 
                     // Write Binary
                     await this.storageProvider.writeBinary(imageFileName, buffer);
