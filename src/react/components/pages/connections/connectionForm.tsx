@@ -7,7 +7,7 @@ import { strings } from "../../../../common/strings"
 const uiSchema = require("./connectionForm.ui.json");
 
 const formSchema = {
-    title: strings.connections.connectionDetails,
+    title: strings.connections.details,
     required: [
         "name",
         "providerType"
@@ -86,7 +86,7 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
     public render() {
         return (
             <div className="app-connections-page-detail m-3 text-light">
-                <h3><i className="fas fa-plug fa-1x"></i><span className="px-2">Connection Settings</span></h3>
+                <h3><i className="fas fa-plug fa-1x"></i><span className="px-2">{strings.connections.settings}</span></h3>
                 <div className="m-3 text-light">
                     <Form
                         widgets={this.widgets}

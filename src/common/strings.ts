@@ -52,8 +52,9 @@ export interface IStrings extends LocalizedStringsMethods{
         tags: string;
     },
     connections: {
-        connections: string;
-        connectionDetails: string;
+        title: string;
+        details: string;
+        settings: string;
         connectionPageInstructions: string;
         provider: string;
         providers: {
@@ -143,8 +144,9 @@ export const strings: IStrings = new LocalizedStrings({
             tags: "Tags"
         },
         connections: {
-            connections: "Connections",
-            connectionDetails: "Connection Details",
+            title: "Connections",
+            settings: "Connection Settings",
+            details: "Connection Details",
             connectionPageInstructions: "Please select a connection to edit",
             provider: "Provider",
             providers: {
