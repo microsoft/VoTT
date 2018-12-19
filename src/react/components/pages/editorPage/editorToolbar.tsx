@@ -36,8 +36,8 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
 
         return (
             <div className="btn-toolbar" role="toolbar">
-                {groups.map((items) =>
-                    <div className="btn-group mr-2" role="group">
+                {groups.map((items, idx) =>
+                    <div key={idx} className="btn-group mr-2" role="group">
                         {items.map((registration) => {
                             const toolbarItemProps: IToolbarItemProps = {
                                 ...registration.config,
