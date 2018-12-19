@@ -92,7 +92,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     /**
      * Called when form is submitted
      */
-    private onFormSubmit(args: IProjectFormState) {
+    private onFormSubmit(args) {
         const project: IProject = {
             ...args.formData,
         };
