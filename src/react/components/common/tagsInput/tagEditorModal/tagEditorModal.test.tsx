@@ -102,12 +102,15 @@ describe("Tag Editor Modal", () => {
         const newTagName = "new tag name";
 
         expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
-        //wrapper.find("input#root_name.form-control").simulate("change", {target: {value: newTagName}});
+        wrapper.find("input#root_name.form-control").simulate("change", {target: {value: newTagName}});
         const okButton = wrapper.find("button").first();
         expect(okButton.exists()).toBeTruthy();
         okButton.simulate("click");
         setImmediate(() => {
-            expect(onOk).toBeCalled();
+            expect(onOk).toBeCalledWith({
+                name: newTagName,
+                color: tag.color
+            })
         });
     });
 });
