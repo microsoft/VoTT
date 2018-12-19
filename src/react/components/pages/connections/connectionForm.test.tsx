@@ -1,7 +1,6 @@
 import React from "react";
 import { mount } from "enzyme";
 import MockFactory from "../../../../common/mockFactory";
-import Form from "react-jsonschema-form";
 import ConnectionForm, { IConnectionFormProps } from "./connectionForm";
 
 describe("Connection Form", () => {
