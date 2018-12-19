@@ -1,3 +1,4 @@
+import shortid from "shortid";
 import React from "react";
 import { Route } from "react-router-dom";
 import { connect } from "react-redux";
@@ -108,6 +109,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     private onFormSubmit = async (connection: IConnection) => {
+        connection.id = shortid.generate();
         await this.props.actions.saveConnection(connection);
         this.props.history.goBack();
     }

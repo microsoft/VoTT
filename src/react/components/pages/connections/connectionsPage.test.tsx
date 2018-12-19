@@ -79,11 +79,10 @@ describe("Connections Page", () => {
             const route = connectionsPage.find(Route);
             expect(route.last().prop("path")).toEqual("/connections/:connectionId");
 
-            const text = connectionsPage.find("h6");
+            const text = connectionsPage.find(".app-connections-page-detail").childAt(0);
             expect(text.exists()).toBe(true);
 
-            // TODO: not sure why this doesn't work
-            // expect(text.text()).toBe("Please select a connection to edit");
+            expect(text.text()).toBe("Please select a connection to edit");
         });
     });
 
@@ -138,11 +137,12 @@ describe("Connections Page", () => {
             connectionForm.update();
 
             expect(saveConnection).toBeCalled();
+            expect(saveConnection.mock.calls[0][0].id !== null).toBe(true);
         });
 
         it("renders connections in the list correctly", () => {
             const props = createProps(connectionsRoute);
-            let state = initialState;
+            const state = initialState;
             state.connections = MockFactory.createTestConnections(8);
 
             const store = createStore(state);
@@ -158,7 +158,7 @@ describe("Connections Page", () => {
 
         it("renders no form when nothing is selected", () => {
             const props = createProps(connectionsRoute);
-            let state = initialState;
+            const state = initialState;
             state.connections = MockFactory.createTestConnections(2);
 
             const store = createStore(state);
@@ -171,7 +171,7 @@ describe("Connections Page", () => {
 
         it("contains connection specific links for their id /connections/:connectionId", () => {
             const props = createProps(connectionsRoute);
-            let state = initialState;
+            const state = initialState;
             state.connections = MockFactory.createTestConnections(2);
 
             const store = createStore(state);
@@ -188,7 +188,7 @@ describe("Connections Page", () => {
             const props = createProps(route);
             props.match.params = { connectionId: "connection-3" };
 
-            let state = initialState;
+            const state = initialState;
             state.connections = MockFactory.createTestConnections(4);
 
             const store = createStore(state);
@@ -202,20 +202,16 @@ describe("Connections Page", () => {
     });
 
     describe("removing a connection", () => {
-        // no connection selected, delete connection, ensure it's removed from collection, ensure a form isn't drawn
-        // select connection, ensure form is selected, delete connection, ensure it's removed from collection, ensure form isn't drawn
 
         it("removes unselected connection when deleted button is hit", () => {
-            const route = connectionsRoute + "/connection-1";
-            const props = createProps(route);
+            const props = createProps(connectionsRoute);
             const deleteConnection = jest.spyOn(props.actions, "deleteConnection");
-            props.match.params = { connectionId: "connection-1" };
 
-            let state = initialState;
+            const state = initialState;
             state.connections = MockFactory.createTestConnections(2);
 
             const store = createStore(state);
-            const wrapper = createComponent(route, store, props);
+            const wrapper = createComponent(connectionsRoute, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
 
             // ensure list is 2 long (drawn & internal)
@@ -230,7 +226,30 @@ describe("Connections Page", () => {
         });
 
         it("removes a selected connection when delete button is hit", () => {
+            const route = connectionsRoute + "/connection-1";
+            const props = createProps(route);
+            props.match.params = { connectionId: "connection-1" };
+            const historyPush = jest.spyOn(props.history, "push");
 
+            const state = initialState;
+            state.connections = MockFactory.createTestConnections(2);
+
+            const store = createStore(state);
+            const wrapper = createComponent(route, store, props);
+            const connectionsPage = wrapper.find(ConnectionPage);
+
+            const items = connectionsPage.find(ConnectionItem);
+            expect(items.length).toEqual(2);
+
+            const form = connectionsPage.find(ConnectionForm);
+            expect(form.exists()).toBe(true);
+
+            const toDelete = items.first();
+            const deleteButton = toDelete.find(".delete-btn");
+            deleteButton.simulate("click");
+
+            expect(historyPush.mock.calls[0][0]).toEqual("/connections");
+            expect(connectionsPage.state().connection).toEqual(undefined);
         });
     });
 });
@@ -257,7 +276,7 @@ function createProps(route: string): IConnectionPageProps {
             state: null,
         },
         match: {
-            params: null,
+            params: { },
             isExact: true,
             path: `https://localhost:3000${route}`,
             url: `https://localhost:3000${route}`,
