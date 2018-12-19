@@ -157,13 +157,12 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     private getTag(id: string): IReactTag {
-        const { tags } = this.state;
-        for (const tag of tags) {
-            if (tag.id === id) {
-                return tag;
-            }
+        const match = this.state.tags.find((tag) => tag.id === id);
+        if (!match) {
+            throw new Error(`No tag by id: ${id}`);
         }
-        throw new Error("No tag by name: " + id);
+
+        return match;
     }
 
     private addHtml(tag: IReactTag): void {
