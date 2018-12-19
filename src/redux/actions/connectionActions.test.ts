@@ -24,6 +24,14 @@ describe("Conneciton Redux Actions", () => {
         expect(result).toEqual(connection);
     });
 
+    it("Save Connection generates unique id for new connection", async () => {
+        const connection = MockFactory.createTestConnection("Connection1");
+        connection.id = null;
+
+        const result = await connectionActions.saveConnection(connection)(store.dispatch);
+        expect(result.id).toEqual(expect.any(String));
+    });
+
     it("Save Connection action resolves a promise and dispatches redux action", async () => {
         const connection = MockFactory.createTestConnection("Connection1");
         const result = await connectionActions.saveConnection(connection)(store.dispatch);
