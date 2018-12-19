@@ -66,8 +66,6 @@ describe("Editor Page Component", () => {
             project: testProject,
         });
 
-        console.log(editorPage.prop("project"));
-
         setImmediate(() => {
             expect(editorPage.prop("project")).toEqual(testProject);
         });
