@@ -1,18 +1,18 @@
-import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization'
+import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
 
-export interface IStrings extends LocalizedStringsMethods{
+export interface IStrings extends LocalizedStringsMethods {
     appName: string;
     common: {
         displayName: string;
         description: string;
         submit: string;
         cancel: string;
-    },
+    };
     homePage: {
         newProject: string;
         openProject: string;
         recentProjects: string;
-    },
+    };
     menuBar: {
         file: {
             exit: string;
@@ -43,14 +43,14 @@ export interface IStrings extends LocalizedStringsMethods{
             documentation: string;
             communityDiscussions: string;
             searchIssues: string;
-        }
-    },
+        },
+    };
     projectSettings: {
         sourceConnection: string;
         targetConnection: string;
         addConnection: string;
         tags: string;
-    },
+    };
     connections: {
         title: string;
         details: string;
@@ -72,9 +72,9 @@ export interface IStrings extends LocalizedStringsMethods{
                 title: string;
                 folderPath: string;
                 selectFolder
-            }
+            },
         }
-    },
+    };
     editorPage: {
         width: string;
         height: string;
@@ -86,7 +86,7 @@ export interface IStrings extends LocalizedStringsMethods{
             saveProject: string;
             exportProject: string;
         }
-    }
+    };
 }
 
 export const strings: IStrings = new LocalizedStrings({
@@ -103,11 +103,11 @@ export const strings: IStrings = new LocalizedStrings({
         homePage: {
             newProject: "New Project",
             openProject: "Open Project",
-            recentProjects: "Recent Projects"
+            recentProjects: "Recent Projects",
         },
         menuBar: {
             file: {
-                exit: "Exit"
+                exit: "Exit",
             },
             edit: {
                 undo: "Undo",
@@ -117,31 +117,31 @@ export const strings: IStrings = new LocalizedStrings({
                 paste: "Paste",
                 pasteAndMatchStyle: "Paste and Match Style",
                 delete: "Delete",
-                selectAll: "Select All"
+                selectAll: "Select All",
             },
             view: {
                 reload: "Reload",
                 forceReload: "Force Reload",
                 toggleDevTools: "Toggle Dev Tools",
                 actualSize: "Actual Size",
-                toggleFullScreen: "Toggle Full Screen"
+                toggleFullScreen: "Toggle Full Screen",
             },
             window: {
                 minimize: "Minimize",
-                close: "Close"
+                close: "Close",
             },
             help: {
                 learnMore: "Learn More",
                 documentation: "Documentation",
                 communityDiscussions: "Community Discussions",
-                searchIssues: "Search Issues"
-            }
+                searchIssues: "Search Issues",
+            },
         },
         projectSettings: {
             sourceConnection: "Source Connection",
             targetConnection: "Target Connection",
             addConnection: "Add Connection",
-            tags: "Tags"
+            tags: "Tags",
         },
         connections: {
             title: "Connections",
@@ -151,21 +151,21 @@ export const strings: IStrings = new LocalizedStrings({
             provider: "Provider",
             providers: {
                 azureBlob: {
-                    title: "Azure Blob Storage"
+                    title: "Azure Blob Storage",
                 },
                 bing: {
                     title: "Bing Image Search",
                     options: "Bing Image Search Options",
                     apiKey: "API Key",
                     query: "Query",
-                    aspectRatio: "Aspect Ratio"
+                    aspectRatio: "Aspect Ratio",
                 },
                 local: {
                     title: "Local File System",
                     folderPath: "Folder Path",
-                    selectFolder: "Select Folder"
-                }
-            }
+                    selectFolder: "Select Folder",
+                },
+            },
         },
         editorPage: {
             width: "Width",
@@ -176,8 +176,8 @@ export const strings: IStrings = new LocalizedStrings({
                 drawRectangle: "Draw Rectangle",
                 drawPolygon: "Draw Polygon",
                 saveProject: "Save Project",
-                exportProject: "Export Project"
-            }
-        }
-    }
-})
+                exportProject: "Export Project",
+            },
+        },
+    },
+});

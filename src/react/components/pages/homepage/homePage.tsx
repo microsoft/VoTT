@@ -8,7 +8,7 @@ import CondensedList from "../../common/condensedList";
 import RecentProjectItem from "./recentProjectItem";
 import FilePicker from "../../common/filePicker";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { strings } from "../../../../common/strings"
+import { strings } from "../../../../common/strings";
 
 interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
