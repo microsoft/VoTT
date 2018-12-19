@@ -1,5 +1,5 @@
 import React from "react";
-import Form from "react-jsonschema-form";
+import Form, { Widget } from "react-jsonschema-form";
 import { IConnection } from "../../../../models/applicationState.js";
 import LocalFolderPicker from "../../common/localFolderPicker";
 // tslint:disable-next-line:no-var-requires
@@ -21,7 +21,7 @@ interface IConnectionFormState {
 
 export default class ConnectionForm extends React.Component<IConnectionFormProps, IConnectionFormState> {
     private widgets = {
-        localFolderPicker: LocalFolderPicker,
+        localFolderPicker: (LocalFolderPicker as any) as Widget,
     };
 
     constructor(props, context) {
@@ -62,7 +62,6 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
                     </Form>
                 </div>
             </div>
-
         );
     }
 

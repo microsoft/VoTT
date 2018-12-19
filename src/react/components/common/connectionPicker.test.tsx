@@ -17,17 +17,13 @@ describe("Connection Picker Component", () => {
             { id: "4", name: "Connection 4", providerType: "localFileSystemProxy", providerOptions: null },
         ];
 
-        const options = {
-            connections,
-        };
-
         onChangeHandler = jest.fn();
 
         wrapper = mount(
             <Router>
                 <ConnectionPicker
-                    value=""
-                    options={options}
+                    value={null}
+                    connections={connections}
                     onChange={onChangeHandler}
                 />
             </Router>,
@@ -47,9 +43,9 @@ describe("Connection Picker Component", () => {
     });
 
     it("raises onChange event when dropdown is modified", () => {
-        const connectionId = "2";
+        const newConnection = connections[1];
 
-        wrapper.find("select").simulate("change", { target: { value: connectionId } });
-        expect(onChangeHandler).toBeCalledWith(connectionId);
+        wrapper.find("select").simulate("change", { target: { value: newConnection.id } });
+        expect(onChangeHandler).toBeCalledWith(newConnection);
     });
 });
