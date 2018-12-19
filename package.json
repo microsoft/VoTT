@@ -29,7 +29,7 @@
     "pretest": "./node_modules/.bin/tslint 'src/**/*.ts*'",
     "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
     "test": "react-scripts test --env=jsdom --silent",
-    "coverage": "react-scripts test --env=jsdom --coverage",
+    "coverage": "react-scripts test --env=jsdom --coverage --silent",
     "eject": "react-scripts eject",
     "electron": "webpack --config ./config/webpack.dev.config.js && electron .",
     "electron-start": "node src/electron/start",
