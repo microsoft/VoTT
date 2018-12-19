@@ -9,8 +9,6 @@ import { mount, ReactWrapper } from "enzyme";
 import { IApplicationState,
          IProject} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-// import IProjectActions from "../../../../redux/actions/projectActions";
-import AssetPreview from "./assetPreview";
 import MockFactory from "../../../../common/mockFactory";
 
 jest.mock("../../../../services/projectService");
@@ -46,8 +44,6 @@ describe("Editor Page Component", () => {
         expect(editorPage.prop("project")).toEqual(testProject);
     });
 
-    // after simulate the update, validate the state of the component setprop
-    // and ensure that (assets.length > 0) has been correctly set on the state.
     it("Loads project assets when state changes", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, true);
