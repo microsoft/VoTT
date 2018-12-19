@@ -3,6 +3,7 @@ import { ExportProvider } from "./exportProvider";
 import { IProject, AssetState, AssetType, IAsset, IAssetMetadata } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
+import axios from "axios";
 
 /**
  * @name - TF Pascal VOC Records Export Asset State
@@ -80,10 +81,12 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
 
             return new Promise((resolve, reject) => {
                 // Get image
-                fetch(element.asset.path)
+                axios.get(element.asset.path, {
+                    responseType: "arraybuffer",
+                })
                 .then(async (response) => {
                     // Get buffer
-                    const buffer = new Buffer(await response.arrayBuffer());
+                    const buffer = new Buffer(await response.data);
 
                     // Write Binary
                     await this.storageProvider.writeBinary(imageFileName, buffer);
