@@ -4,6 +4,7 @@ import Form from "react-jsonschema-form";
 import { IConnection, IProject, ITag } from "../../../../models/applicationState.js";
 import ConnectionPicker from "../../common/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
+import CustomField from "../../common/customField";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
@@ -30,7 +31,13 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     };
 
     private fields = {
-        connection: ConnectionPicker,
+        connection: CustomField(ConnectionPicker, (props) => {
+            return {
+                value: props.formData,
+                connections: this.props.connections,
+                onChange: props.onChange,
+            };
+        }),
     };
 
     constructor(props, context) {
@@ -82,16 +89,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     private createUiSchema(): any {
         const overrideUiSchema = {
-            sourceConnection: {
-                "ui:options": {
-                    connections: this.props.connections,
-                },
-            },
-            targetConnection: {
-                "ui:options": {
-                    connections: this.props.connections,
-                },
-            },
         };
         return deepmerge(uiSchema, overrideUiSchema);
     }

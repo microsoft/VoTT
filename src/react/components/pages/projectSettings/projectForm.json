@@ -19,18 +19,7 @@
         },
         "tags": {
             "title": "Tags",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "color": {
-                        "type": "string"
-                    }
-                }
-            }
+            "type": "array"
         }
     },
     "required": [
