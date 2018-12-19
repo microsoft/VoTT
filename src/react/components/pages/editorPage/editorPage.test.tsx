@@ -40,10 +40,31 @@ describe("Editor Page Component", () => {
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
         const wrapper = createCompoent(store, props);
-        const exportPage = wrapper.find(EditorPage).childAt(0);
+        const editorPage = wrapper.find(EditorPage).childAt(0);
 
         expect(loadProjectSpy).not.toBeCalled();
-        expect(exportPage.prop("project")).toEqual(testProject);
+        expect(editorPage.prop("project")).toEqual(testProject);
+    });
+
+    // after simulate the update, validate the state of the component setprop
+    // and ensure that (assets.length > 0) has been correctly set on the state.
+    it("Loads project assets when state changes", () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, true);
+        const props = createProps(testProject.id);
+
+        const wrapper = createCompoent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0);
+
+        wrapper.setProps({
+            project: testProject,
+        });
+
+        console.log(editorPage.prop("project"));
+
+        setImmediate(() => {
+            expect(editorPage.prop("project")).toEqual(testProject);
+        });
     });
 });
 
