@@ -1,3 +1,4 @@
+import shortid from "shortid";
 import { IConnection } from "../../models/applicationState";
 import { ActionTypes } from "./actionTypes";
 import { IPayloadAction, createPayloadAction } from "./actionCreators";
@@ -18,6 +19,9 @@ export function loadConnection(connection: IConnection): (dispatch: Dispatch) =>
 
 export function saveConnection(connection: IConnection): (dispatch: Dispatch) => Promise<IConnection> {
     return (dispatch: Dispatch) => {
+        if (!connection.id) {
+            connection.id = shortid.generate();
+        }
         dispatch(saveConnectionAction(connection));
         return Promise.resolve(connection);
     };
