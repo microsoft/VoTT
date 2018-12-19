@@ -86,15 +86,12 @@ describe("TFPascalVOC Json Export Provider", () => {
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
-            const exportJson = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            const exportObject = JSON.parse(exportJson);
+            const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
 
-            const exportedAssets = _.values(exportObject.assets);
-            const expectedAssets = _.values(testProject.assets);
-
-            expect(exportedAssets.length).toEqual(expectedAssets.length);
-            expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith("Test-Project-export.json", expect.any(String));
+            expect(createContainerCalls.length).toEqual(4);
+            expect(createContainerCalls[1][0].endsWith("/Annotations")).toEqual(true);
+            expect(createContainerCalls[2][0].endsWith("/ImageSets")).toEqual(true);
+            expect(createContainerCalls[3][0].endsWith("/JPEGImages")).toEqual(true);
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
