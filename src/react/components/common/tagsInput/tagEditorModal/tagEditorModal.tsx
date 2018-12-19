@@ -14,14 +14,14 @@ const customStyles = {
       bottom                : "auto",
       marginRight           : "-50%",
       transform             : "translate(-50%, -50%)",
-      zIndex                : 1,
+      zIndex                : 200,
     },
   };
 
 export interface ITagEditorModalProps {
     tag: ITag;
     showModal: boolean;
-    onSubmit: (tag: ITag) => void;
+    onOk: (tag: ITag) => void;
     onCancel: (value) => void;
 }
 
@@ -52,8 +52,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
                     <Form
                         schema={formSchema}
                         formData={this.state.tag}
-                        onChange={this.handleChange}
-                        onSubmit={this.handleOk}>
+                        onChange={this.handleChange}>
                         <div>
                             <button className="btn btn-info" onClick={this.handleOk}>Ok</button>
                             <button className="btn btn-info" onClick={this.props.onCancel}>Cancel</button>
@@ -79,6 +78,6 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
     }
 
     private handleOk() {
-        this.props.onSubmit(this.state.tag);
+        this.props.onOk(this.state.tag);
     }
 }
