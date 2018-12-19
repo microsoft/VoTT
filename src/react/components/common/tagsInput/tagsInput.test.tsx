@@ -43,7 +43,7 @@ describe("Tags Input Component", () => {
     it("one text input field is available", () => {
         expect(wrapper.find("input")).toHaveLength(1);
     });
-    
+
     it("create a new tag from text box - enter key", () => {
         const newTagName = "My new tag";
         wrapper.find("input").simulate("change", {target: {value: newTagName}});
