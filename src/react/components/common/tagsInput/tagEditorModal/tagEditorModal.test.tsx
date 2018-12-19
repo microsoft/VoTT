@@ -18,12 +18,12 @@ describe("Tag Editor Modal", () => {
 
     it("modal is initialized properly", () => {
         const onCancel = jest.fn();
-        const onOk = jest.fn();
+        const onSubmit = jest.fn();
         const wrapper = createComponent({
             tag,
             showModal: false,
             onCancel,
-            onOk,
+            onSubmit,
         });
         const state = wrapper.state();
         expect(state.tag).toEqual(tag);
@@ -32,12 +32,12 @@ describe("Tag Editor Modal", () => {
 
     it("modal is not visible", () => {
         const onCancel = jest.fn();
-        const onOk = jest.fn();
+        const onSubmit = jest.fn();
         const wrapper = createComponent({
             tag,
             showModal: false,
             onCancel,
-            onOk,
+            onSubmit,
         });
         expect(
             wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists(),
@@ -46,12 +46,12 @@ describe("Tag Editor Modal", () => {
 
     it("modal is visible", () => {
         const onCancel = jest.fn();
-        const onOk = jest.fn();
+        const onSubmit = jest.fn();
         const wrapper = createComponent({
             tag,
             showModal: true,
             onCancel,
-            onOk,
+            onSubmit,
         });
         expect(
             wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists(),
@@ -60,50 +60,49 @@ describe("Tag Editor Modal", () => {
 
     it("modal calls 'onCancel' when cancel is clicked", () => {
         const onCancel = jest.fn();
-        const onOk = jest.fn();
+        const onSubmit = jest.fn();
         const wrapper = createComponent({
             tag,
             showModal: true,
             onCancel,
-            onOk,
-        });
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
-        wrapper.find("button").first().simulate("click");
-        expect(onCancel).toBeCalled();
-    });
-
-    it("modal calls 'onOk' when ok is clicked", () => {
-        const onCancel = jest.fn();
-        const onOk = jest.fn();
-        const wrapper = createComponent({
-            tag,
-            showModal: true,
-            onCancel,
-            onOk,
+            onSubmit,
         });
         expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
         wrapper.find("button").last().simulate("click");
-        expect(onOk).toBeCalled();
+        expect(onCancel).toBeCalled();
     });
 
-    xit("modal calls 'onOk' with new tag information", () => {
+    it("modal calls 'onSubmit' when ok is clicked", () => {
         const onCancel = jest.fn();
-        const onOk = jest.fn();
+        const onSubmit = jest.fn();
         const wrapper = createComponent({
             tag,
             showModal: true,
             onCancel,
-            onOk,
+            onSubmit,
+        });
+        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
+        const button = wrapper.find("button").first();
+        expect(button.exists()).toBeTruthy();
+        button.simulate("click");
+        expect(onSubmit).toBeCalled();
+    });
+
+    it("modal calls 'onSubmit' with new tag information", () => {
+        const onCancel = jest.fn();
+        const onSubmit = jest.fn();
+        const wrapper = createComponent({
+            tag,
+            showModal: true,
+            onCancel,
+            onSubmit,
         });
         const newTagName = "new tag name";
         expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
         expect(wrapper.find("input#root_name.form-control")).toHaveLength(1);
         wrapper.find("input#root_name.form-control").simulate("change", {target: {value: newTagName}});
-        expect(wrapper.state().tag.name).toEqual(newTagName);
-        wrapper.find("button").last().simulate("click");
-        expect(onOk).toBeCalledWith({
-            name: newTagName,
-            color: expect.stringMatching(/^#([0-9a-fA-F]{3}){1,2}$/i),
-        });
+        const button = wrapper.find("button").first();
+        button.simulate("click");
+        expect(onSubmit).toBeCalled();
     });
 });

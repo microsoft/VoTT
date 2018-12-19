@@ -21,7 +21,7 @@ const customStyles = {
 export interface ITagEditorModalProps {
     tag: ITag;
     showModal: boolean;
-    onOk: (tag: ITag) => void;
+    onSubmit: (tag: ITag) => void;
     onCancel: (value) => void;
 }
 
@@ -38,26 +38,8 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
             tag: props.tag,
             isOpen: false,
         };
-        this.handleFormChange = this.handleFormChange.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handleOk = this.handleOk.bind(this);
-    }
-
-    public componentDidUpdate(prevProps) {
-        if (this.props.tag && prevProps.tag !== this.props.tag) {
-            this.setState({
-                tag: this.props.tag,
-            });
-        }
-    }
-
-    public handleFormChange(args) {
-        this.setState({
-            tag: args.formData,
-        });
-    }
-
-    public handleOk() {
-        this.props.onOk(this.state.tag);
     }
 
     public render() {
@@ -69,13 +51,34 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
                     style={customStyles}>
                     <Form
                         schema={formSchema}
-                        onChange={this.handleFormChange}
-                        formData={this.state.tag}>
-                        <button type="button" onClick={this.props.onCancel}>Close</button>
-                        <button type="button" onClick={this.handleOk}>OK</button>
+                        formData={this.state.tag}
+                        onChange={this.handleChange}
+                        onSubmit={this.handleOk}>
+                        <div>
+                            <button className="btn btn-info" onClick={this.handleOk}>Ok</button>
+                            <button className="btn btn-info" onClick={this.props.onCancel}>Cancel</button>
+                        </div>
                     </Form>
                 </ReactModal>
             </div>
         );
+    }
+
+    public componentDidUpdate(prevProps) {
+        if (this.props.tag && prevProps.tag !== this.props.tag) {
+            this.setState({
+                tag: this.props.tag,
+            });
+        }
+    }
+
+    private handleChange(args){
+        this.setState({
+            tag: args.formData
+        })
+    }
+
+    private handleOk() {
+        this.props.onSubmit(this.state.tag);
     }
 }
