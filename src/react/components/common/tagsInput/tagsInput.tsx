@@ -16,8 +16,8 @@ export interface IReactTag {
 }
 
 interface ITagsInputProps {
-    tags: ITag[] | string;
-    onChange: (value) => void;
+    tags: ITag[];
+    onChange: (value: ITag[]) => void;
 }
 
 interface ITagsInputState {
@@ -41,7 +41,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         super(props);
 
         this.state = {
-            tags: this.getReactTags(props),
+            tags: this.getReactTags(this.props.tags),
             currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
@@ -66,7 +66,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
                     handleDelete={this.handleDelete}
                     handleAddition={this.handleAddition}
                     handleDrag={this.handleDrag}
-                    delimiters={delimiters}/>
+                    delimiters={delimiters} />
                 <TagEditorModal
                     tag={this.toItag(this.state.selectedTag)}
                     showModal={this.state.showModal}
@@ -75,6 +75,14 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
                 />
             </div>
         );
+    }
+
+    public componentDidUpdate(prevProps: ITagsInputProps) {
+        if (prevProps.tags !== this.props.tags) {
+            this.setState({
+                tags: this.getReactTags(this.props.tags),
+            });
+        }
     }
 
     public handleEditedTag(newTag: ITag): void {
@@ -149,22 +157,20 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     private getTag(id: string): IReactTag {
-        const {tags} = this.state;
-        for (const tag of tags) {
-            if (tag.id === id) {
-                return tag;
-            }
+        const match = this.state.tags.find((tag) => tag.id === id);
+        if (!match) {
+            throw new Error(`No tag by id: ${id}`);
         }
-        throw new Error("No tag by name: " + id);
+
+        return match;
     }
 
     private addHtml(tag: IReactTag): void {
         tag.text = this.ReactTagHtml(tag.id, tag.color);
     }
 
-    private getReactTags(props): IReactTag[] {
-        const iTags = (props.tags) ? props.tags : props.formData; // Form component populates props.formData with tags
-        return (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [];
+    private getReactTags(tags: ITag[]): IReactTag[] {
+        return tags ? tags.map((element: ITag) => this.toReactTag(element)) : [];
     }
 
     private toReactTag(tag: ITag): IReactTag {
@@ -180,12 +186,12 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
 
     private ReactTagHtml(name: string, color: string) {
         return <div className="inline-block tagtext" onDoubleClick={(event) => this.handleTagClick(event)}>
-                    <div className={"inline-block tag_color_box"}
-                        style={{
-                            backgroundColor: color,
-                        }}></div>
-                    <span>{name}</span>
-                </div>;
+            <div className={"inline-block tag_color_box"}
+                style={{
+                    backgroundColor: color,
+                }}></div>
+            <span>{name}</span>
+        </div>;
     }
 
     private toItag(tag: IReactTag): ITag {
@@ -198,7 +204,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         };
     }
 
-    private normalize(tags): string {
+    private normalize(tags: IReactTag[]): ITag[] {
         const itags = tags.map((element: IReactTag) => this.toItag(element));
         return itags;
     }

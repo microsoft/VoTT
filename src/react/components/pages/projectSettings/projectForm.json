@@ -5,13 +5,13 @@
             "title": "Name",
             "type": "string"
         },
-        "sourceConnectionId": {
+        "sourceConnection": {
             "title": "Source Connection",
-            "type": "string"
+            "type": "object"
         },
-        "targetConnectionId": {
+        "targetConnection": {
             "title": "Target Connection",
-            "type": "string"
+            "type": "object"
         },
         "description": {
             "title": "Description",
@@ -19,19 +19,12 @@
         },
         "tags": {
             "title": "Tags",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "color": {
-                        "type": "string"
-                    }
-                }
-            }
+            "type": "array"
         }
     },
-    "required": ["name", "sourceConnectionId", "targetConnectionId"]
+    "required": [
+        "name",
+        "sourceConnection",
+        "targetConnection"
+    ]
 }

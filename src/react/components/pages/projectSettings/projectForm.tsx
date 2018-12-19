@@ -1,9 +1,9 @@
-import deepmerge from "deepmerge";
 import React from "react";
 import Form from "react-jsonschema-form";
 import { IConnection, IProject, ITag } from "../../../../models/applicationState.js";
 import ConnectionPicker from "../../common/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
+import CustomField from "../../common/customField";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
@@ -21,18 +21,28 @@ export interface IProjectFormState {
     uiSchema: any;
 }
 
-const fields = {tagsInput: TagsInput};
-
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
-    private widgets = {
-        connectionPicker: ConnectionPicker,
-        tagsInput: TagsInput,
+    private fields = {
+        connection: CustomField(ConnectionPicker, (props) => {
+            return {
+                id: props.idSchema.$id,
+                value: props.formData,
+                connections: this.props.connections,
+                onChange: props.onChange,
+            };
+        }),
+        tagsInput: CustomField(TagsInput, (props) => {
+            return {
+                tags: props.formData,
+                onChange: props.onChange,
+            };
+        }),
     };
 
     constructor(props, context) {
         super(props, context);
         this.state = {
-            uiSchema: this.createUiSchema(),
+            uiSchema: { ...uiSchema },
             formSchema: { ...formSchema },
             formData: {
                 ...this.props.project,
@@ -47,21 +57,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 formData: { ...this.props.project },
             });
         }
-
-        if (prevProps.connections !== this.props.connections) {
-            this.setState({
-                uiSchema: this.createUiSchema(),
-            });
-        }
     }
 
     public render() {
         return (
             <Form
-                widgets={this.widgets}
+                fields={this.fields}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
-                fields={fields}
                 formData={this.state.formData}
                 onSubmit={this.onFormSubmit}>
             </Form>
@@ -73,21 +76,5 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             ...args.formData,
         };
         this.props.onSubmit(project);
-    }
-
-    private createUiSchema(): any {
-        const overrideUiSchema = {
-            sourceConnectionId: {
-                "ui:options": {
-                    connections: this.props.connections,
-                },
-            },
-            targetConnectionId: {
-                "ui:options": {
-                    connections: this.props.connections,
-                },
-            },
-        };
-        return deepmerge(uiSchema, overrideUiSchema);
     }
 }

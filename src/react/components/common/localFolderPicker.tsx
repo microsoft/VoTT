@@ -3,12 +3,12 @@ import { LocalFileSystemProxy } from "../../../providers/storage/localFileSystem
 
 interface ILocalFolderPickerProps {
     id?: string;
-    value: any;
+    value: string;
     onChange: (value) => void;
 }
 
 interface ILocalFolderPickerState {
-    value: any;
+    value: string;
 }
 
 export default class LocalFolderPicker extends React.Component<ILocalFolderPickerProps, ILocalFolderPickerState> {
