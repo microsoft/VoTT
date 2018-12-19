@@ -69,7 +69,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         super(props);
 
         this.state = {
-            tags: this.getReactTags(props),
+            tags: this.getReactTags(this.props.tags),
             currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
@@ -94,7 +94,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
                     handleDelete={this.handleDelete}
                     handleAddition={this.handleAddition}
                     handleDrag={this.handleDrag}
-                    delimiters={delimiters}/>
+                    delimiters={delimiters} />
                 <TagEditorModal
                     tag={this.toItag(this.state.selectedTag)}
                     showModal={this.state.showModal}
@@ -105,6 +105,13 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         );
     }
 
+    public componentDidUpdate(prevProps: ITagsInputProps) {
+        if (prevProps.tags !== this.props.tags) {
+            this.setState({
+                tags: this.getReactTags(this.props.tags),
+            });
+        }
+    }
     /**
      * Update an existing tag, called after clicking 'OK' in modal
      * @param newTag Edited version of tag
@@ -219,13 +226,12 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
      * @param id string name of tag. param 'id' for lower level react component
      */
     private getTag(id: string): IReactTag {
-        const {tags} = this.state;
-        for (const tag of tags) {
-            if (tag.id === id) {
-                return tag;
-            }
+        const match = this.state.tags.find((tag) => tag.id === id);
+        if (!match) {
+            throw new Error(`No tag by id: ${id}`);
         }
-        throw new Error("No tag by name: " + id);
+
+        return match;
     }
 
     /**
@@ -240,9 +246,8 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
      * Gets ITag[] from props and converts it to IReactTag[]
      * @param props properties for component, contains tags in ITag format
      */
-    private getReactTags(props): IReactTag[] {
-        const iTags = (props.tags) ? props.tags : props.formData; // Form component populates props.formData with tags
-        return (iTags) ? iTags.map((element: ITag) => this.toReactTag(element)) : [];
+    private getReactTags(tags: ITag[]): IReactTag[] {
+        return tags ? tags.map((element: ITag) => this.toReactTag(element)) : [];
     }
 
     /**

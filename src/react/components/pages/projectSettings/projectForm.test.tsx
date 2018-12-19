@@ -98,19 +98,19 @@ describe("Project Form Component", () => {
             connections,
             onSubmit,
         });
-        const newConnectionId = connections[1].id;
-        const currentConnectionId = wrapper.state().formData.sourceConnectionId;
-        expect(currentConnectionId).not.toEqual(newConnectionId);
-        expect(currentConnectionId).toEqual(project.sourceConnectionId);
-        expect(wrapper.find("select#root_sourceConnectionId").exists()).toBe(true);
-        wrapper.find("select#root_sourceConnectionId").simulate("change", { target: { value: newConnectionId } });
+        const newConnection = connections[1];
+        const currentConnectionId = wrapper.state().formData.sourceConnection.id;
+        expect(currentConnectionId).not.toEqual(newConnection.id);
+        expect(currentConnectionId).toEqual(project.sourceConnection.id);
+        expect(wrapper.find("select#root_sourceConnection").exists()).toBe(true);
+        wrapper.find("select#root_sourceConnection").simulate("change", { target: { value: newConnection.id } });
 
-        expect(wrapper.state().formData.sourceConnectionId).toEqual(newConnectionId);
+        expect(wrapper.state().formData.sourceConnection).toEqual(newConnection);
         const form = wrapper.find("form");
         form.simulate("submit");
         expect(onSubmit).toBeCalledWith({
             ...project,
-            sourceConnectionId: newConnectionId,
+            sourceConnection: connections[1],
         });
 
     });
@@ -122,17 +122,17 @@ describe("Project Form Component", () => {
             connections,
             onSubmit,
         });
-        const newConnectionId = connections[1].id;
-        const currentConnectionId = wrapper.state().formData.targetConnectionId;
-        expect(currentConnectionId).not.toEqual(newConnectionId);
-        expect(currentConnectionId).toEqual(project.targetConnectionId);
-        expect(wrapper.find("select#root_targetConnectionId").exists()).toBe(true);
-        wrapper.find("select#root_targetConnectionId").simulate("change", { target: { value: newConnectionId } });
-        expect(wrapper.state().formData.targetConnectionId).toEqual(newConnectionId);
+        const newConnection = connections[1];
+        const currentConnectionId = wrapper.state().formData.targetConnection.id;
+        expect(currentConnectionId).not.toEqual(newConnection.id);
+        expect(currentConnectionId).toEqual(project.targetConnection.id);
+        expect(wrapper.find("select#root_targetConnection").exists()).toBe(true);
+        wrapper.find("select#root_targetConnection").simulate("change", { target: { value: newConnection.id } });
+        expect(wrapper.state().formData.targetConnection).toEqual(newConnection);
         wrapper.find("form").simulate("submit");
         expect(onSubmit).toBeCalledWith({
             ...project,
-            targetConnectionId: newConnectionId,
+            targetConnection: connections[1],
         });
     });
 
@@ -159,13 +159,13 @@ describe("Project Form Component", () => {
         });
 
         const newName = "My new name";
-        const newConnectionId = connections[1].id;
+        const newConnection = connections[1];
         const newDescription = "My new description";
         const newTagName = "My new tag";
 
         wrapper.find("input#root_name").simulate("change", { target: { value: newName } });
-        wrapper.find("select#root_sourceConnectionId").simulate("change", { target: { value: newConnectionId } });
-        wrapper.find("select#root_targetConnectionId").simulate("change", { target: { value: newConnectionId } });
+        wrapper.find("select#root_sourceConnection").simulate("change", { target: { value: newConnection.id } });
+        wrapper.find("select#root_targetConnection").simulate("change", { target: { value: newConnection.id } });
         wrapper.find("textarea#root_description").simulate("change", { target: { value: newDescription } });
         wrapper.find("input.ReactTags__tagInputField").simulate("change", {target: {value: newTagName}});
         wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", {keyCode: KeyCodes.enter});
@@ -175,8 +175,8 @@ describe("Project Form Component", () => {
         expect(onSubmit).toBeCalledWith(
             expect.objectContaining({
                 name: newName,
-                sourceConnectionId: newConnectionId,
-                targetConnectionId: newConnectionId,
+                sourceConnection: connections[1],
+                targetConnection: connections[1],
                 description: newDescription,
                 tags: expect.arrayContaining([
                     ...project.tags,
@@ -198,8 +198,8 @@ describe("Project Form Component", () => {
         });
         const formData = wrapper.state().formData;
         expect(formData.name).toBe(undefined);
-        expect(formData.sourceConnectionId).toBe(undefined);
-        expect(formData.targetConnectionId).toBe(undefined);
+        expect(formData.sourceConnection).toEqual({});
+        expect(formData.targetConnection).toEqual({});
         expect(formData.description).toBe(undefined);
         expect(formData.tags).toBe(undefined);
     });

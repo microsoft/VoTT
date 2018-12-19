@@ -67,9 +67,7 @@ export default class MockFactory {
             assets: {},
             exportFormat: MockFactory.exportFormat(),
             sourceConnection: connection,
-            sourceConnectionId: connection.id,
             targetConnection: connection,
-            targetConnectionId: connection.id,
             tags: MockFactory.createTestTags(),
             autoSave: true,
         };
