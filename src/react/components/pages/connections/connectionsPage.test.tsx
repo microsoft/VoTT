@@ -1,7 +1,7 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { AnyAction, Store } from "redux";
-import { Route, Link, StaticRouter as Router } from "react-router-dom";
+import { Route, Link, NavLink, StaticRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
 import Form from "react-jsonschema-form";
 import createReduxStore from "../../../../redux/store/store";
@@ -141,44 +141,96 @@ describe("Connections Page", () => {
         });
 
         it("renders connections in the list correctly", () => {
-            const props = createProps(connectionCreateRoute);
-
+            const props = createProps(connectionsRoute);
             let state = initialState;
             state.connections = MockFactory.createTestConnections(8);
 
             const store = createStore(state);
-
             const wrapper = createComponent(connectionsRoute, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
             const items = connectionsPage.find(ConnectionItem);
 
             expect(items.length).toEqual(8);
         });
+    });
 
-        // TODO: renders the form correctly when a new connection is selected
-        // init with 2
-        // ensure no form is drawn
-        // select first
-        // ensure first form is drawm
-        // select second
-        // ensure second form is drawn
+    describe("selecting connections", () => {
+
+        it("renders no form when nothing is selected", () => {
+            const props = createProps(connectionsRoute);
+            let state = initialState;
+            state.connections = MockFactory.createTestConnections(2);
+
+            const store = createStore(state);
+            const wrapper = createComponent(connectionsRoute, store, props);
+            const connectionsPage = wrapper.find(ConnectionPage);
+
+            expect(connectionsPage.find(ConnectionForm).exists()).toEqual(false);
+            expect(connectionsPage.find(ConnectionItem).length).toEqual(2);
+        });
+
+        it("contains connection specific links for their id /connections/:connectionId", () => {
+            const props = createProps(connectionsRoute);
+            let state = initialState;
+            state.connections = MockFactory.createTestConnections(2);
+
+            const store = createStore(state);
+            const wrapper = createComponent(connectionsRoute, store, props);
+            const connectionsPage = wrapper.find(ConnectionPage);
+            const items = connectionsPage.find(ConnectionItem);
+
+            expect(items.at(0).find(NavLink).props().to).toEqual("/connections/connection-1");
+            expect(items.at(1).find(NavLink).props().to).toEqual("/connections/connection-2");
+        });
+
+        it("shows the connection's form when its route is visited", () => {
+            const route = connectionsRoute + "/connection-3";
+            const props = createProps(route);
+            props.match.params = { connectionId: "connection-3" };
+
+            let state = initialState;
+            state.connections = MockFactory.createTestConnections(4);
+
+            const store = createStore(state);
+            const wrapper = createComponent(route, store, props);
+            const connectionsPage = wrapper.find(ConnectionPage);
+            const form = connectionsPage.find(ConnectionForm);
+
+            expect(form.exists()).toEqual(true);
+            expect(form.props().connection.id).toEqual("connection-3");
+        });
     });
 
     describe("removing a connection", () => {
+        // no connection selected, delete connection, ensure it's removed from collection, ensure a form isn't drawn
+        // select connection, ensure form is selected, delete connection, ensure it's removed from collection, ensure form isn't drawn
 
-        // TODO delete `connectionPage.props().actions.deleteConnection`
-        it("removes connection when delete button is hit", () => {
-            // init with 1 connection
-            // hit the button
-            // make sure 0 connections are in the list or drawn
+        it("removes unselected connection when deleted button is hit", () => {
+            const route = connectionsRoute + "/connection-1";
+            const props = createProps(route);
+            const deleteConnection = jest.spyOn(props.actions, "deleteConnection");
+            props.match.params = { connectionId: "connection-1" };
+
+            let state = initialState;
+            state.connections = MockFactory.createTestConnections(2);
+
+            const store = createStore(state);
+            const wrapper = createComponent(route, store, props);
+            const connectionsPage = wrapper.find(ConnectionPage);
+
+            // ensure list is 2 long (drawn & internal)
+            const items = connectionsPage.find(ConnectionItem);
+            expect(items.length).toEqual(2);
+
+            const toDelete = items.first();
+            const deleteButton = toDelete.find(".delete-btn");
+            deleteButton.simulate("click");
+
+            expect(deleteConnection).toBeCalled();
         });
 
-        // TODO fix bug, after delete, form shows (add test)
-        it("stops drawing the form when a connection is removed", () => {
-            // init with 1 connection
-            // make sure form shows
-            // delete it
-            // make sure form goes
+        it("removes a selected connection when delete button is hit", () => {
+
         });
     });
 });

@@ -99,6 +99,11 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     private onConnectionDelete = async (connection: IConnection) => {
+        if (this.state && connection === this.state.connection) {
+            this.props.history.push("/connections");
+            this.setState({ connection: null });
+        }
+
         await this.props.actions.deleteConnection(connection);
     }
 
