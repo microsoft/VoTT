@@ -25,12 +25,19 @@
   "build": {
     "appId": "com.microsoft.vott",
     "artifactName": "${productName}-${os}.${ext}",
+    "directories": {
+      "buildResources": "app-icons"
+    },
+    "extraResources": [
+    ],
     "extends": null,
     "files": [
       "build/"
     ],
-    "dmg": {
-      "icon": "app-icons/icon.icns"
+    "mac": {
+      "icon": "app-icons/icon.icns",
+      "target": "dmg",
+      "identity": null
     },
     "win": {
       "icon": "app-icons/icon.ico"
@@ -49,6 +56,7 @@
     "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
     "test": "react-scripts test --env=jsdom",
     "test:ci": "CI=true react-scripts test --env=jsdom",
+    "dist": "electron-builder",
     "release": "react-scripts build && npm run electron:ci && electron-builder",
     "coverage": "react-scripts test --env=jsdom --coverage",
     "eject": "react-scripts eject",
