@@ -134,10 +134,10 @@ describe("Connections Page", () => {
                           .simulate("change", { target: { value: "test" } });
 
             connectionForm.find(Form).simulate("submit");
-            connectionForm.update();
 
             expect(saveConnection).toBeCalled();
             expect(saveConnection.mock.calls[0][0].id !== null).toBe(true);
+            wrapper.unmount();
         });
 
         it("renders connections in the list correctly", () => {
