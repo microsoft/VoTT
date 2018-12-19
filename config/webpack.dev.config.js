@@ -1,16 +1,16 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-  mode: 'development',
-  target: 'electron-main',
-  entry: './src/electron/main.ts',
-  devtool: 'cheap-module-source-map',
+  mode: "development",
+  target: "electron-main",
+  entry: "./src/electron/main.ts",
+  devtool: "cheap-module-source-map",
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts?$/,
         use: [{
-          loader: 'ts-loader',
+          loader: "ts-loader",
           options: {
             compilerOptions: {
               noEmit: false
@@ -22,10 +22,10 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: [".ts", ".js"]
   },
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, '../build/electron')
+    filename: "main.js",
+    path: path.resolve(__dirname, "../build")
   }
 };
