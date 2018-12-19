@@ -6,6 +6,7 @@ import EditorPage, { IEditorPageProps } from "./editorPage";
 import { Store, AnyAction } from "redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
+import { AssetService } from "../../../../services/assetService";
 import { IApplicationState,
          IProject} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -59,6 +60,20 @@ describe("Editor Page Component", () => {
         setImmediate(() => {
             expect(editorPage.prop("project")).toEqual(testProject);
         });
+    });
+
+    it("Raises onAssetSelected handler when an asset is selected from the sidebar", async () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, true);
+        const asset = MockFactory.createTestAsset("TestAsset");
+        const assetMetadata = MockFactory.createTestAssetMetadata(asset);
+        const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
+        mockAssetService.prototype.getAssetMetadata = jest.fn(() => assetMetadata);
+
+        const result = await projectActions.loadAssetMetadata(testProject, asset)(store.dispatch);
+
+        expect(mockAssetService.prototype.getAssetMetadata).toBeCalledWith(asset);
+        expect(result).toEqual(assetMetadata);
     });
 });
 
