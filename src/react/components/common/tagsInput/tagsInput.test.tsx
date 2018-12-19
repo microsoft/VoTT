@@ -43,18 +43,7 @@ describe("Tags Input Component", () => {
     it("one text input field is available", () => {
         expect(wrapper.find("input")).toHaveLength(1);
     });
-
-    it("create a new tag from text box - enter key", () => {
-        const newTagName = "My new tag";
-        wrapper.find("input").simulate("change", {target: {value: newTagName}});
-        wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.enter}); // enter
-        expect(onChangeHandler).toBeCalled();
-        expect(wrapper.state().tags).toHaveLength(originalTags.length + 1);
-        const newTagIndex = originalTags.length;
-        expect(wrapper.state().tags[newTagIndex].id).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.state().tags[newTagIndex].color);
-    });
-
+    
     it("create a new tag from text box - enter key", () => {
         const newTagName = "My new tag";
         wrapper.find("input").simulate("change", {target: {value: newTagName}});
