@@ -6,6 +6,7 @@ import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
+import axios from "axios";
 
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
@@ -42,6 +43,12 @@ describe("TFPascalVOC Json Export Provider", () => {
         },
         tags: [],
     };
+
+    axios.get = jest.fn(() => {
+        return Promise.resolve({
+            data: [1, 2, 3],
+        });
+    });
 
     beforeEach(() => {
         registerProviders();
@@ -92,6 +99,13 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(createContainerCalls[1][0].endsWith("/Annotations")).toEqual(true);
             expect(createContainerCalls[2][0].endsWith("/ImageSets")).toEqual(true);
             expect(createContainerCalls[3][0].endsWith("/JPEGImages")).toEqual(true);
+
+            const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
+            expect(writeBinaryCalls.length).toEqual(4);
+            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
+            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
+            expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4")).toEqual(true);
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -103,16 +117,18 @@ describe("TFPascalVOC Json Export Provider", () => {
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
-            const exportJson = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            const exportObject = JSON.parse(exportJson);
+            const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
 
-            const exportedAssets = _.values(exportObject.assets);
-            const expectedAssets = _.values(testProject.assets)
-                .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+            expect(createContainerCalls.length).toEqual(4);
+            expect(createContainerCalls[1][0].endsWith("/Annotations")).toEqual(true);
+            expect(createContainerCalls[2][0].endsWith("/ImageSets")).toEqual(true);
+            expect(createContainerCalls[3][0].endsWith("/JPEGImages")).toEqual(true);
 
-            expect(exportedAssets.length).toEqual(expectedAssets.length);
-            expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith("Test-Project-export.json", expect.any(String));
+            const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
+            expect(writeBinaryCalls.length).toEqual(3);
+            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
+            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
         });
 
         it("Exports only tagged assets", async () => {
@@ -124,15 +140,17 @@ describe("TFPascalVOC Json Export Provider", () => {
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
-            const exportJson = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            const exportObject = JSON.parse(exportJson);
+            const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
 
-            const exportedAssets = _.values(exportObject.assets);
-            const expectedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
+            expect(createContainerCalls.length).toEqual(4);
+            expect(createContainerCalls[1][0].endsWith("/Annotations")).toEqual(true);
+            expect(createContainerCalls[2][0].endsWith("/ImageSets")).toEqual(true);
+            expect(createContainerCalls[3][0].endsWith("/JPEGImages")).toEqual(true);
 
-            expect(exportedAssets.length).toEqual(expectedAssets.length);
-            expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith("Test-Project-export.json", expect.any(String));
+            const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
+            expect(writeBinaryCalls.length).toEqual(2);
+            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
         });
     });
 });
