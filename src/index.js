@@ -415,7 +415,13 @@ function openPath(pathName, isDir, isRecords = false) {
             videotagging.optionalTags.colors = config.tag_colors;
           }
           videotagging.inputframes = config.frames;
-          visitedFrames =  new Set(config.visitedFrames);
+          if(config.visitedFrames){
+            visitedFrames =  new Set(config.visitedFrames);
+          }
+          else {
+            visitedFrames = new Set([Object.keys(config.frames).sort()[0]])
+          }
+          visitedFramesNumber =  new Set(Array.from(Array(visitedFrames).keys()));
         } else {
           videotagging.inputframes = {};
           visitedFrames = new Set();
@@ -444,9 +450,6 @@ function openPath(pathName, isDir, isRecords = false) {
         } 
 
         if (isDir){
-            $('head title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
-            if(isRecords) $('head title').text(`Image Tagging from Records Job: ${path.dirname(pathName)}`); //set title indicator
-
             //get list of images in directory
             var files = fs.readdirSync(pathName);
             
@@ -466,6 +469,9 @@ function openPath(pathName, isDir, isRecords = false) {
                 return file.match(/.(jpg|jpeg|png|gif)$/i);
               });
             }
+
+            $('head title').text(`Image Tagging Job: ${videotagging.imagelist[0]}`); //set title indicator
+            if(isRecords) $('head title').text(`Image Tagging from Records Job: ${videotagging.imagelist[0]}`); //set title indicator
 
             if (videotagging.imagelist.length){
               //Check if tagging was done in previous version of VOTT
