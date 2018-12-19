@@ -2,10 +2,46 @@ import React from "react";
 import Form, { Widget } from "react-jsonschema-form";
 import { IConnection } from "../../../../models/applicationState.js";
 import LocalFolderPicker from "../../common/localFolderPicker";
-// tslint:disable-next-line:no-var-requires
-const formSchema = require("./connectionForm.json");
+import { strings } from "../../../../common/strings"
 // tslint:disable-next-line:no-var-requires
 const uiSchema = require("./connectionForm.ui.json");
+
+const formSchema = {
+    title: strings.connections.connectionDetails,
+    required: [
+        "name",
+        "providerType"
+    ],
+    type: "object",
+    properties: {
+        name: {
+            "title": strings.common.displayName,
+            "type": "string"
+        },
+        description: {
+            title: strings.common.description,
+            type: "string"
+        },
+        providerType: {
+            title: strings.connections.provider,
+            type: "string",
+            enum: [
+                "azureBlobStorage",
+                "bingImageSearch",
+                "localFileSystemProxy"
+            ],
+            default: "azureBlobStorage",
+            enumNames: [
+                strings.connections.providers.azureBlob.title,
+                strings.connections.providers.bing.title,
+                strings.connections.providers.local.title
+            ]
+        },
+        providerOptions: {
+            type: "object"
+        }
+    }
+}
 
 interface IConnectionFormProps extends React.Props<ConnectionForm> {
     connection: IConnection;
