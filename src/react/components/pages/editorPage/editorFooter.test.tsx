@@ -81,6 +81,6 @@ describe("Footer Component", () => {
             .first()
             .simulate("click");
         expect(onChangeHandler).not.toBeCalled();
-    // });
+    });
 
 });
