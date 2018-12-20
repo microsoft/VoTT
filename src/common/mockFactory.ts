@@ -109,13 +109,12 @@ export default class MockFactory {
         };
     }
 
-    public static createAssetProvider() : IAssetProvider {
+    public static createAssetProvider(): IAssetProvider {
         return {
             getAssets(containerName?: string): Promise<IAsset[]> {
                 throw new Error("Method not implemented.");
-            }
-        }
-
+            },
+        };
     }
 
     public static exportFormat(): IExportFormat {

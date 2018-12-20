@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
 import { Store, AnyAction } from "redux";
 import EditorPage, { IEditorPageProps } from "./editorPage";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider"
+import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
 import { IApplicationState, IProject} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { AssetService } from "../../../../services/assetService";
@@ -64,7 +64,6 @@ describe("Editor Page Component", () => {
     });
 
     fit("Raises onAssetSelected handler when an asset is selected from the sidebar", async () => {
-        
         AssetProviderFactory.register("testProvider", () => MockFactory.createAssetProvider());
         const testProject = MockFactory.createTestProject("TestProject");
 
