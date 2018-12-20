@@ -59,7 +59,7 @@ describe("Export Page", () => {
         });
     });
 
-    it("Calls save and export project actions on form submit", (done) => {
+    it("Calls save project actions on form submit", (done) => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, true);
         const props = createProps(testProject.id);
@@ -81,7 +81,7 @@ describe("Export Page", () => {
 
         setImmediate(() => {
             expect(saveProjectSpy).toBeCalled();
-            expect(exportProjectSpy).toBeCalled();
+            expect(exportProjectSpy).not.toBeCalled();
             expect(props.history.goBack).toBeCalled();
 
             const state = store.getState() as IApplicationState;

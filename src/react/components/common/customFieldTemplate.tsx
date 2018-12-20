@@ -2,7 +2,7 @@ import React from "react";
 import { FieldTemplateProps } from "react-jsonschema-form";
 
 export default function CustomFieldTemplate(props: FieldTemplateProps) {
-    const { id, label, help, required, description, errors, rawErrors, children } = props;
+    const { id, label, required, description, rawErrors, children } = props;
     const classNames = ["form-group"];
     if (rawErrors && rawErrors.length > 0) {
         classNames.push("is-invalid");
@@ -12,7 +12,8 @@ export default function CustomFieldTemplate(props: FieldTemplateProps) {
 
     return (
         <div className={classNames.join(" ")}>
-            {props.schema.type !== "object" &&
+            { /* Render label for non-objects except for when an object has defined a ui:field template */}
+            {(props.schema.type !== "object" || (props.schema.type === "object" && props.uiSchema["ui:field"])) &&
                 <label htmlFor={id}>{label}{required ? "*" : null}</label>
             }
             {children}
