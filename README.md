@@ -1,6 +1,6 @@
 # VoTT - Open Source
 
-[![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/Microsoft.VoTT?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=4?branchName=v2)
+[![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6?branchName=v2)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
