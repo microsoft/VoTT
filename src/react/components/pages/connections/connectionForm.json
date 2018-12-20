@@ -1,5 +1,5 @@
 {
-    "title": "Connection Details",
+    "title": "${connections.title}",
     "required": [
         "name",
         "providerType"
@@ -11,11 +11,11 @@
             "type": "string"
         },
         "description": {
-            "title": "Description",
+            "title": "${common.description}",
             "type": "string"
         },
         "providerType": {
-            "title": "Provider",
+            "title": "${connections.provider}",
             "type": "string",
             "enum": [
                 "bingImageSearch",
@@ -23,8 +23,8 @@
             ],
             "default": "bingImageSearch",
             "enumNames": [
-                "Bing Image Search",
-                "Local Directory"
+                "${connections.providers.bing.title}",
+                "${connections.providers.local.title}"
             ]
         },
         "providerOptions": {
