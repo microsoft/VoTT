@@ -7,7 +7,7 @@
     "type": "object",
     "properties": {
         "name": {
-            "title": "Display Name",
+            "title": "${common.displayName}",
             "type": "string"
         },
         "description": {

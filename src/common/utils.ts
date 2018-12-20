@@ -14,3 +14,14 @@ export function randomIntInRange(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive
 }
+
+export function replaceVariablesInJson(json: any, valueMapper: Function): any {
+    let jsonStr = JSON.stringify(json);
+    const variableRegex = /\${[a-zA-Z0-9\.]*}/g
+    const variables = jsonStr.match(variableRegex);
+    for(const variable of variables) {
+        const value = valueMapper(variable);
+        jsonStr = jsonStr.replace(variable, value);
+    }
+    return JSON.parse(jsonStr);
+}

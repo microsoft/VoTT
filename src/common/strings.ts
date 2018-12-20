@@ -13,38 +13,6 @@ export interface IStrings extends LocalizedStringsMethods {
         openProject: string;
         recentProjects: string;
     };
-    menuBar: {
-        file: {
-            exit: string;
-        }
-        edit: {
-            undo: string;
-            redo: string;
-            cut: string;
-            copy: string;
-            paste: string;
-            pasteAndMatchStyle: string;
-            delete: string;
-            selectAll: string;
-        }
-        view: {
-            reload: string;
-            forceReload: string;
-            toggleDevTools: string;
-            actualSize: string;
-            toggleFullScreen: string;
-        }
-        window: {
-            minimize: string;
-            close: string;
-        }
-        help: {
-            learnMore: string;
-            documentation: string;
-            communityDiscussions: string;
-            searchIssues: string;
-        },
-    };
     projectSettings: {
         sourceConnection: string;
         targetConnection: string;
@@ -105,38 +73,6 @@ export const strings: IStrings = new LocalizedStrings({
             openProject: "Open Project",
             recentProjects: "Recent Projects",
         },
-        menuBar: {
-            file: {
-                exit: "Exit",
-            },
-            edit: {
-                undo: "Undo",
-                redo: "Redo",
-                cut: "Cut",
-                copy: "Copy",
-                paste: "Paste",
-                pasteAndMatchStyle: "Paste and Match Style",
-                delete: "Delete",
-                selectAll: "Select All",
-            },
-            view: {
-                reload: "Reload",
-                forceReload: "Force Reload",
-                toggleDevTools: "Toggle Dev Tools",
-                actualSize: "Actual Size",
-                toggleFullScreen: "Toggle Full Screen",
-            },
-            window: {
-                minimize: "Minimize",
-                close: "Close",
-            },
-            help: {
-                learnMore: "Learn More",
-                documentation: "Documentation",
-                communityDiscussions: "Community Discussions",
-                searchIssues: "Search Issues",
-            },
-        },
         projectSettings: {
             sourceConnection: "Source Connection",
             targetConnection: "Target Connection",
@@ -181,3 +117,38 @@ export const strings: IStrings = new LocalizedStrings({
         },
     },
 });
+
+function getLocValue(variable: string) {
+    const varName = variable.replace(/\${}\s/g, "");
+    if (varName.length === 0){
+        throw new Error("Empty variable name");
+    }
+    const split = varName.split(".");
+    let result;
+    try {
+        result = strings[split[0]];
+    }
+    catch(e) {
+        throw new Error(`Variable ${varName} not found in strings`)
+    }
+    for(let i = 1; i < split.length; i++) {
+        try {
+            result = result[split[i]];
+        }
+        catch(e) {
+            throw new Error(`Variable ${varName} not found in strings`)
+        }
+    }
+    return result;
+}
+
+export function addLocValues(json: any): any {
+    let jsonStr = JSON.stringify(json);
+    const variableRegex = /\${[a-zA-Z0-9\.]*}/g
+    const variables = jsonStr.match(variableRegex);
+    for(const variable of variables) {
+        const locValue = getLocValue(variable);
+        jsonStr = jsonStr.replace(variable, locValue)
+    }
+    return JSON.parse(jsonStr);
+}
