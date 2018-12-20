@@ -99,7 +99,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 formData={this.state.formData}
                 onSubmit={this.onFormSubmit}>
                 <div>
-                    <button className="btn btn-success" type="submit">Save Project</button>
+                    <button className="btn btn-success mr-1" type="submit">Save Project</button>
                     <button className="btn btn-secondary btn-cancel"
                         type="button"
                         onClick={this.onFormCancel}>Cancel</button>
