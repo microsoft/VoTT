@@ -11,11 +11,11 @@
 # testing
 /coverage
 
-# production
+# packaging
 /build
 
-# release
-/dist/
+# releases
+/releases/
 
 # misc
 .DS_Store

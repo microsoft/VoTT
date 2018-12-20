@@ -24,7 +24,7 @@ steps:
 
     export DISPLAY=:99.0
 
-    npm install
+    npm ci  # do a clean install
     npm run compile
-    CI=true npm test # don't watch and just run all the tests
+    npm run test:ci # don't watch and just run all the tests
   displayName: 'Run tests'
