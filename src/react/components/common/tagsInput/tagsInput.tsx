@@ -48,7 +48,6 @@ export interface ITagsInputState {
     currentTagColorIndex: number;
     selectedTag: IReactTag;
     showModal: boolean;
-    editMode: boolean;
 }
 
 /**
@@ -81,7 +80,6 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
             currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
-            editMode: false,
         };
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
