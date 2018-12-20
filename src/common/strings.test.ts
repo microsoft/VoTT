@@ -4,7 +4,6 @@ const connectionForm = require("../react/components/pages/connections/connection
 
 describe("Localization tests", () => {
 
-
     function testLanguage(language: string) {
         strings.setLanguage(language);
         // tslint:disable-next-line:no-var-requires
@@ -17,13 +16,13 @@ describe("Localization tests", () => {
         const common = languageJson.common;
         const newConn = addLocValues(connectionForm);
         const connProps = newConn.properties;
-        
+
         expect(newConn.title).toEqual(lConn.title);
         expect(connProps.name.title).toEqual(common.displayName);
         expect(connProps.description.title).toEqual(common.description);
-        expect(connProps.providerType.title).toEqual(lConn.provider)
+        expect(connProps.providerType.title).toEqual(lConn.provider);
         expect(connProps.providerType.enumNames[0]).toEqual(lConn.providers.bing.title);
-        expect(connProps.providerType.enumNames[1]).toEqual(lConn.providers.local.title)
+        expect(connProps.providerType.enumNames[1]).toEqual(lConn.providers.local.title);
     }
 
     it("English", () => {
