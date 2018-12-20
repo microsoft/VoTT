@@ -96,13 +96,26 @@ describe("Tags Input Component", () => {
         expect(wrapper.find(TagsInput).state().tags[0].color).toEqual(originalTags[0].color);
     });
 
-    it("ctrl click tag opens editor modal", () => {
+    it("typing backspace on empty field does NOT delete tag", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        expect(wrapper.find(TagsInput).state().showModal).toBeFalsy();
+        // Root component calls handleDelete when backspace is pressed
+        // Component should handle backspace and return, not deleting and not calling onChange
+        wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.backspace}); // backspace
+        expect(onChangeHandler).not.toBeCalled();
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length);
+    });
+
+    it("ctrl clicking tag opens editor modal", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
@@ -110,7 +123,7 @@ describe("Tags Input Component", () => {
         expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(true);
     });
 
-    it("ctrl click tag sets selected tag", () => {
+    it("ctrl clicking tag sets selected tag", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
@@ -121,6 +134,28 @@ describe("Tags Input Component", () => {
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         expect(wrapper.find(TagsInput).state().selectedTag.id).toEqual(originalTags[0].name);
         expect(wrapper.find(TagsInput).state().selectedTag.color).toEqual(originalTags[0].color);
+    });
+
+    it("ctrl clicking tag does not call onTagClick or OnTagShiftClick", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const onTagShiftClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagShiftClick: onTagShiftClickHandler,
+            onTagClick: onTagClickHandler,
+        });
+        wrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
+        // Shows modal
+        expect(wrapper.find(TagsInput).state().showModal).toBe(true);
+        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(true);
+        // Does not Call onTagShiftClick
+        expect(onTagShiftClickHandler).not.toBeCalled();
+        // Does not call onTagClick
+        expect(onTagClickHandler).not.toBeCalled();
     });
 
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
@@ -135,7 +170,7 @@ describe("Tags Input Component", () => {
         wrapper.find("button")
             .last()
             .simulate("click");
-        expect(wrapper.find(TagsInput).state().showModal).toBeFalsy();
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).toBeCalled();
     });
 
@@ -151,32 +186,19 @@ describe("Tags Input Component", () => {
         wrapper.find("button")
             .first()
             .simulate("click");
-        expect(wrapper.find(TagsInput).state().showModal).toBeFalsy();
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).not.toBeCalled();
     });
 
-    it("typing backspace on empty field does NOT delete tag", () => {
-        const onChangeHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-        });
-        // Root component calls handleDelete when backspace is pressed
-        // Component should handle backspace and return, not deleting and not calling onChange
-        wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.backspace}); // backspace
-        expect(onChangeHandler).not.toBeCalled();
-        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length);
-    });
-
-    it("clicking tag calls onTagClick handler when specified", () => {
+    it("clicking tag calls onTagClick handler", () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
-        const newWrapper = createComponent({
+        const wrapper = createComponent({
             tags: originalTags,
             onChange: onChangeHandler,
             onTagClick: onTagClickHandler,
         });
-        newWrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}});
         expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
@@ -185,40 +207,82 @@ describe("Tags Input Component", () => {
     it("clicking tag does not call onTagClick handler when not specified", () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
-        const newWrapper = createComponent({
+        const wrapper = createComponent({
             tags: originalTags,
             onChange: onChangeHandler,
             onTagClick: null,
         });
-        newWrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}});
         expect(onTagClickHandler).not.toBeCalled();
     });
 
-    it("clicking tag calls onTagShiftClick handler when specified", () => {
-        const onChangeHandler = jest.fn();
-        const onTagShiftClick = jest.fn();
-        const newWrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClick,
-        });
-        newWrapper.find("div.inline-block.tagtext")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
-        expect(onTagShiftClick).toBeCalledWith(originalTags[0]);
-    });
-
-    it("clicking tag does not call onTagShiftClick handler when not specified", () => {
+    it("clicking tag does not open modal or call onTagShiftClick handler", () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
-        const newWrapper = createComponent({
+        const onTagShiftClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagShiftClick: onTagShiftClickHandler,
+            onTagClick: onTagClickHandler,
+        });
+        wrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}});
+        expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
+        // Does not show modal
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
+        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(false);
+        // Does not call onTagShiftClick
+        expect(onTagShiftClickHandler).not.toBeCalled();
+    });
+
+    it("shift clicking tag calls onTagShiftClick handler", () => {
+        const onChangeHandler = jest.fn();
+        const onTagShiftClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagShiftClick: onTagShiftClickHandler,
+        });
+        wrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
+        expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
+    });
+
+    it("shift clicking tag does not open modal or call onTagClick handler", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const onTagShiftClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagShiftClick: onTagShiftClickHandler,
+            onTagClick: onTagClickHandler,
+        });
+        wrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
+        expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
+        // Does not show modal
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
+        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(false);
+        // Does not call onTagClick
+        expect(onTagClickHandler).not.toBeCalled();
+    });
+
+    it("shift clicking tag does not call onTagShiftClick handler when not specified", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const wrapper = createComponent({
             tags: originalTags,
             onChange: onChangeHandler,
             onTagShiftClick: null,
         });
-        newWrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
         expect(onTagClickHandler).not.toBeCalled();
