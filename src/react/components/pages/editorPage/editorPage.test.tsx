@@ -85,7 +85,6 @@ describe("Editor Page Component", () => {
             // check to see if editorPage's editorSideBar.props onAssetSelected is called
             expect(editorPage.find(EditorSideBar)).not.toBeNull();
             expect(onAssetSelectedSpy).toBeCalled();
-            // expect(editorPage.find(EditorSideBar).prop("onAssetSelected")).toBeCalled();
         });
 
     //     const asset = MockFactory.createTestAsset("TestAsset");
