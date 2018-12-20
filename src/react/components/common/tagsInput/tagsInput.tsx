@@ -111,7 +111,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
                 />
             </div>
         );
-    }    
+    }
 
     public componentDidUpdate(prevProps: ITagsInputProps) {
         if (prevProps.tags !== this.props.tags) {
