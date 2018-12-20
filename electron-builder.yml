@@ -1,0 +1,22 @@
+# only use if package.json doesn't contain a "build"
+
+directories:
+  output: releases
+  buildResources: app-icons # this is where app-icons is store
+appId: com.microsoft.vott
+artifactName: '${productName}-${os}.${ext}'
+extends: null # need this otherwise it won't use the entry point we set in "main" in package.json
+files:
+  - filter:
+      - build/  # copy this directory to the asar directory that electron-builder use to look for the main entry file
+mac:
+  icon: app-icons/icon.icns
+  target: dmg
+  identity: null  # don't sign the app
+win:
+  icon: app-icons/icon.ico
+linux:
+  target:
+    - snap
+publish: null
+electronVersion: 3.0.13

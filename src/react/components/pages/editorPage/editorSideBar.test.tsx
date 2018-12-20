@@ -64,25 +64,23 @@ describe("Editor SideBar", () => {
         });
     });
 
-    // Not able to get the virtualized list to render in the headless browser.
-    xit("Calls onAssetSelected handler when an asset is selected", (done) => {
+    it("Calls onAssetSelected handler when an asset is selected", (done) => {
         const testAssets = getTestAssets();
         const props: IEditorSideBarProps = {
             assets: testAssets,
             selectedAsset: testAssets[0],
             onAssetSelected: onSelectAssetHanlder,
-            style: {
-                width: "300px",
-                height: "1000px",
-            },
         };
 
+        const nextAsset = testAssets[1];
         const wrapper = createComponent(props);
-        wrapper.find(".asset-item").at(1).simulate("click");
+        wrapper.setProps({
+            selectedAsset: nextAsset,
+        });
 
         setImmediate(() => {
-            expect(wrapper.state()["selectedAsset"]).toEqual(testAssets[1]);
-            expect(onSelectAssetHanlder).toBeCalledWith(testAssets[1]);
+            expect(wrapper.state()["selectedAsset"]).toEqual(nextAsset);
+            expect(onSelectAssetHanlder).toBeCalledWith(nextAsset);
             done();
         });
     });

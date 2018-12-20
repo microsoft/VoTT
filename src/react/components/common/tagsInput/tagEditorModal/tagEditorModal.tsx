@@ -1,8 +1,8 @@
 import React from "react";
-import ReactModal from "react-modal";
 import Form from "react-jsonschema-form";
-import "./tagEditorModal.scss";
+import ReactModal from "react-modal";
 import { ITag } from "../../../../../models/applicationState";
+import "./tagEditorModal.scss";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./tagEditorModal.json");
 
@@ -30,6 +30,9 @@ export interface ITagEditorModalState {
     isOpen: boolean;
 }
 
+/**
+ * Simple modal for editing the name and color of project tags
+ */
 export default class TagEditorModal extends React.Component<ITagEditorModalProps, ITagEditorModalState> {
 
     constructor(props: ITagEditorModalProps) {
@@ -38,7 +41,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
             tag: props.tag,
             isOpen: false,
         };
-        this.handleChange = this.handleChange.bind(this);
+        this.handleFormChange = this.handleFormChange.bind(this);
         this.handleOk = this.handleOk.bind(this);
     }
 
@@ -52,7 +55,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
                     <Form
                         schema={formSchema}
                         formData={this.state.tag}
-                        onChange={this.handleChange}>
+                        onChange={this.handleFormChange}>
                         <div>
                             <button className="btn btn-info" onClick={this.handleOk}>Ok</button>
                             <button className="btn btn-info" onClick={this.props.onCancel}>Cancel</button>
@@ -63,6 +66,10 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
         );
     }
 
+    /**
+     * Updates tag in modal if necessary
+     * @param prevProps Previous properties with `tag` attribute
+     */
     public componentDidUpdate(prevProps) {
         if (this.props.tag && prevProps.tag !== this.props.tag) {
             this.setState({
@@ -71,13 +78,23 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
         }
     }
 
-    private handleChange(args){
+    /**
+     * Called when change made to modal form
+     */
+    private handleFormChange(args) {
         this.setState({
-            tag: args.formData
-        })
+            tag: {
+                name: args.formData.name,
+                color: args.formData.color,
+            },
+        });
     }
 
+    /**
+     * Called when 'Ok' is clicked
+     */
     private handleOk() {
         this.props.onOk(this.state.tag);
     }
+
 }

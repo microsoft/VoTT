@@ -2,6 +2,7 @@ import { mount } from "enzyme";
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
+import { KeyCodes } from "../../common/tagsInput/tagsInput";
 import ProjectForm, { IProjectFormProps } from "./projectForm";
 import { IProject } from "../../../../models/applicationState";
 
@@ -166,8 +167,8 @@ describe("Project Form Component", () => {
         wrapper.find("select#root_sourceConnection").simulate("change", { target: { value: newConnection.id } });
         wrapper.find("select#root_targetConnection").simulate("change", { target: { value: newConnection.id } });
         wrapper.find("textarea#root_description").simulate("change", { target: { value: newDescription } });
-        wrapper.find("input.ReactTags__tagInputField").simulate("change", { target: { value: newTagName } });
-        wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", { keyCode: 13 }); // enter
+        wrapper.find("input.ReactTags__tagInputField").simulate("change", {target: {value: newTagName}});
+        wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", {keyCode: KeyCodes.enter});
 
         const form = wrapper.find("form");
         form.simulate("submit");
