@@ -142,13 +142,4 @@ function getLocValue(variable: string) {
     return result;
 }
 
-export function addLocValues(json: any): any {
-    let jsonStr = JSON.stringify(json);
-    const variableRegex = /\${[a-zA-Z0-9\.]*}/g
-    const variables = jsonStr.match(variableRegex);
-    for(const variable of variables) {
-        const locValue = getLocValue(variable);
-        jsonStr = jsonStr.replace(variable, locValue)
-    }
-    return JSON.parse(jsonStr);
-}
+
