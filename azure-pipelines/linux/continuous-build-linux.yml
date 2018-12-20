@@ -8,7 +8,7 @@ steps:
     
     sudo apt-get update
     sudo apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 libgconf-2-4 dbus xvfb libgtk-3-0
-    sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+    sudo cp azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
     sudo chmod +x /etc/init.d/xvfb
     sudo update-rc.d xvfb defaults
     sudo service xvfb start
@@ -24,7 +24,7 @@ steps:
 
     export DISPLAY=:99.0
 
-    npm install
+    npm ci  # do a clean install
     npm run compile
-    CI=true npm test # don't watch and just run all the tests
+    npm run test:ci # don't watch and just run all the tests
   displayName: 'Run tests'
