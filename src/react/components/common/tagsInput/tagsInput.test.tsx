@@ -7,8 +7,6 @@ import MockFactory from "../../../../common/mockFactory";
 const TagColors = require("./tagColors.json");
 
 describe("Tags Input Component", () => {
-    let wrapper: any = null;
-    let onChangeHandler: (value: any) => void;
 
     const originalTags = MockFactory.createTestTags();
 
@@ -18,16 +16,13 @@ describe("Tags Input Component", () => {
         );
     }
 
-    beforeEach(() => {
-        onChangeHandler = jest.fn();
-        wrapper = createComponent({
+    it("tags are initialized correctly", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
             tags: originalTags,
             onChange: onChangeHandler,
         });
-    });
-
-    it("tags are initialized correctly", () => {
-        const stateTags = wrapper.state().tags;
+        const stateTags = wrapper.find(TagsInput).state().tags;
         expect(stateTags).toHaveLength(originalTags.length);
         for (let i = 0; i < stateTags.length; i++) {
             expect(stateTags[i].id).toEqual(originalTags[i].name);
@@ -37,88 +32,195 @@ describe("Tags Input Component", () => {
     });
 
     it("renders appropriate number of color boxes", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         expect(wrapper.find("div.inline-block.tag_color_box")).toHaveLength(originalTags.length);
     });
 
     it("one text input field is available", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         expect(wrapper.find("input")).toHaveLength(1);
     });
 
     it("create a new tag from text box - enter key", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         const newTagName = "My new tag";
         wrapper.find("input").simulate("change", {target: {value: newTagName}});
         wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.enter});
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.state().tags).toHaveLength(originalTags.length + 1);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
-        expect(wrapper.state().tags[newTagIndex].id).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.state().tags[newTagIndex].color);
+        expect(wrapper.find(TagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
+        expect(TagColors).toContain(wrapper.find(TagsInput).state().tags[newTagIndex].color);
     });
 
     it("create a new tag from text box - comma key", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         const newTagName = "My new tag";
         wrapper.find("input").simulate("change", {target: {value: newTagName}});
         wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.comma});
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.state().tags).toHaveLength(originalTags.length + 1);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
-        expect(wrapper.state().tags[newTagIndex].id).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.state().tags[newTagIndex].color);
+        expect(wrapper.find(TagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
+        expect(TagColors).toContain(wrapper.find(TagsInput).state().tags[newTagIndex].color);
     });
 
     it("remove a tag", () => {
-        expect(wrapper.state().tags).toHaveLength(originalTags.length);
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length);
         wrapper.find("a.ReactTags__remove")
             .last().simulate("click");
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.state().tags).toHaveLength(originalTags.length - 1);
-        expect(wrapper.state().tags[0].id).toEqual(originalTags[0].name);
-        expect(wrapper.state().tags[0].color).toEqual(originalTags[0].color);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length - 1);
+        expect(wrapper.find(TagsInput).state().tags[0].id).toEqual(originalTags[0].name);
+        expect(wrapper.find(TagsInput).state().tags[0].color).toEqual(originalTags[0].color);
     });
 
-    it("double click tag opens modal", () => {
-        expect(wrapper.state().showModal).toBeFalsy();
+    it("ctrl click tag opens editor modal", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
+        expect(wrapper.find(TagsInput).state().showModal).toBeFalsy();
         wrapper.find("div.inline-block.tagtext")
             .first()
-            .simulate("dblclick", { target: { innerText: originalTags[0].name}});
-        expect(wrapper.state().showModal).toBeTruthy();
+            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
+        expect(wrapper.find(TagsInput).state().showModal).toBe(true);
+        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(true);
     });
 
-    it("double click tag sets selected tag", () => {
+    it("ctrl click tag sets selected tag", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         wrapper.find("div.inline-block.tagtext")
             .first()
-            .simulate("dblclick", { target: { innerText: originalTags[0].name}});
-        expect(wrapper.state().selectedTag.id).toEqual(originalTags[0].name);
-        expect(wrapper.state().selectedTag.color).toEqual(originalTags[0].color);
+            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
+        expect(wrapper.find(TagsInput).state().selectedTag.id).toEqual(originalTags[0].name);
+        expect(wrapper.find(TagsInput).state().selectedTag.color).toEqual(originalTags[0].color);
     });
 
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         wrapper.find("div.inline-block.tagtext")
             .first()
-            .simulate("dblclick", { target: { innerText: originalTags[0].name}});
+            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button")
             .last()
             .simulate("click");
-        expect(wrapper.state().showModal).toBeFalsy();
+        expect(wrapper.find(TagsInput).state().showModal).toBeFalsy();
         expect(onChangeHandler).toBeCalled();
     });
 
     it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         wrapper.find("div.inline-block.tagtext")
             .first()
-            .simulate("dblclick", { target: { innerText: originalTags[0].name}});
+            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button")
             .first()
             .simulate("click");
-        expect(wrapper.state().showModal).toBeFalsy();
+        expect(wrapper.find(TagsInput).state().showModal).toBeFalsy();
         expect(onChangeHandler).not.toBeCalled();
     });
 
     it("typing backspace on empty field does NOT delete tag", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
         // Root component calls handleDelete when backspace is pressed
         // Component should handle backspace and return, not deleting and not calling onChange
         wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.backspace}); // backspace
         expect(onChangeHandler).not.toBeCalled();
-        expect(wrapper.state().tags).toHaveLength(originalTags.length);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length);
+    });
+
+    it("clicking tag calls onTagClick handler when specified", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const newWrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagClick: onTagClickHandler,
+        });
+        newWrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}});
+        expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
+    });
+
+    it("clicking tag does not call onTagClick handler when not specified", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const newWrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagClick: null,
+        });
+        newWrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}});
+        expect(onTagClickHandler).not.toBeCalled();
+    });
+
+    it("clicking tag calls onTagShiftClick handler when specified", () => {
+        const onChangeHandler = jest.fn();
+        const onTagShiftClick = jest.fn();
+        const newWrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagShiftClick: onTagShiftClick,
+        });
+        newWrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
+        expect(onTagShiftClick).toBeCalledWith(originalTags[0]);
+    });
+
+    it("clicking tag does not call onTagShiftClick handler when not specified", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const newWrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+            onTagShiftClick: null,
+        });
+        newWrapper.find("div.inline-block.tagtext")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
+        expect(onTagClickHandler).not.toBeCalled();
     });
 });

@@ -29,6 +29,8 @@ export interface IReactTag {
 export interface ITagsInputProps {
     tags: ITag[];
     onChange: (tags: ITag[]) => void;
+    onTagClick?: (tag: ITag) => void;
+    onTagShiftClick?: (tag: ITag) => void;
 }
 
 /**
@@ -44,6 +46,7 @@ export interface ITagsInputState {
     currentTagColorIndex: number;
     selectedTag: IReactTag;
     showModal: boolean;
+    editMode: boolean;
 }
 
 /**
@@ -73,15 +76,15 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
             currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
+            editMode: false,
         };
-
+        this.handleTagClick = this.handleTagClick.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
+        this.getTag = this.getTag.bind(this);
         this.handleDrag = this.handleDrag.bind(this);
-        this.handleTagDoubleClick = this.handleTagDoubleClick.bind(this);
         this.handleEditedTag = this.handleEditedTag.bind(this);
         this.handleCloseModal = this.handleCloseModal.bind(this);
-        this.getTag = this.getTag.bind(this);
         this.toItag = this.toItag.bind(this);
         this.toReactTag = this.toReactTag.bind(this);
     }
@@ -171,19 +174,25 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     /**
-     * Sets the selected tag and shows the modal for editing tag
-     * @param event Double click event
+     * Calls the onTagClick handler if not null with clicked tag
+     * @param event Click event
      */
-    private handleTagDoubleClick(event) {
-        let text = event.currentTarget.innerText;
-        if (!text) {
-            text = event.target.innerText;
-        }
+    private handleTagClick(event) {
+        const text = event.currentTarget.innerText || event.target.innerText;
         const tag = this.getTag(text);
-        this.setState({
-            selectedTag: tag,
-            showModal: true,
-        });
+        if (event.ctrlKey) {
+            // Opens up tag editor modal
+            this.setState({
+                selectedTag: tag,
+                showModal: true,
+            });
+        } else if (event.shiftKey && this.props.onTagShiftClick) {
+            // Calls provided onTagShiftClick
+            this.props.onTagShiftClick(this.toItag(tag));
+        } else if (this.props.onTagClick) {
+            // Calls provided onTagClick function
+            this.props.onTagClick(this.toItag(tag));
+        }
     }
 
     /**
@@ -230,7 +239,6 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         if (!match) {
             throw new Error(`No tag by id: ${id}`);
         }
-
         return match;
     }
 
@@ -285,7 +293,8 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
      * @param color color of tag
      */
     private ReactTagHtml(name: string, color: string) {
-        return <div className="inline-block tagtext" onDoubleClick={(event) => this.handleTagDoubleClick(event)}>
+        return <div className="inline-block tagtext"
+                    onClick={(event) => this.handleTagClick(event)}>
                     <div className={"inline-block tag_color_box"}
                         style={{
                             backgroundColor: color,
