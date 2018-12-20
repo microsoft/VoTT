@@ -1,6 +1,6 @@
 import React from "react";
 import Form from "react-jsonschema-form";
-import { IConnection, IProject, ITag } from "../../../../models/applicationState.js";
+import { IConnection, IProject } from "../../../../models/applicationState.js";
 import ConnectionPicker from "../../common/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField";
@@ -9,18 +9,33 @@ const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
 const uiSchema = require("./projectForm.ui.json");
 
+/**
+ * Required properties for Project Settings form
+ * project: IProject - project to fill form
+ * connections: IConnection[] - array of connections to use in project
+ * onSubmit: function to call on form submit
+ */
 export interface IProjectFormProps extends React.Props<ProjectForm> {
     project: IProject;
     connections: IConnection[];
     onSubmit: (project: IProject) => void;
 }
 
+/**
+ * Project Form State
+ * formData - data containing details of project
+ * formSchema - json schema of form
+ * uiSchema - json UI schema of form
+ */
 export interface IProjectFormState {
     formData: any;
     formSchema: any;
     uiSchema: any;
 }
 
+/**
+ * Form for editing or creating VoTT projects
+ */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
     private fields = {
         connection: CustomField(ConnectionPicker, (props) => {
@@ -50,7 +65,10 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         };
         this.onFormSubmit = this.onFormSubmit.bind(this);
     }
-
+    /**
+     * Updates state if project from properties has changed
+     * @param prevProps - previously set properties
+     */
     public componentDidUpdate(prevProps) {
         if (prevProps.project !== this.props.project) {
             this.setState({
@@ -71,6 +89,9 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         );
     }
 
+    /**
+     * Called when form is submitted
+     */
     private onFormSubmit(args) {
         const project: IProject = {
             ...args.formData,
