@@ -18,12 +18,19 @@ export class AssetProviderFactory {
     }
 
     public static create(name: string, options?: any): IAssetProvider {
+        Guard.emtpy(name);
+
         const handler = AssetProviderFactory.handlerRegistry[name];
-        if (!handler) {
-            throw new Error(`No asset provider has been registered with name '${name}'`);
-        }
+        console.log(handler);
+        // if (!handler) {
+        //     throw new Error(`No asset provider has been registered with name '${name}'`);
+        // }
 
         return handler(options);
+    }
+
+    public static getAssets() {
+        return this.getAssets();
     }
     private static handlerRegistry: { [id: string]: (options?: any) => IAssetProvider } = {};
 }
