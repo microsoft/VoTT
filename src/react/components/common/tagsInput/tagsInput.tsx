@@ -76,20 +76,22 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         super(props);
 
         this.state = {
-            tags: this.getReactTags(this.props.tags),
+            tags: this.toReactTags(this.props.tags),
             currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
         };
+        // UI Handlers
         this.handleTagClick = this.handleTagClick.bind(this);
-        this.handleDelete = this.handleDelete.bind(this);
-        this.handleAddition = this.handleAddition.bind(this);
-        this.getTag = this.getTag.bind(this);
         this.handleDrag = this.handleDrag.bind(this);
-        this.handleEditedTag = this.handleEditedTag.bind(this);
         this.handleCloseModal = this.handleCloseModal.bind(this);
-        this.toItag = this.toItag.bind(this);
+        // Tag edit handlers
+        this.handleAddition = this.handleAddition.bind(this);
+        this.handleEditedTag = this.handleEditedTag.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        // Helpers
         this.toReactTag = this.toReactTag.bind(this);
+        this.getTag = this.getTag.bind(this);
     }
 
     public render() {
@@ -109,72 +111,17 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
                 />
             </div>
         );
-    }
+    }    
 
     public componentDidUpdate(prevProps: ITagsInputProps) {
         if (prevProps.tags !== this.props.tags) {
             this.setState({
-                tags: this.getReactTags(this.props.tags),
+                tags: this.toReactTags(this.props.tags),
             });
         }
     }
-    /**
-     * Update an existing tag, called after clicking 'OK' in modal
-     * @param newTag Edited version of tag
-     */
-    private handleEditedTag(newTag: ITag): void {
-        const newReactTag = this.toReactTag(newTag);
-        /**
-         * If this was a name change (ids are not equal), don't allow
-         * the new tag to be named with a name that currently exists
-         * in other tags. Probably should include an error message.
-         * For now, just doesn't allow the action to take place. Modal
-         * won't close and user won't be able to set the name. This is
-         * similar to how the component handles duplicate naming at the
-         * creation level. If user enters name that already exists in
-         * tags, the component just doesn't do anything.
-         */
-        if (newReactTag.id !== this.state.selectedTag.id && this.state.tags.some((t) => t.id === newReactTag.id)) {
-            return;
-        }
-        this.addHtml(newReactTag);
-        this.setState((prevState) => {
-            return {
-                tags: prevState.tags.map((reactTag) => {
-                    if (reactTag.id === prevState.selectedTag.id) {
-                        reactTag = newReactTag;
-                    }
-                    return reactTag;
-                }),
-                showModal: false,
-            };
-        }, () => this.props.onChange(this.normalize(this.state.tags)));
-    }
 
-    /**
-     * Set showModal to false
-     */
-    private handleCloseModal(): void {
-        this.setState({
-            showModal: false,
-        });
-    }
-
-    /**
-     * Adds new tag to state with necessary HTML for rendering
-     * Sets the color of the tag to next color, rotates through each
-     * @param reactTag - IReactTag - new tag to add to state
-     */
-    private handleAddition(reactTag: IReactTag): void {
-        reactTag.color = TagColors[this.state.currentTagColorIndex];
-        this.addHtml(reactTag);
-        this.setState((prevState) => {
-            return {
-                tags: [...this.state.tags, reactTag],
-                currentTagColorIndex: (prevState.currentTagColorIndex + 1) % TagColors.length,
-            };
-        }, () => this.props.onChange(this.normalize(this.state.tags)));
-    }
+    // UI Handlers
 
     /**
      * Calls the onTagClick handler if not null with clicked tag
@@ -212,7 +159,67 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         newTags.splice(newPos, 0, tag);
 
         this.setState({ tags: newTags },
-            () => this.props.onChange(this.normalize(this.state.tags)));
+            () => this.props.onChange(this.toITags(this.state.tags)));
+    }
+
+    /**
+     * Set showModal to false
+     */
+    private handleCloseModal(): void {
+        this.setState({
+            showModal: false,
+        });
+    }
+
+    // Tag Operations
+
+    /**
+     * Adds new tag to state with necessary HTML for rendering
+     * Sets the color of the tag to next color, rotates through each
+     * @param reactTag - IReactTag - new tag to add to state
+     */
+    private handleAddition(reactTag: IReactTag): void {
+        reactTag.color = TagColors[this.state.currentTagColorIndex];
+        this.addHtml(reactTag);
+        this.setState((prevState) => {
+            return {
+                tags: [...this.state.tags, reactTag],
+                currentTagColorIndex: (prevState.currentTagColorIndex + 1) % TagColors.length,
+            };
+        }, () => this.props.onChange(this.toITags(this.state.tags)));
+    }
+
+    /**
+     * Update an existing tag, called after clicking 'OK' in modal
+     * @param newTag Edited version of tag
+     */
+    private handleEditedTag(newTag: ITag): void {
+        const newReactTag = this.toReactTag(newTag);
+        /**
+         * If this was a name change (ids are not equal), don't allow
+         * the new tag to be named with a name that currently exists
+         * in other tags. Probably should include an error message.
+         * For now, just doesn't allow the action to take place. Modal
+         * won't close and user won't be able to set the name. This is
+         * similar to how the component handles duplicate naming at the
+         * creation level. If user enters name that already exists in
+         * tags, the component just doesn't do anything.
+         */
+        if (newReactTag.id !== this.state.selectedTag.id && this.state.tags.some((t) => t.id === newReactTag.id)) {
+            return;
+        }
+        this.addHtml(newReactTag);
+        this.setState((prevState) => {
+            return {
+                tags: prevState.tags.map((reactTag) => {
+                    if (reactTag.id === prevState.selectedTag.id) {
+                        reactTag = newReactTag;
+                    }
+                    return reactTag;
+                }),
+                showModal: false,
+            };
+        }, () => this.props.onChange(this.toITags(this.state.tags)));
     }
 
     /**
@@ -230,8 +237,10 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
             return {
                 tags: tags.filter((tag, index) => index !== i),
             };
-        }, () => this.props.onChange(this.normalize(this.state.tags)));
+        }, () => this.props.onChange(this.toITags(this.state.tags)));
     }
+
+    // Helpers
 
     /**
      * Gets the tag with the given name (id)
@@ -244,23 +253,6 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         }
         return match;
     }
-
-    /**
-     * Adds necessary HTML for tag to render correctly
-     * @param tag tag needing Html
-     */
-    private addHtml(tag: IReactTag): void {
-        tag.text = this.ReactTagHtml(tag.id, tag.color);
-    }
-
-    /**
-     * Gets ITag[] from props and converts it to IReactTag[]
-     * @param props properties for component, contains tags in ITag format
-     */
-    private getReactTags(tags: ITag[]): IReactTag[] {
-        return tags ? tags.map((element: ITag) => this.toReactTag(element)) : [];
-    }
-
     /**
      * Converts ITag to IReactTag
      * @param tag ITag to convert to IReactTag
@@ -272,20 +264,6 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         return {
             id: tag.name,
             text: this.ReactTagHtml(tag.name, tag.color),
-            color: tag.color,
-        };
-    }
-
-    /**
-     * Converts IReactTag to ITag
-     * @param tag IReactTag to convert to ITag
-     */
-    private toItag(tag: IReactTag): ITag {
-        if (!tag) {
-            return null;
-        }
-        return {
-            name: tag.id,
             color: tag.color,
         };
     }
@@ -307,10 +285,40 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     /**
+     * Converts IReactTag to ITag
+     * @param tag IReactTag to convert to ITag
+     */
+    private toItag(tag: IReactTag): ITag {
+        if (!tag) {
+            return null;
+        }
+        return {
+            name: tag.id,
+            color: tag.color,
+        };
+    }
+
+    /**
+     * Adds necessary HTML for tag to render correctly
+     * @param tag tag needing Html
+     */
+    private addHtml(tag: IReactTag): void {
+        tag.text = this.ReactTagHtml(tag.id, tag.color);
+    }
+
+    /**
+     * Gets ITag[] from props and converts it to IReactTag[]
+     * @param props properties for component, contains tags in ITag format
+     */
+    private toReactTags(tags: ITag[]): IReactTag[] {
+        return tags ? tags.map((element: ITag) => this.toReactTag(element)) : [];
+    }
+
+    /**
      * Convert array of IReactTags to ITags
      * @param tags array of IReactTags to convert to ITags
      */
-    private normalize(tags: IReactTag[]): ITag[] {
+    private toITags(tags: IReactTag[]): ITag[] {
         return tags.map((element: IReactTag) => this.toItag(element));
     }
 }
