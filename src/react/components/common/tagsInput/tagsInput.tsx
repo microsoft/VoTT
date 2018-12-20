@@ -25,6 +25,8 @@ export interface IReactTag {
  * Properties required for TagsInput component
  * tags - ITag[] or stringified ITag[]
  * onChange - function to call on tags change
+ * onTagClick - function to call when tag is clicked
+ * onTagShiftClick - function to call when tag is clicked while holding shift key
  */
 export interface ITagsInputProps {
     tags: ITag[];
@@ -66,6 +68,9 @@ export const KeyCodes = {
  */
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
+/**
+ * Component for creating, modifying and using tags
+ */
 export default class TagsInput extends React.Component<ITagsInputProps, ITagsInputState> {
 
     constructor(props) {
