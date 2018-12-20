@@ -113,6 +113,7 @@ describe("Connections Page", () => {
         it("adds connection when submit button is hit", () => {
             const props = createProps(connectionCreateRoute);
             props.match.params = { connectionId: "create" };
+            props.actions.saveConnection = jest.fn();
             const saveConnection = jest.spyOn(props.actions, "saveConnection");
             const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
 
@@ -129,9 +130,11 @@ describe("Connections Page", () => {
                           .simulate("change", { target: { value: "test" } });
             connectionForm.find(Form).simulate("submit");
 
-            expect(saveConnection).toBeCalled();
-            expect(saveConnection.mock.calls[0][0].id !== null).toBe(true);
-            wrapper.unmount();
+            setImmediate(() => setImmediate(() => {
+                expect(saveConnection).toBeCalled();
+                expect(saveConnection.mock.calls[0][0].id !== null).toBe(true);
+                wrapper.unmount();
+            }));
         });
 
         it("renders connections in the list correctly", () => {
