@@ -1,19 +1,18 @@
 import React from "react";
 import { Provider } from "react-redux";
-import createReduxStore from "../../../../redux/store/store";
-import initialState from "../../../../redux/store/initialState";
-import EditorPage, { IEditorPageProps } from "./editorPage";
-import { Store, AnyAction } from "redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
-import { AssetService } from "../../../../services/assetService";
-import { IApplicationState,
-         IProject} from "../../../../models/applicationState";
+import { Store, AnyAction } from "redux";
+import EditorPage, { IEditorPageProps } from "./editorPage";
+import { IApplicationState, IProject} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import { AssetService } from "../../../../services/assetService";
+import createReduxStore from "../../../../redux/store/store";
 import MockFactory from "../../../../common/mockFactory";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
+import EditorSideBar from "./editorSideBar";
 
 describe("Editor Page Component", () => {
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
@@ -59,21 +58,42 @@ describe("Editor Page Component", () => {
 
         setImmediate(() => {
             expect(editorPage.prop("project")).toEqual(testProject);
+            expect(editorPage.state("assets")).toEqual([]);
         });
     });
 
     it("Raises onAssetSelected handler when an asset is selected from the sidebar", async () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, true);
-        const asset = MockFactory.createTestAsset("TestAsset");
-        const assetMetadata = MockFactory.createTestAssetMetadata(asset);
-        const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
-        mockAssetService.prototype.getAssetMetadata = jest.fn(() => assetMetadata);
+        const props = createProps(testProject.id);
 
-        const result = await projectActions.loadAssetMetadata(testProject, asset)(store.dispatch);
+        const wrapper = createCompoent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0);
 
-        expect(mockAssetService.prototype.getAssetMetadata).toBeCalledWith(asset);
-        expect(result).toEqual(assetMetadata);
+        const editorSideBar = wrapper.find(EditorSideBar);
+        const onAssetSelectedSpy = jest.spyOn(editorSideBar.props(), "onAssetSelected");
+
+        // THOUGHT PROCESS: probs have to create jest.fn() => something for onAssetSelected
+        // then have to mock selecting an item and check if this mock fn is called
+
+        // mock an selecting an item from the sidebar
+
+        setImmediate(() => {
+            // check to see if editorPage's editorSideBar.props onAssetSelected is called
+            expect(editorPage.find(EditorSideBar)).not.toBeNull();
+            expect(onAssetSelectedSpy).toBeCalled();
+            // expect(editorPage.find(EditorSideBar).prop("onAssetSelected")).toBeCalled();
+        });
+
+    //     const asset = MockFactory.createTestAsset("TestAsset");
+    //     const assetMetadata = MockFactory.createTestAssetMetadata(asset);
+    //     const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
+    //     mockAssetService.prototype.getAssetMetadatas = jest.fn(() => assetMetadata);
+
+    //     const result = await projectActions.loadAssetMetadata(testProject, asset)(store.dispatch);
+
+    //     expect(mockAssetService.prototype.getAssetMetadata).toBeCalledWith(asset);
+    //     expect(result).toEqual(assetMetadata);
     });
 });
 
