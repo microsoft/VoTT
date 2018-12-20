@@ -307,7 +307,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     /**
-     * Gets ITag[] from props and converts it to IReactTag[]
+     * Convert array of ITags to IReactTags
      * @param props properties for component, contains tags in ITag format
      */
     private toReactTags(tags: ITag[]): IReactTag[] {
