@@ -1,6 +1,9 @@
 import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
 import { replaceVariablesInJson } from "./utils";
+// tslint:disable-next-line:no-var-requires
 const english = require("./localization/en.json");
+// tslint:disable-next-line:no-var-requires
+const spanish = require("./localization/es.json");
 
 export interface IStrings extends LocalizedStringsMethods {
     appName: string;
@@ -60,7 +63,8 @@ export interface IStrings extends LocalizedStringsMethods {
 }
 
 export const strings: IStrings = new LocalizedStrings({
-    en: english
+    en: english,
+    es: spanish,
 });
 
 function getLocValue(variable: string): string {

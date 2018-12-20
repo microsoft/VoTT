@@ -1,58 +1,58 @@
 {
-    "appName": "Visual Object Tagging Tool",
+    "appName": "Herramienta Visual de Etiquetado de Objetos",
     "common": {
-        "displayName": "Display Name",
-        "description": "Description",
-        "submit": "Submit",
-        "cancel": "Cancel",
-        "zoomIn": "Zoom In",
-        "zoomOut": "Zoom Out"
+        "displayName": "Nombre para Mostrar",
+        "description": "Descripción",
+        "submit": "Enviar",
+        "cancel": "Cancelar",
+        "zoomIn": "Aumentar el Zoom",
+        "zoomOut": "Disminuir el Zoom"
     },
     "homePage": {
-        "newProject": "New Project",
-        "openProject": "Open Project",
-        "recentProjects": "Recent Projects"
+        "newProject": "Nuevo Proyecto",
+        "openProject": "Abrir Proyecto",
+        "recentProjects": "Proyectos Recientes"
     },
     "projectSettings": {
-        "sourceConnection": "Source Connection",
-        "targetConnection": "Target Connection",
-        "addConnection": "Add Connection",
-        "tags": "Tags"
+        "sourceConnection": "Conexión de Origen",
+        "targetConnection": "Conexión de Destino",
+        "addConnection": "Agregar Conexión",
+        "tags": "Etiquetas"
     },
     "connections": {
-        "title": "Connections",
-        "settings": "Connection Settings",
-        "details": "Connection Details",
-        "connectionPageInstructions": "Please select a connection to edit",
-        "provider": "Provider",
+        "title": "Conexiones",
+        "settings": "Configuración de Conexión",
+        "details": "Detalles de Conexión",
+        "connectionPageInstructions": "Por favor seleccione una conexión para editar",
+        "provider": "Proveedor",
         "providers": {
             "azureBlob": {
-                "title": "Azure Blob Storage"
+                "title": "Almacenamiento de Azure Blob"
             },
             "bing": {
-                "title": "Bing Image Search",
-                "options": "Bing Image Search Options",
-                "apiKey": "API Key",
-                "query": "Query",
-                "aspectRatio": "Aspect Ratio"
+                "title": "Búsqueda de Imágenes Bing",
+                "options": "Opciones Bing Image Search",
+                "apiKey": "Clave API",
+                "query": "Consulta",
+                "aspectRatio": "Relación de Aspecto"
             },
             "local": {
-                "title": "Local File System",
-                "folderPath": "Folder Path",
-                "selectFolder": "Select Folder"
+                "title": "Sistema de Archivos Local",
+                "folderPath": "Ruta de la carpeta",
+                "selectFolder": "Seleccione la carpeta"
             }
         }
     },
     "editorPage": {
-        "width": "Width",
-        "height": "Height",
+        "width": "Anchura",
+        "height": "Altura",
         "toolbar": {
-            "select": "Select",
+            "select": "Seleccionar",
             "pan": "Pan",
-            "drawRectangle": "Draw Rectangle",
-            "drawPolygon": "Draw Polygon",
-            "saveProject": "Save Project",
-            "exportProject": "Export Project"
+            "drawRectangle": "Dibujar Rectángulo",
+            "drawPolygon": "Dibujar Polígono",
+            "saveProject": "Guardar Proyecto",
+            "exportProject": "Exprtar Proyecto"
         }
     }
 }
