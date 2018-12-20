@@ -1,11 +1,10 @@
 import React from "react";
-import Form from "react-jsonschema-form";
+import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { IConnection, IProject } from "../../../../models/applicationState.js";
 import ConnectionPicker from "../../common/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
-import ErrorListTemplate from "../../common/errorListTemplate";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
@@ -21,7 +20,7 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
     project: IProject;
     connections: IConnection[];
     onSubmit: (project: IProject) => void;
-    onCancel: () => void;
+    onCancel?: () => void;
 }
 
 /**
@@ -77,7 +76,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
      * Updates state if project from properties has changed
      * @param prevProps - previously set properties
      */
-    public componentDidUpdate(prevProps) {
+    public componentDidUpdate(prevProps: IProjectFormProps) {
         if (prevProps.project !== this.props.project) {
             this.setState({
                 formData: { ...this.props.project },
@@ -101,18 +100,20 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 onSubmit={this.onFormSubmit}>
                 <div>
                     <button className="btn btn-success" type="submit">Save Project</button>
-                    <button className="btn btn-secondary" type="button" onClick={this.onFormCancel}>Cancel</button>
+                    <button className="btn btn-secondary btn-cancel"
+                        type="button"
+                        onClick={this.onFormCancel}>Cancel</button>
                 </div>
             </Form>
         );
     }
 
-    private onFormValidate(formData: IProject, errors) {
-        if (Object.keys(formData.sourceConnection).length === 0) {
+    private onFormValidate(project: IProject, errors: FormValidation) {
+        if (Object.keys(project.sourceConnection).length === 0) {
             errors.sourceConnection.addError("is a required property");
         }
 
-        if (Object.keys(formData.targetConnection).length === 0) {
+        if (Object.keys(project.targetConnection).length === 0) {
             errors.targetConnection.addError("is a required property");
         }
 
@@ -128,7 +129,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     /**
      * Called when form is submitted
      */
-    private onFormSubmit(args) {
+    private onFormSubmit(args: ISubmitEvent<IProject>) {
         const project: IProject = {
             ...args.formData,
         };
