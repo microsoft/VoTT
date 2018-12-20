@@ -15,6 +15,7 @@ import {
     ITag,
 } from "../models/applicationState";
 import { VottExportAssetState } from "../providers/export/vottJson";
+import { IAssetProvider } from "../providers/storage/assetProvider";
 
 export default class MockFactory {
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
@@ -106,6 +107,15 @@ export default class MockFactory {
             providerType,
             providerOptions: {},
         };
+    }
+
+    public static createAssetProvider() : IAssetProvider {
+        return {
+            getAssets(containerName?: string): Promise<IAsset[]> {
+                throw new Error("Method not implemented.");
+            }
+        }
+
     }
 
     public static exportFormat(): IExportFormat {
