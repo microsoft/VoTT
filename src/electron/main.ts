@@ -1,6 +1,4 @@
-import { app, ipcMain, BrowserWindow, dialog } from "electron";
-import path from "path";
-import url from "url";
+import { app, ipcMain, BrowserWindow, dialog, BrowserWindowConstructorOptions } from "electron";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
 
@@ -11,17 +9,26 @@ let ipcMainProxy: IpcMainProxy;
 
 function createWindow() {
     // and load the index.html of the app.
-    const startUrl = process.env.ELECTRON_START_URL || url.format({
-        pathname: path.join(__dirname, "/../build/index.html"),
-        protocol: "file:",
-        slashes: true,
-    });
 
-    const webSecurityEnabled = !(!!process.env.ELECTRON_START_URL);
-
+    const windowOptions: BrowserWindowConstructorOptions = {
+        width: 1024,
+        height: 768,
+    };
     // Create the browser window.
-    mainWindow = new BrowserWindow({ width: 1024, height: 768, webPreferences: { webSecurity: webSecurityEnabled } });
-    mainWindow.loadURL(startUrl);
+
+    if (process.env.ELECTRON_START_URL) {
+        // Disable web security to support loading in local file system resources
+        // TODO: Look into defined local security policy
+        windowOptions.webPreferences = {
+            webSecurity: false,
+        };
+        mainWindow = new BrowserWindow(windowOptions);
+        mainWindow.loadURL(process.env.ELECTRON_START_URL);
+    } else {
+        // When running in production mode or with static files use loadFile api vs. loadUrl api.
+        mainWindow = new BrowserWindow(windowOptions);
+        mainWindow.loadFile("build/index.html");
+    }
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
