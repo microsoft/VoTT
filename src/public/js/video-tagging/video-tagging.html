@@ -628,8 +628,8 @@
         region.box = {
             x1: rd.x,
             y1: rd.y,
-            x2: rd.width,
-            y2: rd.height
+            x2: rd.x + rd.width,
+            y2: rd.y + rd.height
         };
         region.points = rd.points.map((point) => {
             return { x: point.x, y: point.y };
