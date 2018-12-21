@@ -38,7 +38,7 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
         return (
             <div className="input-group">
                 <select id={id} value={selectedValue} onChange={this.onChange} className="form-control">
-                    <option value="">Select Connection</option>
+                    <option>Select Connection</option>
                     {connections.map((connection) =>
                         <option key={connection.id} value={connection.id}>{connection.name}</option>)
                     }
@@ -52,12 +52,10 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
 
     private onChange = (e) => {
         const selectedConnection = this.props.connections
-            .find((connection) => connection.id === e.target.value);
+            .find((connection) => connection.id === e.target.value) || {};
 
-        if (selectedConnection) {
-            this.setState({
-                value: selectedConnection,
-            }, () => this.props.onChange(selectedConnection));
-        }
+        this.setState({
+            value: selectedConnection,
+        }, () => this.props.onChange(selectedConnection));
     }
 }
