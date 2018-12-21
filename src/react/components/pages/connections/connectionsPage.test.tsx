@@ -1,7 +1,7 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { AnyAction, Store } from "redux";
-import { Route, Link, NavLink, StaticRouter as Router } from "react-router-dom";
+import { Route, Link, StaticRouter as Router, NavLink } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
 import Form from "react-jsonschema-form";
 import createReduxStore from "../../../../redux/store/store";
@@ -15,7 +15,6 @@ import MockFactory from "../../../../common/mockFactory";
 import { IApplicationState } from "../../../../models/applicationState";
 
 describe("Connections Page", () => {
-
     const connectionsRoute: string = "/connections";
     const connectionCreateRoute: string = "/connections/create";
 
@@ -32,16 +31,11 @@ describe("Connections Page", () => {
     function createWrapper(
         route = connectionsRoute, store = createStore(), props = createProps(connectionsRoute),
     ): ReactWrapper {
-        const context = { };
+        const context = {};
         return createComponent(context, route, store, props);
     }
 
-    function finish(wrapper, done) {
-        wrapper.unmount();
-        done();
-    }
-
-    it("mounted the component", (done) => {
+    it("mounted the component", () => {
         const wrapper = createWrapper();
 
         expect(wrapper).not.toBeNull();
@@ -52,12 +46,10 @@ describe("Connections Page", () => {
         const page = connectionsPage.find(".app-connections-page");
         expect(page.exists()).toBe(true);
         expect(page.children()).toHaveLength(3);
-        finish(wrapper, done);
     });
 
     describe("without any connections", () => {
-
-        it("renders connections list correctly", (done) => {
+        it("renders connections list correctly", () => {
             const wrapper = createWrapper();
             const connectionsPage = wrapper.find(ConnectionPage);
 
@@ -71,10 +63,9 @@ describe("Connections Page", () => {
 
             const listButton = list.find(Link);
             expect(listButton.props().to).toEqual(connectionCreateRoute);
-            finish(wrapper, done);
         });
 
-        it("renders connection form correctly", (done) => {
+        it("renders connection form correctly", () => {
             const wrapper = createWrapper();
             const connectionsPage = wrapper.find(ConnectionPage);
 
@@ -85,65 +76,9 @@ describe("Connections Page", () => {
             expect(text.exists()).toBe(true);
 
             expect(text.text()).toBe("Please select a connection to edit");
-            finish(wrapper, done);
-        });
-    });
-
-    describe("adding a connection", () => {
-
-        it("create connection button exists", (done) => {
-            const wrapper = createWrapper();
-            const connectionsPage = wrapper.find(ConnectionPage);
-
-            const form = connectionsPage.find(ConnectionForm);
-            expect(form.exists()).toBe(false);
-
-            const list = connectionsPage.find(CondensedList);
-            expect(list.exists()).toBe(true);
-            expect(list.props().newLinkTo).toBe(connectionCreateRoute);
-            finish(wrapper, done);
         });
 
-        it("ConnectionForm mounts correctly", (done) => {
-            const props = createProps(connectionCreateRoute);
-            props.match.params = { connectionId: "create" };
-            const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
-
-            const connectionsPage = wrapper.find(ConnectionPage);
-            const form = connectionsPage.find(ConnectionForm);
-            expect(form.exists()).toBe(true);
-            finish(wrapper, done);
-        });
-
-        it("adds connection when submit button is hit", (done) => {
-            const props = createProps(connectionCreateRoute);
-            props.match.params = { connectionId: "create" };
-            props.actions.saveConnection = jest.fn((connection) => Promise.resolve(connection));
-
-            const saveConnection = jest.spyOn(props.actions, "saveConnection");
-            const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
-
-            const connectionsPage = wrapper.find(ConnectionPage);
-            const connectionForm = connectionsPage.find(ConnectionForm);
-
-            connectionForm.find("input#root_name")
-                          .simulate("change", { target: { value: "test" } });
-            connectionForm.find("select#root_providerType")
-                          .simulate("change", { target: { value: "azureBlobStorage" } });
-            connectionForm.find("input#root_providerOptions_connectionString")
-                          .simulate("change", { target: { value: "test" } });
-            connectionForm.find("input#root_providerOptions_containerName")
-                          .simulate("change", { target: { value: "test" } });
-            connectionForm.find(Form).simulate("submit");
-
-            setImmediate(() => setImmediate(() => {
-                expect(saveConnection).toBeCalled();
-                expect(saveConnection.mock.calls[0][0].id !== null).toBe(true);
-                finish(wrapper, done);
-            }));
-        });
-
-        it("renders connections in the list correctly", (done) => {
+        it("renders connections in the list correctly", () => {
             const props = createProps(connectionsRoute);
             const state = { ...initialState };
             state.connections = MockFactory.createTestConnections(8);
@@ -153,19 +88,77 @@ describe("Connections Page", () => {
             const connectionsPage = wrapper.find(ConnectionPage);
             const items = connectionsPage.find(ConnectionItem);
             expect(items.length).toEqual(8);
-            finish(wrapper, done);
         });
     });
 
-    /*describe("selecting connections", () => {
+    describe("adding a connection", () => {
+        it("create connection button exists", () => {
+            const wrapper = createWrapper();
+            const connectionsPage = wrapper.find(ConnectionPage);
 
+            const form = connectionsPage.find(ConnectionForm);
+            expect(form.exists()).toBe(false);
+
+            const list = connectionsPage.find(CondensedList);
+            expect(list.exists()).toBe(true);
+            expect(list.props().newLinkTo).toBe(connectionCreateRoute);
+        });
+
+        it("ConnectionForm mounts correctly", () => {
+            const props = createProps(connectionCreateRoute);
+            props.match.params = { connectionId: "create" };
+            const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
+
+            const connectionsPage = wrapper.find(ConnectionPage);
+            const form = connectionsPage.find(ConnectionForm);
+            expect(form.exists()).toBe(true);
+        });
+
+        it("adds connection when submit button is hit", (done) => {
+            const props = createProps(connectionCreateRoute);
+            props.match.params = { connectionId: "create" };
+
+            const saveConnectionSpy = jest.spyOn(props.actions, "saveConnection");
+            const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
+
+            const connectionsPage = wrapper.find(ConnectionPage);
+            const connectionForm = connectionsPage.find(ConnectionForm);
+
+            const partialConnection = {
+                name: "test",
+                providerType: "azureBlobStorage",
+                providerOptions: {
+                    connectionString: "test",
+                    containerName: "test",
+                },
+            };
+
+            connectionForm.find("input#root_name")
+                .simulate("change", { target: { value: partialConnection.name } });
+            connectionForm.find("select#root_providerType")
+                .simulate("change", { target: { value: partialConnection.providerType } });
+            connectionForm.find("input#root_providerOptions_connectionString")
+                .simulate("change", { target: { value: partialConnection.providerOptions.connectionString } });
+            connectionForm.find("input#root_providerOptions_containerName")
+                .simulate("change", { target: { value: partialConnection.providerOptions.containerName } });
+            connectionForm.find(Form).simulate("submit");
+
+            setImmediate(() => {
+                expect(saveConnectionSpy).toBeCalledWith(expect.objectContaining(partialConnection));
+                done();
+            });
+        });
+
+    });
+
+    describe("selecting connections", () => {
         it("renders no form when nothing is selected", () => {
             const props = createProps(connectionsRoute);
             const state = { ...initialState };
             state.connections = MockFactory.createTestConnections(2);
 
             const store = createStore(state);
-            const wrapper = createComponent(connectionsRoute, store, props);
+            const wrapper = createWrapper(connectionsRoute, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
 
             expect(connectionsPage.find(ConnectionForm).exists()).toEqual(false);
@@ -179,7 +172,7 @@ describe("Connections Page", () => {
             state.connections = MockFactory.createTestConnections(2);
 
             const store = createStore(state);
-            const wrapper = createComponent(connectionsRoute, store, props);
+            const wrapper = createWrapper(connectionsRoute, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
             const items = connectionsPage.find(ConnectionItem);
 
@@ -197,7 +190,7 @@ describe("Connections Page", () => {
             state.connections = MockFactory.createTestConnections(4);
 
             const store = createStore(state);
-            const wrapper = createComponent(route, store, props);
+            const wrapper = createWrapper(route, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
             const form = connectionsPage.find(ConnectionForm);
 
@@ -208,7 +201,6 @@ describe("Connections Page", () => {
     });
 
     describe("removing a connection", () => {
-
         it("removes unselected connection when deleted button is hit", () => {
             const props = createProps(connectionsRoute);
             const deleteConnection = jest.spyOn(props.actions, "deleteConnection");
@@ -217,7 +209,7 @@ describe("Connections Page", () => {
             state.connections = MockFactory.createTestConnections(2);
 
             const store = createStore(state);
-            const wrapper = createComponent(connectionsRoute, store, props);
+            const wrapper = createWrapper(connectionsRoute, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
 
             // ensure list is 2 long (drawn & internal)
@@ -229,7 +221,6 @@ describe("Connections Page", () => {
             deleteButton.simulate("click");
 
             expect(deleteConnection).toBeCalled();
-            wrapper.unmount();
         });
 
         it("removes a selected connection when delete button is hit", () => {
@@ -242,7 +233,7 @@ describe("Connections Page", () => {
             state.connections = MockFactory.createTestConnections(2);
 
             const store = createStore(state);
-            const wrapper = createComponent(route, store, props);
+            const wrapper = createWrapper(route, store, props);
             const connectionsPage = wrapper.find(ConnectionPage);
 
             const items = connectionsPage.find(ConnectionItem);
@@ -257,9 +248,8 @@ describe("Connections Page", () => {
 
             expect(historyPush.mock.calls[0][0]).toEqual("/connections");
             expect(connectionsPage.state().connection).toEqual(undefined);
-            wrapper.unmount();
         });
-    });*/
+    });
 });
 
 function createProps(route: string): IConnectionPageProps {
@@ -284,16 +274,16 @@ function createProps(route: string): IConnectionPageProps {
             state: null,
         },
         match: {
-            params: { },
+            params: {},
             isExact: true,
             path: `https://localhost:3000${route}`,
             url: `https://localhost:3000${route}`,
         },
         connections: [],
-        actions: ({...connectionActions} as any) as IConnectionActions,
+        actions: (connectionActions as any) as IConnectionActions,
     };
 }
 
 function createStore(state?: IApplicationState): Store<any, AnyAction> {
-    return createReduxStore(state);
+    return createReduxStore(state, false);
 }

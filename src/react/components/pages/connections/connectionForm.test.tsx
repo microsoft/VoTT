@@ -1,5 +1,4 @@
-// TODO: uncomment, just wanted to make sure these weren't causing any errors in connectionsPage.test.tsx
-/*import React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import MockFactory from "../../../../common/mockFactory";
 import ConnectionForm, { IConnectionFormProps } from "./connectionForm";
@@ -52,7 +51,6 @@ describe("Connection Form", () => {
         });
     });
 });
-*/
 
 describe("Connection Form", () => {
 
