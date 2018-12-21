@@ -1,7 +1,5 @@
 import React from "react";
 import { IAssetMetadata, IRegion, RegionType, AssetState } from "../../../../models/applicationState";
-// const ct = require('vott-ct').CanvasTools
-// import * as CanvasTools from "vott-ct"
 import { CanvasTools } from "vott-ct"
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
@@ -23,7 +21,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     //Editor Methods
     /**
      * @name scaleRegionToFrameSize
-     * @description rescales region based on visible frame size
+     * @description rescales region based on visible frame size (used to load regions onto canvas)
      * @param {RegionData} regionData
      * @param {number} sourceWidth?
      * @param {number} sourceHeight?
@@ -33,7 +31,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     /**
      * @name scaleRegionToSourceSize
-     * @description rescales region based on source size
+     * @description rescales region based on source size (used to save regions from canvas)
      * @param {RegionData} regionData
      * @param {number} sourceWidth?
      * @param {number} sourceHeight?
@@ -231,6 +229,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
             this.addRegion((incrementalRegionID++).toString(), commit, tags)
 
+            //RegionData not serializable so need to extract data
             let scaledRegionData = this.scaleRegionToSourceSize(commit)
             let newRegion = {
                 id: incrementalRegionID.toString(),

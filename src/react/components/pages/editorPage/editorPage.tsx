@@ -7,7 +7,6 @@ import IProjectActions, * as projectActions from "../../../../redux/actions/proj
 import { RouteComponentProps } from "react-router-dom";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import "./editorPage.scss";
-import AssetPreview from "./assetPreview";
 import EditorFooter from "./editorFooter";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
@@ -102,13 +101,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="editor-page-content-body">
                         {selectedAsset &&
                             <div className="canvas-container">
-                                {/* <AssetPreview asset={selectedAsset} />
-                                {selectedAsset.asset.size &&
-                                    <div>
-                                        Width: {selectedAsset.asset.size.width}
-                                        Height: {selectedAsset.asset.size.height}
-                                    </div>
-                                } */}
                                 <Canvas 
                                     selectedAsset={this.state.selectedAsset}
                                     onAssetMetadataChanged={this.onAssetMetadataChanged.bind(this)}/>
@@ -155,8 +147,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         this.onAssetMetadataChanged(assetMetadata);
-        // await this.props.projectActions.saveAssetMetadata(this.props.project, assetMetadata);
-        // await this.props.projectActions.saveProject(this.props.project);
 
         this.setState({
             selectedAsset: assetMetadata,
