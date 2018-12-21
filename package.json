@@ -36,8 +36,7 @@
     "electron-start": "node src/electron/start",
     "react-start": "react-scripts start",
     "compile": "tsc",
-    "release": "npm run build && npm run electron:prod && electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "release": "npm run build && npm run electron:prod && electron-builder"
   },
   "eslintConfig": {
     "extends": "react-app"

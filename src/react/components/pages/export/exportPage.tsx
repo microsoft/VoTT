@@ -68,6 +68,7 @@ export default class ExportPage extends React.Component<IExportPageProps> {
         };
 
         await this.props.actions.saveProject(projectToUpdate);
+        await this.props.actions.exportProject(projectToUpdate);
         this.props.history.goBack();
     }
 
