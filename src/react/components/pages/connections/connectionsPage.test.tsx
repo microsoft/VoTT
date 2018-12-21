@@ -36,7 +36,12 @@ describe("Connections Page", () => {
         return createComponent(context, route, store, props);
     }
 
-    it("mounted the component", () => {
+    function finish(wrapper, done) {
+        wrapper.unmount();
+        done();
+    }
+
+    it("mounted the component", (done) => {
         const wrapper = createWrapper();
 
         expect(wrapper).not.toBeNull();
@@ -47,12 +52,12 @@ describe("Connections Page", () => {
         const page = connectionsPage.find(".app-connections-page");
         expect(page.exists()).toBe(true);
         expect(page.children()).toHaveLength(3);
-        wrapper.unmount();
+        finish(wrapper, done);
     });
 
     describe("without any connections", () => {
 
-        it("renders connections list correctly", () => {
+        it("renders connections list correctly", (done) => {
             const wrapper = createWrapper();
             const connectionsPage = wrapper.find(ConnectionPage);
 
@@ -66,10 +71,10 @@ describe("Connections Page", () => {
 
             const listButton = list.find(Link);
             expect(listButton.props().to).toEqual(connectionCreateRoute);
-            wrapper.unmount();
+            finish(wrapper, done);
         });
 
-        it("renders connection form correctly", () => {
+        it("renders connection form correctly", (done) => {
             const wrapper = createWrapper();
             const connectionsPage = wrapper.find(ConnectionPage);
 
@@ -80,13 +85,13 @@ describe("Connections Page", () => {
             expect(text.exists()).toBe(true);
 
             expect(text.text()).toBe("Please select a connection to edit");
-            wrapper.unmount();
+            finish(wrapper, done);
         });
     });
 
     describe("adding a connection", () => {
 
-        it("create connection button exists", () => {
+        it("create connection button exists", (done) => {
             const wrapper = createWrapper();
             const connectionsPage = wrapper.find(ConnectionPage);
 
@@ -96,10 +101,10 @@ describe("Connections Page", () => {
             const list = connectionsPage.find(CondensedList);
             expect(list.exists()).toBe(true);
             expect(list.props().newLinkTo).toBe(connectionCreateRoute);
-            wrapper.unmount();
+            finish(wrapper, done);
         });
 
-        it("ConnectionForm mounts correctly", () => {
+        it("ConnectionForm mounts correctly", (done) => {
             const props = createProps(connectionCreateRoute);
             props.match.params = { connectionId: "create" };
             const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
@@ -107,13 +112,14 @@ describe("Connections Page", () => {
             const connectionsPage = wrapper.find(ConnectionPage);
             const form = connectionsPage.find(ConnectionForm);
             expect(form.exists()).toBe(true);
-            wrapper.unmount();
+            finish(wrapper, done);
         });
 
-        it("adds connection when submit button is hit", () => {
+        it("adds connection when submit button is hit", (done) => {
             const props = createProps(connectionCreateRoute);
             props.match.params = { connectionId: "create" };
-            props.actions.saveConnection = jest.fn();
+            props.actions.saveConnection = jest.fn((connection) => Promise.resolve(connection));
+
             const saveConnection = jest.spyOn(props.actions, "saveConnection");
             const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
 
@@ -133,11 +139,11 @@ describe("Connections Page", () => {
             setImmediate(() => setImmediate(() => {
                 expect(saveConnection).toBeCalled();
                 expect(saveConnection.mock.calls[0][0].id !== null).toBe(true);
-                wrapper.unmount();
+                finish(wrapper, done);
             }));
         });
 
-        it("renders connections in the list correctly", () => {
+        it("renders connections in the list correctly", (done) => {
             const props = createProps(connectionsRoute);
             const state = { ...initialState };
             state.connections = MockFactory.createTestConnections(8);
@@ -147,7 +153,7 @@ describe("Connections Page", () => {
             const connectionsPage = wrapper.find(ConnectionPage);
             const items = connectionsPage.find(ConnectionItem);
             expect(items.length).toEqual(8);
-            wrapper.unmount();
+            finish(wrapper, done);
         });
     });
 
