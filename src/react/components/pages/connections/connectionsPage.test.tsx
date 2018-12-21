@@ -126,22 +126,32 @@ describe("Connections Page", () => {
 
             const partialConnection = {
                 name: "test",
-                providerType: "azureBlobStorage",
+                providerType: "bingImageSearch",
                 providerOptions: {
-                    connectionString: "test",
-                    containerName: "test",
+                    apiKey: "abc123",
+                    query: "test",
+                    aspectRatio: "tall",
                 },
             };
 
-            connectionForm.find("input#root_name")
+            connectionForm
+                .find("input#root_name")
                 .simulate("change", { target: { value: partialConnection.name } });
-            connectionForm.find("select#root_providerType")
+            connectionForm
+                .find("select#root_providerType")
                 .simulate("change", { target: { value: partialConnection.providerType } });
-            connectionForm.find("input#root_providerOptions_connectionString")
-                .simulate("change", { target: { value: partialConnection.providerOptions.connectionString } });
-            connectionForm.find("input#root_providerOptions_containerName")
-                .simulate("change", { target: { value: partialConnection.providerOptions.containerName } });
-            connectionForm.find(Form).simulate("submit");
+            connectionForm
+                .find("input#root_providerOptions_apiKey")
+                .simulate("change", { target: { value: partialConnection.providerOptions.apiKey } });
+            connectionForm
+                .find("input#root_providerOptions_query")
+                .simulate("change", { target: { value: partialConnection.providerOptions.query } });
+            connectionForm
+                .find("select#root_providerOptions_aspectRatio")
+                .simulate("change", { target: { value: partialConnection.providerOptions.aspectRatio } });
+            connectionForm
+                .find(Form)
+                .simulate("submit");
 
             setImmediate(() => {
                 expect(saveConnectionSpy).toBeCalledWith(expect.objectContaining(partialConnection));
