@@ -88,6 +88,17 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     // Get buffer
                     const buffer = new Buffer(response.data);
 
+                    const image64 = btoa(new Uint8Array(response.data).
+                        reduce((data, byte) => data + String.fromCharCode(byte), ""));
+
+                    const img = new Image();
+                    img.onload = ((event) => {
+                        // TODO: Save on a temporary Dictionary width, height, depth to be used later in exportAnnotations()
+                        console.log(img.width);
+                    });
+
+                    img.src = "data:image/jpeg;base64," + image64;
+
                     // Write Binary
                     await this.storageProvider.writeBinary(imageFileName, buffer);
 
@@ -126,7 +137,6 @@ item {
             const items = project.tags.map((element) =>
                 itemTemplate.replace("%ID%", (id++).toString()).replace("%TAG%", element.name));
 
-            // TODO
             await this.storageProvider.writeText(pbtxtFileName, items.join());
         }
     }
