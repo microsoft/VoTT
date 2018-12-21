@@ -3,8 +3,10 @@ import Form from "react-jsonschema-form";
 import ReactModal from "react-modal";
 import { ITag } from "../../../../../models/applicationState";
 import "./tagEditorModal.scss";
+import { addLocValues } from "../../../../../common/strings";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./tagEditorModal.json");
+const nonLocalizedFormSchema = require("./tagEditorModal.json");
+const formSchema = addLocValues(nonLocalizedFormSchema);
 
 const customStyles = {
     content : {

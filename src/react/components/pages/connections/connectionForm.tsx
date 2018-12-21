@@ -2,12 +2,14 @@ import React from "react";
 import Form, { Widget, IChangeEvent, FormValidation } from "react-jsonschema-form";
 import { IConnection } from "../../../../models/applicationState";
 import LocalFolderPicker from "../../common/localFolderPicker";
-import { strings } from "../../../../common/strings";
+import { strings, addLocValues } from "../../../../common/strings";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./connectionForm.json");
+const nonLocalizedFormSchema = require("./connectionForm.json");
+const formSchema = addLocValues(nonLocalizedFormSchema);
 // tslint:disable-next-line:no-var-requires
-const uiSchema = require("./connectionForm.ui.json");
+const nonLocalizedUiSchema = require("./connectionForm.ui.json");
+const uiSchema = addLocValues(nonLocalizedUiSchema);
 
 interface IConnectionFormProps extends React.Props<ConnectionForm> {
     connection: IConnection;

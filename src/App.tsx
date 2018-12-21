@@ -6,6 +6,7 @@ import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
 import { IApplicationState, IProject } from "./models/applicationState";
 import "./App.scss";
+import { strings } from "./common/strings";
 
 interface IAppProps {
     currentProject?: IProject;

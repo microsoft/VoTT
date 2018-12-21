@@ -15,10 +15,21 @@ export const spanish: IAppStrings = {
         recentProjects: "Proyectos Recientes",
     },
     appSettings: {
+        title: "Configuración de Aplicación",
         storageTitle: "Configuración de Almacenamiento",
         uiHelp: "Donde se guardan sus configuraciones",
+        devTools: {
+            description: "Abrir herramientas de desarrollo de aplicaciones para ayudar a diagnosticar problemas.",
+            button: "Alternar Herramientas de Desarrollo",
+        },
+        reload: {
+            description: "Recargar la aplicación descartando todos los cambios actuales",
+            button: "Recargar la aplicación",
+        },
     },
     projectSettings: {
+        title: "Configuración de Proyecto",
+        save: "Guardar el Proyecto",
         sourceConnection: {
             title: "Conexión de Origen",
             description: "De donde se gargan sus activos",
@@ -54,6 +65,7 @@ export const spanish: IAppStrings = {
     },
     connections: {
         title: "Conexiones",
+        save: "Guardar Conexión",
         details: "Detalles de Conexión",
         settings: "Configuración de Conexión",
         instructions: "Por favor seleccione una conexión para editar",
@@ -86,8 +98,11 @@ export const spanish: IAppStrings = {
             saveProject: "Guardar Proyecto",
             exportProject: "Exprtar Proyecto",
         },
+        assetError: "No se puede mostrar el activo",
     },
     exportPage: {
+        settings: "Configuración de Exportación",
+        saveSettings: "Guardar Configuración de Exportación",
         providers: {
             vottJson: "VoTT JSON",
             azureCV: "Servicio de Visión Personalizada Azure",

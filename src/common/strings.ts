@@ -32,6 +32,7 @@ export interface IAppStrings {
     };
     projectSettings: {
         title: string;
+        save: string;
         sourceConnection: {
             title: string;
             description: string;

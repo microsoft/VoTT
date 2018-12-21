@@ -51,7 +51,12 @@ export default class ExportPage extends React.Component<IExportPageProps> {
 
         return (
             <div className="m-3 text-light">
-                <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">{strings.exportPage.settings}</span></h3>
+                <h3>
+                    <i className="fas fa-sliders-h fa-1x"></i>
+                    <span className="px-2">
+                        {strings.exportPage.settings}
+                    </span>
+                </h3>
                 <div className="m-3 text-light">
                     <ExportForm
                         settings={exportFormat}

@@ -20,12 +20,12 @@ export const english: IAppStrings = {
         uiHelp: "Where your settings are stored",
         devTools: {
             description: "Open application developer tools to help diagnose issues",
-            button: "Toggle Developer Tools"
+            button: "Toggle Developer Tools",
         },
         reload: {
             description: "Reload the app discarding all current changes",
-            button: "Refresh Application"
-        }
+            button: "Refresh Application",
+        },
     },
     projectSettings: {
         title: "Project Settings",
@@ -98,7 +98,7 @@ export const english: IAppStrings = {
             saveProject: "Save Project",
             exportProject: "Export Project",
         },
-        assetError: "Unable to display asset"
+        assetError: "Unable to display asset",
     },
     exportPage: {
         settings: "Export Settings",

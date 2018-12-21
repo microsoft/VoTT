@@ -25,10 +25,14 @@ export function replaceVariablesInJson(json: any, valueMapper: (variable: string
     let jsonStr = JSON.stringify(json);
     const variableRegex = /\${[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*}/g;
     const variables = jsonStr.match(variableRegex);
-    for (const variable of variables) {
-        const variableName = variable.replace(/\$|{|}/g, "");
-        const value = valueMapper(variableName);
-        jsonStr = jsonStr.replace(variable, value);
+    if (variables) {
+        for (const variable of variables) {
+            const variableName = variable.replace(/\$|{|}/g, "");
+            const value = valueMapper(variableName);
+            jsonStr = jsonStr.replace(variable, value);
+        }
+        return JSON.parse(jsonStr);
+    } else {
+        return json;
     }
-    return JSON.parse(jsonStr);
 }

@@ -5,11 +5,13 @@ import ConnectionPicker from "../../common/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
-import { strings } from "../../../../common/strings.js";
+import { strings, addLocValues } from "../../../../common/strings";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./projectForm.json");
+const nonLocalizedformSchema = require("./projectForm.json");
+const formSchema = addLocValues(nonLocalizedformSchema);
 // tslint:disable-next-line:no-var-requires
-const uiSchema = require("./projectForm.ui.json");
+const nonLocalizedUiSchema = require("./projectForm.ui.json");
+const uiSchema = addLocValues(nonLocalizedUiSchema);
 
 /**
  * Required properties for Project Settings form

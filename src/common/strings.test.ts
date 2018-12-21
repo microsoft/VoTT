@@ -2,7 +2,7 @@ import { strings, addLocValues, IAppStrings } from "./strings";
 import { english } from "./localization/en";
 import { spanish } from "./localization/es";
 
-const languages = ["en", "es"]
+const languages = ["en", "es"];
 
 describe("Localization tests", () => {
 
@@ -10,7 +10,7 @@ describe("Localization tests", () => {
         return {
             en: english,
             es: spanish,
-        }[language]
+        }[language];
     }
 
     describe("JSON Form Schemas", () => {
@@ -24,7 +24,7 @@ describe("Localization tests", () => {
                 const common = languageJson.common;
                 const newFormJson = addLocValues(formJson);
                 const formProps = newFormJson.properties;
-        
+
                 expect(newFormJson.title).toEqual(lConn.title);
                 expect(formProps.name.title).toEqual(common.displayName);
                 expect(formProps.description.title).toEqual(common.description);

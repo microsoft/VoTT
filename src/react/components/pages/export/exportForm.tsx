@@ -2,11 +2,13 @@ import React from "react";
 import Form, { FormValidation, ISubmitEvent, IChangeEvent } from "react-jsonschema-form";
 import { IExportFormat } from "../../../../models/applicationState.js";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
-import { strings } from "../../../../common/strings.js";
+import { strings, addLocValues } from "../../../../common/strings";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./exportForm.json");
+const nonLocalizedFormSchema = require("./exportForm.json");
+const formSchema = addLocValues(nonLocalizedFormSchema);
 // tslint:disable-next-line:no-var-requires
-const uiSchema = require("./exportForm.ui.json");
+const nonLocalizedUiSchema = require("./exportForm.ui.json");
+const uiSchema = addLocValues(nonLocalizedUiSchema);
 
 export interface IExportFormProps extends React.Props<ExportForm> {
     settings: IExportFormat;

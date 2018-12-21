@@ -46,7 +46,12 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     public render() {
         return (
             <div className="m-3 text-light">
-                <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">{strings.projectSettings.title}</span></h3>
+                <h3>
+                    <i className="fas fa-sliders-h fa-1x"></i>
+                    <span className="px-2">
+                        {strings.projectSettings.title}
+                    </span>
+                </h3>
                 <div className="m-3 text-light">
                     <ProjectForm
                         project={this.props.project}

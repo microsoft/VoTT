@@ -6,12 +6,14 @@ import IApplicationActions, * as applicationActions from "../../../../redux/acti
 import { IApplicationState, IAppSettings, IConnection } from "../../../../models/applicationState";
 import Form from "react-jsonschema-form";
 import "./appSettingsPage.scss";
-import { strings } from "../../../../common/strings";
+import { strings, addLocValues } from "../../../../common/strings";
 import ConnectionPicker from "../../common/connectionPicker";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./appSettingsPage.json");
+const nonLocalizedFormSchema = require("./appSettingsPage.json");
+const formSchema = addLocValues(nonLocalizedFormSchema);
 // tslint:disable-next-line:no-var-requires
-const uiSchema = require("./appSettingsPage.ui.json");
+const nonLocalizedUiSchema = require("./appSettingsPage.ui.json");
+const uiSchema = addLocValues(nonLocalizedUiSchema);
 
 interface IAppSettingsProps {
     appSettings: IAppSettings;
@@ -39,7 +41,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class AppSettingsPage extends React.Component<IAppSettingsProps, IAppSettingsState> {
+export default class AppSettingsPage extends React.Component<IAppSettingsProps, IAppSettingsState> {    
     private widgets: any = {
         connectionPicker: ConnectionPicker,
     };

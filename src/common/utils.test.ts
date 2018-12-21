@@ -54,5 +54,13 @@ describe("Helper functions", () => {
             const result = replaceVariablesInJson(initial, mapper);
             expect(result).toEqual(expected);
         });
+
+        it("Returns the original if no change", () => {
+            const original = {
+                test: "No change needed",
+            };
+            const result = replaceVariablesInJson(original, mapper);
+            expect(result).toEqual(original);
+        });
     });
 });
