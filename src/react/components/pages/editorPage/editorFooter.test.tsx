@@ -1,6 +1,6 @@
+import { mount } from "enzyme";
 import React from "react";
 import EditorFooter from "./editorFooter";
-import { mount } from "enzyme";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("../../common/tagsInput/tagColors.json");
 

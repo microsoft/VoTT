@@ -5,7 +5,6 @@ import { ITag } from "../../../../../models/applicationState";
 import "./tagEditorModal.scss";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./tagEditorModal.json");
-import * as util from "util";
 
 const customStyles = {
     content : {

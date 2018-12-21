@@ -1,8 +1,7 @@
-import React from "react";
-import TagEditorModal, {ITagEditorModalProps} from "./tagEditorModal";
 import { mount } from "enzyme";
-import { ITag } from "../../../../../models/applicationState";
+import React from "react";
 import MockFactory from "../../../../../common/mockFactory";
+import TagEditorModal, { ITagEditorModalProps } from "./tagEditorModal";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("../tagColors.json");
 
