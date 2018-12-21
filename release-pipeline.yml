@@ -1,0 +1,34 @@
+trigger: 
+  - v2 # disable CI build for branch except v2
+pr: none # disable CI build for PR
+
+jobs:
+- job: Linux
+  condition: succeeded()
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+  steps:
+  - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+    fetchDepth: 1  # the depth of commits to ask Git to fetch
+  - template: azure-pipelines/linux/artifact-build-linux.yml
+
+- job: MacOS
+  condition: succeeded()
+  pool:
+    vmImage: macOS-10.13
+  timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+  steps:
+  - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+    fetchDepth: 1  # the depth of commits to ask Git to fetch
+  - template: azure-pipelines/mac/artifact-build-mac.yml
+
+- job: Windows
+  condition: succeeded()
+  pool:
+    vmImage: vs2017-win2016
+  timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+  steps:
+  - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+    fetchDepth: 1  # the depth of commits to ask Git to fetch
+  - template: azure-pipelines/windows/artifact-build-windows.yml
