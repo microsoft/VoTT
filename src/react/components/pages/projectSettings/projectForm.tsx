@@ -7,11 +7,9 @@ import CustomField from "../../common/customField";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
 import { strings, addLocValues } from "../../../../common/strings";
 // tslint:disable-next-line:no-var-requires
-const nonLocalizedformSchema = require("./projectForm.json");
-const formSchema = addLocValues(nonLocalizedformSchema);
+const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
-const nonLocalizedUiSchema = require("./projectForm.ui.json");
-const uiSchema = addLocValues(nonLocalizedUiSchema);
+const uiSchema = addLocValues(require("./projectForm.ui.json"));
 
 /**
  * Required properties for Project Settings form

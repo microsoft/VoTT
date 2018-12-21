@@ -9,11 +9,9 @@ import "./appSettingsPage.scss";
 import { strings, addLocValues } from "../../../../common/strings";
 import ConnectionPicker from "../../common/connectionPicker";
 // tslint:disable-next-line:no-var-requires
-const nonLocalizedFormSchema = require("./appSettingsPage.json");
-const formSchema = addLocValues(nonLocalizedFormSchema);
+const formSchema = addLocValues(require("./appSettingsPage.json"));
 // tslint:disable-next-line:no-var-requires
-const nonLocalizedUiSchema = require("./appSettingsPage.ui.json");
-const uiSchema = addLocValues(nonLocalizedUiSchema);
+const uiSchema = addLocValues(require("./appSettingsPage.ui.json"));
 
 interface IAppSettingsProps {
     appSettings: IAppSettings;
