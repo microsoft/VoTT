@@ -5,6 +5,7 @@ import { ITag } from "../../../../../models/applicationState";
 import "./tagEditorModal.scss";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./tagEditorModal.json");
+import * as util from "util";
 
 const customStyles = {
     content : {
@@ -56,6 +57,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
                         schema={formSchema}
                         formData={this.state.tag}
                         onChange={this.handleFormChange}>
+                        >
                         <div>
                             <button className="btn btn-info" onClick={this.handleOk}>Ok</button>
                             <button className="btn btn-info" onClick={this.props.onCancel}>Cancel</button>
@@ -93,8 +95,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
     /**
      * Called when 'Ok' is clicked
      */
-    private handleOk() {
+    private handleOk(e) {
         this.props.onOk(this.state.tag);
     }
-
 }

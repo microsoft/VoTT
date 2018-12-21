@@ -97,7 +97,7 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("dblclick", { target: { innerText: originalTags[0].name}});
         wrapper.find("button")
-            .last()
+            .first()
             .simulate("click");
         expect(wrapper.state().showModal).toBeFalsy();
         expect(onChangeHandler).toBeCalled();
@@ -108,7 +108,7 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("dblclick", { target: { innerText: originalTags[0].name}});
         wrapper.find("button")
-            .first()
+            .last()
             .simulate("click");
         expect(wrapper.state().showModal).toBeFalsy();
         expect(onChangeHandler).not.toBeCalled();

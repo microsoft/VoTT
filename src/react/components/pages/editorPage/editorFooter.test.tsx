@@ -68,7 +68,7 @@ describe("Footer Component", () => {
             .first()
             .simulate("dblclick", { target: { innerText: originalTags[0].name } });
         wrapper.find("button")
-            .last()
+            .first()
             .simulate("click");
         expect(onChangeHandler).toBeCalled();
     });
@@ -78,7 +78,7 @@ describe("Footer Component", () => {
             .first()
             .simulate("dblclick", { target: { innerText: originalTags[0].name } });
         wrapper.find("button")
-            .first()
+            .last()
             .simulate("click");
         expect(onChangeHandler).not.toBeCalled();
     });

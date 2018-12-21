@@ -98,7 +98,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
                 <TagEditorModal
                     tag={this.toItag(this.state.selectedTag)}
                     showModal={this.state.showModal}
-                    onSubmit={this.handleEditedTag}
+                    onOk={this.handleEditedTag}
                     onCancel={this.handleCloseModal}
                 />
             </div>

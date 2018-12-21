@@ -11,7 +11,7 @@ describe("Tag Editor Modal", () => {
     function createComponent(props: ITagEditorModalProps) {
         return mount(
             <TagEditorModal {...props} />,
-        ).find(TagEditorModal);
+        );
     }
 
     const tag = MockFactory.createTestTag();
@@ -25,7 +25,7 @@ describe("Tag Editor Modal", () => {
             onCancel,
             onOk,
         });
-        const state = wrapper.state();
+        const state = wrapper.find(TagEditorModal).state();
         expect(state.tag).toEqual(tag);
         expect(state.isOpen).toBeFalsy();
     });
@@ -86,11 +86,11 @@ describe("Tag Editor Modal", () => {
         expect(okButton.exists()).toBeTruthy();
         okButton.simulate("click");
         setImmediate(() => {
-            expect(onOk).toBeCalled();
+            expect(onOk).toBeCalledWith(tag);
         });
     });
 
-    it("modal calls 'onOk' when ok is clicked with new tag information", () => {
+    it("Updates props via componentDidUpdate and calls 'onOk' when ok is clicked with new tag information", () => {
         const onCancel = jest.fn();
         const onOk = jest.fn();
         const wrapper = createComponent({
@@ -102,15 +102,21 @@ describe("Tag Editor Modal", () => {
         const newTagName = "new tag name";
 
         expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
-        wrapper.find("input#root_name.form-control").simulate("change", {target: {value: newTagName}});
+        // Calls componentDidUpdate
+        wrapper.setProps({
+            tag: {
+                name: newTagName,
+                color: tag.color,
+            },
+        });
         const okButton = wrapper.find("button").first();
         expect(okButton.exists()).toBeTruthy();
         okButton.simulate("click");
         setImmediate(() => {
             expect(onOk).toBeCalledWith({
                 name: newTagName,
-                color: tag.color
-            })
+                color: tag.color,
+            });
         });
     });
 });
