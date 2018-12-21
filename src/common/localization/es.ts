@@ -1,6 +1,6 @@
-import { IAppStrings } from "../strings"
+import { IAppStrings } from "../strings";
 
-export const spanish : IAppStrings = {
+export const spanish: IAppStrings = {
     appName: "Herramienta Visual de Etiquetado de Objetos",
     common: {
         displayName: "Nombre para Mostrar",
@@ -50,7 +50,7 @@ export const spanish : IAppStrings = {
             navy: "Azul Marino",
             fuschia: "Fuschia",
             purple: "Púrpura",
-        }
+        },
     },
     connections: {
         title: "Conexiones",
@@ -71,9 +71,9 @@ export const spanish : IAppStrings = {
             local: {
                 title: "Sistema de Archivos Local",
                 folderPath: "Ruta de la carpeta",
-                selectFolder: "Seleccione la carpeta"
+                selectFolder: "Seleccione la carpeta",
             },
-        }
+        },
     },
     editorPage: {
         width: "Anchura",
@@ -85,13 +85,13 @@ export const spanish : IAppStrings = {
             drawPolygon: "Dibujar Polígono",
             saveProject: "Guardar Proyecto",
             exportProject: "Exprtar Proyecto",
-        }
+        },
     },
     exportPage: {
         providers: {
             vottJson: "VoTT JSON",
             azureCV: "Azure Custom Vision Service",
             tfRecords: "Tensorflow Records",
-        }
+        },
     },
-}
+};

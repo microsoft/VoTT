@@ -1,6 +1,6 @@
-import { IAppStrings } from "../strings"
+import { IAppStrings } from "../strings";
 
-export const english : IAppStrings = {
+export const english: IAppStrings = {
     appName: "Visual Object Tagging Tool",
     common: {
         displayName: "Display Name",
@@ -50,7 +50,7 @@ export const english : IAppStrings = {
             navy: "Navy",
             fuschia: "Fuschia",
             purple: "Purple",
-        }
+        },
     },
     connections: {
         title: "Connections",
@@ -71,9 +71,9 @@ export const english : IAppStrings = {
             local: {
                 title: "Local File System",
                 folderPath: "Folder Path",
-                selectFolder: "Select Folder"
+                selectFolder: "Select Folder",
             },
-        }
+        },
     },
     editorPage: {
         width: "Width",
@@ -85,13 +85,13 @@ export const english : IAppStrings = {
             drawPolygon: "Draw Polygon",
             saveProject: "Save Project",
             exportProject: "Export Project",
-        }
+        },
     },
     exportPage: {
         providers: {
             vottJson: "VoTT JSON",
             azureCV: "Azure Custom Vision Service",
             tfRecords: "Tensorflow Records",
-        }
+        },
     },
-}
+};

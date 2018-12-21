@@ -54,7 +54,7 @@ export interface IAppStrings {
             fuschia: string;
             purple: string;
         }
-    }
+    };
     connections: {
         title: string;
         details: string;
@@ -95,7 +95,7 @@ export interface IAppStrings {
             vottJson: string;
             azureCV: string;
             tfRecords: string;
-        }
+        },
     };
 }
 

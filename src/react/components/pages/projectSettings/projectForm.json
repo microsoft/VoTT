@@ -12,7 +12,7 @@
         },
         "targetConnection": {
             "title": "${projectSettings.targetConnection.title}",
-            "description": "${projectSettings.targetConnection.title}",
+            "description": "${projectSettings.targetConnection.description}",
             "type": "object"
         },
         "description": {
