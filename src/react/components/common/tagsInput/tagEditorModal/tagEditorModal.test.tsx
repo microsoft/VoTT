@@ -69,6 +69,7 @@ describe("Tag Editor Modal", () => {
         expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
         wrapper.find("button").last().simulate("click");
         expect(onCancel).toBeCalled();
+        expect(onOk).not.toBeCalled();
     });
 
     it("modal calls 'onOk' when ok is clicked", () => {
@@ -86,6 +87,7 @@ describe("Tag Editor Modal", () => {
         okButton.simulate("click");
         setImmediate(() => {
             expect(onOk).toBeCalledWith(tag);
+            expect(onCancel).not.toBeCalled();
         });
     });
 
@@ -116,6 +118,7 @@ describe("Tag Editor Modal", () => {
                 name: newTagName,
                 color: tag.color,
             });
+            expect(onCancel).not.toBeCalled();
         });
     });
 });
