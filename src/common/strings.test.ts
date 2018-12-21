@@ -1,16 +1,20 @@
-import { strings, addLocValues } from "./strings";
+import { strings, addLocValues, IAppStrings } from "./strings";
+import { english } from "./localization/en"
+import { spanish } from "./localization/es";
+
+const languages = {
+    en: english,
+    es: spanish
+}
 
 describe("Localization tests", () => {
 
-    function getLanguageJson(language: string) {
-        // tslint:disable-next-line:no-var-requires
-        const languageJson = require(`../common/localization/${language}.json`);
-        return languageJson;
+    function getLanguageJson(language: string) : IAppStrings{
+        return languages[language];
     }
 
     function testConnectionForm(language: string) {
         const languageJson = getLanguageJson(language);
-
         // tslint:disable-next-line:no-var-requires
         const formJson = require("../react/components/pages/connections/connectionForm.json");
         strings.setLanguage(language);
@@ -30,15 +34,42 @@ describe("Localization tests", () => {
     function testAppSettingsForm(language: string){
         const languageJson = getLanguageJson(language);
         // tslint:disable-next-line:no-var-requires
-        const formJson = require("../react/components/pages/connections/connectionForm.json");
+        const formJson = require("../react/components/pages/appSettings/appSettingsPage.json");
     }
 
     function testProjectSettingsForm(language: string){
-        
+        const languageJson = getLanguageJson(language);
+        // tslint:disable-next-line:no-var-requires
+        const formJson = require("../react/components/pages/projectSettings/projectForm.json");
+        strings.setLanguage(language);
+        const newFormJson = addLocValues(formJson)
+        const formProps = newFormJson.properties;
+        const common = languageJson.common;
+
+        const lProj = languageJson.projectSettings;
+
+        expect(formProps.name.title).toEqual(common.displayName);
+        expect(formProps.sourceConnection.title).toEqual(lProj.sourceConnection.title);
+        expect(formProps.sourceConnection.description).toEqual(lProj.sourceConnection.description);
+        expect(formProps.targetConnection.title).toEqual(lProj.targetConnection.title);
+        expect(formProps.targetConnection.description).toEqual(lProj.targetConnection.description);
+        expect(formProps.description).toEqual(common.description);
+        expect(formProps.tags.title).toEqual(languageJson.tags.title);        
     }
 
     function testExportForm(language: string){
+        const languageJson = getLanguageJson(language);
+        // tslint:disable-next-line:no-var-requires
+        const formJson = require("../react/components/pages/export/exportForm.json");
+        strings.setLanguage(language);
+        const newFormJson = addLocValues(formJson)
+        const formProps = newFormJson.properties;
+        const common = languageJson.common;
+
+        const lExp = languageJson.exportPage;
         
+        expect(formProps.providerType.title).toEqual(common.provider);
+        expect
     }
 
     function testTagEditorModalForm(language: string){

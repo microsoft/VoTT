@@ -1,11 +1,9 @@
 import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
 import { replaceVariablesInJson } from "./utils";
-// tslint:disable-next-line:no-var-requires
-const english = require("./localization/en.json");
-// tslint:disable-next-line:no-var-requires
-const spanish = require("./localization/es.json");
+import { english } from "./localization/en";
+import { spanish } from "./localization/es";
 
-export interface IStrings extends LocalizedStringsMethods {
+export interface IAppStrings {
     appName: string;
     common: {
         displayName: string;
@@ -19,12 +17,44 @@ export interface IStrings extends LocalizedStringsMethods {
         openProject: string;
         recentProjects: string;
     };
-    projectSettings: {
-        sourceConnection: string;
-        targetConnection: string;
-        addConnection: string;
-        tags: string;
+    appSettings: {
+        storageTitle: string;
+        uiHelp: string;
     };
+    projectSettings: {
+        sourceConnection: {
+            title: string;
+            description: string;
+        }
+        targetConnection: {
+            title: string;
+            description: string;
+        }
+        addConnection: string;
+    };
+    tags: {
+        title: string;
+        modal: {
+            name: string;
+            color: string;
+        }
+        colors: {
+            white: string;
+            gray: string;
+            red: string;
+            maroon: string;
+            yellow: string;
+            olive: string;
+            lime: string;
+            green: string;
+            aqua: string;
+            teal: string;
+            blue: string;
+            navy: string;
+            fuschia: string;
+            purple: string;
+        }
+    }
     connections: {
         title: string;
         details: string;
@@ -60,7 +90,16 @@ export interface IStrings extends LocalizedStringsMethods {
             exportProject: string;
         }
     };
+    exportPage: {
+        providers: {
+            vottJson: string;
+            azureCV: string;
+            tfRecords: string;
+        }
+    };
 }
+
+interface IStrings extends LocalizedStringsMethods, IAppStrings {}
 
 export const strings: IStrings = new LocalizedStrings({
     en: english,

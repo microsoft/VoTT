@@ -2,7 +2,7 @@
     "type": "object",
     "properties": {
         "providerType": {
-            "title": "Provider",
+            "title": "${common.provider}",
             "type": "string",
             "enum": [
                 "vottJson",
@@ -11,9 +11,9 @@
             ],
             "default": "vottJson",
             "enumNames": [
-                "VoTT JSON",
-                "Azure Custom Vision Service",
-                "Tensor Flow Records"
+                "${exportPage.providers.vottJson}",
+                "${exportPage.providers.azureCV}",
+                "${exportPage.providers.tfRecords}"
             ]
         },
         "providerOptions": {
