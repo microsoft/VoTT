@@ -57,8 +57,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
                         schema={formSchema}
                         formData={this.state.tag}
                         onChange={this.handleFormChange}>
-                        >
-                        <div>
+                        <div style={{textAlign: "center"}}>
                             <button className="btn btn-info" onClick={this.handleOk}>Ok</button>
                             <button className="btn btn-info" onClick={this.props.onCancel}>Cancel</button>
                         </div>
