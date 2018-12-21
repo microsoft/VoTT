@@ -7,13 +7,15 @@
             "enum": [
                 "vottJson",
                 "azureCustomVision",
-                "tensorFlowRecords"
+                "tensorFlowRecords",
+                "tensorFlowPascalVOC"
             ],
             "default": "vottJson",
             "enumNames": [
                 "VoTT JSON",
                 "Azure Custom Vision Service",
-                "Tensor Flow Records"
+                "Tensor Flow Records",
+                "Tensor Flow Pascal VOC"
             ]
         },
         "providerOptions": {

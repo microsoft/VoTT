@@ -14,7 +14,8 @@ import {
     IProject,
     ITag,
 } from "../models/applicationState";
-import { VottExportAssetState } from "../providers/export/vottJson";
+
+import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider } from "../providers/storage/assetProvider";
 
 export default class MockFactory {
@@ -76,7 +77,7 @@ export default class MockFactory {
 
     public static createTestTags(count: number = 5): ITag[] {
         const tags: ITag[] = [];
-        for (let i = 1; i < count; i++) {
+        for (let i = 0; i < count; i++) {
             tags.push(MockFactory.createTestTag(i.toString()));
         }
 
@@ -121,7 +122,7 @@ export default class MockFactory {
         return {
             providerType: "vottJson",
             providerOptions: {
-                assetState: VottExportAssetState.Tagged,
+                assetState: ExportAssetState.Tagged,
             },
         };
     }
