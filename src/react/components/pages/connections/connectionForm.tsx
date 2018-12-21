@@ -11,13 +11,13 @@ const formSchema = addLocValues(nonLocalizedFormSchema);
 const nonLocalizedUiSchema = require("./connectionForm.ui.json");
 const uiSchema = addLocValues(nonLocalizedUiSchema);
 
-interface IConnectionFormProps extends React.Props<ConnectionForm> {
+export interface IConnectionFormProps extends React.Props<ConnectionForm> {
     connection: IConnection;
     onSubmit: (connection: IConnection) => void;
     onCancel?: () => void;
 }
 
-interface IConnectionFormState {
+export interface IConnectionFormState {
     providerName: string;
     formSchema: any;
     uiSchema: any;
@@ -106,6 +106,10 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
 
         if (providerType !== this.state.providerName) {
             this.bindForm(args.formData, true);
+        } else {
+            this.setState({
+                formData: args.formData,
+            });
         }
     }
 
