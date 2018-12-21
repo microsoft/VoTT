@@ -78,10 +78,10 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
                         onChange={this.onFormChange}
                         onSubmit={(form) => this.props.onSubmit(form.formData)}>
                         <div>
-                            <button className="btn btn-success mr-1" type="submit">Save Connection</button>
+                            <button className="btn btn-success mr-1" type="submit">{strings.connections.save}</button>
                             <button className="btn btn-secondary btn-cancel"
                                 type="button"
-                                onClick={this.onFormCancel}>Cancel</button>
+                                onClick={this.onFormCancel}>{strings.common.cancel}</button>
                         </div>
                     </Form>
                 </div>

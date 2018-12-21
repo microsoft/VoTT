@@ -12,6 +12,7 @@ import EditorFooter from "./editorFooter";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import { strings } from "../../../../common/strings";
 
 interface IEditorPageProps extends RouteComponentProps, React.Props<IEditorPageProps> {
     project: IProject;
@@ -104,8 +105,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 <AssetPreview asset={selectedAsset.asset} />
                                 {selectedAsset.asset.size &&
                                     <div>
-                                        Width: {selectedAsset.asset.size.width}
-                                        Height: {selectedAsset.asset.size.height}
+                                        {strings.editorPage.width}: {selectedAsset.asset.size.width}
+                                        {strings.editorPage.height}: {selectedAsset.asset.size.height}
                                     </div>
                                 }
                             </div>

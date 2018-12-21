@@ -56,7 +56,7 @@ export const spanish: IAppStrings = {
         title: "Conexiones",
         details: "Detalles de Conexión",
         settings: "Configuración de Conexión",
-        connectionPageInstructions: "Por favor seleccione una conexión para editar",
+        instructions: "Por favor seleccione una conexión para editar",
         providers: {
             azureBlob: {
                 title: "Almacenamiento de Azure Blob",
@@ -90,8 +90,8 @@ export const spanish: IAppStrings = {
     exportPage: {
         providers: {
             vottJson: "VoTT JSON",
-            azureCV: "Azure Custom Vision Service",
-            tfRecords: "Tensorflow Records",
+            azureCV: "Servicio de Visión Personalizada Azure",
+            tfRecords: "Registros de Tensorflow",
         },
     },
 };

@@ -5,6 +5,7 @@ import ConnectionPicker from "../../common/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
+import { strings } from "../../../../common/strings.js";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./projectForm.json");
 // tslint:disable-next-line:no-var-requires
@@ -99,10 +100,10 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 formData={this.state.formData}
                 onSubmit={this.onFormSubmit}>
                 <div>
-                    <button className="btn btn-success mr-1" type="submit">Save Project</button>
+                    <button className="btn btn-success mr-1" type="submit">{strings.projectSettings.save}</button>
                     <button className="btn btn-secondary btn-cancel"
                         type="button"
-                        onClick={this.onFormCancel}>Cancel</button>
+                        onClick={this.onFormCancel}>{strings.common.cancel}</button>
                 </div>
             </Form>
         );

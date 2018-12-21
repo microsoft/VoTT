@@ -9,6 +9,7 @@ import { RouteComponentProps } from "react-router-dom";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
+import { strings } from "../../../../common/strings";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
@@ -75,7 +76,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
 
                 <Route exact path="/connections" render={(props) =>
                     <div className="app-connections-page-detail m-3 text-light">
-                        <h6>Please select a connection to edit</h6>
+                        <h6>{strings.connections.instructions}</h6>
                     </div>
                 } />
 

@@ -15,10 +15,21 @@ export const english: IAppStrings = {
         recentProjects: "Recent Projects",
     },
     appSettings: {
+        title: "Application Settings",
         storageTitle: "Storage Settings",
         uiHelp: "Where your settings are stored",
+        devTools: {
+            description: "Open application developer tools to help diagnose issues",
+            button: "Toggle Developer Tools"
+        },
+        reload: {
+            description: "Reload the app discarding all current changes",
+            button: "Refresh Application"
+        }
     },
     projectSettings: {
+        title: "Project Settings",
+        save: "Save Project",
         sourceConnection: {
             title: "Source Connection",
             description: "Where to load assets from",
@@ -56,7 +67,8 @@ export const english: IAppStrings = {
         title: "Connections",
         details: "Connection Details",
         settings: "Connection Settings",
-        connectionPageInstructions: "Please select a connection to edit",
+        instructions: "Please select a connection to edit",
+        save: "Save Connection",
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
@@ -86,8 +98,11 @@ export const english: IAppStrings = {
             saveProject: "Save Project",
             exportProject: "Export Project",
         },
+        assetError: "Unable to display asset"
     },
     exportPage: {
+        settings: "Export Settings",
+        saveSettings: "Save Export Settings",
         providers: {
             vottJson: "VoTT JSON",
             azureCV: "Azure Custom Vision Service",

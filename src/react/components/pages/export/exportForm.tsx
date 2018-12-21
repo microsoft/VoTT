@@ -2,6 +2,7 @@ import React from "react";
 import Form, { FormValidation, ISubmitEvent, IChangeEvent } from "react-jsonschema-form";
 import { IExportFormat } from "../../../../models/applicationState.js";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
+import { strings } from "../../../../common/strings.js";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./exportForm.json");
 // tslint:disable-next-line:no-var-requires
@@ -64,10 +65,10 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 onChange={this.onFormChange}
                 onSubmit={this.onFormSubmit}>
                 <div>
-                    <button className="btn btn-success mr-1" type="submit">Save Export Settings</button>
+                    <button className="btn btn-success mr-1" type="submit">{strings.exportPage.saveSettings}</button>
                     <button className="btn btn-secondary btn-cancel"
                         type="button"
-                        onClick={this.onFormCancel}>Cancel</button>
+                        onClick={this.onFormCancel}>{strings.common.cancel}</button>
                 </div>
             </Form>
         );

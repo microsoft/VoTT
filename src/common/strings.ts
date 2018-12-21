@@ -18,10 +18,20 @@ export interface IAppStrings {
         recentProjects: string;
     };
     appSettings: {
+        title: string;
         storageTitle: string;
         uiHelp: string;
+        devTools: {
+            description: string;
+            button: string;
+        },
+        reload: {
+            description: string;
+            button: string;
+        }
     };
     projectSettings: {
+        title: string;
         sourceConnection: {
             title: string;
             description: string;
@@ -59,7 +69,8 @@ export interface IAppStrings {
         title: string;
         details: string;
         settings: string;
-        connectionPageInstructions: string;
+        instructions: string;
+        save: string;
         providers: {
             azureBlob: {
                 title: string;
@@ -89,8 +100,11 @@ export interface IAppStrings {
             saveProject: string;
             exportProject: string;
         }
+        assetError: string;
     };
     exportPage: {
+        settings: string;
+        saveSettings: string;
         providers: {
             vottJson: string;
             azureCV: string;
