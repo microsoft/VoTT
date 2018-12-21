@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { TFPascalVOCJsonExportProvider,
-         ITFPascalVOCJsonExportOptions,
-         TFPascalVOCExportAssetState } from "./tensorFlowPascalVOC";
+         ITFPascalVOCJsonExportOptions } from "./tensorFlowPascalVOC";
+import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
@@ -15,34 +15,15 @@ jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 
 describe("TFPascalVOC Json Export Provider", () => {
-    const testProject: IProject = {
-        id: "1",
-        name: "Test Project",
-        autoSave: true,
-        assets: {
-            "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
-            "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
-            "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
-            "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
-        },
-        exportFormat: {
-            providerType: "json",
-            providerOptions: {},
-        },
-        sourceConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        targetConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        tags: [],
+    const baseTestProject = MockFactory.createTestProject("Test Project");
+    baseTestProject.assets = {
+        "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
+        "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
+        "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
+        "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
     };
+    baseTestProject.sourceConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
+    baseTestProject.targetConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
 
     const tagLengthInPbtxt = 37;
 
@@ -51,8 +32,6 @@ describe("TFPascalVOC Json Export Provider", () => {
             data: [1, 2, 3],
         });
     });
-
-    jest.setTimeout(10000);
 
     beforeEach(() => {
         registerProviders();
@@ -64,9 +43,9 @@ describe("TFPascalVOC Json Export Provider", () => {
 
     it("Can be instantiated through the factory", () => {
         const options: ITFPascalVOCJsonExportOptions = {
-            assetState: TFPascalVOCExportAssetState.All,
+            assetState: ExportAssetState.All,
         };
-        const exportProvider = ExportProviderFactory.create("tensorFlowPascalVOC", testProject, options);
+        const exportProvider = ExportProviderFactory.create("tensorFlowPascalVOC", baseTestProject, options);
         expect(exportProvider).not.toBeNull();
         expect(exportProvider).toBeInstanceOf(TFPascalVOCJsonExportProvider);
     });
@@ -90,9 +69,10 @@ describe("TFPascalVOC Json Export Provider", () => {
 
         it("Exports all assets", async () => {
             const options: ITFPascalVOCJsonExportOptions = {
-                assetState: TFPascalVOCExportAssetState.All,
+                assetState: ExportAssetState.All,
             };
 
+            const testProject = {...baseTestProject};
             testProject.tags = MockFactory.createTestTags(3);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
@@ -122,9 +102,10 @@ describe("TFPascalVOC Json Export Provider", () => {
 
         it("Exports only visited assets (includes tagged)", async () => {
             const options: ITFPascalVOCJsonExportOptions = {
-                assetState: TFPascalVOCExportAssetState.Visited,
+                assetState: ExportAssetState.Visited,
             };
 
+            const testProject = {...baseTestProject};
             testProject.tags = MockFactory.createTestTags(1);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
@@ -153,9 +134,10 @@ describe("TFPascalVOC Json Export Provider", () => {
 
         it("Exports only tagged assets", async () => {
             const options: ITFPascalVOCJsonExportOptions = {
-                assetState: TFPascalVOCExportAssetState.Tagged,
+                assetState: ExportAssetState.Tagged,
             };
 
+            const testProject = {...baseTestProject};
             testProject.tags = MockFactory.createTestTags(0);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);

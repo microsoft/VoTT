@@ -2,7 +2,7 @@ import React from "react";
 import ExportForm, { IExportFormProps, IExportFormState } from "./exportForm";
 import { mount } from "enzyme";
 import { IExportFormat } from "../../../../models/applicationState";
-import { VottExportAssetState } from "../../../../providers/export/vottJson";
+import { ExportAssetState } from "../../../../providers/export/exportProvider";
 
 describe("Export Form Component", () => {
     function createComponent(props: IExportFormProps) {
@@ -35,7 +35,7 @@ describe("Export Form Component", () => {
             settings: {
                 providerType: "vottJson",
                 providerOptions: {
-                    assetState: VottExportAssetState.Tagged,
+                    assetState: ExportAssetState.Tagged,
                 },
             },
             onSubmit: onSubmitHandler,
@@ -68,7 +68,7 @@ describe("Export Form Component", () => {
         const defaultExportSettings: IExportFormat = {
             providerType: "vottJson",
             providerOptions: {
-                assetState: VottExportAssetState.All,
+                assetState: ExportAssetState.All,
             },
         };
 

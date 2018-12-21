@@ -14,7 +14,7 @@ import {
     IProject,
     ITag,
 } from "../models/applicationState";
-import { VottExportAssetState } from "../providers/export/vottJson";
+import { ExportAssetState } from "../providers/export/exportProvider";
 
 export default class MockFactory {
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
@@ -112,7 +112,7 @@ export default class MockFactory {
         return {
             providerType: "vottJson",
             providerOptions: {
-                assetState: VottExportAssetState.Tagged,
+                assetState: ExportAssetState.Tagged,
             },
         };
     }
