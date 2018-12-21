@@ -1,8 +1,7 @@
-import React from "react";
-import TagsInput, { ITagsInputProps, KeyCodes } from "./tagsInput";
 import { mount } from "enzyme";
-import { ITag } from "../../../../models/applicationState";
+import React from "react";
 import MockFactory from "../../../../common/mockFactory";
+import TagsInput, { ITagsInputProps, KeyCodes } from "./tagsInput";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("./tagColors.json");
 
@@ -168,7 +167,7 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button")
-            .last()
+            .first()
             .simulate("click");
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).toBeCalled();
@@ -184,7 +183,7 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button")
-            .first()
+            .last()
             .simulate("click");
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).not.toBeCalled();

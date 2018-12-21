@@ -11,7 +11,7 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
         case ActionTypes.LOAD_PROJECT_SUCCESS:
             return { ...action.payload };
         case ActionTypes.SAVE_PROJECT_SUCCESS:
-            if (state && state.id === action.payload.id) {
+            if (!state || state.id === action.payload.id) {
                 return { ...action.payload };
             } else {
                 return state;

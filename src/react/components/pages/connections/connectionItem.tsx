@@ -7,7 +7,7 @@ export default function ConnectionItem({ item, onClick, onDelete }) {
             <NavLink to={`/connections/${item.id}`}>
                 <i className="fas fa-edit"></i>
                 <span className="px-2">{item.name}</span>
-                <div className="float-right" onClick={onDelete}><i className="fas fa-trash"></i></div>
+                <div className="float-right delete-btn" onClick={onDelete}><i className="fas fa-trash"></i></div>
             </NavLink>
         </li>
     );

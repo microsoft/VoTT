@@ -42,6 +42,7 @@ export default class ExportPage extends React.Component<IExportPageProps> {
         }
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onFormCancel = this.onFormCancel.bind(this);
     }
 
     public render() {
@@ -53,7 +54,8 @@ export default class ExportPage extends React.Component<IExportPageProps> {
                 <div className="m-3 text-light">
                     <ExportForm
                         settings={exportFormat}
-                        onSubmit={this.onFormSubmit} />
+                        onSubmit={this.onFormSubmit}
+                        onCancel={this.onFormCancel} />
                 </div>
             </div>
         );
@@ -66,7 +68,10 @@ export default class ExportPage extends React.Component<IExportPageProps> {
         };
 
         await this.props.actions.saveProject(projectToUpdate);
-        await this.props.actions.exportProject(this.props.project);
+        this.props.history.goBack();
+    }
+
+    private onFormCancel() {
         this.props.history.goBack();
     }
 }

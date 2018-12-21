@@ -41,6 +41,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
         };
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onFormCancel = this.onFormCancel.bind(this);
         this.onConnectionDelete = this.onConnectionDelete.bind(this);
     }
 
@@ -81,7 +82,8 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                 <Route exact path="/connections/:connectionId" render={(props) =>
                     <ConnectionForm
                         connection={this.state.connection}
-                        onSubmit={this.onFormSubmit} />
+                        onSubmit={this.onFormSubmit}
+                        onCancel={this.onFormCancel} />
                 } />
             </div>
         );
@@ -98,10 +100,19 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
 
     private onConnectionDelete = async (connection: IConnection) => {
         await this.props.actions.deleteConnection(connection);
+
+        if (this.state.connection === connection) {
+            this.props.history.push("/connections");
+            this.setState({ connection: null });
+        }
     }
 
     private onFormSubmit = async (connection: IConnection) => {
         await this.props.actions.saveConnection(connection);
-        this.props.history.push("/connections");
+        this.props.history.goBack();
+    }
+
+    private onFormCancel() {
+        this.props.history.goBack();
     }
 }
