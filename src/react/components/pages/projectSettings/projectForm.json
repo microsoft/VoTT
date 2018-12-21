@@ -7,10 +7,12 @@
         },
         "sourceConnection": {
             "title": "Source Connection",
+            "description": "Where to load the assets from",
             "type": "object"
         },
         "targetConnection": {
             "title": "Target Connection",
+            "description": "Where to save the project and exported data",
             "type": "object"
         },
         "description": {

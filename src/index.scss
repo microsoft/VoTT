@@ -32,3 +32,25 @@ input[type=file] {
 ::-webkit-scrollbar-thumb:window-inactive {
 	background: $lighter-4; 
 }
+
+.form-group {
+    &.is-invalid {
+        .invalid-feedback {
+            display: block;
+        }
+
+        .form-control {
+            border: solid 1px #ee5f5b;
+        }
+    }
+
+    &.is-valid {
+        .valid-feedback {
+            display: block;
+        }
+
+        .form-control {
+            border: solid 1px #62c462;
+        }
+    }
+}

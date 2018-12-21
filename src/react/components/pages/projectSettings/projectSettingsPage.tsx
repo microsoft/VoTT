@@ -39,6 +39,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         }
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onFormCancel = this.onFormCancel.bind(this);
     }
 
     public render() {
@@ -49,7 +50,8 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                     <ProjectForm
                         project={this.props.project}
                         connections={this.props.connections}
-                        onSubmit={this.onFormSubmit} />
+                        onSubmit={this.onFormSubmit}
+                        onCancel={this.onFormCancel} />
                 </div>
             </div>
         );
@@ -60,7 +62,17 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
             ...formData,
         };
 
+        const isNew = !(!!projectToUpdate.id);
         await this.props.actions.saveProject(projectToUpdate);
+
+        if (isNew) {
+            this.props.history.push(`/projects/${this.props.project.id}/edit`);
+        } else {
+            this.props.history.goBack();
+        }
+    }
+
+    private onFormCancel() {
         this.props.history.goBack();
     }
 }
