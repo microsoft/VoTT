@@ -45,6 +45,7 @@ export interface IAppStrings {
     };
     tags: {
         title: string;
+        placeholder: string;
         modal: {
             name: string;
             color: string;
@@ -117,7 +118,7 @@ export interface IAppStrings {
 interface IStrings extends LocalizedStringsMethods, IAppStrings {}
 
 export const strings: IStrings = new LocalizedStrings({
-    en: english,
+    // en: english,
     es: spanish,
 });
 

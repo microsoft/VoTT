@@ -6,6 +6,7 @@ import { randomIntInRange } from "../../../../common/utils";
 import { TagEditorModal } from "./tagEditorModal/tagEditorModal";
 import deepmerge from "deepmerge";
 import { ITag } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("./tagColors.json");
 
@@ -91,6 +92,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         return (
             <div>
                 <ReactTags tags={tags}
+                    placeholder={strings.tags.placeholder}
                     handleDelete={this.handleDelete}
                     handleAddition={this.handleAddition}
                     handleDrag={this.handleDrag}

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
+import { strings } from "../../../common/strings";
 
 export default function Navbar() {
     return (
@@ -10,7 +11,7 @@ export default function Navbar() {
                 </ul>
             </div>
             <div className="app-navbar-brand">
-                <span>Visual Object Tagging Tool</span>
+                <span>{strings.appName}</span>
             </div>
             <div className="app-navbar-menu">
                 <ul>

@@ -42,6 +42,7 @@ export const spanish: IAppStrings = {
     },
     tags: {
         title: "Etiquetas",
+        placeholder: "Agregar nuevo etiqueta",
         modal: {
             name: "Nombre de Etiqueta",
             color: "Color de Etiqueta",

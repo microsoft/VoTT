@@ -42,6 +42,7 @@ export const english: IAppStrings = {
     },
     tags: {
         title: "Tags",
+        placeholder: "Add new tag",
         modal: {
             name: "Tag Name",
             color: "Tag Color",

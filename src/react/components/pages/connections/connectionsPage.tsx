@@ -67,7 +67,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
             <div className="app-connections-page">
                 <div className="app-connections-page-list bg-lighter-1">
                     <CondensedList
-                        title="Connections"
+                        title={strings.connections.title}
                         newLinkTo={"/connections/create"}
                         onDelete={this.onConnectionDelete}
                         Component={ConnectionItem}
