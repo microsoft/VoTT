@@ -4,8 +4,9 @@ import { IAssetMetadata, IRegion, RegionType, AssetState } from "../../../../mod
 // import * as CanvasTools from "vott-ct"
 import { CanvasTools } from "vott-ct"
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import { IPoint2D } from "vott-ct/lib/js/CanvasTools/Interface/IPoint2D";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/CanvasTools.Tags";
+import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
+import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 
 interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -18,43 +19,68 @@ interface ICanvasState {
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
     private editor: Editor;
-    private frameWidth: number;
-    private frameHeight: number;
-    private ratioWidth: number;
-    private ratioHeight: number;
-    private sourceWidth: number;
-    private sourceHeight: number;
+
+    //Editor Methods
+    /**
+     * @name scaleRegionToFrameSize
+     * @description rescales region based on visible frame size
+     * @param {RegionData} regionData
+     * @param {number} sourceWidth?
+     * @param {number} sourceHeight?
+     * @returns {RegionData}
+     */
+    public scaleRegionToFrameSize: (regionData: RegionData, sourceWidth?: number, sourceHeight?: number) => RegionData;
+
+    /**
+     * @name scaleRegionToSourceSize
+     * @description rescales region based on source size
+     * @param {RegionData} regionData
+     * @param {number} sourceWidth?
+     * @param {number} sourceHeight?
+     * @returns {RegionData}
+     */
+    public scaleRegionToSourceSize: (regionData: RegionData, sourceWidth?: number, sourceHeight?: number) => RegionData;
 
     //Region Manager Methods
+    /**
+     * @name addRegion
+     * @description wrapper that adds a region to the canvas
+     * @param {string} id
+     * @param {RegionData} regionData
+     * @param {TagsDescriptor} tagsDescriptor
+     * @returns {void}
+     */
+    public addRegion: (id: string, regionData: RegionData, tagsDescriptor: TagsDescriptor) => void;
+
     /**
      * @name addPointRegion
      * @description adds point region to the canvas
      * @param {string} id
-     * @param {IPoint2D} point
+     * @param {RegionData} regionData
      * @param {TagsDescriptor} tagsDescriptor
      * @returns {void}
      */
-    public addPointRegion: (id: string, point: IPoint2D, tagsDescriptor: TagsDescriptor) => void;
+    public addPointRegion: (id: string, regionData: RegionData, tagsDescriptor: TagsDescriptor) => void;
 
     /**
      * @name addPolylineRegion
      * @description adds polygon region to the canvas
      * @param {string} id
-     * @param {IPoint2D[]} points
+     * @param {RegionData} regionData
      * @param {TagsDescriptor} tagsDescriptor
      * @returns {void}
      */
-    public addPolylineRegion: (id: string, points: IPoint2D[], tagsDescriptor: TagsDescriptor) => void;
+    public addPolylineRegion: (id: string, regionData: RegionData, tagsDescriptor: TagsDescriptor) => void;
 
     /**
      * @name addRectRegion
      * @description adds rectagular region to the canvas
      * @param {string} id
-     * @param {IPoint2D[]} points
+     * @param {RegionData} regionData
      * @param {TagsDescriptor} tagsDescriptor
      * @returns {void}
      */
-    public addRectRegion: (id: string, pointA: IPoint2D, pointB: IPoint2D, tagsDescriptor: TagsDescriptor) => void;
+    public addRectRegion: (id: string, regionData: RegionData, tagsDescriptor: TagsDescriptor) => void;
 
     /**
      * @name deleteAllRegions
@@ -158,7 +184,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor = new ct.Editor(sz);
         this.editor.addToolbar(tz, ct.Editor.FullToolbarSet, "./../../../images/icons/");
 
+        //Expose CanvasTools Editor API
+        this.scaleRegionToFrameSize = this.editor.scaleRegionToFrameSize.bind(this.editor);
+        this.scaleRegionToSourceSize = this.editor.scaleRegionToSourceSize.bind(this.editor);
+
         //Expose CanvasTools RegionManager API
+        this.addRegion = this.editor.RM.addRegion.bind(this.editor.RM);
         this.addPointRegion = this.editor.RM.addPointRegion.bind(this.editor.RM);
         this.addPolylineRegion = this.editor.RM.addPolylineRegion.bind(this.editor.RM);
         this.addRectRegion = this.editor.RM.addRectRegion.bind(this.editor.RM);
@@ -188,7 +219,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         this.editor.onSelectionEnd = (commit) => {
             let r = commit.boundRect;
-            
+            console.log(commit)
+
+            //Generated random tags for now
             let tags = 
                 (Math.random() < 0.3) ?        
                     new ct.Core.TagsDescriptor(primaryTag, [secondaryTag, ternaryTag]):
@@ -196,18 +229,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     new ct.Core.TagsDescriptor(secondaryTag, [ternaryTag, primaryTag]):
                     new ct.Core.TagsDescriptor(ternaryTag, [primaryTag, secondaryTag]));
 
-            if (commit.meta !== undefined && commit.meta.point !== undefined) {
-                let point = commit.meta.point;
-                this.addPointRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(point.x, point.y), tags);
-            } else {
-                this.addRectRegion((incrementalRegionID++).toString(), new ct.Core.Point2D(r.x1, r.y1), new ct.Core.Point2D(r.x2, r.y2), tags);
-            }
+            this.addRegion((incrementalRegionID++).toString(), commit, tags)
 
+            let scaledRegionData = this.scaleRegionToSourceSize(commit)
             let newRegion = {
                 id: incrementalRegionID.toString(),
                 type: RegionType.Rectangle,
                 tags: tags,
-                points: [new ct.Core.Point2D(r.x1 / this.ratioWidth, r.y1 / this.ratioHeight), new ct.Core.Point2D(r.x2 / this.ratioWidth, r.y2 / this.ratioHeight)]
+                points: [new Point2D(scaledRegionData.x, scaledRegionData.y), new Point2D(scaledRegionData.x + scaledRegionData.width, scaledRegionData.y + scaledRegionData.height)]                                                                               
             }
 
             let currentAssetMetadata = this.props.selectedAsset;
@@ -219,13 +248,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.props.onAssetMetadataChanged(currentAssetMetadata);
         }
         
-        this.editor.onRegionMove = (id, x, y, width, height) => {
-            console.log(`Moved ${id}: {${x}, ${y}} x {${width}, ${height}}`);
+        this.editor.onRegionMove = (id, regionData) => {
             let currentAssetMetadata = this.props.selectedAsset;
             let movedRegionIndex = currentAssetMetadata.regions.findIndex(region => {return region.id == id})
             let movedRegion = currentAssetMetadata.regions[movedRegionIndex]
+            //@ts-ignore   in here until CanvasTools types get updated
+            let scaledRegionData = this.scaleRegionToSourceSize(regionData)
             if(movedRegion){
-                movedRegion.points = [new ct.Core.Point2D(x / this.ratioWidth, y / this.ratioHeight), new ct.Core.Point2D((x + width) / this.ratioWidth, (y + height) / this.ratioHeight)]
+                movedRegion.points = [new ct.Core.Point2D(scaledRegionData.x, scaledRegionData.y), new ct.Core.Point2D(scaledRegionData.x + scaledRegionData.width, scaledRegionData.y + scaledRegionData.height)]
+
             }
             currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
             this.props.onAssetMetadataChanged(currentAssetMetadata);
@@ -276,27 +307,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.deleteAllRegions();
         let image = new Image();
         image.addEventListener("load", (e) => {
-            const sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
-            this.frameWidth = sz.querySelector("svg").clientWidth
-            this.frameHeight = sz.querySelector("svg").clientHeight
-            //@ts-ignore
-            this.sourceWidth = e.currentTarget.width
-            //@ts-ignore
-            this.sourceHeight = e.currentTarget.height
-            //@ts-ignore
-            this.ratioWidth = this.frameWidth/this.sourceWidth;
-            //@ts-ignore
-            this.ratioHeight = this.frameHeight/this.sourceHeight;
-
-
             console.log("loading")
             //@ts-ignore
             this.editor.addContentSource(e.target);
             if(this.props.selectedAsset.regions.length){
                 this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    let rescaledPoint1 = new CanvasTools.Core.Point2D(region.points[0].x * this.ratioWidth, region.points[0].y * this.ratioHeight)
-                    let rescaledPoint2 = new CanvasTools.Core.Point2D(region.points[1].x * this.ratioWidth, region.points[1].y * this.ratioHeight)
-                    this.addRectRegion(region.id, rescaledPoint1, rescaledPoint2, region.tags);
+                    let loadedRegionData = new RegionData(region.points[0].x,region.points[0].y,Math.abs(region.points[0].x-region.points[1].x),Math.abs(region.points[0].y-region.points[1].y), region.points, RegionDataType.Rect)
+                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), region.tags);
                 });
             }
         });
