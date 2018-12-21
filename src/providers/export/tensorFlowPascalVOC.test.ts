@@ -41,7 +41,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             providerType: "localFileSystemProxy",
             providerOptions: {},
         },
-        tags: [],
+        tags: MockFactory.createTestTags(3),
     };
 
     axios.get = jest.fn(() => {

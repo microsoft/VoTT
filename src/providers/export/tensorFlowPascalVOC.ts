@@ -65,10 +65,10 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const exportFolderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
         await this.storageProvider.createContainer(exportFolderName);
 
-        await this.exporAnnotations(exportFolderName, results);
+        await this.exportAnnotations(exportFolderName, results);
         await this.exportImageSets(exportFolderName, results);
         await this.exportImages(exportFolderName, results);
-        await this.exportPBTXT(exportFolderName, results);
+        await this.exportPBTXT(exportFolderName, this.project);
     }
 
     private async exportImages(exportFolderName: string, results: IAssetMetadata[]) {
@@ -111,7 +111,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         }
     }
 
-    private async exporAnnotations(exportFolderName: string, results: IAssetMetadata[]) {
+    private async exportAnnotations(exportFolderName: string, results: IAssetMetadata[]) {
         // Create Annotations Sub Folder
         const annotationsFolderName = `${exportFolderName}/Annotations`;
         await this.storageProvider.createContainer(annotationsFolderName);
@@ -129,11 +129,20 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         // TODO
     }
 
-    private async exportPBTXT(exportFolderName: string, results: IAssetMetadata[]) {
+    private async exportPBTXT(exportFolderName: string, project: IProject) {
         // Save pascal_label_map.pbtxt
         const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
 
+        const itemTemplate = `
+item {
+    id: %ID%
+    name: '%TAG%'
+}`;
+        let id = 1;
+        const items = project.tags.map((element) =>
+            itemTemplate.replace("%ID%", (id++).toString()).replace("%TAG%", element.name));
+
         // TODO
-        await this.storageProvider.writeText(pbtxtFileName, JSON.stringify("TODO", null, 4));
+        await this.storageProvider.writeText(pbtxtFileName, items.join());
     }
 }
