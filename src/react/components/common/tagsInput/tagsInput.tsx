@@ -1,12 +1,11 @@
 import React from "react";
-import "./tagsInput.scss";
-import "../common.scss";
 import { WithContext as ReactTags } from "react-tag-input";
-import { randomIntInRange } from "../../../../common/utils";
-import { TagEditorModal } from "./tagEditorModal/tagEditorModal";
-import deepmerge from "deepmerge";
-import { ITag } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
+import { randomIntInRange } from "../../../../common/utils";
+import { ITag } from "../../../../models/applicationState";
+import "../common.scss";
+import TagEditorModal from "./tagEditorModal/tagEditorModal";
+import "./tagsInput.scss";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("./tagColors.json");
 

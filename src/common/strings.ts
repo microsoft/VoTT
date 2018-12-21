@@ -121,6 +121,7 @@ export interface IAppStrings {
             vottJson: string;
             azureCV: string;
             tfRecords: string;
+            tfPascalVoc: string;
         },
     };
     activeLearning: {

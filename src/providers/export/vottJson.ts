@@ -1,28 +1,15 @@
 import _ from "lodash";
-import { ExportProvider } from "./exportProvider";
+import { ExportProvider, ExportAssetState } from "./exportProvider";
 import { IProject, AssetState, AssetType, IAsset } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
-
-/**
- * @name - Vott Export Asset State
- * @description - Defines the asset type export option
- * @member All - Specifies that all assets will be exported
- * @member Visited - Specifies that visited (including tagged) assets will be exported
- * @member Tagged - Specifies that only tagged assets will be exported
- */
-export enum VottExportAssetState {
-    All = "all",
-    Visited = "visited",
-    Tagged = "tagged",
-}
 
 /**
  * @name - IVottJsonExportOptions
  * @description - Defines the configurable options for the Vott JSON Export provider
  */
 export interface IVottJsonExportOptions {
-    assetState: VottExportAssetState;
+    assetState: ExportAssetState;
 }
 
 /**
@@ -41,13 +28,13 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOption
         let predicate: (asset: IAsset) => boolean = null;
 
         switch (this.options.assetState) {
-            case VottExportAssetState.All:
+            case ExportAssetState.All:
                 predicate = (asset) => true;
                 break;
-            case VottExportAssetState.Visited:
+            case ExportAssetState.Visited:
                 predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
                 break;
-            case VottExportAssetState.Tagged:
+            case ExportAssetState.Tagged:
                 predicate = (asset) => asset.state === AssetState.Tagged;
                 break;
         }

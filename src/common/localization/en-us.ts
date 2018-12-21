@@ -118,6 +118,7 @@ export const english: IAppStrings = {
             vottJson: "VoTT JSON",
             azureCV: "Azure Custom Vision Service",
             tfRecords: "Tensorflow Records",
+            tfPascalVoc: "Tensorflow Pascal VOC"
         },
     },
     activeLearning: {
