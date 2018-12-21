@@ -95,19 +95,35 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     const image64 = btoa(new Uint8Array(response.data).
                         reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
-                    // Load image at runtime to get dimension info
-                    const img = new Image();
-                    img.onload = ((event) => {
-                        // TODO: Save on a temporary Dictionary width, height, depth
-                        //       to be used later in exportAnnotations()
-                        console.log(img.width);
+                    if (image64.length > 10) {
+                        // Load image at runtime to get dimension info
+                        const img = new Image();
+                        img.onload = ((event) => {
+                            // TODO: Save on a temporary Dictionary width, height, depth
+                            //       to be used later in exportAnnotations()
+                            console.log(img.width);
 
+                            resolve();
+                        });
+                        img.onerror = ((err) => {
+                            // Ignore the error at the moment
+                            // TODO: Refactor ExportProvider abstract class export() method
+                            //       to return Promise<object> with an object containing
+                            //       the number of files succesfully exported out of total
+                            console.log(`Error loading image ${imageFileName}`);
+                            resolve();
+                            // eject(err);
+                        });
+                        img.src = "data:image/jpeg;base64," + image64;
+                    } else {
+                        // Ignore the error at the moment
+                        // TODO: Refactor ExportProvider abstract class export() method
+                        //       to return Promise<object> with an object containing
+                        //       the number of files succesfully exported out of total
+                        console.log(`Image not valid ${imageFileName}`);
                         resolve();
-                    });
-                    img.onerror = ((err) => {
-                        reject(err);
-                    });
-                    img.src = "data:image/jpeg;base64," + image64;
+                        // eject(err);
+                    }
                 })
                 .catch((err) => {
                     // Ignore the error at the moment

@@ -52,6 +52,8 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
     });
 
+    jest.setTimeout(10000);
+
     beforeEach(() => {
         registerProviders();
     });
