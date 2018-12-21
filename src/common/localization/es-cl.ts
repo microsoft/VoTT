@@ -8,7 +8,7 @@ export const spanish: IAppStrings = {
         submit: "Enviar",
         cancel: "Cancelar",
         provider: "Proveedor",
-        homePage: "Página de Inicio"
+        homePage: "Página de Inicio",
     },
     homePage: {
         newProject: "Nuevo Proyecto",
@@ -86,14 +86,14 @@ export const spanish: IAppStrings = {
                     all: "Todos",
                     square: "Cuadrado",
                     wide: "Ancho",
-                    tall: "Alto"
-                }
+                    tall: "Alto",
+                },
             },
             local: {
                 title: "Sistema de Archivos Local",
                 folderPath: "Ruta de la carpeta",
                 selectFolder: "Seleccionar la carpeta",
-                chooseFolder: "Elijir la carpeta"
+                chooseFolder: "Elijir la carpeta",
             },
         },
     },
@@ -121,9 +121,9 @@ export const spanish: IAppStrings = {
         },
     },
     activeLearning: {
-        title: "Aprendizaje Activo"
+        title: "Aprendizaje Activo",
     },
     profile: {
-        settings: "Configuración de Perfíl"
-    }
+        settings: "Configuración de Perfíl",
+    },
 };

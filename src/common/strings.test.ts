@@ -1,6 +1,6 @@
 import { strings, addLocValues, IAppStrings } from "./strings";
-import { english } from "./localization/en";
-import { spanish } from "./localization/es";
+import { english } from "./localization/en-us";
+import { spanish } from "./localization/es-cl";
 
 const languages = ["en", "es"];
 

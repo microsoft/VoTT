@@ -41,7 +41,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class AppSettingsPage extends React.Component<IAppSettingsProps, IAppSettingsState> {    
+export default class AppSettingsPage extends React.Component<IAppSettingsProps, IAppSettingsState> {
     private widgets: any = {
         connectionPicker: ConnectionPicker,
     };

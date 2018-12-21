@@ -1,7 +1,7 @@
 import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
 import { replaceVariablesInJson } from "./utils";
-import { english } from "./localization/en";
-import { spanish } from "./localization/es";
+import { english } from "./localization/en-us";
+import { spanish } from "./localization/es-cl";
 
 export interface IAppStrings {
     appName: string;
@@ -128,13 +128,13 @@ export interface IAppStrings {
     };
     profile: {
         settings: string;
-    }
+    };
 }
 
 interface IStrings extends LocalizedStringsMethods, IAppStrings {}
 
 export const strings: IStrings = new LocalizedStrings({
-    // en: english,
+    en: english,
     es: spanish,
 });
 

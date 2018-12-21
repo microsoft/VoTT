@@ -8,7 +8,7 @@ export const english: IAppStrings = {
         submit: "Submit",
         cancel: "Cancel",
         provider: "Provider",
-        homePage: "Home Page"
+        homePage: "Home Page",
     },
     homePage: {
         newProject: "New Project",
@@ -86,14 +86,14 @@ export const english: IAppStrings = {
                     all: "All",
                     square: "Square",
                     wide: "Wide",
-                    tall: "Tall"
-                }
+                    tall: "Tall",
+                },
             },
             local: {
                 title: "Local File System",
                 folderPath: "Folder Path",
                 selectFolder: "Select Folder",
-                chooseFolder: "Choose Folder"
+                chooseFolder: "Choose Folder",
             },
         },
     },
@@ -121,9 +121,9 @@ export const english: IAppStrings = {
         },
     },
     activeLearning: {
-        title: "Active Learning"
+        title: "Active Learning",
     },
     profile: {
-        settings: "Profile Settings"
-    }
+        settings: "Profile Settings",
+    },
 };
