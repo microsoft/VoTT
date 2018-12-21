@@ -1,12 +1,12 @@
 import React from "react";
-import { mount } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import MockFactory from "../../../../common/mockFactory";
-import ConnectionForm, { IConnectionFormProps } from "./connectionForm";
+import ConnectionForm, { IConnectionFormProps, IConnectionFormState } from "./connectionForm";
 
 describe("Connection Form", () => {
 
     let wrapper: any = null;
-    let connectionForm: any = null;
+    let connectionForm: ReactWrapper<IConnectionFormProps, IConnectionFormState> = null;
 
     function createComponent(props: IConnectionFormProps) {
         return mount(
@@ -16,7 +16,7 @@ describe("Connection Form", () => {
 
     function init(): void {
         wrapper = createComponent({
-            connection: MockFactory.createTestConnection("test", "azureBlobStorage"),
+            connection: MockFactory.createTestConnection("test", "localFileSystemProxy"),
             onSubmit: jest.fn(),
         });
 
@@ -27,8 +27,9 @@ describe("Connection Form", () => {
 
     it("should update formData in state when changes occur", (done) => {
         init();
-        connectionForm.find("input#root_name")
-                      .simulate("change", { target: { value: "Foo" } });
+        connectionForm
+            .find("input#root_name")
+            .simulate("change", { target: { value: "Foo" } });
 
         setImmediate(() => {
             expect(connectionForm.state().formData.name).toEqual("Foo");
@@ -38,8 +39,9 @@ describe("Connection Form", () => {
 
     it("should update provider options when new type is set", (done) => {
         init();
-        connectionForm.find("select#root_providerType")
-                      .simulate("change", { target: { value: "bingImageSearch" } });
+        connectionForm
+            .find("select#root_providerType")
+            .simulate("change", { target: { value: "bingImageSearch" } });
 
         setImmediate(() => {
             expect(connectionForm.state().formData.providerType).toEqual("bingImageSearch");
@@ -49,12 +51,5 @@ describe("Connection Form", () => {
             expect("aspectRatio" in providerOptions).toBe(true);
             done();
         });
-    });
-});
-
-describe("Connection Form", () => {
-
-    it("should update formData in state when changes occur", (done) => {
-        done();
     });
 });

@@ -14,7 +14,8 @@ export interface IConnectionFormProps extends React.Props<ConnectionForm> {
     onCancel?: () => void;
 }
 
-interface IConnectionFormState {
+export interface IConnectionFormState {
+    providerName: string;
     formSchema: any;
     uiSchema: any;
     formData: IConnection;
@@ -33,6 +34,7 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
             classNames: ["needs-validation"],
             formSchema: { ...formSchema },
             uiSchema: { ...uiSchema },
+            providerName: this.props.connection ? this.props.connection.providerType : null,
             formData: this.props.connection,
         };
 
@@ -92,15 +94,20 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
     }
 
     private onFormChange = (args: IChangeEvent<IConnection>) => {
+        const providerType = args.formData.providerType;
 
-        if (!formData || formData.providerType !== args.formData.providerType) {
+        if (providerType !== this.state.providerName) {
             this.bindForm(args.formData, true);
         } else {
             this.setState({
-                formSchema: args.schema,
-                uiSchema: args.uiSchema,
                 formData: args.formData,
             });
+        }
+    }
+
+    private onFormCancel() {
+        if (this.props.onCancel) {
+            this.props.onCancel();
         }
     }
 
@@ -126,6 +133,7 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         }
 
         this.setState({
+            providerName: providerType,
             formSchema: newFormSchema,
             uiSchema: newUiSchema,
             formData,
