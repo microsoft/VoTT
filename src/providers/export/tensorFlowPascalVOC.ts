@@ -44,26 +44,26 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
             .filter(predicate)
             .map((asset) => assetService.getAssetMetadata(asset));
 
-        const results = await Promise.all(loadAssetTasks);
+        const allAssets = await Promise.all(loadAssetTasks);
         const exportObject: any = { ...this.project };
-        exportObject.assets = _.keyBy(results, (assetMetadata) => assetMetadata.asset.id);
+        exportObject.assets = _.keyBy(allAssets, (assetMetadata) => assetMetadata.asset.id);
 
         // Create Export Folder
         const exportFolderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
         await this.storageProvider.createContainer(exportFolderName);
 
-        await this.exportImages(exportFolderName, results);
+        await this.exportImages(exportFolderName, allAssets);
         await this.exportPBTXT(exportFolderName, this.project);
-        await this.exportAnnotations(exportFolderName, results);
-        await this.exportImageSets(exportFolderName, results);
+        await this.exportAnnotations(exportFolderName, allAssets);
+        await this.exportImageSets(exportFolderName, allAssets);
     }
 
-    private async exportImages(exportFolderName: string, results: IAssetMetadata[]) {
+    private async exportImages(exportFolderName: string, allAssets: IAssetMetadata[]) {
         // Create JPEGImages Sub Folder
         const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
-        const allImageExports = results.map((element) => {
+        const allImageExports = allAssets.map((element) => {
             const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
 
             return new Promise((resolve, reject) => {
@@ -150,7 +150,7 @@ item {
         }
     }
 
-    private async exportAnnotations(exportFolderName: string, results: IAssetMetadata[]) {
+    private async exportAnnotations(exportFolderName: string, allAssets: IAssetMetadata[]) {
         // Create Annotations Sub Folder
         const annotationsFolderName = `${exportFolderName}/Annotations`;
         await this.storageProvider.createContainer(annotationsFolderName);
@@ -159,7 +159,7 @@ item {
         // TODO
     }
 
-    private async exportImageSets(exportFolderName: string, results: IAssetMetadata[]) {
+    private async exportImageSets(exportFolderName: string, allAssets: IAssetMetadata[]) {
         // Create ImageSets Sub Folder (Main ?)
         const imageSetsFolderName = `${exportFolderName}/ImageSets`;
         await this.storageProvider.createContainer(imageSetsFolderName);
