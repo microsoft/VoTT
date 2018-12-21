@@ -233,11 +233,11 @@ describe("Connections Page", () => {
             expect(deleteConnection).toBeCalled();
         });
 
-        it("removes a selected connection when delete button is hit", () => {
+        it("removes a selected connection when delete button is hit", (done) => {
             const route = connectionsRoute + "/connection-1";
             const props = createProps(route);
             props.match.params = { connectionId: "connection-1" };
-            const historyPush = jest.spyOn(props.history, "push");
+            const historyPushSpy = jest.spyOn(props.history, "push");
 
             const state = { ...initialState };
             state.connections = MockFactory.createTestConnections(2);
@@ -256,8 +256,11 @@ describe("Connections Page", () => {
             const deleteButton = toDelete.find(".delete-btn");
             deleteButton.simulate("click");
 
-            expect(historyPush.mock.calls[0][0]).toEqual("/connections");
-            expect(connectionsPage.state().connection).toEqual(undefined);
+            setImmediate(() => {
+                expect(historyPushSpy).toBeCalledWith("/connections");
+                expect(connectionsPage.state().connection).toEqual(undefined);
+                done();
+            });
         });
     });
 });
