@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState, IRegion } from "../../../../models/applicationState";
+import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { RouteComponentProps } from "react-router-dom";
 import HtmlFileReader from "../../../../common/htmlFileReader";
@@ -101,7 +101,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="editor-page-content-body">
                         {selectedAsset &&
                             <div className="canvas-container">
-                                <Canvas 
+                                <Canvas
                                     selectedAsset={this.state.selectedAsset}
                                     onAssetMetadataChanged={this.onAssetMetadataChanged.bind(this)}/>
                             </div>
@@ -109,7 +109,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     </div>
                     <div>
                         <EditorFooter
-                            tags={this.props.project.tags}                        
+                            tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange} />
                     </div>
                 </div>
@@ -117,7 +117,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         );
     }
 
-    private async onAssetMetadataChanged(assetMetadata: IAssetMetadata){
+    private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
         await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.actions.saveProject(this.props.project);
     }
