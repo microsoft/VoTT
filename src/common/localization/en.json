@@ -6,7 +6,8 @@
         "submit": "Submit",
         "cancel": "Cancel",
         "zoomIn": "Zoom In",
-        "zoomOut": "Zoom Out"
+        "zoomOut": "Zoom Out",
+        "provider": "Provider"
     },
     "homePage": {
         "newProject": "New Project",
@@ -24,7 +25,6 @@
         "settings": "Connection Settings",
         "details": "Connection Details",
         "connectionPageInstructions": "Please select a connection to edit",
-        "provider": "Provider",
         "providers": {
             "azureBlob": {
                 "title": "Azure Blob Storage"

@@ -12,6 +12,7 @@ export interface IStrings extends LocalizedStringsMethods {
         description: string;
         submit: string;
         cancel: string;
+        provider: string;
     };
     homePage: {
         newProject: string;
@@ -29,7 +30,6 @@ export interface IStrings extends LocalizedStringsMethods {
         details: string;
         settings: string;
         connectionPageInstructions: string;
-        provider: string;
         providers: {
             azureBlob: {
                 title: string;

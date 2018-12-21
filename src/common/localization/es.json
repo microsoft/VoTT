@@ -6,7 +6,8 @@
         "submit": "Enviar",
         "cancel": "Cancelar",
         "zoomIn": "Aumentar el Zoom",
-        "zoomOut": "Disminuir el Zoom"
+        "zoomOut": "Disminuir el Zoom",
+        "provider": "Proveedor"
     },
     "homePage": {
         "newProject": "Nuevo Proyecto",
@@ -24,7 +25,6 @@
         "settings": "Configuración de Conexión",
         "details": "Detalles de Conexión",
         "connectionPageInstructions": "Por favor seleccione una conexión para editar",
-        "provider": "Proveedor",
         "providers": {
             "azureBlob": {
                 "title": "Almacenamiento de Azure Blob"
