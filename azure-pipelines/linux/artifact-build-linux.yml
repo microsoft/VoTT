@@ -1,0 +1,26 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+steps:
+  - task: NodeTool@0
+    displayName: 'Use Node 10.x'
+    inputs:
+      versionSpec: 10.x
+
+  - bash: |  
+      set -ex
+      
+      # clean install
+      npm ci
+      npm run release
+      
+      mkdir -p linux
+      cp releases/vott*.snap linux/
+    displayName: Build
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: linux'
+    inputs:
+      PathtoPublish: linux
+      ArtifactName: linux

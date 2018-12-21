@@ -14,7 +14,9 @@ import {
     IProject,
     ITag,
 } from "../models/applicationState";
+
 import { ExportAssetState } from "../providers/export/exportProvider";
+import { IAssetProvider } from "../providers/storage/assetProvider";
 
 export default class MockFactory {
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
@@ -98,13 +100,21 @@ export default class MockFactory {
         return connections;
     }
 
-    public static createTestConnection(name: string, providerType: string = "test"): IConnection {
+    public static createTestConnection(name: string, providerType: string = "localFileSystemProxy"): IConnection {
         return {
             id: `connection-${name}`,
             name: `Connection ${name}`,
             description: `Description for Connection ${name}`,
             providerType,
             providerOptions: {},
+        };
+    }
+
+    public static createAssetProvider(): IAssetProvider {
+        return {
+            getAssets(containerName?: string): Promise<IAsset[]> {
+                throw new Error("Method not implemented.");
+            },
         };
     }
 
