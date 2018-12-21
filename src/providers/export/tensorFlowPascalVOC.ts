@@ -65,10 +65,10 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const exportFolderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
         await this.storageProvider.createContainer(exportFolderName);
 
-        await this.exportAnnotations(exportFolderName, results);
-        await this.exportImageSets(exportFolderName, results);
         await this.exportImages(exportFolderName, results);
         await this.exportPBTXT(exportFolderName, this.project);
+        await this.exportAnnotations(exportFolderName, results);
+        await this.exportImageSets(exportFolderName, results);
     }
 
     private async exportImages(exportFolderName: string, results: IAssetMetadata[]) {
@@ -111,6 +111,26 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         }
     }
 
+    private async exportPBTXT(exportFolderName: string, project: IProject) {
+        const itemTemplate = `
+item {
+    id: %ID%
+    name: '%TAG%'
+}`;
+
+        if (project.tags && project.tags.length > 0) {
+            // Save pascal_label_map.pbtxt
+            const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
+
+            let id = 1;
+            const items = project.tags.map((element) =>
+                itemTemplate.replace("%ID%", (id++).toString()).replace("%TAG%", element.name));
+
+            // TODO
+            await this.storageProvider.writeText(pbtxtFileName, items.join());
+        }
+    }
+
     private async exportAnnotations(exportFolderName: string, results: IAssetMetadata[]) {
         // Create Annotations Sub Folder
         const annotationsFolderName = `${exportFolderName}/Annotations`;
@@ -127,22 +147,5 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
 
         // Save ImageSets (Main ?)
         // TODO
-    }
-
-    private async exportPBTXT(exportFolderName: string, project: IProject) {
-        // Save pascal_label_map.pbtxt
-        const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
-
-        const itemTemplate = `
-item {
-    id: %ID%
-    name: '%TAG%'
-}`;
-        let id = 1;
-        const items = project.tags.map((element) =>
-            itemTemplate.replace("%ID%", (id++).toString()).replace("%TAG%", element.name));
-
-        // TODO
-        await this.storageProvider.writeText(pbtxtFileName, items.join());
     }
 }

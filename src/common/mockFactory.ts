@@ -75,7 +75,7 @@ export default class MockFactory {
 
     public static createTestTags(count: number = 5): ITag[] {
         const tags: ITag[] = [];
-        for (let i = 1; i < count; i++) {
+        for (let i = 0; i < count; i++) {
             tags.push(MockFactory.createTestTag(i.toString()));
         }
 
