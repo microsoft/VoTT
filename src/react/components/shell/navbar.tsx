@@ -7,7 +7,7 @@ export default function Navbar() {
         <nav className="bg-lighter-2 app-navbar">
             <div className="app-navbar-logo">
                 <ul>
-                    <li><Link title="Home" to={`/`}><i className="fas fa-tags"></i></Link></li>
+                    <li><Link title={strings.common.homePage} to={`/`}><i className="fas fa-tags"></i></Link></li>
                 </ul>
             </div>
             <div className="app-navbar-brand">
@@ -16,7 +16,7 @@ export default function Navbar() {
             <div className="app-navbar-menu">
                 <ul>
                     <li>
-                        <NavLink title="Profile Settings" to={`/profile`}>
+                        <NavLink title={strings.profile.settings} to={`/profile`}>
                             <i className="fas fa-user-circle"></i>
                         </NavLink>
                     </li>

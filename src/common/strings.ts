@@ -11,6 +11,7 @@ export interface IAppStrings {
         submit: string;
         cancel: string;
         provider: string;
+        homePage: string;
     };
     homePage: {
         newProject: string;
@@ -46,6 +47,7 @@ export interface IAppStrings {
     tags: {
         title: string;
         placeholder: string;
+        editor: string;
         modal: {
             name: string;
             color: string;
@@ -82,12 +84,19 @@ export interface IAppStrings {
                 options: string;
                 apiKey: string;
                 query: string;
-                aspectRatio: string;
+                aspectRatio: {
+                    title: string;
+                    all: string;
+                    square: string;
+                    wide: string;
+                    tall: string;
+                }
             },
             local: {
                 title: string;
                 folderPath: string;
-                selectFolder
+                selectFolder: string;
+                chooseFolder: string;
             },
         }
     };
@@ -104,7 +113,8 @@ export interface IAppStrings {
         }
         assetError: string;
     };
-    exportPage: {
+    export: {
+        title: string;
         settings: string;
         saveSettings: string;
         providers: {
@@ -113,6 +123,12 @@ export interface IAppStrings {
             tfRecords: string;
         },
     };
+    activeLearning: {
+        title: string;
+    };
+    profile: {
+        settings: string;
+    }
 }
 
 interface IStrings extends LocalizedStringsMethods, IAppStrings {}

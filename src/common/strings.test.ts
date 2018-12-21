@@ -59,7 +59,7 @@ describe("Localization tests", () => {
                 const formProps = newFormJson.properties;
                 const common = languageJson.common;
 
-                const lExp = languageJson.exportPage;
+                const lExp = languageJson.export;
 
                 expect(formProps.providerType.title).toEqual(common.provider);
                 expect(formProps.providerType.enumNames[0]).toEqual(lExp.providers.vottJson);

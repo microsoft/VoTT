@@ -67,7 +67,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 onChange={this.onFormChange}
                 onSubmit={this.onFormSubmit}>
                 <div>
-                    <button className="btn btn-success mr-1" type="submit">{strings.exportPage.saveSettings}</button>
+                    <button className="btn btn-success mr-1" type="submit">{strings.export.saveSettings}</button>
                     <button className="btn btn-secondary btn-cancel"
                         type="button"
                         onClick={this.onFormCancel}>{strings.common.cancel}</button>
@@ -110,8 +110,8 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         let newUiSchema: any = this.state.uiSchema;
 
         if (providerType) {
-            const providerSchema = require(`../../../../providers/export/${providerType}.json`);
-            const providerUiSchema = require(`../../../../providers/export/${providerType}.ui.json`);
+            const providerSchema = addLocValues(require(`../../../../providers/export/${providerType}.json`));
+            const providerUiSchema = addLocValues(require(`../../../../providers/export/${providerType}.ui.json`));
 
             newFormSchema = { ...formSchema };
             newFormSchema.properties["providerOptions"] = providerSchema;

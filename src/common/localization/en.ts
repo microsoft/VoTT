@@ -8,6 +8,7 @@ export const english: IAppStrings = {
         submit: "Submit",
         cancel: "Cancel",
         provider: "Provider",
+        homePage: "Home Page"
     },
     homePage: {
         newProject: "New Project",
@@ -43,6 +44,7 @@ export const english: IAppStrings = {
     tags: {
         title: "Tags",
         placeholder: "Add new tag",
+        editor: "Tags Editor",
         modal: {
             name: "Tag Name",
             color: "Tag Color",
@@ -79,12 +81,19 @@ export const english: IAppStrings = {
                 options: "Bing Image Search Options",
                 apiKey: "API Key",
                 query: "Query",
-                aspectRatio: "Aspect Ratio",
+                aspectRatio: {
+                    title: "Aspect Ratio",
+                    all: "All",
+                    square: "Square",
+                    wide: "Wide",
+                    tall: "Tall"
+                }
             },
             local: {
                 title: "Local File System",
                 folderPath: "Folder Path",
                 selectFolder: "Select Folder",
+                chooseFolder: "Choose Folder"
             },
         },
     },
@@ -101,7 +110,8 @@ export const english: IAppStrings = {
         },
         assetError: "Unable to display asset",
     },
-    exportPage: {
+    export: {
+        title: "Export",
         settings: "Export Settings",
         saveSettings: "Save Export Settings",
         providers: {
@@ -110,4 +120,10 @@ export const english: IAppStrings = {
             tfRecords: "Tensorflow Records",
         },
     },
+    activeLearning: {
+        title: "Active Learning"
+    },
+    profile: {
+        settings: "Profile Settings"
+    }
 };

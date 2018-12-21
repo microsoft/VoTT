@@ -11,9 +11,9 @@
             ],
             "default": "vottJson",
             "enumNames": [
-                "${exportPage.providers.vottJson}",
-                "${exportPage.providers.azureCV}",
-                "${exportPage.providers.tfRecords}"
+                "${export.providers.vottJson}",
+                "${export.providers.azureCV}",
+                "${export.providers.tfRecords}"
             ]
         },
         "providerOptions": {

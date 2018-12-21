@@ -121,8 +121,8 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         let newUiSchema: any = this.state.uiSchema;
 
         if (providerType) {
-            const providerSchema = require(`../../../../providers/storage/${providerType}.json`);
-            const providerUiSchema = require(`../../../../providers/storage/${providerType}.ui.json`);
+            const providerSchema = addLocValues(require(`../../../../providers/storage/${providerType}.json`));
+            const providerUiSchema = addLocValues(require(`../../../../providers/storage/${providerType}.ui.json`));
 
             newFormSchema = { ...formSchema };
             newFormSchema.properties["providerOptions"] = providerSchema;

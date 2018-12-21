@@ -8,6 +8,7 @@ export const spanish: IAppStrings = {
         submit: "Enviar",
         cancel: "Cancelar",
         provider: "Proveedor",
+        homePage: "Página de Inicio"
     },
     homePage: {
         newProject: "Nuevo Proyecto",
@@ -43,6 +44,7 @@ export const spanish: IAppStrings = {
     tags: {
         title: "Etiquetas",
         placeholder: "Agregar nuevo etiqueta",
+        editor: "Editor de Etiquetas",
         modal: {
             name: "Nombre de Etiqueta",
             color: "Color de Etiqueta",
@@ -79,12 +81,19 @@ export const spanish: IAppStrings = {
                 options: "Opciones de Búsqueda de Imágenes Bing",
                 apiKey: "Clave API",
                 query: "Consulta",
-                aspectRatio: "Relación de Aspecto",
+                aspectRatio: {
+                    title: "Relación de Aspecto",
+                    all: "Todos",
+                    square: "Cuadrado",
+                    wide: "Ancho",
+                    tall: "Alto"
+                }
             },
             local: {
                 title: "Sistema de Archivos Local",
                 folderPath: "Ruta de la carpeta",
-                selectFolder: "Seleccione la carpeta",
+                selectFolder: "Seleccionar la carpeta",
+                chooseFolder: "Elijir la carpeta"
             },
         },
     },
@@ -101,7 +110,8 @@ export const spanish: IAppStrings = {
         },
         assetError: "No se puede mostrar el activo",
     },
-    exportPage: {
+    export: {
+        title: "Exportar",
         settings: "Configuración de Exportación",
         saveSettings: "Guardar Configuración de Exportación",
         providers: {
@@ -110,4 +120,10 @@ export const spanish: IAppStrings = {
             tfRecords: "Registros de Tensorflow",
         },
     },
+    activeLearning: {
+        title: "Aprendizaje Activo"
+    },
+    profile: {
+        settings: "Configuración de Perfíl"
+    }
 };
