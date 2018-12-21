@@ -9,13 +9,12 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    set -e
-
-    SET DISPLAY=:99.0
+    
+    setx DISPLAY :99.0
 
     npm ci  # do a clean install
     npm run compile
 
-    SET CI=true
+    setx CI true
     npm run test # don't watch and just run all the tests
   displayName: 'Run tests'
