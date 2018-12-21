@@ -76,7 +76,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
-        const allImgaeExports = results.map((element) => {
+        const allImageExports = results.map((element) => {
             const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
 
             return new Promise((resolve, reject) => {
@@ -88,36 +88,42 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     // Get buffer
                     const buffer = new Buffer(response.data);
 
-                    const image64 = btoa(new Uint8Array(response.data).
-                        reduce((data, byte) => data + String.fromCharCode(byte), ""));
-
-                    const img = new Image();
-                    img.onload = ((event) => {
-                        // TODO: Save on a temporary Dictionary width, height, depth to be used later in exportAnnotations()
-                        console.log(img.width);
-                    });
-
-                    img.src = "data:image/jpeg;base64," + image64;
-
                     // Write Binary
                     await this.storageProvider.writeBinary(imageFileName, buffer);
 
-                    resolve();
+                    // Get Base64
+                    const image64 = btoa(new Uint8Array(response.data).
+                        reduce((data, byte) => data + String.fromCharCode(byte), ""));
+
+                    // Load image at runtime to get dimension info
+                    const img = new Image();
+                    img.onload = ((event) => {
+                        // TODO: Save on a temporary Dictionary width, height, depth
+                        //       to be used later in exportAnnotations()
+                        console.log(img.width);
+
+                        resolve();
+                    });
+                    img.onerror = ((err) => {
+                        reject(err);
+                    });
+                    img.src = "data:image/jpeg;base64," + image64;
                 })
                 .catch((err) => {
+                    // Ignore the error at the moment
+                    // TODO: Refactor ExportProvider abstract class export() method
+                    //       to return Promise<object> with an object containing
+                    //       the number of files succesfully exported out of total
                     console.log(`Error downloading ${imageFileName}`);
-                    reject(err);
+                    resolve();
+                    // eject(err);
                 });
             });
         });
 
         try {
-            await Promise.all(allImgaeExports);
+            await Promise.all(allImageExports);
         } catch (err) {
-            // Ignore the error at the moment
-            // TODO: Refactor ExportProvider abstract class export() method
-            //       to return Promise<object> with an object containing
-            //       the number of files succesfully exported out of total
             console.log(err);
         }
     }
