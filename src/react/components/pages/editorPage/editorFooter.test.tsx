@@ -67,9 +67,7 @@ describe("Footer Component", () => {
         wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("dblclick", { target: { innerText: originalTags[0].name } });
-        wrapper.find("button")
-            .first()
-            .simulate("click");
+        wrapper.find("button.btn.btn-success").simulate("click");
         expect(onChangeHandler).toBeCalled();
     });
 
@@ -77,9 +75,7 @@ describe("Footer Component", () => {
         wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("dblclick", { target: { innerText: originalTags[0].name } });
-        wrapper.find("button")
-            .last()
-            .simulate("click");
+        wrapper.find("button.btn.btn-secondary").simulate("click");
         expect(onChangeHandler).not.toBeCalled();
     });
 
