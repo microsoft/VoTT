@@ -2,47 +2,38 @@
 
 [![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6?branchName=v2)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The `v2` branch is a complete reboot of the original VoTT, and currently don't share git histories. The purpose of `v2` is to create a more extensible version of the original application while leveraging more recent frameworks such as React/Redux.
 
-## Available Scripts
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). For available scripts and other related info, see [our docs](docs/REACTAPP.md)
 
-In the project directory, you can run:
+## Contributing Guidelines
 
-### `npm start`
+We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests](https://github.com/Microsoft/VoTT/pulls) into the project. We ask that you follow these simple guidelines when 
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Pull Requests
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+- Branch `v2` is always stable (passes `tslint` and unit tests)
+- 
 
-### `npm test`
+### Issues
+- Look for duplicate issues
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Download and Use
 
-### `npm run build`
+For those who just want to use VoTT rather than contributing to it, you have two options:
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+####1. Download and install release package for your environment (recommended)
+   Find our [most recent release](https://github.com/Microsoft/VoTT/releases), download and run. `v2` releases will be prefixed by `2.x`.
+   
+####2. Clone repo and run from terminal using `npm`
+   Run the following commands in your terminal:
+   ```bash
+    git clone https://github.com/Microsoft/VoTT
+    cd VoTT
+    git checkout v2
+    npm install
+    npm run    
+   ```
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+   Important to note that when running with `npm`, both the electron and the browser versions of the applications will start. The only major difference is that electron can access the local file system.
