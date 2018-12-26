@@ -3,13 +3,12 @@
      xmlns:xlink="http://www.w3.org/1999/xlink" 
      style="isolation:isolate" viewBox="0 0 64 64" width="64" height="64">
      <g>
+     <g>
+        <rect x="12" y="12" width="40" height="40" fill="rgb(255,255,255)" fill-opacity="0.2" stroke-width="1" stroke="rgb(0,0,0)" />
         <circle class="accent-f" cx="52" cy="12" r="4" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
         <circle class="accent-f" cx="52" cy="52" r="4" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
         <circle class="accent-f" cx="12" cy="12" r="4" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
         <circle class="accent-f" cx="12" cy="52" r="4" fill="none" stroke-width="1" stroke="rgb(0,0,0)" />
-        <line x1="12" y1="16" x2="12" y2="48" stroke-width="1" stroke="rgb(0,0,0)" />
-        <line x1="16" y1="12" x2="48" y2="12" stroke-width="1" stroke="rgb(0,0,0)" />
-        <line x1="52" y1="16" x2="52" y2="48" stroke-width="1" stroke="rgb(0,0,0)"/>
-        <line x1="16" y1="52" x2="48" y2="52" stroke-width="1" stroke="rgb(0,0,0)" />
+    </g>
     </g>
 </svg>
