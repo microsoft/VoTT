@@ -20,8 +20,18 @@ var saveState,
     assetFolder,
     sourceDir; 
 
+function setAppTitle(text) {
+  ipcRenderer.send('setAppTitle', text);
+}
+
+ipcRenderer.on('setAppTitleWithVersion', (event, message) => {
+  document.querySelector("head title").innerHTML = message;
+});
+
 $(document).ready(() => {//init confirm keys figure out why this doesn't work
   $('#inputtags').tagsinput({confirmKeys: [13, 32, 44, 45, 46, 59, 188]});
+
+  setAppTitle("Visual Object Tagging Tool");
 });
 
 //ipc rendering
@@ -224,9 +234,6 @@ window.addEventListener('keyup', (e) => {
     var selectedRegions = videotagging.getSelectedRegions();
     
     if(e.ctrlKey && (e.code == 'KeyC' || e.code == 'KeyX' || e.code == 'KeyA')){
-
-      var widthRatio = videotagging.overlay.width / videotagging.sourceWidth;
-      var heightRatio = videotagging.overlay.height / videotagging.sourceHeight;
       var content = [];
       
       if(e.code == 'KeyA'){ //select all
@@ -237,11 +244,13 @@ window.addEventListener('keyup', (e) => {
       for(let currentRegion of selectedRegions){
         content.push(
           {
-            x1: currentRegion.x1 * widthRatio,
-            y1: currentRegion.y1 * heightRatio,
-            x2: currentRegion.x2 * widthRatio,
-            y2: currentRegion.y2 * heightRatio,
-            tags: currentRegion.tags
+            x1: currentRegion.box.x1,
+            y1: currentRegion.box.y1,
+            x2: currentRegion.box.x2,
+            y2: currentRegion.box.y2,
+            tags: currentRegion.tags,
+            points: currentRegion.points,
+            type: currentRegion.type
           }
         )
 
@@ -263,7 +272,15 @@ window.addEventListener('keyup', (e) => {
       var content = JSON.parse(clipboard.readText());
 
       for(let currentRegion of content){
-        videotagging.createRegion(currentRegion.x1, currentRegion.y1, currentRegion.x2, currentRegion.y2);
+        let x = Math.min(currentRegion.x1, currentRegion.x2);
+        let y = Math.min(currentRegion.y1, currentRegion.y2);
+        let w = Math.abs(currentRegion.x1 - currentRegion.x2);
+        let h = Math.abs(currentRegion.y1 - currentRegion.y2);
+        let ps = currentRegion.points.map((point) => new videotagging.CT.Core.Point2D(point.x, point.y));
+        let type = currentRegion.type;
+        let rd = new videotagging.CT.Core.RegionData(x, y, w, h, ps, type);
+        rd = videotagging.editor.scaleRegionToFrameSize(rd);
+        videotagging.createRegion(rd);
         videotagging.addTagsToRegion(currentRegion.tags);
         videotagging.showAllRegions();
       }
@@ -348,7 +365,7 @@ function openPath(pathName, isDir, isRecords = false) {
     $('#framerateGroup').show();
     
     //set title indicator
-    $('head title').text(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
+    setAppTitle(`Tagging Job Configuration: ${path.basename(pathName, path.extname(pathName))}`);
     $('#inputtags').tagsinput('removeAll');//remove all previous tag labels
 
     if (isDir) {
@@ -444,8 +461,12 @@ function openPath(pathName, isDir, isRecords = false) {
         } 
 
         if (isDir){
-            $('head title').text(`Image Tagging Job: ${path.dirname(pathName)}`); //set title indicator
-            if(isRecords) $('head title').text(`Image Tagging from Records Job: ${path.dirname(pathName)}`); //set title indicator
+            
+            if(isRecords) {
+              setAppTitle(`Image Tagging from Records Job: ${path.dirname(pathName)}`);
+            } else {
+              setAppTitle(`Image Tagging Job: ${path.dirname(pathName)}`);
+            }
 
             //get list of images in directory
             var files = fs.readdirSync(pathName);
@@ -485,9 +506,13 @@ function openPath(pathName, isDir, isRecords = false) {
               $("#video-tagging").on("stepFwdClicked-AfterStep", () => {
                 //update title to match src
                 if(videotagging.currTFRecord) {
-                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) getRegionsFromRecord(videotagging.currTFRecord);
-                  $('head title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
-                } else $('head title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) {
+                    getRegionsFromRecord(videotagging.currTFRecord);
+                  }
+                  setAppTitle(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                } else {
+                  setAppTitle(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                }
 
                 updateVisitedFrames();
 
@@ -495,10 +520,14 @@ function openPath(pathName, isDir, isRecords = false) {
               $("#video-tagging").on("stepBwdClicked-AfterStep", () => {
                 //update title to match src
                 if(videotagging.currTFRecord) {
-                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) getRegionsFromRecord(videotagging.currTFRecord);
-                  $('head title').text(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
+                  if(!visitedFrames.has(videotagging.getCurrentFrameId())) {
+                    getRegionsFromRecord(videotagging.currTFRecord);
+                  }
+                  setAppTitle(`Image Tagging from Records Job: ${path.basename(videotagging.imagelist[videotagging.imageIndex])}`);
                 }
-                else $('head title').text(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                else {
+                  setAppTitle(`Image Tagging Job: ${path.basename(videotagging.curImg.src)}`);
+                }
 
             });
 
@@ -515,7 +544,7 @@ function openPath(pathName, isDir, isRecords = false) {
                 return folderSelected();
             }
         } else {
-          $('head title').text(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`); //set title indicator
+          setAppTitle(`Video Tagging Job: ${path.basename(pathName, path.extname(pathName))}`);
           videotagging.disableImageDir();
           videotagging.src = pathName;
           //set start time
