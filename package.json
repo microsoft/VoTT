@@ -15,6 +15,7 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1",
     "react-virtualized": "^9.21.0",
+    "reactstrap": "^6.5.0",
     "redux": "^4.0.1",
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-logger": "^3.0.6",
