@@ -1,22 +1,32 @@
-# VoTT - Open Source
+# VoTT (Visual Object Tagging Tool)
 
 [![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6?branchName=v2)
 
 The `v2` branch is a complete reboot of the original VoTT, and currently don't share git histories. The purpose of `v2` is to create a more extensible version of the original application while leveraging more recent frameworks such as React/Redux.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). For available scripts and other related info, see [our docs](docs/REACTAPP.md)
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). For available scripts and other related info, see [our docs](docs/REACTAPP.md).
 
 ## Contributing Guidelines
 
 We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests](https://github.com/Microsoft/VoTT/pulls) into the project. We ask that you follow these simple guidelines when 
 
+### Issues
+- Look for duplicate issues & comment on thread if experiencing something similar
+- Fill in template information (platform, OS, version, screenshots, etc.) 
+
 ### Pull Requests
 
-- Branch `v2` is always stable (passes `tslint` and unit tests)
-- 
+1. Find an issue to work on, or create a new one
+2. Fork repo, make sure you have latest changes from `v2`
+3. Create branch following naming convention: `git checkout -b issue-<###>-<short-description>`.
+4. Write code
+5. Add unit tests
+6. Verify linting and unit tests by running `npm test`
+7. Update docs if needed
+8. Rebase on `v2` and resolve conflicts
+9. Submit PR to `v2` branch
 
-### Issues
-- Look for duplicate issues
+Try to keep PRs small to decrease the time required to review and merge
 
 ## Download and Use
 
@@ -32,8 +42,8 @@ For those who just want to use VoTT rather than contributing to it, you have two
     cd VoTT
     git checkout v2
     npm install
-    npm run    
+    npm start    
    ```
 
 
-   Important to note that when running with `npm`, both the electron and the browser versions of the applications will start. The only major difference is that electron can access the local file system.
+   Important to note that when running with `npm`, both the electron and the browser versions of the applications will start. One major difference is that electron can access the local file system.
