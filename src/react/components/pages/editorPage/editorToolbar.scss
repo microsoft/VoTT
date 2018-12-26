@@ -1,0 +1,33 @@
+@import '../../../../assets/sass/theme.scss';
+
+.editor-page-content-header {
+    padding: 5px;
+
+    .btn-group {
+        border-right: solid 1px $lighter-2;
+        padding-right: 10px;
+    }
+
+    .toolbar-btn {
+        width: 48px;
+        height: 48px;
+        outline: none;
+
+        background-color: transparent;
+        border: none;
+        color: #CCC;
+
+        &:hover, &.active {
+            background-color: $lighter-2;
+            border: solid 1px $lighter-3;
+        }
+
+        &:active {
+            background-color: $darker-2;
+        }
+
+        .fas {
+            font-size: 18px;
+        }
+    }
+}

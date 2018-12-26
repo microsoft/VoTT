@@ -5,13 +5,15 @@
             "title": "Name",
             "type": "string"
         },
-        "sourceConnectionId": {
+        "sourceConnection": {
             "title": "Source Connection",
-            "type": "string"
+            "description": "Where to load the assets from",
+            "type": "object"
         },
-        "targetConnectionId": {
+        "targetConnection": {
             "title": "Target Connection",
-            "type": "string"
+            "description": "Where to save the project and exported data",
+            "type": "object"
         },
         "description": {
             "title": "Description",
@@ -19,8 +21,12 @@
         },
         "tags": {
             "title": "Tags",
-            "type": "string"
+            "type": "array"
         }
     },
-    "required": ["name", "sourceConnectionId", "targetConnectionId"]
+    "required": [
+        "name",
+        "sourceConnection",
+        "targetConnection"
+    ]
 }

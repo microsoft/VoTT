@@ -2,13 +2,13 @@
     "description": {
         "ui:widget": "textarea"
     },
-    "sourceConnectionId": {
-        "ui:widget": "connectionPicker"
+    "sourceConnection": {
+        "ui:field": "connection"
     },
-    "targetConnectionId": {
-        "ui:widget": "connectionPicker"
+    "targetConnection": {
+        "ui:field": "connection"
     },
     "tags": {
-        "ui:widget": "tagsInput"
+        "ui:field": "tagsInput"
     }
 }

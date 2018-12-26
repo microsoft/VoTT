@@ -6,6 +6,9 @@ import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
 
+import { ExportAssetState } from "../providers/export/exportProvider";
+import { IAssetProvider } from "../providers/storage/assetProvider";
+
 export default class MockFactory {
 
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
@@ -32,6 +35,14 @@ export default class MockFactory {
         return assets;
     }
 
+    public static createTestAssetMetadata(asset: IAsset): IAssetMetadata {
+        return {
+            asset,
+            regions: [],
+            timestamp: null,
+        };
+    }
+
     public static createTestProjects(count: number = 10): IProject[] {
         const projects: IProject[] = [];
         for (let i = 1; i <= count; i++) {
@@ -48,11 +59,9 @@ export default class MockFactory {
             id: `project-${name}`,
             name: `Project ${name}`,
             assets: {},
-            exportFormat: null,
+            exportFormat: MockFactory.exportFormat(),
             sourceConnection: connection,
-            sourceConnectionId: connection.id,
             targetConnection: connection,
-            targetConnectionId: connection.id,
             tags: MockFactory.createTestTags(),
             autoSave: true,
         };
@@ -113,14 +122,14 @@ export default class MockFactory {
     }
     public static createTestTags(count: number = 5): ITag[] {
         const tags: ITag[] = [];
-        for (let i = 1; i < count; i++) {
+        for (let i = 0; i < count; i++) {
             tags.push(MockFactory.createTestTag(i.toString()));
         }
 
         return tags;
     }
 
-    public static createTestTag(name: string): ITag {
+    public static createTestTag(name: string= "Test Tag"): ITag {
         return {
             name: `Tag ${name}`,
             color: MockFactory.randomColor(),
@@ -136,7 +145,7 @@ export default class MockFactory {
         return connections;
     }
 
-    public static createTestConnection(name: string, providerType: string = "test"): IConnection {
+    public static createTestConnection(name: string, providerType: string = "localFileSystemProxy"): IConnection {
         return {
             id: `connection-${name}`,
             name: `Connection ${name}`,
@@ -146,10 +155,20 @@ export default class MockFactory {
         };
     }
 
+    public static createAssetProvider(): IAssetProvider {
+        return {
+            getAssets(containerName?: string): Promise<IAsset[]> {
+                throw new Error("Method not implemented.");
+            },
+        };
+    }
+
     public static exportFormat(): IExportFormat {
         return {
-            providerType: "Fake",
-            providerOptions: {},
+            providerType: "vottJson",
+            providerOptions: {
+                assetState: ExportAssetState.Tagged,
+            },
         };
     }
 

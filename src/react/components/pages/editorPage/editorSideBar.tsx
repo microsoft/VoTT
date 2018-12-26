@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React from "react";
 import { AutoSizer, List } from "react-virtualized";
 import { IAsset, AssetState } from "../../../../models/applicationState";
 import AssetPreview from "./assetPreview";
@@ -7,7 +7,6 @@ export interface IEditorSideBarProps {
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
     selectedAsset?: IAsset;
-    style?: CSSProperties;
 }
 
 export interface IEditorSideBarState {
@@ -31,7 +30,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     public render() {
         return (
-            <div className="editor-page-sidebar-nav" style={this.props.style}>
+            <div className="editor-page-sidebar-nav">
                 <AutoSizer>
                     {({ height, width }) => (
                         <List
@@ -50,21 +49,28 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         );
     }
 
-    public componentDidUpdate(prevProps) {
-        if (prevProps.selectedAsset !== this.props.selectedAsset) {
+    public componentDidUpdate(prevProps: IEditorSideBarProps) {
+        if (!prevProps.selectedAsset && !this.props.selectedAsset) {
+            return;
+        }
+
+        if ((!prevProps.selectedAsset && this.props.selectedAsset) ||
+            prevProps.selectedAsset.id !== this.props.selectedAsset.id) {
             this.selectAsset(this.props.selectedAsset);
         }
     }
 
-    public selectAsset(asset: IAsset) {
+    private selectAsset(asset: IAsset) {
         this.setState({
             selectedAsset: asset,
-        }, () => this.listRef.current.forceUpdateGrid());
+        }, () => {
+            this.props.onAssetSelected(asset);
+            this.listRef.current.forceUpdateGrid();
+        });
     }
 
     private onAssetClicked(asset: IAsset) {
         this.selectAsset(asset);
-        this.props.onAssetSelected(asset);
     }
 
     private rowRenderer({ key, index, style }) {

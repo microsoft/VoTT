@@ -1,5 +1,4 @@
 {
-    "title": "Connection Details",
     "required": [
         "name",
         "providerType"
@@ -18,13 +17,11 @@
             "title": "Provider",
             "type": "string",
             "enum": [
-                "azureBlobStorage",
                 "bingImageSearch",
                 "localFileSystemProxy"
             ],
-            "default": "azureBlobStorage",
+            "default": "bingImageSearch",
             "enumNames": [
-                "Azure Blob Storage",
                 "Bing Image Search",
                 "Local Directory"
             ]

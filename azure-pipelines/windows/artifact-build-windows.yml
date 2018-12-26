@@ -1,0 +1,24 @@
+steps:
+  - task: NodeTool@0
+    displayName: 'Use Node 10.x'
+    inputs:
+      versionSpec: 10.x
+
+  - bash: | 
+      set -ex
+      
+      # clean install
+      npm ci
+      npm run release
+      
+      mkdir -p windows
+      cp releases/vott*.exe windows/
+      
+    displayName: Build
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: windows'
+    inputs:
+      PathtoPublish: windows
+      ArtifactName: windows
+

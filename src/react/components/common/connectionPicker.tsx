@@ -5,10 +5,8 @@ import { Link } from "react-router-dom";
 interface IConnectionPickerProps {
     id?: string;
     value: any;
+    connections: IConnection[];
     onChange: (value) => void;
-    options?: {
-        connections: IConnection[],
-    };
 }
 
 interface IConnectionPickerState {
@@ -28,21 +26,19 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
     public componentDidUpdate(prevProps) {
         if (prevProps.value !== this.props.value) {
             this.setState({
-                value: this.props.value || "",
+                value: this.props.value || null,
             });
         }
     }
 
     public render() {
-        const { id, options } = this.props;
-        const connections = options.connections || [];
-
-        const { value } = this.state;
+        const { id, connections } = this.props;
+        const selectedValue = this.state.value ? this.state.value.id : "";
 
         return (
             <div className="input-group">
-                <select id={id} value={value} onChange={this.onChange} className="form-control">
-                    <option value="">Select Connection</option>
+                <select id={id} value={selectedValue} onChange={this.onChange} className="form-control">
+                    <option>Select Connection</option>
                     {connections.map((connection) =>
                         <option key={connection.id} value={connection.id}>{connection.name}</option>)
                     }
@@ -55,13 +51,11 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
     }
 
     private onChange = (e) => {
-        const selectedConnection = this.props.options.connections
-            .find((connection) => connection.id === e.target.value);
+        const selectedConnection = this.props.connections
+            .find((connection) => connection.id === e.target.value) || {};
 
-        if (selectedConnection) {
-            this.setState({
-                value: selectedConnection.id,
-            }, () => this.props.onChange(selectedConnection.id));
-        }
+        this.setState({
+            value: selectedConnection,
+        }, () => this.props.onChange(selectedConnection));
     }
 }

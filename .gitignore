@@ -11,8 +11,11 @@
 # testing
 /coverage
 
-# production
-/build/electron
+# packaging
+/build
+
+# releases
+/releases/
 
 # misc
 .DS_Store

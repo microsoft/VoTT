@@ -2,16 +2,31 @@ trigger:
   - v2 # disable CI build for branch except v2
 pr:
   - v2 # only kick off for pr targeting v2
-resources:
-  - repo: self  # self represents the repo where the initial Pipelines YAML file was found
-    clean: true  # whether to fetch clean each time
-    fetchDepth: 1  # the depth of commits to ask Git to fetch
 
 jobs:
 - job: Linux
   pool:
-    name: Hosted Ubuntu 1604
     vmImage: ubuntu-16.04
   timeoutInMinutes: 60 # how long to run the job before automatically cancelling
   steps:
-  - template: build/azure-pipelines/linux/continuous-build-linux.yml
+  - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+    fetchDepth: 1  # the depth of commits to ask Git to fetch
+  - template: azure-pipelines/linux/continuous-build-linux.yml
+
+- job: MacOS
+  pool:
+    vmImage: macOS-10.13
+  timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+  steps:
+  - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+    fetchDepth: 1  # the depth of commits to ask Git to fetch
+  - template: azure-pipelines/mac/continuous-build-mac.yml
+
+- job: Windows
+  pool:
+    vmImage: win1803	
+  timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+  steps:
+  - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+    fetchDepth: 1  # the depth of commits to ask Git to fetch
+  - template: azure-pipelines/windows/continuous-build-windows.yml

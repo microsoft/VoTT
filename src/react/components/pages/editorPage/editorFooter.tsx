@@ -33,7 +33,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
 
     private onTagsChanged(tags) {
         this.setState({
-            tags: JSON.parse(tags),
+            tags,
         }, () => this.props.onTagsChanged(this.state));
     }
 }

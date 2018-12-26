@@ -1,0 +1,20 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    
+    setx DISPLAY :99.0
+
+    npm ci  # do a clean install
+    npm run compile
+
+    setx CI true
+    npm run test # don't watch and just run all the tests
+  displayName: 'Run tests'
