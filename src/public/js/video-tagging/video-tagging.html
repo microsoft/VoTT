@@ -745,8 +745,8 @@
                     };
                     // rect-boxes only
                     region.points = [
-                        { x: x1, y: y1 },
-                        { x: x2, y: y2 }
+                        { x: x1, y: y1 }, { x: x2, y: y1} ,
+                        { x: x2, y: y2 }, { x: x1, y: y2}
                     ];
                     region.type = "rect";         
                 } else {
@@ -759,8 +759,8 @@
                     if (region.points === undefined) {
                         // rect-boxes only
                         region.points = [
-                            { x: x1, y: y1 },
-                            { x: x2, y: y2 }
+                        { x: x1, y: y1 }, { x: x2, y: y1} ,
+                        { x: x2, y: y2 }, { x: x1, y: y2}
                         ];
                         region.type = "rect";  
                     }
