@@ -15,31 +15,24 @@ export interface IAzureCloudStorageOptions {
 
 export class AzureBlobStorage implements IStorageProvider {
 
-    private static getFileName(path: string) {
-        return path.substring(path.indexOf("/") + 1);
-    }
-
     constructor(private options?: IAzureCloudStorageOptions) {}
 
-    public initialize() : Promise<void>{
-        return new Promise<void>(async (resolve,reject) => {
+    public initialize(): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
             try {
                 const containerName = this.options.containerName;
-                if(this.options.createContainer) {
+                if (this.options.createContainer) {
                     await this.createContainer(containerName);
                     resolve();
-                }
-                else {
+                } else {
                     const containers = await this.listContainers(null);
-                    if(containers.indexOf(containerName) > -1){
+                    if (containers.indexOf(containerName) > -1) {
                         resolve();
-                    }
-                    else {
-                        throw new Error(`Container "${containerName}" does not exist`)
+                    } else {
+                        throw new Error(`Container "${containerName}" does not exist`);
                     }
                 }
-            }
-            catch(e){
+            } catch (e) {
                 reject(e);
             }
         });
@@ -64,7 +57,7 @@ export class AzureBlobStorage implements IStorageProvider {
     }
 
     public async writeText(blobName: string, content: string | Buffer) {
-        await this.initialize(); // TODO Move this to more central location, called by IStorageProvider
+        // await this.initialize(); // TODO Move this to more central location, called by IStorageProvider
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const blockBlobURL = this.getBlockBlobURL(blobName);
@@ -178,8 +171,13 @@ export class AzureBlobStorage implements IStorageProvider {
         return result;
     }
 
-    private getAccountUrl(): string {
-        return `https://${this.options.accountName}.blob.core.windows.net` + (this.options.sas || "");       
+    public getFileName(url: string) {
+        const pathParts = url.split("/");
+        return pathParts[pathParts.length - 1].split("?")[0];
+    }
+
+    public getAccountUrl(): string {
+        return `https://${this.options.accountName}.blob.core.windows.net` + (this.options.sas || "");
     }
 
     private getCredential(): Credential {
@@ -218,11 +216,6 @@ export class AzureBlobStorage implements IStorageProvider {
 
     private getUrl(blobName: string): string {
         return this.getBlockBlobURL(blobName).url;
-    }
-
-    private getFileName(url: string) {
-        const pathParts = url.split("/");
-        return pathParts[pathParts.length - 1].split("?")[0];
     }
 
     private async bodyToString(
