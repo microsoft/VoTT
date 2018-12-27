@@ -21,6 +21,30 @@ export class AzureBlobStorage implements IStorageProvider {
 
     constructor(private options?: IAzureCloudStorageOptions) {}
 
+    public initialize() : Promise<void>{
+        return new Promise<void>(async (resolve,reject) => {
+            try {
+                const containerName = this.options.containerName;
+                if(this.options.createContainer) {
+                    await this.createContainer(containerName);
+                    resolve();
+                }
+                else {
+                    const containers = await this.listContainers(null);
+                    if(containers.indexOf(containerName) > -1){
+                        resolve();
+                    }
+                    else {
+                        throw new Error(`Container "${containerName}" does not exist`)
+                    }
+                }
+            }
+            catch(e){
+                reject(e);
+            }
+        });
+    }
+
     public readText(blobName: string): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             try {
@@ -40,6 +64,7 @@ export class AzureBlobStorage implements IStorageProvider {
     }
 
     public async writeText(blobName: string, content: string | Buffer) {
+        await this.initialize(); // TODO Move this to more central location, called by IStorageProvider
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const blockBlobURL = this.getBlockBlobURL(blobName);
