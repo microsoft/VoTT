@@ -8,7 +8,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Contributing Guidelines
 
-We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests](https://github.com/Microsoft/VoTT/pulls) into the project. We ask that you follow these simple guidelines when 
+We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests](https://github.com/Microsoft/VoTT/pulls) into the project. We ask that you follow these simple guidelines:
 
 ### Issues
 - Look for duplicate issues & comment on thread if experiencing something similar
@@ -45,5 +45,4 @@ For those who just want to use VoTT rather than contributing to it, you have two
     npm start    
    ```
 
-
-   Important to note that when running with `npm`, both the electron and the browser versions of the applications will start. One major difference is that electron can access the local file system.
+   Important to note that when running with `npm`, both the electron and the browser versions of the application will start. One major difference is that electron can access the local file system.
