@@ -13,7 +13,7 @@ The tool supports the following **features**:
 - Exporting tags and assets to CNTK, Tensorflow (PascalVOC) or YOLO format for training an object detection model.
 - Running and validating a trained CNTK object detection model on new videos to generate stronger models.
 
-- Exporting tags and assets to Custom Vision Service CNTK , Tensorflow (PascalVOC) or YOLO format for training an object detection model.
+- Exporting tags and assets to Custom Vision Service CNTK, Tensorflow (PascalVOC) or YOLO format for training an object detection model.
 - Use Active Learning with trained object detection models (locally or remotely) on new videos to generate stronger models.
 
 
@@ -178,7 +178,7 @@ There are two options to run a model for active learning within VoTT one is to u
 
 ### Remote Active learning using Docker 
 
-1. Set up your own remote model endpoint locally or on Azure with docker [CNTK Example](https://github.com/User1m/vott-reviewer-ext)
+1. Set up your own remote model endpoint locally or on Azure with Docker [CNTK Example](https://github.com/User1m/vott-reviewer-ext)
 2. Paste the review service endpoint to review your model.
 
 ### Local Active Learning CNTK Example
@@ -195,7 +195,7 @@ There are two options to run a model for active learning within VoTT one is to u
  7. Repeat step 1 on new assets until the model performance is satisfactory
  
  
-## Supporting additonal object detection Export and Review formats.
+## Supporting additional object detection Export and Review formats.
 
 In the latest release we provide support for [Export and Review formats](https://github.com/CatalystCode/VOTT/tree/master/src/lib/detection_algorithms). To add a new object detection format, copy the interface folder and use the Yolo and CNTK implementations as reference. 
 
@@ -241,7 +241,7 @@ Use the number keys to quickly tag a selected region *(Only works for single dig
 ## Upcoming Features
 
 - Tagging project management.
-- Altenative Tracking algorithms such as optical flow.
+- Alternative Tracking algorithms such as optical flow.
 - Classification Labeling Support.
 - Segmentation Annotation support.
 - Zoom in and out
