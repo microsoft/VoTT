@@ -1,6 +1,6 @@
 import MockFactory from "../../common/mockFactory";
 import registerProviders from "../../registerProviders";
-import { AzureCloudStorageService } from "./azureBlobStorage";
+import { AzureBlobStorage } from "./azureBlobStorage";
 jest.mock("@azure/storage-blob");
 import { BlockBlobURL, ContainerURL, ServiceURL, Aborter } from "@azure/storage-blob";
 jest.mock("../../services/assetService");
@@ -11,7 +11,7 @@ describe("Azure blob functions", () => {
 
     const ad = MockFactory.fakeAzureData();
     const options = ad.options;
-    const provider: AzureCloudStorageService = new AzureCloudStorageService(options);
+    const provider: AzureBlobStorage = new AzureBlobStorage(options);
 
     const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
     serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers));

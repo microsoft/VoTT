@@ -12,7 +12,7 @@ export interface IAzureCloudStorageOptions {
     token?: string;
 }
 
-export class AzureCloudStorageService implements IStorageProvider {
+export class AzureBlobStorage implements IStorageProvider {
 
     private static getFileName(path: string) {
         return path.substring(path.indexOf("/") + 1);
