@@ -4,7 +4,7 @@
   "private": true,
   "main": "build/main.js",
   "dependencies": {
-    "@azure/storage-blob": "^10.2.0-preview",
+    "@azure/storage-blob": "^10.3.0",
     "@fortawesome/fontawesome-free": "^5.5.0",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",
