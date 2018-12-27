@@ -21,7 +21,7 @@
                 "bingImageSearch",
                 "localFileSystemProxy"
             ],
-            "default": "azureBlobStorage",
+            "default": "bingImageSearch",
             "enumNames": [
                 "Azure Blob Storage",
                 "Bing Image Search",

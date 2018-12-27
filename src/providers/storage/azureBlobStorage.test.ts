@@ -11,7 +11,6 @@ describe("Azure blob functions", () => {
 
     const ad = MockFactory.fakeAzureData();
     const options = ad.options;
-    
 
     const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
     serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers));
