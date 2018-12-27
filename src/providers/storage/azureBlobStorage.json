@@ -3,7 +3,7 @@
     "required": [
         "accountName",
         "containerName",
-        "token"
+        "sas"
     ],
     "type": "object",
     "properties": {
@@ -15,8 +15,8 @@
             "title": "Container Name",
             "type": "string"
         },
-        "token": {
-            "title": "SAS Token",
+        "sas": {
+            "title": "SAS",
             "type": "string"
         },
         "createContainer": {

@@ -5,12 +5,12 @@ import { AssetProviderFactory, IAssetProvider } from "../providers/storage/asset
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProvider";
 
 export class AssetService {
-    public static createAssetFromFilePath(filePath: string): IAsset {
+    public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
         Guard.emtpy(filePath);
 
         const md5Hash = new MD5().update(filePath).digest("hex");
         const pathParts = filePath.indexOf("\\") > -1 ? filePath.split("\\") : filePath.split("/");
-        const fileName = pathParts[pathParts.length - 1];
+        fileName = fileName || pathParts[pathParts.length - 1];
         const fileNameParts = fileName.split(".");
         const assetFormat = fileNameParts[fileNameParts.length - 1];
         const assetType = this.getAssetType(assetFormat);

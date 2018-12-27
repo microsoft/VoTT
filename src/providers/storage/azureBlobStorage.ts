@@ -9,7 +9,8 @@ export interface IAzureCloudStorageOptions {
     accountName: string;
     containerName: string;
     createContainer: boolean;
-    token?: string;
+    oauthToken?: string;
+    sas?: string;
 }
 
 export class AzureBlobStorage implements IStorageProvider {
@@ -144,7 +145,7 @@ export class AzureBlobStorage implements IStorageProvider {
         const result: IAsset[] = [];
         for (const file of files) {
             const url = this.getUrl(file);
-            const asset = AssetService.createAssetFromFilePath(url);
+            const asset = AssetService.createAssetFromFilePath(url, this.getFileName(url));
             if (asset.type !== AssetType.Unknown) {
                 result.push(asset);
             }
@@ -152,13 +153,13 @@ export class AzureBlobStorage implements IStorageProvider {
         return result;
     }
 
-    private getHostName(): string {
-        return `https://${this.options.accountName}.blob.core.windows.net`;
+    private getAccountUrl(): string {
+        return `https://${this.options.accountName}.blob.core.windows.net` + (this.options.sas || "");       
     }
 
     private getCredential(): Credential {
-        if (this.options.token) {
-            return new TokenCredential(this.options.token);
+        if (this.options.oauthToken) {
+            return new TokenCredential(this.options.oauthToken);
         } else {
             return new AnonymousCredential();
         }
@@ -167,8 +168,9 @@ export class AzureBlobStorage implements IStorageProvider {
     private getServiceURL(): ServiceURL {
         const credential = this.getCredential();
         const pipeline = StorageURL.newPipeline(credential);
+        const accountUrl = this.getAccountUrl();
         const serviceUrl = new ServiceURL(
-            this.getHostName(),
+            accountUrl,
             pipeline,
         );
         return serviceUrl;
@@ -191,6 +193,11 @@ export class AzureBlobStorage implements IStorageProvider {
 
     private getUrl(blobName: string): string {
         return this.getBlockBlobURL(blobName).url;
+    }
+
+    private getFileName(url: string) {
+        const pathParts = url.split("/");
+        return pathParts[pathParts.length - 1].split("?")[0];
     }
 
     private async bodyToString(
