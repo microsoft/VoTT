@@ -18,14 +18,14 @@
             "title": "${common.provider}",
             "type": "string",
             "enum": [
-                "azureBlobStorage",
                 "bingImageSearch",
+                "azureBlobStorage",
                 "localFileSystemProxy"
             ],
             "default": "bingImageSearch",
             "enumNames": [
-                "${connections.providers.azureBlob.title}",
                 "${connections.providers.bing.title}",
+                "${connections.providers.azureBlob.title}",
                 "${connections.providers.local.title}"
             ]
         },
