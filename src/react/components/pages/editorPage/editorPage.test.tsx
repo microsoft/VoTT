@@ -141,6 +141,49 @@ describe("Editor Page Component", () => {
             done();
         });
     });
+
+    it("tags are initialized correctly", () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, true);
+        const props = createProps(testProject.id);
+        const wrapper = createCompoent(store, props);
+        const stateTags = wrapper.find(EditorPage).childAt(0).state().project.tags;
+        expect(stateTags).toEqual(testProject.tags);
+    });
+
+    it("create a new tag from text box", () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, true);
+        const props = createProps(testProject.id);
+        const wrapper = createCompoent(store, props);
+
+        const newTagName = "My new tag";
+        wrapper.find("input.ReactTags__tagInputField").simulate("change", { target: { value: newTagName } });
+        wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", { keyCode: 13 });
+        const stateTags = wrapper.find(EditorPage).childAt(0).state().project.tags;
+
+        expect(stateTags).toHaveLength(testProject.tags.length + 1);
+        expect(stateTags[stateTags.length - 1].name).toEqual(newTagName);
+    });
+
+    it("remove a tag", () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, true);
+        const props = createProps(testProject.id);
+        const wrapper = createCompoent(store, props);
+        const stateTags = wrapper.find(EditorPage).childAt(0).state().project.tags;
+
+        expect(stateTags).toHaveLength(testProject.tags.length);
+        wrapper.find("a.ReactTags__remove")
+            .last().simulate("click");
+
+        const newStateTags = wrapper.find(EditorPage).childAt(0).state().project.tags;
+
+        expect(newStateTags).toHaveLength(testProject.tags.length - 1);
+        for (let i = 0; i < newStateTags.length; i++) {
+            expect(newStateTags[i]).toEqual(testProject.tags[i]);
+        }
+    });
 });
 
 function createProps(projectId: string): IEditorPageProps {

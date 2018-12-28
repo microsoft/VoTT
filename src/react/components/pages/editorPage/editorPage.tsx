@@ -1,17 +1,17 @@
+import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import _ from "lodash";
-import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState } from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { RouteComponentProps } from "react-router-dom";
+import { bindActionCreators } from "redux";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import "./editorPage.scss";
+import { AssetState, IApplicationState, IAsset, IAssetMetadata, IProject } from "../../../../models/applicationState";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import TagsInput from "../../common/tagsInput/tagsInput";
 import AssetPreview from "./assetPreview";
-import EditorFooter from "./editorFooter";
+import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -45,7 +45,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     constructor(props, context) {
         super(props, context);
-
         this.state = {
             project: this.props.project,
             assets: [],
@@ -60,7 +59,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         this.selectAsset = this.selectAsset.bind(this);
-        this.onFooterChange = this.onFooterChange.bind(this);
+        this.onTagsChanged = this.onTagsChanged.bind(this);
     }
 
     public async componentDidMount() {
@@ -112,20 +111,22 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         }
                     </div>
                     <div>
-                        <EditorFooter
-                            tags={this.props.project.tags}
-                            onTagsChanged={this.onFooterChange} />
+                        {/*Footer*/}
+                        <TagsInput
+                            tags={(this.state.project) ? this.state.project.tags : null}
+                            onChange={this.onTagsChanged}
+                        />
                     </div>
                 </div>
             </div>
         );
     }
 
-    private onFooterChange(footerState) {
+    private onTagsChanged(tags) {
         this.setState({
             project: {
                 ...this.state.project,
-                tags: footerState.tags,
+                tags,
             },
         });
     }
