@@ -238,19 +238,47 @@ function createWindow () {
               label: "Add filter", 
               submenu: [
                 {
-                  label: "Invert filter", 
+                  label: "Increase contrast (25%)", 
+                  selector: "contrast:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'contrast_filter');
+                  }
+                },
+                {
+                  label: "Increase brightness (25%)", 
+                  selector: "brightness:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'brightness_filter');
+                  }
+                },
+                {
+                  label: "Increase saturation (50%)", 
+                  selector: "saturation:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'saturation_filter');
+                  }
+                },
+                {
+                  label: "Grayscale", 
+                  selector: "grayscale:", 
+                  click () { 
+                    mainWindow.webContents.send('filter', 'grayscale_filter');
+                  }
+                },
+                {
+                  label: "Invert", 
                   selector: "invert:", 
                   click () { 
                     mainWindow.webContents.send('filter', 'invert_filter');
                   }
                 },
                 {
-                  label: "Grayscale filter", 
-                  selector: "grayscale:", 
+                  label: "Blur Difference (Experimental)", 
+                  selector: "blurdiff:", 
                   click () { 
-                    mainWindow.webContents.send('filter', 'grayscale_filter');
+                    mainWindow.webContents.send('filter', 'blurdiff_filter');
                   }
-                }
+                },
               ]
             },
 
