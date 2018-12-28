@@ -132,6 +132,9 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         if (newReactTag.id !== this.state.selectedTag.id && this.state.tags.some((t) => t.id === newReactTag.id)) {
             return;
         }
+        if (!newReactTag.id || newReactTag.id.trim().length === 0) {
+            return;
+        }
         this.addHtml(newReactTag);
         this.setState((prevState) => {
             return {

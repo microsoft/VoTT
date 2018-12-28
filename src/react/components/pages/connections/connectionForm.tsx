@@ -5,11 +5,9 @@ import LocalFolderPicker from "../../common/localFolderPicker";
 import { strings, addLocValues } from "../../../../common/strings";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
 // tslint:disable-next-line:no-var-requires
-const nonLocalizedFormSchema = require("./connectionForm.json");
-const formSchema = addLocValues(nonLocalizedFormSchema);
+const formSchema = addLocValues(require("./connectionForm.json"));
 // tslint:disable-next-line:no-var-requires
-const nonLocalizedUiSchema = require("./connectionForm.ui.json");
-const uiSchema = addLocValues(nonLocalizedUiSchema);
+const uiSchema = addLocValues(require("./connectionForm.ui.json"));
 
 export interface IConnectionFormProps extends React.Props<ConnectionForm> {
     connection: IConnection;
