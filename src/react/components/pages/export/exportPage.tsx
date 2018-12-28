@@ -5,6 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import ExportForm from "./exportForm";
 import { IProject, IApplicationState, IExportFormat } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 
 export interface IExportPageProps extends RouteComponentProps, React.Props<ExportPage> {
     project: IProject;
@@ -50,7 +51,12 @@ export default class ExportPage extends React.Component<IExportPageProps> {
 
         return (
             <div className="m-3 text-light">
-                <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">Export Settings</span></h3>
+                <h3>
+                    <i className="fas fa-sliders-h fa-1x"></i>
+                    <span className="px-2">
+                        {strings.export.settings}
+                    </span>
+                </h3>
                 <div className="m-3 text-light">
                     <ExportForm
                         settings={exportFormat}

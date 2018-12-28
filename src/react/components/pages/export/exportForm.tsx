@@ -1,11 +1,12 @@
 import React from "react";
-import Form, { FormValidation, ISubmitEvent, IChangeEvent } from "react-jsonschema-form";
+import Form, { FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
+import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat } from "../../../../models/applicationState.js";
 import CustomFieldTemplate from "../../common/customFieldTemplate";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./exportForm.json");
+const formSchema = addLocValues(require("./exportForm.json"));
 // tslint:disable-next-line:no-var-requires
-const uiSchema = require("./exportForm.ui.json");
+const uiSchema = addLocValues(require("./exportForm.ui.json"));
 
 export interface IExportFormProps extends React.Props<ExportForm> {
     settings: IExportFormat;
@@ -64,10 +65,10 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 onChange={this.onFormChange}
                 onSubmit={this.onFormSubmit}>
                 <div>
-                    <button className="btn btn-success mr-1" type="submit">Save Export Settings</button>
+                    <button className="btn btn-success mr-1" type="submit">{strings.export.saveSettings}</button>
                     <button className="btn btn-secondary btn-cancel"
                         type="button"
-                        onClick={this.onFormCancel}>Cancel</button>
+                        onClick={this.onFormCancel}>{strings.common.cancel}</button>
                 </div>
             </Form>
         );
@@ -107,8 +108,8 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         let newUiSchema: any = this.state.uiSchema;
 
         if (providerType) {
-            const providerSchema = require(`../../../../providers/export/${providerType}.json`);
-            const providerUiSchema = require(`../../../../providers/export/${providerType}.ui.json`);
+            const providerSchema = addLocValues(require(`../../../../providers/export/${providerType}.json`));
+            const providerUiSchema = addLocValues(require(`../../../../providers/export/${providerType}.ui.json`));
 
             newFormSchema = { ...formSchema };
             newFormSchema.properties["providerOptions"] = providerSchema;

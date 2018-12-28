@@ -1,5 +1,6 @@
 import React from "react";
 import { WithContext as ReactTags } from "react-tag-input";
+import { strings } from "../../../../common/strings";
 import { randomIntInRange } from "../../../../common/utils";
 import { ITag } from "../../../../models/applicationState";
 import "../common.scss";
@@ -90,6 +91,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         return (
             <div>
                 <ReactTags tags={tags}
+                    placeholder={strings.tags.placeholder}
                     handleDelete={this.handleDelete}
                     handleAddition={this.handleAddition}
                     handleDrag={this.handleDrag}
@@ -128,6 +130,9 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
          * tags, the component just doesn't do anything.
          */
         if (newReactTag.id !== this.state.selectedTag.id && this.state.tags.some((t) => t.id === newReactTag.id)) {
+            return;
+        }
+        if (!newReactTag.id || newReactTag.id.trim().length === 0) {
             return;
         }
         this.addHtml(newReactTag);
