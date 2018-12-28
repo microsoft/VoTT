@@ -5,6 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import ProjectForm from "./projectForm";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject, IConnection } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 
 export interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     project: IProject;
@@ -45,7 +46,12 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     public render() {
         return (
             <div className="m-3 text-light">
-                <h3><i className="fas fa-sliders-h fa-1x"></i><span className="px-2">Project Settings</span></h3>
+                <h3>
+                    <i className="fas fa-sliders-h fa-1x"></i>
+                    <span className="px-2">
+                        {strings.projectSettings.title}
+                    </span>
+                </h3>
                 <div className="m-3 text-light">
                     <ProjectForm
                         project={this.props.project}

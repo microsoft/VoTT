@@ -1,11 +1,11 @@
 import React from "react";
 import Form from "react-jsonschema-form";
-import ReactModal from "react-modal";
+import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { addLocValues } from "../../../../../common/strings";
 import { ITag } from "../../../../../models/applicationState";
 import "./tagEditorModal.scss";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./tagEditorModal.json");
+const formSchema = addLocValues(require("./tagEditorModal.json"));
 
 const customStyles = {
     content : {

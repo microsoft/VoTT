@@ -1,12 +1,12 @@
 {
-    "title": "Local File System",
+    "title": "${connections.providers.local.title}",
     "required": [
         "folderPath"
     ],
     "type": "object",
     "properties": {
         "folderPath": {
-            "title": "Folder Path",
+            "title": "${connections.providers.local.folderPath}",
             "type": "string"
         }
     }
