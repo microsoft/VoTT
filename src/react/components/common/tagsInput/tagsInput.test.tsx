@@ -119,7 +119,6 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         expect(wrapper.find(TagsInput).state().showModal).toBe(true);
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(true);
     });
 
     it("ctrl clicking tag sets selected tag", () => {
@@ -150,7 +149,6 @@ describe("Tags Input Component", () => {
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         // Shows modal
         expect(wrapper.find(TagsInput).state().showModal).toBe(true);
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(true);
         // Does not Call onTagShiftClick
         expect(onTagShiftClickHandler).not.toBeCalled();
         // Does not call onTagClick
@@ -229,7 +227,6 @@ describe("Tags Input Component", () => {
         expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
         // Does not show modal
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(false);
         // Does not call onTagShiftClick
         expect(onTagShiftClickHandler).not.toBeCalled();
     });
@@ -264,7 +261,6 @@ describe("Tags Input Component", () => {
         expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
         // Does not show modal
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBe(false);
         // Does not call onTagClick
         expect(onTagClickHandler).not.toBeCalled();
     });
