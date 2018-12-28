@@ -1230,11 +1230,37 @@
     addFilterByName(filterName, params) {
         switch (filterName) {            
             case "invert_filter": {
+                this.editor.FilterPipeline.clearPipeline();
                 this.editor.FilterPipeline.addFilter(this.CT.Filters.InvertFilter);
                 this.playingCallback();
                 break;
             }
+            case "contrast_filter": {
+                this.editor.FilterPipeline.clearPipeline();
+                this.editor.FilterPipeline.addFilter(this.CT.Filters.ContrastFilter(64));
+                this.playingCallback();
+                break;
+            }
+            case "brightness_filter": {
+                this.editor.FilterPipeline.clearPipeline();
+                this.editor.FilterPipeline.addFilter(this.CT.Filters.BrightnessFilter(64));
+                this.playingCallback();
+                break;
+            }
+            case "saturation_filter": {
+                this.editor.FilterPipeline.clearPipeline();
+                this.editor.FilterPipeline.addFilter(this.CT.Filters.SaturationFilter(383));
+                this.playingCallback();
+                break;
+            }
+            case "blurdiff_filter": {
+                this.editor.FilterPipeline.clearPipeline();
+                this.editor.FilterPipeline.addFilter(this.CT.Filters.BlurDiffFilter(4));
+                this.playingCallback();
+                break;
+            }
             case "grayscale_filter": {
+                this.editor.FilterPipeline.clearPipeline();
                 this.editor.FilterPipeline.addFilter(this.CT.Filters.GrayscaleFilter);
                 this.playingCallback();
                 break;
