@@ -3,6 +3,7 @@ import Form from "react-jsonschema-form";
 import ReactModal from "react-modal";
 import { ITag } from "../../../../../models/applicationState";
 import "./tagEditorModal.scss";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 // tslint:disable-next-line:no-var-requires
 const formSchema = require("./tagEditorModal.json");
 
@@ -39,29 +40,35 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
         super(props);
         this.state = {
             tag: props.tag,
-            isOpen: false,
+            isOpen: props.showModal,
         };
         this.handleFormChange = this.handleFormChange.bind(this);
         this.handleOk = this.handleOk.bind(this);
     }
 
     public render() {
+        const closeBtn = <button className="close" onClick={this.props.onCancel}>&times;</button>;
+
         return (
             <div>
-                <ReactModal
-                    isOpen={this.props.showModal}
-                    ariaHideApp={false}
-                    style={customStyles}>
-                    <Form
-                        schema={formSchema}
-                        formData={this.state.tag}
-                        onChange={this.handleFormChange}>
-                        <div style={{textAlign: "center"}}>
-                            <button className="btn btn-info" onClick={this.handleOk}>Ok</button>
-                            <button className="btn btn-info" onClick={this.props.onCancel}>Cancel</button>
-                        </div>
-                    </Form>
-                </ReactModal>
+                <Modal isOpen={this.state.isOpen} centered={true}>
+                    <ModalHeader toggle={this.props.onCancel} close={closeBtn}>Edit Tag</ModalHeader>
+                    <ModalBody>
+                        <Form
+                            schema={formSchema}
+                            formData={this.state.tag}
+                            onChange={this.handleFormChange}>
+                            <div style={{textAlign: "center"}}>
+                                <Button
+                                    color="success"
+                                    onClick={this.handleOk}>Save Changes</Button>
+                                <Button
+                                    color="secondary"
+                                    onClick={this.props.onCancel}>Cancel</Button>
+                            </div>
+                        </Form>
+                    </ModalBody>
+                </Modal>
             </div>
         );
     }
@@ -74,6 +81,11 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
         if (this.props.tag && prevProps.tag !== this.props.tag) {
             this.setState({
                 tag: this.props.tag,
+            });
+        }
+        if (prevProps.showModal !== this.props.showModal) {
+            this.setState({
+                isOpen: this.props.showModal,
             });
         }
     }
