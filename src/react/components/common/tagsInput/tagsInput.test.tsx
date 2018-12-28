@@ -166,9 +166,7 @@ describe("Tags Input Component", () => {
         wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        wrapper.find("button")
-            .first()
-            .simulate("click");
+        wrapper.find("button.btn.btn-success").simulate("click");
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).toBeCalled();
     });
@@ -182,9 +180,7 @@ describe("Tags Input Component", () => {
         wrapper.find("div.inline-block.tagtext")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        wrapper.find("button")
-            .last()
-            .simulate("click");
+        wrapper.find("button.btn.btn-secondary").simulate("click");
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).not.toBeCalled();
     });

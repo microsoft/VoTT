@@ -26,7 +26,7 @@ describe("Tag Editor Modal", () => {
         });
         const state = wrapper.find(TagEditorModal).state();
         expect(state.tag).toEqual(tag);
-        expect(state.isOpen).toBeFalsy();
+        expect(state.isOpen).toBe(false);
     });
 
     it("modal is not visible", () => {
@@ -38,9 +38,9 @@ describe("Tag Editor Modal", () => {
             onCancel,
             onOk,
         });
-        expect(
-            wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists(),
-        ).toBe(false);
+        expect(wrapper.find("div.modal-content").exists()).toBe(false);
+        expect(wrapper.find("div.modal-header").exists()).toBe(false);
+        expect(wrapper.find("div.modal-body").exists()).toBe(false);
     });
 
     it("modal is visible", () => {
@@ -52,9 +52,9 @@ describe("Tag Editor Modal", () => {
             onCancel,
             onOk,
         });
-        expect(
-            wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists(),
-        ).toBe(true);
+        expect(wrapper.find("div.modal-content").exists()).toBe(true);
+        expect(wrapper.find("div.modal-header").exists()).toBe(true);
+        expect(wrapper.find("div.modal-body").exists()).toBe(true);
     });
 
     it("modal calls 'onCancel' when cancel is clicked", () => {
@@ -66,8 +66,9 @@ describe("Tag Editor Modal", () => {
             onCancel,
             onOk,
         });
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
-        wrapper.find("button").last().simulate("click");
+        expect(wrapper.find("div.modal-header").exists()).toBe(true);
+        expect(wrapper.find("div.modal-body").exists()).toBe(true);
+        wrapper.find("button.btn.btn-secondary").simulate("click");
         expect(onCancel).toBeCalled();
         expect(onOk).not.toBeCalled();
     });
@@ -81,14 +82,11 @@ describe("Tag Editor Modal", () => {
             onCancel,
             onOk,
         });
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
-        const okButton = wrapper.find("button").first();
-        expect(okButton.exists()).toBeTruthy();
-        okButton.simulate("click");
-        setImmediate(() => {
-            expect(onOk).toBeCalledWith(tag);
-            expect(onCancel).not.toBeCalled();
-        });
+        expect(wrapper.find("div.modal-header").exists()).toBe(true);
+        expect(wrapper.find("div.modal-body").exists()).toBe(true);
+        wrapper.find("button.btn.btn-success").simulate("click");
+        expect(onOk).toBeCalled();
+        expect(onCancel).not.toBeCalled();
     });
 
     it("Updates props via componentDidUpdate and calls 'onOk' when ok is clicked with new tag information", () => {
@@ -102,7 +100,8 @@ describe("Tag Editor Modal", () => {
         });
         const newTagName = "new tag name";
 
-        expect(wrapper.find("div.ReactModal__Content.ReactModal__Content--after-open").exists()).toBeTruthy();
+        expect(wrapper.find("div.modal-header").exists()).toBe(true);
+        expect(wrapper.find("div.modal-body").exists()).toBe(true);
         // Calls componentDidUpdate
         wrapper.setProps({
             tag: {
@@ -110,15 +109,11 @@ describe("Tag Editor Modal", () => {
                 color: tag.color,
             },
         });
-        const okButton = wrapper.find("button").first();
-        expect(okButton.exists()).toBeTruthy();
-        okButton.simulate("click");
-        setImmediate(() => {
-            expect(onOk).toBeCalledWith({
-                name: newTagName,
-                color: tag.color,
-            });
-            expect(onCancel).not.toBeCalled();
+        wrapper.find("button.btn.btn-success").simulate("click");
+        expect(onOk).toBeCalledWith({
+            name: newTagName,
+            color: tag.color,
         });
+        expect(onCancel).not.toBeCalled();
     });
 });

@@ -4,6 +4,19 @@ import { IStorageProvider, StorageProviderFactory } from "../storage/storageProv
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProvider";
 
 /**
+ * @name - TF Pascal VOC Records Export Asset State
+ * @description - Defines the asset type export option
+ * @member All - Specifies that all assets will be exported
+ * @member Visited - Specifies that visited (including tagged) assets will be exported
+ * @member Tagged - Specifies that only tagged assets will be exported
+ */
+export enum ExportAssetState {
+    All = "all",
+    Visited = "visited",
+    Tagged = "tagged",
+}
+
+/**
  * @name - IExportProvider
  * @description - Defines the required interface for all VoTT export providers
  */

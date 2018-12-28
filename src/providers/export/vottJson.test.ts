@@ -1,6 +1,7 @@
 import _ from "lodash";
-import { VottJsonExportProvider, IVottJsonExportOptions, VottExportAssetState } from "./vottJson";
+import { VottJsonExportProvider, IVottJsonExportOptions } from "./vottJson";
 import registerProviders from "../../registerProviders";
+import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
@@ -51,7 +52,7 @@ describe("VoTT Json Export Provider", () => {
 
     it("Can be instantiated through the factory", () => {
         const options: IVottJsonExportOptions = {
-            assetState: VottExportAssetState.All,
+            assetState: ExportAssetState.All,
         };
         const exportProvider = ExportProviderFactory.create("vottJson", testProject, options);
         expect(exportProvider).not.toBeNull();
@@ -77,7 +78,7 @@ describe("VoTT Json Export Provider", () => {
 
         it("Exports all assets", async () => {
             const options: IVottJsonExportOptions = {
-                assetState: VottExportAssetState.All,
+                assetState: ExportAssetState.All,
             };
 
             const exportProvider = new VottJsonExportProvider(testProject, options);
@@ -97,7 +98,7 @@ describe("VoTT Json Export Provider", () => {
 
         it("Exports only visited assets (includes tagged)", async () => {
             const options: IVottJsonExportOptions = {
-                assetState: VottExportAssetState.Visited,
+                assetState: ExportAssetState.Visited,
             };
 
             const exportProvider = new VottJsonExportProvider(testProject, options);
@@ -118,7 +119,7 @@ describe("VoTT Json Export Provider", () => {
 
         it("Exports only tagged assets", async () => {
             const options: IVottJsonExportOptions = {
-                assetState: VottExportAssetState.Tagged,
+                assetState: ExportAssetState.Tagged,
             };
 
             const exportProvider = new VottJsonExportProvider(testProject, options);

@@ -1,4 +1,5 @@
 {
+    "title": "${connections.title}",
     "required": [
         "name",
         "providerType"
@@ -6,24 +7,26 @@
     "type": "object",
     "properties": {
         "name": {
-            "title": "Display Name",
+            "title": "${common.displayName}",
             "type": "string"
         },
         "description": {
-            "title": "Description",
+            "title": "${common.description}",
             "type": "string"
         },
         "providerType": {
-            "title": "Provider",
+            "title": "${common.provider}",
             "type": "string",
             "enum": [
                 "bingImageSearch",
+                "azureBlobStorage",
                 "localFileSystemProxy"
             ],
             "default": "bingImageSearch",
             "enumNames": [
-                "Bing Image Search",
-                "Local Directory"
+                "${connections.providers.bing.title}",
+                "${connections.providers.azureBlob.title}",
+                "${connections.providers.local.title}"
             ]
         },
         "providerOptions": {

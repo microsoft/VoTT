@@ -1,0 +1,27 @@
+{
+    "title": "Azure Blob Storage",
+    "required": [
+        "accountName",
+        "containerName",
+        "sas"
+    ],
+    "type": "object",
+    "properties": {
+        "accountName": {
+            "title": "Account Name",
+            "type": "string"
+        },
+        "containerName": {
+            "title": "Container Name",
+            "type": "string"
+        },
+        "sas": {
+            "title": "SAS",
+            "type": "string"
+        },
+        "createContainer": {
+            "title": "Create Container",
+            "type": "boolean"
+        }
+    }
+}

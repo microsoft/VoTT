@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import ConditionalNavLink from "../common/conditionalNavLink";
+import { strings } from "../../../common/strings";
 
 export default function Sidebar({ project }) {
     const projectId = project ? project.id : null;
@@ -10,37 +11,39 @@ export default function Sidebar({ project }) {
             <ul>
                 <li>
                     <ConditionalNavLink disabled={!projectId}
-                        title="Tag Editor"
+                        title={strings.tags.editor}
                         to={`/projects/${projectId}/edit`}>
                         <i className="fas fa-bookmark"></i>
                     </ConditionalNavLink>
                 </li>
                 <li>
                     <ConditionalNavLink disabled={!projectId}
-                        title="Project Settings"
+                        title={strings.projectSettings.title}
                         to={`/projects/${projectId}/settings`}>
                         <i className="fas fa-sliders-h"></i>
                     </ConditionalNavLink>
                 </li>
                 <li>
                     <ConditionalNavLink disabled={!projectId}
-                        title="Export"
+                        title={strings.export.title}
                         to={`/projects/${projectId}/export`}>
                         <i className="fas fa-external-link-square-alt"></i></ConditionalNavLink></li>
                 <li>
                     <ConditionalNavLink disabled={!projectId}
-                        title="Active Learning"
+                        title={strings.activeLearning.title}
                         to={`/projects/${projectId}/active-learning`}>
                         <i className="fas fa-graduation-cap"></i>
                     </ConditionalNavLink>
                 </li>
                 <li>
-                    <NavLink title="Connections" to={`/connections`}><i className="fas fa-plug"></i></NavLink>
+                    <NavLink title={strings.connections.title}
+                            to={`/connections`}><i className="fas fa-plug"></i></NavLink>
                 </li>
             </ul>
             <div className="app-sidebar-fill"></div>
             <ul>
-                <li><NavLink title="Application Settings" to={`/settings`}><i className="fas fa-cog"></i></NavLink></li>
+                <li><NavLink title={strings.appSettings.title}
+                            to={`/settings`}><i className="fas fa-cog"></i></NavLink></li>
             </ul>
         </div>
     );
