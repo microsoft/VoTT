@@ -1,24 +1,16 @@
+import { AssetState, AssetType, IApplicationState, IAppSettings,
+    IAsset, IAssetMetadata, IConnection, IExportFormat, IProject, ITag } from "../models/applicationState";
+import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
-import {
-    AssetState,
-    AssetType,
-    IApplicationState,
-    IAppSettings,
-    IAsset,
-    IAssetMetadata,
-    IConnection,
-    IExportFormat,
-    IProject,
-    ITag,
-} from "../models/applicationState";
 
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider } from "../providers/storage/assetProvider";
 
 export default class MockFactory {
+
     public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
         return {
             id: `asset-${name}`,
@@ -75,6 +67,59 @@ export default class MockFactory {
         };
     }
 
+    public static azureOptions(): IAzureCloudStorageOptions {
+        return {
+            accountName: "myaccount",
+            containerName: "container",
+            createContainer: false,
+        };
+    }
+
+    public static listContainersResponse() {
+        return {
+            containerItems: MockFactory.azureContainers(),
+            nextMarker: null,
+        };
+    }
+
+    public static azureContainers(count: number= 3) {
+        const result = [];
+        for (let i = 0; i < count; i++) {
+            result.push({
+                name: `container${i}`,
+                blobs: MockFactory.azureBlobs(i),
+            });
+        }
+        return {containerItems: result};
+    }
+
+    public static fakeAzureData() {
+        return {
+            blobName: "file1.jpg",
+            blobText: "This is the content",
+            fileType: "image/jpg",
+            containerName: "container",
+            containers: this.azureContainers(),
+            blobs: this.azureBlobs(),
+            options: this.azureOptions(),
+        };
+    }
+
+    public static blob(name: string, content: string | Buffer, fileType: string): Blob {
+        const blob = new Blob([content], { type: fileType });
+        blob["name"] = name;
+        return blob;
+    }
+
+    public static azureBlobs(id: number= 1, count: number= 10) {
+        const result = [];
+        for (let i = 0; i < count; i++) {
+            result.push({
+                name: `blob-${id}-${i}.jpg`,
+            });
+        }
+        return {segment: {blobItems: result}};
+    }
     public static createTestTags(count: number = 5): ITag[] {
         const tags: ITag[] = [];
         for (let i = 0; i < count; i++) {
