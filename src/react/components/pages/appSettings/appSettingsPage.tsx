@@ -6,11 +6,12 @@ import IApplicationActions, * as applicationActions from "../../../../redux/acti
 import { IApplicationState, IAppSettings, IConnection } from "../../../../models/applicationState";
 import Form from "react-jsonschema-form";
 import "./appSettingsPage.scss";
+import { strings, addLocValues } from "../../../../common/strings";
 import ConnectionPicker from "../../common/connectionPicker";
 // tslint:disable-next-line:no-var-requires
-const formSchema = require("./appSettingsPage.json");
+const formSchema = addLocValues(require("./appSettingsPage.json"));
 // tslint:disable-next-line:no-var-requires
-const uiSchema = require("./appSettingsPage.ui.json");
+const uiSchema = addLocValues(require("./appSettingsPage.ui.json"));
 
 interface IAppSettingsProps {
     appSettings: IAppSettings;
@@ -68,7 +69,7 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
     public render() {
         return (
             <div className="m-3 text-light">
-                <h3><i className="fas fa-cog fa-1x"></i><span className="px-2">Application Settings</span></h3>
+                <h3><i className="fas fa-cog fa-1x"></i><span className="px-2">{strings.appSettings.title}</span></h3>
                 <div className="app-settings-page">
                     <div className="app-settings-page-form">
                         <Form
@@ -80,15 +81,15 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
                     </div>
                     <div className="app-settings-page-sidebar px-2">
                         <div className="my-3">
-                            <p>Open application developer tools to help diagnose issues</p>
+                            <p>{strings.appSettings.devTools.description}</p>
                             <button className="btn btn-primary btn-sm"
-                                onClick={this.toggleDevTools}>Toggle Developer Tools
+                                onClick={this.toggleDevTools}>{strings.appSettings.devTools.button}
                             </button>
                         </div>
                         <div className="my-3">
-                            <p>Reload the app discarding all current changes</p>
+                            <p>{strings.appSettings.reload.description}</p>
                             <button className="btn btn-primary btn-sm"
-                                onClick={this.reloadApp}>Refresh Application
+                                onClick={this.reloadApp}>{strings.appSettings.reload.button}
                             </button>
                         </div>
                     </div>

@@ -1,11 +1,11 @@
 import React from "react";
-import "./tagsInput.scss";
-import "../common.scss";
 import { WithContext as ReactTags } from "react-tag-input";
+import { strings } from "../../../../common/strings";
 import { randomIntInRange } from "../../../../common/utils";
-import { TagEditorModal } from "./tagEditorModal/tagEditorModal";
-import deepmerge from "deepmerge";
 import { ITag } from "../../../../models/applicationState";
+import "../common.scss";
+import TagEditorModal from "./tagEditorModal/tagEditorModal";
+import "./tagsInput.scss";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("./tagColors.json");
 
@@ -25,10 +25,14 @@ export interface IReactTag {
  * Properties required for TagsInput component
  * tags - ITag[] or stringified ITag[]
  * onChange - function to call on tags change
+ * onTagClick - function to call when tag is clicked
+ * onTagShiftClick - function to call when tag is clicked while holding shift key
  */
 export interface ITagsInputProps {
     tags: ITag[];
     onChange: (tags: ITag[]) => void;
+    onTagClick?: (tag: ITag) => void;
+    onTagShiftClick?: (tag: ITag) => void;
 }
 
 /**
@@ -63,27 +67,31 @@ export const KeyCodes = {
  */
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
+/**
+ * Component for creating, modifying and using tags
+ */
 export default class TagsInput extends React.Component<ITagsInputProps, ITagsInputState> {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            tags: this.getReactTags(this.props.tags),
+            tags: this.toReactTags(this.props.tags),
             currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
         };
-
-        this.handleDelete = this.handleDelete.bind(this);
-        this.handleAddition = this.handleAddition.bind(this);
+        // UI Handlers
+        this.handleTagClick = this.handleTagClick.bind(this);
         this.handleDrag = this.handleDrag.bind(this);
-        this.handleTagDoubleClick = this.handleTagDoubleClick.bind(this);
-        this.handleEditedTag = this.handleEditedTag.bind(this);
         this.handleCloseModal = this.handleCloseModal.bind(this);
-        this.getTag = this.getTag.bind(this);
-        this.toItag = this.toItag.bind(this);
+        // Tag edit handlers
+        this.handleAddition = this.handleAddition.bind(this);
+        this.handleEditedTag = this.handleEditedTag.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        // Helpers
         this.toReactTag = this.toReactTag.bind(this);
+        this.getTag = this.getTag.bind(this);
     }
 
     public render() {
@@ -91,6 +99,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         return (
             <div>
                 <ReactTags tags={tags}
+                    placeholder={strings.tags.placeholder}
                     handleDelete={this.handleDelete}
                     handleAddition={this.handleAddition}
                     handleDrag={this.handleDrag}
@@ -108,10 +117,79 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     public componentDidUpdate(prevProps: ITagsInputProps) {
         if (prevProps.tags !== this.props.tags) {
             this.setState({
-                tags: this.getReactTags(this.props.tags),
+                tags: this.toReactTags(this.props.tags),
             });
         }
     }
+
+    // UI Handlers
+
+    /**
+     * Calls the onTagClick handler if not null with clicked tag
+     * @param event Click event
+     */
+    private handleTagClick(event) {
+        const text = event.currentTarget.innerText || event.target.innerText;
+        const tag = this.getTag(text);
+        if (event.ctrlKey) {
+            // Opens up tag editor modal
+            this.setState({
+                selectedTag: tag,
+                showModal: true,
+            });
+        } else if (event.shiftKey && this.props.onTagShiftClick) {
+            // Calls provided onTagShiftClick
+            this.props.onTagShiftClick(this.toItag(tag));
+        } else if (this.props.onTagClick) {
+            // Calls provided onTagClick function
+            this.props.onTagClick(this.toItag(tag));
+        }
+    }
+
+    /**
+     * Allows for click-and-drag re-ordering of tags
+     * @param tag Tag being dragged
+     * @param currPos Current position of tag
+     * @param newPos New position of tag
+     */
+    private handleDrag(tag: IReactTag, currPos: number, newPos: number): void {
+        const tags = [...this.state.tags];
+        const newTags = tags.slice();
+
+        newTags.splice(currPos, 1);
+        newTags.splice(newPos, 0, tag);
+
+        this.setState({ tags: newTags },
+            () => this.props.onChange(this.toITags(this.state.tags)));
+    }
+
+    /**
+     * Set showModal to false
+     */
+    private handleCloseModal(): void {
+        this.setState({
+            showModal: false,
+        });
+    }
+
+    // Tag Operations
+
+    /**
+     * Adds new tag to state with necessary HTML for rendering
+     * Sets the color of the tag to next color, rotates through each
+     * @param reactTag - IReactTag - new tag to add to state
+     */
+    private handleAddition(reactTag: IReactTag): void {
+        reactTag.color = TagColors[this.state.currentTagColorIndex];
+        this.addHtml(reactTag);
+        this.setState((prevState) => {
+            return {
+                tags: [...this.state.tags, reactTag],
+                currentTagColorIndex: (prevState.currentTagColorIndex + 1) % TagColors.length,
+            };
+        }, () => this.props.onChange(this.toITags(this.state.tags)));
+    }
+
     /**
      * Update an existing tag, called after clicking 'OK' in modal
      * @param newTag Edited version of tag
@@ -142,65 +220,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
                 }),
                 showModal: false,
             };
-        }, () => this.props.onChange(this.normalize(this.state.tags)));
-    }
-
-    /**
-     * Set showModal to false
-     */
-    private handleCloseModal(): void {
-        this.setState({
-            showModal: false,
-        });
-    }
-
-    /**
-     * Adds new tag to state with necessary HTML for rendering
-     * Sets the color of the tag to next color, rotates through each
-     * @param reactTag - IReactTag - new tag to add to state
-     */
-    private handleAddition(reactTag: IReactTag): void {
-        reactTag.color = TagColors[this.state.currentTagColorIndex];
-        this.addHtml(reactTag);
-        this.setState((prevState) => {
-            return {
-                tags: [...this.state.tags, reactTag],
-                currentTagColorIndex: (prevState.currentTagColorIndex + 1) % TagColors.length,
-            };
-        }, () => this.props.onChange(this.normalize(this.state.tags)));
-    }
-
-    /**
-     * Sets the selected tag and shows the modal for editing tag
-     * @param event Double click event
-     */
-    private handleTagDoubleClick(event) {
-        let text = event.currentTarget.innerText;
-        if (!text) {
-            text = event.target.innerText;
-        }
-        const tag = this.getTag(text);
-        this.setState({
-            selectedTag: tag,
-            showModal: true,
-        });
-    }
-
-    /**
-     * Allows for click-and-drag re-ordering of tags
-     * @param tag Tag being dragged
-     * @param currPos Current position of tag
-     * @param newPos New position of tag
-     */
-    private handleDrag(tag: IReactTag, currPos: number, newPos: number): void {
-        const tags = [...this.state.tags];
-        const newTags = tags.slice();
-
-        newTags.splice(currPos, 1);
-        newTags.splice(newPos, 0, tag);
-
-        this.setState({ tags: newTags },
-            () => this.props.onChange(this.normalize(this.state.tags)));
+        }, () => this.props.onChange(this.toITags(this.state.tags)));
     }
 
     /**
@@ -218,8 +238,10 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
             return {
                 tags: tags.filter((tag, index) => index !== i),
             };
-        }, () => this.props.onChange(this.normalize(this.state.tags)));
+        }, () => this.props.onChange(this.toITags(this.state.tags)));
     }
+
+    // Helpers
 
     /**
      * Gets the tag with the given name (id)
@@ -230,26 +252,8 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         if (!match) {
             throw new Error(`No tag by id: ${id}`);
         }
-
         return match;
     }
-
-    /**
-     * Adds necessary HTML for tag to render correctly
-     * @param tag tag needing Html
-     */
-    private addHtml(tag: IReactTag): void {
-        tag.text = this.ReactTagHtml(tag.id, tag.color);
-    }
-
-    /**
-     * Gets ITag[] from props and converts it to IReactTag[]
-     * @param props properties for component, contains tags in ITag format
-     */
-    private getReactTags(tags: ITag[]): IReactTag[] {
-        return tags ? tags.map((element: ITag) => this.toReactTag(element)) : [];
-    }
-
     /**
      * Converts ITag to IReactTag
      * @param tag ITag to convert to IReactTag
@@ -263,6 +267,22 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
             text: this.ReactTagHtml(tag.name, tag.color),
             color: tag.color,
         };
+    }
+
+    /**
+     * Generate necessary HTML to render tag box appropriately
+     * @param name name of tag
+     * @param color color of tag
+     */
+    private ReactTagHtml(name: string, color: string) {
+        return <div className="inline-block tagtext"
+                    onClick={(event) => this.handleTagClick(event)}>
+                    <div className={"inline-block tag_color_box"}
+                        style={{
+                            backgroundColor: color,
+                        }}></div>
+                    <span>{name}</span>
+                </div>;
     }
 
     /**
@@ -280,25 +300,26 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
     }
 
     /**
-     * Generate necessary HTML to render tag box appropriately
-     * @param name name of tag
-     * @param color color of tag
+     * Adds necessary HTML for tag to render correctly
+     * @param tag tag needing Html
      */
-    private ReactTagHtml(name: string, color: string) {
-        return <div className="inline-block tagtext" onDoubleClick={(event) => this.handleTagDoubleClick(event)}>
-                    <div className={"inline-block tag_color_box"}
-                        style={{
-                            backgroundColor: color,
-                        }}></div>
-                    <span>{name}</span>
-                </div>;
+    private addHtml(tag: IReactTag): void {
+        tag.text = this.ReactTagHtml(tag.id, tag.color);
+    }
+
+    /**
+     * Convert array of ITags to IReactTags
+     * @param props properties for component, contains tags in ITag format
+     */
+    private toReactTags(tags: ITag[]): IReactTag[] {
+        return tags ? tags.map((element: ITag) => this.toReactTag(element)) : [];
     }
 
     /**
      * Convert array of IReactTags to ITags
      * @param tags array of IReactTags to convert to ITags
      */
-    private normalize(tags: IReactTag[]): ITag[] {
+    private toITags(tags: IReactTag[]): ITag[] {
         return tags.map((element: IReactTag) => this.toItag(element));
     }
 }

@@ -2,18 +2,20 @@
     "type": "object",
     "properties": {
         "providerType": {
-            "title": "Provider",
+            "title": "${common.provider}",
             "type": "string",
             "enum": [
                 "vottJson",
                 "azureCustomVision",
-                "tensorFlowRecords"
+                "tensorFlowRecords",
+                "tensorFlowPascalVOC"
             ],
             "default": "vottJson",
             "enumNames": [
-                "VoTT JSON",
-                "Azure Custom Vision Service",
-                "Tensor Flow Records"
+                "${export.providers.vottJson}",
+                "${export.providers.azureCV}",
+                "${export.providers.tfRecords}",
+                "${export.providers.tfPascalVoc}"
             ]
         },
         "providerOptions": {

@@ -1,5 +1,6 @@
 import React from "react";
 import { IAsset, AssetType } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 
 interface IAssetPreviewProps {
     asset: IAsset;
@@ -40,7 +41,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </video>
                 }
                 {asset.type === AssetType.Unknown &&
-                    <div>Unable to display asset</div>
+                    <div>{strings.editorPage.assetError}</div>
                 }
             </div>
         );

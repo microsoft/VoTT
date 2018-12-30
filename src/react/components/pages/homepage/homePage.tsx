@@ -8,6 +8,7 @@ import CondensedList from "../../common/condensedList";
 import RecentProjectItem from "./recentProjectItem";
 import FilePicker from "../../common/filePicker";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { strings } from "../../../../common/strings";
 
 interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -49,13 +50,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
                         <li>
                             <Link to={"/projects/create"} className="p-5">
                                 <i className="fas fa-folder-plus fa-9x"></i>
-                                <h6>New Project</h6>
+                                <h6>{strings.homePage.newProject}</h6>
                             </Link>
                         </li>
                         <li>
                             <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
                                 <i className="fas fa-folder-open fa-9x"></i>
-                                <h6>Open Project</h6>
+                                <h6>{strings.homePage.openProject}</h6>
                             </a>
                             <FilePicker ref={this.filePicker}
                                 onChange={this.onProjectFileUpload}
@@ -66,7 +67,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 {(this.props.recentProjects && this.props.recentProjects.length > 0) &&
                     <div className="app-homepage-recent bg-lighter-1">
                         <CondensedList
-                            title="Recent Projects"
+                            title={strings.homePage.recentProjects}
                             Component={RecentProjectItem}
                             items={this.props.recentProjects}
                             onClick={this.loadSelectedProject}

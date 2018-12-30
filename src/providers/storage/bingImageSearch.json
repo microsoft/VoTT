@@ -1,19 +1,19 @@
 {
     "type": "object",
-    "title": "Bing Image Search Options",
+    "title": "${connections.providers.bing.options}",
     "required": ["apiKey","query"],
     "properties": {
         "apiKey": {
             "type": "string",
-            "title": "API Key"
+            "title": "${connections.providers.bing.apiKey}"
         },
         "query": {
             "type": "string",
-            "title": "Query"
+            "title": "${connections.providers.bing.query}"
         },
         "aspectRatio": {
             "type": "string",
-            "title": "Aspect Ratio",
+            "title": "${connections.providers.bing.aspectRatio.title}",
             "enum": [
                 "all",
                 "square",
@@ -22,10 +22,10 @@
             ],
             "default": "all",
             "enumNames": [
-                "All",
-                "Square",
-                "Wide",
-                "Tall"
+                "${connections.providers.bing.aspectRatio.all}",
+                "${connections.providers.bing.aspectRatio.square}",
+                "${connections.providers.bing.aspectRatio.wide}",
+                "${connections.providers.bing.aspectRatio.tall}"
             ]
         }
     }

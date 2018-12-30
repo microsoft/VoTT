@@ -5,6 +5,7 @@ import rimraf from "rimraf";
 import { IStorageProvider } from "../../../providers/storage/storageProvider";
 import { IAsset, AssetType } from "../../../models/applicationState";
 import { AssetService } from "../../../services/assetService";
+import { strings } from "../../../common/strings";
 
 export default class LocalFileSystem implements IStorageProvider {
     constructor(private browserWindow: BrowserWindow) { }
@@ -12,8 +13,8 @@ export default class LocalFileSystem implements IStorageProvider {
     public selectContainer(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             dialog.showOpenDialog(this.browserWindow, {
-                title: "Select Folder",
-                buttonLabel: "Choose Folder",
+                title: strings.connections.providers.local.selectFolder,
+                buttonLabel: strings.connections.providers.local.chooseFolder,
                 properties: ["openDirectory", "createDirectory"],
             },
                 (filePaths) => {

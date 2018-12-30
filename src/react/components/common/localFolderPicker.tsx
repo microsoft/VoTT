@@ -1,5 +1,6 @@
 import React from "react";
 import { LocalFileSystemProxy } from "../../../providers/storage/localFileSystemProxy";
+import { strings } from "../../../common/strings";
 
 interface ILocalFolderPickerProps {
     id?: string;
@@ -35,7 +36,7 @@ export default class LocalFolderPicker extends React.Component<ILocalFolderPicke
                 <div className="input-group-append">
                     <button className="btn btn-primary"
                         type="button"
-                        onClick={this.selectLocalFolder}>Select Folder
+                        onClick={this.selectLocalFolder}>{strings.connections.providers.local.selectFolder}
                     </button>
                 </div>
             </div>
