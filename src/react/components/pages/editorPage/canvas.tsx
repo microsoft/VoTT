@@ -295,9 +295,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         this.props.onAssetMetadataChanged(currentAssetMetadata);
-    };
+    }
 
-    
     /**
      * @name onRegionMove
      * @description Method called when moving a region already in the editor
@@ -306,7 +305,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     private onRegionMove = (id: string, regionData: RegionData) => {
-        const ct = CanvasTools
+        const ct = CanvasTools;
         const currentAssetMetadata = this.props.selectedAsset;
         const movedRegionIndex = currentAssetMetadata.regions.findIndex((region) => region.id === id);
         const movedRegion = currentAssetMetadata.regions[movedRegionIndex];
@@ -320,7 +319,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
         currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
         this.props.onAssetMetadataChanged(currentAssetMetadata);
-    };
+    }
 
     /**
      * @name onRegionMove
@@ -337,7 +336,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             currentAssetMetadata.asset.state = AssetState.Visited;
         }
         this.props.onAssetMetadataChanged(currentAssetMetadata);
-    };
+    }
 
     /**
      * @name updateEditor
