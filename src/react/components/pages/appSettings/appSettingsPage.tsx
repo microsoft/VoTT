@@ -7,7 +7,7 @@ import { IApplicationState, IAppSettings, IConnection } from "../../../../models
 import Form from "react-jsonschema-form";
 import "./appSettingsPage.scss";
 import { strings, addLocValues } from "../../../../common/strings";
-import ConnectionPicker from "../../common/connectionPicker";
+import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./appSettingsPage.json"));
 // tslint:disable-next-line:no-var-requires

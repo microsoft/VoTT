@@ -8,8 +8,8 @@ import { mount } from "enzyme";
 import { Link } from "react-router-dom";
 import { IApplicationState, IProject, ITag, IExportFormat, IConnection } from "../../../../models/applicationState";
 import IProjectActions from "../../../../redux/actions/projectActions";
-import CondensedList from "../../common/condensedList";
-import FilePicker from "../../common/filePicker";
+import CondensedList from "../../common/condensedList/condensedList";
+import FilePicker from "../../common/filePicker/filePicker";
 
 describe("Connection Picker Component", () => {
     const defaultState: IApplicationState = initialState;

@@ -1,9 +1,9 @@
 import React from "react";
 import Form, { Widget, IChangeEvent, FormValidation } from "react-jsonschema-form";
 import { IConnection } from "../../../../models/applicationState";
-import LocalFolderPicker from "../../common/localFolderPicker";
+import LocalFolderPicker from "../../common/localFolderPicker/localFolderPicker";
 import { strings, addLocValues } from "../../../../common/strings";
-import CustomFieldTemplate from "../../common/customFieldTemplate";
+import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./connectionForm.json"));
 // tslint:disable-next-line:no-var-requires

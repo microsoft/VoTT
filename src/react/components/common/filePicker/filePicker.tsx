@@ -1,6 +1,6 @@
 import React, { SyntheticEvent } from "react";
 import shortid from "shortid";
-import HtmlFileReader from "../../../common/htmlFileReader";
+import HtmlFileReader from "../../../../common/htmlFileReader";
 
 interface IFilePickerProps {
     onChange: (sender: SyntheticEvent, fileText: string | ArrayBuffer) => void;

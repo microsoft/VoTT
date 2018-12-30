@@ -8,7 +8,7 @@ import createReduxStore from "../../../../redux/store/store";
 import initialState from "../../../../redux/store/initialState";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
-import CondensedList from "../../common/condensedList";
+import CondensedList from "../../common/condensedList/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import MockFactory from "../../../../common/mockFactory";

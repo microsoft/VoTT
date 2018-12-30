@@ -4,9 +4,9 @@ import { bindActionCreators } from "redux";
 import "./homePage.scss";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject } from "../../../../models/applicationState";
-import CondensedList from "../../common/condensedList";
+import CondensedList from "../../common/condensedList/condensedList";
 import RecentProjectItem from "./recentProjectItem";
-import FilePicker from "../../common/filePicker";
+import FilePicker from "../../common/filePicker/filePicker";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { strings } from "../../../../common/strings";
 

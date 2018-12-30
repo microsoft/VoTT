@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import ConditionalNavLink from "../common/conditionalNavLink";
+import ConditionalNavLink from "../common/conditionalNavLink/conditionalNavLink";
 import { strings } from "../../../common/strings";
 
 export default function Sidebar({ project }) {
