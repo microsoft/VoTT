@@ -3,7 +3,7 @@ import { Route } from "react-router-dom";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import ConnectionItem from "./connectionItem";
-import CondensedList from "../../common/condensedList";
+import CondensedList from "../../common/condensedList/condensedList";
 import { IApplicationState, IConnection } from "../../../../models/applicationState.js";
 import { RouteComponentProps } from "react-router-dom";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";

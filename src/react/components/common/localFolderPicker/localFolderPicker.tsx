@@ -1,6 +1,6 @@
 import React from "react";
-import { LocalFileSystemProxy } from "../../../providers/storage/localFileSystemProxy";
-import { strings } from "../../../common/strings";
+import { LocalFileSystemProxy } from "../../../../providers/storage/localFileSystemProxy";
+import { strings } from "../../../../common/strings";
 
 interface ILocalFolderPickerProps {
     id?: string;
