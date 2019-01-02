@@ -52,7 +52,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
         return (
             <div>
                 <Modal isOpen={this.state.isOpen} centered={true}>
-                    <ModalHeader toggle={this.props.onCancel} close={closeBtn}>Edit Tag</ModalHeader>
+                    <ModalHeader close={closeBtn}>Edit Tag</ModalHeader>
                     <ModalBody>
                         <Form
                             schema={formSchema}

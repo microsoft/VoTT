@@ -9,9 +9,9 @@ import RecentProjectItem from "./recentProjectItem";
 import FilePicker from "../../common/filePicker/filePicker";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { strings } from "../../../../common/strings";
-import Confirm from "../../common/confirm";
+import Confirm from "../../common/confirm/confirm";
 
-interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
+export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     actions: IProjectActions;
 }

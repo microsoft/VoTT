@@ -10,7 +10,7 @@ import IConnectionActions, * as connectionActions from "../../../../redux/action
 import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
 import { strings } from "../../../../common/strings";
-import Confirm from "../../common/confirm";
+import Confirm from "../../common/confirm/confirm";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];

@@ -44,7 +44,7 @@ export default class Confirm extends React.Component<IConfirmProps, IConfirmStat
             : this.props.message.apply(this, this.state.params);
 
         return (
-            <Modal isOpen={this.state.isOpen}>
+            <Modal className="confirm-modal" isOpen={this.state.isOpen}>
                 <ModalHeader>{this.props.title}</ModalHeader>
                 <ModalBody>{messageText}</ModalBody>
                 <ModalFooter>
