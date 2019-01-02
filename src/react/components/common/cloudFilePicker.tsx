@@ -55,11 +55,11 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
                         {this.state.condensedList}
                     </ModalBody>
                     <ModalFooter>
-                        <div style={{display: 'flex', justifyContent: 'center'}}>
+                        <div style={{display: "flex", justifyContent: "center"}}>
                             <Button onClick={this.handleOk} disabled={this.state.okDisabled}>Ok</Button>
                             <Button onClick={this.handleBack} disabled={this.state.backDisabled}>Go Back</Button>
                         </div>
-                        
+
                     </ModalFooter>
                 </Modal>
             </div>
@@ -67,7 +67,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private async handleOk() {
-        if(this.state.selectedConnection && this.state.selectedFile) {
+        if (this.state.selectedConnection && this.state.selectedFile) {
             const storageProvider = this.getStorageProvider(this.state.selectedConnection);
             const content = await storageProvider.readText(this.state.selectedFile);
             const project: IProject = JSON.parse(content);
@@ -83,7 +83,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
             selectedFile: null,
             okDisabled: true,
             backDisabled: true,
-        })
+        });
     }
 
     private getCondensedList(title: string, items: any[], onClick) {
@@ -96,14 +96,14 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private connectionList() {
-        const connections = this.props.connections
+        const connections = this.props.connections;
         return this.getCondensedList("Connections", connections, (args) => this.onClickConnection(args));
     }
 
     private async onClickConnection(args) {
         const connection: ICloudConnection = {
-            ...args
-        }
+            ...args,
+        };
 
         const fileList = await this.fileList(connection);
         this.setState({

@@ -86,7 +86,7 @@ export interface ICloudStorageOptions {
 }
 
 export interface ICloudConnection extends IConnection {
-    providerOptions: ICloudStorageOptions
+    providerOptions: ICloudStorageOptions;
 }
 
 /**
