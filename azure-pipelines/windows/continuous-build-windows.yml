@@ -14,5 +14,5 @@ steps:
     npm ci  # do a clean install
     npm run compile
 
-    npm run test:coverage # don't watch and just run all the tests
+    npm run test:ci # don't watch and just run all the tests
   displayName: 'Run tests'
