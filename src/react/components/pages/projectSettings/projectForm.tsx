@@ -1,10 +1,10 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { IConnection, IProject } from "../../../../models/applicationState.js";
-import ConnectionPicker from "../../common/connectionPicker";
+import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
-import CustomField from "../../common/customField";
-import CustomFieldTemplate from "../../common/customFieldTemplate";
+import CustomField from "../../common/customField/customField";
+import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { strings, addLocValues } from "../../../../common/strings";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));

@@ -1,15 +1,15 @@
+import { mount } from "enzyme";
 import React from "react";
 import { Provider } from "react-redux";
-import createReduxStore from "../../../../redux/store/store";
-import initialState from "../../../../redux/store/initialState";
-import HomePage from "./homePage";
-import { BrowserRouter as Router } from "react-router-dom";
-import { mount } from "enzyme";
-import { Link } from "react-router-dom";
-import { IApplicationState, IProject, ITag, IExportFormat, IConnection } from "../../../../models/applicationState";
+import { BrowserRouter as Router, Link } from "react-router-dom";
+import MockFactory from "../../../../common/mockFactory";
+import { IApplicationState, IConnection, IExportFormat, IProject, ITag } from "../../../../models/applicationState";
 import IProjectActions from "../../../../redux/actions/projectActions";
-import CondensedList from "../../common/condensedList";
-import FilePicker from "../../common/filePicker";
+import initialState from "../../../../redux/store/initialState";
+import createReduxStore from "../../../../redux/store/store";
+import CondensedList from "../../common/condensedList/condensedList";
+import FilePicker from "../../common/filePicker/filePicker";
+import HomePage from "./homePage";
 
 describe("Connection Picker Component", () => {
     const defaultState: IApplicationState = initialState;
@@ -56,6 +56,7 @@ describe("Connection Picker Component", () => {
                 <Router>
                     <HomePage
                         recentProjects={recentProjects}
+                        connections={MockFactory.createTestConnections()}
                         actions={actions}
                         history={history}
                         location={location}

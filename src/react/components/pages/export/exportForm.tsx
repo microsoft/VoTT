@@ -2,7 +2,7 @@ import React from "react";
 import Form, { FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat } from "../../../../models/applicationState.js";
-import CustomFieldTemplate from "../../common/customFieldTemplate";
+import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
 // tslint:disable-next-line:no-var-requires

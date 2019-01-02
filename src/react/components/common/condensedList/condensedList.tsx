@@ -67,3 +67,14 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
         }
     }
 }
+
+export function ListItem({ item, onClick }) {
+    return (
+        <li>
+            <a onClick={onClick}>
+                <i className="fas"></i>
+                <span className="px-2">{item.name}</span>
+            </a>
+        </li>
+    );
+}

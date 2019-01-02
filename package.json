@@ -4,6 +4,7 @@
   "private": true,
   "main": "build/main.js",
   "dependencies": {
+    "@azure/storage-blob": "^10.3.0",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",
     "deepmerge": "^2.2.1",

@@ -79,6 +79,16 @@ export interface IConnection {
     providerOptions: object;
 }
 
+export interface ICloudStorageOptions {
+    accountName: string;
+    containerName: string;
+    createContainer: boolean;
+}
+
+export interface ICloudConnection extends IConnection {
+    providerOptions: ICloudStorageOptions
+}
+
 /**
  * @name - Export Format
  * @description - Defines the settings for how project data is exported into commonly used format

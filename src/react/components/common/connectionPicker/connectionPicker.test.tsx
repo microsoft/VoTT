@@ -2,7 +2,7 @@ import React from "react";
 import ConnectionPicker from "./connectionPicker";
 import { BrowserRouter as Router } from "react-router-dom";
 import { mount } from "enzyme";
-import { IConnection } from "../../../models/applicationState";
+import { IConnection } from "../../../../models/applicationState";
 
 describe("Connection Picker Component", () => {
     let wrapper: any = null;

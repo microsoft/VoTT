@@ -16,6 +16,7 @@ export interface IAppStrings {
     homePage: {
         newProject: string;
         openProject: string;
+        openCloudProject: string;
         recentProjects: string;
     };
     appSettings: {
