@@ -15,7 +15,7 @@ export interface IAppStrings {
     };
     homePage: {
         newProject: string;
-        openProject: string;
+        openLocalProject: string;
         openCloudProject: string;
         recentProjects: string;
     };

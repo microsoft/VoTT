@@ -35,7 +35,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         this.fileList = this.fileList.bind(this);
         this.onClickFile = this.onClickFile.bind(this);
 
-        this.state = this.getInitialState();        
+        this.state = this.getInitialState();
     }
 
     public render() {
@@ -69,7 +69,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
             selectedFile: null,
             okDisabled: true,
             backDisabled: true,
-        }
+        };
     }
 
     private async handleOk() {

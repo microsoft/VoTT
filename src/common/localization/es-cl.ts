@@ -12,7 +12,7 @@ export const spanish: IAppStrings = {
     },
     homePage: {
         newProject: "Nuevo Proyecto",
-        openProject: "Abrir Proyecto",
+        openLocalProject: "Abrir Proyecto Local",
         openCloudProject: "Abrir Proyecto de la Nube",
         recentProjects: "Proyectos Recientes",
     },
