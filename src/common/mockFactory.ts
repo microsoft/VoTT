@@ -1,5 +1,6 @@
 import { AssetState, AssetType, IApplicationState, IAppSettings,
-    IAsset, IAssetMetadata, IConnection, IExportFormat, IProject, ITag } from "../models/applicationState";
+    IAsset, IAssetMetadata, IConnection, IExportFormat, IProject,
+    ITag, ICloudConnection } from "../models/applicationState";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
@@ -8,6 +9,7 @@ import { IProjectService } from "../services/projectService";
 
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider } from "../providers/storage/assetProvider";
+import { IStorageProvider } from "../providers/storage/storageProvider";
 
 export default class MockFactory {
 
@@ -138,10 +140,12 @@ export default class MockFactory {
 
     public static createTestConnections(count: number = 10): IConnection[] {
         const connections: IConnection[] = [];
-        for (let i = 1; i <= count; i++) {
+        for (let i = 1; i <= (count / 2); i++) {
+            connections.push(MockFactory.createTestCloudConnection(i.toString()));
+        }
+        for (let i = (count / 2) + 1; i <= count; i++) {
             connections.push(MockFactory.createTestConnection(i.toString()));
         }
-
         return connections;
     }
 
@@ -154,6 +158,33 @@ export default class MockFactory {
             providerType,
             providerOptions: {},
         };
+    }
+
+    public static createTestCloudConnection(name: string= "test"): ICloudConnection {
+        const connection = this.createTestConnection(name, "azureBlobStorage");
+        return {
+            ...connection,
+            providerOptions: {
+                accountName: `account-${name}`,
+                containerName: `container-${name}`,
+                createContainer: false,
+            },
+        };
+    }
+
+    public static createStorageProvider(files: string[]): IStorageProvider {
+        return {
+            readText: jest.fn(),
+            readBinary: jest.fn(),
+            deleteFile: jest.fn(),
+            writeText: jest.fn(),
+            writeBinary: jest.fn(),
+            listFiles: jest.fn(() => Promise.resolve(files)),
+            listContainers: jest.fn(),
+            createContainer: jest.fn(),
+            deleteContainer: jest.fn(),
+            getAssets: jest.fn(),
+        }
     }
 
     public static createAssetProvider(): IAssetProvider {

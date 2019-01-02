@@ -72,7 +72,7 @@ describe("Connection Picker Component", () => {
     });
 
     it("should call upload when 'Open Project' is clicked", () => {
-        const fileUpload = wrapper.find("a.file-upload");
+        const fileUpload = wrapper.find("a.file-upload").first();
         const filePicker = wrapper.find(FilePicker);
         const spy = jest.spyOn(filePicker.instance(), "upload");
         fileUpload.simulate("click");

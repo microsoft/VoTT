@@ -5,11 +5,12 @@ import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
 import { IApplicationState, IConnection, IProject } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import { CloudFilePicker } from "../../common/cloudFilePicker";
+import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
 import FilePicker from "../../common/filePicker/filePicker";
 import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
+import { constants } from "../../../../common/constants";
 
 interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -85,7 +86,8 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
                                 isOpen={this.state.cloudPickerOpen}
                                 connections={this.props.connections}
                                 onCancel={this.handleCloseCloudProjectModal}
-                                onSubmit={this.loadSelectedProject}
+                                onSubmit={(content) => this.loadSelectedProject(JSON.parse(content))}
+                                fileExtension={constants.projectFileExtension}
                             />
                         </li>
                     </ul>
