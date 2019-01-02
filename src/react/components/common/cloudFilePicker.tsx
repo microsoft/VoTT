@@ -99,9 +99,19 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         />;
     }
 
+    private isCloudConnection(connection: IConnection) {
+        return "accountName" in connection.providerOptions &&
+                "containerName" in connection.providerOptions
+    }
+
+    private getCloudConnections(connections: IConnection[]): ICloudConnection[] {
+        const cloudConnections = connections.filter(this.isCloudConnection);
+        return cloudConnections as ICloudConnection[];        
+    }
+
     private connectionList() {
-        const connections = this.props.connections;
-        return this.getCondensedList("Connections", connections, (args) => this.onClickConnection(args));
+        const connections = this.getCloudConnections(this.props.connections);
+        return this.getCondensedList("Cloud Connections", connections, (args) => this.onClickConnection(args));
     }
 
     private async onClickConnection(args) {
