@@ -9,6 +9,8 @@ steps:
   displayName: 'Install Node.js'
 
 - bash: | 
+    set -e
+    
     export DISPLAY :99.0
 
     npm ci  # do a clean install
