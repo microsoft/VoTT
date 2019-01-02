@@ -25,25 +25,21 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
 
     constructor(props) {
         super(props);
-        this.state = {
-            modalHeader: "Select a Connection",
-            condensedList: this.connectionList(),
-            selectedConnection: null,
-            selectedFile: null,
-            okDisabled: true,
-            backDisabled: true,
-        };
 
+        this.getInitialState = this.getInitialState.bind(this);
         this.handleOk = this.handleOk.bind(this);
         this.handleBack = this.handleBack.bind(this);
+        this.handleClose = this.handleClose.bind(this);
         this.connectionList = this.connectionList.bind(this);
         this.onClickConnection = this.onClickConnection.bind(this);
         this.fileList = this.fileList.bind(this);
         this.onClickFile = this.onClickFile.bind(this);
+
+        this.state = this.getInitialState();        
     }
 
     public render() {
-        const closeBtn = <button className="close" onClick={this.props.onCancel}>&times;</button>;
+        const closeBtn = <button className="close" onClick={this.handleClose}>&times;</button>;
 
         return(
             <div>
@@ -55,15 +51,25 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
                         {this.state.condensedList}
                     </ModalBody>
                     <ModalFooter>
-                        <div style={{display: "flex", justifyContent: "center"}}>
-                            <Button onClick={this.handleOk} disabled={this.state.okDisabled}>Ok</Button>
-                            <Button onClick={this.handleBack} disabled={this.state.backDisabled}>Go Back</Button>
-                        </div>
+                        {this.state.selectedFile || ""}
+                        <Button onClick={this.handleOk} disabled={this.state.okDisabled}>Ok</Button>
+                        <Button onClick={this.handleBack} disabled={this.state.backDisabled}>Go Back</Button>
 
                     </ModalFooter>
                 </Modal>
             </div>
         );
+    }
+
+    private getInitialState(): ICloudFilePickerState {
+        return {
+            modalHeader: "Select a Connection",
+            condensedList: this.connectionList(),
+            selectedConnection: null,
+            selectedFile: null,
+            okDisabled: true,
+            backDisabled: true,
+        }
     }
 
     private async handleOk() {
@@ -76,14 +82,12 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private handleBack() {
-        this.setState({
-            modalHeader: "Select a Connection",
-            condensedList: this.connectionList(),
-            selectedConnection: null,
-            selectedFile: null,
-            okDisabled: true,
-            backDisabled: true,
-        });
+        this.setState(this.getInitialState());
+    }
+
+    private handleClose() {
+        this.setState(this.getInitialState());
+        this.props.onCancel();
     }
 
     private getCondensedList(title: string, items: any[], onClick) {
@@ -104,7 +108,6 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         const connection: ICloudConnection = {
             ...args,
         };
-
         const fileList = await this.fileList(connection);
         this.setState({
             selectedConnection: connection,
