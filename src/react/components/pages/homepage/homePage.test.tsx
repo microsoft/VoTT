@@ -41,7 +41,7 @@ describe("Connection Picker Component", () => {
         const props = createProps();
         const wrapper = createComponent(store, props);
         const fileUpload = wrapper.find("a.file-upload");
-        const filePicker = wrapper.find(FilePicker);
+        const filePicker = wrapper.find(FilePicker) as ReactWrapper<{}, {}, FilePicker>;
         const spy = jest.spyOn(filePicker.instance(), "upload");
         fileUpload.simulate("click");
         expect(spy).toBeCalled();

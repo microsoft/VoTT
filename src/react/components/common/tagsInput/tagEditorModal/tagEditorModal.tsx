@@ -23,7 +23,7 @@ export interface ITagEditorModalProps {
     tag: ITag;
     showModal: boolean;
     onOk: (tag: ITag) => void;
-    onCancel: (value) => void;
+    onCancel: () => void;
 }
 
 export interface ITagEditorModalState {
@@ -52,7 +52,7 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
         return (
             <div>
                 <Modal isOpen={this.state.isOpen} centered={true}>
-                    <ModalHeader close={closeBtn}>Edit Tag</ModalHeader>
+                    <ModalHeader toggle={this.props.onCancel} close={closeBtn}>Edit Tag</ModalHeader>
                     <ModalBody>
                         <Form
                             schema={formSchema}
