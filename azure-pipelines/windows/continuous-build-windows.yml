@@ -11,7 +11,7 @@ steps:
 - bash: | 
     set -e
     
-    export DISPLAY :99.0
+    export DISPLAY=:99.0
 
     npm ci  # do a clean install
     npm run compile
