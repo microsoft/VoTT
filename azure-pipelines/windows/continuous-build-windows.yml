@@ -8,13 +8,11 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- script: |
-    
-    setx DISPLAY :99.0
+- bash: | 
+    export DISPLAY :99.0
 
     npm ci  # do a clean install
     npm run compile
 
-    setx CI true
-    npm run test # don't watch and just run all the tests
+    npm run test:ci # don't watch and just run all the tests
   displayName: 'Run tests'
