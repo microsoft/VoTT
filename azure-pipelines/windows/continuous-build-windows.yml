@@ -14,6 +14,5 @@ steps:
     npm ci  # do a clean install
     npm run compile
 
-    export CI=true
-    npm run test # don't watch and just run all the tests
+    npm run test:ci # don't watch and just run all the tests
   displayName: 'Run tests'
