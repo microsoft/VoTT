@@ -69,7 +69,7 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
                         <li>
                             <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
                                 <i className="fas fa-folder-open fa-9x"></i>
-                                <h6>{strings.homePage.openProject}</h6>
+                                <h6>{strings.homePage.openLocalProject}</h6>
                             </a>
                             <FilePicker ref={this.filePicker}
                                 onChange={this.onProjectFileUpload}
