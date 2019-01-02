@@ -55,7 +55,6 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
         this.handleOpenCloudProjectClick = this.handleOpenCloudProjectClick.bind(this);
         this.handleCloseCloudProjectModal = this.handleCloseCloudProjectModal.bind(this);
 
-
         this.props.actions.closeProject();
     }
 
@@ -115,7 +114,7 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
 
     private handleOpenCloudProjectClick() {
         this.setState({
-            cloudPickerOpen: true
+            cloudPickerOpen: true,
         });
     }
 

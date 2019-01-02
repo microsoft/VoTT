@@ -98,7 +98,7 @@ export class AzureBlobStorage implements IStorageProvider {
                     );
                     marker = listBlobsResponse.nextMarker;
                     for (const blob of listBlobsResponse.segment.blobItems) {
-                        if((ext && blob.name.endsWith(ext)) || !ext){
+                        if ((ext && blob.name.endsWith(ext)) || !ext) {
                             result.push(blob.name);
                         }
                     }

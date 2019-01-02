@@ -1,3 +1,3 @@
 export const constants = {
-    projectFileExtension: ".json"
-}
+    projectFileExtension: ".json",
+};
