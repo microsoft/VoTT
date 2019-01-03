@@ -1,3 +1,5 @@
 export const constants = {
-    projectFileExtension: ".json",
+    projectFileExtension: ".vott",
+    assetMetadataFileExtension: "-asset.json",
+    exportFileExtension: "-export.json",
 };

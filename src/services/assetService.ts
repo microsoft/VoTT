@@ -3,6 +3,7 @@ import Guard from "../common/guard";
 import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProvider";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProvider";
+import { constants } from "../common/constants";
 
 export class AssetService {
     public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
@@ -84,7 +85,7 @@ export class AssetService {
     public async save(metadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(metadata);
 
-        const fileName = `${metadata.asset.id}.json`;
+        const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
         await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
 
         return metadata;
@@ -93,7 +94,7 @@ export class AssetService {
     public async getAssetMetadata(asset: IAsset): Promise<IAssetMetadata> {
         Guard.null(asset);
 
-        const fileName = `${asset.id}.json`;
+        const fileName = `${asset.id}${constants.assetMetadataFileExtension}`;
         try {
             const json = await this.storageProvider.readText(fileName);
             return JSON.parse(json) as IAssetMetadata;
