@@ -3,6 +3,7 @@ import { AssetType, IAssetMetadata } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProvider";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProvider";
+import { constants } from "../common/constants";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
@@ -114,7 +115,7 @@ describe("Asset Service", () => {
             const result = await assetService.save(assetMetadata);
 
             expect(storageProviderMock.writeText).toBeCalledWith(
-                `${assetMetadata.asset.id}.json`,
+                `${assetMetadata.asset.id}${constants.assetMetadataFileExtension}`,
                 JSON.stringify(assetMetadata, null, 4),
             );
             expect(result).toBe(assetMetadata);
