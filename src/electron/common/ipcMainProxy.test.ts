@@ -4,7 +4,7 @@ import path from "path";
 import LocalFileSystem from "../providers/storage/localFileSystem";
 import { IpcMainProxy } from "./ipcMainProxy";
 
-fdescribe("IpcMainProxy", () => {
+describe("IpcMainProxy", () => {
     let proxy: IpcMainProxy = null;
 
     beforeEach(() => {

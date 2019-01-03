@@ -31,9 +31,9 @@ describe("Html File Reader", () => {
                 onloadedmetadata: jest.fn(),
             };
 
-            setTimeout(() => {
+            setImmediate(() => {
                 element.onloadedmetadata();
-            }, 100);
+            });
 
             return element;
         });
@@ -59,9 +59,9 @@ describe("Html File Reader", () => {
                 onload: jest.fn(),
             };
 
-            setTimeout(() => {
+            setImmediate(() => {
                 element.onload();
-            }, 100);
+            });
 
             return element;
         });
