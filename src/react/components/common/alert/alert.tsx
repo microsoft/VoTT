@@ -52,7 +52,6 @@ export default class Alert extends React.Component<IAlertProps, IAlertState> {
     }
 
     private onCloseClick() {
-        this.close();
         if (this.props.onClose) {
             this.props.onClose.apply(null, this.state.params);
         }

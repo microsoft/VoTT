@@ -60,12 +60,10 @@ export default class Confirm extends React.Component<IConfirmProps, IConfirmStat
     }
 
     private onConfirmClick() {
-        this.close();
         this.props.onConfirm.apply(null, this.state.params);
     }
 
     private onCancelClick() {
-        this.close();
         if (this.props.onCancel) {
             this.props.onCancel.apply(null, this.state.params);
         }

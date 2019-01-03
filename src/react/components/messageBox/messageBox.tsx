@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 export type MessageFormatHandler = (...params: any[]) => string;
@@ -23,6 +23,7 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
 
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
+        this.onFooterClick = this.onFooterClick.bind(this);
     }
 
     public render() {
@@ -38,7 +39,7 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
             <Modal className="confirm-modal" isOpen={this.state.isOpen}>
                 <ModalHeader>{this.props.title}</ModalHeader>
                 <ModalBody>{messageText}</ModalBody>
-                <ModalFooter>
+                <ModalFooter onClick={this.onFooterClick}>
                     {this.props.children}
                 </ModalFooter>
             </Modal>
@@ -55,5 +56,12 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
         this.setState({
             isOpen: false,
         });
+    }
+
+    private onFooterClick(evt: SyntheticEvent) {
+        const htmlElement = evt.target as Element;
+        if (htmlElement.tagName === "BUTTON") {
+            this.close();
+        }
     }
 }
