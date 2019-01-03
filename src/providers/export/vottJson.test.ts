@@ -11,6 +11,7 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
+import { constants } from "../../common/constants";
 
 describe("VoTT Json Export Provider", () => {
     const testProject: IProject = {
@@ -93,7 +94,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith("Test-Project-export.json", expect.any(String));
+                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -114,7 +115,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith("Test-Project-export.json", expect.any(String));
+                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
         });
 
         it("Exports only tagged assets", async () => {
@@ -134,7 +135,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith("Test-Project-export.json", expect.any(String));
+                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
         });
     });
 });
