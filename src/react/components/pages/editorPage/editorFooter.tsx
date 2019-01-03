@@ -26,9 +26,14 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
                 <TagsInput
                     tags={this.state.tags}
                     onChange={this.onTagsChanged}
+                    onTagClick={this.onTagClick}
                 />
             </div>
         );
+    }
+
+    private onTagClick(tag: ITag){
+
     }
 
     private onTagsChanged(tags) {
