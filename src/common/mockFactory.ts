@@ -174,7 +174,7 @@ export default class MockFactory {
 
     public static createStorageProvider(files: string[]): IStorageProvider {
         return {
-            readText: jest.fn(),
+            readText: jest.fn(() => Promise.resolve("Fake text")),
             readBinary: jest.fn(),
             deleteFile: jest.fn(),
             writeText: jest.fn(),
@@ -184,7 +184,7 @@ export default class MockFactory {
             createContainer: jest.fn(),
             deleteContainer: jest.fn(),
             getAssets: jest.fn(),
-        }
+        };
     }
 
     public static createAssetProvider(): IAssetProvider {

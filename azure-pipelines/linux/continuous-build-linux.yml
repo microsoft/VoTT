@@ -3,7 +3,7 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 steps:
-- script: |
+- bash: |
     set -e
     
     sudo apt-get update
@@ -19,7 +19,7 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
-- script: |
+- bash: |
     set -e
 
     export DISPLAY=:99.0

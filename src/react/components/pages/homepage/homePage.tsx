@@ -7,12 +7,13 @@ import { IApplicationState, IConnection, IProject } from "../../../../models/app
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
+import Confirm from "../../common/confirm/confirm";
 import FilePicker from "../../common/filePicker/filePicker";
 import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 
-interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
+export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
@@ -38,6 +39,7 @@ function mapDispatchToProps(dispatch) {
 @connect(mapStateToProps, mapDispatchToProps)
 export default class HomePage extends React.Component<IHomepageProps, IHomepageState> {
     private filePicker: React.RefObject<FilePicker>;
+    private deleteConfirm: React.RefObject<Confirm>;
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
@@ -47,6 +49,7 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
         };
 
         this.filePicker = React.createRef<FilePicker>();
+        this.deleteConfirm = React.createRef<Confirm>();
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
         this.deleteProject = this.deleteProject.bind(this);
@@ -99,9 +102,14 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
                             Component={RecentProjectItem}
                             items={this.props.recentProjects}
                             onClick={this.loadSelectedProject}
-                            onDelete={this.deleteProject} />
+                            onDelete={(project) => this.deleteConfirm.current.open(project)} />
                     </div>
                 }
+                <Confirm title="Delete Project"
+                    ref={this.deleteConfirm}
+                    message={(project: IProject) => `Are you sure you want to delete project '${project.name}'?`}
+                    confirmButtonColor="danger"
+                    onConfirm={this.deleteProject} />
             </div>
         );
     }
