@@ -10,6 +10,7 @@ import FilePicker from "../../common/filePicker/filePicker";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { strings } from "../../../../common/strings";
 import Confirm from "../../common/confirm/confirm";
+import Alert from "../../common/alert/alert";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -32,11 +33,13 @@ function mapDispatchToProps(dispatch) {
 export default class HomePage extends React.Component<IHomepageProps> {
     private filePicker: React.RefObject<FilePicker>;
     private deleteConfirm: React.RefObject<Confirm>;
+    private alert: React.RefObject<Alert>;
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
 
         this.filePicker = React.createRef<FilePicker>();
+        this.alert = React.createRef<Alert>();
         this.deleteConfirm = React.createRef<Confirm>();
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
@@ -64,6 +67,16 @@ export default class HomePage extends React.Component<IHomepageProps> {
                             <FilePicker ref={this.filePicker}
                                 onChange={this.onProjectFileUpload}
                                 onError={this.onProjectFileUploadError} />
+                        </li>
+                        <li>
+                            <a href="#" onClick={() => this.alert.current.open()} className="p-5 file-upload">
+                                <i className="fas fa-cloud fa-9x"></i>
+                                <h6>Alert Test</h6>
+                            </a>
+                            <Alert title="Title"
+                                closeButtonColor="success"
+                                message={() => Date.now().toString()}
+                                ref={this.alert} />
                         </li>
                     </ul>
                 </div>
