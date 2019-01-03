@@ -22,6 +22,11 @@ export interface ICloudFilePickerState {
     backDisabled: boolean;
 }
 
+export function isCloudConnection(connection: IConnection): boolean {
+    return "accountName" in connection.providerOptions &&
+            "containerName" in connection.providerOptions;
+}
+
 export class CloudFilePicker extends React.Component<ICloudFilePickerProps, ICloudFilePickerState> {
 
     constructor(props) {
@@ -53,8 +58,17 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
                     </ModalBody>
                     <ModalFooter>
                         {this.state.selectedFile || ""}
-                        <Button onClick={this.handleOk} disabled={this.state.okDisabled}>Ok</Button>
-                        <Button onClick={this.handleBack} disabled={this.state.backDisabled}>Go Back</Button>
+                        <Button
+                            className="btn btn-success mr-1"
+                            onClick={this.handleOk}
+                            disabled={this.state.okDisabled}>
+                            Ok
+                        </Button>
+                        <Button
+                            onClick={this.handleBack}
+                            disabled={this.state.backDisabled}>
+                            Go Back
+                        </Button>
 
                     </ModalFooter>
                 </Modal>
@@ -99,13 +113,8 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         />;
     }
 
-    private isCloudConnection(connection: IConnection) {
-        return "accountName" in connection.providerOptions &&
-                "containerName" in connection.providerOptions;
-    }
-
     private getCloudConnections(connections: IConnection[]): ICloudConnection[] {
-        const cloudConnections = connections.filter(this.isCloudConnection);
+        const cloudConnections = connections.filter(isCloudConnection);
         return cloudConnections as ICloudConnection[];
     }
 
@@ -147,7 +156,6 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private onClickFile(args) {
-        // TODO this is a connection, not a filename
         const fileName = args.name;
         this.setState({
             selectedFile: fileName,
