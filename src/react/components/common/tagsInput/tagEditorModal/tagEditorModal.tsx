@@ -1,23 +1,10 @@
 import React from "react";
 import Form from "react-jsonschema-form";
-import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import { addLocValues } from "../../../../../common/strings";
 import { ITag } from "../../../../../models/applicationState";
-import ModalFooter from "reactstrap/lib/ModalFooter";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./tagEditorModal.json"));
-
-const customStyles = {
-    content: {
-        top: "50%",
-        left: "50%",
-        right: "auto",
-        bottom: "auto",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 200,
-    },
-};
 
 export interface ITagEditorModalProps {
     tag: ITag;

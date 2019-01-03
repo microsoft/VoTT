@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, remote } from "electron";
+import { BrowserWindow, dialog } from "electron";
 import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
