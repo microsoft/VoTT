@@ -1,8 +1,8 @@
 import { mount } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
 import { CloudFilePicker, ICloudFilePickerProps, isCloudConnection } from "./cloudFilePicker";
-import { IStorageProvider, StorageProviderFactory } from "../../../../providers/storage/storageProvider";
 
 describe("CloudFilePicker", () => {
     function createComponent(props: ICloudFilePickerProps) {

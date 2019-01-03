@@ -1,9 +1,8 @@
 import React from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { IConnection, ICloudConnection, IProject } from "../../../../models/applicationState";
+import { ICloudConnection, IConnection } from "../../../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../../../../providers/storage/storageProvider";
 import CondensedList, { ListItem } from "../condensedList/condensedList";
-import { constants } from "../../../../common/constants";
 
 export interface ICloudFilePickerProps {
     isOpen: boolean;
