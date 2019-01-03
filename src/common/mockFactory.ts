@@ -145,7 +145,8 @@ export default class MockFactory {
         return connections;
     }
 
-    public static createTestConnection(name: string, providerType: string = "localFileSystemProxy"): IConnection {
+    public static createTestConnection(
+        name: string= "test", providerType: string = "localFileSystemProxy"): IConnection {
         return {
             id: `connection-${name}`,
             name: `Connection ${name}`,

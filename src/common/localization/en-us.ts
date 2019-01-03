@@ -13,6 +13,7 @@ export const english: IAppStrings = {
     homePage: {
         newProject: "New Project",
         openProject: "Open Project",
+        openCloudProject: "Open Cloud Project",
         recentProjects: "Recent Projects",
     },
     appSettings: {

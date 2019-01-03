@@ -1,24 +1,31 @@
 import React from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import "./homePage.scss";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import { IApplicationState, IProject } from "../../../../models/applicationState";
-import CondensedList from "../../common/condensedList/condensedList";
-import RecentProjectItem from "./recentProjectItem";
-import FilePicker from "../../common/filePicker/filePicker";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
+import { IApplicationState, IConnection, IProject } from "../../../../models/applicationState";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import { CloudFilePicker } from "../../common/cloudFilePicker";
+import CondensedList from "../../common/condensedList/condensedList";
 import Confirm from "../../common/confirm/confirm";
+import FilePicker from "../../common/filePicker/filePicker";
+import "./homePage.scss";
+import RecentProjectItem from "./recentProjectItem";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
+    connections: IConnection[];
     actions: IProjectActions;
+}
+
+interface IHomepageState {
+    cloudPickerOpen: boolean;
 }
 
 function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
+        connections: state.connections,
     };
 }
 
@@ -29,18 +36,25 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class HomePage extends React.Component<IHomepageProps> {
+export default class HomePage extends React.Component<IHomepageProps, IHomepageState> {
     private filePicker: React.RefObject<FilePicker>;
     private deleteConfirm: React.RefObject<Confirm>;
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
 
+        this.state = {
+            cloudPickerOpen: false,
+        };
+
         this.filePicker = React.createRef<FilePicker>();
         this.deleteConfirm = React.createRef<Confirm>();
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
         this.deleteProject = this.deleteProject.bind(this);
+        this.handleOpenCloudProjectClick = this.handleOpenCloudProjectClick.bind(this);
+        this.handleCloseCloudProjectModal = this.handleCloseCloudProjectModal.bind(this);
+
 
         this.props.actions.closeProject();
     }
@@ -65,6 +79,19 @@ export default class HomePage extends React.Component<IHomepageProps> {
                                 onChange={this.onProjectFileUpload}
                                 onError={this.onProjectFileUploadError} />
                         </li>
+                        <li>
+                            {/*Open Cloud Project*/}
+                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5 file-upload">
+                                <i className="fas fa-cloud fa-9x"></i>
+                                <h6>{strings.homePage.openCloudProject}</h6>
+                            </a>
+                            <CloudFilePicker
+                                isOpen={this.state.cloudPickerOpen}
+                                connections={this.props.connections}
+                                onCancel={this.handleCloseCloudProjectModal}
+                                onSubmit={this.loadSelectedProject}
+                            />
+                        </li>
                     </ul>
                 </div>
                 {(this.props.recentProjects && this.props.recentProjects.length > 0) &&
@@ -86,6 +113,18 @@ export default class HomePage extends React.Component<IHomepageProps> {
         );
     }
 
+    private handleOpenCloudProjectClick() {
+        this.setState({
+            cloudPickerOpen: true
+        });
+    }
+
+    private handleCloseCloudProjectModal() {
+        this.setState({
+            cloudPickerOpen: false,
+        });
+    }
+
     private onProjectFileUpload = (e, projectJson) => {
         const project: IProject = JSON.parse(projectJson);
         this.loadSelectedProject(project);
@@ -103,4 +142,5 @@ export default class HomePage extends React.Component<IHomepageProps> {
     private deleteProject = async (project: IProject) => {
         await this.props.actions.deleteProject(project);
     }
+
 }

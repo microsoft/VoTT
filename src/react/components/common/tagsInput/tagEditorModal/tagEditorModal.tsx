@@ -7,18 +7,6 @@ import "./tagEditorModal.scss";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./tagEditorModal.json"));
 
-const customStyles = {
-    content : {
-      top                   : "50%",
-      left                  : "50%",
-      right                 : "auto",
-      bottom                : "auto",
-      marginRight           : "-50%",
-      transform             : "translate(-50%, -50%)",
-      zIndex                : 200,
-    },
-  };
-
 export interface ITagEditorModalProps {
     tag: ITag;
     showModal: boolean;
