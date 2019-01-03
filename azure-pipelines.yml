@@ -30,3 +30,4 @@ jobs:
   - checkout: self # self represents the repo where the initial Pipelines YAML file was found
     fetchDepth: 1  # the depth of commits to ask Git to fetch
   - template: azure-pipelines/windows/continuous-build-windows.yml
+
