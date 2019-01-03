@@ -23,7 +23,7 @@ export interface ITagEditorModalProps {
     tag: ITag;
     showModal: boolean;
     onOk: (tag: ITag) => void;
-    onCancel: (value) => void;
+    onCancel: () => void;
 }
 
 export interface ITagEditorModalState {

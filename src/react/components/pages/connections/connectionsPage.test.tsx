@@ -45,7 +45,6 @@ describe("Connections Page", () => {
 
         const page = connectionsPage.find(".app-connections-page");
         expect(page.exists()).toBe(true);
-        expect(page.children()).toHaveLength(3);
     });
 
     describe("without any connections", () => {
@@ -230,6 +229,9 @@ describe("Connections Page", () => {
             const deleteButton = toDelete.find(".delete-btn");
             deleteButton.simulate("click");
 
+            // Accept the modal delete warning
+            wrapper.find(".confirm-modal button").first().simulate("click");
+
             expect(deleteConnection).toBeCalled();
         });
 
@@ -255,6 +257,9 @@ describe("Connections Page", () => {
             const toDelete = items.first();
             const deleteButton = toDelete.find(".delete-btn");
             deleteButton.simulate("click");
+
+            // Accept the modal delete warning
+            wrapper.find(".confirm-modal button").first().simulate("click");
 
             setImmediate(() => {
                 expect(historyPushSpy).toBeCalledWith("/connections");

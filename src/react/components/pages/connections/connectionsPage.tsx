@@ -10,6 +10,7 @@ import IConnectionActions, * as connectionActions from "../../../../redux/action
 import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
 import { strings } from "../../../../common/strings";
+import Confirm from "../../common/confirm/confirm";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
@@ -34,6 +35,8 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ConnectionPage extends React.Component<IConnectionPageProps, IConnectionPageState> {
+    private confirmDelete: React.RefObject<Confirm>;
+
     constructor(props, context) {
         super(props, context);
 
@@ -41,6 +44,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
             connection: null,
         };
 
+        this.confirmDelete = React.createRef<Confirm>();
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onFormCancel = this.onFormCancel.bind(this);
         this.onConnectionDelete = this.onConnectionDelete.bind(this);
@@ -69,10 +73,17 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                     <CondensedList
                         title={strings.connections.title}
                         newLinkTo={"/connections/create"}
-                        onDelete={this.onConnectionDelete}
+                        onDelete={(connection) => this.confirmDelete.current.open(connection)}
                         Component={ConnectionItem}
                         items={this.props.connections} />
                 </div>
+
+                <Confirm ref={this.confirmDelete}
+                    title="Delete Connection"
+                    // tslint:disable-next-line:max-line-length
+                    message={(connection: IConnection) => `Are you sure you want to delete the connection '${connection.name}'?`}
+                    confirmButtonColor="danger"
+                    onConfirm={(connection) => this.onConnectionDelete(connection)} />
 
                 <Route exact path="/connections" render={(props) =>
                     <div className="app-connections-page-detail m-3 text-light">
