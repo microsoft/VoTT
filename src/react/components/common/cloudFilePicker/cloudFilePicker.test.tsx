@@ -2,7 +2,7 @@ import { mount } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
-import { CloudFilePicker, ICloudFilePickerProps, isCloudConnection } from "./cloudFilePicker";
+import { CloudFilePicker, ICloudFilePickerProps } from "./cloudFilePicker";
 
 describe("CloudFilePicker", () => {
     function createComponent(props: ICloudFilePickerProps) {
@@ -79,15 +79,6 @@ describe("CloudFilePicker", () => {
         expect(state.selectedConnection).toEqual(connections[0]);
         expect(wrapper.find("a")).toHaveLength(mockFiles.length);
     });
-
-    function wrapInPromise(fn): Promise<void> {
-        return new Promise((resolve, reject) => {
-            setImmediate(() => {
-                fn();
-                resolve();
-            });
-        });
-    }
 
     it("sets selected file and displays in footer", async () => {
         const mockStorageProvider = MockFactory.createStorageProvider(mockFiles);
@@ -213,13 +204,12 @@ describe("CloudFilePicker", () => {
         expect(onSubmit).toBeCalledWith(await mockStorageProvider.readText(mockFiles[0]));
     });
 
-    it("knows the difference between cloud connection and normal connection", () => {
-        const connections = MockFactory.createTestConnections();
-        for (let i = 0; i < (connections.length / 2); i++) {
-            expect(isCloudConnection(connections[i])).toBe(true);
-        }
-        for (let i = (connections.length / 2); i < connections.length; i++) {
-            expect(isCloudConnection(connections[i])).toBe(false);
-        }
-    });
+    function wrapInPromise(fn): Promise<void> {
+        return new Promise((resolve, reject) => {
+            setImmediate(() => {
+                fn();
+                resolve();
+            });
+        });
+    }
 });

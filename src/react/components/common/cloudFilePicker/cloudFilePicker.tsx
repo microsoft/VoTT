@@ -1,8 +1,9 @@
 import React from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { ICloudConnection, IConnection } from "../../../../models/applicationState";
+import { StorageType, IConnection } from "../../../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../../../../providers/storage/storageProvider";
 import CondensedList, { ListItem } from "../condensedList/condensedList";
+import { strings } from "../../../../common/strings";
 
 export interface ICloudFilePickerProps {
     isOpen: boolean;
@@ -15,15 +16,10 @@ export interface ICloudFilePickerProps {
 export interface ICloudFilePickerState {
     modalHeader: string;
     condensedList: any;
-    selectedConnection: ICloudConnection;
+    selectedConnection: IConnection;
     selectedFile: string;
     okDisabled: boolean;
     backDisabled: boolean;
-}
-
-export function isCloudConnection(connection: IConnection): boolean {
-    return "accountName" in connection.providerOptions &&
-            "containerName" in connection.providerOptions;
 }
 
 export class CloudFilePicker extends React.Component<ICloudFilePickerProps, ICloudFilePickerState> {
@@ -68,7 +64,6 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
                             disabled={this.state.backDisabled}>
                             Go Back
                         </Button>
-
                     </ModalFooter>
                 </Modal>
             </div>
@@ -77,7 +72,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
 
     private getInitialState(): ICloudFilePickerState {
         return {
-            modalHeader: "Select a Connection",
+            modalHeader: strings.homePage.openCloudProject.selectConnection,
             condensedList: this.connectionList(),
             selectedConnection: null,
             selectedFile: null,
@@ -112,9 +107,8 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         />;
     }
 
-    private getCloudConnections(connections: IConnection[]): ICloudConnection[] {
-        const cloudConnections = connections.filter(isCloudConnection);
-        return cloudConnections as ICloudConnection[];
+    private getCloudConnections(connections: IConnection[]): IConnection[] {
+        return connections.filter((connection) => connection.connectionType === StorageType.CLOUD);
     }
 
     private connectionList() {
@@ -123,7 +117,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private async onClickConnection(args) {
-        const connection: ICloudConnection = {
+        const connection: IConnection = {
             ...args,
         };
         const fileList = await this.fileList(connection);
@@ -135,10 +129,10 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         });
     }
 
-    private async fileList(connection: ICloudConnection) {
+    private async fileList(connection: IConnection) {
         const storageProvider = this.getStorageProvider(connection);
         const files = await storageProvider.listFiles(
-            connection.providerOptions.containerName,
+            connection.providerOptions["containerName"],
             this.props.fileExtension);
         const fileItems = [];
         for (let i = 0; i < files.length; i++) {
@@ -160,10 +154,9 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
             selectedFile: fileName,
             okDisabled: false,
         });
-
     }
 
-    private getStorageProvider(connection: ICloudConnection): IStorageProvider {
+    private getStorageProvider(connection: IConnection): IStorageProvider {
         return StorageProviderFactory.create(
             connection.providerType,
             connection.providerOptions,

@@ -73,7 +73,7 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
                         <li>
                             <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
                                 <i className="fas fa-folder-open fa-9x"></i>
-                                <h6>{strings.homePage.openLocalProject}</h6>
+                                <h6>{strings.homePage.openLocalProject.title}</h6>
                             </a>
                             <FilePicker ref={this.filePicker}
                                 onChange={this.onProjectFileUpload}
@@ -81,9 +81,9 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
                         </li>
                         <li>
                             {/*Open Cloud Project*/}
-                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5 file-upload">
+                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5">
                                 <i className="fas fa-cloud fa-9x"></i>
-                                <h6>{strings.homePage.openCloudProject}</h6>
+                                <h6>{strings.homePage.openCloudProject.title}</h6>
                             </a>
                             <CloudFilePicker
                                 isOpen={this.state.cloudPickerOpen}
@@ -107,7 +107,7 @@ export default class HomePage extends React.Component<IHomepageProps, IHomepageS
                 }
                 <Confirm title="Delete Project"
                     ref={this.deleteConfirm}
-                    message={(project: IProject) => `Are you sure you want to delete project '${project.name}'?`}
+                    message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} '${project.name}'?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
             </div>

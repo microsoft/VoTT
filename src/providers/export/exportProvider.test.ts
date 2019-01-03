@@ -1,31 +1,11 @@
 import { ExportProvider } from "./exportProvider";
 import { IProject } from "../../models/applicationState";
 import { ExportProviderFactory } from "./exportProviderFactory";
+import MockFactory from "../../common/mockFactory"
 import registerProviders from "../../registerProviders";
 
 describe("Export Provider Base", () => {
-    const testProject: IProject = {
-        id: "1",
-        name: "Test Project",
-        autoSave: true,
-        exportFormat: {
-            providerType: "json",
-            providerOptions: {},
-        },
-        sourceConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        targetConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        tags: [],
-    };
+    const testProject: IProject = MockFactory.createTestProject();
 
     it("initializes the asset and storage providers", () => {
         registerProviders();

@@ -15,9 +15,7 @@ import { constants } from "../../common/constants";
 
 describe("VoTT Json Export Provider", () => {
     const testProject: IProject = {
-        id: "1",
-        name: "Test Project",
-        autoSave: true,
+        ...MockFactory.createTestProject(),
         assets: {
             "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
             "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
@@ -28,20 +26,7 @@ describe("VoTT Json Export Provider", () => {
             providerType: "json",
             providerOptions: {},
         },
-        sourceConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        targetConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        tags: [],
-    };
+    }
 
     beforeEach(() => {
         registerProviders();

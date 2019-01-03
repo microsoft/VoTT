@@ -1,11 +1,14 @@
 import { IStorageProvider } from "./storageProvider";
-import { IAsset, AssetType, ICloudStorageOptions } from "../../models/applicationState";
+import { IAsset, AssetType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import { TokenCredential, AnonymousCredential,
     ContainerURL, StorageURL, ServiceURL, Credential, Aborter,
     BlobURL, BlockBlobURL } from "@azure/storage-blob";
 
-export interface IAzureCloudStorageOptions extends ICloudStorageOptions {
+export interface IAzureCloudStorageOptions {
+    accountName: string;
+    containerName: string;
+    createContainer: boolean;
     oauthToken?: string;
     sas?: string;
 }

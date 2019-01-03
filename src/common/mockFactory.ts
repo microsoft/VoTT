@@ -1,15 +1,14 @@
-import { AssetState, AssetType, IApplicationState, IAppSettings,
-    IAsset, IAssetMetadata, IConnection, IExportFormat, IProject,
-    ITag, ICloudConnection } from "../models/applicationState";
+import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
+    IAssetMetadata, IConnection, IExportFormat, IProject, ITag } from "../models/applicationState";
+import { ExportAssetState } from "../providers/export/exportProvider";
+import { IAssetProvider } from "../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
+import { IStorageProvider } from "../providers/storage/storageProvider";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
-
-import { ExportAssetState } from "../providers/export/exportProvider";
-import { IAssetProvider } from "../providers/storage/assetProvider";
-import { IStorageProvider } from "../providers/storage/storageProvider";
+import { getStorageType } from "../models/helpers";
 
 export default class MockFactory {
 
@@ -54,7 +53,7 @@ export default class MockFactory {
         return projects;
     }
 
-    public static createTestProject(name: string): IProject {
+    public static createTestProject(name: string="test"): IProject {
         const connection = MockFactory.createTestConnection(name);
 
         return {
@@ -156,11 +155,12 @@ export default class MockFactory {
             name: `Connection ${name}`,
             description: `Description for Connection ${name}`,
             providerType,
+            connectionType: getStorageType(providerType),
             providerOptions: {},
         };
     }
 
-    public static createTestCloudConnection(name: string= "test"): ICloudConnection {
+    public static createTestCloudConnection(name: string= "test"): IConnection {
         const connection = this.createTestConnection(name, "azureBlobStorage");
         return {
             ...connection,

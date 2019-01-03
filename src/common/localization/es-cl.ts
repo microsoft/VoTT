@@ -12,9 +12,18 @@ export const spanish: IAppStrings = {
     },
     homePage: {
         newProject: "Nuevo Proyecto",
-        openLocalProject: "Abrir Proyecto Local",
-        openCloudProject: "Abrir Proyecto de la Nube",
         recentProjects: "Proyectos Recientes",
+        openLocalProject: {
+            title: "Abrir Proyecto Local",
+        },
+        openCloudProject: {
+            title: "Abrir Proyecto de la Nube",
+            selectConnection: "Select a Connection",
+        },
+        deleteProject: {
+            title: "Borrar Proyecto",
+            confirmation: "¿Está seguro que quiere borrar el proyecto",
+        },
     },
     appSettings: {
         title: "Configuración de Aplicación",
