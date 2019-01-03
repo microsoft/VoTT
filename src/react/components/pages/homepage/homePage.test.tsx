@@ -17,6 +17,10 @@ jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 
 describe("Connection Picker Component", () => {
+    let store: Store<IApplicationState> = null;
+    let props: IHomepageProps = null;
+    let wrapper: ReactWrapper<IHomepageProps> = null;
+    let deleteProjectSpy: jest.SpyInstance = null;
     const recentProjects = MockFactory.createTestProjects(2);
 
     function createComponent(store, props: IHomepageProps): ReactWrapper<IHomepageProps> {
@@ -29,17 +33,22 @@ describe("Connection Picker Component", () => {
         );
     }
 
+    beforeEach(() => {
+        const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
+
+        store = createStore(recentProjects);
+        props = createProps();
+        deleteProjectSpy = jest.spyOn(props.actions, "deleteProject");
+
+        wrapper = createComponent(store, props);
+    });
+
     it("should render a New Project Link", () => {
-        const store = createStore(recentProjects);
-        const props = createProps();
-        const wrapper = createComponent(store, props);
         expect(wrapper.find(Link).props().to).toBe("/projects/create");
     });
 
     it("should call upload when 'Open Project' is clicked", () => {
-        const store = createStore(recentProjects);
-        const props = createProps();
-        const wrapper = createComponent(store, props);
         const fileUpload = wrapper.find("a.file-upload");
         const filePicker = wrapper.find(FilePicker) as ReactWrapper<{}, {}, FilePicker>;
         const spy = jest.spyOn(filePicker.instance(), "upload");
@@ -48,19 +57,11 @@ describe("Connection Picker Component", () => {
     });
 
     it("should render a file picker", () => {
-        const store = createStore(recentProjects);
-        const props = createProps();
-        const wrapper = createComponent(store, props);
-
         expect(wrapper).not.toBeNull();
         expect(wrapper.find(FilePicker).exists()).toBeTruthy();
     });
 
     it("should render a list of recent projects", () => {
-        const store = createStore(recentProjects);
-        const props = createProps();
-        const wrapper = createComponent(store, props);
-
         expect(wrapper).not.toBeNull();
         if (wrapper.props().recentProjects && wrapper.props().recentProjects.length > 0) {
             expect(wrapper.find(CondensedList).exists()).toBeTruthy();
@@ -68,12 +69,8 @@ describe("Connection Picker Component", () => {
     });
 
     it("should delete a project when clicking trash icon", (done) => {
-        const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
-        projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
-
         const store = createStore(recentProjects);
         const props = createProps();
-        const deleteProjectSpy = jest.spyOn(props.actions, "deleteProject");
         const wrapper = createComponent(store, props);
 
         expect(wrapper.find(".recent-project-item").length).toEqual(recentProjects.length);
