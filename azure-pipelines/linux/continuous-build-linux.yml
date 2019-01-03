@@ -26,8 +26,8 @@ steps:
 
     npm ci  # do a clean install
     npm run compile
-    npm run test:ci # don't watch and just run all the tests
-  displayName: 'Run tests'
+    npm run test:coverage # run tests and coverage
+  displayName: 'Run tests and coverage'
 
 - bash: |
     bash <(curl -s https://codecov.io/bash) -t $(CODECOV_TOKEN)
