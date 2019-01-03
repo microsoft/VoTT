@@ -28,3 +28,7 @@ steps:
     npm run compile
     npm run test:ci # don't watch and just run all the tests
   displayName: 'Run tests'
+
+- bash: |
+    bash <(curl -s https://codecov.io/bash) -t $(CODECOV_TOKEN)
+  displayName: 'Upload coverage report'
