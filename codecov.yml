@@ -1,1 +1,8 @@
 comment: on  # enable pull request comment
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: null
+        base: auto
