@@ -24,7 +24,9 @@ export default class ProjectService implements IProjectService {
                     project.targetConnection.providerOptions,
                 );
 
-                await storageProvider.writeText(`${project.name}${constants.projectFileExtension}`, JSON.stringify(project, null, 4));
+                await storageProvider.writeText(
+                    `${project.name}${constants.projectFileExtension}`,
+                    JSON.stringify(project, null, 4));
 
                 resolve(project);
             } catch (err) {

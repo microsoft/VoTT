@@ -30,7 +30,9 @@ describe("Project Service", () => {
             testProject.targetConnection.providerOptions,
         );
 
-        expect(storageProviderMock.writeText).toBeCalledWith(`${testProject.name}${constants.projectFileExtension}`, expect.any(String));
+        expect(storageProviderMock.writeText).toBeCalledWith(
+            `${testProject.name}${constants.projectFileExtension}`,
+            expect.any(String));
     });
 
     it("Save throws error if writing to storage provider fails", async () => {
