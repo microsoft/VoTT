@@ -68,7 +68,6 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
             ...formData,
         };
 
-        // const isNew = !(!!projectToUpdate.id);
         const projectName = formData["name"];
         const sourceConnection = formData.sourceConnection.name;
         const targetConnection = formData.targetConnection.name;
