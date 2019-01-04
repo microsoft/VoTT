@@ -8,7 +8,6 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
-import { getStorageType } from "../models/helpers";
 
 export default class MockFactory {
 
@@ -181,7 +180,7 @@ export default class MockFactory {
         };
     }
 
-    public static createStorageProvider(files: string[]): IStorageProvider {
+    public static createStorageProvider(files: string[]=["file1.jpg", "file2.jpg", "file3.jpg"]): IStorageProvider {
         return {
             storageType: StorageType.cloud,
             readText: jest.fn(() => Promise.resolve("Fake text")),
@@ -195,6 +194,13 @@ export default class MockFactory {
             deleteContainer: jest.fn(),
             getAssets: jest.fn(),
         };
+    }
+
+    public static createStorageProviderFromConnection(connection: IConnection): IStorageProvider {
+        return {
+            ...this.createStorageProvider(),
+            storageType: this.getStorageType(connection.providerType)
+        }
     }
 
     public static createAssetProvider(): IAssetProvider {
@@ -324,5 +330,16 @@ export default class MockFactory {
     private static randomColorSegment(): string {
         const num = Math.floor(Math.random() * 255);
         return num.toString(16);
+    }
+
+    private static getStorageType(providerType: string): StorageType {
+        switch(providerType) {
+            case "azureBlobStorage":
+                return StorageType.cloud;
+            case "localFileSystemProxy":
+                return StorageType.local;
+            default:
+                return StorageType.other;
+        }
     }
 }

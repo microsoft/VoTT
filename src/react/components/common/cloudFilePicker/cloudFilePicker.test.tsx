@@ -3,6 +3,7 @@ import React from "react";
 import MockFactory from "../../../../common/mockFactory";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
 import { CloudFilePicker, ICloudFilePickerProps, ICloudFilePickerState } from "./cloudFilePicker";
+import { IConnection } from "../../../../models/applicationState";
 
 describe("CloudFilePicker", () => {
     function createComponent(props: ICloudFilePickerProps):
@@ -61,7 +62,8 @@ describe("CloudFilePicker", () => {
 
     it("sets selected connection", async () => {
         const mockStorageProvider = MockFactory.createStorageProvider(mockFiles);
-        StorageProviderFactory.create = jest.fn(() => mockStorageProvider);
+        StorageProviderFactory.createFromConnection = jest.fn(
+            (connection: IConnection) => MockFactory.createStorageProviderFromConnection(connection));
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();
