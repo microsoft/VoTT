@@ -106,7 +106,10 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private handleBack() {
-        this.setState(this.getInitialState());
+        this.setState({
+            ...this.getInitialState(),
+            isOpen: true,
+        });
     }
 
     private getCondensedList(title: string, items: any[], onClick) {

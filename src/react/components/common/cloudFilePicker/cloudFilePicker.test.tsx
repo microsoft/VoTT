@@ -148,6 +148,7 @@ describe("CloudFilePicker", () => {
         wrapper.update();
 
         const state = wrapper.find(CloudFilePicker).state();
+        expect(state.isOpen).toBe(true);
         expect(state.modalHeader).toEqual("Select a Connection");
         expect(state.selectedConnection).toBeNull();
         expect(state.selectedFile).toBeNull();
