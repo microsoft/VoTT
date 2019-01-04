@@ -71,7 +71,8 @@ export default class MockFactory {
         return {
             accountName: "myaccount",
             containerName: "container",
-            createContainer: false,
+            sas: "sas",
+            createContainer: undefined,
         };
     }
 
@@ -151,8 +152,17 @@ export default class MockFactory {
             name: `Connection ${name}`,
             description: `Description for Connection ${name}`,
             providerType,
-            providerOptions: {},
+            providerOptions: this.getProviderOptions(providerType),
         };
+    }
+
+    public static getProviderOptions(providerType) {
+        switch (providerType) {
+            case "azureBlobStorage":
+                return this.azureOptions();
+            default:
+                return {};
+        }
     }
 
     public static createAssetProvider(): IAssetProvider {
