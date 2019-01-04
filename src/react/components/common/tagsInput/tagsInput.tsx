@@ -129,7 +129,7 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
      * @param event Click event
      */
     private handleTagClick(event) {
-        const text = event.currentTarget.innerText || event.target.innerText;
+        const text = (event.currentTarget.innerText || event.target.innerText).trim();
         const tag = this.getTag(text);
         if (event.ctrlKey) {
             // Opens up tag editor modal
@@ -275,14 +275,14 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
      * @param color color of tag
      */
     private ReactTagHtml(name: string, color: string) {
-        return <div className="inline-block tagtext"
-                    onClick={(event) => this.handleTagClick(event)}>
-                    <div className={"inline-block tag_color_box"}
-                        style={{
-                            backgroundColor: color,
-                        }}></div>
+        return (
+            <div className="tag inline-block" onClick={(event) => this.handleTagClick(event)}>
+                <div className="tag-contents">
+                    <div className="tag-color-box" style={{ backgroundColor: color }}></div>
                     <span>{name}</span>
-                </div>;
+                </div>
+            </div>
+        );
     }
 
     /**
