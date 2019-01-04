@@ -34,11 +34,13 @@ describe("Confirm component", () => {
 
     it("Renders modal when activiated", () => {
         const wrapper = createComponent(defaultProps);
-        wrapper.instance().open();
 
-        expect(document.querySelector(".modal-title").textContent).toEqual(defaultProps.title);
-        expect(document.querySelector(".modal-body").textContent).toEqual(defaultProps.message);
-        expect(document.querySelectorAll(".modal-footer button").length).toEqual(2);
+        wrapper.instance().open();
+        wrapper.update();
+
+        expect(wrapper.find(".modal-title").text()).toEqual(defaultProps.title);
+        expect(wrapper.find(".modal-body").text()).toEqual(defaultProps.message);
+        expect(wrapper.find(".modal-footer button").length).toEqual(2);
     });
 
     it("Renders custom button text / colors when properties are set", () => {
@@ -50,31 +52,36 @@ describe("Confirm component", () => {
             cancelButtonText: "No",
         };
         const wrapper = createComponent(props);
-        wrapper.instance().open();
 
-        const buttons = document.querySelectorAll(".modal-footer button");
-        expect(buttons[0].textContent).toEqual(props.confirmButtonText);
-        expect(buttons[0].className.indexOf(props.confirmButtonColor)).toBeGreaterThan(-1);
-        expect(buttons[1].textContent).toEqual(props.cancelButtonText);
-        expect(buttons[1].className.indexOf(props.cancelButtonColor)).toBeGreaterThan(-1);
+        wrapper.instance().open();
+        wrapper.update();
+
+        const buttons = wrapper.find(".modal-footer button");
+        expect(buttons.at(0).text()).toEqual(props.confirmButtonText);
+        expect(buttons.at(0).hasClass("btn-success")).toBe(true);
+        expect(buttons.at(1).text()).toEqual(props.cancelButtonText);
+        expect(buttons.at(1).hasClass("btn-danger")).toBe(true);
     });
 
     it("Calls onConfirm handler when clicking positive button", () => {
         const arg = { value: "test" };
         const wrapper = createComponent(defaultProps);
-        wrapper.instance().open(arg);
 
-        (document.querySelectorAll(".modal-footer button")[0] as HTMLButtonElement).click();
+        wrapper.instance().open(arg);
+        wrapper.update();
+
+        wrapper.find(".modal-footer button").first().simulate("click");
         expect(modalConfirmHandler).toBeCalledWith(arg);
     });
 
     it("Calls the onCancel handler when clicking the negative button", () => {
         const arg = { value: "test" };
         const wrapper = createComponent(defaultProps);
-        wrapper.instance().open(arg);
 
-        const buttons = document.querySelectorAll(".modal-footer button");
-        (buttons[buttons.length - 1] as HTMLButtonElement).click();
+        wrapper.instance().open(arg);
+        wrapper.update();
+
+        wrapper.find(".modal-footer button").last().simulate("click");
         expect(modalCancelHandler).toBeCalledWith(arg);
     });
 });
