@@ -1,23 +1,10 @@
 import React from "react";
 import Form from "react-jsonschema-form";
-import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import { addLocValues } from "../../../../../common/strings";
 import { ITag } from "../../../../../models/applicationState";
-import "./tagEditorModal.scss";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./tagEditorModal.json"));
-
-const customStyles = {
-    content : {
-      top                   : "50%",
-      left                  : "50%",
-      right                 : "auto",
-      bottom                : "auto",
-      marginRight           : "-50%",
-      transform             : "translate(-50%, -50%)",
-      zIndex                : 200,
-    },
-  };
 
 export interface ITagEditorModalProps {
     tag: ITag;
@@ -58,16 +45,17 @@ export default class TagEditorModal extends React.Component<ITagEditorModalProps
                             schema={formSchema}
                             formData={this.state.tag}
                             onChange={this.handleFormChange}>
-                            <div style={{textAlign: "center"}}>
-                                <Button
-                                    color="success"
-                                    onClick={this.handleOk}>Save Changes</Button>
-                                <Button
-                                    color="secondary"
-                                    onClick={this.props.onCancel}>Cancel</Button>
-                            </div>
+                            <div></div>
                         </Form>
                     </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            color="success"
+                            onClick={this.handleOk}>Save</Button>
+                        <Button
+                            color="secondary"
+                            onClick={this.props.onCancel}>Cancel</Button>
+                    </ModalFooter>
                 </Modal>
             </div>
         );
