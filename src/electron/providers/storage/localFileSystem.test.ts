@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import shortid from "shortid";
 import LocalFileSystem from "./localFileSystem";
-import fsMock from "mock-fs";
 
 jest.mock("electron", () => ({
     dialog: {
@@ -13,14 +12,6 @@ import { dialog } from "electron";
 
 describe("LocalFileSystem Storage Provider", () => {
     let localFileSystem: LocalFileSystem = null;
-
-    beforeAll(() => {
-        fsMock();
-    });
-
-    afterAll(() => {
-        fsMock.restore();
-    });
 
     beforeEach(() => {
         localFileSystem = new LocalFileSystem(null);
