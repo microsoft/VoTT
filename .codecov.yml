@@ -1,4 +1,7 @@
-comment: on  # enable pull request comment
+# Validate changes
+# cat .codecov.yml | curl --data-binary @- https://codecov.io/validate
+
+comment:  # enable pull request comment
   behavior: new # delete old report and post new one
 coverage:
   range: 70..100
