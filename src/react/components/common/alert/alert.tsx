@@ -1,6 +1,6 @@
 import React, { RefObject } from "react";
 import { Button } from "reactstrap";
-import MessageBox, { IMessageBoxProps } from "../../messageBox/messageBox";
+import MessageBox, { IMessageBoxProps } from "../messageBox/messageBox";
 
 export interface IAlertProps extends IMessageBoxProps {
     closeButtonText?: string;
@@ -36,6 +36,7 @@ export default class Alert extends React.Component<IAlertProps, IAlertState> {
                 message={this.props.message}
                 params={this.state.params}>
                 <Button
+                    autoFocus={true}
                     color={this.props.closeButtonColor || "primary"}
                     onClick={this.onCloseClick}>{this.props.closeButtonText || "OK"}
                 </Button>

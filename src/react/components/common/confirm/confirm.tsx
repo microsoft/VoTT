@@ -1,6 +1,6 @@
 import React, { RefObject } from "react";
 import { Button } from "reactstrap";
-import MessageBox, { IMessageBoxProps } from "../../messageBox/messageBox";
+import MessageBox, { IMessageBoxProps } from "../messageBox/messageBox";
 
 export interface IConfirmProps extends IMessageBoxProps {
     confirmButtonText?: string;
@@ -38,8 +38,10 @@ export default class Confirm extends React.Component<IConfirmProps, IConfirmStat
             <MessageBox ref={this.messageBox}
                 title={this.props.title}
                 message={this.props.message}
-                params={this.state.params}>
+                params={this.state.params}
+                onCancel={this.onCancelClick}>
                 <Button
+                    autoFocus={true}
                     color={this.props.confirmButtonColor || "primary"}
                     onClick={this.onConfirmClick}>{this.props.confirmButtonText || "Yes"}
                 </Button>

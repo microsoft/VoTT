@@ -38,21 +38,7 @@ describe("Confirm component", () => {
 
         expect(document.querySelector(".modal-title").textContent).toEqual(defaultProps.title);
         expect(document.querySelector(".modal-body").textContent).toEqual(defaultProps.message);
-        expect(document.querySelectorAll("button").length).toEqual(2);
-    });
-
-    it("Renders a message from function handler", () => {
-        const props = {
-            ...defaultProps,
-            message: (testObject) => testObject.value,
-        };
-        const testObject = {
-            value: "A Test Message from function handler",
-        };
-        const wrapper = createComponent(props);
-        wrapper.instance().open(testObject);
-
-        expect(document.querySelector(".modal-body").textContent).toEqual(testObject.value);
+        expect(document.querySelectorAll(".modal-footer button").length).toEqual(2);
     });
 
     it("Renders custom button text / colors when properties are set", () => {
@@ -66,7 +52,7 @@ describe("Confirm component", () => {
         const wrapper = createComponent(props);
         wrapper.instance().open();
 
-        const buttons = document.querySelectorAll("button");
+        const buttons = document.querySelectorAll(".modal-footer button");
         expect(buttons[0].textContent).toEqual(props.confirmButtonText);
         expect(buttons[0].className.indexOf(props.confirmButtonColor)).toBeGreaterThan(-1);
         expect(buttons[1].textContent).toEqual(props.cancelButtonText);
@@ -78,7 +64,7 @@ describe("Confirm component", () => {
         const wrapper = createComponent(defaultProps);
         wrapper.instance().open(arg);
 
-        document.querySelectorAll("button")[0].click();
+        (document.querySelectorAll(".modal-footer button")[0] as HTMLButtonElement).click();
         expect(modalConfirmHandler).toBeCalledWith(arg);
     });
 
@@ -87,8 +73,8 @@ describe("Confirm component", () => {
         const wrapper = createComponent(defaultProps);
         wrapper.instance().open(arg);
 
-        const buttons = document.querySelectorAll("button");
-        buttons[buttons.length - 1].click();
+        const buttons = document.querySelectorAll(".modal-footer button");
+        (buttons[buttons.length - 1] as HTMLButtonElement).click();
         expect(modalCancelHandler).toBeCalledWith(arg);
     });
 });

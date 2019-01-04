@@ -7,10 +7,14 @@ export interface IMessageBoxProps {
     title: string;
     message: string | MessageFormatHandler;
     params?: any[];
+    onButtonSelect?: (button: HTMLButtonElement) => void;
+    onCancel?: () => void;
 }
 
 export interface IMessageBoxState {
     isOpen: boolean;
+    isRendered: boolean;
+    isButtonSelected: boolean;
 }
 
 export default class MessageBox extends React.Component<IMessageBoxProps, IMessageBoxState> {
@@ -19,15 +23,19 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
 
         this.state = {
             isOpen: false,
+            isRendered: false,
+            isButtonSelected: false,
         };
 
+        this.toggle = this.toggle.bind(this);
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
         this.onFooterClick = this.onFooterClick.bind(this);
+        this.onClosed = this.onClosed.bind(this);
     }
 
     public render() {
-        if (!this.state.isOpen) {
+        if (!this.state.isRendered) {
             return null;
         }
 
@@ -36,8 +44,10 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
             : this.props.message.apply(this, this.props.params);
 
         return (
-            <Modal className="confirm-modal" isOpen={this.state.isOpen}>
-                <ModalHeader>{this.props.title}</ModalHeader>
+            <Modal className="messagebox-modal"
+                isOpen={this.state.isOpen}
+                onClosed={this.onClosed}>
+                <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader>
                 <ModalBody>{messageText}</ModalBody>
                 <ModalFooter onClick={this.onFooterClick}>
                     {this.props.children}
@@ -49,19 +59,46 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
     public open(): void {
         this.setState({
             isOpen: true,
+            isRendered: true,
+            isButtonSelected: false,
         });
     }
 
     public close(): void {
         this.setState({
             isOpen: false,
+        }, () => {
+            if (!this.state.isButtonSelected && this.props.onCancel) {
+                this.props.onCancel();
+            }
         });
     }
 
     private onFooterClick(evt: SyntheticEvent) {
-        const htmlElement = evt.target as Element;
+        const htmlElement = evt.target as HTMLButtonElement;
         if (htmlElement.tagName === "BUTTON") {
-            this.close();
+            this.setState({
+                isButtonSelected: true,
+            }, () => {
+                this.close();
+                if (this.props.onButtonSelect) {
+                    this.props.onButtonSelect(htmlElement);
+                }
+            });
         }
+    }
+
+    private toggle() {
+        if (this.state.isOpen) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+
+    private onClosed() {
+        this.setState({
+            isRendered: false,
+        });
     }
 }
