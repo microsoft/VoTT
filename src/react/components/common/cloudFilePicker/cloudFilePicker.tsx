@@ -1,19 +1,20 @@
 import React from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-import { StorageType, IConnection } from "../../../../models/applicationState";
-import { IStorageProvider, StorageProviderFactory } from "../../../../providers/storage/storageProvider";
-import CondensedList, { ListItem } from "../condensedList/condensedList";
 import { strings } from "../../../../common/strings";
+import { IConnection, StorageType } from "../../../../models/applicationState";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
+import CondensedList, { ListItem } from "../condensedList/condensedList";
 
 export interface ICloudFilePickerProps {
-    isOpen: boolean;
     connections: IConnection[];
-    onCancel: () => void;
     onSubmit: (content: string) => void;
+
+    onCancel?: () => void;
     fileExtension?: string;
 }
 
 export interface ICloudFilePickerState {
+    isOpen: boolean;
     modalHeader: string;
     condensedList: any;
     selectedConnection: IConnection;
@@ -27,10 +28,12 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     constructor(props) {
         super(props);
 
+        this.open = this.open.bind(this);
+        this.close = this.close.bind(this);
+
         this.getInitialState = this.getInitialState.bind(this);
         this.handleOk = this.handleOk.bind(this);
         this.handleBack = this.handleBack.bind(this);
-        this.handleClose = this.handleClose.bind(this);
         this.connectionList = this.connectionList.bind(this);
         this.onClickConnection = this.onClickConnection.bind(this);
         this.fileList = this.fileList.bind(this);
@@ -40,38 +43,51 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     public render() {
-        const closeBtn = <button className="close" onClick={this.handleClose}>&times;</button>;
+        const closeBtn = <button className="close" onClick={this.close}>&times;</button>;
 
         return(
-            <div>
-                <Modal isOpen={this.props.isOpen} centered={true}>
-                    <ModalHeader toggle={this.props.onCancel} close={closeBtn}>
-                        {this.state.modalHeader}
-                    </ModalHeader>
-                    <ModalBody>
-                        {this.state.condensedList}
-                    </ModalBody>
-                    <ModalFooter>
-                        {this.state.selectedFile || ""}
-                        <Button
-                            className="btn btn-success mr-1"
-                            onClick={this.handleOk}
-                            disabled={this.state.okDisabled}>
-                            Ok
-                        </Button>
-                        <Button
-                            onClick={this.handleBack}
-                            disabled={this.state.backDisabled}>
-                            Go Back
-                        </Button>
-                    </ModalFooter>
-                </Modal>
-            </div>
+            <Modal isOpen={this.state.isOpen} centered={true}>
+                <ModalHeader toggle={this.close} close={closeBtn}>
+                    {this.state.modalHeader}
+                </ModalHeader>
+                <ModalBody>
+                    {this.state.condensedList}
+                </ModalBody>
+                <ModalFooter>
+                    {this.state.selectedFile || ""}
+                    <Button
+                        className="btn btn-success mr-1"
+                        onClick={this.handleOk}
+                        disabled={this.state.okDisabled}>
+                        Ok
+                    </Button>
+                    <Button
+                        onClick={this.handleBack}
+                        disabled={this.state.backDisabled}>
+                        Go Back
+                    </Button>
+                </ModalFooter>
+            </Modal>
+        );
+    }
+
+    public open(): void {
+        this.setState({isOpen: true});
+    }
+
+    public close(): void {
+        this.setState(this.getInitialState(),
+            () => {
+                if (this.props.onCancel) {
+                    this.props.onCancel();
+                }
+            },
         );
     }
 
     private getInitialState(): ICloudFilePickerState {
         return {
+            isOpen: false,
             modalHeader: strings.homePage.openCloudProject.selectConnection,
             condensedList: this.connectionList(),
             selectedConnection: null,
@@ -83,7 +99,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
 
     private async handleOk() {
         if (this.state.selectedConnection && this.state.selectedFile) {
-            const storageProvider = this.getStorageProvider(this.state.selectedConnection);
+            const storageProvider = StorageProviderFactory.createFromConnection(this.state.selectedConnection);
             const content = await storageProvider.readText(this.state.selectedFile);
             this.props.onSubmit(content);
         }
@@ -91,11 +107,6 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
 
     private handleBack() {
         this.setState(this.getInitialState());
-    }
-
-    private handleClose() {
-        this.setState(this.getInitialState());
-        this.props.onCancel();
     }
 
     private getCondensedList(title: string, items: any[], onClick) {
@@ -130,7 +141,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private async fileList(connection: IConnection) {
-        const storageProvider = this.getStorageProvider(connection);
+        const storageProvider = StorageProviderFactory.createFromConnection(connection);
         const files = await storageProvider.listFiles(
             connection.providerOptions["containerName"],
             this.props.fileExtension);
@@ -154,12 +165,5 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
             selectedFile: fileName,
             okDisabled: false,
         });
-    }
-
-    private getStorageProvider(connection: IConnection): IStorageProvider {
-        return StorageProviderFactory.create(
-            connection.providerType,
-            connection.providerOptions,
-        );
     }
 }

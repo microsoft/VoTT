@@ -1,5 +1,6 @@
 import { IAssetProvider } from "./assetProvider";
 import Guard from "../../common/guard";
+import { IConnection } from "../../models/applicationState";
 
 export interface IStorageProvider extends IAssetProvider {
     readText(filePath: string): Promise<string>;
@@ -26,6 +27,10 @@ export class StorageProviderFactory {
         Guard.null(factory);
 
         StorageProviderFactory.handlerRegistry[name] = factory;
+    }
+
+    public static createFromConnection(connection: IConnection) {
+        return this.create(connection.providerType, connection.providerOptions);
     }
 
     public static create(name: string, options?: any): IStorageProvider {

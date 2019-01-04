@@ -1,7 +1,7 @@
 import { ExportProvider } from "./exportProvider";
 import { IProject } from "../../models/applicationState";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import MockFactory from "../../common/mockFactory"
+import MockFactory from "../../common/mockFactory";
 import registerProviders from "../../registerProviders";
 
 describe("Export Provider Base", () => {

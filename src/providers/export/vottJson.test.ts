@@ -26,7 +26,9 @@ describe("VoTT Json Export Provider", () => {
             providerType: "json",
             providerOptions: {},
         },
-    }
+    };
+
+    const expectedFileName = testProject.name.replace(" ", "-") + constants.exportFileExtension;
 
     beforeEach(() => {
         registerProviders();
@@ -79,7 +81,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
+                .toBeCalledWith(expectedFileName, expect.any(String));
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -100,7 +102,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
+                .toBeCalledWith(expectedFileName, expect.any(String));
         });
 
         it("Exports only tagged assets", async () => {
@@ -120,7 +122,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
+                .toBeCalledWith(expectedFileName, expect.any(String));
         });
     });
 });

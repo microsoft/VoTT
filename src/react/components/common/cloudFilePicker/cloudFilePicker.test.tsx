@@ -1,11 +1,12 @@
-import { mount } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
-import { CloudFilePicker, ICloudFilePickerProps } from "./cloudFilePicker";
+import { CloudFilePicker, ICloudFilePickerProps, ICloudFilePickerState } from "./cloudFilePicker";
 
 describe("CloudFilePicker", () => {
-    function createComponent(props: ICloudFilePickerProps) {
+    function createComponent(props: ICloudFilePickerProps):
+            ReactWrapper<ICloudFilePickerProps, ICloudFilePickerState, CloudFilePicker> {
         return mount(<CloudFilePicker {...props}/>);
     }
 
@@ -15,16 +16,19 @@ describe("CloudFilePicker", () => {
 
     const mockFiles = ["file1.json", "file2.json", "file3.json"];
 
-    it("modal is visible", () => {
+    it("modal is visible", async () => {
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: true,
             onCancel,
             onSubmit,
         });
+        await wrapInPromise(() => wrapper.instance().open());
+        await flushPromises();
+        wrapper.update();
+
         expect(wrapper.find("div.modal-content").exists()).toBe(true);
     });
 
@@ -34,23 +38,25 @@ describe("CloudFilePicker", () => {
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: false,
             onCancel,
             onSubmit,
         });
         expect(wrapper.find("div.modal-content").exists()).toBe(false);
     });
 
-    it("only shows cloud connections", () => {
+    it("only shows cloud connections", async () => {
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: true,
             onCancel,
             onSubmit,
         });
+        await wrapInPromise(() => wrapper.instance().open());
+        await flushPromises();
+        wrapper.update();
+
         // Half of the connections are cloud connections
         expect(wrapper.find("a")).toHaveLength(connections.length / 2);
     });
@@ -63,10 +69,13 @@ describe("CloudFilePicker", () => {
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: true,
             onCancel,
             onSubmit,
         });
+        await wrapInPromise(() => wrapper.instance().open());
+        await flushPromises();
+        wrapper.update();
+
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
         await flushPromises();
         wrapper.update();
@@ -88,10 +97,12 @@ describe("CloudFilePicker", () => {
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: true,
             onCancel,
             onSubmit,
         });
+        await wrapInPromise(() => wrapper.instance().open());
+        await flushPromises();
+        wrapper.update();
 
         // Click on connection
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
@@ -119,10 +130,12 @@ describe("CloudFilePicker", () => {
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: true,
             onCancel,
             onSubmit,
         });
+        await wrapInPromise(() => wrapper.instance().open());
+        await flushPromises();
+        wrapper.update();
 
         // Click on connection
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
@@ -150,10 +163,12 @@ describe("CloudFilePicker", () => {
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: true,
             onCancel,
             onSubmit,
         });
+        await wrapInPromise(() => wrapper.instance().open());
+        await flushPromises();
+        wrapper.update();
 
         // Click on connection
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
@@ -181,10 +196,12 @@ describe("CloudFilePicker", () => {
         const onSubmit = jest.fn();
         const wrapper = createComponent({
             connections,
-            isOpen: true,
             onCancel,
             onSubmit,
         });
+        await wrapInPromise(() => wrapper.instance().open());
+        await flushPromises();
+        wrapper.update();
 
         // Click on connection
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));

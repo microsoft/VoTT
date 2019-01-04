@@ -53,7 +53,7 @@ export default class MockFactory {
         return projects;
     }
 
-    public static createTestProject(name: string="test"): IProject {
+    public static createTestProject(name: string= "test"): IProject {
         const connection = MockFactory.createTestConnection(name);
 
         return {
