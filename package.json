@@ -33,7 +33,6 @@
         "test": "react-scripts test --env=jsdom --silent",
         "test:ci": "cross-env CI=true npm run test",
         "test:coverage": "npm run test -- --coverage",
-        "coverage": "react-scripts test --env=jsdom --coverage --silent",
         "eject": "react-scripts eject",
         "electron": "webpack --config ./config/webpack.dev.js && electron .",
         "electron:prod": "webpack -p --config ./config/webpack.prod.js",

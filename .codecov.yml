@@ -1,0 +1,14 @@
+# Validate changes
+# cat .codecov.yml | curl --data-binary @- https://codecov.io/validate
+
+comment:  on # enable pull request comment
+coverage:
+  range: 70..100
+  round: down # round down to the precision point
+  precision: 2
+  status:
+    project: # compare project coverage against the base of pr
+      default:
+        target: 75%  # min coverage ratio to be considered a success
+        threshold: null  # allow coverage to drop by X%
+        base: auto   
