@@ -1,20 +1,18 @@
+import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import { Provider } from "react-redux";
-import createReduxStore from "../../../../redux/store/store";
-import initialState from "../../../../redux/store/initialState";
-import HomePage, { IHomepageProps } from "./homePage";
-import { BrowserRouter as Router } from "react-router-dom";
-import { mount, ReactWrapper } from "enzyme";
-import { Link } from "react-router-dom";
-import { IApplicationState, IProject, ITag, IExportFormat, IConnection } from "../../../../models/applicationState";
+import { BrowserRouter as Router, Link } from "react-router-dom";
+import { AnyAction, Store } from "redux";
+import MockFactory from "../../../../common/mockFactory";
+import { IApplicationState, IProject } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import createReduxStore from "../../../../redux/store/store";
+import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
 import FilePicker from "../../common/filePicker/filePicker";
-import MockFactory from "../../../../common/mockFactory";
-import { Store, AnyAction } from "redux";
+import HomePage, { IHomepageProps } from "./homePage";
 
 jest.mock("../../../../services/projectService");
-import ProjectService from "../../../../services/projectService";
 
 describe("Connection Picker Component", () => {
     let store: Store<IApplicationState> = null;
@@ -49,9 +47,9 @@ describe("Connection Picker Component", () => {
     });
 
     it("should call upload when 'Open Project' is clicked", () => {
-        const fileUpload = wrapper.find("a.file-upload");
-        const filePicker = wrapper.find(FilePicker) as ReactWrapper<{}, {}, FilePicker>;
-        const spy = jest.spyOn(filePicker.instance(), "upload");
+        const fileUpload = wrapper.find("a.file-upload").first();
+        const filePicker = wrapper.find(FilePicker);
+        const spy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
         fileUpload.simulate("click");
         expect(spy).toBeCalled();
     });
@@ -91,6 +89,7 @@ describe("Connection Picker Component", () => {
     function createProps(): IHomepageProps {
         return {
             recentProjects: [],
+            connections: MockFactory.createTestConnections(),
             history: {
                 length: 0,
                 action: null,

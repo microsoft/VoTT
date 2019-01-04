@@ -15,9 +15,7 @@ import { constants } from "../../common/constants";
 
 describe("VoTT Json Export Provider", () => {
     const testProject: IProject = {
-        id: "1",
-        name: "Test Project",
-        autoSave: true,
+        ...MockFactory.createTestProject(),
         assets: {
             "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
             "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
@@ -28,20 +26,9 @@ describe("VoTT Json Export Provider", () => {
             providerType: "json",
             providerOptions: {},
         },
-        sourceConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        targetConnection: {
-            id: "local-1",
-            name: "Local Files 1",
-            providerType: "localFileSystemProxy",
-            providerOptions: {},
-        },
-        tags: [],
     };
+
+    const expectedFileName = testProject.name.replace(" ", "-") + constants.exportFileExtension;
 
     beforeEach(() => {
         registerProviders();
@@ -94,7 +81,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
+                .toBeCalledWith(expectedFileName, expect.any(String));
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -115,7 +102,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
+                .toBeCalledWith(expectedFileName, expect.any(String));
         });
 
         it("Exports only tagged assets", async () => {
@@ -135,7 +122,7 @@ describe("VoTT Json Export Provider", () => {
 
             expect(exportedAssets.length).toEqual(expectedAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
-                .toBeCalledWith(`Test-Project${constants.exportFileExtension}`, expect.any(String));
+                .toBeCalledWith(expectedFileName, expect.any(String));
         });
     });
 });

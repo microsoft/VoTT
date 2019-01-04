@@ -88,7 +88,7 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
-    public listFiles(path: string): Promise<string[]> {
+    public listFiles(path: string, ext?: string): Promise<string[]> {
         return new Promise<string[]>(async (resolve, reject) => {
             try {
                 const result: string[] = [];
@@ -101,7 +101,9 @@ export class AzureBlobStorage implements IStorageProvider {
                     );
                     marker = listBlobsResponse.nextMarker;
                     for (const blob of listBlobsResponse.segment.blobItems) {
-                        result.push(blob.name);
+                        if ((ext && blob.name.endsWith(ext)) || !ext) {
+                            result.push(blob.name);
+                        }
                     }
                 } while (marker);
                 resolve(result);

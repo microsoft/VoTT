@@ -4,13 +4,14 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import ConnectionItem from "./connectionItem";
 import CondensedList from "../../common/condensedList/condensedList";
-import { IApplicationState, IConnection } from "../../../../models/applicationState.js";
+import { IApplicationState, IConnection } from "../../../../models/applicationState";
 import { RouteComponentProps } from "react-router-dom";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
 import { strings } from "../../../../common/strings";
 import Confirm from "../../common/confirm/confirm";
+import { getStorageType } from "../../../../models/helpers";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
@@ -120,6 +121,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     private onFormSubmit = async (connection: IConnection) => {
+        connection.connectionType = getStorageType(connection.providerType);
         await this.props.actions.saveConnection(connection);
         this.props.history.goBack();
     }

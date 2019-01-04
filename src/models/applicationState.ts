@@ -63,6 +63,17 @@ export interface ITag {
 }
 
 /**
+ * @enum LOCAL - Local storage type
+ * @enum CLOUD - Cloud storage type
+ * @enum OTHER - Any other storage type
+ */
+export enum StorageType {
+    local = "local",
+    cloud = "cloud",
+    other = "other",
+}
+
+/**
  * @name - Connection
  * @description - Defines a reusable data source definition for projects
  * @member id - Unique identifier for connection
@@ -76,6 +87,7 @@ export interface IConnection {
     name: string;
     description?: string;
     providerType: string;
+    connectionType: StorageType;
     providerOptions: object;
 }
 
