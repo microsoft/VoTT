@@ -230,7 +230,7 @@ describe("Connections Page", () => {
             deleteButton.simulate("click");
 
             // Accept the modal delete warning
-            wrapper.find(".confirm-modal button").first().simulate("click");
+            wrapper.find(".modal-footer button").first().simulate("click");
 
             expect(deleteConnection).toBeCalled();
         });
@@ -259,7 +259,7 @@ describe("Connections Page", () => {
             deleteButton.simulate("click");
 
             // Accept the modal delete warning
-            wrapper.find(".confirm-modal button").first().simulate("click");
+            wrapper.find(".modal-footer button").first().simulate("click");
 
             setImmediate(() => {
                 expect(historyPushSpy).toBeCalledWith("/connections");
