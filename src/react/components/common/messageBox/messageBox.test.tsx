@@ -41,11 +41,13 @@ describe("MessageBox component", () => {
 
     it("Renders modal when activiated", () => {
         const wrapper = createComponent(defaultProps);
-        wrapper.instance().open();
 
-        expect(document.querySelector(".modal-title").textContent).toEqual(defaultProps.title);
-        expect(document.querySelector(".modal-body").textContent).toEqual(defaultProps.message);
-        expect(document.querySelectorAll(".modal-footer button").length).toEqual(3);
+        wrapper.instance().open();
+        wrapper.update();
+
+        expect(wrapper.find(".modal-title").text()).toEqual(defaultProps.title);
+        expect(wrapper.find(".modal-body").text()).toEqual(defaultProps.message);
+        expect(wrapper.find(".modal-footer button").length).toEqual(3);
     });
 
     it("Renders a message from function handler", () => {
@@ -58,27 +60,32 @@ describe("MessageBox component", () => {
             params: [testObject],
         };
         const wrapper = createComponent(props);
-        wrapper.instance().open();
 
-        expect(document.querySelector(".modal-body").textContent).toEqual(testObject.value);
+        wrapper.instance().open();
+        wrapper.update();
+
+        expect(wrapper.find(".modal-body").text()).toEqual(testObject.value);
     });
 
     it("Calls onButtonSelect when a button is clicked", () => {
         const wrapper = createComponent(defaultProps);
+
         wrapper.instance().open();
+        wrapper.update();
 
-        const button = document.querySelectorAll("button")[2];
-        button.click();
+        const button = wrapper.find(".modal-footer button").at(2);
+        button.simulate("click");
 
-        expect(buttonSelectHandler).toBeCalledWith(button);
+        expect(buttonSelectHandler).toBeCalledWith(button.getDOMNode());
     });
 
     it("Calls onCancel when close button is clicked", () => {
         const wrapper = createComponent(defaultProps);
-        wrapper.instance().open();
 
-        const closeButton = document.querySelector("button.close") as HTMLButtonElement;
-        closeButton.click();
+        wrapper.instance().open();
+        wrapper.update();
+
+        wrapper.find(".modal-header button.close").simulate("click");
 
         expect(cancelHandler).toBeCalled();
     });
