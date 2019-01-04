@@ -11,7 +11,6 @@ import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
 import { strings } from "../../../../common/strings";
 import Confirm from "../../common/confirm/confirm";
-import { getStorageType } from "../../../../models/helpers";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];

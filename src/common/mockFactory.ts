@@ -180,7 +180,11 @@ export default class MockFactory {
         };
     }
 
-    public static createStorageProvider(files: string[]= ["file1.jpg", "file2.jpg", "file3.jpg"]): IStorageProvider {
+    public static createFileList(): string[] {
+        return ["file1.jpg", "file2.jpg", "file3.jpg"];
+    }
+
+    public static createStorageProvider(): IStorageProvider {
         return {
             storageType: StorageType.cloud,
             readText: jest.fn(() => Promise.resolve("Fake text")),
@@ -188,7 +192,7 @@ export default class MockFactory {
             deleteFile: jest.fn(),
             writeText: jest.fn(),
             writeBinary: jest.fn(),
-            listFiles: jest.fn(() => Promise.resolve(files)),
+            listFiles: jest.fn(() => Promise.resolve(this.createFileList())),
             listContainers: jest.fn(),
             createContainer: jest.fn(),
             deleteContainer: jest.fn(),

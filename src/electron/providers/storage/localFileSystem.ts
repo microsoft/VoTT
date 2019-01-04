@@ -3,11 +3,13 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import { IStorageProvider } from "../../../providers/storage/storageProvider";
-import { IAsset, AssetType } from "../../../models/applicationState";
+import { IAsset, AssetType, StorageType } from "../../../models/applicationState";
 import { AssetService } from "../../../services/assetService";
 import { strings } from "../../../common/strings";
 
 export default class LocalFileSystem implements IStorageProvider {
+    public storageType: StorageType.local;
+
     constructor(private browserWindow: BrowserWindow) { }
 
     public selectContainer(): Promise<string> {
