@@ -29,8 +29,8 @@ describe("Localization tests", () => {
                 expect(formProps.name.title).toEqual(common.displayName);
                 expect(formProps.description.title).toEqual(common.description);
                 expect(formProps.providerType.title).toEqual(common.provider);
-                expect(formProps.providerType.enumNames[0]).toEqual(lConn.providers.bing.title);
-                expect(formProps.providerType.enumNames[1]).toEqual(lConn.providers.azureBlob.title);
+                expect(formProps.providerType.enumNames[0]).toEqual(lConn.providers.azureBlob.title);
+                expect(formProps.providerType.enumNames[1]).toEqual(lConn.providers.bing.title);
                 expect(formProps.providerType.enumNames[2]).toEqual(lConn.providers.local.title);
             }
         });
