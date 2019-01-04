@@ -1,7 +1,7 @@
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IStorageProvider } from "./storageProvider";
 import { IAssetProvider } from "./assetProvider";
-import { IAsset } from "../../models/applicationState";
+import { IAsset, StorageType } from "../../models/applicationState";
 
 const PROXY_NAME = "LocalFileSystem";
 
@@ -10,6 +10,8 @@ export interface ILocalFileSystemProxyOptions {
 }
 
 export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
+
+    public storageType: StorageType.local;
     constructor(private options?: ILocalFileSystemProxyOptions) {
         if (!this.options) {
             this.options = {

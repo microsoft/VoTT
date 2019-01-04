@@ -1,5 +1,5 @@
 import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
-    IAssetMetadata, IConnection, IExportFormat, IProject, ITag } from "../models/applicationState";
+    IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider } from "../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -156,7 +156,6 @@ export default class MockFactory {
             name: `Connection ${name}`,
             description: `Description for Connection ${name}`,
             providerType,
-            connectionType: getStorageType(providerType),
             providerOptions: this.getProviderOptions(providerType),
         };
     }
@@ -184,6 +183,7 @@ export default class MockFactory {
 
     public static createStorageProvider(files: string[]): IStorageProvider {
         return {
+            storageType: StorageType.cloud,
             readText: jest.fn(() => Promise.resolve("Fake text")),
             readBinary: jest.fn(),
             deleteFile: jest.fn(),

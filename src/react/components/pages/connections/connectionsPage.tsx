@@ -121,7 +121,6 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     private onFormSubmit = async (connection: IConnection) => {
-        connection.connectionType = getStorageType(connection.providerType);
         await this.props.actions.saveConnection(connection);
         this.props.history.goBack();
     }

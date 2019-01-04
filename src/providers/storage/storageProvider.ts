@@ -1,8 +1,11 @@
 import { IAssetProvider } from "./assetProvider";
 import Guard from "../../common/guard";
-import { IConnection } from "../../models/applicationState";
+import { IConnection, StorageType } from "../../models/applicationState";
 
 export interface IStorageProvider extends IAssetProvider {
+
+    storageType: StorageType;
+
     readText(filePath: string): Promise<string>;
     readBinary(filePath: string): Promise<Buffer>;
     deleteFile(filePath: string): Promise<void>;

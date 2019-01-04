@@ -87,7 +87,6 @@ export interface IConnection {
     name: string;
     description?: string;
     providerType: string;
-    connectionType: StorageType;
     providerOptions: object;
 }
 
