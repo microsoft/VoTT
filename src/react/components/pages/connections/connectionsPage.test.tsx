@@ -15,7 +15,6 @@ import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
 
-
 describe("Connections Page", () => {
     const connectionsRoute: string = "/connections";
     const connectionCreateRoute: string = "/connections/create";
@@ -129,7 +128,7 @@ describe("Connections Page", () => {
                 ...MockFactory.createTestConnection("test", "azureBlobStorage"),
                 id: expect.any(String),
             };
-            
+
             const options: IAzureCloudStorageOptions = connection.providerOptions as IAzureCloudStorageOptions;
 
             connectionForm
@@ -144,7 +143,7 @@ describe("Connections Page", () => {
             connectionForm
                 .find("input#root_providerOptions_accountName")
                 .simulate("change", { target: { value: options.accountName } });
-            
+
             connectionForm
                 .find("input#root_providerOptions_containerName")
                 .simulate("change", { target: { value: options.containerName } });
