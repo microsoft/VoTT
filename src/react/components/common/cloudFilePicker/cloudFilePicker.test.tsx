@@ -26,7 +26,6 @@ describe("CloudFilePicker", () => {
             onSubmit,
         });
         await wrapInPromise(() => wrapper.instance().open());
-        await flushPromises();
         wrapper.update();
 
         expect(wrapper.find("div.modal-content").exists()).toBe(true);
@@ -54,7 +53,6 @@ describe("CloudFilePicker", () => {
             onSubmit,
         });
         await wrapInPromise(() => wrapper.instance().open());
-        await flushPromises();
         wrapper.update();
 
         // Half of the connections are cloud connections
@@ -134,17 +132,14 @@ describe("CloudFilePicker", () => {
             onSubmit,
         });
         await wrapInPromise(() => wrapper.instance().open());
-        await flushPromises();
         wrapper.update();
 
         // Click on connection
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
-        await flushPromises();
         wrapper.update();
 
         // Click back button
         await wrapInPromise(() => wrapper.find("button.btn.btn-secondary").last().simulate("click"));
-        await flushPromises();
         wrapper.update();
 
         const state = wrapper.find(CloudFilePicker).state();
@@ -168,17 +163,14 @@ describe("CloudFilePicker", () => {
             onSubmit,
         });
         await wrapInPromise(() => wrapper.instance().open());
-        await flushPromises();
         wrapper.update();
 
         // Click on connection
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
-        await flushPromises();
         wrapper.update();
 
         // Click close button
         await wrapInPromise(() => wrapper.find("button.close").last().simulate("click"));
-        await flushPromises();
         wrapper.update();
 
         const state = wrapper.find(CloudFilePicker).state();
@@ -201,22 +193,18 @@ describe("CloudFilePicker", () => {
             onSubmit,
         });
         await wrapInPromise(() => wrapper.instance().open());
-        await flushPromises();
         wrapper.update();
 
         // Click on connection
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
-        await flushPromises();
         wrapper.update();
 
         // Click on file
         await wrapInPromise(() => wrapper.find("a").first().simulate("click"));
-        await flushPromises();
         wrapper.update();
 
         // Click ok button
         await wrapInPromise(() => wrapper.find("button.btn.btn-success").simulate("click"));
-        await flushPromises();
         wrapper.update();
 
         expect(onSubmit).toBeCalledWith(await mockStorageProvider.readText(mockFiles[0]));
