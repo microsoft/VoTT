@@ -122,7 +122,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     }
 
     private getCloudConnections(connections: IConnection[]): IConnection[] {
-        return connections.filter((connection) => connection.connectionType === StorageType.CLOUD);
+        return connections.filter((connection) => connection.connectionType === StorageType.cloud);
     }
 
     private connectionList() {

@@ -7,8 +7,10 @@ import { StorageType } from "./applicationState";
 export function getStorageType(providerType: string) {
     switch (providerType) {
         case "localFileSystemProxy":
-            return StorageType.LOCAL;
+            return StorageType.local;
         case "azureBlobStorage":
-            return StorageType.CLOUD;
+            return StorageType.cloud;
+        default:
+            return StorageType.other;
     }
 }
