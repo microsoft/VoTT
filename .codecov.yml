@@ -2,6 +2,7 @@
 # cat .codecov.yml | curl --data-binary @- https://codecov.io/validate
 
 comment:  # enable pull request comment
+  layout: "reach, diff, flags, files"
   behavior: new # delete old report and post new one
 coverage:
   range: 70..100
