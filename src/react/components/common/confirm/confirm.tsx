@@ -1,11 +1,8 @@
-import React from "react";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import React, { RefObject } from "react";
+import { Button } from "reactstrap";
+import MessageBox, { IMessageBoxProps } from "../messageBox/messageBox";
 
-export type MessageFormatHandler = (...params: any[]) => string;
-
-export interface IConfirmProps {
-    title: string;
-    message: string | MessageFormatHandler;
+export interface IConfirmProps extends IMessageBoxProps {
     confirmButtonText?: string;
     cancelButtonText?: string;
     confirmButtonColor?: string;
@@ -15,18 +12,20 @@ export interface IConfirmProps {
 }
 
 export interface IConfirmState {
-    isOpen: boolean;
     params: any[];
 }
 
 export default class Confirm extends React.Component<IConfirmProps, IConfirmState> {
+    private messageBox: RefObject<MessageBox>;
+
     constructor(props, context) {
         super(props, context);
 
         this.state = {
-            isOpen: false,
             params: null,
         };
+
+        this.messageBox = React.createRef<MessageBox>();
 
         this.open = this.open.bind(this);
         this.close = this.close.bind(this);
@@ -35,48 +34,38 @@ export default class Confirm extends React.Component<IConfirmProps, IConfirmStat
     }
 
     public render() {
-        if (!this.state.isOpen) {
-            return null;
-        }
-
-        const messageText = typeof this.props.message === "string"
-            ? this.props.message
-            : this.props.message.apply(this, this.state.params);
-
         return (
-            <Modal className="confirm-modal" isOpen={this.state.isOpen}>
-                <ModalHeader>{this.props.title}</ModalHeader>
-                <ModalBody>{messageText}</ModalBody>
-                <ModalFooter>
-                    <Button color={this.props.confirmButtonColor || "primary"}
-                        onClick={this.onConfirmClick}>{this.props.confirmButtonText || "Yes"}</Button>
-                    <Button color={this.props.cancelButtonColor || "secondary"}
-                        onClick={this.onCancelClick}>{this.props.cancelButtonText || "No"}</Button>
-                </ModalFooter>
-            </Modal>
+            <MessageBox ref={this.messageBox}
+                title={this.props.title}
+                message={this.props.message}
+                params={this.state.params}
+                onCancel={this.onCancelClick}>
+                <Button
+                    autoFocus={true}
+                    color={this.props.confirmButtonColor || "primary"}
+                    onClick={this.onConfirmClick}>{this.props.confirmButtonText || "Yes"}
+                </Button>
+                <Button
+                    color={this.props.cancelButtonColor || "secondary"}
+                    onClick={this.onCancelClick}>{this.props.cancelButtonText || "No"}
+                </Button>
+            </MessageBox>
         );
     }
 
     public open(...params: any[]): void {
-        this.setState({
-            isOpen: true,
-            params,
-        });
+        this.setState({ params }, () => this.messageBox.current.open());
     }
 
     public close(): void {
-        this.setState({
-            isOpen: false,
-        });
+        this.messageBox.current.close();
     }
 
     private onConfirmClick() {
-        this.close();
         this.props.onConfirm.apply(null, this.state.params);
     }
 
     private onCancelClick() {
-        this.close();
         if (this.props.onCancel) {
             this.props.onCancel.apply(null, this.state.params);
         }
