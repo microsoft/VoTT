@@ -32,8 +32,8 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         this.close = this.close.bind(this);
 
         this.getInitialState = this.getInitialState.bind(this);
-        this.handleOk = this.handleOk.bind(this);
-        this.handleBack = this.handleBack.bind(this);
+        this.ok = this.ok.bind(this);
+        this.back = this.back.bind(this);
         this.connectionList = this.connectionList.bind(this);
         this.onClickConnection = this.onClickConnection.bind(this);
         this.fileList = this.fileList.bind(this);
@@ -57,12 +57,12 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
                     {this.state.selectedFile || ""}
                     <Button
                         className="btn btn-success mr-1"
-                        onClick={this.handleOk}
+                        onClick={this.ok}
                         disabled={this.state.okDisabled}>
                         Ok
                     </Button>
                     <Button
-                        onClick={this.handleBack}
+                        onClick={this.back}
                         disabled={this.state.backDisabled}>
                         Go Back
                     </Button>
@@ -97,7 +97,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         };
     }
 
-    private async handleOk() {
+    private async ok() {
         if (this.state.selectedConnection && this.state.selectedFile) {
             const storageProvider = StorageProviderFactory.createFromConnection(this.state.selectedConnection);
             const content = await storageProvider.readText(this.state.selectedFile);
@@ -105,7 +105,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         }
     }
 
-    private handleBack() {
+    private back() {
         this.setState({
             ...this.getInitialState(),
             isOpen: true,
