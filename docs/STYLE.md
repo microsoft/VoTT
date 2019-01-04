@@ -7,9 +7,9 @@ and also avoid unneccessary changes due to space/tab configuration.
 
 Some editors required installing additional plugin to work while others don't.
 
-Find your editor [here](https://editorconfig.org/).
+* Find your editor [here](https://editorconfig.org/).
 
-A few that require plugins:
+### Editors that require plugins
 
 * VsCode
 * Notepad
