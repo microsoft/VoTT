@@ -180,7 +180,7 @@ export default class MockFactory {
         };
     }
 
-    public static createStorageProvider(files: string[]=["file1.jpg", "file2.jpg", "file3.jpg"]): IStorageProvider {
+    public static createStorageProvider(files: string[]= ["file1.jpg", "file2.jpg", "file3.jpg"]): IStorageProvider {
         return {
             storageType: StorageType.cloud,
             readText: jest.fn(() => Promise.resolve("Fake text")),
@@ -199,8 +199,8 @@ export default class MockFactory {
     public static createStorageProviderFromConnection(connection: IConnection): IStorageProvider {
         return {
             ...this.createStorageProvider(),
-            storageType: this.getStorageType(connection.providerType)
-        }
+            storageType: this.getStorageType(connection.providerType),
+        };
     }
 
     public static createAssetProvider(): IAssetProvider {
@@ -333,7 +333,7 @@ export default class MockFactory {
     }
 
     private static getStorageType(providerType: string): StorageType {
-        switch(providerType) {
+        switch (providerType) {
             case "azureBlobStorage":
                 return StorageType.cloud;
             case "localFileSystemProxy":
