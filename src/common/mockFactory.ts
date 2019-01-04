@@ -72,7 +72,8 @@ export default class MockFactory {
         return {
             accountName: "myaccount",
             containerName: "container",
-            createContainer: false,
+            sas: "sas",
+            createContainer: undefined,
         };
     }
 
@@ -156,8 +157,17 @@ export default class MockFactory {
             description: `Description for Connection ${name}`,
             providerType,
             connectionType: getStorageType(providerType),
-            providerOptions: {},
+            providerOptions: this.getProviderOptions(providerType),
         };
+    }
+
+    public static getProviderOptions(providerType) {
+        switch (providerType) {
+            case "azureBlobStorage":
+                return this.azureOptions();
+            default:
+                return {};
+        }
     }
 
     public static createTestCloudConnection(name: string= "test"): IConnection {
