@@ -1,5 +1,8 @@
 # EditorConfig is awesome: https://EditorConfig.org
 
+# Default:
+# https://github.com/editorconfig/editorconfig-defaults/blob/master/editorconfig-defaults.json
+
 # top-most EditorConfig file
 root = true
 
