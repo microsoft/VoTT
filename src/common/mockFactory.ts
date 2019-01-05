@@ -3,9 +3,9 @@ import {
     IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
-import { IAssetProvider } from "../providers/storage/assetProvider";
+import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
-import { IStorageProvider } from "../providers/storage/storageProvider";
+import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProvider";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
@@ -224,6 +224,46 @@ export default class MockFactory {
                 assetState: ExportAssetState.Tagged,
             },
         };
+    }
+
+    public static createStorageProviderRegistrations(count: number = 10): IStorageProviderRegistrationOptions[] {
+        const registrations: IStorageProviderRegistrationOptions[] = [];
+        for (let i = 1; i <= count; i++) {
+            registrations.push(MockFactory.createStorageProviderRegistration(i.toString()));
+        }
+
+        return registrations;
+    }
+
+    public static createAssetProviderRegistrations(count: number = 10): IAssetProviderRegistrationOptions[] {
+        const registrations: IAssetProviderRegistrationOptions[] = [];
+        for (let i = 1; i <= count; i++) {
+            registrations.push(MockFactory.createAssetProviderRegistration(i.toString()));
+        }
+
+        return registrations;
+    }
+
+    public static createStorageProviderRegistration(name: string) {
+        const registration: IStorageProviderRegistrationOptions = {
+            name,
+            displayName: `${name} display name`,
+            description: `${name} short description`,
+            factory: () => null,
+        };
+
+        return registration;
+    }
+
+    public static createAssetProviderRegistration(name: string) {
+        const registration: IAssetProviderRegistrationOptions = {
+            name,
+            displayName: `${name} display name`,
+            description: `${name} short description`,
+            factory: () => null,
+        };
+
+        return registration;
     }
 
     public static projectService(): IProjectService {

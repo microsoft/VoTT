@@ -1,16 +1,17 @@
 import React from "react";
 import _ from "lodash";
-import { WidgetProps } from "react-jsonschema-form";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
 
-export default function ConnectionProviderPicker(props: WidgetProps) {
+export interface IConnectionProviderPickerProps {
+    onChange: (value: string) => void;
+    id: string;
+    value: string;
+}
+
+export default function ConnectionProviderPicker(props: IConnectionProviderPickerProps) {
     const storageProviders = _.values(StorageProviderFactory.providers);
     const assetProviders = _.values(AssetProviderFactory.providers);
-
-    function onChange(e) {
-        props.onChange(e.target.value);
-    }
 
     const allProviders = _([])
         .concat(assetProviders)
@@ -18,6 +19,10 @@ export default function ConnectionProviderPicker(props: WidgetProps) {
         .uniqBy("name")
         .orderBy("displayName")
         .value();
+
+    function onChange(e) {
+        props.onChange(e.target.value);
+    }
 
     return (
         <select id={props.id}

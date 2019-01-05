@@ -1,4 +1,4 @@
-import { IAssetProvider } from "./assetProvider";
+import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProvider";
 import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
 
@@ -20,10 +20,7 @@ export interface IStorageProvider extends IAssetProvider {
     deleteContainer(folderPath: string): Promise<void>;
 }
 
-export interface IStorageProviderRegistrationOptions {
-    name: string;
-    displayName: string;
-    description?: string;
+export interface IStorageProviderRegistrationOptions extends IAssetProviderRegistrationOptions {
     factory: (options?: any) => IStorageProvider;
 }
 
