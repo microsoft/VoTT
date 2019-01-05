@@ -1,5 +1,7 @@
-import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
-    IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
+import {
+    AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
+    IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType,
+} from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider } from "../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -52,7 +54,7 @@ export default class MockFactory {
         return projects;
     }
 
-    public static createTestProject(name: string= "test"): IProject {
+    public static createTestProject(name: string = "test"): IProject {
         const connection = MockFactory.createTestConnection(name);
 
         return {
@@ -83,7 +85,7 @@ export default class MockFactory {
         };
     }
 
-    public static azureContainers(count: number= 3) {
+    public static azureContainers(count: number = 3) {
         const result = [];
         for (let i = 0; i < count; i++) {
             result.push({
@@ -91,7 +93,7 @@ export default class MockFactory {
                 blobs: MockFactory.azureBlobs(i),
             });
         }
-        return {containerItems: result};
+        return { containerItems: result };
     }
 
     public static fakeAzureData() {
@@ -112,14 +114,14 @@ export default class MockFactory {
         return blob;
     }
 
-    public static azureBlobs(id: number= 1, count: number= 10) {
+    public static azureBlobs(id: number = 1, count: number = 10) {
         const result = [];
         for (let i = 0; i < count; i++) {
             result.push({
                 name: `blob-${id}-${i}.jpg`,
             });
         }
-        return {segment: {blobItems: result}};
+        return { segment: { blobItems: result } };
     }
     public static createTestTags(count: number = 5): ITag[] {
         const tags: ITag[] = [];
@@ -130,7 +132,7 @@ export default class MockFactory {
         return tags;
     }
 
-    public static createTestTag(name: string= "Test Tag"): ITag {
+    public static createTestTag(name: string = "Test Tag"): ITag {
         return {
             name: `Tag ${name}`,
             color: MockFactory.randomColor(),
@@ -149,7 +151,7 @@ export default class MockFactory {
     }
 
     public static createTestConnection(
-        name: string= "test", providerType: string = "localFileSystemProxy"): IConnection {
+        name: string = "test", providerType: string = "localFileSystemProxy"): IConnection {
         return {
             id: `connection-${name}`,
             name: `Connection ${name}`,
@@ -168,7 +170,7 @@ export default class MockFactory {
         }
     }
 
-    public static createTestCloudConnection(name: string= "test"): IConnection {
+    public static createTestCloudConnection(name: string = "test"): IConnection {
         const connection = this.createTestConnection(name, "azureBlobStorage");
         return {
             ...connection,
@@ -320,6 +322,17 @@ export default class MockFactory {
             search: null,
             state: null,
         };
+    }
+
+    /**
+     * Runs function that updates the UI, and flushes call stack
+     * @param func - The function that updates the UI
+     */
+    public static flushUi(func: () => void): Promise<void> {
+        return new Promise<void>((resolve) => {
+            func();
+            setImmediate(resolve);
+        });
     }
 
     private static randomColor(): string {
