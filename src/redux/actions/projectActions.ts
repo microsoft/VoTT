@@ -5,6 +5,7 @@ import { ActionTypes } from "./actionTypes";
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
+import store from "../store/store";
 
 export default interface IProjectActions {
     loadProject(project: IProject): Promise<IProject>;
@@ -24,11 +25,30 @@ export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<
     };
 }
 
-export function saveProject(project: IProject): (dispatch: Dispatch) => Promise<IProject> {
-    return async (dispatch: Dispatch) => {
+export function saveProject(project: IProject): (dispatch: Dispatch, getState: any) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: any) => {
         const projectService = new ProjectService();
-        project = await projectService.save(project);
-        dispatch(saveProjectAction(project));
+        const projectName = project["name"];
+        const sourceConnection = project.sourceConnection.name;
+        const targetConnection = project.targetConnection.name;
+        const projectList = getState().recentProjects;
+        if (projectList && projectList.length > 0) {
+            const isNew = (projectList.find((project) => project.name === projectName) === undefined) &&
+                        (projectList.find(
+                            (project) => project.sourceConnection.name === sourceConnection) === undefined) &&
+                        (projectList.find(
+                            (project) => project.targetConnection.name === targetConnection) === undefined);
+            if (isNew) {
+                project = await projectService.save(project);
+                dispatch(saveProjectAction(project));
+            } else {
+                throw new Error("Cannot create duplicate projects");
+            }
+        } else {
+            project = await projectService.save(project);
+            dispatch(saveProjectAction(project));
+        }
+        // project = await projectService.save(project);
         return project;
     };
 }

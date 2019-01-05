@@ -67,23 +67,9 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         const projectToUpdate: IProject = {
             ...formData,
         };
-
-        const projectName = formData["name"];
-        const sourceConnection = formData.sourceConnection.name;
-        const targetConnection = formData.targetConnection.name;
-        const isNew = (this.props.recentProjects.find((project) => project.name === projectName) === undefined) &&
-                      (this.props.recentProjects.find(
-                          (project) => project.sourceConnection === sourceConnection) === undefined) &&
-                      (this.props.recentProjects.find(
-                          (project) => project.targetConnection === targetConnection) === undefined);
-
         try {
-            if (isNew) {
-                await this.props.actions.saveProject(projectToUpdate);
-                this.props.history.push(`/projects/${this.props.project.id}/edit`);
-            } else {
-                throw new Error("You cannot create duplicate projects");
-            }
+            await this.props.actions.saveProject(projectToUpdate);
+            this.props.history.push(`/projects/${this.props.project.id}/edit`);
         } catch (e) {
             console.log(e);
         }
