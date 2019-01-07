@@ -12,8 +12,18 @@ export const english: IAppStrings = {
     },
     homePage: {
         newProject: "New Project",
-        openProject: "Open Project",
+        openLocalProject: {
+            title: "Open Local Project",
+        },
+        openCloudProject: {
+            title: "Open Cloud Project",
+            selectConnection: "Select a Connection",
+        },
         recentProjects: "Recent Projects",
+        deleteProject: {
+            title: "Delete Project",
+            confirmation: "Are you sure you want to delete project",
+        },
     },
     appSettings: {
         title: "Application Settings",

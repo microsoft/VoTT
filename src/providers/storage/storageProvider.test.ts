@@ -1,5 +1,5 @@
 import { StorageProviderFactory, IStorageProvider } from "./storageProvider";
-import { IAsset } from "../../models/applicationState";
+import { IAsset, StorageType } from "../../models/applicationState";
 
 describe("Storage Provider Factory", () => {
     it("registers new storage providers", () => {
@@ -22,6 +22,8 @@ describe("Storage Provider Factory", () => {
 });
 
 class TestStorageProvider implements IStorageProvider {
+    public storageType: StorageType.Other;
+
     public readText(filePath: string): Promise<string> {
         throw new Error("Method not implemented.");
     }

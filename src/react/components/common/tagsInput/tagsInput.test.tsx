@@ -36,7 +36,7 @@ describe("Tags Input Component", () => {
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        expect(wrapper.find("div.inline-block.tag_color_box")).toHaveLength(originalTags.length);
+        expect(wrapper.find("div.tag-color-box")).toHaveLength(originalTags.length);
     });
 
     it("one text input field is available", () => {
@@ -115,7 +115,7 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
         });
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         expect(wrapper.find(TagsInput).state().showModal).toBe(true);
@@ -127,7 +127,7 @@ describe("Tags Input Component", () => {
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         expect(wrapper.find(TagsInput).state().selectedTag.id).toEqual(originalTags[0].name);
@@ -144,7 +144,7 @@ describe("Tags Input Component", () => {
             onTagShiftClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         // Shows modal
@@ -161,7 +161,7 @@ describe("Tags Input Component", () => {
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button.btn.btn-success").simulate("click");
@@ -175,7 +175,7 @@ describe("Tags Input Component", () => {
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button.btn.btn-secondary").simulate("click");
@@ -191,7 +191,7 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
             onTagClick: onTagClickHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}});
         expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
@@ -205,7 +205,7 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
             onTagClick: null,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}});
         expect(onTagClickHandler).not.toBeCalled();
@@ -221,7 +221,7 @@ describe("Tags Input Component", () => {
             onTagShiftClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}});
         expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
@@ -239,7 +239,7 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
             onTagShiftClick: onTagShiftClickHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
         expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
@@ -255,7 +255,7 @@ describe("Tags Input Component", () => {
             onTagShiftClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
         expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
@@ -273,7 +273,7 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
             onTagShiftClick: null,
         });
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
         expect(onTagClickHandler).not.toBeCalled();

@@ -1,7 +1,11 @@
 import { IAssetProvider } from "./assetProvider";
 import Guard from "../../common/guard";
+import { IConnection, StorageType } from "../../models/applicationState";
 
 export interface IStorageProvider extends IAssetProvider {
+
+    storageType: StorageType;
+
     readText(filePath: string): Promise<string>;
     readBinary(filePath: string): Promise<Buffer>;
     deleteFile(filePath: string): Promise<void>;
@@ -9,7 +13,7 @@ export interface IStorageProvider extends IAssetProvider {
     writeText(filePath: string, contents: string): Promise<void>;
     writeBinary(filePath: string, contents: Buffer): Promise<void>;
 
-    listFiles(folderPath?: string): Promise<string[]>;
+    listFiles(folderPath?: string, ext?: string): Promise<string[]>;
     listContainers(folderPath?: string): Promise<string[]>;
 
     createContainer(folderPath: string): Promise<void>;
@@ -26,6 +30,10 @@ export class StorageProviderFactory {
         Guard.null(factory);
 
         StorageProviderFactory.handlerRegistry[name] = factory;
+    }
+
+    public static createFromConnection(connection: IConnection) {
+        return this.create(connection.providerType, connection.providerOptions);
     }
 
     public static create(name: string, options?: any): IStorageProvider {

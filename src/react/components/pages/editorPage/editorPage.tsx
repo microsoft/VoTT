@@ -125,11 +125,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onFooterChange(footerState) {
-        this.setState({
-            project: {
-                ...this.state.project,
-                tags: footerState.tags,
-            },
+        const project = {
+            ...this.state.project,
+            tags: footerState.tags,
+        };
+        this.setState({project}, async () => {
+            await this.props.actions.saveProject(project);
         });
     }
 

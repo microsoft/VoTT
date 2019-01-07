@@ -1,6 +1,6 @@
 # VoTT (Visual Object Tagging Tool)
 
-[![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6?branchName=v2)
+[![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6?branchName=v2) [![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/v2/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)
 
 The `v2` branch is a complete reboot of the original VoTT, and currently don't share git histories. The purpose of `v2` is to create a more extensible version of the original application while leveraging more recent frameworks such as React/Redux.
 
@@ -11,6 +11,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests](https://github.com/Microsoft/VoTT/pulls) into the project. We ask that you follow these simple guidelines:
 
 ### Issues
+
 - Look for duplicate issues & comment on thread if experiencing something similar
 - Fill in template information (platform, OS, version, screenshots, etc.) 
 
@@ -28,21 +29,29 @@ We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests
 
 Try to keep PRs small to decrease the time required to review and merge
 
-## Download and Use
+### Style
+
+1. This repo use EditorConfig to maintain consistent style, please refer to
+   this [guide](docs/STYLE.md) for more information.
+
+## Usage
 
 For those who just want to use VoTT rather than contributing to it, you have two options:
 
-####1. Download and install release package for your environment (recommended)
+### Download and install release package for your environment (recommended)
+
    Find our [most recent release](https://github.com/Microsoft/VoTT/releases), download and run. `v2` releases will be prefixed by `2.x`.
-   
-####2. Clone repo and run from terminal using `npm`
+
+#### Clone repo and run from terminal using `npm`
+
    Run the following commands in your terminal:
+
    ```bash
     git clone https://github.com/Microsoft/VoTT
     cd VoTT
     git checkout v2
     npm install
-    npm start    
+    npm start
    ```
 
-   Important to note that when running with `npm`, both the electron and the browser versions of the application will start. One major difference is that electron can access the local file system.
+   **Important to note that when running with `npm`, both the electron and the browser versions of the application will start. One major difference is that electron can access the local file system.**
