@@ -187,4 +187,34 @@ describe("Azure blob functions", () => {
         expect(fileName).toEqual("filename.jpg");
     });
 
+    it("creates a container when specified in options", () => {
+        const newOptions = {
+            ...options,
+            containerName: "newContainer",
+            createContainer: true,
+        };
+        const provider: AzureBlobStorage = new AzureBlobStorage(newOptions);
+        provider.initialize();
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            newOptions.containerName,
+        );
+    });
+
+    it("does not create a container when not specified", async () => {
+        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        await provider.initialize();
+        expect(serviceURL.prototype.listContainersSegment).toBeCalled();
+    });
+
+    it("throws an error if container not found and not created", async () => {
+        const newContainerName = "newContainer";
+        const provider: AzureBlobStorage = new AzureBlobStorage({
+            ...options,
+            containerName: newContainerName,
+        });
+        expect(provider.initialize()).rejects.toContain({
+            message: `Container "${newContainerName} does not exist`
+        });
+    });
 });

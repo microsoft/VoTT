@@ -14,6 +14,7 @@ import CondensedList from "../../common/condensedList/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
 
 describe("Connections Page", () => {
     const connectionsRoute: string = "/connections";
@@ -129,6 +130,10 @@ describe("Connections Page", () => {
                 id: expect.any(String),
             };
 
+            const assetProvider = MockFactory.createAssetProvider();
+
+            AssetProviderFactory.createFromConnection = jest.fn(() => assetProvider);
+
             const options: IAzureCloudStorageOptions = connection.providerOptions as IAzureCloudStorageOptions;
 
             connectionForm
@@ -156,6 +161,7 @@ describe("Connections Page", () => {
 
             setImmediate(() => {
                 expect(saveConnectionSpy).toBeCalledWith(connection);
+                expect(assetProvider.initialize).toBeCalled();
                 done();
             });
         });

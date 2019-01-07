@@ -11,6 +11,7 @@ import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
 import { strings } from "../../../../common/strings";
 import Confirm from "../../common/confirm/confirm";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
@@ -120,6 +121,10 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     private onFormSubmit = async (connection: IConnection) => {
+        const assetProvider = AssetProviderFactory.createFromConnection(connection);
+        if (assetProvider.initialize) {
+            await assetProvider.initialize();
+        }
         await this.props.actions.saveConnection(connection);
         this.props.history.goBack();
     }

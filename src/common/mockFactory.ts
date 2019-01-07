@@ -1,7 +1,7 @@
 import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
     IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
-import { IAssetProvider } from "../providers/storage/assetProvider";
+import { IAssetProvider, AssetProviderFactory } from "../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
 import { IStorageProvider } from "../providers/storage/storageProvider";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
@@ -70,7 +70,7 @@ export default class MockFactory {
     public static azureOptions(): IAzureCloudStorageOptions {
         return {
             accountName: "myaccount",
-            containerName: "container",
+            containerName: "container0",
             sas: "sas",
             createContainer: undefined,
         };
@@ -95,14 +95,15 @@ export default class MockFactory {
     }
 
     public static fakeAzureData() {
+        const options = this.azureOptions();
         return {
             blobName: "file1.jpg",
             blobText: "This is the content",
             fileType: "image/jpg",
-            containerName: "container",
+            containerName: options.containerName,
             containers: this.azureContainers(),
             blobs: this.azureBlobs(),
-            options: this.azureOptions(),
+            options: options,
         };
     }
 
@@ -121,6 +122,7 @@ export default class MockFactory {
         }
         return {segment: {blobItems: result}};
     }
+
     public static createTestTags(count: number = 5): ITag[] {
         const tags: ITag[] = [];
         for (let i = 0; i < count; i++) {
@@ -209,6 +211,9 @@ export default class MockFactory {
 
     public static createAssetProvider(): IAssetProvider {
         return {
+            initialize(): Promise<void> {
+                return Promise.resolve();
+            },
             getAssets(containerName?: string): Promise<IAsset[]> {
                 throw new Error("Method not implemented.");
             },
