@@ -8,6 +8,7 @@
  */
 export interface IApplicationState {
     appSettings: IAppSettings;
+    appContext: IAppContext;
     connections: IConnection[];
     recentProjects: IProject[];
     currentProject: IProject;
@@ -24,6 +25,38 @@ export interface IAppSettings {
     devToolsEnabled: boolean;
     connectionId?: string;
     connection: IConnection;
+}
+
+/**
+ * @name - Application Context
+ * @description - Contains contextual information about where the application is running
+ * @member hostProcess - Information about the process hosting the web app
+ * @member os - Information about the operating system the web app is running on
+ */
+export interface IAppContext {
+    hostProcess: IHostProcess;
+    os: IOS;
+}
+
+/**
+ * @name - Host Process
+ * @description - Describes the host process
+ * @member type - The type of host process
+ * @member info - Extra info about the host process
+ */
+export interface IHostProcess {
+    type: HostProcessType;
+    info: IHostProcessInfo;
+}
+
+/**
+ * @name - Operating System
+ * @description - Describes the Operating System
+ * @member type - The type of Operating System
+ */
+export interface IOS {
+    type: OSType;
+    info: IOSInfo;
 }
 
 /**
@@ -219,4 +252,59 @@ export enum RegionType {
     Square = "SQUARE",
     Rectangle = "RECTANGLE",
     Polygon = "POLYGON",
+}
+
+/**
+ * @enum ELECTRON - Electron Host Process Type
+ * @enum BROWSER - Browser Host Process Type
+ */
+export enum HostProcessType {
+    Electron = "electron",
+    Browser = "browser",
+}
+
+/**
+ * @name - Host Process Info
+ * @description - Detailed information about the host process
+ * @member build - Build string of the host process
+ * @member cpuArchitecture - CPU architecture the process was compiled for
+ */
+export interface IHostProcessInfo {
+    build: string;
+    cpuArchitecture: CPUArchitectureType;
+}
+
+/**
+ * @enum WINDOWS - Windows OS Type
+ * @enum MAC - Mac OS Type
+ * @enum LINUX - Linux OS Type
+ */
+export enum OSType {
+    Windows = "windows",
+    Mac = "mac",
+    Linux = "linux",
+}
+
+/**
+ * @name - Operating System Info
+ * @description - Detailed information about the operating system
+ * @member build - Build string of the operating system
+ * @member cpuArchitecture - CPU architecture the operating system was compiled for
+ */
+export interface IOSInfo {
+    build: string;
+    cpuArchitecture: CPUArchitectureType;
+}
+
+/**
+ * @enum X86 - 32-bit x86 machine code
+ * @enum X64 - 64-bit x64 machine code
+ * @enum ARM - 32-bit ARM machine code
+ * @enum ARM64 - 64-bit ARM machine code
+ */
+export enum CPUArchitectureType {
+    x86 = "x86",
+    x64 = "x64",
+    Arm = "arm",
+    Arm64 = "arm64",
 }
