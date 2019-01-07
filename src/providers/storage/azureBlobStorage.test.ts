@@ -194,6 +194,7 @@ describe("Azure blob functions", () => {
             createContainer: true,
         };
         const provider: AzureBlobStorage = new AzureBlobStorage(newOptions);
+        
         provider.initialize();
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
