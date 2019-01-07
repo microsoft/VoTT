@@ -13,11 +13,18 @@ export interface ITFPascalVOCJsonExportOptions {
     assetState: ExportAssetState;
 }
 
+interface IImageInfo {
+    width: number;
+    height: number;
+}
+
 /**
  * @name - TFPascalVOC Json Export Provider
  * @description - Exports a project into a single JSON file that include all configured assets
  */
 export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJsonExportOptions> {
+    private imagesInfo = new Map<string, IImageInfo>();
+
     constructor(project: IProject, options: ITFPascalVOCJsonExportOptions) {
         super(project, options);
         Guard.null(options);
@@ -86,9 +93,12 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                         // Load image at runtime to get dimension info
                         const img = new Image();
                         img.onload = ((event) => {
-                            // TODO: Save on a temporary Dictionary width, height, depth
-                            //       to be used later in exportAnnotations()
-                            console.log(img.width);
+                            const imageInfo: IImageInfo = {
+                                width: img.width,
+                                height: img.height,
+                            };
+
+                            this.imagesInfo.set(element.asset.name, imageInfo);
 
                             resolve();
                         });
@@ -154,6 +164,14 @@ item {
         // Create Annotations Sub Folder
         const annotationsFolderName = `${exportFolderName}/Annotations`;
         await this.storageProvider.createContainer(annotationsFolderName);
+
+
+        this.imagesInfo.forEach((element) => {
+            console.log(element);
+        });
+
+
+
 
         // Save Annotations
         // TODO
