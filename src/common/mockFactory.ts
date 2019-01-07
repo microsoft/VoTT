@@ -103,7 +103,7 @@ export default class MockFactory {
             containerName: options.containerName,
             containers: this.azureContainers(),
             blobs: this.azureBlobs(),
-            options: options,
+            options,
         };
     }
 
