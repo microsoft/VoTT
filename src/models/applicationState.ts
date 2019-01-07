@@ -150,8 +150,8 @@ export interface ISize {
 export interface IRegion {
     id: string;
     type: RegionType;
-    tags: TagsDescriptor;
-    points: Point2D[];
+    tags: ITag[];
+    points: IPoint[];
 }
 
 /**

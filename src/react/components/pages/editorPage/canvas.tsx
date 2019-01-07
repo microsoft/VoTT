@@ -1,5 +1,5 @@
 import React from "react";
-import { IAssetMetadata, IRegion, RegionType, AssetState } from "../../../../models/applicationState";
+import { IAssetMetadata, IRegion, RegionType, AssetState, ITag } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
@@ -279,10 +279,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.scaleRegionToSourceSize(commit);
+        let newTags = [tags.primary,...tags.secondary].map((tag)=>{return {name: tag.name,color: tag.colorHue.toString()}})
         const newRegion = {
             id: incrementalRegionID.toString(),
             type: RegionType.Rectangle,
-            tags,
+            tags: newTags,
             points: [new Point2D(scaledRegionData.x, scaledRegionData.y),
                     new Point2D(scaledRegionData.x + scaledRegionData.width,
                                 scaledRegionData.y + scaledRegionData.height)],
@@ -355,12 +356,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     const loadedRegionData = new RegionData(region.points[0].x, region.points[0].y,
                                                             Math.abs(region.points[0].x - region.points[1].x),
                                                             Math.abs(region.points[0].y - region.points[1].y),
-                                                            region.points,
+                                                            region.points.map((point)=>{return new Point2D(point.x,point.y)}),
                                                             RegionDataType.Rect);
-                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), region.tags);
+                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,parseInt(region.tags[0].color))));
                 });
             }
         });
         image.src = this.props.selectedAsset.asset.path;
-    }
+    }    
 }

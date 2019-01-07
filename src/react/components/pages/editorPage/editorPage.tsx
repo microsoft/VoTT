@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState} from "../../../../models/applicationState";
+import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState, IRegion} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { RouteComponentProps } from "react-router-dom";
 import HtmlFileReader from "../../../../common/htmlFileReader";
@@ -24,6 +24,7 @@ interface IEditorPageState {
     project: IProject;
     assets: IAsset[];
     selectedAsset?: IAssetMetadata;
+    selectedRegion?: IRegion;
 }
 
 function mapStateToProps(state: IApplicationState) {
