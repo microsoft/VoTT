@@ -8,6 +8,7 @@ import { LocalFileSystemProxy } from "./providers/storage/localFileSystemProxy";
 import { StorageProviderFactory } from "./providers/storage/storageProviderFactory";
 import registerToolbar from "./registerToolbar";
 import { strings } from "./common/strings";
+import AzureCustomVisionProvider from "./providers/export/azureCustomVision";
 
 export default function registerProviders() {
     // Storage Providers
@@ -43,6 +44,9 @@ export default function registerProviders() {
     ExportProviderFactory.register("vottJson", (project, options) => new VottJsonExportProvider(project, options));
     ExportProviderFactory.register("tensorFlowPascalVOC",
         (project, options) => new TFPascalVOCJsonExportProvider(project, options));
+
+    ExportProviderFactory.register("azureCustomVision",
+        (project, options) => new AzureCustomVisionProvider(project, options));
 
     registerToolbar();
 }

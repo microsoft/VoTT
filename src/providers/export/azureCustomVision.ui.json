@@ -1,1 +1,12 @@
-{}
+{
+    "description": {
+        "ui:widget": "textarea"
+    },
+    "domain": {
+        "ui:widget": "externalPicker",
+        "ui:options": {
+            "url": "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/domains",
+            "apiKey": "${apiKey}"
+        }
+    }
+}

@@ -1,1 +1,63 @@
-{}
+{
+    "type": "object",
+    "title": "Azure Custom Vision",
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Project Name"
+        },
+        "description": {
+            "type": "string",
+            "title": "Project Description"
+        },
+        "apiKey": {
+            "type": "string",
+            "title": "API Key"
+        },
+        "projectType": {
+            "type": "string",
+            "title": "Project Type",
+            "enum": [
+                "Classification",
+                "Object Detection"
+            ],
+            "enumNames": [
+                "Classification",
+                "Object Detection"
+            ],
+            "default": "Classification"
+        },
+        "classificationType": {
+            "type": "string",
+            "title": "Classification Type",
+            "enum": [
+                "Multilabel",
+                "Multiclass"
+            ],
+            "enumNames": [
+                "Multiple tags per image",
+                "Single tag per image"
+            ],
+            "default": "Multilabel"
+        },
+        "domains": {
+            "type": "string",
+            "title": "Domain"
+        },
+        "assetState": {
+            "type": "string",
+            "title": "Asset State",
+            "enum": [
+                "all",
+                "visited",
+                "tagged"
+            ],
+            "default": "all",
+            "enumNames": [
+                "All Assets",
+                "Only Visisted Assets",
+                "Only Tagged Assets"
+            ]
+        }
+    }
+}
