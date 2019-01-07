@@ -7,16 +7,37 @@ import { BingImageSearch } from "./providers/storage/bingImageSearch";
 import { LocalFileSystemProxy } from "./providers/storage/localFileSystemProxy";
 import { StorageProviderFactory } from "./providers/storage/storageProvider";
 import registerToolbar from "./registerToolbar";
+import { strings } from "./common/strings";
 
 export default function registerProviders() {
     // Storage Providers
-    StorageProviderFactory.register("localFileSystemProxy", (options) => new LocalFileSystemProxy(options));
-    StorageProviderFactory.register("azureBlobStorage", (options) => new AzureBlobStorage(options));
+    StorageProviderFactory.register({
+        name: "localFileSystemProxy",
+        displayName: strings.connections.providers.local.title,
+        factory: (options) => new LocalFileSystemProxy(options),
+    });
+    StorageProviderFactory.register({
+        name: "azureBlobStorage",
+        displayName: strings.connections.providers.azureBlob.title,
+        factory: (options) => new AzureBlobStorage(options),
+    });
 
     // Asset Providers
-    AssetProviderFactory.register("localFileSystemProxy", (options) => new LocalFileSystemProxy(options));
-    AssetProviderFactory.register("azureBlobStorage", (options) => new AzureBlobStorage(options));
-    AssetProviderFactory.register("bingImageSearch", (options) => new BingImageSearch(options));
+    AssetProviderFactory.register({
+        name: "localFileSystemProxy",
+        displayName: strings.connections.providers.local.title,
+        factory: (options) => new LocalFileSystemProxy(options),
+    });
+    AssetProviderFactory.register({
+        name: "azureBlobStorage",
+        displayName: strings.connections.providers.azureBlob.title,
+        factory: (options) => new AzureBlobStorage(options),
+    });
+    AssetProviderFactory.register({
+        name: "bingImageSearch",
+        displayName: strings.connections.providers.bing.title,
+        factory: (options) => new BingImageSearch(options),
+    });
 
     // Export Providers
     ExportProviderFactory.register("vottJson", (project, options) => new VottJsonExportProvider(project, options));

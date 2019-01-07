@@ -15,7 +15,7 @@ export interface IAzureCloudStorageOptions {
 
 export class AzureBlobStorage implements IStorageProvider {
 
-    public storageType: StorageType.Cloud;
+    public storageType: StorageType = StorageType.Cloud;
 
     constructor(private options?: IAzureCloudStorageOptions) {}
 

@@ -3,9 +3,9 @@ import { IAsset } from "../../models/applicationState";
 
 describe("Asset Provider Factory", () => {
     it("registers new storage providers", () => {
-        expect(Object.keys(AssetProviderFactory.handlers).length).toEqual(0);
+        expect(Object.keys(AssetProviderFactory.providers).length).toEqual(0);
         AssetProviderFactory.register("testProvider", () => new TestAssetProvider());
-        expect(Object.keys(AssetProviderFactory.handlers).length).toEqual(1);
+        expect(Object.keys(AssetProviderFactory.providers).length).toEqual(1);
     });
 
     it("creates a new instance of the provider", () => {

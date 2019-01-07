@@ -4,6 +4,7 @@ import { IConnection } from "../../../../models/applicationState";
 import LocalFolderPicker from "../../common/localFolderPicker/localFolderPicker";
 import { strings, addLocValues } from "../../../../common/strings";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+import ConnectionProviderPicker from "../../common/connectionProviderPicker/connectionProviderPicker";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./connectionForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -26,6 +27,7 @@ export interface IConnectionFormState {
 export default class ConnectionForm extends React.Component<IConnectionFormProps, IConnectionFormState> {
     private widgets = {
         localFolderPicker: (LocalFolderPicker as any) as Widget,
+        connectionProviderPicker: (ConnectionProviderPicker as any) as Widget,
     };
 
     constructor(props, context) {
@@ -90,6 +92,10 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
     }
 
     private onFormValidate(connection: IConnection, errors: FormValidation) {
+        if (connection.providerType === "") {
+            errors.providerType.addError("is a required property");
+        }
+
         if (this.state.classNames.indexOf("was-validated") === -1) {
             this.setState({
                 classNames: [...this.state.classNames, "was-validated"],
@@ -131,6 +137,14 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
 
             newUiSchema = { ...uiSchema };
             newUiSchema["providerOptions"] = providerUiSchema;
+        } else {
+            newFormSchema = { ...formSchema };
+            delete newFormSchema.properties["providerOptions"];
+
+            newUiSchema = { ...uiSchema };
+            delete newUiSchema["providerOptions"];
+
+            resetProviderOptions = true;
         }
 
         const formData = { ...connection };
