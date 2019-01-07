@@ -1,5 +1,5 @@
 import { IStorageProvider } from "./storageProvider";
-import { IAsset, AssetType } from "../../models/applicationState";
+import { IAsset, AssetType, StorageType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import { TokenCredential, AnonymousCredential,
     ContainerURL, StorageURL, ServiceURL, Credential, Aborter,
@@ -14,6 +14,8 @@ export interface IAzureCloudStorageOptions {
 }
 
 export class AzureBlobStorage implements IStorageProvider {
+
+    public storageType: StorageType = StorageType.Cloud;
 
     constructor(private options?: IAzureCloudStorageOptions) {}
 
@@ -88,7 +90,7 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
-    public listFiles(path: string): Promise<string[]> {
+    public listFiles(path: string, ext?: string): Promise<string[]> {
         return new Promise<string[]>(async (resolve, reject) => {
             try {
                 const result: string[] = [];
@@ -101,7 +103,9 @@ export class AzureBlobStorage implements IStorageProvider {
                     );
                     marker = listBlobsResponse.nextMarker;
                     for (const blob of listBlobsResponse.segment.blobItems) {
-                        result.push(blob.name);
+                        if ((ext && blob.name.endsWith(ext)) || !ext) {
+                            result.push(blob.name);
+                        }
                     }
                 } while (marker);
                 resolve(result);

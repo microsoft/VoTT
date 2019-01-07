@@ -3,6 +3,7 @@ import { ExportProvider, ExportAssetState } from "./exportProvider";
 import { IProject, AssetState, AssetType, IAsset } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
+import { constants } from "../../common/constants";
 
 /**
  * @name - IVottJsonExportOptions
@@ -47,7 +48,7 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOption
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(results, (assetMetadata) => assetMetadata.asset.id);
 
-        const fileName = `${this.project.name.replace(" ", "-")}-export.json`;
+        const fileName = `${this.project.name.replace(" ", "-")}${constants.exportFileExtension}`;
         await this.storageProvider.writeText(fileName, JSON.stringify(exportObject, null, 4));
     }
 }

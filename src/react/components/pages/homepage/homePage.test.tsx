@@ -1,69 +1,45 @@
+import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import { Provider } from "react-redux";
+import { BrowserRouter as Router, Link } from "react-router-dom";
+import { AnyAction, Store } from "redux";
+import MockFactory from "../../../../common/mockFactory";
+import { IApplicationState, IProject } from "../../../../models/applicationState";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
-import initialState from "../../../../redux/store/initialState";
-import HomePage from "./homePage";
-import { BrowserRouter as Router } from "react-router-dom";
-import { mount } from "enzyme";
-import { Link } from "react-router-dom";
-import { IApplicationState, IProject, ITag, IExportFormat, IConnection } from "../../../../models/applicationState";
-import IProjectActions from "../../../../redux/actions/projectActions";
+import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
 import FilePicker from "../../common/filePicker/filePicker";
+import HomePage, { IHomepageProps } from "./homePage";
+
+jest.mock("../../../../services/projectService");
 
 describe("Connection Picker Component", () => {
-    const defaultState: IApplicationState = initialState;
-    const store = createReduxStore(defaultState);
-    let wrapper: any = null;
-    let recentProjects: IProject[] = null;
-    const actions: IProjectActions = null;
-    let source: IConnection;
-    const tags: ITag[] = [];
-    let format: IExportFormat;
-    const history: any = null;
-    const location: any = null;
-    const match: any = null;
-    let onChangeHandler: (value: any) => void;
+    let store: Store<IApplicationState> = null;
+    let props: IHomepageProps = null;
+    let wrapper: ReactWrapper<IHomepageProps> = null;
+    let deleteProjectSpy: jest.SpyInstance = null;
+    const recentProjects = MockFactory.createTestProjects(2);
 
-    beforeEach(() => {
-        source = {
-            id: "1",
-            name: "connection name",
-            description: "connection description",
-            providerType: "provider",
-            providerOptions: {},
-        };
-        format = {
-            providerType: "provider",
-            providerOptions: {},
-        };
-        recentProjects = [
-            { id: "1",
-              name: "project1",
-              description: "testproject",
-              tags,
-              sourceConnection: source,
-              targetConnection: source,
-              exportFormat: format,
-              autoSave: true,
-            },
-        ];
-
-        onChangeHandler = jest.fn();
-
-        wrapper = mount(
+    function createComponent(store, props: IHomepageProps): ReactWrapper<IHomepageProps> {
+        return mount(
             <Provider store={store}>
                 <Router>
-                    <HomePage
-                        recentProjects={recentProjects}
-                        actions={actions}
-                        history={history}
-                        location={location}
-                        match={match}
-                    />
+                    <HomePage {...props} />
                 </Router>
             </Provider>,
         );
+    }
+
+    beforeEach(() => {
+        const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
+
+        store = createStore(recentProjects);
+        props = createProps();
+        deleteProjectSpy = jest.spyOn(props.actions, "deleteProject");
+
+        wrapper = createComponent(store, props);
     });
 
     it("should render a New Project Link", () => {
@@ -71,9 +47,9 @@ describe("Connection Picker Component", () => {
     });
 
     it("should call upload when 'Open Project' is clicked", () => {
-        const fileUpload = wrapper.find("a.file-upload");
+        const fileUpload = wrapper.find("a.file-upload").first();
         const filePicker = wrapper.find(FilePicker);
-        const spy = jest.spyOn(filePicker.instance(), "upload");
+        const spy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
         fileUpload.simulate("click");
         expect(spy).toBeCalled();
     });
@@ -85,8 +61,75 @@ describe("Connection Picker Component", () => {
 
     it("should render a list of recent projects", () => {
         expect(wrapper).not.toBeNull();
-        if (wrapper.props.recentProjects && wrapper.props.recentProjects.length > 0) {
+        if (wrapper.props().recentProjects && wrapper.props().recentProjects.length > 0) {
             expect(wrapper.find(CondensedList).exists()).toBeTruthy();
         }
     });
+
+    it("should delete a project when clicking trash icon", (done) => {
+        const store = createStore(recentProjects);
+        const props = createProps();
+        const wrapper = createComponent(store, props);
+
+        expect(wrapper.find(".recent-project-item").length).toEqual(recentProjects.length);
+        wrapper.find(".delete-btn").first().simulate("click");
+
+        // Accept the modal delete warning
+        wrapper.find(".modal-footer button").first().simulate("click");
+
+        setImmediate(() => {
+            expect(deleteProjectSpy).toBeCalledWith(recentProjects[0]);
+            const updatedStore = store.getState();
+            expect(updatedStore.recentProjects.length).toEqual(recentProjects.length - 1);
+
+            done();
+        });
+    });
+
+    function createProps(): IHomepageProps {
+        return {
+            recentProjects: [],
+            connections: MockFactory.createTestConnections(),
+            history: {
+                length: 0,
+                action: null,
+                location: null,
+                push: jest.fn(),
+                replace: jest.fn(),
+                go: jest.fn(),
+                goBack: jest.fn(),
+                goForward: jest.fn(),
+                block: jest.fn(),
+                listen: jest.fn(),
+                createHref: jest.fn(),
+            },
+            location: {
+                hash: null,
+                pathname: null,
+                search: null,
+                state: null,
+            },
+            actions: (projectActions as any) as IProjectActions,
+            match: {
+                params: {},
+                isExact: true,
+                path: `https://localhost:3000/`,
+                url: `https://localhost:3000/`,
+            },
+        };
+    }
+
+    function createStore(recentProjects: IProject[]): Store<IApplicationState, AnyAction> {
+        const initialState: IApplicationState = {
+            currentProject: null,
+            appSettings: {
+                connection: null,
+                devToolsEnabled: false,
+            },
+            connections: [],
+            recentProjects,
+        };
+
+        return createReduxStore(initialState);
+    }
 });

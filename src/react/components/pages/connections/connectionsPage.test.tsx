@@ -1,18 +1,20 @@
-import React from "react";
-import { Provider } from "react-redux";
-import { AnyAction, Store } from "redux";
-import { Route, Link, StaticRouter as Router, NavLink } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
+import React from "react";
 import Form from "react-jsonschema-form";
-import createReduxStore from "../../../../redux/store/store";
-import initialState from "../../../../redux/store/initialState";
+import { Provider } from "react-redux";
+import { Link, NavLink, Route, StaticRouter as Router } from "react-router-dom";
+import { AnyAction, Store } from "redux";
+import MockFactory from "../../../../common/mockFactory";
+import { IApplicationState, IConnection } from "../../../../models/applicationState";
+import { IAzureCloudStorageOptions } from "../../../../providers/storage/azureBlobStorage";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
-import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
+import initialState from "../../../../redux/store/initialState";
+import createReduxStore from "../../../../redux/store/store";
 import CondensedList from "../../common/condensedList/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
-import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState } from "../../../../models/applicationState";
+import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
+import registerProviders from "../../../../registerProviders";
 
 describe("Connections Page", () => {
     const connectionsRoute: string = "/connections";
@@ -35,6 +37,8 @@ describe("Connections Page", () => {
         return createComponent(context, route, store, props);
     }
 
+    beforeAll(registerProviders);
+
     it("mounted the component", () => {
         const wrapper = createWrapper();
 
@@ -45,7 +49,6 @@ describe("Connections Page", () => {
 
         const page = connectionsPage.find(".app-connections-page");
         expect(page.exists()).toBe(true);
-        expect(page.children()).toHaveLength(3);
     });
 
     describe("without any connections", () => {
@@ -114,47 +117,50 @@ describe("Connections Page", () => {
             expect(form.exists()).toBe(true);
         });
 
-        it("adds connection when submit button is hit", (done) => {
+        it("adds connection when submit button is hit", async (done) => {
             const props = createProps(connectionCreateRoute);
             props.match.params = { connectionId: "create" };
 
             const saveConnectionSpy = jest.spyOn(props.actions, "saveConnection");
             const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
 
-            const connectionsPage = wrapper.find(ConnectionPage);
-            const connectionForm = connectionsPage.find(ConnectionForm);
-
-            const partialConnection = {
-                name: "test",
-                providerType: "bingImageSearch",
-                providerOptions: {
-                    apiKey: "abc123",
-                    query: "test",
-                    aspectRatio: "tall",
-                },
+            const connection: IConnection = {
+                ...MockFactory.createTestConnection("test", "azureBlobStorage"),
+                id: expect.any(String),
             };
 
-            connectionForm
+            const options: IAzureCloudStorageOptions = connection.providerOptions as IAzureCloudStorageOptions;
+
+            wrapper
                 .find("input#root_name")
-                .simulate("change", { target: { value: partialConnection.name } });
-            connectionForm
-                .find("select#root_providerType")
-                .simulate("change", { target: { value: partialConnection.providerType } });
-            connectionForm
-                .find("input#root_providerOptions_apiKey")
-                .simulate("change", { target: { value: partialConnection.providerOptions.apiKey } });
-            connectionForm
-                .find("input#root_providerOptions_query")
-                .simulate("change", { target: { value: partialConnection.providerOptions.query } });
-            connectionForm
-                .find("select#root_providerOptions_aspectRatio")
-                .simulate("change", { target: { value: partialConnection.providerOptions.aspectRatio } });
-            connectionForm
+                .simulate("change", { target: { value: connection.name } });
+            wrapper
+                .find("textarea#root_description")
+                .simulate("change", { target: { value: connection.description } });
+
+            await MockFactory.flushUi(() => {
+                wrapper
+                    .find("select#root_providerType")
+                    .simulate("change", { target: { value: connection.providerType } });
+            });
+
+            wrapper.update();
+
+            wrapper
+                .find("input#root_providerOptions_accountName")
+                .simulate("change", { target: { value: options.accountName } });
+            wrapper
+                .find("input#root_providerOptions_containerName")
+                .simulate("change", { target: { value: options.containerName } });
+            wrapper
+                .find("input#root_providerOptions_sas")
+                .simulate("change", { target: { value: options.sas } });
+            wrapper
                 .find(Form)
                 .simulate("submit");
 
             setImmediate(() => {
-                expect(saveConnectionSpy).toBeCalledWith(expect.objectContaining(partialConnection));
+                expect(saveConnectionSpy).toBeCalledWith(connection);
                 done();
             });
         });
@@ -230,6 +236,9 @@ describe("Connections Page", () => {
             const deleteButton = toDelete.find(".delete-btn");
             deleteButton.simulate("click");
 
+            // Accept the modal delete warning
+            wrapper.find(".modal-footer button").first().simulate("click");
+
             expect(deleteConnection).toBeCalled();
         });
 
@@ -255,6 +264,9 @@ describe("Connections Page", () => {
             const toDelete = items.first();
             const deleteButton = toDelete.find(".delete-btn");
             deleteButton.simulate("click");
+
+            // Accept the modal delete warning
+            wrapper.find(".modal-footer button").first().simulate("click");
 
             setImmediate(() => {
                 expect(historyPushSpy).toBeCalledWith("/connections");

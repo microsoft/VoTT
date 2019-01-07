@@ -1,7 +1,7 @@
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IStorageProvider } from "./storageProvider";
 import { IAssetProvider } from "./assetProvider";
-import { IAsset } from "../../models/applicationState";
+import { IAsset, StorageType } from "../../models/applicationState";
 
 const PROXY_NAME = "LocalFileSystem";
 
@@ -10,6 +10,8 @@ export interface ILocalFileSystemProxyOptions {
 }
 
 export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
+
+    public storageType: StorageType.Local;
     constructor(private options?: ILocalFileSystemProxyOptions) {
         if (!this.options) {
             this.options = {
@@ -47,7 +49,7 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
         return IpcRendererProxy.send(`${PROXY_NAME}:writeBinary`, [filePath, contents]);
     }
 
-    public listFiles(folderName?: string): Promise<string[]> {
+    public listFiles(folderName?: string, ext?: string): Promise<string[]> {
         const folderPath = folderName ? [this.options.folderPath, folderName].join("\\") : this.options.folderPath;
         return IpcRendererProxy.send(`${PROXY_NAME}:listFiles`, [folderPath]);
     }

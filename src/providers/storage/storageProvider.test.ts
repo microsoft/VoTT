@@ -1,11 +1,11 @@
 import { StorageProviderFactory, IStorageProvider } from "./storageProvider";
-import { IAsset } from "../../models/applicationState";
+import { IAsset, StorageType } from "../../models/applicationState";
 
 describe("Storage Provider Factory", () => {
     it("registers new storage providers", () => {
-        expect(Object.keys(StorageProviderFactory.handlers).length).toEqual(0);
+        expect(Object.keys(StorageProviderFactory.providers).length).toEqual(0);
         StorageProviderFactory.register("testProvider", () => new TestStorageProvider());
-        expect(Object.keys(StorageProviderFactory.handlers).length).toEqual(1);
+        expect(Object.keys(StorageProviderFactory.providers).length).toEqual(1);
     });
 
     it("creates a new instance of the provider", () => {
@@ -22,6 +22,8 @@ describe("Storage Provider Factory", () => {
 });
 
 class TestStorageProvider implements IStorageProvider {
+    public storageType: StorageType.Other;
+
     public readText(filePath: string): Promise<string> {
         throw new Error("Method not implemented.");
     }

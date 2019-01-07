@@ -3,6 +3,7 @@ import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProvider";
 import { IProject } from "../models/applicationState";
 import { error } from "util";
+import { constants } from "../common/constants";
 
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
@@ -29,7 +30,9 @@ describe("Project Service", () => {
             testProject.targetConnection.providerOptions,
         );
 
-        expect(storageProviderMock.writeText).toBeCalledWith(`${testProject.name}.json`, expect.any(String));
+        expect(storageProviderMock.writeText).toBeCalledWith(
+            `${testProject.name}${constants.projectFileExtension}`,
+            expect.any(String));
     });
 
     it("Save throws error if writing to storage provider fails", async () => {
@@ -54,7 +57,7 @@ describe("Project Service", () => {
             testProject.targetConnection.providerOptions,
         );
 
-        expect(storageProviderMock.deleteFile).toBeCalledWith(`${testProject.name}.json`);
+        expect(storageProviderMock.deleteFile).toBeCalledWith(`${testProject.name}${constants.projectFileExtension}`);
     });
 
     it("Delete call fails if deleting from storageProvider fails", async () => {

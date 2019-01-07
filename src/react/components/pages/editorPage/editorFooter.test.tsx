@@ -64,7 +64,7 @@ describe("Footer Component", () => {
     });
 
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
         wrapper.find("button.btn.btn-success").simulate("click");
@@ -72,7 +72,7 @@ describe("Footer Component", () => {
     });
 
     it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
-        wrapper.find("div.inline-block.tagtext")
+        wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
         wrapper.find("button.btn.btn-secondary").simulate("click");

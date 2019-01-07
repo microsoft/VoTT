@@ -1,6 +1,7 @@
 import React from "react";
 import ConnectionPicker from "./connectionPicker";
 import { BrowserRouter as Router } from "react-router-dom";
+import MockFactory from "../../../../common/mockFactory";
 import { mount } from "enzyme";
 import { IConnection } from "../../../../models/applicationState";
 
@@ -10,12 +11,7 @@ describe("Connection Picker Component", () => {
     let onChangeHandler: (value: any) => void;
 
     beforeEach(() => {
-        connections = [
-            { id: "1", name: "Connection 1", providerType: "localFileSystemProxy", providerOptions: null },
-            { id: "2", name: "Connection 2", providerType: "localFileSystemProxy", providerOptions: null },
-            { id: "3", name: "Connection 3", providerType: "localFileSystemProxy", providerOptions: null },
-            { id: "4", name: "Connection 4", providerType: "localFileSystemProxy", providerOptions: null },
-        ];
+        connections = MockFactory.createTestConnections();
 
         onChangeHandler = jest.fn();
 
