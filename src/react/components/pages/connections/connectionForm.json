@@ -16,21 +16,7 @@
         },
         "providerType": {
             "title": "${common.provider}",
-            "type": "string",
-            "enum": [
-                "azureBlobStorage",
-                "bingImageSearch",
-                "localFileSystemProxy"
-            ],
-            "default": "azureBlobStorage",
-            "enumNames": [
-                "${connections.providers.azureBlob.title}",
-                "${connections.providers.bing.title}",
-                "${connections.providers.local.title}"
-            ]
-        },
-        "providerOptions": {
-            "type": "object"
+            "type": "string"
         }
     }
 }
