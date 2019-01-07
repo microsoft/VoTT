@@ -22,7 +22,7 @@ describe("Storage Provider Factory", () => {
 });
 
 class TestStorageProvider implements IStorageProvider {
-    public storageType: StorageType.other;
+    public storageType: StorageType.Other;
 
     public readText(filePath: string): Promise<string> {
         throw new Error("Method not implemented.");

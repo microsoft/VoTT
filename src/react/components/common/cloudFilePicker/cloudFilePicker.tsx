@@ -124,7 +124,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
     private isCloudConnection(connection: IConnection): boolean {
         try {
             const storageProvider = StorageProviderFactory.createFromConnection(connection);
-            return storageProvider.storageType === StorageType.cloud;
+            return storageProvider.storageType === StorageType.Cloud;
         } catch (e) {
             // Catches connections that are not registered as StorageProviders (e.g. Bing Image search)
             return false;

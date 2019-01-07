@@ -186,7 +186,7 @@ export default class MockFactory {
 
     public static createStorageProvider(): IStorageProvider {
         return {
-            storageType: StorageType.cloud,
+            storageType: StorageType.Cloud,
             readText: jest.fn(() => Promise.resolve("Fake text")),
             readBinary: jest.fn(),
             deleteFile: jest.fn(),
@@ -339,11 +339,11 @@ export default class MockFactory {
     private static getStorageType(providerType: string): StorageType {
         switch (providerType) {
             case "azureBlobStorage":
-                return StorageType.cloud;
+                return StorageType.Cloud;
             case "localFileSystemProxy":
-                return StorageType.local;
+                return StorageType.Local;
             default:
-                return StorageType.other;
+                return StorageType.Other;
         }
     }
 }

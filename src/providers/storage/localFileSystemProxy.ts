@@ -11,7 +11,7 @@ export interface ILocalFileSystemProxyOptions {
 
 export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
 
-    public storageType: StorageType.local;
+    public storageType: StorageType.Local;
     constructor(private options?: ILocalFileSystemProxyOptions) {
         if (!this.options) {
             this.options = {

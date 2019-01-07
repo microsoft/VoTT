@@ -8,7 +8,7 @@ import { AssetService } from "../../../services/assetService";
 import { strings } from "../../../common/strings";
 
 export default class LocalFileSystem implements IStorageProvider {
-    public storageType: StorageType.local;
+    public storageType: StorageType.Local;
 
     constructor(private browserWindow: BrowserWindow) { }
 
