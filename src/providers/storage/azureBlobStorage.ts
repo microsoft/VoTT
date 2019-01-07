@@ -1,5 +1,5 @@
 import { IStorageProvider } from "./storageProvider";
-import { IAsset, AssetType } from "../../models/applicationState";
+import { IAsset, AssetType, StorageType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import { TokenCredential, AnonymousCredential,
     ContainerURL, StorageURL, ServiceURL, Credential, Aborter,
@@ -14,6 +14,8 @@ export interface IAzureCloudStorageOptions {
 }
 
 export class AzureBlobStorage implements IStorageProvider {
+
+    public storageType: StorageType.Cloud;
 
     constructor(private options?: IAzureCloudStorageOptions) {}
 

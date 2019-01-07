@@ -3,8 +3,16 @@ import React from "react";
 import MockFactory from "../../../../common/mockFactory";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
 import { CloudFilePicker, ICloudFilePickerProps, ICloudFilePickerState } from "./cloudFilePicker";
+import { IConnection } from "../../../../models/applicationState";
 
 describe("CloudFilePicker", () => {
+
+    const mockFiles = MockFactory.createFileList();
+
+    const mockStorageProvider = MockFactory.createStorageProvider();
+    StorageProviderFactory.createFromConnection = jest.fn(
+        (connection: IConnection) => MockFactory.createStorageProviderFromConnection(connection));
+
     function createComponent(props: ICloudFilePickerProps):
             ReactWrapper<ICloudFilePickerProps, ICloudFilePickerState, CloudFilePicker> {
         return mount(<CloudFilePicker {...props}/>);
@@ -13,8 +21,6 @@ describe("CloudFilePicker", () => {
     function flushPromises() {
         return new Promise((resolve) => setImmediate(resolve));
     }
-
-    const mockFiles = ["file1.json", "file2.json", "file3.json"];
 
     it("modal is visible", async () => {
         const connections = MockFactory.createTestConnections();
@@ -60,8 +66,6 @@ describe("CloudFilePicker", () => {
     });
 
     it("sets selected connection", async () => {
-        const mockStorageProvider = MockFactory.createStorageProvider(mockFiles);
-        StorageProviderFactory.create = jest.fn(() => mockStorageProvider);
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();
@@ -88,8 +92,6 @@ describe("CloudFilePicker", () => {
     });
 
     it("sets selected file and displays in footer", async () => {
-        const mockStorageProvider = MockFactory.createStorageProvider(mockFiles);
-        StorageProviderFactory.create = jest.fn(() => mockStorageProvider);
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();
@@ -121,8 +123,6 @@ describe("CloudFilePicker", () => {
     });
 
     it("resets state when 'Go Back' is clicked", async () => {
-        const mockStorageProvider = MockFactory.createStorageProvider(mockFiles);
-        StorageProviderFactory.create = jest.fn(() => mockStorageProvider);
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();
@@ -152,8 +152,6 @@ describe("CloudFilePicker", () => {
     });
 
     it("resets state and closes when exit is clicked", async () => {
-        const mockStorageProvider = MockFactory.createStorageProvider(mockFiles);
-        StorageProviderFactory.create = jest.fn(() => mockStorageProvider);
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();
@@ -182,8 +180,6 @@ describe("CloudFilePicker", () => {
     });
 
     it("calls onSubmit when 'Ok' is clicked", async () => {
-        const mockStorageProvider = MockFactory.createStorageProvider(mockFiles);
-        StorageProviderFactory.create = jest.fn(() => mockStorageProvider);
         const connections = MockFactory.createTestConnections();
         const onCancel = jest.fn();
         const onSubmit = jest.fn();

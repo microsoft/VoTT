@@ -1,5 +1,5 @@
 import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
-    IAssetMetadata, IConnection, IExportFormat, IProject, ITag } from "../models/applicationState";
+    IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider } from "../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -8,7 +8,6 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
-import { getStorageType } from "../models/helpers";
 
 export default class MockFactory {
 
@@ -156,7 +155,6 @@ export default class MockFactory {
             name: `Connection ${name}`,
             description: `Description for Connection ${name}`,
             providerType,
-            connectionType: getStorageType(providerType),
             providerOptions: this.getProviderOptions(providerType),
         };
     }
@@ -182,18 +180,30 @@ export default class MockFactory {
         };
     }
 
-    public static createStorageProvider(files: string[]): IStorageProvider {
+    public static createFileList(): string[] {
+        return ["file1.jpg", "file2.jpg", "file3.jpg"];
+    }
+
+    public static createStorageProvider(): IStorageProvider {
         return {
+            storageType: StorageType.Cloud,
             readText: jest.fn(() => Promise.resolve("Fake text")),
             readBinary: jest.fn(),
             deleteFile: jest.fn(),
             writeText: jest.fn(),
             writeBinary: jest.fn(),
-            listFiles: jest.fn(() => Promise.resolve(files)),
+            listFiles: jest.fn(() => Promise.resolve(this.createFileList())),
             listContainers: jest.fn(),
             createContainer: jest.fn(),
             deleteContainer: jest.fn(),
             getAssets: jest.fn(),
+        };
+    }
+
+    public static createStorageProviderFromConnection(connection: IConnection): IStorageProvider {
+        return {
+            ...this.createStorageProvider(),
+            storageType: this.getStorageType(connection.providerType),
         };
     }
 
@@ -324,5 +334,16 @@ export default class MockFactory {
     private static randomColorSegment(): string {
         const num = Math.floor(Math.random() * 255);
         return num.toString(16);
+    }
+
+    private static getStorageType(providerType: string): StorageType {
+        switch (providerType) {
+            case "azureBlobStorage":
+                return StorageType.Cloud;
+            case "localFileSystemProxy":
+                return StorageType.Local;
+            default:
+                return StorageType.Other;
+        }
     }
 }

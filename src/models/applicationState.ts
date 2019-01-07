@@ -68,9 +68,9 @@ export interface ITag {
  * @enum OTHER - Any other storage type
  */
 export enum StorageType {
-    local = "local",
-    cloud = "cloud",
-    other = "other",
+    Local = "local",
+    Cloud = "cloud",
+    Other = "other",
 }
 
 /**
@@ -87,7 +87,6 @@ export interface IConnection {
     name: string;
     description?: string;
     providerType: string;
-    connectionType: StorageType;
     providerOptions: object;
 }
 
