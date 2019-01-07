@@ -189,6 +189,7 @@ export default class MockFactory {
     public static createStorageProvider(): IStorageProvider {
         return {
             storageType: StorageType.Cloud,
+            initialize: jest.fn(() => Promise.resolve()),
             readText: jest.fn(() => Promise.resolve("Fake text")),
             readBinary: jest.fn(),
             deleteFile: jest.fn(),

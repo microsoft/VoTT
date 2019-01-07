@@ -1,8 +1,6 @@
 import shortid from "shortid";
-import { StorageProviderFactory } from "../providers/storage/storageProvider";
-import { IConnection, IProject } from "../models/applicationState";
 import Guard from "../common/guard";
-import { constants } from "../common/constants";
+import { IConnection } from "../models/applicationState";
 import { AssetProviderFactory } from "../providers/storage/assetProvider";
 
 export interface IConnectionService {
@@ -13,14 +11,14 @@ export default class ConnectionService implements IConnectionService {
     public save(connection: IConnection) {
         Guard.null(connection);
 
-        return new Promise<IConnection>(async (resolve,reject) => {
+        return new Promise<IConnection>(async (resolve, reject) => {
             try {
-                if(!connection.id) {
+                if (!connection.id) {
                     connection.id = shortid.generate();
                 }
-                
+
                 const assetProvider = AssetProviderFactory.createFromConnection(connection);
-                if(assetProvider.initialize) {
+                if (assetProvider.initialize) {
                     await assetProvider.initialize();
                 }
 

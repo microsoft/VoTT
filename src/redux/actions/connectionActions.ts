@@ -3,6 +3,7 @@ import { IConnection } from "../../models/applicationState";
 import { ActionTypes } from "./actionTypes";
 import { IPayloadAction, createPayloadAction } from "./actionCreators";
 import { Dispatch } from "redux";
+import ConnectionService from "../../services/connectionService";
 
 export default interface IConnectionActions {
     loadConnection(connection: IConnection): Promise<IConnection>;
@@ -18,10 +19,9 @@ export function loadConnection(connection: IConnection): (dispatch: Dispatch) =>
 }
 
 export function saveConnection(connection: IConnection): (dispatch: Dispatch) => Promise<IConnection> {
-    return (dispatch: Dispatch) => {
-        if (!connection.id) {
-            connection.id = shortid.generate();
-        }
+    return async (dispatch: Dispatch) => {
+        const connectionService = new ConnectionService();
+        await connectionService.save(connection);
         dispatch(saveConnectionAction(connection));
         return Promise.resolve(connection);
     };
