@@ -211,9 +211,7 @@ export default class MockFactory {
 
     public static createAssetProvider(): IAssetProvider {
         return {
-            initialize(): Promise<void> {
-                return Promise.resolve();
-            },
+            initialize: jest.fn(() => Promise.resolve()),
             getAssets(containerName?: string): Promise<IAsset[]> {
                 throw new Error("Method not implemented.");
             },
