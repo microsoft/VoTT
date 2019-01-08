@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
-import { IExportFormat } from "../../../../models/applicationState.js";
+import { IExportFormat } from "../../../../models/applicationState";
 import ExportProviderPicker from "../../common/exportProviderPicker/exportProviderPicker";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ExternalPicker from "../../common/externalPicker/externalPicker";
@@ -29,10 +29,14 @@ export interface IExportFormState {
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
     private widgets = {
 <<<<<<< HEAD
+<<<<<<< HEAD
         externalPicker: (ExternalPicker as any) as Widget,
 =======
         exportProviderPicker: (ExportProviderPicker as any) as Widget,
 >>>>>>> Refactoring code
+=======
+        exportProviderPicker: (ExportProviderPicker as any) as Widget,
+>>>>>>> Updating to use registered export providers rather than hard coded list
     };
 
     constructor(props, context) {
@@ -75,9 +79,12 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 validate={this.onFormValidate}
                 widgets={this.widgets}
 <<<<<<< HEAD
+<<<<<<< HEAD
                 formContext={this.state.formData}
 =======
 >>>>>>> Refactoring code
+=======
+>>>>>>> Updating to use registered export providers rather than hard coded list
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
