@@ -164,11 +164,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     public updateTagsForSelectedRegions: (tagsDescriptor: TagsDescriptor) => void;
+    
     private editor: Editor;
-    private primaryTag: Tag;
-    private secondaryTag: Tag;
-    private ternaryTag: Tag;
-    private incrementalRegionID: number;
 
     constructor(props, context) {
         super(props, context);
@@ -208,24 +205,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.updateTagsById = this.editor.RM.updateTagsById.bind(this.editor.RM);
         this.updateTagsForSelectedRegions = this.editor.RM.updateTagsForSelectedRegions.bind(this.editor.RM);
 
-        this.incrementalRegionID = 100;
-
-        // Set up random tags for regions (will replace with footer interaction)
-        this.primaryTag = new ct.Core.Tag(
-            (Math.random() > 0.5) ? "Awesome" : "Brilliante",
-            Math.floor(Math.random() * 360.0));
-        this.secondaryTag = new ct.Core.Tag(
-            (Math.random() > 0.5) ? "Yes" : "No",
-            Math.floor(Math.random() * 360.0));
-        this.ternaryTag = new ct.Core.Tag(
-            (Math.random() > 0.5) ? "one" : "two",
-            Math.floor(Math.random() * 360.0));
-
         this.editor.onSelectionEnd = this.onSelectionEnd.bind(this);
 
         this.editor.onRegionMove = this.onRegionMove.bind(this);
 
         this.editor.onRegionDelete = this.onRegionDelete.bind(this);
+
+        this.editor.onRegionSelected = this.onRegionSelected.bind(this);
 
         // Upload background image for selection
         this.updateEditor();
@@ -261,29 +247,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onSelectionEnd = (commit: RegionData) => {
         const ct = CanvasTools;
         const r = commit.boundRect;
-        const primaryTag = this.primaryTag;
-        const secondaryTag = this.secondaryTag;
-        const ternaryTag = this.ternaryTag;
-        let incrementalRegionID = this.incrementalRegionID;
         console.log(commit);
 
-        // Generated random tags for now
-        const tags =
-            (Math.random() < 0.3) ?
-                new ct.Core.TagsDescriptor(primaryTag, [secondaryTag, ternaryTag]) :
-            ((Math.random() > 0.5) ?
-                new ct.Core.TagsDescriptor(secondaryTag, [ternaryTag, primaryTag]) :
-                new ct.Core.TagsDescriptor(ternaryTag, [primaryTag, secondaryTag]));
-
-        this.addRegion((incrementalRegionID++).toString(), commit, tags);
+        this.addRegion(this.props.selectedAsset.regions.length.toString(), commit, null);
 
         // RegionData not serializable so need to extract data
-        const scaledRegionData = this.scaleRegionToSourceSize(commit);
-        let newTags = [tags.primary,...tags.secondary].map((tag)=>{return {name: tag.name,color: tag.colorHue.toString()}})
-        const newRegion = {
-            id: incrementalRegionID.toString(),
+        const scaledRegionData = this.scaleRegionToSourceSize(commit);        const newRegion = {
+            id: this.props.selectedAsset.regions.length.toString(),
             type: RegionType.Rectangle,
-            tags: newTags,
+            tags: [],
             points: [new Point2D(scaledRegionData.x, scaledRegionData.y),
                     new Point2D(scaledRegionData.x + scaledRegionData.width,
                                 scaledRegionData.y + scaledRegionData.height)],
@@ -291,6 +263,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         const currentAssetMetadata = this.props.selectedAsset;
         currentAssetMetadata.regions.push(newRegion);
+        currentAssetMetadata.selectedRegions = [newRegion];
         if (currentAssetMetadata.regions.length) {
             currentAssetMetadata.asset.state = AssetState.Tagged;
         }
@@ -319,22 +292,42 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         }
         currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
+        currentAssetMetadata.selectedRegions = [movedRegion];
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 
     /**
-     * @name onRegionMove
+     * @name onRegionDelete
      * @description Method called when deleting a region from the editor
      * @param {string} id the id of the deleted region
      * @returns {void}
      */
-    private onRegionDelete = (id) => {
+    private onRegionDelete = (id: string) => {
         this.deleteRegionById(id);
         const currentAssetMetadata = this.props.selectedAsset;
         const deletedRegionIndex = this.props.selectedAsset.regions.findIndex((region) => region.id === id);
         currentAssetMetadata.regions.splice(deletedRegionIndex, 1);
         if (!currentAssetMetadata.regions.length) {
             currentAssetMetadata.asset.state = AssetState.Visited;
+        }
+        currentAssetMetadata.selectedRegions = [];
+        this.props.onAssetMetadataChanged(currentAssetMetadata);
+    }
+
+    /**
+     * @name onRegionSelected
+     * @description Method called when deleting a region from the editor
+     * @param {string} id the id of the deleted region
+     * @param {boolean} multiselection boolean whether multiselect is active
+     * @returns {void}
+     */
+    private onRegionSelected = (id: string, multiselect: boolean) => {
+        const currentAssetMetadata = this.props.selectedAsset;
+        console.log(this.props.selectedAsset.regions.find((region) => region.id === id))
+        if(multiselect){
+            currentAssetMetadata.selectedRegions.push(this.props.selectedAsset.regions.find((region) => region.id === id))
+        } else {
+            currentAssetMetadata.selectedRegions = [this.props.selectedAsset.regions.find((region) => region.id === id)];
         }
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
@@ -358,7 +351,19 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                                                             Math.abs(region.points[0].y - region.points[1].y),
                                                             region.points.map((point)=>{return new Point2D(point.x,point.y)}),
                                                             RegionDataType.Rect);
-                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,parseInt(region.tags[0].color))));
+                    // this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,parseInt(region.tags[0].color))));
+                    // debugger;
+                    // // @ts-ignore
+                    // if(region.tags.primary){
+                    //     // @ts-ignore
+                    //     this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor([new Tag(region.tags.primary.name,region.tags.primary.colorHue)]));
+                    // } else 
+                    if(region.tags.length){
+                        // this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,this.colorToNumber(region.tags[0].color))));
+                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,Tag.getHueFromColor(region.tags[0].color))));
+                    } else {
+                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), null);
+                    }
                 });
             }
         });

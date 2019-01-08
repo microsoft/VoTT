@@ -5,6 +5,7 @@ import TagsInput from "../../common/tagsInput/tagsInput";
 export interface IEditorFooterProps {
     tags: ITag[];
     onTagsChanged: (value) => void;
+    onTagClicked?: (value) => void;
 }
 
 export interface IEditorFooterState {
@@ -26,14 +27,10 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
                 <TagsInput
                     tags={this.state.tags}
                     onChange={this.onTagsChanged}
-                    onTagClick={this.onTagClick}
+                    onTagClick={this.props.onTagClicked}
                 />
             </div>
         );
-    }
-
-    private onTagClick(tag: ITag){
-
     }
 
     private onTagsChanged(tags) {

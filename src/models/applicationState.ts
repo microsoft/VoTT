@@ -131,11 +131,13 @@ export interface IAsset {
  * @description - Format to store asset metadata for each asset within a project
  * @member asset - References an asset within the project
  * @member regions - The list of regions drawn on the asset
+ * @member selectedRegion - The currently selected regions
  * @member timestamp - The timestamp of the asset typically used for video durations / frames
  */
 export interface IAssetMetadata {
     asset: IAsset;
     regions: IRegion[];
+    selectedRegions?: IRegion[];
     timestamp?: string;
 }
 

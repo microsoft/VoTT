@@ -1,8 +1,8 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState, IRegion} from "../../../../models/applicationState";
+import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState, ITag} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { RouteComponentProps } from "react-router-dom";
 import HtmlFileReader from "../../../../common/htmlFileReader";
@@ -13,6 +13,8 @@ import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import Canvas from "./canvas";
 import { strings } from "../../../../common/strings";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
+import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -24,7 +26,6 @@ interface IEditorPageState {
     project: IProject;
     assets: IAsset[];
     selectedAsset?: IAssetMetadata;
-    selectedRegion?: IRegion;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -44,6 +45,7 @@ function mapDispatchToProps(dispatch) {
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = [];
+    private canvas: RefObject<Canvas>;
 
     constructor(props, context) {
         super(props, context);
@@ -54,6 +56,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         };
 
         this.toolbarItems = ToolbarItemFactory.getToolbarItems();
+
+        this.canvas = React.createRef<Canvas>();
 
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
@@ -104,6 +108,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         {selectedAsset &&
                             <div className="canvas-container">
                                 <Canvas
+                                    ref={this.canvas}
                                     selectedAsset={this.state.selectedAsset}
                                     onAssetMetadataChanged={this.onAssetMetadataChanged.bind(this)}/>
                             </div>
@@ -112,7 +117,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div>
                         <EditorFooter
                             tags={this.props.project.tags}
-                            onTagsChanged={this.onFooterChange} />
+                            onTagsChanged={this.onFooterChange}
+                            onTagClicked={this.onTagClicked.bind(this)} />
                     </div>
                 </div>
             </div>
@@ -122,6 +128,31 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
         await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.actions.saveProject(this.props.project);
+    }
+
+    private onTagClicked(tag: ITag){
+        let selectedAsset = this.state.selectedAsset;
+        if(selectedAsset.selectedRegions && selectedAsset.selectedRegions.length){
+            selectedAsset.selectedRegions.map((region)=>{
+                console.log(selectedAsset)
+                // debugger;
+                let tagIndex = region.tags.findIndex((existingTag) => existingTag.name === tag.name);
+                if(tagIndex === -1){
+                    region.tags.push(tag)
+                } else {
+                    region.tags.splice(tagIndex,1);
+                }
+                // this.canvas.current.updateTagsById(region.id,new TagsDescriptor([new Tag(tag.name,Tag.getHueFromColor(tag.color))]))
+                if(region.tags.length){
+                    this.canvas.current.updateTagsById(region.id,new TagsDescriptor(region.tags.map((tempTag)=>{return new Tag(tempTag.name,Tag.getHueFromColor(tempTag.color))})[0]))
+                } else {
+                    this.canvas.current.updateTagsById(region.id,null)
+                }
+                
+                return region
+            })
+        }
+        this.onAssetMetadataChanged(selectedAsset);
     }
 
     private onFooterChange(footerState) {
