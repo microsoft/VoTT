@@ -33,10 +33,11 @@ export function saveProject(project: IProject): (dispatch: Dispatch, getState: a
         const targetConnection = project.targetConnection.name;
         const projectList = getState().recentProjects;
         if (projectList && projectList.length > 0) {
-            const isNew = (projectList.find((project) => project.name === projectName) === undefined) &&
-                        (projectList.find(
+            const isNew = (project.id === null) &&
+                          (projectList.find((project) => project.name === projectName) === undefined) &&
+                          (projectList.find(
                             (project) => project.sourceConnection.name === sourceConnection) === undefined) &&
-                        (projectList.find(
+                          (projectList.find(
                             (project) => project.targetConnection.name === targetConnection) === undefined);
             if (isNew) {
                 project = await projectService.save(project);
@@ -48,7 +49,6 @@ export function saveProject(project: IProject): (dispatch: Dispatch, getState: a
             project = await projectService.save(project);
             dispatch(saveProjectAction(project));
         }
-        // project = await projectService.save(project);
         return project;
     };
 }
