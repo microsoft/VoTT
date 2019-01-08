@@ -41,22 +41,34 @@ export interface IAppContext {
 /**
  * @name - Host Process
  * @description - Describes the host process
- * @member type - The type of host process
- * @member info - Extra info about the host process
+ * @member name - The name of the host process (electron or browser)
+ * @member release - The release string of the host process
  */
 export interface IHostProcess {
-    type: HostProcessType;
-    info: IHostProcessInfo;
+    name: HostProcessType;
+    release: string;
+}
+
+/**
+ * @enum ELECTRON - Electron Host Process Type
+ * @enum BROWSER - Browser Host Process Type
+ */
+export enum HostProcessType {
+    Electron = "electron",
+    Browser = "browser",
 }
 
 /**
  * @name - Operating System
  * @description - Describes the Operating System
- * @member type - The type of Operating System
+ * @member name - The Operation System's name
+ * @member release - The release string of the Operating System
+ * @member cpuArchitecture - The CPU's architecture
  */
 export interface IOS {
-    type: OSType;
-    info: IOSInfo;
+    name: string;
+    release: string;
+    cpuArchitecture: string;
 }
 
 /**
@@ -252,59 +264,4 @@ export enum RegionType {
     Square = "SQUARE",
     Rectangle = "RECTANGLE",
     Polygon = "POLYGON",
-}
-
-/**
- * @enum ELECTRON - Electron Host Process Type
- * @enum BROWSER - Browser Host Process Type
- */
-export enum HostProcessType {
-    Electron = "electron",
-    Browser = "browser",
-}
-
-/**
- * @name - Host Process Info
- * @description - Detailed information about the host process
- * @member build - Build string of the host process
- * @member cpuArchitecture - CPU architecture the process was compiled for
- */
-export interface IHostProcessInfo {
-    build: string;
-    cpuArchitecture: CPUArchitectureType;
-}
-
-/**
- * @enum WINDOWS - Windows OS Type
- * @enum MAC - Mac OS Type
- * @enum LINUX - Linux OS Type
- */
-export enum OSType {
-    Windows = "windows",
-    Mac = "mac",
-    Linux = "linux",
-}
-
-/**
- * @name - Operating System Info
- * @description - Detailed information about the operating system
- * @member build - Build string of the operating system
- * @member cpuArchitecture - CPU architecture the operating system was compiled for
- */
-export interface IOSInfo {
-    build: string;
-    cpuArchitecture: CPUArchitectureType;
-}
-
-/**
- * @enum X86 - 32-bit x86 machine code
- * @enum X64 - 64-bit x64 machine code
- * @enum ARM - 32-bit ARM machine code
- * @enum ARM64 - 64-bit ARM machine code
- */
-export enum CPUArchitectureType {
-    x86 = "x86",
-    x64 = "x64",
-    Arm = "arm",
-    Arm64 = "arm64",
 }
