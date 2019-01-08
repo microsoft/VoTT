@@ -214,8 +214,10 @@ describe("Azure blob functions", () => {
             ...options,
             containerName: newContainerName,
         });
-        expect(provider.initialize()).rejects.toContain({
-            message: `Container "${newContainerName} does not exist`,
-        });
+        try {
+            await provider.initialize();
+        } catch (e) {
+            expect(e.message).toEqual(`Container "${newContainerName}" does not exist`);
+        }
     });
 });

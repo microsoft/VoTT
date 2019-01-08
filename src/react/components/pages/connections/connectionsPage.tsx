@@ -121,10 +121,6 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     }
 
     private onFormSubmit = async (connection: IConnection) => {
-        const assetProvider = AssetProviderFactory.createFromConnection(connection);
-        if (assetProvider.initialize) {
-            await assetProvider.initialize();
-        }
         await this.props.actions.saveConnection(connection);
         this.props.history.goBack();
     }
