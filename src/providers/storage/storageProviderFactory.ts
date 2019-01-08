@@ -1,4 +1,4 @@
-import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProvider";
+import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProviderFactory";
 import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
 

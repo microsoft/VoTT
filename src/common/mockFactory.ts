@@ -1,9 +1,9 @@
 import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
-import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProvider";
+import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
-import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProvider";
+import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProviderFactory";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";

@@ -6,7 +6,7 @@ import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { strings, addLocValues } from "../../../../common/strings";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires

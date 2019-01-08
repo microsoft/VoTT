@@ -1,5 +1,5 @@
 import shortid from "shortid";
-import { StorageProviderFactory } from "../providers/storage/storageProvider";
+import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { IProject } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";

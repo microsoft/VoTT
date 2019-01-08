@@ -5,9 +5,9 @@ import ConnectionProviderPicker, { IConnectionProviderPickerProps } from "./conn
 import MockFactory from "../../../../common/mockFactory";
 
 jest.mock("../../../../providers/storage/storageProvider");
-import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 jest.mock("../../../../providers/storage/assetProvider");
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 
 describe("Connection Provider Picker", () => {
     const storageProviderRegistrations = MockFactory.createStorageProviderRegistrations();

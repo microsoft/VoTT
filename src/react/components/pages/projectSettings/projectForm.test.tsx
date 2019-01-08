@@ -3,7 +3,7 @@ import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
 import { KeyCodes } from "../../common/tagsInput/tagsInput";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import ProjectForm, { IProjectFormProps, IProjectFormState } from "./projectForm";
 import registerProviders from "../../../../registerProviders";
 

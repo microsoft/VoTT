@@ -6,7 +6,7 @@ import { Link, NavLink, Route, StaticRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
 import { IApplicationState, IConnection } from "../../../../models/applicationState";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../../../../providers/storage/azureBlobStorage";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import initialState from "../../../../redux/store/initialState";
