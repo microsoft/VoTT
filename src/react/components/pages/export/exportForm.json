@@ -1,8 +1,24 @@
 {
     "type": "object",
     "properties": {
+        "assetState": {
+            "type": "string",
+            "title": "Asset State",
+            "description": "Which assets to include in the export",
+            "enum": [
+                "all",
+                "visited",
+                "tagged"
+            ],
+            "default": "all",
+            "enumNames": [
+                "All Assets",
+                "Only Visisted Assets",
+                "Only Tagged Assets"
+            ]
+        },
         "providerType": {
-            "title": "${common.provider}",
+            "title": "${strings.common.provider}",
             "type": "string",
             "enum": [
                 "vottJson",
@@ -12,10 +28,10 @@
             ],
             "default": "vottJson",
             "enumNames": [
-                "${export.providers.vottJson}",
-                "${export.providers.azureCV}",
-                "${export.providers.tfRecords}",
-                "${export.providers.tfPascalVoc}"
+                "${strings.export.providers.vottJson}",
+                "${strings.export.providers.azureCV}",
+                "${strings.export.providers.tfRecords}",
+                "${strings.export.providers.tfPascalVoc}"
             ]
         },
         "providerOptions": {

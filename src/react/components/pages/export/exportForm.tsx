@@ -118,7 +118,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
         if (providerType) {
             const providerSchema = addLocValues(require(`../../../../providers/export/${providerType}.json`));
-            const providerUiSchema = addLocValues(require(`../../../../providers/export/${providerType}.ui.json`));
+            const providerUiSchema = require(`../../../../providers/export/${providerType}.ui.json`);
 
             newFormSchema = { ...formSchema };
             newFormSchema.properties["providerOptions"] = providerSchema;

@@ -2,11 +2,26 @@
     "description": {
         "ui:widget": "textarea"
     },
+    "projectId": {
+        "ui:widget": "externalPicker",
+        "ui:options": {
+            "method": "GET",
+            "url": "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/projects",
+            "authHeaderName": "Training-key",
+            "authHeaderValue": "${props.formContext.providerOptions.apiKey}",
+            "keySelector": "${item.id}",
+            "valueSelector": "${item.name}"
+        }
+    },
     "domain": {
         "ui:widget": "externalPicker",
         "ui:options": {
+            "method": "GET",
             "url": "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/domains",
-            "apiKey": "${apiKey}"
+            "authHeaderName": "Training-key",
+            "authHeaderValue": "${props.formContext.providerOptions.apiKey}",
+            "keySelector": "${item.id}",
+            "valueSelector": "${item.name}"
         }
     }
 }
