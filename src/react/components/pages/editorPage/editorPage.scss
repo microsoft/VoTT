@@ -7,8 +7,7 @@
     height: 100%;
 
     &-sidebar {
-        width: 290px;
-        flex-basis: 290px;
+        min-width: 290px;
 
         &-nav {
             width: 100%;
