@@ -8,7 +8,6 @@
  */
 export interface IApplicationState {
     appSettings: IAppSettings;
-    appContext: IAppContext;
     connections: IConnection[];
     recentProjects: IProject[];
     currentProject: IProject;
@@ -25,36 +24,6 @@ export interface IAppSettings {
     devToolsEnabled: boolean;
     connectionId?: string;
     connection: IConnection;
-}
-
-/**
- * @name - Application Context
- * @description - Contains contextual information about where the application is running
- * @member hostProcess - Information about the process hosting the web app
- * @member os - Information about the operating system the web app is running on
- */
-export interface IAppContext {
-    hostProcess: IHostProcess;
-}
-
-/**
- * @name - Host Process
- * @description - Describes the host process
- * @member name - The name of the host process (electron or browser)
- * @member release - The release string of the host process
- */
-export interface IHostProcess {
-    name: HostProcessType;
-    release: string;
-}
-
-/**
- * @enum ELECTRON - Electron Host Process Type
- * @enum BROWSER - Browser Host Process Type
- */
-export enum HostProcessType {
-    Electron = "electron",
-    Browser = "browser",
 }
 
 /**

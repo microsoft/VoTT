@@ -133,7 +133,6 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
             connection: null,
             devToolsEnabled: false,
         },
-        appContext: MockFactory.appContext(),
         connections: [],
         recentProjects: [project],
     };

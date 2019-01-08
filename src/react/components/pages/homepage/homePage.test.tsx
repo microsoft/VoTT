@@ -126,7 +126,6 @@ describe("Connection Picker Component", () => {
                 connection: null,
                 devToolsEnabled: false,
             },
-            appContext: MockFactory.appContext(),
             connections: [],
             recentProjects,
         };
