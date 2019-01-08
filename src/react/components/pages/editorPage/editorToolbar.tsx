@@ -47,7 +47,7 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
                                 project: this.props.project,
                                 active: this.isComponentActive(this.state.selectedItem, registration),
                                 onClick: this.onToolbarItemSelected,
-                                canvas: this.props.canvas
+                                canvas: this.props.canvas,
                             };
                             const ToolbarItem = registration.component;
 

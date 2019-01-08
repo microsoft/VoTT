@@ -166,7 +166,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public updateTagsForSelectedRegions: (tagsDescriptor: TagsDescriptor) => void;
 
     public setSelectionMode: (selectionMode: any) => void;
-    
+
     private editor: Editor;
 
     constructor(props, context) {
@@ -187,7 +187,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // Expose CanvasTools Editor API
         this.scaleRegionToFrameSize = this.editor.scaleRegionToFrameSize.bind(this.editor);
         this.scaleRegionToSourceSize = this.editor.scaleRegionToSourceSize.bind(this.editor);
-        this.setSelectionMode = this.editor.setSelectionMode.bind(this.editor)
+        this.setSelectionMode = this.editor.setSelectionMode.bind(this.editor);
 
         // Expose CanvasTools RegionManager API
         this.addRegion = this.editor.RM.addRegion.bind(this.editor.RM);
@@ -251,7 +251,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.addRegion(this.props.selectedAsset.regions.length.toString(), commit, null);
 
         // RegionData not serializable so need to extract data
-        const scaledRegionData = this.scaleRegionToSourceSize(commit);        
+        const scaledRegionData = this.scaleRegionToSourceSize(commit);
         const newRegion = {
             id: this.props.selectedAsset.regions.length.toString(),
             type: RegionType.Rectangle,
@@ -284,7 +284,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // @ts-ignore   in here until CanvasTools types get updated
         const scaledRegionData = this.scaleRegionToSourceSize(regionData);
         if (movedRegion) {
-            movedRegion.points = scaledRegionData.points
+            movedRegion.points = scaledRegionData.points;
             // movedRegion.points = [new Point2D(scaledRegionData.x, scaledRegionData.y),
             //                     new Point2D(scaledRegionData.x + scaledRegionData.width,
             //                                         scaledRegionData.y + scaledRegionData.height),
@@ -326,11 +326,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
         const currentAssetMetadata = this.props.selectedAsset;
-        console.log(this.props.selectedAsset.regions.find((region) => region.id === id))
-        if(multiselect){
-            currentAssetMetadata.selectedRegions.push(this.props.selectedAsset.regions.find((region) => region.id === id))
+        console.log(this.props.selectedAsset.regions.find((region) => region.id === id));
+        if (multiselect) {
+            currentAssetMetadata.selectedRegions.push(
+                this.props.selectedAsset.regions.find((region) => region.id === id));
         } else {
-            currentAssetMetadata.selectedRegions = [this.props.selectedAsset.regions.find((region) => region.id === id)];
+            currentAssetMetadata.selectedRegions = [
+                this.props.selectedAsset.regions.find((region) => region.id === id),
+            ];
         }
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
@@ -349,24 +352,31 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.addContentSource(e.target);
             if (this.props.selectedAsset.regions.length) {
                 this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    let sortByX = region.points.sort((a,b)=>{return a.x-b.x})
-                    let sortByY = region.points.sort((a,b)=>{return a.y-b.y})
-                    console.log(region.points)
-                    console.log(sortByX)
-                    console.log(sortByY)
+                    const sortByX = region.points.sort((a, b) => a.x - b.x);
+                    const sortByY = region.points.sort((a, b) => a.y - b.y);
+                    console.log(region.points);
+                    console.log(sortByX);
+                    console.log(sortByY);
                     const loadedRegionData = new RegionData(region.points[0].x, region.points[0].y,
                                                             Math.abs(region.points[0].x - region.points[1].x),
                                                             Math.abs(region.points[0].y - region.points[2].y),
-                                                            region.points.map((point)=>{return new Point2D(point.x,point.y)}),
+                                                            region.points.map(
+                                                                (point) => new Point2D(point.x, point.y)),
                                                             RegionDataType.Rect);
-                    if(region.tags.length){
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(region.tags.map((tag)=>{return new Tag(tag.name,tag.color)})));
+                    if (region.tags.length) {
+                        this.addRegion(
+                            region.id,
+                            this.scaleRegionToFrameSize(loadedRegionData),
+                            new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name, tag.color))));
                     } else {
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor());
+                        this.addRegion(
+                            region.id,
+                            this.scaleRegionToFrameSize(loadedRegionData),
+                            new TagsDescriptor());
                     }
                 });
             }
         });
         image.src = this.props.selectedAsset.asset.path;
-    }    
+    }
 }

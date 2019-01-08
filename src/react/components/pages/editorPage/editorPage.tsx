@@ -1,20 +1,20 @@
+import _ from "lodash";
 import React, { RefObject } from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import _ from "lodash";
-import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState, ITag} from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { RouteComponentProps } from "react-router-dom";
+import { bindActionCreators } from "redux";
+import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import "./editorPage.scss";
+import { AssetState, IApplicationState, IAsset,
+    IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import Canvas from "./canvas";
 import EditorFooter from "./editorFooter";
+import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import Canvas from "./canvas";
-import { strings } from "../../../../common/strings";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
-import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -131,24 +131,27 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         await this.props.actions.saveProject(this.props.project);
     }
 
-    private onTagClicked(tag: ITag){
-        let selectedAsset = this.state.selectedAsset;
-        if(selectedAsset.selectedRegions && selectedAsset.selectedRegions.length){
-            selectedAsset.selectedRegions.map((region)=>{
-                let tagIndex = region.tags.findIndex((existingTag) => existingTag.name === tag.name);
-                if(tagIndex === -1){
-                    region.tags.push(tag)
+    private onTagClicked(tag: ITag) {
+        const selectedAsset = this.state.selectedAsset;
+        if (selectedAsset.selectedRegions && selectedAsset.selectedRegions.length) {
+            selectedAsset.selectedRegions.map((region) => {
+                const tagIndex = region.tags.findIndex((existingTag) => existingTag.name === tag.name);
+                if (tagIndex === -1) {
+                    region.tags.push(tag);
                 } else {
-                    region.tags.splice(tagIndex,1);
+                    region.tags.splice(tagIndex, 1);
                 }
-                if(region.tags.length){
-                    this.canvas.current.updateTagsById(region.id,new TagsDescriptor(region.tags.map((tempTag)=>{return new Tag(tempTag.name,tempTag.color)})))
+                if (region.tags.length) {
+                    this.canvas.current.updateTagsById(
+                        region.id,
+                        new TagsDescriptor(
+                            region.tags.map((tempTag) => new Tag(tempTag.name, tempTag.color))));
                 } else {
-                    this.canvas.current.updateTagsById(region.id,null)
+                    this.canvas.current.updateTagsById(region.id, null);
                 }
-                
-                return region
-            })
+
+                return region;
+            });
         }
         this.onAssetMetadataChanged(selectedAsset);
     }
