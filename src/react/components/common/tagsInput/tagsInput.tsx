@@ -31,6 +31,7 @@ export interface IReactTag {
 export interface ITagsInputProps {
     tags: ITag[];
     onChange: (tags: ITag[]) => void;
+    showIndex?: boolean;
     onTagClick?: (tag: ITag) => void;
     onTagShiftClick?: (tag: ITag) => void;
 }
@@ -254,6 +255,24 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         }
         return match;
     }
+
+    private displayIndexOfTag(id: string): number {
+        let index = -1;
+        if (this.state) {
+            index = this.state.tags.findIndex((tag) => tag.id === id);
+            if (index < 0) {
+                index = this.state.tags.length + 1;
+            }
+        } else {
+            index = this.props.tags.findIndex((tag) => tag.name === id);
+        }
+        if (index < 0) {
+            throw new Error(`No tag by id: ${id}`)
+        }
+        index += 1;
+        return (index === 10) ? 0 : index;
+    }
+
     /**
      * Converts ITag to IReactTag
      * @param tag ITag to convert to IReactTag
@@ -275,11 +294,12 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
      * @param color color of tag
      */
     private ReactTagHtml(name: string, color: string) {
+        const index = this.displayIndexOfTag(name);
         return (
             <div className="tag inline-block" onClick={(event) => this.handleTagClick(event)}>
                 <div className="tag-contents">
                     <div className="tag-color-box" style={{ backgroundColor: color }}></div>
-                    <span>{name}</span>
+                    <span>{(this.props.showIndex && index <= 9) ? `[${index}]  ` : ""}{name}</span>
                 </div>
             </div>
         );
