@@ -10,6 +10,7 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import { HostProcessType } from "./hostProcess";
 
 export default class MockFactory {
 
@@ -249,6 +250,7 @@ export default class MockFactory {
             name,
             displayName: `${name} display name`,
             description: `${name} short description`,
+            platformSupport: HostProcessType.All,
             factory: () => null,
         };
 
@@ -260,6 +262,7 @@ export default class MockFactory {
             name,
             displayName: `${name} display name`,
             description: `${name} short description`,
+            platformSupport: HostProcessType.All,
             factory: () => null,
         };
 

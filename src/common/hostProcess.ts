@@ -1,11 +1,11 @@
 /**
  * @name - Host Process
  * @description - Describes the host process
- * @member name - The name of the host process (electron or browser)
+ * @member type - The type of the host process (electron, browser, etc)
  * @member release - The release string of the host process
  */
 export interface IHostProcess {
-    name: HostProcessType;
+    type: HostProcessType;
     release: string;
 }
 
@@ -14,25 +14,33 @@ export interface IHostProcess {
  * @enum BROWSER - Browser Host Process Type
  */
 export enum HostProcessType {
-    Electron = "electron",
-    Browser = "browser",
+    Electron = 1 << 0,
+    Browser = 1 << 1,
+    All = ~(~0 << 2),
 }
 
-import os from "os";
+export function typeToFriendlyName(type: HostProcessType): string {
+    switch (type) {
+        case HostProcessType.Electron:
+            return "electron";
+        case HostProcessType.Browser:
+            return "browser";
+    }
+}
 
-const hostProcess: IHostProcess = {
-    name: getHostProcessType(),
-    release: os.release(),
-};
+const osRelease = require("os").release();
 
 function getHostProcessType(): HostProcessType {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-
-    if (userAgent.indexOf(" electron/") > -1) {
+    if (osRelease.indexOf("electron") > -1) {
         return HostProcessType.Electron;
     } else {
         return HostProcessType.Browser;
     }
 }
+
+const hostProcess: IHostProcess = {
+    type: getHostProcessType(),
+    release: osRelease,
+};
 
 export default hostProcess;

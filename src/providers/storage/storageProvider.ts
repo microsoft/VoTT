@@ -1,6 +1,7 @@
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProvider";
 import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
+import HostProcess, { HostProcessType, typeToFriendlyName } from "../../common/hostProcess";
 
 export interface IStorageProvider extends IAssetProvider {
 
@@ -43,6 +44,7 @@ export class StorageProviderFactory {
             options = {
                 name: nameOrOptions,
                 displayName: nameOrOptions,
+                platformSupport: HostProcessType.All,
                 factory,
             };
         }
@@ -60,6 +62,10 @@ export class StorageProviderFactory {
         const registrationOptions = StorageProviderFactory.providerRegistry[name];
         if (!registrationOptions) {
             throw new Error(`No storage provider has been registered with name '${name}'`);
+        }
+
+        if ((registrationOptions.platformSupport & HostProcess.type) == 0) {
+            throw new Error(`This storage provider isn't supported by the host process type "${typeToFriendlyName(HostProcess.type)}". Info: ${HostProcess.release}`);
         }
 
         return registrationOptions.factory(options);
