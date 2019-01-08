@@ -14,19 +14,25 @@ import { AssetService } from "../../../../services/assetService";
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 
+function createCompoent(store, props: IEditorPageProps): ReactWrapper {
+    return mount(
+        <Provider store={store}>
+            <Router>
+                <EditorPage {...props} />
+            </Router>
+        </Provider>,
+    );
+}
+
+function getState(wrapper) {
+    return wrapper.find(EditorPage).childAt(0).state();
+}
+
 describe("Editor Page Component", () => {
     let assetServiceMock: jest.Mocked<typeof AssetService> = null;
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
-    function createCompoent(store, props: IEditorPageProps): ReactWrapper {
-        return mount(
-            <Provider store={store}>
-                <Router>
-                    <EditorPage {...props} />
-                </Router>
-            </Provider>,
-        );
-    }
+    
 
     beforeEach(() => {
         assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
@@ -52,7 +58,7 @@ describe("Editor Page Component", () => {
     it("Sets project state from redux store", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, true);
-        const props = createProps(testProject.id);
+        const props = MockFactory.editorPageSettingsProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
         const wrapper = createCompoent(store, props);
@@ -66,7 +72,7 @@ describe("Editor Page Component", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets(5);
         const store = createStore(testProject, true);
-        const props = createProps(testProject.id);
+        const props = MockFactory.editorPageSettingsProps(testProject.id);
 
         AssetProviderFactory.create = jest.fn(() => {
             return {
@@ -105,7 +111,7 @@ describe("Editor Page Component", () => {
 
         // mock store and props
         const store = createStore(testProject, true);
-        const props = createProps(testProject.id);
+        const props = MockFactory.editorPageSettingsProps(testProject.id);
 
         // mock out the asset provider create method
         AssetProviderFactory.create = jest.fn(() => {
@@ -143,40 +149,57 @@ describe("Editor Page Component", () => {
     });
 });
 
-function createProps(projectId: string): IEditorPageProps {
-    return {
-        project: null,
-        recentProjects: [],
-        history: {
-            length: 0,
-            action: null,
-            location: null,
-            push: jest.fn(),
-            replace: jest.fn(),
-            go: jest.fn(),
-            goBack: jest.fn(),
-            goForward: jest.fn(),
-            block: jest.fn(),
-            listen: jest.fn(),
-            createHref: jest.fn(),
-        },
-        location: {
-            hash: null,
-            pathname: null,
-            search: null,
-            state: null,
-        },
-        actions: (projectActions as any) as IProjectActions,
-        match: {
-            params: {
-                projectId,
-            },
-            isExact: true,
-            path: `https://localhost:3000/projects/${projectId}/edit`,
-            url: `https://localhost:3000/projects/${projectId}/edit`,
-        },
-    };
-}
+describe("Editor Page Footer integration", () => {
+
+    describe("Basic tag interaction tests", () => {
+        it("tags are initialized correctly", () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project
+            });
+            const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+            expect(getState(wrapper).project.tags).toEqual(project.tags);
+        });
+    
+        it("create a new tag from text box", () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project
+            });
+            const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+            expect(getState(wrapper).project.tags).toEqual(project.tags);
+    
+            const newTagName = "My new tag";
+            wrapper.find("input.ReactTags__tagInputField").simulate("change", { target: { value: newTagName } });
+            wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", { keyCode: 13 });
+            
+            const stateTags = getState(wrapper).project.tags
+    
+            expect(stateTags).toHaveLength(project.tags.length + 1);
+            expect(stateTags[stateTags.length - 1].name).toEqual(newTagName);
+        });
+    
+        it("remove a tag", () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project
+            });
+    
+            const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+            expect(getState(wrapper).project.tags).toEqual(project.tags);
+            wrapper.find("a.ReactTags__remove")
+                .last().simulate("click");
+            
+            const stateTags = getState(wrapper).project.tags
+            expect(stateTags).toHaveLength(project.tags.length - 1);
+        });
+    });
+    
+    
+});
 
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {

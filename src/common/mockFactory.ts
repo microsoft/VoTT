@@ -8,6 +8,8 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import { IEditorFooterProps } from "../react/components/pages/editorPage/editorFooter";
+import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
 
 export default class MockFactory {
 
@@ -315,6 +317,24 @@ export default class MockFactory {
             history: this.history(),
             location: this.location(),
             match: this.match(projectId),
+        };
+    }
+
+    public static editorPageSettingsProps(projectId: string = "test"): IEditorPageProps {
+        return {
+            project: null,
+            recentProjects: [],
+            history: this.history(),
+            location: this.location(),
+            actions: (projectActions as any) as IProjectActions,
+            match: {
+                params: {
+                    projectId,
+                },
+                isExact: true,
+                path: `https://localhost:3000/projects/${projectId}/edit`,
+                url: `https://localhost:3000/projects/${projectId}/edit`,
+            },
         };
     }
 
