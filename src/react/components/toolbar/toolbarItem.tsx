@@ -1,6 +1,7 @@
 import React from "react";
 import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
+import Canvas from "../pages/editorPage/canvas";
 
 export interface IToolbarItemMetadata {
     name: string;
@@ -20,6 +21,7 @@ export interface IToolbarItemProps extends IToolbarItemMetadata {
     project: IProject;
     active: boolean;
     onClick: (item: ToolbarItem) => void;
+    canvas: Canvas;
 }
 
 export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {

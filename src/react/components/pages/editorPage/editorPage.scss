@@ -144,10 +144,7 @@
 
 #ctZone {        
     display: grid;
-    width: calc(100% - 40px);
     height: 600px;
-    grid-template-columns: 64px 1fr;
-    grid-template-rows: 1fr;
 
     margin:20px;
     background: rgb(64,64,64);

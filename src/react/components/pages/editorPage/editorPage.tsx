@@ -102,7 +102,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="editor-page-content-header">
                         <EditorToolbar project={this.props.project}
                             items={this.toolbarItems}
-                            actions={this.props.actions} />
+                            actions={this.props.actions}
+                            canvas={this.canvas.current} />
                     </div>
                     <div className="editor-page-content-body">
                         {selectedAsset &&
@@ -134,17 +135,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         let selectedAsset = this.state.selectedAsset;
         if(selectedAsset.selectedRegions && selectedAsset.selectedRegions.length){
             selectedAsset.selectedRegions.map((region)=>{
-                console.log(selectedAsset)
-                // debugger;
                 let tagIndex = region.tags.findIndex((existingTag) => existingTag.name === tag.name);
                 if(tagIndex === -1){
                     region.tags.push(tag)
                 } else {
                     region.tags.splice(tagIndex,1);
                 }
-                // this.canvas.current.updateTagsById(region.id,new TagsDescriptor([new Tag(tag.name,Tag.getHueFromColor(tag.color))]))
                 if(region.tags.length){
-                    this.canvas.current.updateTagsById(region.id,new TagsDescriptor(region.tags.map((tempTag)=>{return new Tag(tempTag.name,Tag.getHueFromColor(tempTag.color))})[0]))
+                    this.canvas.current.updateTagsById(region.id,new TagsDescriptor(region.tags.map((tempTag)=>{return new Tag(tempTag.name,tempTag.color)})))
                 } else {
                     this.canvas.current.updateTagsById(region.id,null)
                 }

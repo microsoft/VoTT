@@ -6,11 +6,13 @@ import { IProject } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
 import "./editorToolbar.scss";
 import { Select } from "../../toolbar/select";
+import Canvas from "./canvas";
 
 export interface IEditorToolbarProps {
     project: IProject;
     actions: IProjectActions;
     items: IToolbarItemRegistration[];
+    canvas: Canvas;
 }
 
 export interface IEditorToolbarState {
@@ -45,6 +47,7 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
                                 project: this.props.project,
                                 active: this.isComponentActive(this.state.selectedItem, registration),
                                 onClick: this.onToolbarItemSelected,
+                                canvas: this.props.canvas
                             };
                             const ToolbarItem = registration.component;
 

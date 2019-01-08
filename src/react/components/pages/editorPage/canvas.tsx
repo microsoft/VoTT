@@ -164,6 +164,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     public updateTagsForSelectedRegions: (tagsDescriptor: TagsDescriptor) => void;
+
+    public setSelectionMode: (selectionMode: any) => void;
     
     private editor: Editor;
 
@@ -178,15 +180,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public componentDidMount() {
         const ct = CanvasTools;
         const sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
-        const tz = document.getElementById("toolbarzone")as unknown as HTMLDivElement;
 
         // @ts-ignore
         this.editor = new ct.Editor(sz);
-        this.editor.addToolbar(tz, ct.Editor.FullToolbarSet, "./../../../images/icons/");
 
         // Expose CanvasTools Editor API
         this.scaleRegionToFrameSize = this.editor.scaleRegionToFrameSize.bind(this.editor);
         this.scaleRegionToSourceSize = this.editor.scaleRegionToSourceSize.bind(this.editor);
+        this.setSelectionMode = this.editor.setSelectionMode.bind(this.editor)
 
         // Expose CanvasTools RegionManager API
         this.addRegion = this.editor.RM.addRegion.bind(this.editor.RM);
@@ -232,8 +233,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 <div id="selectionzone">
                     <div id="editorzone"></div>
                 </div>
-                <div id="toolbarzone">
-                </div>
             </div>
         );
     }
@@ -252,13 +251,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.addRegion(this.props.selectedAsset.regions.length.toString(), commit, null);
 
         // RegionData not serializable so need to extract data
-        const scaledRegionData = this.scaleRegionToSourceSize(commit);        const newRegion = {
+        const scaledRegionData = this.scaleRegionToSourceSize(commit);        
+        const newRegion = {
             id: this.props.selectedAsset.regions.length.toString(),
             type: RegionType.Rectangle,
             tags: [],
-            points: [new Point2D(scaledRegionData.x, scaledRegionData.y),
-                    new Point2D(scaledRegionData.x + scaledRegionData.width,
-                                scaledRegionData.y + scaledRegionData.height)],
+            points: scaledRegionData.points,
         };
 
         const currentAssetMetadata = this.props.selectedAsset;
@@ -286,9 +284,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // @ts-ignore   in here until CanvasTools types get updated
         const scaledRegionData = this.scaleRegionToSourceSize(regionData);
         if (movedRegion) {
-            movedRegion.points = [new ct.Core.Point2D(scaledRegionData.x, scaledRegionData.y),
-                                new ct.Core.Point2D(scaledRegionData.x + scaledRegionData.width,
-                                                    scaledRegionData.y + scaledRegionData.height)];
+            movedRegion.points = scaledRegionData.points
+            // movedRegion.points = [new Point2D(scaledRegionData.x, scaledRegionData.y),
+            //                     new Point2D(scaledRegionData.x + scaledRegionData.width,
+            //                                         scaledRegionData.y + scaledRegionData.height),
+            //                     new Point2D(scaledRegionData.x + scaledRegionData.width,
+            //                         scaledRegionData.y),
+            //                     new Point2D(scaledRegionData.x,
+            //                         scaledRegionData.y + scaledRegionData.height)];
 
         }
         currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
@@ -346,23 +349,20 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.addContentSource(e.target);
             if (this.props.selectedAsset.regions.length) {
                 this.props.selectedAsset.regions.forEach((region: IRegion) => {
+                    let sortByX = region.points.sort((a,b)=>{return a.x-b.x})
+                    let sortByY = region.points.sort((a,b)=>{return a.y-b.y})
+                    console.log(region.points)
+                    console.log(sortByX)
+                    console.log(sortByY)
                     const loadedRegionData = new RegionData(region.points[0].x, region.points[0].y,
                                                             Math.abs(region.points[0].x - region.points[1].x),
-                                                            Math.abs(region.points[0].y - region.points[1].y),
+                                                            Math.abs(region.points[0].y - region.points[2].y),
                                                             region.points.map((point)=>{return new Point2D(point.x,point.y)}),
                                                             RegionDataType.Rect);
-                    // this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,parseInt(region.tags[0].color))));
-                    // debugger;
-                    // // @ts-ignore
-                    // if(region.tags.primary){
-                    //     // @ts-ignore
-                    //     this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor([new Tag(region.tags.primary.name,region.tags.primary.colorHue)]));
-                    // } else 
                     if(region.tags.length){
-                        // this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,this.colorToNumber(region.tags[0].color))));
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(new Tag(region.tags[0].name,Tag.getHueFromColor(region.tags[0].color))));
+                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(region.tags.map((tag)=>{return new Tag(tag.name,tag.color)})));
                     } else {
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), null);
+                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor());
                     }
                 });
             }
