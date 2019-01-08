@@ -28,7 +28,7 @@ export class ExportProviderFactory {
         Guard.emtpy(options.displayName);
         Guard.null(options.factory);
 
-        ExportProviderFactory.handlerRegistry[options.name] = options;
+        ExportProviderFactory.handlerRegistry[options.name] = options.factory;
     }
 
     /**

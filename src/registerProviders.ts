@@ -51,9 +51,11 @@ export default function registerProviders() {
         displayName: strings.export.providers.tfPascalVoc,
         factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
     });
-
-    ExportProviderFactory.register("azureCustomVision",
-        (project, options) => new AzureCustomVisionProvider(project, options));
+    ExportProviderFactory.register({
+        name: "azureCustomVision",
+        displayName: strings.export.providers.AzureCustomVisionProvider,
+        factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
+    });
 
     registerToolbar();
 }
