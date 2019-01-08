@@ -165,16 +165,66 @@ item {
         const annotationsFolderName = `${exportFolderName}/Annotations`;
         await this.storageProvider.createContainer(annotationsFolderName);
 
+        const annotationTemplate = `
+<annotation verified="yes">
+    <folder>Annotation</folder>
+    <filename>%FILE_NAME%</filename>
+    <path>%FILE_PATH%</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>%WIDTH%</width>
+        <height>%HEIGHT%</height>
+        <depth>3</depth>
+    </size\>
+    <segmented>0</segmented>
+    %OBJECTS%
+</annotation\>`;
 
-        this.imagesInfo.forEach((element) => {
-            console.log(element);
-        });
+        const objectTemplate = `
+<object>
+    <name>%OBJECT_CLASS%</name>
+    <pose>Unspecified</pose>
+    <truncated>0</truncated>
+    <difficult>0</difficult>
+    <bndbox>
+        <xmin>%OBJECT_TAG_x1%</xmin>
+        <ymin>%OBJECT_TAG_y1%</ymin>
+        <xmax>%OBJECT_TAG_x2%</xmax>
+        <ymax>%OBJECT_TAG_y2%</ymax>
+    </bndbox>
+</object>`;
 
-
-
+        const allAnnotationExports = [];  // Promise[] ?????
 
         // Save Annotations
-        // TODO
+        this.imagesInfo.forEach((imageInfo, imageName) => {
+            allAnnotationExports.push(
+                new Promise((resolve, reject) => {
+                    const filePath = `${annotationsFolderName}/${imageName}`;
+
+                    const annotationXML = annotationTemplate.replace("%FILE_NAME%", imageName)
+                                                          .replace("%FILE_PATH%", filePath)
+                                                          .replace("%WIDTH%", imageInfo.width.toString())
+                                                          .replace("%HEIGHT%", imageInfo.height.toString());
+
+                    // TODO : Objects
+
+                    console.log(imageName, annotationXML);
+
+                    // TODO : Save Annotation File
+
+                    resolve();
+                }),
+            );
+        });
+
+        try {
+            await Promise.all(allAnnotationExports);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     private async exportImageSets(exportFolderName: string, allAssets: IAssetMetadata[]) {
