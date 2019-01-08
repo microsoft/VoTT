@@ -6,10 +6,12 @@ import { Link, NavLink, Route, StaticRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
 import { IApplicationState, IConnection } from "../../../../models/applicationState";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../../../../providers/storage/azureBlobStorage";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import initialState from "../../../../redux/store/initialState";
 import createReduxStore from "../../../../redux/store/store";
+import registerProviders from "../../../../registerProviders";
 import CondensedList from "../../common/condensedList/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
@@ -35,6 +37,8 @@ describe("Connections Page", () => {
         const context = {};
         return createComponent(context, route, store, props);
     }
+
+    beforeAll(registerProviders);
 
     it("mounted the component", () => {
         const wrapper = createWrapper();
@@ -114,48 +118,55 @@ describe("Connections Page", () => {
             expect(form.exists()).toBe(true);
         });
 
-        it("adds connection when submit button is hit", (done) => {
+        it("adds connection when submit button is hit", async (done) => {
             const props = createProps(connectionCreateRoute);
             props.match.params = { connectionId: "create" };
 
             const saveConnectionSpy = jest.spyOn(props.actions, "saveConnection");
             const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
 
-            const connectionsPage = wrapper.find(ConnectionPage);
-            const connectionForm = connectionsPage.find(ConnectionForm);
-
             const connection: IConnection = {
                 ...MockFactory.createTestConnection("test", "azureBlobStorage"),
                 id: expect.any(String),
             };
 
+            const assetProvider = MockFactory.createAssetProvider();
+
+            AssetProviderFactory.createFromConnection = jest.fn(() => assetProvider);
+
             const options: IAzureCloudStorageOptions = connection.providerOptions as IAzureCloudStorageOptions;
 
-            connectionForm
+            wrapper
                 .find("input#root_name")
                 .simulate("change", { target: { value: connection.name } });
-            connectionForm
-                .find("select#root_providerType")
-                .simulate("change", { target: { value: connection.providerType } });
-            connectionForm
+            wrapper
                 .find("textarea#root_description")
                 .simulate("change", { target: { value: connection.description } });
-            connectionForm
+
+            await MockFactory.flushUi(() => {
+                wrapper
+                    .find("select#root_providerType")
+                    .simulate("change", { target: { value: connection.providerType } });
+            });
+
+            wrapper.update();
+
+            wrapper
                 .find("input#root_providerOptions_accountName")
                 .simulate("change", { target: { value: options.accountName } });
-
-            connectionForm
+            wrapper
                 .find("input#root_providerOptions_containerName")
                 .simulate("change", { target: { value: options.containerName } });
-            connectionForm
+            wrapper
                 .find("input#root_providerOptions_sas")
                 .simulate("change", { target: { value: options.sas } });
-            connectionForm
+            wrapper
                 .find(Form)
                 .simulate("submit");
 
             setImmediate(() => {
                 expect(saveConnectionSpy).toBeCalledWith(connection);
+                expect(assetProvider.initialize).toBeCalled();
                 done();
             });
         });

@@ -1,5 +1,8 @@
 {
     "description": {
         "ui:widget": "textarea"
+    },
+    "providerType": {
+        "ui:widget": "connectionProviderPicker"
     }
 }
