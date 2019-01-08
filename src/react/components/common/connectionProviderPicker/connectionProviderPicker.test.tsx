@@ -4,9 +4,9 @@ import _ from "lodash";
 import ConnectionProviderPicker, { IConnectionProviderPickerProps } from "./connectionProviderPicker";
 import MockFactory from "../../../../common/mockFactory";
 
-jest.mock("../../../../providers/storage/storageProvider");
+jest.mock("../../../../providers/storage/storageProviderFactory");
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
-jest.mock("../../../../providers/storage/assetProvider");
+jest.mock("../../../../providers/storage/assetProviderFactory");
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 
 describe("Connection Provider Picker", () => {
