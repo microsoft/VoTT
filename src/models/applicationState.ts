@@ -35,7 +35,6 @@ export interface IAppSettings {
  */
 export interface IAppContext {
     hostProcess: IHostProcess;
-    os: IOS;
 }
 
 /**
@@ -56,19 +55,6 @@ export interface IHostProcess {
 export enum HostProcessType {
     Electron = "electron",
     Browser = "browser",
-}
-
-/**
- * @name - Operating System
- * @description - Describes the Operating System
- * @member name - The Operation System's name
- * @member release - The release string of the Operating System
- * @member cpuArchitecture - The CPU's architecture
- */
-export interface IOS {
-    name: string;
-    release: string;
-    cpuArchitecture: string;
 }
 
 /**

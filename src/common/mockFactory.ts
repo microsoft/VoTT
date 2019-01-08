@@ -1,6 +1,6 @@
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
-    IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType,
+    IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType, IAppContext,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProvider";
@@ -10,6 +10,7 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import { getHostProcess } from "./platform";
 
 export default class MockFactory {
 
@@ -304,6 +305,12 @@ export default class MockFactory {
         };
     }
 
+    public static appContext(): IAppContext {
+        return {
+            hostProcess: getHostProcess(),
+        }
+    }
+
     public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
         return {
             project: null,
@@ -322,6 +329,7 @@ export default class MockFactory {
 
         return {
             appSettings: MockFactory.appSettings(),
+            appContext: MockFactory.appContext(),
             connections: testConnections,
             recentProjects: testProjects,
             currentProject: testProjects[0],
