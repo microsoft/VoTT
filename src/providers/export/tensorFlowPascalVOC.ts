@@ -13,9 +13,18 @@ export interface ITFPascalVOCJsonExportOptions {
     assetState: ExportAssetState;
 }
 
+interface IObjectInfo {
+    name: string;
+    xmin: number;
+    ymin: number;
+    xmax: number;
+    ymax: number;
+}
+
 interface IImageInfo {
     width: number;
     height: number;
+    objects: IObjectInfo[];
 }
 
 /**
@@ -93,9 +102,25 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                         // Load image at runtime to get dimension info
                         const img = new Image();
                         img.onload = ((event) => {
+                            const tagObjects = [];
+                            element.regions.filter((region) => region.points.length === 2).forEach((region) => {
+                                region.tags.forEach((tag) => {
+                                    const objectInfo: IObjectInfo = {
+                                        name: tag.name,
+                                        xmin: region.points[0].x,
+                                        ymin: region.points[0].y,
+                                        xmax: region.points[1].x,
+                                        ymax: region.points[1].y,
+                                    };
+
+                                    tagObjects.push(objectInfo);
+                                });
+                            });
+
                             const imageInfo: IImageInfo = {
                                 width: img.width,
                                 height: img.height,
+                                objects: tagObjects,
                             };
 
                             this.imagesInfo.set(element.asset.name, imageInfo);
@@ -184,36 +209,46 @@ item {
 
         const objectTemplate = `
 <object>
-    <name>%OBJECT_CLASS%</name>
+    <name>%OBJECT_TAG_NAME%</name>
     <pose>Unspecified</pose>
     <truncated>0</truncated>
     <difficult>0</difficult>
     <bndbox>
-        <xmin>%OBJECT_TAG_x1%</xmin>
-        <ymin>%OBJECT_TAG_y1%</ymin>
-        <xmax>%OBJECT_TAG_x2%</xmax>
-        <ymax>%OBJECT_TAG_y2%</ymax>
+        <xmin>%OBJECT_TAG_xmin%</xmin>
+        <ymin>%OBJECT_TAG_ymin%</ymin>
+        <xmax>%OBJECT_TAG_xmax%</xmax>
+        <ymax>%OBJECT_TAG_ymax%</ymax>
     </bndbox>
 </object>`;
 
-        const allAnnotationExports = [];  // Promise[] ?????
+        const allAnnotationExports = [];  // Promise[]
 
         // Save Annotations
         this.imagesInfo.forEach((imageInfo, imageName) => {
             allAnnotationExports.push(
-                new Promise((resolve, reject) => {
-                    const filePath = `${annotationsFolderName}/${imageName}`;
+                new Promise(async (resolve, reject) => {
+                    const imageFilePath = `${annotationsFolderName}/${imageName}`;
+                    const assetFilePath = `${imageFilePath.substr(0, imageFilePath.lastIndexOf("."))
+                        || imageFilePath}.xml`;
+
+                    const objectsXML = imageInfo.objects.map((o) => {
+                        return objectTemplate.replace("%OBJECT_TAG_NAME%", o.name)
+                                             .replace("%OBJECT_TAG_xmin%", o.xmin.toString())
+                                             .replace("%OBJECT_TAG_ymin%", o.ymin.toString())
+                                             .replace("%OBJECT_TAG_xmax%", o.xmax.toString())
+                                             .replace("%OBJECT_TAG_ymax%", o.ymax.toString());
+                    });
 
                     const annotationXML = annotationTemplate.replace("%FILE_NAME%", imageName)
-                                                          .replace("%FILE_PATH%", filePath)
-                                                          .replace("%WIDTH%", imageInfo.width.toString())
-                                                          .replace("%HEIGHT%", imageInfo.height.toString());
+                                                            .replace("%FILE_PATH%", imageFilePath)
+                                                            .replace("%WIDTH%", imageInfo.width.toString())
+                                                            .replace("%HEIGHT%", imageInfo.height.toString())
+                                                            .replace("%OBJECTS%", objectsXML.join("\n"));
 
-                    // TODO : Objects
+                    console.log(imageName, imageInfo.objects);
 
-                    console.log(imageName, annotationXML);
-
-                    // TODO : Save Annotation File
+                    // Save Annotation File
+                    await this.storageProvider.writeText(assetFilePath, annotationXML);
 
                     resolve();
                 }),
