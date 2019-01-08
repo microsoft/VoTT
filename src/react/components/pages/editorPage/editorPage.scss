@@ -19,6 +19,7 @@
         flex-grow: 1;
         display: flex;
         flex-direction: column;
+        min-width: 290px;
 
         &-header {
             flex-basis: 50px;
