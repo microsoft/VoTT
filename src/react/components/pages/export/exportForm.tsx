@@ -1,8 +1,11 @@
 import React from "react";
-import Form, { FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
+import _ from "lodash";
+import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat } from "../../../../models/applicationState";
+import ExportProviderPicker from "../../common/exportProviderPicker/exportProviderPicker";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -23,6 +26,10 @@ export interface IExportFormState {
 }
 
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
+    private widgets = {
+        exportProviderPicker: (ExportProviderPicker as any) as Widget,
+    };
+
     constructor(props, context) {
         super(props, context);
 
@@ -59,6 +66,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 noHtml5Validate={true}
                 FieldTemplate={CustomFieldTemplate}
                 validate={this.onFormValidate}
+                widgets={this.widgets}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
@@ -103,6 +111,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
     }
 
     private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
+
         const providerType = exportFormat ? exportFormat.providerType : null;
         let newFormSchema: any = this.state.formSchema;
         let newUiSchema: any = this.state.uiSchema;
