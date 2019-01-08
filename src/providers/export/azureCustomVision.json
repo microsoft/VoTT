@@ -2,9 +2,26 @@
     "type": "object",
     "title": "Azure Custom Vision",
     "required": [
+        "assetState",
         "apiKey"
     ],
     "properties": {
+        "assetState": {
+            "type": "string",
+            "title": "Asset State",
+            "description": "Which assets to include in the export",
+            "enum": [
+                "all",
+                "visited",
+                "tagged"
+            ],
+            "default": "all",
+            "enumNames": [
+                "All Assets",
+                "Only Visisted Assets",
+                "Only Tagged Assets"
+            ]
+        },
         "apiKey": {
             "type": "string",
             "title": "API Key"
@@ -63,7 +80,7 @@
                             ],
                             "default": "Multilabel"
                         },
-                        "domain": {
+                        "domainId": {
                             "type": "string",
                             "title": "Domain"
                         }
@@ -72,7 +89,7 @@
                         "name",
                         "projectType",
                         "classificationType",
-                        "domain"
+                        "domainId"
                     ]
                 },
                 {

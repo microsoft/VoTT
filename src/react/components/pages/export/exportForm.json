@@ -1,22 +1,9 @@
 {
     "type": "object",
+    "required": [
+        "providerType"
+    ],
     "properties": {
-        "assetState": {
-            "type": "string",
-            "title": "Asset State",
-            "description": "Which assets to include in the export",
-            "enum": [
-                "all",
-                "visited",
-                "tagged"
-            ],
-            "default": "all",
-            "enumNames": [
-                "All Assets",
-                "Only Visisted Assets",
-                "Only Tagged Assets"
-            ]
-        },
         "providerType": {
             "title": "${strings.common.provider}",
             "type": "string",
