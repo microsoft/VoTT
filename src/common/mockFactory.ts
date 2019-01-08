@@ -8,6 +8,7 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 
 export default class MockFactory {
 
@@ -150,6 +151,14 @@ export default class MockFactory {
         return connections;
     }
 
+    public static createTestBingConnections(count: number = 10): IConnection[] {
+        const connections: IConnection[] = [];
+        for (let i = 1; i <= count; i++) {
+            connections.push(MockFactory.createTestConnection(i.toString(), "bingImageSearch"));
+        }
+        return connections;
+    }
+
     public static createTestConnection(
         name: string = "test", providerType: string = "localFileSystemProxy"): IConnection {
         return {
@@ -161,10 +170,20 @@ export default class MockFactory {
         };
     }
 
+    public static createBingOptions(): IBingImageSearchOptions {
+        return {
+            apiKey: "key",
+            aspectRatio: BingImageSearchAspectRatio.All,
+            query: "test",
+        };
+    }
+
     public static getProviderOptions(providerType) {
         switch (providerType) {
             case "azureBlobStorage":
                 return this.azureOptions();
+            case "bingImageSearch":
+                return this.createBingOptions();
             default:
                 return {};
         }

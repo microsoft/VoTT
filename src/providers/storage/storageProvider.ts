@@ -65,5 +65,9 @@ export class StorageProviderFactory {
         return registrationOptions.factory(options);
     }
 
+    public static isRegistered(providerType: string): boolean {
+        return this.providers[providerType] !== undefined;
+    }
+
     private static providerRegistry: { [id: string]: IStorageProviderRegistrationOptions } = {};
 }
