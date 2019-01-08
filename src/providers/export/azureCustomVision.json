@@ -1,6 +1,7 @@
 {
     "type": "object",
     "title": "Azure Custom Vision",
+    "required": ["name","apiKey","projectType","classificationType","domain"],
     "properties": {
         "name": {
             "type": "string",
@@ -40,7 +41,7 @@
             ],
             "default": "Multilabel"
         },
-        "domains": {
+        "domain": {
             "type": "string",
             "title": "Domain"
         },
