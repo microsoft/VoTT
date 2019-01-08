@@ -8,17 +8,9 @@
             "title": "${strings.common.provider}",
             "type": "string",
             "enum": [
-                "vottJson",
-                "azureCustomVision",
-                "tensorFlowRecords",
-                "tensorFlowPascalVOC"
             ],
             "default": "vottJson",
             "enumNames": [
-                "${strings.export.providers.vottJson}",
-                "${strings.export.providers.azureCV}",
-                "${strings.export.providers.tfRecords}",
-                "${strings.export.providers.tfPascalVoc}"
             ]
         },
         "providerOptions": {
