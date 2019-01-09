@@ -3,10 +3,10 @@
         "ui:widget": "textarea"
     },
     "sourceConnection": {
-        "ui:field": "connection"
+        "ui:field": "sourceConnection"
     },
     "targetConnection": {
-        "ui:field": "connection"
+        "ui:field": "targetConnection"
     },
     "tags": {
         "ui:field": "tagsInput"

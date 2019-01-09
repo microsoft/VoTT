@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import Guard from "../common/guard";
 import { IConnection } from "../models/applicationState";
-import { AssetProviderFactory } from "../providers/storage/assetProvider";
+import { AssetProviderFactory } from "../providers/storage/assetProviderFactory";
 
 export interface IConnectionService {
     save(connection: IConnection): Promise<IConnection>;
