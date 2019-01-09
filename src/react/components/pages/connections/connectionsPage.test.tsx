@@ -116,57 +116,7 @@ describe("Connections Page", () => {
             const form = connectionsPage.find(ConnectionForm);
             expect(form.exists()).toBe(true);
         });
-
-        it("adds connection when submit button is hit", async (done) => {
-            const props = createProps(connectionCreateRoute);
-            props.match.params = { connectionId: "create" };
-
-            const saveConnectionSpy = jest.spyOn(props.actions, "saveConnection");
-            const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
-
-            const connection: IConnection = {
-                ...MockFactory.createTestConnection("test", "azureBlobStorage"),
-                id: expect.any(String),
-            };
-
-            const options: IAzureCloudStorageOptions = connection.providerOptions as IAzureCloudStorageOptions;
-
-            wrapper
-                .find("input#root_name")
-                .simulate("change", { target: { value: connection.name } });
-            wrapper
-                .find("textarea#root_description")
-                .simulate("change", { target: { value: connection.description } });
-
-            await MockFactory.flushUi(() => {
-                wrapper
-                    .find("select#root_providerType")
-                    .simulate("change", { target: { value: connection.providerType } });
-            });
-
-            wrapper.update();
-
-            wrapper
-                .find("input#root_providerOptions_accountName")
-                .simulate("change", { target: { value: options.accountName } });
-            wrapper
-                .find("input#root_providerOptions_containerName")
-                .simulate("change", { target: { value: options.containerName } });
-            wrapper
-                .find("input#root_providerOptions_sas")
-                .simulate("change", { target: { value: options.sas } });
-            wrapper
-                .find(Form)
-                .simulate("submit");
-
-            setImmediate(() => {
-                expect(saveConnectionSpy).toBeCalledWith(connection);
-                done();
-            });
-        });
-
-    });
-
+        
     describe("selecting connections", () => {
         it("renders no form when nothing is selected", () => {
             const props = createProps(connectionsRoute);
@@ -217,6 +167,30 @@ describe("Connections Page", () => {
     });
 
     describe("removing a connection", () => {
+        it("removes unselected connection when deleted button is hit", () => {
+            const props = createProps(connectionsRoute);
+            const deleteConnection = jest.spyOn(props.actions, "deleteConnection");
+
+            const state = { ...initialState };
+            state.connections = MockFactory.createTestConnections(2);
+
+            const store = createStore(state);
+            const wrapper = createWrapper(connectionsRoute, store, props);
+            const connectionsPage = wrapper.find(ConnectionPage);
+
+            // ensure list is 2 long (drawn & internal)
+            const items = connectionsPage.find(ConnectionItem);
+            expect(items.length).toEqual(2);
+
+            const toDelete = items.first();
+            const deleteButton = toDelete.find(".delete-btn");
+            deleteButton.simulate("click");
+
+            // Accept the modal delete warning
+            wrapper.find(".modal-footer button").first().simulate("click");
+
+            expect(deleteConnection).toBeCalled();
+        });
 
         it("removes a selected connection when delete button is hit", (done) => {
             const route = connectionsRoute + "/connection-1";
