@@ -31,9 +31,6 @@ export interface IReactTag {
 export interface ITagsInputProps {
     tags: ITag[];
     onChange: (tags: ITag[]) => void;
-    showIndex?: boolean;
-    onTagClick?: (tag: ITag) => void;
-    onTagShiftClick?: (tag: ITag) => void;
 }
 
 /**
@@ -71,7 +68,7 @@ const delimiters = [KeyCodes.comma, KeyCodes.enter];
 /**
  * Component for creating, modifying and using tags
  */
-export default class TagsInput extends React.Component<ITagsInputProps, ITagsInputState> {
+export default abstract class TagsInput<T extends ITagsInputProps> extends React.Component<T, ITagsInputState> {
 
     constructor(props) {
         super(props);
@@ -129,22 +126,62 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
      * Calls the onTagClick handler if not null with clicked tag
      * @param event Click event
      */
-    private handleTagClick(event) {
-        const text = (event.currentTarget.innerText || event.target.innerText).trim();
-        const tag = this.getTag(text);
-        if (event.ctrlKey) {
-            // Opens up tag editor modal
-            this.setState({
-                selectedTag: tag,
-                showModal: true,
-            });
-        } else if (event.shiftKey && this.props.onTagShiftClick) {
-            // Calls provided onTagShiftClick
-            this.props.onTagShiftClick(this.toItag(tag));
-        } else if (this.props.onTagClick) {
-            // Calls provided onTagClick function
-            this.props.onTagClick(this.toItag(tag));
+    protected abstract handleTagClick(event);
+
+    protected openEditModal(tag: IReactTag) {
+        this.setState({
+            selectedTag: tag,
+            showModal: true,
+        });
+    }
+
+    // Helpers
+
+    /**
+     * Gets the tag with the given name (id)
+     * @param id string name of tag. param 'id' for lower level react component
+     */
+    protected getTag(id: string): IReactTag {
+        const match = this.state.tags.find((tag) => tag.id === id);
+        if (!match) {
+            throw new Error(`No tag by id: ${id}`);
         }
+        return match;
+    }
+
+    /**
+     * Generate necessary HTML to render tag box appropriately
+     * @param name name of tag
+     * @param color color of tag
+     */
+    protected ReactTagHtml(name: string, color: string) {
+        return (
+            <div className="tag inline-block" onClick={(event) => this.handleTagClick(event)}>
+                <div className="tag-contents">
+                    <div className="tag-color-box" style={{ backgroundColor: color }}></div>
+                    {this.getTagSpan(name)}
+                </div>
+            </div>
+        );
+    }
+
+    /**
+     * Get span element for each tag
+     */
+    protected abstract getTagSpan(name: string);
+
+    /**
+     * Converts IReactTag to ITag
+     * @param tag IReactTag to convert to ITag
+     */
+    protected toItag(tag: IReactTag): ITag {
+        if (!tag) {
+            return null;
+        }
+        return {
+            name: tag.id,
+            color: tag.color,
+        };
     }
 
     /**
@@ -242,37 +279,6 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         }, () => this.props.onChange(this.toITags(this.state.tags)));
     }
 
-    // Helpers
-
-    /**
-     * Gets the tag with the given name (id)
-     * @param id string name of tag. param 'id' for lower level react component
-     */
-    private getTag(id: string): IReactTag {
-        const match = this.state.tags.find((tag) => tag.id === id);
-        if (!match) {
-            throw new Error(`No tag by id: ${id}`);
-        }
-        return match;
-    }
-
-    private displayIndexOfTag(id: string): number {
-        let index = -1;
-        if (this.state) {
-            index = this.state.tags.findIndex((tag) => tag.id === id);
-            if (index < 0) {
-                index = this.state.tags.length + 1;
-            }
-        } else {
-            index = this.props.tags.findIndex((tag) => tag.name === id);
-        }
-        if (index < 0) {
-            throw new Error(`No tag by id: ${id}`)
-        }
-        index += 1;
-        return (index === 10) ? 0 : index;
-    }
-
     /**
      * Converts ITag to IReactTag
      * @param tag ITag to convert to IReactTag
@@ -284,37 +290,6 @@ export default class TagsInput extends React.Component<ITagsInputProps, ITagsInp
         return {
             id: tag.name,
             text: this.ReactTagHtml(tag.name, tag.color),
-            color: tag.color,
-        };
-    }
-
-    /**
-     * Generate necessary HTML to render tag box appropriately
-     * @param name name of tag
-     * @param color color of tag
-     */
-    private ReactTagHtml(name: string, color: string) {
-        const index = this.displayIndexOfTag(name);
-        return (
-            <div className="tag inline-block" onClick={(event) => this.handleTagClick(event)}>
-                <div className="tag-contents">
-                    <div className="tag-color-box" style={{ backgroundColor: color }}></div>
-                    <span>{(this.props.showIndex && index <= 9) ? `[${index}]  ` : ""}{name}</span>
-                </div>
-            </div>
-        );
-    }
-
-    /**
-     * Converts IReactTag to ITag
-     * @param tag IReactTag to convert to ITag
-     */
-    private toItag(tag: IReactTag): ITag {
-        if (!tag) {
-            return null;
-        }
-        return {
-            name: tag.id,
             color: tag.color,
         };
     }
