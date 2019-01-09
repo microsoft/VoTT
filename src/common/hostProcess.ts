@@ -28,7 +28,8 @@ export function typeToFriendlyName(type: HostProcessType): string {
     }
 }
 
-const osRelease = require("os").release();
+import os from "os";
+const osRelease = os.release();
 
 function getHostProcessType(): HostProcessType {
     if (osRelease.indexOf("electron") > -1) {

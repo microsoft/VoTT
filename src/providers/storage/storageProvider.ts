@@ -64,8 +64,10 @@ export class StorageProviderFactory {
             throw new Error(`No storage provider has been registered with name '${name}'`);
         }
 
-        if ((registrationOptions.platformSupport & HostProcess.type) == 0) {
-            throw new Error(`This storage provider isn't supported by the host process type "${typeToFriendlyName(HostProcess.type)}". Info: ${HostProcess.release}`);
+        if ((registrationOptions.platformSupport & HostProcess.type) === 0) {
+            throw new Error(
+                `This storage provider isn't supported by the host process type ` +
+                `"${typeToFriendlyName(HostProcess.type)}". Info: ${HostProcess.release}`);
         }
 
         return registrationOptions.factory(options);

@@ -49,8 +49,10 @@ export class AssetProviderFactory {
             throw new Error(`No asset provider has been registered with name '${name}'`);
         }
 
-        if ((registrationOptions.platformSupport & HostProcess.type) == 0) {
-            throw new Error(`This asset provider isn't supported by the host process type "${typeToFriendlyName(HostProcess.type)}". Info: ${HostProcess.release}`);
+        if ((registrationOptions.platformSupport & HostProcess.type) === 0) {
+            throw new Error(
+                `This asset provider isn't supported by the host process type ` +
+                `"${typeToFriendlyName(HostProcess.type)}". Info: ${HostProcess.release}`);
         }
 
         return registrationOptions.factory(options);
