@@ -6,12 +6,7 @@
     "properties": {
         "providerType": {
             "title": "${common.provider}",
-            "type": "string",
-            "enum": [
-            ],
-            "default": "vottJson",
-            "enumNames": [
-            ]
+            "type": "string"
         },
         "providerOptions": {
             "type": "object"
