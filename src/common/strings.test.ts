@@ -60,9 +60,6 @@ describe("Localization tests", () => {
                 const lExp = languageJson.export;
 
                 expect(formProps.providerType.title).toEqual(common.provider);
-                expect(formProps.providerType.enumNames[0]).toEqual(lExp.providers.vottJson);
-                expect(formProps.providerType.enumNames[1]).toEqual(lExp.providers.azureCV);
-                expect(formProps.providerType.enumNames[2]).toEqual(lExp.providers.tfRecords);
             }
         });
 

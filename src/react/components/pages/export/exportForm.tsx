@@ -1,7 +1,9 @@
 import React from "react";
+import _ from "lodash";
 import Form, { FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat } from "../../../../models/applicationState.js";
+import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
@@ -25,6 +27,11 @@ export interface IExportFormState {
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
     constructor(props, context) {
         super(props, context);
+
+        const exportProviders = _.values(ExportProviderFactory.handlers);
+        formSchema.properties["providerType"]["enum"] = exportProviders.map((item) => item.name);
+        formSchema.properties["providerType"]["enumNames"] = exportProviders.map((item) => item.displayName);
+        formSchema.properties["providerType"]["default"] = "vottJson";
 
         this.state = {
             classNames: ["needs-validation"],
