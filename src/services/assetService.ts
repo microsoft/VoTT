@@ -1,8 +1,8 @@
 import MD5 from "md5.js";
 import Guard from "../common/guard";
 import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../models/applicationState";
-import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProvider";
-import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProvider";
+import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
+import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
 
 export class AssetService {

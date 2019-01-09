@@ -1,16 +1,15 @@
-import {
-    AssetState, AssetType, IApplicationState, IAppSettings, IAsset,
-    IAssetMetadata, IConnection, IExportFormat, IProject, ITag, StorageType,
-} from "../models/applicationState";
+import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
+    IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
-import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProvider";
+import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
-import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProvider";
+import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProviderFactory";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
 import { HostProcessType } from "./hostProcess";
+import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 
 export default class MockFactory {
 
@@ -73,7 +72,7 @@ export default class MockFactory {
     public static azureOptions(): IAzureCloudStorageOptions {
         return {
             accountName: "myaccount",
-            containerName: "container",
+            containerName: "container0",
             sas: "sas",
             createContainer: undefined,
         };
@@ -98,14 +97,15 @@ export default class MockFactory {
     }
 
     public static fakeAzureData() {
+        const options = this.azureOptions();
         return {
             blobName: "file1.jpg",
             blobText: "This is the content",
             fileType: "image/jpg",
-            containerName: "container",
+            containerName: options.containerName,
             containers: this.azureContainers(),
             blobs: this.azureBlobs(),
-            options: this.azureOptions(),
+            options,
         };
     }
 
@@ -124,6 +124,7 @@ export default class MockFactory {
         }
         return { segment: { blobItems: result } };
     }
+
     public static createTestTags(count: number = 5): ITag[] {
         const tags: ITag[] = [];
         for (let i = 0; i < count; i++) {
@@ -151,6 +152,14 @@ export default class MockFactory {
         return connections;
     }
 
+    public static createTestBingConnections(count: number = 10): IConnection[] {
+        const connections: IConnection[] = [];
+        for (let i = 1; i <= count; i++) {
+            connections.push(MockFactory.createTestConnection(i.toString(), "bingImageSearch"));
+        }
+        return connections;
+    }
+
     public static createTestConnection(
         name: string = "test", providerType: string = "localFileSystemProxy"): IConnection {
         return {
@@ -162,10 +171,20 @@ export default class MockFactory {
         };
     }
 
+    public static createBingOptions(): IBingImageSearchOptions {
+        return {
+            apiKey: "key",
+            aspectRatio: BingImageSearchAspectRatio.All,
+            query: "test",
+        };
+    }
+
     public static getProviderOptions(providerType) {
         switch (providerType) {
             case "azureBlobStorage":
                 return this.azureOptions();
+            case "bingImageSearch":
+                return this.createBingOptions();
             default:
                 return {};
         }
@@ -190,6 +209,7 @@ export default class MockFactory {
     public static createStorageProvider(): IStorageProvider {
         return {
             storageType: StorageType.Cloud,
+            initialize: jest.fn(() => Promise.resolve()),
             readText: jest.fn(() => Promise.resolve("Fake text")),
             readBinary: jest.fn(),
             deleteFile: jest.fn(),
@@ -212,6 +232,7 @@ export default class MockFactory {
 
     public static createAssetProvider(): IAssetProvider {
         return {
+            initialize: jest.fn(() => Promise.resolve()),
             getAssets(containerName?: string): Promise<IAsset[]> {
                 throw new Error("Method not implemented.");
             },

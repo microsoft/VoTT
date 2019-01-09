@@ -1,4 +1,4 @@
-import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProvider";
+import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProviderFactory";
 import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
 import HostProcess, { HostProcessType, typeToFriendlyName } from "../../common/hostProcess";
@@ -71,6 +71,10 @@ export class StorageProviderFactory {
         }
 
         return registrationOptions.factory(options);
+    }
+
+    public static isRegistered(providerType: string): boolean {
+        return this.providers[providerType] !== undefined;
     }
 
     private static providerRegistry: { [id: string]: IStorageProviderRegistrationOptions } = {};
