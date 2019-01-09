@@ -98,35 +98,40 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     const image64 = btoa(new Uint8Array(response.data).
                         reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
-                    if (image64.length > 10) {
+                    const tagObjects = [];
+                    element.regions.filter((region) => (region.type === RegionType.Rectangle ||
+                                                        region.type === RegionType.Square) &&
+                                                        region.points.length === 2)
+                                    .forEach((region) => {
+                                        region.tags.forEach((tag) => {
+                                            const objectInfo: IObjectInfo = {
+                                                name: tag.name,
+                                                xmin: region.points[0].x,
+                                                ymin: region.points[0].y,
+                                                xmax: region.points[1].x,
+                                                ymax: region.points[1].y,
+                                            };
+
+                                            tagObjects.push(objectInfo);
+                                        });
+                    });
+
+                    const imageInfo: IImageInfo = {
+                        width: 0,
+                        height: 0,
+                        objects: tagObjects,
+                    };
+
+                    this.imagesInfo.set(element.asset.name, imageInfo);
+
+                    if (image64.length > 4) {
                         // Load image at runtime to get dimension info
                         const img = new Image();
+                        // img.title = element.asset.name;
                         img.onload = ((event) => {
-                            const tagObjects = [];
-                            element.regions.filter((region) => (region.type === RegionType.Rectangle ||
-                                                                region.type === RegionType.Square) &&
-                                                                region.points.length === 2)
-                                           .forEach((region) => {
-                                                region.tags.forEach((tag) => {
-                                                    const objectInfo: IObjectInfo = {
-                                                        name: tag.name,
-                                                        xmin: region.points[0].x,
-                                                        ymin: region.points[0].y,
-                                                        xmax: region.points[1].x,
-                                                        ymax: region.points[1].y,
-                                                    };
-
-                                                    tagObjects.push(objectInfo);
-                                                });
-                            });
-
-                            const imageInfo: IImageInfo = {
-                                width: img.width,
-                                height: img.height,
-                                objects: tagObjects,
-                            };
-
-                            this.imagesInfo.set(element.asset.name, imageInfo);
+                            // const imageInfo = this.imagesInfo[event.target.title];
+                            // imageInfo.width = img.width;
+                            // imageInfo.height = img.height;
 
                             resolve();
                         });
