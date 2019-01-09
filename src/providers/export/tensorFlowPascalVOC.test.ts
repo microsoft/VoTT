@@ -117,10 +117,11 @@ describe("TFPascalVOC Json Export Provider", () => {
             const storageProviderMock = LocalFileSystemProxy as any;
             const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
 
-            expect(createContainerCalls.length).toEqual(4);
+            expect(createContainerCalls.length).toEqual(5);
             expect(createContainerCalls[1][0].endsWith("/JPEGImages")).toEqual(true);
             expect(createContainerCalls[2][0].endsWith("/Annotations")).toEqual(true);
             expect(createContainerCalls[3][0].endsWith("/ImageSets")).toEqual(true);
+            expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(4);
@@ -154,10 +155,11 @@ describe("TFPascalVOC Json Export Provider", () => {
             const storageProviderMock = LocalFileSystemProxy as any;
             const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
 
-            expect(createContainerCalls.length).toEqual(4);
+            expect(createContainerCalls.length).toEqual(5);
             expect(createContainerCalls[1][0].endsWith("/JPEGImages")).toEqual(true);
             expect(createContainerCalls[2][0].endsWith("/Annotations")).toEqual(true);
             expect(createContainerCalls[3][0].endsWith("/ImageSets")).toEqual(true);
+            expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(3);
@@ -189,10 +191,11 @@ describe("TFPascalVOC Json Export Provider", () => {
             const storageProviderMock = LocalFileSystemProxy as any;
             const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
 
-            expect(createContainerCalls.length).toEqual(4);
+            expect(createContainerCalls.length).toEqual(5);
             expect(createContainerCalls[1][0].endsWith("/JPEGImages")).toEqual(true);
             expect(createContainerCalls[2][0].endsWith("/Annotations")).toEqual(true);
             expect(createContainerCalls[3][0].endsWith("/ImageSets")).toEqual(true);
+            expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(2);

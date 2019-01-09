@@ -3,6 +3,7 @@ import { ExportProvider, ExportAssetState } from "./exportProvider";
 import { IProject, AssetState, AssetType, IAsset, IAssetMetadata, RegionType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
+import HtmlFileReader from "../../common/htmlFileReader";
 import axios from "axios";
 
 /**
@@ -94,10 +95,6 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     // Write Binary
                     await this.storageProvider.writeBinary(imageFileName, buffer);
 
-                    // Get Base64
-                    const image64 = btoa(new Uint8Array(response.data).
-                        reduce((data, byte) => data + String.fromCharCode(byte), ""));
-
                     const tagObjects = [];
                     element.regions.filter((region) => (region.type === RegionType.Rectangle ||
                                                         region.type === RegionType.Square) &&
@@ -117,42 +114,48 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     });
 
                     const imageInfo: IImageInfo = {
-                        width: 0,
-                        height: 0,
+                        width: element.asset.size ? element.asset.size.width : 0,
+                        height: element.asset.size ? element.asset.size.height : 0,
                         objects: tagObjects,
                     };
 
                     this.imagesInfo.set(element.asset.name, imageInfo);
 
-                    if (image64.length > 4) {
-                        // Load image at runtime to get dimension info
-                        const img = new Image();
-                        // img.title = element.asset.name;
-                        img.onload = ((event) => {
-                            // const imageInfo = this.imagesInfo[event.target.title];
-                            // imageInfo.width = img.width;
-                            // imageInfo.height = img.height;
+                    if (element.asset.size && element.asset.size.width > 0 && element.asset.size.height > 0) {
+                        resolve();
+                    } else {
+                        // Get Base64
+                        const image64 = btoa(new Uint8Array(response.data).
+                        reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
-                            resolve();
-                        });
-                        img.onerror = ((err) => {
+                        if (image64.length < 10) {
                             // Ignore the error at the moment
                             // TODO: Refactor ExportProvider abstract class export() method
                             //       to return Promise<object> with an object containing
                             //       the number of files succesfully exported out of total
-                            console.log(`Error loading image ${imageFileName}`);
+                            console.log(`Image not valid ${imageFileName}`);
                             resolve();
-                            // eject(err);
-                        });
-                        img.src = "data:image;base64," + image64;
-                    } else {
-                        // Ignore the error at the moment
-                        // TODO: Refactor ExportProvider abstract class export() method
-                        //       to return Promise<object> with an object containing
-                        //       the number of files succesfully exported out of total
-                        console.log(`Image not valid ${imageFileName}`);
-                        resolve();
-                        // eject(err);
+                        } else {
+                            // Load image at runtime to get dimension info
+                            // const imageInfo = this.imagesInfo[element.asset.name];
+                            const img = new Image();
+                            img.onload = ((event) => {
+                                // imageInfo.width = img.width;
+                                // imageInfo.height = img.height;
+
+                                resolve();
+                            });
+                            img.onerror = ((err) => {
+                                // Ignore the error at the moment
+                                // TODO: Refactor ExportProvider abstract class export() method
+                                //       to return Promise<object> with an object containing
+                                //       the number of files succesfully exported out of total
+                                console.log(`Error loading image ${imageFileName} - ${err}`);
+                                resolve();
+                                // eject(err);
+                            });
+                            img.src = "data:image;base64," + image64;
+                        }
                     }
                 })
                 .catch((err) => {
@@ -160,7 +163,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     // TODO: Refactor ExportProvider abstract class export() method
                     //       to return Promise<object> with an object containing
                     //       the number of files succesfully exported out of total
-                    console.log(`Error downloading ${imageFileName}`);
+                    console.log(`Error downloading ${imageFileName} - ${err}`);
                     resolve();
                     // eject(err);
                 });
@@ -253,8 +256,6 @@ item {
                                                             .replace("%HEIGHT%", imageInfo.height.toString())
                                                             .replace("%OBJECTS%", objectsXML.join("\n"));
 
-                    console.log(imageName, imageInfo.objects);
-
                     // Save Annotation File
                     await this.storageProvider.writeText(assetFilePath, annotationXML);
 
@@ -274,6 +275,9 @@ item {
         // Create ImageSets Sub Folder (Main ?)
         const imageSetsFolderName = `${exportFolderName}/ImageSets`;
         await this.storageProvider.createContainer(imageSetsFolderName);
+
+        const imageSetsMainFolderName = `${exportFolderName}/ImageSets/Main`;
+        await this.storageProvider.createContainer(imageSetsMainFolderName);
 
         // Save ImageSets (Main ?)
         // TODO
