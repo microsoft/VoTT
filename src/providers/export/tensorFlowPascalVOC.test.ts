@@ -38,10 +38,12 @@ describe("TFPascalVOC Json Export Provider", () => {
 
     const tagLengthInPbtxt = 37;
 
-    // Blank Image: data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=
+    // jest.setTimeout(20000);
     axios.get = jest.fn(() => {
         return Promise.resolve({
-            data: _base64ToArrayBuffer("R0lGODlhAQABAAAAACwAAAAAAQABAAA="),
+            data: [1, 2, 3],
+            // Blank Image: data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=
+            // data: _base64ToArrayBuffer("R0lGODlhAQABAAAAACwAAAAAAQABAAA="),
         });
     });
 
@@ -127,11 +129,15 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
             expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4")).toEqual(true);
 
-            const writeFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeFileCalls.length).toEqual(1);
-            const exportPbtxt = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            expect(exportPbtxt.length)
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            expect(writeTextFileCalls.length).toEqual(5);
+            expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
+            expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
+            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
+            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
+            expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
+            expect(writeTextFileCalls[4][0].endsWith("/Annotations/Asset 4.xml")).toEqual(true);
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -159,11 +165,14 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
             expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
 
-            const writeFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeFileCalls.length).toEqual(1);
-            const exportPbtxt = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            expect(exportPbtxt.length)
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            expect(writeTextFileCalls.length).toEqual(4);
+            expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
+            expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
+            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
+            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
+            expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
         });
 
         it("Exports only tagged assets", async () => {
@@ -172,7 +181,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             };
 
             const testProject = {...baseTestProject};
-            testProject.tags = MockFactory.createTestTags(0);
+            testProject.tags = MockFactory.createTestTags(5);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
             await exportProvider.export();
@@ -190,8 +199,13 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
             expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
 
-            const writeFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeFileCalls.length).toEqual(0);
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            expect(writeTextFileCalls.length).toEqual(3);
+            expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
+            expect(writeTextFileCalls[0][1].length)
+                .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
+            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
+            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
         });
     });
 });
