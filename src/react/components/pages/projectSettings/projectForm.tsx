@@ -1,11 +1,10 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
-import { IConnection, IProject } from "../../../../models/applicationState.js";
+import { addLocValues, strings } from "../../../../common/strings";
+import { IConnection, IProject } from "../../../../models/applicationState";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
-import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
-import { strings, addLocValues } from "../../../../common/strings";
 import ProjectSettingsTagsInput from "./projectSettingsTagsInput";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
@@ -43,7 +42,7 @@ export interface IProjectFormState {
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
     private fields = {
-        connection: CustomField(ConnectionPicker, (props) => {
+        sourceConnection: CustomField(ConnectionPicker, (props) => {
             return {
                 id: props.idSchema.$id,
                 value: props.formData,
@@ -51,7 +50,21 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 onChange: props.onChange,
             };
         }),
+<<<<<<< HEAD
         tagsInput: CustomField(ProjectSettingsTagsInput, (props) => {
+=======
+        targetConnection: CustomField(ConnectionPicker, (props) => {
+            const targetConnections = this.props.connections.filter(
+                (connection) => StorageProviderFactory.isRegistered(connection.providerType));
+            return {
+                id: props.idSchema.$id,
+                value: props.formData,
+                connections: targetConnections,
+                onChange: props.onChange,
+            };
+        }),
+        tagsInput: CustomField(TagsInput, (props) => {
+>>>>>>> 53789a3f4b66163a629660f69325807cb0337359
             return {
                 tags: props.formData,
                 onChange: props.onChange,

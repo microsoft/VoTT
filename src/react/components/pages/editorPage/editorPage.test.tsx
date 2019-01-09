@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { mount, ReactWrapper } from "enzyme";
 import { Store, AnyAction } from "redux";
 import EditorPage, { IEditorPageProps } from "./editorPage";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import { IApplicationState, IProject, IAssetMetadata } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";

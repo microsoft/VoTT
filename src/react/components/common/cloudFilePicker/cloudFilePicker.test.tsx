@@ -1,7 +1,7 @@
 import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import { CloudFilePicker, ICloudFilePickerProps, ICloudFilePickerState } from "./cloudFilePicker";
 import { IConnection } from "../../../../models/applicationState";
 

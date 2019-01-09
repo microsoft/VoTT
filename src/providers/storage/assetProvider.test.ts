@@ -1,4 +1,4 @@
-import { AssetProviderFactory, IAssetProvider } from "./assetProvider";
+import { AssetProviderFactory, IAssetProvider } from "./assetProviderFactory";
 import { IAsset } from "../../models/applicationState";
 
 describe("Asset Provider Factory", () => {

@@ -1,6 +1,6 @@
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
-import { StorageProviderFactory } from "../providers/storage/storageProvider";
+import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { IProject } from "../models/applicationState";
 import { error } from "util";
 import { constants } from "../common/constants";

@@ -11,7 +11,7 @@ import ConnectionForm from "./connectionForm";
 import "./connectionsPage.scss";
 import { strings } from "../../../../common/strings";
 import Confirm from "../../common/confirm/confirm";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
