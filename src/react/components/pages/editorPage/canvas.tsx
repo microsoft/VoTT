@@ -1,4 +1,5 @@
 import React from "react";
+import * as shortid from "shortid";
 import { IAssetMetadata, IRegion, RegionType, AssetState, ITag } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
@@ -250,15 +251,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     private onSelectionEnd = (commit: RegionData) => {
-        const ct = CanvasTools;
-        const r = commit.boundRect;
+        const id = shortid.generate();
 
-        this.addRegion(this.props.selectedAsset.regions.length.toString(), commit, null);
+        this.addRegion(id, commit, null);
 
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.scaleRegionToSourceSize(commit);
         const newRegion = {
-            id: this.props.selectedAsset.regions.length.toString(),
+            id: id,
             type: RegionType.Rectangle,
             tags: [],
             height: scaledRegionData.height,
