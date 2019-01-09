@@ -225,7 +225,8 @@ export enum AssetState {
  * @member Polygon - Specifies a region as a multi-point polygon
  */
 export enum RegionType {
-    Square = "SQUARE",
+    Polyline = "POLYLINE",
+    Point = "POINT",
     Rectangle = "RECTANGLE",
     Polygon = "POLYGON",
 }

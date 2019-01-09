@@ -260,7 +260,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const scaledRegionData = this.scaleRegionToSourceSize(commit);
         const newRegion = {
             id,
-            type: RegionType.Rectangle,
+            type: this.editorModeToType(this.props.editorMode),
             tags: [],
             height: scaledRegionData.height,
             width: scaledRegionData.width,
@@ -356,7 +356,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                                                             region.width,
                                                             region.height,
                                                             region.points.map((point) => new Point2D(point.x, point.y)),
-                                                            RegionDataType.Rect);
+                                                            this.regionTypeToType(region.type));
                     if (region.tags.length) {
                         this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
                                         new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name, tag.color))));
@@ -369,20 +369,41 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         image.src = this.props.selectedAsset.asset.path;
     }
 
+    private regionTypeToType(regionType: RegionType) {
+        let type;
+        switch (regionType) {
+            case RegionType.Rectangle:
+                type = RegionDataType.Rect;
+                break;
+            case RegionType.Polygon:
+                type = RegionDataType.Polygon;
+                break;
+            case RegionType.Point:
+                type = RegionDataType.Point;
+                break;
+            case RegionType.Polyline:
+                type = RegionDataType.Polyline;
+                break;
+            default:
+                break;
+        }
+        return type;
+    }
+
     private editorModeToType(editorMode: EditorMode) {
         let type;
         switch (editorMode) {
             case EditorMode.Rectangle:
-                type = RegionDataType.Rect;
+                type = RegionType.Rectangle;
                 break;
             case EditorMode.Polygon:
-                type = RegionDataType.Polygon;
+                type = RegionType.Polygon;
                 break;
             case EditorMode.Point:
-                type = RegionDataType.Point;
+                type = RegionType.Point;
                 break;
             case EditorMode.Polyline:
-                type = RegionDataType.Polyline;
+                type = RegionType.Polyline;
                 break;
             default:
                 break;
