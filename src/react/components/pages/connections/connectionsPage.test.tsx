@@ -116,6 +116,55 @@ describe("Connections Page", () => {
             const form = connectionsPage.find(ConnectionForm);
             expect(form.exists()).toBe(true);
         });
+
+        it("adds connection when submit button is hit", async (done) => {
+            const props = createProps(connectionCreateRoute);
+            props.match.params = { connectionId: "create" };
+
+            const saveConnectionSpy = jest.spyOn(props.actions, "saveConnection");
+            const wrapper = createWrapper(connectionCreateRoute, createStore(), props);
+
+            const connection: IConnection = {
+                ...MockFactory.createTestConnection("test", "azureBlobStorage"),
+                id: expect.any(String),
+            };
+
+            const options: IAzureCloudStorageOptions = connection.providerOptions as IAzureCloudStorageOptions;
+
+            wrapper
+                .find("input#root_name")
+                .simulate("change", { target: { value: connection.name } });
+            wrapper
+                .find("textarea#root_description")
+                .simulate("change", { target: { value: connection.description } });
+
+            await MockFactory.flushUi(() => {
+                wrapper
+                    .find("select#root_providerType")
+                    .simulate("change", { target: { value: connection.providerType } });
+            });
+
+            wrapper.update();
+
+            wrapper
+                .find("input#root_providerOptions_accountName")
+                .simulate("change", { target: { value: options.accountName } });
+            wrapper
+                .find("input#root_providerOptions_containerName")
+                .simulate("change", { target: { value: options.containerName } });
+            wrapper
+                .find("input#root_providerOptions_sas")
+                .simulate("change", { target: { value: options.sas } });
+            wrapper
+                .find(Form)
+                .simulate("submit");
+
+            setImmediate(() => {
+                expect(saveConnectionSpy).toBeCalledWith(connection);
+                done();
+            });
+        });
+
     });
 
     describe("selecting connections", () => {
