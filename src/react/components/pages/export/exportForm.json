@@ -7,9 +7,6 @@
         "providerType": {
             "title": "${common.provider}",
             "type": "string"
-        },
-        "providerOptions": {
-            "type": "object"
         }
     }
 }
