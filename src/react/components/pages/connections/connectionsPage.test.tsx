@@ -217,30 +217,6 @@ describe("Connections Page", () => {
     });
 
     describe("removing a connection", () => {
-        it("removes unselected connection when deleted button is hit", () => {
-            const props = createProps(connectionsRoute);
-            const deleteConnection = jest.spyOn(props.actions, "deleteConnection");
-
-            const state = { ...initialState };
-            state.connections = MockFactory.createTestConnections(2);
-
-            const store = createStore(state);
-            const wrapper = createWrapper(connectionsRoute, store, props);
-            const connectionsPage = wrapper.find(ConnectionPage);
-
-            // ensure list is 2 long (drawn & internal)
-            const items = connectionsPage.find(ConnectionItem);
-            expect(items.length).toEqual(2);
-
-            const toDelete = items.first();
-            const deleteButton = toDelete.find(".delete-btn");
-            deleteButton.simulate("click");
-
-            // Accept the modal delete warning
-            wrapper.find(".modal-footer button").first().simulate("click");
-
-            expect(deleteConnection).toBeCalled();
-        });
 
         it("removes a selected connection when delete button is hit", (done) => {
             const route = connectionsRoute + "/connection-1";
