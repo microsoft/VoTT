@@ -28,18 +28,22 @@ export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<
 export function saveProject(project: IProject): (dispatch: Dispatch, getState: any) => Promise<IProject> {
     return async (dispatch: Dispatch, getState: any) => {
         const projectService = new ProjectService();
+        const projectId = project["id"];
         const projectName = project["name"];
         const sourceConnection = project.sourceConnection.name;
         const targetConnection = project.targetConnection.name;
         const projectList = getState().recentProjects;
         if (projectList && projectList.length > 0) {
-            const isNew = (project.id === null) &&
-                          (projectList.find((project) => project.name === projectName) === undefined) &&
-                          (projectList.find(
-                            (project) => project.sourceConnection.name === sourceConnection) === undefined) &&
-                          (projectList.find(
-                            (project) => project.targetConnection.name === targetConnection) === undefined);
-            if (isNew) {
+            const isUnique = (project.id === null) ||
+                             ((projectList.find((project) =>
+                                (project.name === projectName) && project.id === projectId)) ||
+                             (projectList.find((project) =>
+                                project.name === projectName) === undefined) &&
+                             (projectList.find((project) =>
+                                project.sourceConnection.name === sourceConnection) === undefined) &&
+                             (projectList.find((project) =>
+                                project.targetConnection.name === targetConnection) === undefined));
+            if (isUnique) {
                 project = await projectService.save(project);
                 dispatch(saveProjectAction(project));
             } else {
