@@ -8,6 +8,7 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import Canvas from "../react/components/pages/editorPage/canvas";
 
 export default class MockFactory {
 
@@ -255,6 +256,10 @@ export default class MockFactory {
         };
 
         return registration;
+    }
+
+    public static createFakeCanvas(){
+        return new Canvas({},{})
     }
 
     public static createAssetProviderRegistration(name: string) {

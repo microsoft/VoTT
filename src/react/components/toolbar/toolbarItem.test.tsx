@@ -2,6 +2,7 @@ import React from "react";
 import { ToolbarItem, IToolbarItemProps, ToolbarItemType } from "./toolbarItem";
 import { mount, ReactWrapper } from "enzyme";
 import MockFactory from "../../../common/mockFactory";
+import Canvas from "../pages/editorPage/canvas";
 
 describe("Toolbar Item", () => {
     let onClickHandler = jest.fn();
@@ -22,6 +23,7 @@ describe("Toolbar Item", () => {
             tooltip: "Test Item Tooltip",
             onClick: onClickHandler,
             type: ToolbarItemType.Action,
+            canvas: new Canvas({},{})
         };
     }
 

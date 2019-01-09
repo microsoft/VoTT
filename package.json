@@ -25,7 +25,7 @@
         "redux-thunk": "^2.3.0",
         "rimraf": "^2.6.2",
         "shortid": "^2.2.14",
-        "vott-ct": "^2.1.10"
+        "vott-ct": "^2.1.11"
     },
     "scripts": {
         "start": "nf start -p 3000",

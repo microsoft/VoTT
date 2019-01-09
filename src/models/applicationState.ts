@@ -164,6 +164,9 @@ export interface IRegion {
     id: string;
     type: RegionType;
     tags: ITag[];
+    height: number;
+    width: number;
+    origin: IPoint;
     points: IPoint[];
 }
 

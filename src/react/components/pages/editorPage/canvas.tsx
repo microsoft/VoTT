@@ -165,6 +165,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     public updateTagsForSelectedRegions: (tagsDescriptor: TagsDescriptor) => void;
 
+    /**
+     * @name setSelectionMode
+     * @description sets the editor's selection mode (poly/rect/copyrect/point/none)
+     * @param {SelectionMode} selectionMode
+     * @returns {void}
+     */
     public setSelectionMode: (selectionMode: any) => void;
     
     private editor: Editor;
@@ -246,16 +252,18 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onSelectionEnd = (commit: RegionData) => {
         const ct = CanvasTools;
         const r = commit.boundRect;
-        console.log(commit);
 
         this.addRegion(this.props.selectedAsset.regions.length.toString(), commit, null);
 
         // RegionData not serializable so need to extract data
-        const scaledRegionData = this.scaleRegionToSourceSize(commit);        
+        const scaledRegionData = this.scaleRegionToSourceSize(commit);
         const newRegion = {
             id: this.props.selectedAsset.regions.length.toString(),
             type: RegionType.Rectangle,
             tags: [],
+            height: scaledRegionData.height,
+            width: scaledRegionData.width,
+            origin: {x: scaledRegionData.x, y: scaledRegionData.y},
             points: scaledRegionData.points,
         };
 
@@ -285,14 +293,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const scaledRegionData = this.scaleRegionToSourceSize(regionData);
         if (movedRegion) {
             movedRegion.points = scaledRegionData.points
-            // movedRegion.points = [new Point2D(scaledRegionData.x, scaledRegionData.y),
-            //                     new Point2D(scaledRegionData.x + scaledRegionData.width,
-            //                                         scaledRegionData.y + scaledRegionData.height),
-            //                     new Point2D(scaledRegionData.x + scaledRegionData.width,
-            //                         scaledRegionData.y),
-            //                     new Point2D(scaledRegionData.x,
-            //                         scaledRegionData.y + scaledRegionData.height)];
-
         }
         currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
         currentAssetMetadata.selectedRegions = [movedRegion];
@@ -326,7 +326,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
         const currentAssetMetadata = this.props.selectedAsset;
-        console.log(this.props.selectedAsset.regions.find((region) => region.id === id))
         if(multiselect){
             currentAssetMetadata.selectedRegions.push(this.props.selectedAsset.regions.find((region) => region.id === id))
         } else {
@@ -349,14 +348,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.addContentSource(e.target);
             if (this.props.selectedAsset.regions.length) {
                 this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    let sortByX = region.points.sort((a,b)=>{return a.x-b.x})
-                    let sortByY = region.points.sort((a,b)=>{return a.y-b.y})
-                    console.log(region.points)
-                    console.log(sortByX)
-                    console.log(sortByY)
-                    const loadedRegionData = new RegionData(region.points[0].x, region.points[0].y,
-                                                            Math.abs(region.points[0].x - region.points[1].x),
-                                                            Math.abs(region.points[0].y - region.points[2].y),
+                    const loadedRegionData = new RegionData(region.origin.x, 
+                                                            region.origin.y,
+                                                            region.width,
+                                                            region.height,
                                                             region.points.map((point)=>{return new Point2D(point.x,point.y)}),
                                                             RegionDataType.Rect);
                     if(region.tags.length){
