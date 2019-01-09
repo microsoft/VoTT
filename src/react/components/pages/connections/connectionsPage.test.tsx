@@ -6,16 +6,15 @@ import { Link, NavLink, Route, StaticRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
 import { IApplicationState, IConnection } from "../../../../models/applicationState";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../../../../providers/storage/azureBlobStorage";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import initialState from "../../../../redux/store/initialState";
 import createReduxStore from "../../../../redux/store/store";
-import registerProviders from "../../../../registerProviders";
 import CondensedList from "../../common/condensedList/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
+import registerProviders from "../../../../registerProviders";
 
 describe("Connections Page", () => {
     const connectionsRoute: string = "/connections";
