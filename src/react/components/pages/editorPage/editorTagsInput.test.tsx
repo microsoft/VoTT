@@ -9,7 +9,7 @@ const TagColors = require("../../common/tagsInput/tagColors.json");
 
 describe("Tags Input Component", () => {
 
-    const originalTags = MockFactory.createTestTags();
+    const originalTags = MockFactory.createTestTags(15);
 
     function createComponent(props: IEditorTagsInputProps) {
         return mount(
@@ -279,5 +279,38 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
         expect(onTagClickHandler).not.toBeCalled();
+    });
+
+    it("displays correct initial index in span", () => {
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: null,
+            onTagShiftClick: null,
+        });
+
+    });
+
+    it("updates indices in tags after removing first", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            onChange: onChangeHandler,
+        });
+        expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length);
+        wrapper.find("a.ReactTags__remove")
+            .first().simulate("click");
+        expect(onChangeHandler).toBeCalled();
+        expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length - 1);
+        wrapper.update();
+
+        setImmediate(() => {
+            const tagSpans = wrapper.find(".tag-span");
+            for (let i = 0; i < 9; i++) {
+                const tag = tagSpans.get(i);
+                expect(tag.props.children[0]).toEqual(`[${i + 1}]  `);
+            }
+            const tenthTag = tagSpans.get(9);
+            expect(tenthTag.props.children[0]).toEqual(`[0]  `);
+        });
     });
 });

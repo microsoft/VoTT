@@ -6,6 +6,7 @@ import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { strings, addLocValues } from "../../../../common/strings";
+import ProjectSettingsTagsInput from "./projectSettingsTagsInput";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -50,7 +51,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 onChange: props.onChange,
             };
         }),
-        tagsInput: CustomField(TagsInput, (props) => {
+        tagsInput: CustomField(ProjectSettingsTagsInput, (props) => {
             return {
                 tags: props.formData,
                 onChange: props.onChange,

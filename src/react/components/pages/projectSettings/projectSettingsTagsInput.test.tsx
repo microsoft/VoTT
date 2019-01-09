@@ -162,5 +162,4 @@ describe("Tags Input Component", () => {
         expect(wrapper.find(ProjectSettingsTagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).not.toBeCalled();
     });
-
 });

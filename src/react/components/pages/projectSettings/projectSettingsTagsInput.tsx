@@ -12,7 +12,7 @@ export default class ProjectSettingsTagsInput extends TagsInput<ITagsInputProps>
      * @param event Click event
      */
     protected handleTagClick(event) {
-        const text = (event.currentTarget.innerText || event.target.innerText).trim();
+        const text = this.getTagText(event);
         const tag = this.getTag(text);
         if (event.ctrlKey) {
             this.openEditModal(tag);

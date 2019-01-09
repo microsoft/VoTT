@@ -149,6 +149,13 @@ export default abstract class TagsInput<T extends ITagsInputProps> extends React
         return match;
     }
 
+    protected getTagText(event): string {
+        if (event.target.lastChild) {
+            return event.target.lastChild.data;
+        }
+        return (event.target.innerText || event.currentTarget.innerText).trim();
+    }
+
     /**
      * Generate necessary HTML to render tag box appropriately
      * @param name name of tag

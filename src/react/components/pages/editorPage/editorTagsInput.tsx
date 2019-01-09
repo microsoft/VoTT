@@ -16,7 +16,7 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
     protected getTagSpan(name: string) {
         const index = this.indexOfTag(name);
         return (
-            <span>
+            <span className="tag-span">
                 {(index <= 9) ? `[${index}]  ` : ""}{name}
             </span>
         );
@@ -27,7 +27,7 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
      * @param event Click event
      */
     protected handleTagClick(event) {
-        const text = (event.currentTarget.innerText || event.target.innerText).trim();
+        const text = this.getTagText(event);
         const tag = this.getTag(text);
         if (event.ctrlKey) {
             this.openEditModal(tag);
