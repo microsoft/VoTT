@@ -1,7 +1,8 @@
-import { IAsset } from "../../models/applicationState";
+import { IAsset, IConnection } from "../../models/applicationState";
 import Guard from "../../common/guard";
 
 export interface IAssetProvider {
+    initialize?(): Promise<void>;
     getAssets(containerName?: string): Promise<IAsset[]>;
 }
 
@@ -36,6 +37,10 @@ export class AssetProviderFactory {
         }
 
         AssetProviderFactory.providerRegistry[options.name] = options;
+    }
+
+    public static createFromConnection(connection: IConnection): IAssetProvider {
+        return this.create(connection.providerType, connection.providerOptions);
     }
 
     public static create(name: string, options?: any): IAssetProvider {
