@@ -42,14 +42,14 @@ export default function registerProviders() {
 
     // Export Providers
     ExportProviderFactory.register({
-        name:"vottJson", 
+        name: "vottJson",
         displayName: strings.export.providers.vottJson,
-        factory: (project, options) => new VottJsonExportProvider(project, options)
+        factory: (project, options) => new VottJsonExportProvider(project, options),
     });
     ExportProviderFactory.register({
-        name:"tensorFlowPascalVOC",
+        name: "tensorFlowPascalVOC",
         displayName: strings.export.providers.tfPascalVoc,
-        factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options)
+        factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
     });
 
     ExportProviderFactory.register("azureCustomVision",

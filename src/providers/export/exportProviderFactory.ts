@@ -20,8 +20,7 @@ export class ExportProviderFactory {
 
     /**
      * Registers a factory method for the specified export provider type
-     * @param name - The name of the export provider
-     * @param factory - The factory method to construct new instances
+     * @param options - The options to use when registering an export provider
      */
     public static register(options: IExportProviderRegistrationOptions) {
         Guard.null(options);
@@ -29,7 +28,7 @@ export class ExportProviderFactory {
         Guard.emtpy(options.displayName);
         Guard.null(options.factory);
 
-        ExportProviderFactory.handlerRegistry[options.name] = options.factory;
+        ExportProviderFactory.handlerRegistry[options.name] = options;
     }
 
     /**
@@ -47,16 +46,8 @@ export class ExportProviderFactory {
             throw new Error(`No export provider has been registered with name '${name}'`);
         }
 
-        return handler(project, options);
+        return handler.factory(project, options);
     }
 
-    public static createFromProject(project: IProject): IExportProvider {
-        return ExportProviderFactory.create(
-            project.exportFormat.providerType,
-            project,
-            project.exportFormat.providerOptions,
-        );
-    }
-
-    private static handlerRegistry: { [id: string]: (project: IProject, options?: any) => IExportProvider } = {};
+    private static handlerRegistry: { [id: string]: IExportProviderRegistrationOptions } = {};
 }
