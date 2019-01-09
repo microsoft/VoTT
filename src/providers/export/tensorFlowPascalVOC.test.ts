@@ -4,7 +4,8 @@ import { TFPascalVOCJsonExportProvider,
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState, IRegion, RegionType,
+         ITagMetadata, IPoint } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 import axios from "axios";
 
@@ -13,6 +14,16 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
+
+function _base64ToArrayBuffer(base64: string) {
+    const binaryString =  window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array( len );
+    for (let i = 0; i < len; i++)        {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
 
 describe("TFPascalVOC Json Export Provider", () => {
     const baseTestProject = MockFactory.createTestProject("Test Project");
@@ -27,9 +38,10 @@ describe("TFPascalVOC Json Export Provider", () => {
 
     const tagLengthInPbtxt = 37;
 
+    // Blank Image: data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=
     axios.get = jest.fn(() => {
         return Promise.resolve({
-            data: [1, 2, 3],
+            data: _base64ToArrayBuffer("R0lGODlhAQABAAAAACwAAAAAAQABAAA="),
         });
     });
 
@@ -54,9 +66,31 @@ describe("TFPascalVOC Json Export Provider", () => {
         beforeEach(() => {
             const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
             assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
+                const mockTag: ITagMetadata = {
+                    name: "tag",
+                    properties: null,
+                };
+
+                const mockStartPoint: IPoint = {
+                    x: 1,
+                    y: 2,
+                };
+
+                const mockEndPoint: IPoint = {
+                    x: 3,
+                    y: 4,
+                };
+
+                const mockRegion: IRegion = {
+                    id: "id",
+                    type: RegionType.Rectangle,
+                    tags: [mockTag],
+                    points: [mockStartPoint, mockEndPoint],
+                };
+
                 const assetMetadata: IAssetMetadata = {
                     asset,
-                    regions: [],
+                    regions: [mockRegion],
                     timestamp: null,
                 };
 

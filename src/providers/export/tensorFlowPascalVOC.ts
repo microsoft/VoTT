@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType, IAsset, IAssetMetadata } from "../../models/applicationState";
+import { IProject, AssetState, AssetType, IAsset, IAssetMetadata, RegionType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 import axios from "axios";
@@ -103,18 +103,21 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                         const img = new Image();
                         img.onload = ((event) => {
                             const tagObjects = [];
-                            element.regions.filter((region) => region.points.length === 2).forEach((region) => {
-                                region.tags.forEach((tag) => {
-                                    const objectInfo: IObjectInfo = {
-                                        name: tag.name,
-                                        xmin: region.points[0].x,
-                                        ymin: region.points[0].y,
-                                        xmax: region.points[1].x,
-                                        ymax: region.points[1].y,
-                                    };
+                            element.regions.filter((region) => (region.type === RegionType.Rectangle ||
+                                                                region.type === RegionType.Square) &&
+                                                                region.points.length === 2)
+                                           .forEach((region) => {
+                                                region.tags.forEach((tag) => {
+                                                    const objectInfo: IObjectInfo = {
+                                                        name: tag.name,
+                                                        xmin: region.points[0].x,
+                                                        ymin: region.points[0].y,
+                                                        xmax: region.points[1].x,
+                                                        ymax: region.points[1].y,
+                                                    };
 
-                                    tagObjects.push(objectInfo);
-                                });
+                                                    tagObjects.push(objectInfo);
+                                                });
                             });
 
                             const imageInfo: IImageInfo = {
@@ -136,7 +139,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                             resolve();
                             // eject(err);
                         });
-                        img.src = "data:image/jpeg;base64," + image64;
+                        img.src = "data:image;base64," + image64;
                     } else {
                         // Ignore the error at the moment
                         // TODO: Refactor ExportProvider abstract class export() method
