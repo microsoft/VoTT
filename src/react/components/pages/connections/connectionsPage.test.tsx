@@ -117,6 +117,7 @@ describe("Connections Page", () => {
             const form = connectionsPage.find(ConnectionForm);
             expect(form.exists()).toBe(true);
         });
+    });
 
     describe("selecting connections", () => {
         it("renders no form when nothing is selected", () => {
