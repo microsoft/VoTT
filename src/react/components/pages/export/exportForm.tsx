@@ -1,10 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import Form, { FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
+import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat } from "../../../../models/applicationState.js";
-import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
+import ExportProviderPicker from "../../common/exportProviderPicker/exportProviderPicker";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -25,13 +26,12 @@ export interface IExportFormState {
 }
 
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
+    private widgets = {
+        exportProviderPicker: (ExportProviderPicker as any) as Widget,
+    };
+
     constructor(props, context) {
         super(props, context);
-
-        const exportProviders = _.values(ExportProviderFactory.handlers);
-        formSchema.properties["providerType"]["enum"] = exportProviders.map((item) => item.name);
-        formSchema.properties["providerType"]["enumNames"] = exportProviders.map((item) => item.displayName);
-        formSchema.properties["providerType"]["default"] = "vottJson";
 
         this.state = {
             classNames: ["needs-validation"],
@@ -66,6 +66,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 noHtml5Validate={true}
                 FieldTemplate={CustomFieldTemplate}
                 validate={this.onFormValidate}
+                widgets={this.widgets}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
@@ -110,6 +111,8 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
     }
 
     private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
+
+        console.log("in bind form", exportFormat);
         const providerType = exportFormat ? exportFormat.providerType : null;
         let newFormSchema: any = this.state.formSchema;
         let newUiSchema: any = this.state.uiSchema;
@@ -130,6 +133,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
             formData.providerOptions = {};
         }
 
+        console.log("setting state", providerType);
         this.setState({
             providerName: providerType,
             formSchema: newFormSchema,

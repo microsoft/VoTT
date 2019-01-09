@@ -1,1 +1,5 @@
-{}
+{
+    "providerType": {
+        "ui:widget": "exportProviderPicker"
+    }
+}
