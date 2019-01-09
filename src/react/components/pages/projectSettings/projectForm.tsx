@@ -1,11 +1,12 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
-import { IConnection, IProject } from "../../../../models/applicationState.js";
+import { IConnection, IProject } from "../../../../models/applicationState";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import TagsInput from "../../common/tagsInput/tagsInput";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { strings, addLocValues } from "../../../../common/strings";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -42,11 +43,21 @@ export interface IProjectFormState {
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
     private fields = {
-        connection: CustomField(ConnectionPicker, (props) => {
+        sourceConnection: CustomField(ConnectionPicker, (props) => {
             return {
                 id: props.idSchema.$id,
                 value: props.formData,
                 connections: this.props.connections,
+                onChange: props.onChange,
+            };
+        }),
+        targetConnection: CustomField(ConnectionPicker, (props) => {
+            const targetConnections = this.props.connections.filter(
+                (connection) => StorageProviderFactory.isRegistered(connection.providerType));
+            return {
+                id: props.idSchema.$id,
+                value: props.formData,
+                connections: targetConnections,
                 onChange: props.onChange,
             };
         }),

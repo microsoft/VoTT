@@ -1,8 +1,8 @@
 import { AssetService } from "./assetService";
 import { AssetType, IAssetMetadata } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
-import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProvider";
-import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProvider";
+import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
+import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
 
 describe("Asset Service", () => {

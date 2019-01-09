@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 
 export interface IConnectionProviderPickerProps {
     onChange: (value: string) => void;

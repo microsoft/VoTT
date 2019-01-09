@@ -40,7 +40,11 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
                 <select id={id} value={selectedValue} onChange={this.onChange} className="form-control">
                     <option>Select Connection</option>
                     {connections.map((connection) =>
-                        <option key={connection.id} value={connection.id}>{connection.name}</option>)
+                        <option
+                            className="connection-option"
+                            key={connection.id}
+                            value={connection.id}>{connection.name}
+                        </option>)
                     }
                 </select>
                 <div className="input-group-append">

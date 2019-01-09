@@ -3,7 +3,9 @@ import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
 import { KeyCodes } from "../../common/tagsInput/tagsInput";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import ProjectForm, { IProjectFormProps, IProjectFormState } from "./projectForm";
+import registerProviders from "../../../../registerProviders";
 
 describe("Project Form Component", () => {
     const project = MockFactory.createTestProject("TestProject");
@@ -20,6 +22,10 @@ describe("Project Form Component", () => {
             </Router>,
         ).find(ProjectForm).childAt(0);
     }
+
+    beforeAll(() => {
+        registerProviders();
+    });
 
     describe("Completed project", () => {
         beforeEach(() => {
@@ -157,6 +163,26 @@ describe("Project Form Component", () => {
             const cancelButton = wrapper.find("form .btn-cancel");
             cancelButton.simulate("click");
             expect(onCancelHandler).toBeCalled();
+        });
+
+        it("Does not include asset providers in target connections", () => {
+            const bingConnections = MockFactory.createTestBingConnections();
+            const newConnections = [...connections, ...bingConnections];
+
+            const newWrapper = createComponent({
+                project,
+                connections: newConnections,
+                onSubmit: onSubmitHandler,
+                onCancel: onCancelHandler,
+            });
+            // Source Connection should have all connections
+            expect(newWrapper.find("select#root_sourceConnection .connection-option")).toHaveLength(
+                newConnections.length,
+            );
+            // Target Connection should not have asset provider connections
+            expect(newWrapper.find("select#root_targetConnection .connection-option")).toHaveLength(
+                newConnections.length - bingConnections.length,
+            );
         });
     });
 
