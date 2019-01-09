@@ -6,6 +6,7 @@ import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ProjectSettingsTagsInput from "./projectSettingsTagsInput";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory"
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -50,9 +51,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 onChange: props.onChange,
             };
         }),
-<<<<<<< HEAD
-        tagsInput: CustomField(ProjectSettingsTagsInput, (props) => {
-=======
         targetConnection: CustomField(ConnectionPicker, (props) => {
             const targetConnections = this.props.connections.filter(
                 (connection) => StorageProviderFactory.isRegistered(connection.providerType));
@@ -63,8 +61,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 onChange: props.onChange,
             };
         }),
-        tagsInput: CustomField(TagsInput, (props) => {
->>>>>>> 53789a3f4b66163a629660f69325807cb0337359
+        tagsInput: CustomField(ProjectSettingsTagsInput, (props) => {
             return {
                 tags: props.formData,
                 onChange: props.onChange,
