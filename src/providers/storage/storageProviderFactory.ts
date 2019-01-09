@@ -49,6 +49,10 @@ export class StorageProviderFactory {
             };
         }
 
+        if ((options.platformSupport & HostProcess.type) === 0) {
+            return;
+        }
+
         StorageProviderFactory.providerRegistry[options.name] = options;
     }
 
@@ -62,12 +66,6 @@ export class StorageProviderFactory {
         const registrationOptions = StorageProviderFactory.providerRegistry[name];
         if (!registrationOptions) {
             throw new Error(`No storage provider has been registered with name '${name}'`);
-        }
-
-        if ((registrationOptions.platformSupport & HostProcess.type) === 0) {
-            throw new Error(
-                `This storage provider isn't supported by the host process type ` +
-                `"${typeToFriendlyName(HostProcess.type)}". Info: ${HostProcess.release}`);
         }
 
         return registrationOptions.factory(options);
