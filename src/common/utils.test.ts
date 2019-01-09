@@ -1,25 +1,33 @@
-import {randomIntInRange, replaceVariablesInJson} from "./utils";
+import {randomIntInRange, replaceVariablesInJson, inclusiveRange} from "./utils";
 
 describe("Helper functions", () => {
 
-    describe("Random int in range", () => {
-        it("generates a random number in range", () => {
-            let lower = 0;
-            let upper = 100;
-            while (lower < upper) {
-                for (let i = 0; i < 10; i++) {
-                    const result = randomIntInRange(lower, upper);
-                    expect(result).toBeGreaterThanOrEqual(lower);
-                    expect(result).toBeLessThan(upper);
-                }
-                lower++;
-                upper--;
+    it("generates a random number in range", () => {
+        let lower = 0;
+        let upper = 100;
+        while (lower < upper) {
+            for (let i = 0; i < 10; i++) {
+                const result = randomIntInRange(lower, upper);
+                expect(result).toBeGreaterThanOrEqual(lower);
+                expect(result).toBeLessThan(upper);
             }
-        });
+            lower++;
+            upper--;
+        }
+    });
 
-        it("throws an error with inappropriate values", () => {
-            expect(() => randomIntInRange(10, 0)).toThrowError();
-        });
+    it("throws an error with inappropriate values", () => {
+        expect(() => randomIntInRange(10, 0)).toThrowError();
+    });
+
+    it("generates inclusive range of numbers", () => {
+        const start = 10;
+        const end = 100;
+        const range = inclusiveRange(start, end);
+        expect(range).toHaveLength(end - start + 1);
+        for (let i = start; i <= end; i++) {
+            expect(range.indexOf(i)).toBeGreaterThanOrEqual(0);
+        }
     });
 
     describe("Replace variables in json", () => {

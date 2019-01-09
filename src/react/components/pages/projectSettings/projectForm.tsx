@@ -6,7 +6,7 @@ import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ProjectSettingsTagsInput from "./projectSettingsTagsInput";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory"
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires

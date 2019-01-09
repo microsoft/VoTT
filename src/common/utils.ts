@@ -36,3 +36,10 @@ export function replaceVariablesInJson(json: any, valueMapper: (variable: string
         return json;
     }
 }
+
+export function inclusiveRange(start, end) {
+    if (start > end) {
+        throw new Error(`Invalid range: [${start},${end}]`)
+    }
+    return Array.from({length: (end + 1 - start)}, (v, k) => k + start);
+}
