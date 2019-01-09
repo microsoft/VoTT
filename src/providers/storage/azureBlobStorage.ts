@@ -1,4 +1,4 @@
-import { IStorageProvider } from "./storageProvider";
+import { IStorageProvider } from "./storageProviderFactory";
 import { IAsset, AssetType, StorageType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import { TokenCredential, AnonymousCredential,

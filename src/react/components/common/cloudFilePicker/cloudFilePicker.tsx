@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { strings } from "../../../../common/strings";
 import { IConnection, StorageType } from "../../../../models/applicationState";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProvider";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import CondensedList, { ListItem } from "../condensedList/condensedList";
 
 export interface ICloudFilePickerProps {

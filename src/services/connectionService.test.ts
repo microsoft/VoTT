@@ -1,5 +1,5 @@
 import ConnectionService, { IConnectionService } from "./connectionService";
-import { AssetProviderFactory } from "../providers/storage/assetProvider";
+import { AssetProviderFactory } from "../providers/storage/assetProviderFactory";
 import MockFactory from "../common/mockFactory";
 
 describe("Connection Service", () => {

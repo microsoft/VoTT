@@ -1,6 +1,6 @@
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "./localFileSystemProxy";
-import { StorageProviderFactory } from "./storageProvider";
+import { StorageProviderFactory } from "./storageProviderFactory";
 import registerProviders from "../../registerProviders";
 
 describe("LocalFileSystem Proxy Storage Provider", () => {
