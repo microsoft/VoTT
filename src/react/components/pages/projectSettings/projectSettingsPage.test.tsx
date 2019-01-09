@@ -78,4 +78,29 @@ describe("Project settings page", () => {
             done();
         });
     });
+
+    it("calls save project when user creates a unique project", (done) => {
+        const store = createReduxStore(MockFactory.initialState());
+        const props = MockFactory.projectSettingsProps();
+        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+        const project = MockFactory.createTestProject("25");
+
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
+        const wrapper = createCompoent(store, props);
+        wrapper.setProps({
+            form: {
+                name: project.name,
+                connections: {
+                    source: project.sourceConnection,
+                    target: project.targetConnection,
+                },
+            },
+        });
+
+        wrapper.find("form").simulate("submit");
+        setImmediate(() => {
+            expect(saveProjectSpy).toBeCalled();
+            done();
+        });
+    });
 });

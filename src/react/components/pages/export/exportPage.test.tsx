@@ -60,7 +60,7 @@ describe("Export Page", () => {
     });
 
     it("Calls save project actions on form submit", (done) => {
-        const testProject = MockFactory.createTestProject("TestProject");
+        const testProject = MockFactory.createTestProject("55");
         const store = createStore(testProject, true);
         const props = createProps(testProject.id);
 
