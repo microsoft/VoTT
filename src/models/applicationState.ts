@@ -229,3 +229,13 @@ export enum RegionType {
     Rectangle = "RECTANGLE",
     Polygon = "POLYGON",
 }
+
+export enum EditorMode {
+    Rectangle = "RECT",
+    Polygon = "POLYGON",
+    Polyline = "POLYLINE",
+    Point = "POINT",
+    Select = "SELECT",
+    CopyRect = "COPYRECT",
+    None = "NONE",
+}

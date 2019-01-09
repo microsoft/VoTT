@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { IToolbarItemRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions from "../../../../redux/actions/projectActions";
-import { IProject } from "../../../../models/applicationState";
+import { IProject, EditorMode } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
 import "./editorToolbar.scss";
 import { Select } from "../../toolbar/select";
@@ -13,6 +13,7 @@ export interface IEditorToolbarProps {
     actions: IProjectActions;
     items: IToolbarItemRegistration[];
     canvas: Canvas;
+    onEditorModeChange: (mode: EditorMode) => void;
 }
 
 export interface IEditorToolbarState {
@@ -47,7 +48,8 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
                                 project: this.props.project,
                                 active: this.isComponentActive(this.state.selectedItem, registration),
                                 onClick: this.onToolbarItemSelected,
-                                canvas: this.props.canvas
+                                canvas: this.props.canvas,
+                                onEditorModeChange: this.props.onEditorModeChange,
                             };
                             const ToolbarItem = registration.component;
 

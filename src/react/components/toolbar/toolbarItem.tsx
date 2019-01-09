@@ -1,5 +1,5 @@
 import React from "react";
-import { IProject } from "../../../models/applicationState";
+import { IProject, RegionType, EditorMode } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
 import Canvas from "../pages/editorPage/canvas";
 
@@ -22,6 +22,7 @@ export interface IToolbarItemProps extends IToolbarItemMetadata {
     active: boolean;
     onClick: (item: ToolbarItem) => void;
     canvas: Canvas;
+    onEditorModeChange: (mode: EditorMode) => void;
 }
 
 export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {

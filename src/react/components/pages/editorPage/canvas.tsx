@@ -1,6 +1,6 @@
 import React from "react";
 import * as shortid from "shortid";
-import { IAssetMetadata, IRegion, RegionType, AssetState, ITag } from "../../../../models/applicationState";
+import { IAssetMetadata, IRegion, RegionType, AssetState, ITag, EditorMode } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
@@ -11,6 +11,7 @@ import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 interface ICanvasProps {
     selectedAsset: IAssetMetadata;
     onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
+    editorMode: EditorMode;
 }
 
 interface ICanvasState {
@@ -173,7 +174,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     public setSelectionMode: (selectionMode: any) => void;
-    
+
     private editor: Editor;
 
     constructor(props, context) {
@@ -194,7 +195,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // Expose CanvasTools Editor API
         this.scaleRegionToFrameSize = this.editor.scaleRegionToFrameSize.bind(this.editor);
         this.scaleRegionToSourceSize = this.editor.scaleRegionToSourceSize.bind(this.editor);
-        this.setSelectionMode = this.editor.setSelectionMode.bind(this.editor)
+        this.setSelectionMode = this.editor.setSelectionMode.bind(this.editor);
 
         // Expose CanvasTools RegionManager API
         this.addRegion = this.editor.RM.addRegion.bind(this.editor.RM);
@@ -258,7 +259,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.scaleRegionToSourceSize(commit);
         const newRegion = {
-            id: id,
+            id,
             type: RegionType.Rectangle,
             tags: [],
             height: scaledRegionData.height,
@@ -292,7 +293,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // @ts-ignore   in here until CanvasTools types get updated
         const scaledRegionData = this.scaleRegionToSourceSize(regionData);
         if (movedRegion) {
-            movedRegion.points = scaledRegionData.points
+            movedRegion.points = scaledRegionData.points;
         }
         currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
         currentAssetMetadata.selectedRegions = [movedRegion];
@@ -326,10 +327,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
         const currentAssetMetadata = this.props.selectedAsset;
-        if(multiselect){
-            currentAssetMetadata.selectedRegions.push(this.props.selectedAsset.regions.find((region) => region.id === id))
+        if (multiselect) {
+            currentAssetMetadata.selectedRegions.push(
+                                                this.props.selectedAsset.regions.find((region) => region.id === id));
         } else {
-            currentAssetMetadata.selectedRegions = [this.props.selectedAsset.regions.find((region) => region.id === id)];
+            currentAssetMetadata.selectedRegions = [
+                                                this.props.selectedAsset.regions.find((region) => region.id === id)];
         }
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
@@ -348,14 +351,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.addContentSource(e.target);
             if (this.props.selectedAsset.regions.length) {
                 this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    const loadedRegionData = new RegionData(region.origin.x, 
+                    const loadedRegionData = new RegionData(region.origin.x,
                                                             region.origin.y,
                                                             region.width,
                                                             region.height,
-                                                            region.points.map((point)=>{return new Point2D(point.x,point.y)}),
+                                                            region.points.map((point) => new Point2D(point.x, point.y)),
                                                             RegionDataType.Rect);
-                    if(region.tags.length){
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor(region.tags.map((tag)=>{return new Tag(tag.name,tag.color)})));
+                    if (region.tags.length) {
+                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
+                                        new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name, tag.color))));
                     } else {
                         this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor());
                     }
@@ -363,5 +367,26 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             }
         });
         image.src = this.props.selectedAsset.asset.path;
-    }    
+    }
+
+    private editorModeToType(editorMode: EditorMode) {
+        let type;
+        switch (editorMode) {
+            case EditorMode.Rectangle:
+                type = RegionDataType.Rect;
+                break;
+            case EditorMode.Polygon:
+                type = RegionDataType.Polygon;
+                break;
+            case EditorMode.Point:
+                type = RegionDataType.Point;
+                break;
+            case EditorMode.Polyline:
+                type = RegionDataType.Polyline;
+                break;
+            default:
+                break;
+        }
+        return type;
+    }
 }

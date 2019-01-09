@@ -2,7 +2,13 @@ import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState, ITag} from "../../../../models/applicationState";
+import { IApplicationState,
+        IProject,
+        IAsset,
+        IAssetMetadata,
+        AssetState,
+        ITag,
+        EditorMode} from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { RouteComponentProps } from "react-router-dom";
 import HtmlFileReader from "../../../../common/htmlFileReader";
@@ -25,6 +31,7 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
 interface IEditorPageState {
     project: IProject;
     assets: IAsset[];
+    mode: EditorMode;
     selectedAsset?: IAssetMetadata;
 }
 
@@ -53,6 +60,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.state = {
             project: this.props.project,
             assets: [],
+            mode: EditorMode.Select,
         };
 
         this.toolbarItems = ToolbarItemFactory.getToolbarItems();
@@ -103,7 +111,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         <EditorToolbar project={this.props.project}
                             items={this.toolbarItems}
                             actions={this.props.actions}
-                            canvas={this.canvas.current} />
+                            canvas={this.canvas.current}
+                            onEditorModeChange={this.setEditorMode.bind(this)}/>
                     </div>
                     <div className="editor-page-content-body">
                         {selectedAsset &&
@@ -111,7 +120,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 <Canvas
                                     ref={this.canvas}
                                     selectedAsset={this.state.selectedAsset}
-                                    onAssetMetadataChanged={this.onAssetMetadataChanged.bind(this)}/>
+                                    onAssetMetadataChanged={this.onAssetMetadataChanged.bind(this)}
+                                    editorMode={this.state.mode}/>
                             </div>
                         }
                     </div>
@@ -131,24 +141,25 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         await this.props.actions.saveProject(this.props.project);
     }
 
-    private onTagClicked(tag: ITag){
-        let selectedAsset = this.state.selectedAsset;
-        if(selectedAsset.selectedRegions && selectedAsset.selectedRegions.length){
-            selectedAsset.selectedRegions.map((region)=>{
-                let tagIndex = region.tags.findIndex((existingTag) => existingTag.name === tag.name);
-                if(tagIndex === -1){
-                    region.tags.push(tag)
+    private onTagClicked(tag: ITag) {
+        const selectedAsset = this.state.selectedAsset;
+        if (selectedAsset.selectedRegions && selectedAsset.selectedRegions.length) {
+            selectedAsset.selectedRegions.map((region) => {
+                const tagIndex = region.tags.findIndex((existingTag) => existingTag.name === tag.name);
+                if (tagIndex === -1) {
+                    region.tags.push(tag);
                 } else {
-                    region.tags.splice(tagIndex,1);
+                    region.tags.splice(tagIndex, 1);
                 }
-                if(region.tags.length){
-                    this.canvas.current.updateTagsById(region.id,new TagsDescriptor(region.tags.map((tempTag)=>{return new Tag(tempTag.name,tempTag.color)})))
+                if (region.tags.length) {
+                    this.canvas.current.updateTagsById(region.id,
+                        new TagsDescriptor(region.tags.map((tempTag) => new Tag(tempTag.name, tempTag.color))));
                 } else {
-                    this.canvas.current.updateTagsById(region.id,null)
+                    this.canvas.current.updateTagsById(region.id, null);
                 }
-                
-                return region
-            })
+
+                return region;
+            });
         }
         this.onAssetMetadataChanged(selectedAsset);
     }
@@ -204,5 +215,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             }
             this.loadingProjectAssets = false;
         });
+    }
+
+    private setEditorMode(mode: EditorMode) {
+        this.setState({
+            mode,
+        });
+        console.log(mode);
     }
 }

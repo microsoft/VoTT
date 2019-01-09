@@ -20,7 +20,8 @@ describe("Editor Toolbar", () => {
             actions: MockFactory.projectActions(),
             project: MockFactory.createTestProject("TestProject"),
             items: ToolbarItemFactory.getToolbarItems(),
-            canvas: MockFactory.createFakeCanvas()
+            canvas: MockFactory.createFakeCanvas(),
+            onEditorModeChange: () => null,
         };
     }
 

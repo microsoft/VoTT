@@ -9,6 +9,7 @@ import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
 import Canvas from "../react/components/pages/editorPage/canvas";
+import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
 
 export default class MockFactory {
 
@@ -258,8 +259,8 @@ export default class MockFactory {
         return registration;
     }
 
-    public static createFakeCanvas(){
-        return new Canvas({},{})
+    public static createFakeCanvas() {
+        return new Canvas({}, {});
     }
 
     public static createAssetProviderRegistration(name: string) {
@@ -320,6 +321,24 @@ export default class MockFactory {
             history: this.history(),
             location: this.location(),
             match: this.match(projectId),
+        };
+    }
+
+    public static editorPageSettingsProps(projectId: string = "test"): IEditorPageProps {
+        return {
+            project: null,
+            recentProjects: [],
+            history: this.history(),
+            location: this.location(),
+            actions: (projectActions as any) as IProjectActions,
+            match: {
+                params: {
+                    projectId,
+                },
+                isExact: true,
+                path: `https://localhost:3000/projects/${projectId}/edit`,
+                url: `https://localhost:3000/projects/${projectId}/edit`,
+            },
         };
     }
 
