@@ -14,8 +14,6 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import { strings } from "../../../../common/strings";
-import keydown from "react-keydown";
-import { inclusiveRange } from "../../../../common/utils";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -42,8 +40,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-// Codes for all numeric keys
-const numericKeys = [...inclusiveRange(48, 58), ...inclusiveRange(96, 105)]
+
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
@@ -126,22 +123,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
             </div>
         );
-    }
-
-    @keydown(numericKeys)
-    public numberPressed(event) {
-        const key = parseInt(event.key);
-        let tag: ITag;
-        const tags = this.props.project.tags;
-        if (key === 0) {
-            if (tags.length >= 10) {
-                tag = tags[9];
-            }
-        } else if (tags.length >= key) {
-            tag = tags[key - 1]
-        }
-        // TODO Do something with tag
-    }
+    }    
 
     private onFooterChange(footerState) {
         const project = {
