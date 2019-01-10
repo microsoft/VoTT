@@ -32,6 +32,10 @@ export default class ExternalPicker extends React.Component<FieldProps, any> {
         );
     }
 
+    public async componentDidMount() {
+        await this.bindExternalData();
+    }
+
     public async componentDidUpdate(prevProps: FieldProps) {
         if (prevProps.formContext !== this.props.formContext) {
             await this.bindExternalData();
@@ -57,17 +61,21 @@ export default class ExternalPicker extends React.Component<FieldProps, any> {
             headers: customHeaders,
         };
 
-        const response = await axios.request(config);
-        const items: IKeyValuePair[] = response.data.map((item) => {
-            return {
-                key: this.interpolate(uiOptions.keySelector, { item }),
-                value: this.interpolate(uiOptions.valueSelector, { item }),
-            };
-        });
+        try {
+            const response = await axios.request(config);
+            const items: IKeyValuePair[] = response.data.map((item) => {
+                return {
+                    key: this.interpolate(uiOptions.keySelector, { item }),
+                    value: this.interpolate(uiOptions.valueSelector, { item }),
+                };
+            });
 
-        this.setState({
-            items,
-        });
+            this.setState({
+                items,
+            });
+        } catch (e) {
+            return;
+        }
     }
 
     private interpolate(template: string, params: any) {

@@ -13,7 +13,7 @@
             "valueSelector": "${item.name}"
         }
     },
-    "domain": {
+    "domainId": {
         "ui:widget": "externalPicker",
         "ui:options": {
             "method": "GET",
