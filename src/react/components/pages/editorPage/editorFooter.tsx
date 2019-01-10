@@ -1,11 +1,13 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
-import TagsInput from "../../common/tagsInput/tagsInput";
+import EditorTagsInput from "./editorTagsInput";
+import { debug } from "util";
 
 export interface IEditorFooterProps {
     tags: ITag[];
     onTagsChanged: (value) => void;
     onTagClicked?: (value) => void;
+    displayHotKeys: boolean;
 }
 
 export interface IEditorFooterState {
@@ -24,7 +26,8 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     public render() {
         return (
             <div>
-                <TagsInput
+                <EditorTagsInput
+                    displayHotKeys={this.props.displayHotKeys}
                     tags={this.state.tags}
                     onChange={this.onTagsChanged}
                     onTagClick={this.props.onTagClicked}

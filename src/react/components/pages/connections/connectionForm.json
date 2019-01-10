@@ -1,5 +1,5 @@
 {
-    "title": "${connections.title}",
+    "title": "${strings.connections.title}",
     "required": [
         "name",
         "providerType"
@@ -7,15 +7,15 @@
     "type": "object",
     "properties": {
         "name": {
-            "title": "${common.displayName}",
+            "title": "${strings.common.displayName}",
             "type": "string"
         },
         "description": {
-            "title": "${common.description}",
+            "title": "${strings.common.description}",
             "type": "string"
         },
         "providerType": {
-            "title": "${common.provider}",
+            "title": "${strings.common.provider}",
             "type": "string"
         }
     }

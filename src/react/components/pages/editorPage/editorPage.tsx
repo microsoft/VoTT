@@ -1,26 +1,20 @@
-import React, { RefObject } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState,
-        IProject,
-        IAsset,
-        IAssetMetadata,
-        AssetState,
-        ITag,
-        EditorMode} from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import { default as React, RefObject } from "react";
+import keydown from "react-keydown";
+import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
+import { bindActionCreators } from "redux";
+import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import "./editorPage.scss";
+import { AssetState, EditorMode, IApplicationState, IAsset, IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import Canvas from "./canvas";
 import EditorFooter from "./editorFooter";
+import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import Canvas from "./canvas";
-import { strings } from "../../../../common/strings";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
-import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -46,6 +40,14 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
     };
+}
+
+function getCtrlNumericKeys(): string[] {
+    const keys: string[] = [];
+    for (let i = 0; i <= 9; i++) {
+        keys.push(`ctrl+${i.toString()}`);
+    }
+    return keys;
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -75,6 +77,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.selectAsset = this.selectAsset.bind(this);
         this.onFooterChange = this.onFooterChange.bind(this);
+        this.handleTagHotKey = this.handleTagHotKey.bind(this);
+        this.onTagClicked = this.onTagClicked.bind(this);
     }
 
     public async componentDidMount() {
@@ -127,6 +131,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     </div>
                     <div>
                         <EditorFooter
+                            displayHotKeys={true}
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange}
                             onTagClicked={this.onTagClicked.bind(this)} />
@@ -136,12 +141,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         );
     }
 
-    private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
-        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
-        await this.props.actions.saveProject(this.props.project);
-    }
-
-    private onTagClicked(tag: ITag) {
+    public onTagClicked(tag: ITag) {
         const selectedAsset = this.state.selectedAsset;
         if (selectedAsset.selectedRegions && selectedAsset.selectedRegions.length) {
             selectedAsset.selectedRegions.map((region) => {
@@ -162,6 +162,29 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             });
         }
         this.onAssetMetadataChanged(selectedAsset);
+    }
+
+    @keydown(getCtrlNumericKeys())
+    public handleTagHotKey(event) {
+        const key = parseInt(event.key, 10);
+        if (isNaN(key)) {
+            return;
+        }
+        let tag: ITag;
+        const tags = this.props.project.tags;
+        if (key === 0) {
+            if (tags.length >= 10) {
+                tag = tags[9];
+            }
+        } else if (tags.length >= key) {
+            tag = tags[key - 1];
+        }
+        this.onTagClicked(tag);
+    }
+
+    private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
+        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+        await this.props.actions.saveProject(this.props.project);
     }
 
     private onFooterChange(footerState) {

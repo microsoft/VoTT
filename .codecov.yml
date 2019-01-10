@@ -11,4 +11,7 @@ coverage:
       default:
         target: 75%  # min coverage ratio to be considered a success
         threshold: null  # allow coverage to drop by X%
-        base: auto   
+        base: auto
+    patch:  # provides an indication on how well the pull request is tested
+      default:
+        target: 70% # min coverage ratio to be considered a success

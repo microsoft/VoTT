@@ -1,9 +1,10 @@
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
-import { StorageProviderFactory } from "../providers/storage/storageProvider";
-import { IProject } from "../models/applicationState";
+import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
+import { IProject, IExportFormat } from "../models/applicationState";
 import { error } from "util";
 import { constants } from "../common/constants";
+import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
@@ -14,7 +15,13 @@ describe("Project Service", () => {
         deleteFile: jest.fn(() => Promise.resolve()),
     };
 
+    const exportProviderMock = {
+        export: jest.fn(() => Promise.resolve()),
+        save: jest.fn((exportFormat: IExportFormat) => Promise.resolve(exportFormat.providerOptions)),
+    };
+
     StorageProviderFactory.create = jest.fn(() => storageProviderMock);
+    ExportProviderFactory.create = jest.fn(() => exportProviderMock);
 
     beforeEach(() => {
         testProject = MockFactory.createTestProject("TestProject");
@@ -33,6 +40,23 @@ describe("Project Service", () => {
         expect(storageProviderMock.writeText).toBeCalledWith(
             `${testProject.name}${constants.projectFileExtension}`,
             expect.any(String));
+    });
+
+    it("Save calls configured export provider save when defined", async () => {
+        testProject.exportFormat = {
+            providerType: "azureCustomVision",
+            providerOptions: {},
+        };
+
+        const result = await projectSerivce.save(testProject);
+
+        expect(result).toEqual(testProject);
+        expect(ExportProviderFactory.create).toBeCalledWith(
+            testProject.exportFormat.providerType,
+            testProject,
+            testProject.exportFormat.providerOptions,
+        );
+        expect(exportProviderMock.save).toBeCalledWith(testProject.exportFormat);
     });
 
     it("Save throws error if writing to storage provider fails", async () => {

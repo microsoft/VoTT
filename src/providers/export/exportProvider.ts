@@ -1,7 +1,7 @@
 import Guard from "../../common/guard";
-import { IProject } from "../../models/applicationState";
-import { IStorageProvider, StorageProviderFactory } from "../storage/storageProvider";
-import { IAssetProvider, AssetProviderFactory } from "../storage/assetProvider";
+import { IProject, IExportFormat } from "../../models/applicationState";
+import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
+import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
 
 /**
  * @name - TF Pascal VOC Records Export Asset State
@@ -30,6 +30,7 @@ export interface IExportProvider {
      * Exports the configured project for specified export configuration
      */
     export(): Promise<void>;
+    save?(exportFormat: IExportFormat): Promise<any>;
 }
 
 /**

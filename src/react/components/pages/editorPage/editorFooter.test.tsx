@@ -24,6 +24,7 @@ describe("Footer Component", () => {
         wrapper = mount(
             <EditorFooter
                 tags={originalTags}
+                displayHotKeys={true}
                 onTagsChanged={onChangeHandler} />,
         );
     });
@@ -37,6 +38,7 @@ describe("Footer Component", () => {
         const emptyWrapper = mount(
             <EditorFooter
                 tags={[]}
+                displayHotKeys={true}
                 onTagsChanged={onChangeHandler} />,
         );
         const stateTags = emptyWrapper.state()["tags"];

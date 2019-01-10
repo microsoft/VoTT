@@ -1,4 +1,4 @@
-import { StorageProviderFactory, IStorageProvider } from "./storageProvider";
+import { StorageProviderFactory, IStorageProvider } from "./storageProviderFactory";
 import { IAsset, StorageType } from "../../models/applicationState";
 
 describe("Storage Provider Factory", () => {

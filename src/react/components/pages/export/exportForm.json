@@ -1,25 +1,12 @@
 {
     "type": "object",
+    "required": [
+        "providerType"
+    ],
     "properties": {
         "providerType": {
-            "title": "${common.provider}",
-            "type": "string",
-            "enum": [
-                "vottJson",
-                "azureCustomVision",
-                "tensorFlowRecords",
-                "tensorFlowPascalVOC"
-            ],
-            "default": "vottJson",
-            "enumNames": [
-                "${export.providers.vottJson}",
-                "${export.providers.azureCV}",
-                "${export.providers.tfRecords}",
-                "${export.providers.tfPascalVoc}"
-            ]
-        },
-        "providerOptions": {
-            "type": "object"
+            "title": "${strings.common.provider}",
+            "type": "string"
         }
     }
 }
