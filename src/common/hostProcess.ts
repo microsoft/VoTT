@@ -19,20 +19,11 @@ export enum HostProcessType {
     All = ~(~0 << 2),
 }
 
-export function typeToFriendlyName(type: HostProcessType): string {
-    switch (type) {
-        case HostProcessType.Electron:
-            return "electron";
-        case HostProcessType.Browser:
-            return "browser";
-    }
-}
-
 import os from "os";
 const osRelease = os.release();
 
 function getHostProcessType(): HostProcessType {
-    if (osRelease.indexOf("electron") > -1) {
+    if (osRelease.indexOf("electron") > -1 || process.env["TEST"]) {
         return HostProcessType.Electron;
     } else {
         return HostProcessType.Browser;

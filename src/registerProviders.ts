@@ -15,13 +15,12 @@ export default function registerProviders() {
     StorageProviderFactory.register({
         name: "localFileSystemProxy",
         displayName: strings.connections.providers.local.title,
-        platformSupport: HostProcessType.All,
+        platformSupport: HostProcessType.Electron,
         factory: (options) => new LocalFileSystemProxy(options),
     });
     StorageProviderFactory.register({
         name: "azureBlobStorage",
         displayName: strings.connections.providers.azureBlob.title,
-        platformSupport: HostProcessType.All,
         factory: (options) => new AzureBlobStorage(options),
     });
 
@@ -29,19 +28,17 @@ export default function registerProviders() {
     AssetProviderFactory.register({
         name: "localFileSystemProxy",
         displayName: strings.connections.providers.local.title,
-        platformSupport: HostProcessType.All,
+        platformSupport: HostProcessType.Electron,
         factory: (options) => new LocalFileSystemProxy(options),
     });
     AssetProviderFactory.register({
         name: "azureBlobStorage",
         displayName: strings.connections.providers.azureBlob.title,
-        platformSupport: HostProcessType.All,
         factory: (options) => new AzureBlobStorage(options),
     });
     AssetProviderFactory.register({
         name: "bingImageSearch",
         displayName: strings.connections.providers.bing.title,
-        platformSupport: HostProcessType.All,
         factory: (options) => new BingImageSearch(options),
     });
 
