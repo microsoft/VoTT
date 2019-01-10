@@ -8,11 +8,24 @@ interface IKeyValuePair {
     value: string;
 }
 
+export interface IExternalPickerUiOptions {
+    method: string;
+    url: string;
+    keySelector: string;
+    valueSelector: string;
+    authHeaderName?: string;
+    authHeaderValue?: string;
+}
+
+export interface IExternalPickerProps extends FieldProps {
+    options: IExternalPickerUiOptions;
+}
+
 export interface IExternalPickerState {
     items: IKeyValuePair[];
 }
 
-export default class ExternalPicker extends React.Component<FieldProps, any> {
+export default class ExternalPicker extends React.Component<IExternalPickerProps, any> {
     constructor(props, context) {
         super(props, context);
 
