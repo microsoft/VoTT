@@ -2,25 +2,25 @@
     "type": "object",
     "properties": {
         "name": {
-            "title": "${common.displayName}",
+            "title": "${strings.common.displayName}",
             "type": "string"
         },
         "sourceConnection": {
-            "title": "${projectSettings.sourceConnection.title}",
-            "description": "${projectSettings.sourceConnection.description}",
+            "title": "${strings.projectSettings.sourceConnection.title}",
+            "description": "${strings.projectSettings.sourceConnection.description}",
             "type": "object"
         },
         "targetConnection": {
-            "title": "${projectSettings.targetConnection.title}",
-            "description": "${projectSettings.targetConnection.description}",
+            "title": "${strings.projectSettings.targetConnection.title}",
+            "description": "${strings.projectSettings.targetConnection.description}",
             "type": "object"
         },
         "description": {
-            "title": "${common.description}",
+            "title": "${strings.common.description}",
             "type": "string"
         },
         "tags": {
-            "title": "${tags.title}",
+            "title": "${strings.tags.title}",
             "type": "array"
         }
     },

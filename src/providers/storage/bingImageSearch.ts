@@ -1,6 +1,6 @@
 import axios from "axios";
 import { IAsset, AssetType } from "../../models/applicationState";
-import { IAssetProvider } from "./assetProvider";
+import { IAssetProvider } from "./assetProviderFactory";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 

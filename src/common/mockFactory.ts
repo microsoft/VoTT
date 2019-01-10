@@ -1,14 +1,16 @@
 import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
-import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProvider";
+import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
-import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProvider";
+import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProviderFactory";
+import { ExportProviderFactory, IExportProviderRegistrationOptions } from "../providers/export/exportProviderFactory";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
 import Canvas from "../react/components/pages/editorPage/canvas";
+import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
 
 export default class MockFactory {
@@ -152,6 +154,14 @@ export default class MockFactory {
         return connections;
     }
 
+    public static createTestBingConnections(count: number = 10): IConnection[] {
+        const connections: IConnection[] = [];
+        for (let i = 1; i <= count; i++) {
+            connections.push(MockFactory.createTestConnection(i.toString(), "bingImageSearch"));
+        }
+        return connections;
+    }
+
     public static createTestConnection(
         name: string = "test", providerType: string = "localFileSystemProxy"): IConnection {
         return {
@@ -163,10 +173,20 @@ export default class MockFactory {
         };
     }
 
+    public static createBingOptions(): IBingImageSearchOptions {
+        return {
+            apiKey: "key",
+            aspectRatio: BingImageSearchAspectRatio.All,
+            query: "test",
+        };
+    }
+
     public static getProviderOptions(providerType) {
         switch (providerType) {
             case "azureBlobStorage":
                 return this.azureOptions();
+            case "bingImageSearch":
+                return this.createBingOptions();
             default:
                 return {};
         }
@@ -230,6 +250,15 @@ export default class MockFactory {
         };
     }
 
+    public static createExportProviderRegistrations(count: number = 3): IExportProviderRegistrationOptions[] {
+        const registrations: IExportProviderRegistrationOptions[] = [];
+        registrations.push(MockFactory.createExportProviderRegistration("vottJson"));
+        registrations.push(MockFactory.createExportProviderRegistration("tensorFlowPascalVOC"));
+        registrations.push(MockFactory.createExportProviderRegistration("azureCustomVision"));
+
+        return registrations;
+    }
+
     public static createStorageProviderRegistrations(count: number = 10): IStorageProviderRegistrationOptions[] {
         const registrations: IStorageProviderRegistrationOptions[] = [];
         for (let i = 1; i <= count; i++) {
@@ -246,6 +275,17 @@ export default class MockFactory {
         }
 
         return registrations;
+    }
+
+    public static createExportProviderRegistration(name: string) {
+        const registration: IExportProviderRegistrationOptions = {
+            name,
+            displayName: `${name} display name`,
+            description: `${name} short description`,
+            factory: () => null,
+        };
+
+        return registration;
     }
 
     public static createStorageProviderRegistration(name: string) {
@@ -332,12 +372,11 @@ export default class MockFactory {
         };
     }
 
-    public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
+    public static pageProps(projectId?: string) {
         return {
             project: null,
             recentProjects: MockFactory.createTestProjects(),
             actions: (projectActions as any) as IProjectActions,
-            connections: MockFactory.createTestConnections(),
             history: this.history(),
             location: this.location(),
             match: this.match(projectId),
@@ -346,11 +385,7 @@ export default class MockFactory {
 
     public static editorPageSettingsProps(projectId: string = "test"): IEditorPageProps {
         return {
-            project: null,
-            recentProjects: [],
-            history: this.history(),
-            location: this.location(),
-            actions: (projectActions as any) as IProjectActions,
+            ...this.pageProps(projectId),
             match: {
                 params: {
                     projectId,
@@ -359,6 +394,13 @@ export default class MockFactory {
                 path: `https://localhost:3000/projects/${projectId}/edit`,
                 url: `https://localhost:3000/projects/${projectId}/edit`,
             },
+        };
+    }
+
+    public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
+        return {
+            ...this.pageProps(projectId),
+            connections: this.createTestConnections(),
         };
     }
 

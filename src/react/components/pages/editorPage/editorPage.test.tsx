@@ -1,20 +1,19 @@
+import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
-import { mount, ReactWrapper } from "enzyme";
-import { Store, AnyAction } from "redux";
-import EditorPage, { IEditorPageProps } from "./editorPage";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
-import { IApplicationState, IProject, IAssetMetadata, EditorMode } from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import createReduxStore from "../../../../redux/store/store";
+import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
+import { EditorMode, IApplicationState, IAssetMetadata, IProject } from "../../../../models/applicationState";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
+import createReduxStore from "../../../../redux/store/store";
+import registerToolbar from "../../../../registerToolbar";
 import { AssetService } from "../../../../services/assetService";
-
-jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 import { DrawPolygon } from "../../toolbar/drawPolygon";
-import registerToolbar from "../../../../registerToolbar";
+import EditorPage, { IEditorPageProps } from "./editorPage";
+
+jest.mock("../../../../services/projectService");
 
 function createCompoent(store, props: IEditorPageProps): ReactWrapper {
     return mount(
@@ -147,9 +146,8 @@ describe("Editor Page Component", () => {
             done();
         });
     });
-});
 
-describe("Editor Page Toolbar integration", () => {
+    describe("Editor Page Toolbar integration", () => {
 
     beforeAll(() => {
         registerToolbar();
@@ -169,7 +167,8 @@ describe("Editor Page Toolbar integration", () => {
     });
 });
 
-describe("Editor Page Footer integration", () => {
+    describe("Editor Page Footer integration", () => {
+    });
 
     describe("Basic tag interaction tests", () => {
         it("tags are initialized correctly", () => {
@@ -216,9 +215,29 @@ describe("Editor Page Footer integration", () => {
             const stateTags = getState(wrapper).project.tags;
             expect(stateTags).toHaveLength(project.tags.length - 1);
         });
-    });
 
+        it("calls onTagClick handler when hot key is pressed", () => {
+            const project = MockFactory.createTestProject();
+
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const props = MockFactory.editorPageSettingsProps();
+            const wrapper = createCompoent(store, props);
+
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            const spy = jest.spyOn(editorPage.instance() as EditorPage, "onTagClicked");
+
+            const keyPressed = 2;
+            (editorPage.instance() as EditorPage).handleTagHotKey({ctrlKey: true, key: keyPressed.toString()});
+            expect(spy).toBeCalledWith(project.tags[keyPressed - 1]);
+        });
+
+    })
 });
+
 
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
@@ -233,3 +252,4 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
 
     return createReduxStore(initialState);
 }
+

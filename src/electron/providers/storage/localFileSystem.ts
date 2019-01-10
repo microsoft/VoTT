@@ -2,7 +2,7 @@ import { BrowserWindow, dialog } from "electron";
 import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
-import { IStorageProvider } from "../../../providers/storage/storageProvider";
+import { IStorageProvider } from "../../../providers/storage/storageProviderFactory";
 import { IAsset, AssetType, StorageType } from "../../../models/applicationState";
 import { AssetService } from "../../../services/assetService";
 import { strings } from "../../../common/strings";

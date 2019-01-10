@@ -10,7 +10,11 @@ describe("Export Provider Base", () => {
     it("initializes the asset and storage providers", () => {
         registerProviders();
 
-        ExportProviderFactory.register("test", (project) => new TestExportProvider(project));
+        ExportProviderFactory.register({
+            name: "test",
+            displayName: "Test DisplayName",
+            factory: (project) => new TestExportProvider(project),
+        });
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
         const assetProvider = exportProvider.getAssetProvider();
         const storageProvider = exportProvider.getStorageProvider();

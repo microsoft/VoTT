@@ -1,13 +1,14 @@
 import { ExportProviderFactory } from "./providers/export/exportProviderFactory";
 import { TFPascalVOCJsonExportProvider } from "./providers/export/tensorFlowPascalVOC";
 import { VottJsonExportProvider } from "./providers/export/vottJson";
-import { AssetProviderFactory } from "./providers/storage/assetProvider";
+import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
 import { AzureBlobStorage } from "./providers/storage/azureBlobStorage";
 import { BingImageSearch } from "./providers/storage/bingImageSearch";
 import { LocalFileSystemProxy } from "./providers/storage/localFileSystemProxy";
-import { StorageProviderFactory } from "./providers/storage/storageProvider";
+import { StorageProviderFactory } from "./providers/storage/storageProviderFactory";
 import registerToolbar from "./registerToolbar";
 import { strings } from "./common/strings";
+import { AzureCustomVisionProvider } from "./providers/export/azureCustomVision";
 
 export default function registerProviders() {
     // Storage Providers
@@ -40,9 +41,21 @@ export default function registerProviders() {
     });
 
     // Export Providers
-    ExportProviderFactory.register("vottJson", (project, options) => new VottJsonExportProvider(project, options));
-    ExportProviderFactory.register("tensorFlowPascalVOC",
-        (project, options) => new TFPascalVOCJsonExportProvider(project, options));
+    ExportProviderFactory.register({
+        name: "vottJson",
+        displayName: strings.export.providers.vottJson,
+        factory: (project, options) => new VottJsonExportProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "tensorFlowPascalVOC",
+        displayName: strings.export.providers.tfPascalVoc,
+        factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "azureCustomVision",
+        displayName: strings.export.providers.azureCV,
+        factory: (project, options) => new AzureCustomVisionProvider(project, options),
+    });
 
     registerToolbar();
 }
