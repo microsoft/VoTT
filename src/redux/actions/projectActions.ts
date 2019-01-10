@@ -29,8 +29,8 @@ export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<
 }
 
 export function saveProject(project: IProject):
-  (dispatch: Dispatch, getState: any, resolve, reject) => Promise<IProject> {
-    return async (dispatch: Dispatch, getState: any, resolve, reject) => {
+  (dispatch: Dispatch, getState: any) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: any) => {
         const projectService = new ProjectService();
         const projectId = project["id"];
         const projectName = project["name"];
