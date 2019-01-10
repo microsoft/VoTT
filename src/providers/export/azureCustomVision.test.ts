@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AzureCustomVisionProvider, IAzureCustomVisionOptions, NewOrExisting } from "./azureCustomVision";
+import { AzureCustomVisionProvider, IAzureCustomVisionExportOptions, NewOrExisting } from "./azureCustomVision";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
@@ -35,7 +35,7 @@ describe("Azure Custom Vision Export Provider", () => {
     });
 
     it("Calling save with New project creates Azure Custom Vision project", async () => {
-        const customVisionOptions: IAzureCustomVisionOptions = {
+        const customVisionOptions: IAzureCustomVisionExportOptions = {
             apiKey: expect.any(String),
             assetState: ExportAssetState.All,
             newOrExisting: NewOrExisting.New,
@@ -68,7 +68,7 @@ describe("Azure Custom Vision Export Provider", () => {
         const mockPost = axios.post as jest.Mock;
         mockPost.mockImplementationOnce(() => Promise.reject("Bad Request"));
 
-        const customVisionOptions: IAzureCustomVisionOptions = {
+        const customVisionOptions: IAzureCustomVisionExportOptions = {
             apiKey: expect.any(String),
             assetState: ExportAssetState.All,
             newOrExisting: NewOrExisting.New,
@@ -81,7 +81,7 @@ describe("Azure Custom Vision Export Provider", () => {
     });
 
     it("Calling save with Existing project returns existing provider settings", async () => {
-        const customVisionOptions: IAzureCustomVisionOptions = {
+        const customVisionOptions: IAzureCustomVisionExportOptions = {
             apiKey: expect.any(String),
             assetState: ExportAssetState.All,
             newOrExisting: NewOrExisting.Existing,

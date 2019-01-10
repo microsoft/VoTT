@@ -26,3 +26,18 @@ export const KeyCodes = {
     shift: 16,
     tab: 9,
 };
+
+/**
+ * Generates a query string from the key/values of a JSON object
+ * @param object The json object
+ * @returns A value representing a URL compatible query string
+ */
+export function createQueryString(object: any): string {
+    const parts: any[] = [];
+
+    for (const key of Object.getOwnPropertyNames(object)) {
+        parts.push(`${key}=${encodeURIComponent(object[key])}`);
+    }
+
+    return parts.join("&");
+}
