@@ -1,8 +1,11 @@
 {
     "type": "object",
+    "required": [
+        "providerType"
+    ],
     "properties": {
         "providerType": {
-            "title": "${common.provider}",
+            "title": "${strings.common.provider}",
             "type": "string",
             "enum": [
                 "vottJson",
@@ -12,10 +15,10 @@
             ],
             "default": "vottJson",
             "enumNames": [
-                "${export.providers.vottJson}",
-                "${export.providers.azureCV}",
-                "${export.providers.tfRecords}",
-                "${export.providers.tfPascalVoc}"
+                "${strings.export.providers.vottJson}",
+                "${strings.export.providers.azureCV}",
+                "${strings.export.providers.tfRecords}",
+                "${strings.export.providers.tfPascalVoc}"
             ]
         },
         "providerOptions": {

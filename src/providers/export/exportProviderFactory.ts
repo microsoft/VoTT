@@ -41,5 +41,13 @@ export class ExportProviderFactory {
         return handler(project, options);
     }
 
+    public static createFromProject(project: IProject): IExportProvider {
+        return ExportProviderFactory.create(
+            project.exportFormat.providerType,
+            project,
+            project.exportFormat.providerOptions,
+        );
+    }
+
     private static handlerRegistry: { [id: string]: (project: IProject, options?: any) => IExportProvider } = {};
 }

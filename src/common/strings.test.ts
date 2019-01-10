@@ -1,4 +1,4 @@
-import { strings, addLocValues, IAppStrings } from "./strings";
+import { strings, addLocValues, IAppStrings, interpolate, interpolateJson } from "./strings";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
 
@@ -118,5 +118,50 @@ describe("Localization tests", () => {
                 expect(formProps.color.enumNames[13]).toEqual(lTags.colors.purple);
             }
         });
+    });
+
+    it("Interpolate processing string template correctly", () => {
+        const template = "Hello ${user.name}, my name is ${bot.handle}";
+        const params = {
+            user: {
+                name: "John Doe",
+            },
+            bot: {
+                handle: "VoTT bot",
+            },
+        };
+
+        const result = interpolate(template, params);
+        expect(result).toEqual(`Hello ${params.user.name}, my name is ${params.bot.handle}`);
+    });
+
+    it("Interpolate processes a JSON object template correctly", () => {
+        const template = {
+            user: {
+                firstName: "${user.firstName}",
+                lastName: "${user.lastName}",
+            },
+            address: {
+                street: "${address.street}",
+                city: "${address.city}",
+                state: "${address.state}",
+                zipCode: "${address.zipCode}",
+            },
+        };
+        const params = {
+            user: {
+                firstName: "John",
+                lastName: "Doe",
+            },
+            address: {
+                street: "1 Microsoft Way",
+                city: "Redmond",
+                state: "WA",
+                zipCode: "98052",
+            },
+        };
+
+        const result = interpolateJson(template, params);
+        expect(result).toEqual(params);
     });
 });

@@ -2,11 +2,11 @@
     "type": "object",
     "properties": {
         "name": {
-            "title": "${tags.modal.name}",
+            "title": "${strings.tags.modal.name}",
             "type": "string"
         },
         "color": {
-            "title": "${tags.modal.color}",
+            "title": "${strings.tags.modal.color}",
             "type": "string",
             "enum": [
                 "#FFFFFF", "#808080", "#FF0000", "#800000", "#FFFF00", "#808000", "#00FF00",
@@ -14,20 +14,20 @@
             ],
             "default": "white",
             "enumNames": [
-                "${tags.colors.white}",
-                "${tags.colors.gray}",
-                "${tags.colors.red}",
-                "${tags.colors.maroon}",
-                "${tags.colors.yellow}",
-                "${tags.colors.olive}",
-                "${tags.colors.lime}",
-                "${tags.colors.green}",
-                "${tags.colors.aqua}",
-                "${tags.colors.teal}",
-                "${tags.colors.blue}",
-                "${tags.colors.navy}",
-                "${tags.colors.fuschia}",
-                "${tags.colors.purple}"
+                "${strings.tags.colors.white}",
+                "${strings.tags.colors.gray}",
+                "${strings.tags.colors.red}",
+                "${strings.tags.colors.maroon}",
+                "${strings.tags.colors.yellow}",
+                "${strings.tags.colors.olive}",
+                "${strings.tags.colors.lime}",
+                "${strings.tags.colors.green}",
+                "${strings.tags.colors.aqua}",
+                "${strings.tags.colors.teal}",
+                "${strings.tags.colors.blue}",
+                "${strings.tags.colors.navy}",
+                "${strings.tags.colors.fuschia}",
+                "${strings.tags.colors.purple}"
             ]
         }
     }
