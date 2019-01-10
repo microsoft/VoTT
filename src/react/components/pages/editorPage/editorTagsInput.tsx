@@ -18,9 +18,11 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
      */
     protected getTagSpan(name: string) {
         const index = this.indexOfTag(name);
+        const showIndex = this.props.displayHotKeys && index <= 9;
+        const className = `tag-span${(showIndex) ? " tag-span-index" : ""}`;
         return (
-            <span className="tag-span">
-                {(this.props.displayHotKeys && index <= 9) ? `[${index}]  ` : ""}{name}
+            <span className={className}>
+                {(showIndex) ? `[${index}]  ` : ""}{name}
             </span>
         );
     }

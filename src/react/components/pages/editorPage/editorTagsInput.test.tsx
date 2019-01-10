@@ -306,10 +306,17 @@ describe("Tags Input Component", () => {
             onChange: null,
             onTagShiftClick: null,
         });
-
+        expect(wrapper.find(".tag-span-index")).toHaveLength(10);
+        const tagSpans = wrapper.find(".tag-span-index");
+        for (let i = 0; i < 9; i++) {
+            const tag = tagSpans.get(i);
+            expect(tag.props.children[0]).toEqual(`[${i + 1}]  `);
+        }
+        const tenthTag = tagSpans.get(9);
+        expect(tenthTag.props.children[0]).toEqual(`[0]  `);
     });
 
-    it("updates indices in tags after removing first", () => {
+    it("updates indices in tags after removing first", (done) => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
@@ -317,20 +324,23 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
         });
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length);
+        expect(wrapper.find(".tag-span-index")).toHaveLength(10);
+
         wrapper.find("a.ReactTags__remove")
             .first().simulate("click");
         expect(onChangeHandler).toBeCalled();
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length - 1);
-
-        setImmediate(() => {
+        setTimeout(() => {
             wrapper.update();
-            const tagSpans = wrapper.find(".tag-span");
+            expect(wrapper.find(".tag-span-index")).toHaveLength(10);
+            const tagSpans = wrapper.find(".tag-span-index");
             for (let i = 0; i < 9; i++) {
                 const tag = tagSpans.get(i);
                 expect(tag.props.children[0]).toEqual(`[${i + 1}]  `);
             }
             const tenthTag = tagSpans.get(9);
             expect(tenthTag.props.children[0]).toEqual(`[0]  `);
-        });
+            done();
+        }, 1);
     });
 });
