@@ -41,12 +41,21 @@ export default function registerProviders() {
     });
 
     // Export Providers
-    ExportProviderFactory.register("vottJson", (project, options) => new VottJsonExportProvider(project, options));
-    ExportProviderFactory.register("tensorFlowPascalVOC",
-        (project, options) => new TFPascalVOCJsonExportProvider(project, options));
-
-    ExportProviderFactory.register("azureCustomVision",
-        (project, options) => new AzureCustomVisionProvider(project, options));
+    ExportProviderFactory.register({
+        name: "vottJson",
+        displayName: strings.export.providers.vottJson,
+        factory: (project, options) => new VottJsonExportProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "tensorFlowPascalVOC",
+        displayName: strings.export.providers.tfPascalVoc,
+        factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "azureCustomVision",
+        displayName: strings.export.providers.azureCV,
+        factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
+    });
 
     registerToolbar();
 }

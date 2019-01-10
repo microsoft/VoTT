@@ -4,6 +4,7 @@ import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
 import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProviderFactory";
+import { ExportProviderFactory, IExportProviderRegistrationOptions } from "../providers/export/exportProviderFactory";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
@@ -247,6 +248,15 @@ export default class MockFactory {
         };
     }
 
+    public static createExportProviderRegistrations(count: number = 3): IExportProviderRegistrationOptions[] {
+        const registrations: IExportProviderRegistrationOptions[] = [];
+        registrations.push(MockFactory.createExportProviderRegistration("vottJson"));
+        registrations.push(MockFactory.createExportProviderRegistration("tensorFlowPascalVOC"));
+        registrations.push(MockFactory.createExportProviderRegistration("azureCustomVision"));
+
+        return registrations;
+    }
+
     public static createStorageProviderRegistrations(count: number = 10): IStorageProviderRegistrationOptions[] {
         const registrations: IStorageProviderRegistrationOptions[] = [];
         for (let i = 1; i <= count; i++) {
@@ -263,6 +273,17 @@ export default class MockFactory {
         }
 
         return registrations;
+    }
+
+    public static createExportProviderRegistration(name: string) {
+        const registration: IExportProviderRegistrationOptions = {
+            name,
+            displayName: `${name} display name`,
+            description: `${name} short description`,
+            factory: () => null,
+        };
+
+        return registration;
     }
 
     public static createStorageProviderRegistration(name: string) {
