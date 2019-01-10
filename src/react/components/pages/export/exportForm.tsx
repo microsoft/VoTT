@@ -3,6 +3,7 @@ import _ from "lodash";
 import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat } from "../../../../models/applicationState";
+import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
 import ExportProviderPicker from "../../common/exportProviderPicker/exportProviderPicker";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ExternalPicker from "../../common/externalPicker/externalPicker";
@@ -37,7 +38,8 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
         this.state = {
             classNames: ["needs-validation"],
-            providerName: this.props.settings ? this.props.settings.providerType : null,
+            providerName: this.props.settings ?
+                this.props.settings.providerType : null,
             formSchema: { ...formSchema },
             uiSchema: { ...uiSchema },
             formData: this.props.settings,
@@ -119,7 +121,9 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
     private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
 
-        const providerType = exportFormat ? exportFormat.providerType : null;
+        // If no provider type was specified on bind, pick the default provider
+        const providerType = (exportFormat && exportFormat.providerType) ?
+            exportFormat.providerType : ExportProviderFactory.defaultProvider.name;
         let newFormSchema: any = this.state.formSchema;
         let newUiSchema: any = this.state.uiSchema;
 
@@ -138,6 +142,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         if (resetProviderOptions) {
             formData.providerOptions = {};
         }
+        formData.providerType = providerType;
 
         this.setState({
             providerName: providerType,
