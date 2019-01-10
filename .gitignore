@@ -30,3 +30,6 @@ yarn-error.log*
 
 # dev
 secrets.sh
+
+# ide
+.idea
