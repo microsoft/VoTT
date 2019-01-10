@@ -15,12 +15,12 @@ export interface IAzureCustomVisionOptions {
     domainId?: string;
 }
 
-enum NewOrExisting {
+export enum NewOrExisting {
     New = "New Project",
     Existing = "Existing Project",
 }
 
-export default class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVisionOptions> {
+export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVisionOptions> {
     constructor(project: IProject, options: IAzureCustomVisionOptions) {
         super(project, options);
         Guard.null(options);

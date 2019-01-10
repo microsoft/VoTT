@@ -39,14 +39,16 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
             formData: this.props.settings,
         };
 
-        if (this.props.settings) {
-            this.bindForm(this.props.settings);
-        }
-
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onFormValidate = this.onFormValidate.bind(this);
         this.onFormChange = this.onFormChange.bind(this);
         this.onFormCancel = this.onFormCancel.bind(this);
+    }
+
+    public componentDidMount() {
+        if (this.props.settings) {
+            this.bindForm(this.props.settings);
+        }
     }
 
     public componentDidUpdate(prevProps: IExportFormProps) {

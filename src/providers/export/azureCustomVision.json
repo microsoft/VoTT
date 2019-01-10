@@ -87,8 +87,6 @@
                     },
                     "required": [
                         "name",
-                        "projectType",
-                        "classificationType",
                         "domainId"
                     ]
                 },
