@@ -1,21 +1,20 @@
-import React from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState, IProject, IAsset,
-    IAssetMetadata, AssetState, ITag } from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import React from "react";
+import keydown from "react-keydown";
+import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
+import { bindActionCreators } from "redux";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import "./editorPage.scss";
+import { strings } from "../../../../common/strings";
+import { AssetState, IApplicationState, IAsset,
+    IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import AssetPreview from "./assetPreview";
 import EditorFooter from "./editorFooter";
+import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import { strings } from "../../../../common/strings";
-import keydown from "react-keydown";
-import { inclusiveRange } from "../../../../common/utils";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
