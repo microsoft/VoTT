@@ -1,10 +1,12 @@
 import _ from "lodash";
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType, IAsset, IAssetMetadata, RegionType } from "../../models/applicationState";
+import { IProject, AssetState, AssetType, IAsset,
+         IAssetMetadata, RegionType, ITag } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import axios from "axios";
+import { all } from "deepmerge";
 
 /**
  * @name - ITFPascalVOCJsonExportOptions
@@ -72,7 +74,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         await this.exportImages(exportFolderName, allAssets);
         await this.exportPBTXT(exportFolderName, this.project);
         await this.exportAnnotations(exportFolderName, allAssets);
-        await this.exportImageSets(exportFolderName, allAssets);
+        await this.exportImageSets(exportFolderName, allAssets, this.project.tags);
     }
 
     private async exportImages(exportFolderName: string, allAssets: IAssetMetadata[]) {
@@ -224,7 +226,7 @@ item {
     </bndbox>
 </object>`;
 
-        const allAnnotationExports = [];  // Promise[]
+        const allAnnotationExports = [];  // Promise<void>[]
 
         // Save Annotations
         this.imagesInfo.forEach((imageInfo, imageName) => {
@@ -263,13 +265,34 @@ item {
         }
     }
 
-    private async exportImageSets(exportFolderName: string, allAssets: IAssetMetadata[]) {
+    private async exportImageSets(exportFolderName: string, allAssets: IAssetMetadata[], tags: ITag[]) {
         // Create ImageSets Sub Folder (Main ?)
         const imageSetsFolderName = `${exportFolderName}/ImageSets`;
         await this.storageProvider.createContainer(imageSetsFolderName);
 
         const imageSetsMainFolderName = `${exportFolderName}/ImageSets/Main`;
         await this.storageProvider.createContainer(imageSetsMainFolderName);
+
+        const tagsDict = [];
+        tags.forEach((tag) => {
+            tagsDict[tag.name] = "";
+        });
+
+        allAssets.forEach((asset) => {
+            asset.regions.forEach((region) => {
+                tags.forEach((tag) => {
+                    if (region.tags.filter((regionTag) => regionTag.name === tag.name).length > 0) {
+                        tagsDict[tag.name] += `${asset.asset.name} 1\n`;
+                    } else {
+                        tagsDict[tag.name] += `${asset.asset.name} -1\n`;
+                    }
+                });
+            });
+        });
+
+        console.log(tagsDict);
+
+
 
         // Save ImageSets (Main ?)
         // TODO

@@ -69,7 +69,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
             assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
                 const mockTag: ITagMetadata = {
-                    name: "tag",
+                    name: "Tag 1",
                     properties: null,
                 };
 
@@ -117,7 +117,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const storageProviderMock = LocalFileSystemProxy as any;
             const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
 
-            expect(createContainerCalls.length).toEqual(5);
+            expect(createContainerCalls.length).toEqual(5000); // 5 !!!
             expect(createContainerCalls[1][0].endsWith("/JPEGImages")).toEqual(true);
             expect(createContainerCalls[2][0].endsWith("/Annotations")).toEqual(true);
             expect(createContainerCalls[3][0].endsWith("/ImageSets")).toEqual(true);
