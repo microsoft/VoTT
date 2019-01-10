@@ -1,5 +1,5 @@
 import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
-    IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
+    IConnection, IExportFormat, IProject, ITag, StorageType, EditorMode } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProvider";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -260,27 +260,12 @@ export default class MockFactory {
     }
 
     public static createFakeCanvas() {
-        // const canvas: Canvas = {
-        //     scaleRegionToFrameSize: jest.fn(),
-        //     scaleRegionToSourceSize: jest.fn(),
-        //     addRegion: jest.fn(),
-        //     addRectRegion: jest.fn(),
-        //     addPointRegion: jest.fn(),
-        //     addPolylineRegion: jest.fn(),
-        //     deleteAllRegions: jest.fn(),
-        //     deleteRegionById: jest.fn(),
-        //     freeze: jest.fn(),
-        //     getSelectedRegionsBounds: jest.fn(),
-        //     redrawAllRegions: jest.fn(),
-        //     resize: jest.fn(),
-        //     toggleFreezeMode: jest.fn(),
-        //     unfreeze: jest.fn(),
-        //     updateTagsById: jest.fn(),
-        //     updateEditor: jest.fn(),
-        //     selectRegionById: jest.fn(),
-        //     setSelectionMode: jest.fn()
-        // }
-        return new Canvas({}, {});
+        const canvasProps = {
+            selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
+            onAssetMetadataChanged: jest.fn(),
+            editorMode: EditorMode.Rectangle,
+        };
+        return new Canvas({canvasProps}, {});
     }
 
     public static createAssetProviderRegistration(name: string) {
