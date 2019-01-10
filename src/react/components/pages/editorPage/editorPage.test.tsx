@@ -5,7 +5,7 @@ import { mount, ReactWrapper } from "enzyme";
 import { Store, AnyAction } from "redux";
 import EditorPage, { IEditorPageProps } from "./editorPage";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
-import { IApplicationState, IProject, IAssetMetadata } from "../../../../models/applicationState";
+import { IApplicationState, IProject, IAssetMetadata, EditorMode } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
 import MockFactory from "../../../../common/mockFactory";
@@ -13,6 +13,8 @@ import { AssetService } from "../../../../services/assetService";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
+import { DrawPolygon } from "../../toolbar/drawPolygon";
+import registerToolbar from "../../../../registerToolbar";
 
 function createCompoent(store, props: IEditorPageProps): ReactWrapper {
     return mount(
@@ -144,6 +146,26 @@ describe("Editor Page Component", () => {
             expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
             done();
         });
+    });
+});
+
+describe("Editor Page Toolbar integration", () => {
+
+    beforeAll(() => {
+        registerToolbar();
+    });
+
+    it("clicking polygon mode button changes mode", () => {
+        const project = MockFactory.createTestProject();
+        const store = createReduxStore({
+            ...MockFactory.initialState(),
+            currentProject: project,
+        });
+        const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+        const poly = wrapper.find(DrawPolygon).first();
+        expect(poly.exists()).toBe(true);
+        poly.find("button").simulate("click");
+        expect(getState(wrapper).mode).toEqual(EditorMode.Polygon);
     });
 });
 

@@ -260,6 +260,26 @@ export default class MockFactory {
     }
 
     public static createFakeCanvas() {
+        // const canvas: Canvas = {
+        //     scaleRegionToFrameSize: jest.fn(),
+        //     scaleRegionToSourceSize: jest.fn(),
+        //     addRegion: jest.fn(),
+        //     addRectRegion: jest.fn(),
+        //     addPointRegion: jest.fn(),
+        //     addPolylineRegion: jest.fn(),
+        //     deleteAllRegions: jest.fn(),
+        //     deleteRegionById: jest.fn(),
+        //     freeze: jest.fn(),
+        //     getSelectedRegionsBounds: jest.fn(),
+        //     redrawAllRegions: jest.fn(),
+        //     resize: jest.fn(),
+        //     toggleFreezeMode: jest.fn(),
+        //     unfreeze: jest.fn(),
+        //     updateTagsById: jest.fn(),
+        //     updateEditor: jest.fn(),
+        //     selectRegionById: jest.fn(),
+        //     setSelectionMode: jest.fn()
+        // }
         return new Canvas({}, {});
     }
 
