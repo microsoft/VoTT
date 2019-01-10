@@ -15,7 +15,7 @@ describe("Export Provider Picker", () => {
     const onChangeHandler = jest.fn();
     const defaultProps: IExportProviderPickerProps = {
         id: "test-export-provider-picker",
-        value: "1",
+        value: "azureCustomVision",
         onChange: onChangeHandler,
     };
 
