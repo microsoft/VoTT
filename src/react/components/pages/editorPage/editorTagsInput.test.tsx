@@ -21,6 +21,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         const stateTags = wrapper.find(EditorTagsInput).state().tags;
@@ -36,6 +37,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find("div.tag-color-box")).toHaveLength(originalTags.length);
@@ -45,6 +47,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find("input")).toHaveLength(1);
@@ -54,6 +57,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         const newTagName = "My new tag";
@@ -70,6 +74,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         const newTagName = "My new tag";
@@ -86,6 +91,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length);
@@ -101,6 +107,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         // Root component calls handleDelete when backspace is pressed
@@ -114,6 +121,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find(EditorTagsInput).state().showModal).toBe(false);
@@ -127,6 +135,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         wrapper.find("div.tag")
@@ -142,6 +151,7 @@ describe("Tags Input Component", () => {
         const onTagShiftClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagShiftClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
@@ -161,6 +171,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         wrapper.find("div.tag")
@@ -175,6 +186,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         wrapper.find("div.tag")
@@ -190,6 +202,7 @@ describe("Tags Input Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagClick: onTagClickHandler,
         });
@@ -204,6 +217,7 @@ describe("Tags Input Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagClick: null,
         });
@@ -219,6 +233,7 @@ describe("Tags Input Component", () => {
         const onTagShiftClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagShiftClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
@@ -238,6 +253,7 @@ describe("Tags Input Component", () => {
         const onTagShiftClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagShiftClick: onTagShiftClickHandler,
         });
@@ -253,6 +269,7 @@ describe("Tags Input Component", () => {
         const onTagShiftClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagShiftClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
@@ -272,6 +289,7 @@ describe("Tags Input Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagShiftClick: null,
         });
@@ -284,6 +302,7 @@ describe("Tags Input Component", () => {
     it("displays correct initial index in span", () => {
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: null,
             onTagShiftClick: null,
         });
@@ -294,6 +313,7 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
+            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length);
@@ -301,9 +321,9 @@ describe("Tags Input Component", () => {
             .first().simulate("click");
         expect(onChangeHandler).toBeCalled();
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length - 1);
-        wrapper.update();
 
         setImmediate(() => {
+            wrapper.update();
             const tagSpans = wrapper.find(".tag-span");
             for (let i = 0; i < 9; i++) {
                 const tag = tagSpans.get(i);

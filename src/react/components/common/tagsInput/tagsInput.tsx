@@ -68,7 +68,7 @@ const delimiters = [KeyCodes.comma, KeyCodes.enter];
 /**
  * Component for creating, modifying and using tags
  */
-export default abstract class TagsInput<T extends ITagsInputProps> extends React.Component<T, ITagsInputState> {
+export default class TagsInput<T extends ITagsInputProps> extends React.Component<T, ITagsInputState> {
 
     constructor(props) {
         super(props);
@@ -128,7 +128,13 @@ export default abstract class TagsInput<T extends ITagsInputProps> extends React
      * Calls the onTagClick handler if not null with clicked tag
      * @param event Click event
      */
-    protected abstract handleTagClick(event);
+    protected handleTagClick(event) {
+        const text = this.getTagText(event);
+        const tag = this.getTag(text);
+        if (event.ctrlKey) {
+            this.openEditModal(tag);
+        }
+    }
 
     protected openEditModal(tag: IReactTag) {
         this.setState({
@@ -177,7 +183,9 @@ export default abstract class TagsInput<T extends ITagsInputProps> extends React
     /**
      * Get span element for each tag
      */
-    protected abstract getTagSpan(name: string);
+    protected getTagSpan(name: string) {
+        return <span>{name}</span>;
+    }
 
     /**
      * Converts IReactTag to ITag

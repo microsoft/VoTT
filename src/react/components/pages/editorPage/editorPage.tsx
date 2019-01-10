@@ -14,7 +14,7 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import { strings } from "../../../../common/strings";
-import keydown from "react-keydown"
+import keydown from "react-keydown";
 import { inclusiveRange } from "../../../../common/utils";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
@@ -42,10 +42,10 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-function getCtrlNumericKeys(): string[]{
-    const keys: string[] = []
-    for(let i = 0; i <=9; i++) {
-        keys.push(`ctrl+${i.toString()}`)
+function getCtrlNumericKeys(): string[] {
+    const keys: string[] = [];
+    for (let i = 0; i <= 9; i++) {
+        keys.push(`ctrl+${i.toString()}`);
     }
     return keys;
 }
@@ -125,6 +125,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     </div>
                     <div>
                         <EditorFooter
+                            displayHotKeys={true}
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange} />
                     </div>
@@ -134,8 +135,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     @keydown(getCtrlNumericKeys())
-    protected handleNumberKeyDown(event) {
-        const key = parseInt(event.key);
+    protected handleTagHotKey(event) {
+        const key = parseInt(event.key, 10);
         let tag: ITag;
         const tags = this.props.project.tags;
         if (key === 0) {

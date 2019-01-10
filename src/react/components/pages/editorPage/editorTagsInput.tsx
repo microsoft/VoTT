@@ -3,6 +3,7 @@ import TagsInput, { ITagsInputProps, IReactTag, ITagsInputState } from "../../co
 import React from "react";
 
 export interface IEditorTagsInputProps extends ITagsInputProps {
+    displayHotKeys: boolean;
     onTagClick?: (tag: ITag) => void;
     onTagShiftClick?: (tag: ITag) => void;
 }
@@ -19,7 +20,7 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
         const index = this.indexOfTag(name);
         return (
             <span className="tag-span">
-                {(index <= 9) ? `[${index}]  ` : ""}{name}
+                {(this.props.displayHotKeys && index <= 9) ? `[${index}]  ` : ""}{name}
             </span>
         );
     }

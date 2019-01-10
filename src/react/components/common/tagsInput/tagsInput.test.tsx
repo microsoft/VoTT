@@ -1,8 +1,7 @@
 import { mount } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
-import TagsInput, { ITagsInputProps, KeyCodes } from "../../common/tagsInput/tagsInput";
-import ProjectSettingsTagsInput from "./projectSettingsTagsInput";
+import TagsInput, { ITagsInputProps, KeyCodes } from "./tagsInput";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("../../common/tagsInput/tagColors.json");
 
@@ -12,7 +11,7 @@ describe("Tags Input Component", () => {
 
     function createComponent(props: ITagsInputProps) {
         return mount(
-            <ProjectSettingsTagsInput {...props}/>,
+            <TagsInput {...props}/>,
         );
     }
 
@@ -22,7 +21,7 @@ describe("Tags Input Component", () => {
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        const stateTags = wrapper.find(ProjectSettingsTagsInput).state().tags;
+        const stateTags = wrapper.find(TagsInput).state().tags;
         expect(stateTags).toHaveLength(originalTags.length);
         for (let i = 0; i < stateTags.length; i++) {
             expect(stateTags[i].id).toEqual(originalTags[i].name);
@@ -59,10 +58,10 @@ describe("Tags Input Component", () => {
         wrapper.find("input").simulate("change", {target: {value: newTagName}});
         wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.enter});
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags).toHaveLength(originalTags.length + 1);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.find(ProjectSettingsTagsInput).state().tags[newTagIndex].color);
+        expect(wrapper.find(TagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
+        expect(TagColors).toContain(wrapper.find(TagsInput).state().tags[newTagIndex].color);
     });
 
     it("create a new tag from text box - comma key", () => {
@@ -75,10 +74,10 @@ describe("Tags Input Component", () => {
         wrapper.find("input").simulate("change", {target: {value: newTagName}});
         wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.comma});
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags).toHaveLength(originalTags.length + 1);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.find(ProjectSettingsTagsInput).state().tags[newTagIndex].color);
+        expect(wrapper.find(TagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
+        expect(TagColors).toContain(wrapper.find(TagsInput).state().tags[newTagIndex].color);
     });
 
     it("remove a tag", () => {
@@ -87,13 +86,13 @@ describe("Tags Input Component", () => {
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags).toHaveLength(originalTags.length);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length);
         wrapper.find("a.ReactTags__remove")
             .last().simulate("click");
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags).toHaveLength(originalTags.length - 1);
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags[0].id).toEqual(originalTags[0].name);
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags[0].color).toEqual(originalTags[0].color);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length - 1);
+        expect(wrapper.find(TagsInput).state().tags[0].id).toEqual(originalTags[0].name);
+        expect(wrapper.find(TagsInput).state().tags[0].color).toEqual(originalTags[0].color);
     });
 
     it("typing backspace on empty field does NOT delete tag", () => {
@@ -106,7 +105,7 @@ describe("Tags Input Component", () => {
         // Component should handle backspace and return, not deleting and not calling onChange
         wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.backspace}); // backspace
         expect(onChangeHandler).not.toBeCalled();
-        expect(wrapper.find(ProjectSettingsTagsInput).state().tags).toHaveLength(originalTags.length);
+        expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length);
     });
 
     it("ctrl clicking tag opens editor modal", () => {
@@ -115,11 +114,11 @@ describe("Tags Input Component", () => {
             tags: originalTags,
             onChange: onChangeHandler,
         });
-        expect(wrapper.find(ProjectSettingsTagsInput).state().showModal).toBe(false);
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        expect(wrapper.find(ProjectSettingsTagsInput).state().showModal).toBe(true);
+        expect(wrapper.find(TagsInput).state().showModal).toBe(true);
     });
 
     it("ctrl clicking tag sets selected tag", () => {
@@ -131,8 +130,8 @@ describe("Tags Input Component", () => {
         wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        expect(wrapper.find(ProjectSettingsTagsInput).state().selectedTag.id).toEqual(originalTags[0].name);
-        expect(wrapper.find(ProjectSettingsTagsInput).state().selectedTag.color).toEqual(originalTags[0].color);
+        expect(wrapper.find(TagsInput).state().selectedTag.id).toEqual(originalTags[0].name);
+        expect(wrapper.find(TagsInput).state().selectedTag.color).toEqual(originalTags[0].color);
     });
 
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
@@ -145,7 +144,7 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button.btn.btn-success").simulate("click");
-        expect(wrapper.find(ProjectSettingsTagsInput).state().showModal).toBe(false);
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).toBeCalled();
     });
 
@@ -159,7 +158,7 @@ describe("Tags Input Component", () => {
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
         wrapper.find("button.btn.btn-secondary").simulate("click");
-        expect(wrapper.find(ProjectSettingsTagsInput).state().showModal).toBe(false);
+        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).not.toBeCalled();
     });
 });

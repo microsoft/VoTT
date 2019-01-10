@@ -6,6 +6,7 @@ import { debug } from "util";
 export interface IEditorFooterProps {
     tags: ITag[];
     onTagsChanged: (value) => void;
+    displayHotKeys: boolean;
 }
 
 export interface IEditorFooterState {
@@ -25,6 +26,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         return (
             <div>
                 <EditorTagsInput
+                    displayHotKeys={this.props.displayHotKeys}
                     tags={this.state.tags}
                     onChange={this.onTagsChanged}
                 />
