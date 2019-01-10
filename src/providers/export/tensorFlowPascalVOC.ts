@@ -81,81 +81,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
         const allImageExports = allAssets.map((element) => {
-            const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
-
-            return new Promise((resolve, reject) => {
-                // Get image
-                axios.get(element.asset.path, {
-                    responseType: "arraybuffer",
-                })
-                .then(async (response) => {
-                    // Get buffer
-                    const buffer = new Buffer(response.data);
-
-                    // Write Binary
-                    await this.storageProvider.writeBinary(imageFileName, buffer);
-
-                    const tagObjects = [];
-                    element.regions.filter((region) => (region.type === RegionType.Rectangle ||
-                                                        region.type === RegionType.Square) &&
-                                                        region.points.length === 2)
-                                    .forEach((region) => {
-                                        region.tags.forEach((tag) => {
-                                            const objectInfo: IObjectInfo = {
-                                                name: tag.name,
-                                                xmin: region.points[0].x,
-                                                ymin: region.points[0].y,
-                                                xmax: region.points[1].x,
-                                                ymax: region.points[1].y,
-                                            };
-
-                                            tagObjects.push(objectInfo);
-                                        });
-                    });
-
-                    const imageInfo: IImageInfo = {
-                        width: element.asset.size ? element.asset.size.width : 0,
-                        height: element.asset.size ? element.asset.size.height : 0,
-                        objects: tagObjects,
-                    };
-
-                    this.imagesInfo.set(element.asset.name, imageInfo);
-
-                    if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
-                        // Get Base64
-                        const image64 = btoa(new Uint8Array(response.data).
-                        reduce((data, byte) => data + String.fromCharCode(byte), ""));
-
-                        if (image64.length < 10) {
-                            // Ignore the error at the moment
-                            // TODO: Refactor ExportProvider abstract class export() method
-                            //       to return Promise<object> with an object containing
-                            //       the number of files succesfully exported out of total
-                            console.log(`Image not valid ${imageFileName}`);
-                        } else {
-                            const assetProps = await HtmlFileReader.readAssetAttributesWithBuffer(image64);
-                            const imageInfo = this.imagesInfo.get(element.asset.name);
-                            if (imageInfo && assetProps) {
-                                imageInfo.width = assetProps.width;
-                                imageInfo.height = assetProps.height;
-                            } else {
-                                console.log(`imageInfo for element ${element.asset.name} not found (${assetProps})`);
-                            }
-                        }
-                    }
-
-                    resolve();
-                })
-                .catch((err) => {
-                    // Ignore the error at the moment
-                    // TODO: Refactor ExportProvider abstract class export() method
-                    //       to return Promise<object> with an object containing
-                    //       the number of files succesfully exported out of total
-                    console.log(`Error downloading ${imageFileName} - ${err}`);
-                    resolve();
-                    // eject(err);
-                });
-            });
+            return this.exportSingleImage(jpegImagesFolderName, element);
         });
 
         try {
@@ -163,6 +89,84 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         } catch (err) {
             console.log(err);
         }
+    }
+
+    private async exportSingleImage(jpegImagesFolderName: string, element: IAssetMetadata): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
+
+            // Get image
+            axios.get(element.asset.path, {
+                responseType: "arraybuffer",
+            })
+            .then(async (response) => {
+                // Get buffer
+                const buffer = new Buffer(response.data);
+
+                // Write Binary
+                await this.storageProvider.writeBinary(imageFileName, buffer);
+
+                const tagObjects = [];
+                element.regions.filter((region) => (region.type === RegionType.Rectangle ||
+                                                    region.type === RegionType.Square) &&
+                                                    region.points.length === 2)
+                                .forEach((region) => {
+                                    region.tags.forEach((tag) => {
+                                        const objectInfo: IObjectInfo = {
+                                            name: tag.name,
+                                            xmin: region.points[0].x,
+                                            ymin: region.points[0].y,
+                                            xmax: region.points[1].x,
+                                            ymax: region.points[1].y,
+                                        };
+
+                                        tagObjects.push(objectInfo);
+                                    });
+                });
+
+                const imageInfo: IImageInfo = {
+                    width: element.asset.size ? element.asset.size.width : 0,
+                    height: element.asset.size ? element.asset.size.height : 0,
+                    objects: tagObjects,
+                };
+
+                this.imagesInfo.set(element.asset.name, imageInfo);
+
+                if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
+                    // Get Base64
+                    const image64 = btoa(new Uint8Array(response.data).
+                    reduce((data, byte) => data + String.fromCharCode(byte), ""));
+
+                    if (image64.length < 10) {
+                        // Ignore the error at the moment
+                        // TODO: Refactor ExportProvider abstract class export() method
+                        //       to return Promise<object> with an object containing
+                        //       the number of files succesfully exported out of total
+                        console.log(`Image not valid ${imageFileName}`);
+                    } else {
+                        const assetProps = await HtmlFileReader.readAssetAttributesWithBuffer(image64);
+                        const imageInfo = this.imagesInfo.get(element.asset.name);
+                        if (imageInfo && assetProps) {
+                            imageInfo.width = assetProps.width;
+                            imageInfo.height = assetProps.height;
+                        } else {
+                            console.log(`imageInfo for element ${element.asset.name} not found (${assetProps})`);
+                        }
+                    }
+                }
+
+                resolve();
+            })
+            .catch((err) => {
+                // Ignore the error at the moment
+                // TODO: Refactor ExportProvider abstract class export() method
+                //       to return Promise<object> with an object containing
+                //       the number of files succesfully exported out of total
+                console.log(`Error downloading ${imageFileName} - ${err}`);
+                resolve();
+                // eject(err);
+            });
+        });
     }
 
     private async exportPBTXT(exportFolderName: string, project: IProject) {
