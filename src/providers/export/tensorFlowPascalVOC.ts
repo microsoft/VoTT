@@ -290,11 +290,12 @@ item {
             });
         });
 
-        console.log(tagsDict);
+        // TODO: Split in Test and Train sets
 
-
-
-        // Save ImageSets (Main ?)
-        // TODO
+        // Save ImageSets
+        tags.forEach(async (tag) => {
+            const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
+            await this.storageProvider.writeText(imageSetFileName, tagsDict[tag.name]);
+        });
     }
 }
