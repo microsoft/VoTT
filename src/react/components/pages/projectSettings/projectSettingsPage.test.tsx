@@ -11,10 +11,13 @@ import ProjectSettingsPage, { IProjectSettingsPageProps } from "./projectSetting
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
+// jest.mock("../../../../redux/actions/projectActions");
+// import ProjectActions from "../../../../redux/actions/projectActions";
 import { ConformsPredicateObject } from "lodash";
 
 describe("Project settings page", () => {
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
+    // let projectActionsMock: jest.Mocked<typeof ProjectActions> = null;
 
     function createCompoent(store, props: IProjectSettingsPageProps): ReactWrapper {
         return mount(
@@ -28,6 +31,7 @@ describe("Project settings page", () => {
 
     beforeEach(() => {
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        // projectActionsMock = ProjectActions as jest.Mocked<typeof ProjectActions>;
     });
 
     it("Form submission calls save project action", (done) => {
@@ -45,12 +49,15 @@ describe("Project settings page", () => {
 
     it("Throws an error when a user tries to create a duplicate project", async (done) => {
         const context: any = null;
-        const store = createReduxStore(MockFactory.initialState());
+        const project = MockFactory.createTestProject("1");
+        project.id = "25";
+        const initialStateOverride = {
+            currentProject: project,
+        };
+        const store = createReduxStore(MockFactory.initialState(initialStateOverride));
         const props = MockFactory.projectSettingsProps();
         const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
-        const project = MockFactory.createTestProject("1");
 
-        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
         const wrapper = createCompoent(store, props);
         wrapper.setProps({
             form: {
@@ -64,17 +71,10 @@ describe("Project settings page", () => {
                 saveProject: props.actions.saveProject,
             },
         });
-
-        const myActions = MockFactory.projectActions();
-
         wrapper.find("form").simulate("submit");
         setImmediate(async () => {
             expect(saveProjectSpy).toBeCalled();
-            try {
-                await expect(myActions.saveProject(project)).rejects.not.toBeNull();
-            } catch (e) {
-                console.log("Error in test");
-            }
+            expect(saveProjectSpy.mockRejectedValue).not.toBeNull();
             done();
         });
     });

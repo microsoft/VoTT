@@ -6,6 +6,7 @@ import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import store from "../store/store";
+import { rejects } from "assert";
 
 export default interface IProjectActions {
     loadProject(project: IProject): Promise<IProject>;
@@ -17,6 +18,8 @@ export default interface IProjectActions {
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
 }
+// export default class ProjectActions implements IProjectActions {
+// }
 
 export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<IProject> {
     return (dispatch: Dispatch) => {
@@ -25,8 +28,9 @@ export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<
     };
 }
 
-export function saveProject(project: IProject): (dispatch: Dispatch, getState: any) => Promise<IProject> {
-    return async (dispatch: Dispatch, getState: any) => {
+export function saveProject(project: IProject):
+  (dispatch: Dispatch, getState: any, resolve, reject) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: any, resolve, reject) => {
         const projectService = new ProjectService();
         const projectId = project["id"];
         const projectName = project["name"];
@@ -36,7 +40,7 @@ export function saveProject(project: IProject): (dispatch: Dispatch, getState: a
         if (projectList && projectList.length > 0) {
             const isUnique = (project.id === null) ||
                              ((projectList.find((project) =>
-                                (project.name === projectName) && project.id === projectId)) ||
+                                (project.name === projectName) && project.id === projectId) !== undefined) ||
                              (projectList.find((project) =>
                                 project.name === projectName) === undefined) &&
                              (projectList.find((project) =>
