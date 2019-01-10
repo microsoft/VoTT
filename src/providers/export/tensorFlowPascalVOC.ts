@@ -121,9 +121,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
 
                     this.imagesInfo.set(element.asset.name, imageInfo);
 
-                    if (element.asset.size && element.asset.size.width > 0 && element.asset.size.height > 0) {
-                        resolve();
-                    } else {
+                    if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
                         // Get Base64
                         const image64 = btoa(new Uint8Array(response.data).
                         reduce((data, byte) => data + String.fromCharCode(byte), ""));
@@ -134,29 +132,19 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                             //       to return Promise<object> with an object containing
                             //       the number of files succesfully exported out of total
                             console.log(`Image not valid ${imageFileName}`);
-                            resolve();
                         } else {
-                            // Load image at runtime to get dimension info
-                            // const imageInfo = this.imagesInfo[element.asset.name];
-                            const img = new Image();
-                            img.onload = ((event) => {
-                                // imageInfo.width = img.width;
-                                // imageInfo.height = img.height;
-
-                                resolve();
-                            });
-                            img.onerror = ((err) => {
-                                // Ignore the error at the moment
-                                // TODO: Refactor ExportProvider abstract class export() method
-                                //       to return Promise<object> with an object containing
-                                //       the number of files succesfully exported out of total
-                                console.log(`Error loading image ${imageFileName} - ${err}`);
-                                resolve();
-                                // eject(err);
-                            });
-                            img.src = "data:image;base64," + image64;
+                            const assetProps = await HtmlFileReader.readAssetAttributesWithBuffer(image64);
+                            const imageInfo = this.imagesInfo.get(element.asset.name);
+                            if (imageInfo && assetProps) {
+                                imageInfo.width = assetProps.width;
+                                imageInfo.height = assetProps.height;
+                            } else {
+                                console.log(`imageInfo for element ${element.asset.name} not found (${assetProps})`);
+                            }
                         }
                     }
+
+                    resolve();
                 })
                 .catch((err) => {
                     // Ignore the error at the moment
