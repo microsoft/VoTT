@@ -14,3 +14,15 @@ export function randomIntInRange(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive
 }
+
+/**
+ * Common key codes used throughout application
+ */
+export const KeyCodes = {
+    comma: 188,
+    enter: 13,
+    backspace: 8,
+    ctrl: 17,
+    shift: 16,
+    tab: 9,
+};

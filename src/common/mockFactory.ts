@@ -10,6 +10,7 @@ import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
 import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
+import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
 
 export default class MockFactory {
 
@@ -346,16 +347,26 @@ export default class MockFactory {
         };
     }
 
-    public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
+    public static pageProps(projectId?: string) {
         return {
             project: null,
             recentProjects: MockFactory.createTestProjects(),
             actions: (projectActions as any) as IProjectActions,
-            connections: MockFactory.createTestConnections(),
             history: this.history(),
             location: this.location(),
             match: this.match(projectId),
         };
+    }
+
+    public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
+        return {
+            ...this.pageProps(projectId),
+            connections: this.createTestConnections(),
+        };
+    }
+
+    public static editorPageProps(projectId?: string): IEditorPageProps {
+        return this.pageProps(projectId);
     }
 
     public static initialState(): IApplicationState {
