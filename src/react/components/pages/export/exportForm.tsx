@@ -71,16 +71,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 FieldTemplate={CustomFieldTemplate}
                 validate={this.onFormValidate}
                 widgets={this.widgets}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 formContext={this.state.formData}
-=======
->>>>>>> Refactoring code
-=======
->>>>>>> Updating to use registered export providers rather than hard coded list
-=======
->>>>>>> 03d1c47b15ca1b244816acdb1ef72a554ddccdc0
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
