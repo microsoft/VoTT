@@ -74,7 +74,9 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         await this.exportImages(exportFolderName, allAssets);
         await this.exportPBTXT(exportFolderName, this.project);
         await this.exportAnnotations(exportFolderName, allAssets);
-        await this.exportImageSets(exportFolderName, allAssets, this.project.tags);
+
+        // TODO: Make testSplit && exportUnassignedTags optional parameter in the UI Exporter configuration
+        await this.exportImageSets(exportFolderName, allAssets, this.project.tags, 0.2, true);
     }
 
     private async exportImages(exportFolderName: string, allAssets: IAssetMetadata[]) {
@@ -265,7 +267,8 @@ item {
         }
     }
 
-    private async exportImageSets(exportFolderName: string, allAssets: IAssetMetadata[], tags: ITag[]) {
+    private async exportImageSets(exportFolderName: string, allAssets: IAssetMetadata[],
+                                  tags: ITag[], testSplit: number, exportUnassignedTags: boolean) {
         // Create ImageSets Sub Folder (Main ?)
         const imageSetsFolderName = `${exportFolderName}/ImageSets`;
         await this.storageProvider.createContainer(imageSetsFolderName);
@@ -274,28 +277,36 @@ item {
         await this.storageProvider.createContainer(imageSetsMainFolderName);
 
         const tagsDict = [];
-        tags.forEach((tag) => {
-            tagsDict[tag.name] = "";
-        });
-
-        allAssets.forEach((asset) => {
-            asset.regions.forEach((region) => {
-                tags.forEach((tag) => {
-                    if (region.tags.filter((regionTag) => regionTag.name === tag.name).length > 0) {
-                        tagsDict[tag.name] += `${asset.asset.name} 1\n`;
-                    } else {
-                        tagsDict[tag.name] += `${asset.asset.name} -1\n`;
-                    }
-                });
+        if (tags) {
+            tags.forEach((tag) => {
+                tagsDict[tag.name] = "";
             });
-        });
 
-        // TODO: Split in Test and Train sets
+            allAssets.forEach((asset) => {
+                if (asset.regions.length > 0) {
+                    asset.regions.forEach((region) => {
+                        tags.forEach((tag) => {
+                            if (region.tags.filter((regionTag) => regionTag.name === tag.name).length > 0) {
+                                tagsDict[tag.name] += `${asset.asset.name} 1\n`;
+                            } else {
+                                tagsDict[tag.name] += `${asset.asset.name} -1\n`;
+                            }
+                        });
+                    });
+                } else if (exportUnassignedTags) {
+                    tags.forEach((tag) => {
+                        tagsDict[tag.name] += `${asset.asset.name} -1\n`;
+                    });
+                }
+            });
 
-        // Save ImageSets
-        tags.forEach(async (tag) => {
-            const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
-            await this.storageProvider.writeText(imageSetFileName, tagsDict[tag.name]);
-        });
+            // TODO: Split in Test and Train sets
+
+            // Save ImageSets
+            tags.forEach(async (tag) => {
+                const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
+                await this.storageProvider.writeText(imageSetFileName, tagsDict[tag.name]);
+            });
+        }
     }
 }
