@@ -14,9 +14,9 @@ export interface IHostProcess {
  * @enum BROWSER - Browser Host Process Type
  */
 export enum HostProcessType {
-    Electron = 1 << 0,
-    Browser = 1 << 1,
-    All = ~(~0 << 2),
+    Electron = 1, // bits: 01
+    Browser = 2,  // bits: 10
+    All = 3,      // bits: 11
 }
 
 import os from "os";
