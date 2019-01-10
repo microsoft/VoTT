@@ -20,7 +20,7 @@ export enum HostProcessType {
 }
 
 import os from "os";
-const osRelease = os.release();
+const osRelease = os.release().toLowerCase();
 
 function getHostProcessType(): HostProcessType {
     if (osRelease.indexOf("electron") > -1 || process.env["TEST"]) {
