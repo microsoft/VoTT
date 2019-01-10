@@ -1,5 +1,4 @@
 import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
-import { replaceVariablesInJson } from "./utils";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
 
@@ -142,35 +141,25 @@ export interface IAppStrings {
     };
 }
 
-interface IStrings extends LocalizedStringsMethods, IAppStrings {}
+interface IStrings extends LocalizedStringsMethods, IAppStrings { }
 
 export const strings: IStrings = new LocalizedStrings({
     en: english,
     es: spanish,
 });
 
-function getLocValue(variable: string): string {
-    const varName = variable.replace(/\${}\s/g, "");
-    if (varName.length === 0) {
-        throw new Error("Empty variable name");
-    }
-    const split = varName.split(".");
-    let result;
-    try {
-        result = strings[split[0]];
-    } catch (e) {
-        throw new Error(`Variable ${varName} not found in strings`);
-    }
-    for (let i = 1; i < split.length; i++) {
-        try {
-            result = result[split[i]];
-        } catch (e) {
-            throw new Error(`Variable ${varName} not found in strings`);
-        }
-    }
-    return result;
+export function addLocValues(json: any) {
+    return interpolateJson(json, { strings });
 }
 
-export function addLocValues(json: any) {
-    return replaceVariablesInJson(json, getLocValue);
+export function interpolateJson(json: any, params: any) {
+    const template = JSON.stringify(json);
+    const outputJson = interpolate(template, params);
+    return JSON.parse(outputJson);
+}
+
+export function interpolate(template: string, params: any) {
+    const names = Object.keys(params);
+    const vals = Object["values"](params);
+    return new Function(...names, `return \`${template}\`;`)(...vals);
 }

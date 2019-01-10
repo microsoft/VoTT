@@ -1,12 +1,12 @@
 {
-    "title": "${connections.providers.local.title}",
+    "title": "${strings.connections.providers.local.title}",
     "required": [
         "folderPath"
     ],
     "type": "object",
     "properties": {
         "folderPath": {
-            "title": "${connections.providers.local.folderPath}",
+            "title": "${strings.connections.providers.local.folderPath}",
             "type": "string"
         }
     }
