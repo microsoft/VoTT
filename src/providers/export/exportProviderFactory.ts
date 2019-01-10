@@ -18,6 +18,10 @@ export class ExportProviderFactory {
         return { ...ExportProviderFactory.providerRegistery };
     }
 
+    public static get defaultProvider() {
+        return ExportProviderFactory.defaultProviderOptions;
+    }
+
     /**
      * Registers a factory method for the specified export provider type
      * @param options - The options to use when registering an export provider
@@ -28,6 +32,10 @@ export class ExportProviderFactory {
         Guard.emtpy(options.displayName);
         Guard.null(options.factory);
 
+        // The first provider registered will be the default
+        if (ExportProviderFactory.defaultProviderOptions === null) {
+            ExportProviderFactory.defaultProviderOptions = options;
+        }
         ExportProviderFactory.providerRegistery[options.name] = options;
     }
 
@@ -58,4 +66,5 @@ export class ExportProviderFactory {
     }
 
     private static providerRegistery: { [id: string]: IExportProviderRegistrationOptions } = {};
+    private static defaultProviderOptions: IExportProviderRegistrationOptions = null;
 }

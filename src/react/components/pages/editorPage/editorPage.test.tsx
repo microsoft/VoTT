@@ -19,7 +19,7 @@ describe("Editor Page Component", () => {
     let assetServiceMock: jest.Mocked<typeof AssetService> = null;
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
-    function createCompoent(store, props: IEditorPageProps): ReactWrapper {
+    function createComponent(store, props: IEditorPageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -56,7 +56,7 @@ describe("Editor Page Component", () => {
         const props = MockFactory.editorPageProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         const editorPage = wrapper.find(EditorPage).childAt(0);
 
         expect(loadProjectSpy).not.toBeCalled();
@@ -82,7 +82,7 @@ describe("Editor Page Component", () => {
             return Promise.resolve(savedAssetMetadata);
         });
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         const editorPage = wrapper.find(EditorPage).childAt(0);
 
         const partialProject = {
@@ -128,7 +128,7 @@ describe("Editor Page Component", () => {
         const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
 
         // create mock editor page
-        createCompoent(store, props);
+        createComponent(store, props);
 
         const partialProject = {
             id: testProject.id,
