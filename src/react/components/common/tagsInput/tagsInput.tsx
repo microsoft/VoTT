@@ -220,10 +220,10 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
         // values. Setting filtered state and then setting state with
         // updated HTML in tags
         this.setState({
-            tags: newTags
+            tags: newTags,
         }, () => this.setState({
-            tags: this.updateTagsHtml(newTags)
-        }, () => this.props.onChange(this.toITags(this.state.tags))));        
+            tags: this.updateTagsHtml(newTags),
+        }, () => this.props.onChange(this.toITags(this.state.tags))));
     }
 
     /**
@@ -296,16 +296,16 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
         if (event.keyCode === KeyCodes.backspace) {
             return;
         }
-        const tags = this.state.tags.filter((tag, index) => index !== i)
-        
+        const tags = this.state.tags.filter((tag, index) => index !== i);
+
         // Updating HTML is dependent upon state having most up to date
         // values. Setting filtered state and then setting state with
         // updated HTML in tags
         this.setState({
-            tags
+            tags,
         }, () => this.setState({
-            tags: this.updateTagsHtml(tags)
-        }, () => this.props.onChange(this.toITags(this.state.tags))));        
+            tags: this.updateTagsHtml(tags),
+        }, () => this.props.onChange(this.toITags(this.state.tags))));
     }
 
     /**
@@ -324,8 +324,8 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
     }
 
     private updateTagsHtml(tags: IReactTag[]): IReactTag[] {
-        const newTags = []
-        for(let tag of tags) {
+        const newTags = [];
+        for (const tag of tags) {
             this.addHtml(tag);
             newTags.push(tag);
         }

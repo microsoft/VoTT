@@ -316,6 +316,16 @@ describe("Tags Input Component", () => {
         expect(tenthTag.props.children[0]).toEqual(`[0]  `);
     });
 
+    it("does not display indices when specified not to", () => {
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: false,
+            onChange: null,
+            onTagShiftClick: null,
+        });
+        expect(wrapper.find(".tag-span-index")).toHaveLength(0);
+    });
+
     it("updates indices in tags after removing first", (done) => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
