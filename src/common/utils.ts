@@ -36,3 +36,15 @@ export function replaceVariablesInJson(json: any, valueMapper: (variable: string
         return json;
     }
 }
+
+/**
+ * Common key codes used throughout application
+ */
+export const KeyCodes = {
+    comma: 188,
+    enter: 13,
+    backspace: 8,
+    ctrl: 17,
+    shift: 16,
+    tab: 9,
+};

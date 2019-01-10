@@ -5,6 +5,7 @@ import { randomIntInRange } from "../../../../common/utils";
 import { ITag } from "../../../../models/applicationState";
 import "../common.scss";
 import TagEditorModal from "./tagEditorModal/tagEditorModal";
+import { KeyCodes } from "../../../../common/utils";
 import "./tagsInput.scss";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("./tagColors.json");
@@ -47,18 +48,6 @@ export interface ITagsInputState {
     selectedTag: IReactTag;
     showModal: boolean;
 }
-
-/**
- * Key codes used within tag input component
- * comma - 188 (delimiter for new tag)
- * enter - 13 (delimiter for new tag)
- * backspace - 8 (override deletion of tags)
- */
-export const KeyCodes = {
-    comma: 188,
-    enter: 13,
-    backspace: 8,
-};
 
 /**
  * Keys that, when pressed, cause creation of new tag

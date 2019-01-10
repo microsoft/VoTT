@@ -72,6 +72,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.selectAsset = this.selectAsset.bind(this);
         this.onFooterChange = this.onFooterChange.bind(this);
+        this.handleTagHotKey = this.handleTagHotKey.bind(this);
+        this.onTagClicked = this.onTagClicked.bind(this);
     }
 
     public async componentDidMount() {
@@ -133,9 +135,17 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         );
     }
 
+    public onTagClicked(tag: ITag) {
+        // Stub for now, waiting for Phil's PR
+        return;
+    }
+
     @keydown(getCtrlNumericKeys())
-    protected handleTagHotKey(event) {
+    public handleTagHotKey(event) {
         const key = parseInt(event.key, 10);
+        if (isNaN(key)) {
+            return;
+        }
         let tag: ITag;
         const tags = this.props.project.tags;
         if (key === 0) {
@@ -145,7 +155,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         } else if (tags.length >= key) {
             tag = tags[key - 1];
         }
-        // TODO Do something with tag
+        this.onTagClicked(tag);
     }
 
     private onFooterChange(footerState) {

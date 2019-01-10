@@ -1,7 +1,7 @@
 import { mount } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
-import TagsInput, { KeyCodes } from "../../common/tagsInput/tagsInput";
+import { KeyCodes } from "../../../../common/utils";
 import EditorTagsInput, { IEditorTagsInputProps } from "./editorTagsInput";
 
 // tslint:disable-next-line:no-var-requires
