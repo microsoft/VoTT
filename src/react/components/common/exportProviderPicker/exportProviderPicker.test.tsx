@@ -24,7 +24,7 @@ describe("Export Provider Picker", () => {
     }
 
     beforeAll(() => {
-        Object.defineProperty(ExportProviderFactory, "handlers", {
+        Object.defineProperty(ExportProviderFactory, "providers", {
             get: jest.fn(() => exportProviderRegistrations),
         });
     });
@@ -39,7 +39,6 @@ describe("Export Provider Picker", () => {
 
             const allProviders = _([])
                 .concat(exportProviders)
-                .uniqBy("name")
                 .orderBy("displayName")
                 .value();
 

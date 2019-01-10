@@ -18,7 +18,7 @@ describe("Export Form Component", () => {
     }
 
     beforeAll(() => {
-        Object.defineProperty(ExportProviderFactory, "handlers", {
+        Object.defineProperty(ExportProviderFactory, "providers", {
             get: jest.fn(() => exportProviderRegistrations),
         });
     });

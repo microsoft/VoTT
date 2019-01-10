@@ -9,11 +9,10 @@ export interface IExportProviderPickerProps {
 }
 
 export default function ExportProviderPicker(props: IExportProviderPickerProps) {
-    const exportProviders = _.values(ExportProviderFactory.handlers);
+    const exportProviders = _.values(ExportProviderFactory.providers);
 
     const allProviders = _([])
         .concat(exportProviders)
-        .uniqBy("name")
         .orderBy("displayName")
         .value();
 

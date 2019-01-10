@@ -12,7 +12,7 @@ describe("Export Provider Base", () => {
 
         ExportProviderFactory.register({
             name: "test",
-            displayName: "Test DisplayNameq",
+            displayName: "Test DisplayName",
             factory: (project) => new TestExportProvider(project),
         });
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;

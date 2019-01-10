@@ -14,8 +14,8 @@ export interface IExportProviderRegistrationOptions {
  * @description - Creates instance of export providers based on request providery type
  */
 export class ExportProviderFactory {
-    public static get handlers() {
-        return { ...ExportProviderFactory.handlerRegistry };
+    public static get providers() {
+        return { ...ExportProviderFactory.providerRegistery };
     }
 
     /**
@@ -28,7 +28,7 @@ export class ExportProviderFactory {
         Guard.emtpy(options.displayName);
         Guard.null(options.factory);
 
-        ExportProviderFactory.handlerRegistry[options.name] = options;
+        ExportProviderFactory.providerRegistery[options.name] = options;
     }
 
     /**
@@ -41,7 +41,7 @@ export class ExportProviderFactory {
         Guard.emtpy(name);
         Guard.null(project);
 
-        const handler = ExportProviderFactory.handlerRegistry[name];
+        const handler = ExportProviderFactory.providerRegistery[name];
         if (!handler) {
             throw new Error(`No export provider has been registered with name '${name}'`);
         }
@@ -49,5 +49,5 @@ export class ExportProviderFactory {
         return handler.factory(project, options);
     }
 
-    private static handlerRegistry: { [id: string]: IExportProviderRegistrationOptions } = {};
+    private static providerRegistery: { [id: string]: IExportProviderRegistrationOptions } = {};
 }

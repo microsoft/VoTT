@@ -17,14 +17,14 @@ describe("Export Provider Factory", () => {
     };
 
     it("registers new export providers", () => {
-        expect(Object.keys(ExportProviderFactory.handlers).length).toEqual(0);
+        expect(Object.keys(ExportProviderFactory.providers).length).toEqual(0);
         ExportProviderFactory.register({
             name: "testProvider",
             displayName: "Test Provider",
             factory: (project) => new TestExportProvider(project),
         });
-        expect(Object.keys(ExportProviderFactory.handlers).length).toEqual(1);
-        expect(ExportProviderFactory.handlers["testProvider"].displayName).toEqual("Test Provider");
+        expect(Object.keys(ExportProviderFactory.providers).length).toEqual(1);
+        expect(ExportProviderFactory.providers["testProvider"].displayName).toEqual("Test Provider");
     });
 
     it("creates a new instance of the provider", () => {
