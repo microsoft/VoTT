@@ -229,11 +229,11 @@ export default class MockFactory {
         };
     }
 
-    public static createExportProviderRegistrations(count: number = 10): IExportProviderRegistrationOptions[] {
+    public static createExportProviderRegistrations(count: number = 3): IExportProviderRegistrationOptions[] {
         const registrations: IExportProviderRegistrationOptions[] = [];
-        for (let i = 1; i <= count; i++) {
-            registrations.push(MockFactory.createExportProviderRegistration(i.toString()));
-        }
+        registrations.push(MockFactory.createExportProviderRegistration("vottJson"));
+        registrations.push(MockFactory.createExportProviderRegistration("tensorFlowPascalVOC"));
+        registrations.push(MockFactory.createExportProviderRegistration("azureCustomVision"));
 
         return registrations;
     }

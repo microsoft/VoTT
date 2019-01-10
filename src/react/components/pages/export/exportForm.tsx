@@ -112,7 +112,6 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
     private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
 
-        console.log("in bind form", exportFormat);
         const providerType = exportFormat ? exportFormat.providerType : null;
         let newFormSchema: any = this.state.formSchema;
         let newUiSchema: any = this.state.uiSchema;
@@ -133,7 +132,6 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
             formData.providerOptions = {};
         }
 
-        console.log("setting state", providerType);
         this.setState({
             providerName: providerType,
             formSchema: newFormSchema,
