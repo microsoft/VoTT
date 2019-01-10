@@ -53,7 +53,7 @@ export default function registerProviders() {
     });
     ExportProviderFactory.register({
         name: "azureCustomVision",
-        displayName: strings.export.providers.AzureCustomVisionProvider,
+        displayName: strings.export.providers.azureCV,
         factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
     });
 

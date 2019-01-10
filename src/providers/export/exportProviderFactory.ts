@@ -49,5 +49,13 @@ export class ExportProviderFactory {
         return handler.factory(project, options);
     }
 
+    public static createFromProject(project: IProject): IExportProvider {
+        return ExportProviderFactory.create(
+            project.exportFormat.providerType,
+            project,
+            project.exportFormat.providerOptions,
+        );
+    }
+
     private static providerRegistery: { [id: string]: IExportProviderRegistrationOptions } = {};
 }

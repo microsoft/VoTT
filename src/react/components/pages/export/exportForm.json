@@ -5,7 +5,7 @@
     ],
     "properties": {
         "providerType": {
-            "title": "${common.provider}",
+            "title": "${strings.common.provider}",
             "type": "string"
         }
     }
