@@ -1,7 +1,7 @@
 import React from "react";
 import TagsInput, { ITagsInputProps, ITagsInputState } from "../../common/tagsInput/tagsInput";
 
-export default class ProjectSettingsTagsInput extends TagsInput<ITagsInputProps, ITagsInputState> {
+export default class ProjectSettingsTagsInput extends TagsInput<ITagsInputProps> {
 
     protected getTagSpan(name: string) {
         return <span>{name}</span>;
@@ -17,10 +17,5 @@ export default class ProjectSettingsTagsInput extends TagsInput<ITagsInputProps,
         if (event.ctrlKey) {
             this.openEditModal(tag);
         }
-    }
-
-    
-    protected handleKeyDown(event) {
-        debugger;
     }
 }

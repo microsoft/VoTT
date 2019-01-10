@@ -1,22 +1,15 @@
 import { ITag } from "../../../../models/applicationState";
 import TagsInput, { ITagsInputProps, IReactTag, ITagsInputState } from "../../common/tagsInput/tagsInput";
-import { inclusiveRange } from "../../../../common/utils";
 import React from "react";
-import keydown from "react-keydown"
 
 export interface IEditorTagsInputProps extends ITagsInputProps {
     onTagClick?: (tag: ITag) => void;
     onTagShiftClick?: (tag: ITag) => void;
-    onTagsHotKeyDown?: (tag: ITag) => void;
-}
-
-export interface IEditorTagsInputState extends ITagsInputState {
-    hotKeyListening: boolean;
 }
 
 // const numericKeyCodes = [...inclusiveRange(48, 58), ...inclusiveRange(96, 105)]
 
-export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps, IEditorTagsInputState> {
+export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
 
     /**
      * Shows the of the tag in the span of the first 10 tags
@@ -47,24 +40,6 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps, IE
             // Calls provided onTagClick function
             this.props.onTagClick(this.toItag(tag));
         }
-    }
-
-    protected handleNumberKeyDown(event) {
-        debugger;
-        const key = parseInt(event.key);
-        let tag: IReactTag;
-        const tags = this.state.tags;
-        if (key === 0) {
-            if (tags.length >= 10) {
-                tag = tags[9];
-            }
-        } else if (tags.length >= key) {
-            tag = tags[key - 1]
-        }
-    }
-
-    protected handleKeyDown(event) {
-        debugger;
     }
 
     private indexOfTag(id: string): number {

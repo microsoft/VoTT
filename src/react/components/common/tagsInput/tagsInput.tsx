@@ -68,9 +68,7 @@ const delimiters = [KeyCodes.comma, KeyCodes.enter];
 /**
  * Component for creating, modifying and using tags
  */
-export default abstract class TagsInput<T extends ITagsInputProps, S extends ITagsInputState> extends React.Component<T, S> {
-
-    private div;
+export default abstract class TagsInput<T extends ITagsInputProps> extends React.Component<T, ITagsInputState> {
 
     constructor(props) {
         super(props);
@@ -80,13 +78,12 @@ export default abstract class TagsInput<T extends ITagsInputProps, S extends ITa
             currentTagColorIndex: randomIntInRange(0, TagColors.length),
             selectedTag: null,
             showModal: false,
-        } as ITagsInputState as S;
-        
+        };
+
         // UI Handlers
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleDrag = this.handleDrag.bind(this);
         this.handleCloseModal = this.handleCloseModal.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
         // Tag edit handlers
         this.handleAddition = this.handleAddition.bind(this);
         this.handleEditedTag = this.handleEditedTag.bind(this);
@@ -99,7 +96,7 @@ export default abstract class TagsInput<T extends ITagsInputProps, S extends ITa
     public render() {
         const { tags } = this.state;
         return (
-            <div onKeyDown={this.handleKeyDown}>
+            <div>
                 <ReactTags tags={tags}
                     placeholder={strings.tags.placeholder}
                     autofocus={false}
@@ -132,8 +129,6 @@ export default abstract class TagsInput<T extends ITagsInputProps, S extends ITa
      * @param event Click event
      */
     protected abstract handleTagClick(event);
-
-    protected abstract handleKeyDown(event);
 
     protected openEditModal(tag: IReactTag) {
         this.setState({

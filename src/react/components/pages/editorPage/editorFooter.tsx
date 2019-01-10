@@ -1,7 +1,7 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
-import TagsInput from "../../common/tagsInput/tagsInput";
 import EditorTagsInput from "./editorTagsInput";
+import { debug } from "util";
 
 export interface IEditorFooterProps {
     tags: ITag[];

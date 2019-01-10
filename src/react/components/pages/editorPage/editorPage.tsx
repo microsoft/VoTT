@@ -14,6 +14,8 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import { strings } from "../../../../common/strings";
+import keydown from "react-keydown"
+import { inclusiveRange } from "../../../../common/utils";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -40,7 +42,13 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-
+function getCtrlNumericKeys(): string[]{
+    const keys: string[] = []
+    for(let i = 0; i <=9; i++) {
+        keys.push(`ctrl+${i.toString()}`)
+    }
+    return keys;
+}
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
@@ -123,7 +131,22 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
             </div>
         );
-    }    
+    }
+
+    @keydown(getCtrlNumericKeys())
+    protected handleNumberKeyDown(event) {
+        const key = parseInt(event.key);
+        let tag: ITag;
+        const tags = this.props.project.tags;
+        if (key === 0) {
+            if (tags.length >= 10) {
+                tag = tags[9];
+            }
+        } else if (tags.length >= key) {
+            tag = tags[key - 1];
+        }
+        // TODO Do something with tag
+    }
 
     private onFooterChange(footerState) {
         const project = {
