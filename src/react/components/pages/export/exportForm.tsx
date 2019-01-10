@@ -28,15 +28,8 @@ export interface IExportFormState {
 
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
     private widgets = {
-<<<<<<< HEAD
-<<<<<<< HEAD
         externalPicker: (ExternalPicker as any) as Widget,
-=======
         exportProviderPicker: (ExportProviderPicker as any) as Widget,
->>>>>>> Refactoring code
-=======
-        exportProviderPicker: (ExportProviderPicker as any) as Widget,
->>>>>>> Updating to use registered export providers rather than hard coded list
     };
 
     constructor(props, context) {
@@ -80,11 +73,14 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
                 widgets={this.widgets}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 formContext={this.state.formData}
 =======
 >>>>>>> Refactoring code
 =======
 >>>>>>> Updating to use registered export providers rather than hard coded list
+=======
+>>>>>>> 03d1c47b15ca1b244816acdb1ef72a554ddccdc0
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
