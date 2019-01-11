@@ -93,7 +93,7 @@ describe("Export Form Component", () => {
         };
 
         const props: IExportFormProps = {
-            settings: defaultExportSettings,
+            settings: null,
             onSubmit: onSubmitHandler,
         };
 
