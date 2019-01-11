@@ -150,7 +150,7 @@ describe("Editor Page Component", () => {
             currentProject: project,
         });
         const props = MockFactory.editorPageProps();
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
 
         const editorPage = wrapper.find(EditorPage).childAt(0);
         const spy = jest.spyOn(editorPage.instance() as EditorPage, "onTagClicked");
