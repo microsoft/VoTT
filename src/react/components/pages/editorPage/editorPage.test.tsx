@@ -13,6 +13,7 @@ import { AssetService } from "../../../../services/assetService";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
+import { KeyCodes } from "../../../../common/utils";
 
 describe("Editor Page Component", () => {
     let assetServiceMock: jest.Mocked<typeof AssetService> = null;
@@ -52,7 +53,7 @@ describe("Editor Page Component", () => {
     it("Sets project state from redux store", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, true);
-        const props = createProps(testProject.id);
+        const props = MockFactory.editorPageProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
         const wrapper = createCompoent(store, props);
@@ -66,7 +67,7 @@ describe("Editor Page Component", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets(5);
         const store = createStore(testProject, true);
-        const props = createProps(testProject.id);
+        const props = MockFactory.editorPageProps(testProject.id);
 
         AssetProviderFactory.create = jest.fn(() => {
             return {
@@ -105,7 +106,7 @@ describe("Editor Page Component", () => {
 
         // mock store and props
         const store = createStore(testProject, true);
-        const props = createProps(testProject.id);
+        const props = MockFactory.editorPageProps(testProject.id);
 
         // mock out the asset provider create method
         AssetProviderFactory.create = jest.fn(() => {
@@ -141,42 +142,24 @@ describe("Editor Page Component", () => {
             done();
         });
     });
-});
 
-function createProps(projectId: string): IEditorPageProps {
-    return {
-        project: null,
-        recentProjects: [],
-        history: {
-            length: 0,
-            action: null,
-            location: null,
-            push: jest.fn(),
-            replace: jest.fn(),
-            go: jest.fn(),
-            goBack: jest.fn(),
-            goForward: jest.fn(),
-            block: jest.fn(),
-            listen: jest.fn(),
-            createHref: jest.fn(),
-        },
-        location: {
-            hash: null,
-            pathname: null,
-            search: null,
-            state: null,
-        },
-        actions: (projectActions as any) as IProjectActions,
-        match: {
-            params: {
-                projectId,
-            },
-            isExact: true,
-            path: `https://localhost:3000/projects/${projectId}/edit`,
-            url: `https://localhost:3000/projects/${projectId}/edit`,
-        },
-    };
-}
+    it("calls onTagClick handler when hot key is pressed", () => {
+        const project = MockFactory.createTestProject();
+        const store = createReduxStore({
+            ...MockFactory.initialState(),
+            currentProject: project,
+        });
+        const props = MockFactory.editorPageProps();
+        const wrapper = createCompoent(store, props);
+
+        const editorPage = wrapper.find(EditorPage).childAt(0);
+        const spy = jest.spyOn(editorPage.instance() as EditorPage, "onTagClicked");
+
+        const keyPressed = 2;
+        (editorPage.instance() as EditorPage).handleTagHotKey({ctrlKey: true, key: keyPressed.toString()});
+        expect(spy).toBeCalledWith(project.tags[keyPressed - 1]);
+    });
+});
 
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
