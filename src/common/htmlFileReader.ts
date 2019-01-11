@@ -1,3 +1,4 @@
+import axios, { AxiosRequestConfig } from "axios";
 import { IAsset, AssetType } from "../models/applicationState";
 import Guard from "./guard";
 
@@ -36,6 +37,26 @@ export default class HtmlFileReader {
             default:
                 throw new Error("Asset not supported");
         }
+    }
+
+    /**
+     * Downloads the binary blob from the blob path
+     * @param asset The asset to download
+     */
+    public static async getAssetBlob(asset: IAsset): Promise<Blob> {
+        Guard.null(asset);
+
+        const config: AxiosRequestConfig = {
+            responseType: "blob",
+        };
+
+        // Download the asset binary from the storage provider
+        const response = await axios.get<Blob>(asset.path, config);
+        if (response.status !== 200) {
+            throw new Error("Error downloading asset binary");
+        }
+
+        return response.data;
     }
 
     private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {

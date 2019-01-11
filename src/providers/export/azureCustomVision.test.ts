@@ -1,22 +1,42 @@
 import shortid from "shortid";
+import _ from "lodash";
 import { AzureCustomVisionProvider, IAzureCustomVisionExportOptions, NewOrExisting } from "./azureCustomVision";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
-import { IProject } from "../../models/applicationState";
+import { IProject, AssetState, IAsset, IAssetMetadata, RegionType, IRegion } from "../../models/applicationState";
 import { ExportAssetState } from "./exportProvider";
 jest.mock("./azureCustomVision/azureCustomVisionService");
-import { AzureCustomVisionService, IAzureCustomVisionProject } from "./azureCustomVision/azureCustomVisionService";
+import {
+    AzureCustomVisionService, IAzureCustomVisionProject,
+    IAzureCustomVisionImage, IAzureCustomVisionTag,
+} from "./azureCustomVision/azureCustomVisionService";
+
+jest.mock("../../services/assetService");
+import { AssetService } from "../../services/assetService";
+import HtmlFileReader from "../../common/htmlFileReader";
+import { existsSync } from "fs";
 
 describe("Azure Custom Vision Export Provider", () => {
     let testProject: IProject = null;
 
     beforeEach(() => {
         jest.resetAllMocks();
-        testProject = MockFactory.createTestProject("TestProject");
-        testProject.exportFormat = {
-            providerType: "azureCustomVision",
-            providerOptions: {},
+        testProject = {
+            ...MockFactory.createTestProject("TestProject"),
+            assets: {
+                "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
+                "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
+                "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
+                "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
+            },
+            exportFormat: {
+                providerType: "azureCustomVision",
+                providerOptions: {
+                    projectdId: "azure-custom-vision-project-1",
+                    apiKey: "ABC123",
+                },
+            },
         };
     });
 
@@ -29,6 +49,7 @@ describe("Azure Custom Vision Export Provider", () => {
 
         const provider = ExportProviderFactory.createFromProject(testProject);
         expect(provider).not.toBeNull();
+        expect(provider).toBeInstanceOf(AzureCustomVisionProvider);
     });
 
     it("Calling save with New project creates Azure Custom Vision project", async () => {
@@ -99,5 +120,82 @@ describe("Azure Custom Vision Export Provider", () => {
 
         expect(newOptions).toEqual(customVisionOptions);
         expect(AzureCustomVisionService.prototype.create).not.toBeCalled();
+    });
+
+    describe("Export Scenarios", () => {
+        beforeEach(() => {
+            AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => {
+                const regions: IRegion[] = [
+                    {
+                        id: shortid.generate(),
+                        type: RegionType.Rectangle,
+                        tags: [
+                            { name: testProject.tags[0].name },
+                        ],
+                        boundingBox: {
+                            left: 10,
+                            top: 10,
+                            height: 100,
+                            width: 100,
+                        },
+                    },
+                ];
+
+                return Promise.resolve<IAssetMetadata>({
+                    asset,
+                    regions: asset.state === AssetState.Tagged ? regions : [],
+                    timestamp: null,
+                });
+            });
+
+            HtmlFileReader.getAssetBlob = jest.fn(() => {
+                return Promise.resolve(new Blob(["Some binary data"]));
+            });
+
+            AzureCustomVisionService.prototype.createImage = jest.fn(() => {
+                const imageId = shortid.generate();
+
+                return Promise.resolve<IAzureCustomVisionImage>({
+                    id: shortid.generate(),
+                    regions: [],
+                    tags: [],
+                    width: 800,
+                    height: 600,
+                    imageUri: `https://imageserver/${imageId}`,
+                });
+            });
+
+            AzureCustomVisionService.prototype.createTag = jest.fn((projectId, tag) => {
+                return Promise.resolve<IAzureCustomVisionTag>({
+                    ...tag,
+                    id: shortid.generate(),
+                });
+            });
+
+            AzureCustomVisionService.prototype.createRegions = jest.fn(() => Promise.resolve());
+            AzureCustomVisionService.prototype.getProjectTags = jest.fn(() => Promise.resolve([]));
+        });
+
+        it("Uploads binaries, regions & tags for all assets", async () => {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
+            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+            const customVisionMock = AzureCustomVisionService as any;
+
+            const results = await provider.export();
+
+            expect(results).not.toBeNull();
+            expect(customVisionMock.prototype.createTag.mock.calls.length).toEqual(testProject.tags.length);
+            expect(customVisionMock.prototype.createImage.mock.calls.length).toEqual(testProject.assets.length);
+            expect(customVisionMock.prototype.createRegions.mock.calls.length).toEqual(taggedAssets.length);
+        });
+
+        it("Uploads binaries, regions & tags for visited assets", () => {
+            fail();
+        });
+
+        it("Uploads binaries, regions & tags for tagged assets", () => {
+            fail();
+        });
     });
 });

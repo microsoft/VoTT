@@ -11,6 +11,7 @@ import {
     AzureCustomVisionService, IAzureCustomVisionServiceOptions, IAzureCustomVisionProject,
     IAzureCustomVisionTag, IAzureCustomVisionRegion,
 } from "./azureCustomVision/azureCustomVisionService";
+import HtmlFileReader from "../../common/htmlFileReader";
 
 export interface IAzureCustomVisionExportOptions {
     assetState: ExportAssetState;
@@ -171,14 +172,10 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
      * @param tags - The global tag list from custom vision service
      */
     private async uploadAsset(assetMetadata: IAssetMetadata, tags: ITagList): Promise<void> {
-        const config: AxiosRequestConfig = {
-            responseType: "blob",
-        };
-        // Download the asset binary from the storage provider
-        const response = await axios.get(assetMetadata.asset.path, config);
+        const blob = await HtmlFileReader.getAssetBlob(assetMetadata.asset);
 
         // Upload new image to the custom vision service
-        const newImage = await this.customVisionService.createImage(this.options.projectId, response.data);
+        const newImage = await this.customVisionService.createImage(this.options.projectId, blob);
 
         if (!newImage) {
             return Promise.reject(`Error uploading asset binary with id "${assetMetadata.asset.id}"`);

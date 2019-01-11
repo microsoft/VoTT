@@ -170,7 +170,7 @@ export interface IRegion {
  */
 export interface ITagMetadata {
     name: string;
-    properties: object;
+    properties?: object;
 }
 
 /**
