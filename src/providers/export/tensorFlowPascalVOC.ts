@@ -276,37 +276,66 @@ item {
         const imageSetsMainFolderName = `${exportFolderName}/ImageSets/Main`;
         await this.storageProvider.createContainer(imageSetsMainFolderName);
 
-        const tagsDict = [];
+        const tagsDict = new Map<string, string[]>();
         if (tags) {
             tags.forEach((tag) => {
-                tagsDict[tag.name] = "";
+                tagsDict.set(tag.name, []);
             });
 
             allAssets.forEach((asset) => {
                 if (asset.regions.length > 0) {
                     asset.regions.forEach((region) => {
                         tags.forEach((tag) => {
+                            const array = tagsDict.get(tag.name);
                             if (region.tags.filter((regionTag) => regionTag.name === tag.name).length > 0) {
-                                tagsDict[tag.name] += `${asset.asset.name} 1\n`;
+                                array.push(`${asset.asset.name} 1`);
                             } else {
-                                tagsDict[tag.name] += `${asset.asset.name} -1\n`;
+                                array.push(`${asset.asset.name} -1`);
                             }
                         });
                     });
                 } else if (exportUnassignedTags) {
                     tags.forEach((tag) => {
-                        tagsDict[tag.name] += `${asset.asset.name} -1\n`;
+                        const array = tagsDict.get(tag.name);
+                        array.push(`${asset.asset.name} -1`);
                     });
                 }
             });
 
-            // TODO: Split in Test and Train sets
-
             // Save ImageSets
             tags.forEach(async (tag) => {
-                const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
-                await this.storageProvider.writeText(imageSetFileName, tagsDict[tag.name]);
+                if (testSplit > 0 && testSplit <= 1) {
+                    // Shuffle tagsDict sets
+                    // const shuffledTagDict = tagsDict.map((array) => this.shuffle(array));
+
+                    const array = tagsDict.get(tag.name);
+
+                    // Split in Test and Train sets
+                    const totalAssets = array.length;
+                    const testCount = Math.ceil(totalAssets * testSplit);
+
+                    const testArray = array.slice(0, testCount);
+                    const trainArray = array.slice(testCount, totalAssets);
+
+                    const testImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_val.txt`;
+                    await this.storageProvider.writeText(testImageSetFileName, testArray.join("\n"));
+
+                    const trainImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_train.txt`;
+                    await this.storageProvider.writeText(trainImageSetFileName, trainArray.join("\n"));
+
+                } else {
+                    const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
+                    await this.storageProvider.writeText(imageSetFileName, tagsDict.get(tag.name).join("\n"));
+                }
             });
         }
+    }
+
+    private shuffle(a: any[]) {
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
     }
 }
