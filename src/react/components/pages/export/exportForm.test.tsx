@@ -21,6 +21,9 @@ describe("Export Form Component", () => {
         Object.defineProperty(ExportProviderFactory, "providers", {
             get: jest.fn(() => exportProviderRegistrations),
         });
+        Object.defineProperty(ExportProviderFactory, "defaultProvider", {
+            get: jest.fn(() => exportProviderRegistrations[0]),
+        });
     });
 
     const onSubmitHandler = jest.fn();
@@ -28,12 +31,7 @@ describe("Export Form Component", () => {
     it("State is initialized without export settings", () => {
         const defaultExportType = "vottJson";
         const props: IExportFormProps = {
-            settings: {
-                providerType: "vottJson",
-                providerOptions: {
-                    assetState: ExportAssetState.Tagged,
-                },
-            },
+            settings: null,
             onSubmit: onSubmitHandler,
         };
 
@@ -95,7 +93,7 @@ describe("Export Form Component", () => {
         };
 
         const props: IExportFormProps = {
-            settings: defaultExportSettings,
+            settings: null,
             onSubmit: onSubmitHandler,
         };
 
