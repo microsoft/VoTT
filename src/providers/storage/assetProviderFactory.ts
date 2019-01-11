@@ -38,7 +38,7 @@ export class AssetProviderFactory {
             };
         }
 
-        if (options.platformSupport == null) {
+        if (!options.platformSupport) {
             options.platformSupport = HostProcessType.All;
         }
 

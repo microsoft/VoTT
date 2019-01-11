@@ -48,7 +48,7 @@ export class StorageProviderFactory {
             };
         }
 
-        if (options.platformSupport == null) {
+        if (!options.platformSupport) {
             options.platformSupport = HostProcessType.All;
         }
 

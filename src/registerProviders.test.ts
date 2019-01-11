@@ -12,7 +12,7 @@ describe("Register Providers", () => {
         it("Doesn't Register localFileSystemProxy", () => {
             process.env.TEST = "false";
 
-            const mock = jest.mock("os", () => {
+            jest.mock("os", () => {
                 return {
                     release: () => "browser",
                 };
@@ -31,7 +31,7 @@ describe("Register Providers", () => {
 
     describe("Electron Registration", () => {
         it("Does Register localFileSystemProxy", () => {
-            const mock = jest.mock("os", () => {
+            jest.mock("os", () => {
                 return {
                     release: () => "electron",
                 };
