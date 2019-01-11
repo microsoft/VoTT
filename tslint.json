@@ -10,7 +10,8 @@
         "no-shadowed-variable": false,
         "ordered-imports": false,
         "no-string-literal": false,
-        "no-bitwise": false
+        "no-bitwise": false,
+        "function-constructor": false
     },
     "rulesDirectory": []
 }
