@@ -23,7 +23,7 @@ import os from "os";
 const osRelease = os.release().toLowerCase();
 
 function getHostProcessType(): HostProcessType {
-    if (osRelease.indexOf("electron") > -1 || process.env["TEST"]) {
+    if (osRelease.indexOf("electron") > -1 || process.env.TEST === "true") {
         return HostProcessType.Electron;
     } else {
         return HostProcessType.Browser;
