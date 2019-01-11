@@ -48,3 +48,7 @@ describe("Register Providers", () => {
         });
     });
 });
+
+// Fixes Typescript Error:
+// "Cannot compile namespaces when the '--isolatedModules' flag is provided."
+export default undefined;
