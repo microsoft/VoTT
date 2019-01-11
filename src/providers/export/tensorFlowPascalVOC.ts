@@ -306,7 +306,9 @@ item {
             tags.forEach(async (tag) => {
                 if (testSplit > 0 && testSplit <= 1) {
                     // Shuffle tagsDict sets
-                    // const shuffledTagDict = tagsDict.map((array) => this.shuffle(array));
+                    tagsDict.forEach((value, key) => {
+                        value = this.shuffle(value);
+                    });
 
                     const array = tagsDict.get(tag.name);
 
