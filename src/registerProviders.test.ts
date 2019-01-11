@@ -1,54 +1,29 @@
+import registerProviders from "./registerProviders";
+import { StorageProviderFactory } from "./providers/storage/storageProviderFactory";
+import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
+import hostProcess from "./common/hostProcess";
+
 describe("Register Providers", () => {
 
-    beforeEach(() => {
-        jest.resetModules();
-    });
-
     describe("Browser Registration", () => {
-        afterEach(() => {
-            process.env.TEST = "true";
-        });
-
         it("Doesn't Register localFileSystemProxy", () => {
-            process.env.TEST = "false";
+            hostProcess.type = 2;
 
-            jest.mock("os", () => {
-                return {
-                    release: () => "browser",
-                };
-            });
-
-            const registerProviders = require("./registerProviders").default;
             registerProviders();
 
-            const storageProviderFactory = require("./providers/storage/storageProviderFactory").StorageProviderFactory;
-            const assetProviderFactory = require("./providers/storage/assetProviderFactory").AssetProviderFactory;
-
-            expect(storageProviderFactory.providers["localFileSystemProxy"]).toBeUndefined();
-            expect(assetProviderFactory.providers["localFileSystemProxy"]).toBeUndefined();
+            expect(StorageProviderFactory.providers["localFileSystemProxy"]).toBeUndefined();
+            expect(AssetProviderFactory.providers["localFileSystemProxy"]).toBeUndefined();
         });
     });
 
     describe("Electron Registration", () => {
         it("Does Register localFileSystemProxy", () => {
-            jest.mock("os", () => {
-                return {
-                    release: () => "electron",
-                };
-            });
+            hostProcess.type = 1;
 
-            const registerProviders = require("./registerProviders").default;
             registerProviders();
 
-            const storageProviderFactory = require("./providers/storage/storageProviderFactory").StorageProviderFactory;
-            const assetProviderFactory = require("./providers/storage/assetProviderFactory").AssetProviderFactory;
-
-            expect(storageProviderFactory.providers["localFileSystemProxy"]).toBeTruthy();
-            expect(assetProviderFactory.providers["localFileSystemProxy"]).toBeTruthy();
+            expect(StorageProviderFactory.providers["localFileSystemProxy"]).toBeTruthy();
+            expect(AssetProviderFactory.providers["localFileSystemProxy"]).toBeTruthy();
         });
     });
 });
-
-// Fixes Typescript Error:
-// "Cannot compile namespaces when the '--isolatedModules' flag is provided."
-export default undefined;
