@@ -125,14 +125,15 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
         let predicate: (asset: IAsset) => boolean = null;
 
         switch (this.options.assetState) {
-            case ExportAssetState.All:
-                predicate = (asset) => true;
-                break;
             case ExportAssetState.Visited:
                 predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
                 break;
             case ExportAssetState.Tagged:
                 predicate = (asset) => asset.state === AssetState.Tagged;
+                break;
+            case ExportAssetState.All:
+            default:
+                predicate = () => true;
                 break;
         }
 

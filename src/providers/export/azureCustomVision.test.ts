@@ -15,7 +15,6 @@ import {
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import HtmlFileReader from "../../common/htmlFileReader";
-import { existsSync } from "fs";
 
 describe("Azure Custom Vision Export Provider", () => {
     let testProject: IProject = null;
@@ -178,24 +177,100 @@ describe("Azure Custom Vision Export Provider", () => {
 
         it("Uploads binaries, regions & tags for all assets", async () => {
             testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            const allAssets = _.values(testProject.assets);
             const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
             const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
-            const customVisionMock = AzureCustomVisionService as any;
 
             const results = await provider.export();
 
             expect(results).not.toBeNull();
-            expect(customVisionMock.prototype.createTag.mock.calls.length).toEqual(testProject.tags.length);
-            expect(customVisionMock.prototype.createImage.mock.calls.length).toEqual(testProject.assets.length);
-            expect(customVisionMock.prototype.createRegions.mock.calls.length).toEqual(taggedAssets.length);
+            expect(AzureCustomVisionService.prototype.getProjectTags).toBeCalledTimes(1);
+            expect(AzureCustomVisionService.prototype.createTag).toBeCalledTimes(testProject.tags.length);
+            expect(AzureCustomVisionService.prototype.createImage).toBeCalledTimes(allAssets.length);
+            expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
         });
 
-        it("Uploads binaries, regions & tags for visited assets", () => {
-            fail();
+        it("Uploads binaries, regions & tags for visited assets", async () => {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.Visited;
+            const visitedAssets = _
+                .values(testProject.assets)
+                .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+            const taggedAssets = _
+                .values(testProject.assets)
+                .filter((asset) => asset.state === AssetState.Tagged);
+            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+
+            const results = await provider.export();
+
+            expect(results).not.toBeNull();
+            expect(AzureCustomVisionService.prototype.getProjectTags).toBeCalledTimes(1);
+            expect(AzureCustomVisionService.prototype.createTag).toBeCalledTimes(testProject.tags.length);
+            expect(AzureCustomVisionService.prototype.createImage).toBeCalledTimes(visitedAssets.length);
+            expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
         });
 
-        it("Uploads binaries, regions & tags for tagged assets", () => {
-            fail();
+        it("Uploads binaries, regions & tags for tagged assets", async () => {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.Tagged;
+            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
+            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+
+            const results = await provider.export();
+
+            expect(results).not.toBeNull();
+            expect(AzureCustomVisionService.prototype.getProjectTags).toBeCalledTimes(1);
+            expect(AzureCustomVisionService.prototype.createTag).toBeCalledTimes(testProject.tags.length);
+            expect(AzureCustomVisionService.prototype.createImage).toBeCalledTimes(taggedAssets.length);
+            expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
+        });
+
+        it("Only creates missing tags if only some tags are missing", async () => {
+            const existingTags = [
+                MockFactory.createAzureCustomVisionTag(testProject.tags[0].name),
+                MockFactory.createAzureCustomVisionTag(testProject.tags[1].name),
+            ];
+
+            const getProjectsTagsMock = AzureCustomVisionService.prototype.getProjectTags as jest.Mock;
+            getProjectsTagsMock.mockImplementationOnce(() => {
+                return Promise.resolve(existingTags);
+            });
+
+            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+
+            await provider.export();
+            expect(AzureCustomVisionService.prototype.createTag)
+                .toBeCalledTimes(testProject.tags.length - existingTags.length);
+        });
+
+        it("Returns export results", async () => {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            const allAssets = _.values(testProject.assets);
+            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+
+            const results = await provider.export();
+            expect(results.count).toEqual(allAssets.length);
+            expect(results.completed.length).toEqual(allAssets.length);
+            expect(results.errors.length).toEqual(0);
+        });
+
+        it("Returns partial success results if any error occurs", async () => {
+            const getAssetBlobMock = HtmlFileReader.getAssetBlob as jest.Mock;
+            HtmlFileReader.getAssetBlob = getAssetBlobMock
+                .mockImplementationOnce((asset: IAsset) => {
+                    if (asset.path === `C:\\Desktop\\asset1.jpg`) {
+                        return Promise.reject("Error downloading binary");
+                    } else {
+                        Promise.resolve(new Blob(["Some binary data"]));
+                    }
+                });
+
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            const allAssets = _.values(testProject.assets);
+            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+
+            const results = await provider.export();
+            expect(results.count).toEqual(allAssets.length);
+            expect(results.completed.length).toEqual(allAssets.length - 1);
+            expect(results.errors.length).toEqual(1);
         });
     });
 });
