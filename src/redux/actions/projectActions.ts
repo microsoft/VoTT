@@ -5,13 +5,14 @@ import { ActionTypes } from "./actionTypes";
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
+import { IExportResults } from "../../providers/export/exportProvider";
 
 export default interface IProjectActions {
     loadProject(project: IProject): Promise<IProject>;
     saveProject(project: IProject): Promise<IProject>;
     deleteProject(project: IProject): Promise<void>;
     closeProject();
-    exportProject(project: IProject): Promise<void>;
+    exportProject(project: IProject): Promise<void> | Promise<IExportResults>;
     loadAssets(project: IProject): Promise<IAsset[]>;
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
@@ -79,7 +80,7 @@ export function saveAssetMetadata(
     };
 }
 
-export function exportProject(project: IProject): (dispatch: Dispatch) => Promise<void> {
+export function exportProject(project: IProject): (dispatch: Dispatch) => Promise<void> | Promise<IExportResults> {
     return async (dispatch: Dispatch) => {
         if (project.exportFormat && project.exportFormat.providerType) {
             const exportProvider = ExportProviderFactory.create(
@@ -87,9 +88,10 @@ export function exportProject(project: IProject): (dispatch: Dispatch) => Promis
                 project,
                 project.exportFormat.providerOptions);
 
-            await exportProvider.export();
-
+            const results = await exportProvider.export();
             dispatch(exportProjectAction(project));
+
+            return results as IExportResults;
         }
     };
 }

@@ -1,5 +1,5 @@
 import Guard from "../../common/guard";
-import { IProject, IExportFormat } from "../../models/applicationState";
+import { IProject, IExportFormat, IAssetMetadata } from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
 
@@ -16,6 +16,18 @@ export enum ExportAssetState {
     Tagged = "tagged",
 }
 
+export interface IExportAssetResult {
+    asset: IAssetMetadata;
+    success: boolean;
+    error?: string;
+}
+
+export interface IExportResults {
+    completed: IExportAssetResult[];
+    errors: IExportAssetResult[];
+    count: number;
+}
+
 /**
  * @name - IExportProvider
  * @description - Defines the required interface for all VoTT export providers
@@ -29,7 +41,7 @@ export interface IExportProvider {
     /**
      * Exports the configured project for specified export configuration
      */
-    export(): Promise<void>;
+    export(): Promise<void> | Promise<IExportResults>;
     save?(exportFormat: IExportFormat): Promise<any>;
 }
 
@@ -45,7 +57,7 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
         Guard.null(project);
     }
 
-    public abstract export(): Promise<void>;
+    public abstract export(): Promise<void> | Promise<IExportResults>;
 
     /**
      * Gets the storage provider for the current project
