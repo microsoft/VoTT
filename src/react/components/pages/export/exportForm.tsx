@@ -38,8 +38,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
         this.state = {
             classNames: ["needs-validation"],
-            providerName: this.props.settings ?
-                this.props.settings.providerType : null,
+            providerName: this.props.settings ? this.props.settings.providerType : null,
             formSchema: { ...formSchema },
             uiSchema: { ...uiSchema },
             formData: this.props.settings,
