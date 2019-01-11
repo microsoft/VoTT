@@ -146,11 +146,19 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
         return match;
     }
 
+    /**
+     * Get the selected tag name from event and remove index if present
+     * @param event onClick or keyPress event
+     */
     protected getTagText(event): string {
+        let text;
         if (event.target.lastChild) {
-            return event.target.lastChild.data;
+            text = event.target.lastChild.data;
+        } else {
+            text = (event.target.innerText || event.currentTarget.innerText);
         }
-        return (event.target.innerText || event.currentTarget.innerText).trim();
+        // Removes tag index if still in text
+        return text.replace(/\[\d+\]  /g, "").trim();
     }
 
     /**
