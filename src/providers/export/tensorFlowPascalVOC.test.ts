@@ -131,7 +131,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeTextFileCalls.length).toEqual(8);
+            expect(writeTextFileCalls.length).toEqual(11);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
@@ -139,9 +139,12 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
             expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
             expect(writeTextFileCalls[4][0].endsWith("/Annotations/Asset 4.xml")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 0.txt")).toEqual(true);
-            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 1.txt")).toEqual(true);
-            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 2.txt")).toEqual(true);
+            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
+            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 1_val.txt")).toEqual(true);
+            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 2_val.txt")).toEqual(true);
+            expect(writeTextFileCalls[8][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
+            expect(writeTextFileCalls[9][0].endsWith("/ImageSets/Main/Tag 1_train.txt")).toEqual(true);
+            expect(writeTextFileCalls[10][0].endsWith("/ImageSets/Main/Tag 2_train.txt")).toEqual(true);
 
         });
 
@@ -172,14 +175,15 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeTextFileCalls.length).toEqual(5);
+            expect(writeTextFileCalls.length).toEqual(6);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
             expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
             expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
             expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 0.txt")).toEqual(true);
+            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
+            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
         });
 
         it("Exports only tagged assets", async () => {
@@ -188,7 +192,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             };
 
             const testProject = {...baseTestProject};
-            testProject.tags = MockFactory.createTestTags(5);
+            testProject.tags = MockFactory.createTestTags(3);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
             await exportProvider.export();
@@ -208,17 +212,18 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeTextFileCalls.length).toEqual(8);
+            expect(writeTextFileCalls.length).toEqual(9);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
             expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
             expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
-            expect(writeTextFileCalls[3][0].endsWith("/ImageSets/Main/Tag 0.txt")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 1.txt")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 2.txt")).toEqual(true);
-            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 3.txt")).toEqual(true);
-            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 4.txt")).toEqual(true);
+            expect(writeTextFileCalls[3][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
+            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 1_val.txt")).toEqual(true);
+            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 2_val.txt")).toEqual(true);
+            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
+            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 1_train.txt")).toEqual(true);
+            expect(writeTextFileCalls[8][0].endsWith("/ImageSets/Main/Tag 2_train.txt")).toEqual(true);
         });
     });
 });
