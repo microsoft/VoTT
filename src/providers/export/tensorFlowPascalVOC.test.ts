@@ -38,12 +38,9 @@ describe("TFPascalVOC Json Export Provider", () => {
 
     const tagLengthInPbtxt = 37;
 
-    // jest.setTimeout(20000);
     axios.get = jest.fn(() => {
         return Promise.resolve({
             data: [1, 2, 3],
-            // Blank Image: data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=
-            // data: _base64ToArrayBuffer("R0lGODlhAQABAAAAACwAAAAAAQABAAA="),
         });
     });
 
