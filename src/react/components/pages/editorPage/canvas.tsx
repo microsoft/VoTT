@@ -8,7 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 
-interface ICanvasProps {
+export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
     onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
@@ -251,7 +251,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {RegionData} commit the RegionData of created region
      * @returns {void}
      */
-    private onSelectionEnd = (commit: RegionData) => {
+    public onSelectionEnd = (commit: RegionData) => {
         const id = shortid.generate();
 
         this.addRegion(id, commit, null);
@@ -285,7 +285,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {RegionData} regionData the RegionData of moved region
      * @returns {void}
      */
-    private onRegionMove = (id: string, regionData: RegionData) => {
+    public onRegionMove = (id: string, regionData: RegionData) => {
         const ct = CanvasTools;
         const currentAssetMetadata = this.props.selectedAsset;
         const movedRegionIndex = currentAssetMetadata.regions.findIndex((region) => region.id === id);
@@ -306,7 +306,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {string} id the id of the deleted region
      * @returns {void}
      */
-    private onRegionDelete = (id: string) => {
+    public onRegionDelete = (id: string) => {
         this.deleteRegionById(id);
         const currentAssetMetadata = this.props.selectedAsset;
         const deletedRegionIndex = this.props.selectedAsset.regions.findIndex((region) => region.id === id);
@@ -325,7 +325,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {boolean} multiselection boolean whether multiselect is active
      * @returns {void}
      */
-    private onRegionSelected = (id: string, multiselect: boolean) => {
+    public onRegionSelected = (id: string, multiselect: boolean) => {
         const currentAssetMetadata = this.props.selectedAsset;
         if (multiselect) {
             currentAssetMetadata.selectedRegions.push(

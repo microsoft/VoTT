@@ -5,7 +5,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
 import { EditorMode, IApplicationState, IAssetMetadata, IProject } from "../../../../models/applicationState";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProvider";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import registerToolbar from "../../../../registerToolbar";
 import { AssetService } from "../../../../services/assetService";
