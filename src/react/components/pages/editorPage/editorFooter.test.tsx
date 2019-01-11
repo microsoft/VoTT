@@ -21,10 +21,12 @@ describe("Footer Component", () => {
 
     beforeEach(() => {
         onChangeHandler = jest.fn();
+        const onClickHandler = jest.fn();
         wrapper = mount(
             <EditorFooter
                 tags={originalTags}
                 displayHotKeys={true}
+                onTagClicked={onClickHandler}
                 onTagsChanged={onChangeHandler} />,
         );
     });
@@ -35,10 +37,12 @@ describe("Footer Component", () => {
     });
 
     it("tags are empty", () => {
+        const onClickHandler = jest.fn();
         const emptyWrapper = mount(
             <EditorFooter
                 tags={[]}
                 displayHotKeys={true}
+                onTagClicked={onClickHandler}
                 onTagsChanged={onChangeHandler} />,
         );
         const stateTags = emptyWrapper.state()["tags"];
