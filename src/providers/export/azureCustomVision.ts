@@ -3,6 +3,9 @@ import { ExportProvider, ExportAssetState } from "./exportProvider";
 import Guard from "../../common/guard";
 import { IProject, IExportFormat } from "../../models/applicationState";
 
+/**
+ * Options for Azure Custom Vision Service
+ */
 export interface IAzureCustomVisionOptions {
     assetState: ExportAssetState;
     newOrExisting: NewOrExisting;
