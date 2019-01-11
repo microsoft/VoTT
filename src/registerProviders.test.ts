@@ -1,4 +1,4 @@
-describe.only("Register Providers", () => {
+describe("Register Providers", () => {
 
     beforeEach(() => {
         jest.resetModules();
