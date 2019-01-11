@@ -146,7 +146,7 @@ export class AzureCustomVisionService {
      * @param projectId The Azure Custom vision project id
      * @param regions The regions to create
      */
-    public async createRegions(projectId: string, regions: IAzureCustomVisionRegion[]) {
+    public async createRegions(projectId: string, regions: IAzureCustomVisionRegion[]): Promise<void> {
         Guard.emtpy(projectId);
         Guard.null(regions);
 

@@ -1,26 +1,23 @@
-import axios from "axios";
+import shortid from "shortid";
 import { AzureCustomVisionProvider, IAzureCustomVisionExportOptions, NewOrExisting } from "./azureCustomVision";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
 import { IProject } from "../../models/applicationState";
 import { ExportAssetState } from "./exportProvider";
+jest.mock("./azureCustomVision/azureCustomVisionService");
+import { AzureCustomVisionService, IAzureCustomVisionProject } from "./azureCustomVision/azureCustomVisionService";
 
 describe("Azure Custom Vision Export Provider", () => {
     let testProject: IProject = null;
 
     beforeEach(() => {
+        jest.resetAllMocks();
         testProject = MockFactory.createTestProject("TestProject");
         testProject.exportFormat = {
             providerType: "azureCustomVision",
             providerOptions: {},
         };
-
-        axios.post = jest.fn(() => Promise.resolve({
-            data: {
-                id: expect.any(String),
-            },
-        }));
     });
 
     it("Is Defined", () => {
@@ -35,6 +32,14 @@ describe("Azure Custom Vision Export Provider", () => {
     });
 
     it("Calling save with New project creates Azure Custom Vision project", async () => {
+        const customVisionMock = AzureCustomVisionService as jest.Mocked<typeof AzureCustomVisionService>;
+        customVisionMock.prototype.create = jest.fn((project) => {
+            return Promise.resolve({
+                id: shortid.generate(),
+                ...project,
+            });
+        });
+
         const customVisionOptions: IAzureCustomVisionExportOptions = {
             apiKey: expect.any(String),
             assetState: ExportAssetState.All,
@@ -46,15 +51,15 @@ describe("Azure Custom Vision Export Provider", () => {
         const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
         const newOptions = await provider.save(testProject.exportFormat);
 
-        expect(axios.post).toBeCalledWith(
-            // tslint:disable-next-line:max-line-length
-            expect.stringContaining("https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training/projects?"),
-            null,
-            expect.objectContaining({
-                headers: {
-                    "Training-key": customVisionOptions.apiKey,
-                },
-            }));
+        const customVisionProject: IAzureCustomVisionProject = {
+            name: customVisionOptions.name,
+            description: customVisionOptions.description,
+            classificationType: customVisionOptions.classificationType,
+            domainId: customVisionOptions.domainId,
+            projectType: customVisionOptions.projectType,
+        };
+
+        expect(AzureCustomVisionService.prototype.create).toBeCalledWith(customVisionProject);
 
         expect(newOptions).toEqual(expect.objectContaining({
             assetState: customVisionOptions.assetState,
@@ -65,8 +70,8 @@ describe("Azure Custom Vision Export Provider", () => {
     });
 
     it("Save returns rejected promise during service call failure", async () => {
-        const mockPost = axios.post as jest.Mock;
-        mockPost.mockImplementationOnce(() => Promise.reject("Bad Request"));
+        const customVisionMock = AzureCustomVisionService as jest.Mocked<typeof AzureCustomVisionService>;
+        customVisionMock.prototype.create = jest.fn((project) => Promise.reject("Error creating project"));
 
         const customVisionOptions: IAzureCustomVisionExportOptions = {
             apiKey: expect.any(String),
@@ -93,6 +98,6 @@ describe("Azure Custom Vision Export Provider", () => {
         const newOptions = await provider.save(testProject.exportFormat);
 
         expect(newOptions).toEqual(customVisionOptions);
-        expect(axios.post).not.toBeCalled();
+        expect(AzureCustomVisionService.prototype.create).not.toBeCalled();
     });
 });

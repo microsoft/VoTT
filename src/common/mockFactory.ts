@@ -14,7 +14,9 @@ import IProjectActions, * as projectActions from "../redux/actions/projectAction
 import { IProjectService } from "../services/projectService";
 import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
-import { IAzureCustomVisionTag, IAzureCustomVisionRegion } from "../providers/export/azureCustomVision/azureCustomVisionService";
+import {
+    IAzureCustomVisionTag, IAzureCustomVisionRegion,
+} from "../providers/export/azureCustomVision/azureCustomVisionService";
 
 export default class MockFactory {
 
