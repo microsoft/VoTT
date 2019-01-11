@@ -1,3 +1,5 @@
+import Guard from "./guard";
+
 /**
  * Generates a random integer in provided range
  * @param min Lower bound of random number generation - INCLUSIVE
@@ -33,6 +35,8 @@ export const KeyCodes = {
  * @returns A value representing a URL compatible query string
  */
 export function createQueryString(object: any): string {
+    Guard.null(object);
+
     const parts: any[] = [];
 
     for (const key of Object.getOwnPropertyNames(object)) {
