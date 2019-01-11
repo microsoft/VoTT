@@ -68,6 +68,10 @@ export class AzureCustomVisionService {
         const url = `${this.options.baseUrl}/projects?${createQueryString(urlParams)}`;
         const response = await axios.post(url, null, this.createRequestConfig());
 
+        if (response.status !== 200) {
+            throw new Error("Error creating new project");
+        }
+
         return response.data as IAzureCustomVisionProject;
     }
 
