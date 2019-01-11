@@ -1,5 +1,8 @@
 import { IAppStrings } from "../strings";
 
+/**
+ * App Strings for English language
+ */
 export const english: IAppStrings = {
     appName: "Visual Object Tagging Tool",
     common: {
