@@ -1,6 +1,7 @@
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProviderFactory";
 import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
+import HostProcess, { HostProcessType } from "../../common/hostProcess";
 
 export interface IStorageProvider extends IAssetProvider {
 
@@ -45,6 +46,14 @@ export class StorageProviderFactory {
                 displayName: nameOrOptions,
                 factory,
             };
+        }
+
+        if (!options.platformSupport) {
+            options.platformSupport = HostProcessType.All;
+        }
+
+        if ((options.platformSupport & HostProcess.type) === 0) {
+            return;
         }
 
         StorageProviderFactory.providerRegistry[options.name] = options;
