@@ -8,6 +8,7 @@ import HtmlFileReader from "../../common/htmlFileReader";
 import axios from "axios";
 import { all } from "deepmerge";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOCTemplates";
+import { strings, interpolate } from "../../common/strings";
 
 /**
  * @name - ITFPascalVOCJsonExportOptions
@@ -123,7 +124,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                 this.imagesInfo.set(element.asset.name, imageInfo);
 
                 if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
-                    await this.updateImageSizeInfo(response.data, imageFileName, element.asset.name)
+                    await this.updateImageSizeInfo(response.data, imageFileName, element.asset.name);
                 }
 
                 resolve();
@@ -190,10 +191,16 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
             const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
 
             let id = 1;
-            const items = project.tags.map((element) =>
-                itemTemplate.replace("%ID%", (id++).toString()).replace("%TAG%", element.name));
+            const items = project.tags.map((element) => {
+                const params = {
+                    id: (id++).toString(),
+                    tag: element.name,
+                };
 
-            await this.storageProvider.writeText(pbtxtFileName, items.join());
+                return interpolate(itemTemplate, params);
+            });
+
+            await this.storageProvider.writeText(pbtxtFileName, items.join(""));
         }
     }
 
@@ -213,21 +220,27 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                         || imageFilePath}.xml`;
 
                     const objectsXML = imageInfo.objects.map((o) => {
-                        return objectTemplate.replace("%OBJECT_TAG_NAME%", o.name)
-                                             .replace("%OBJECT_TAG_xmin%", o.xmin.toString())
-                                             .replace("%OBJECT_TAG_ymin%", o.ymin.toString())
-                                             .replace("%OBJECT_TAG_xmax%", o.xmax.toString())
-                                             .replace("%OBJECT_TAG_ymax%", o.ymax.toString());
+                        const params = {
+                            name: o.name,
+                            xmin: o.xmin.toString(),
+                            ymin: o.ymin.toString(),
+                            xmax: o.xmax.toString(),
+                            ymax: o.ymax.toString(),
+                        };
+
+                        return interpolate(objectTemplate, params);
                     });
 
-                    const annotationXML = annotationTemplate.replace("%FILE_NAME%", imageName)
-                                                            .replace("%FILE_PATH%", imageFilePath)
-                                                            .replace("%WIDTH%", imageInfo.width.toString())
-                                                            .replace("%HEIGHT%", imageInfo.height.toString())
-                                                            .replace("%OBJECTS%", objectsXML.join("\n"));
+                    const params = {
+                        fileName: imageName,
+                        filePath: imageFilePath,
+                        width: imageInfo.width.toString(),
+                        height: imageInfo.height.toString(),
+                        objects: objectsXML.join(""),
+                    };
 
                     // Save Annotation File
-                    await this.storageProvider.writeText(assetFilePath, annotationXML);
+                    await this.storageProvider.writeText(assetFilePath, interpolate(annotationTemplate, params));
 
                     resolve();
                 }),

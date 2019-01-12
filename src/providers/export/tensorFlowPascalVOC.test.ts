@@ -36,7 +36,7 @@ describe("TFPascalVOC Json Export Provider", () => {
     baseTestProject.sourceConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
     baseTestProject.targetConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
 
-    const tagLengthInPbtxt = 37;
+    const tagLengthInPbtxt = 31;
 
     axios.get = jest.fn(() => {
         return Promise.resolve({
@@ -131,7 +131,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeTextFileCalls.length).toEqual(11);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
-                .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
+                .toEqual((tagLengthInPbtxt * testProject.tags.length));
             expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
             expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
             expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
@@ -142,7 +142,6 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeTextFileCalls[8][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
             expect(writeTextFileCalls[9][0].endsWith("/ImageSets/Main/Tag 1_train.txt")).toEqual(true);
             expect(writeTextFileCalls[10][0].endsWith("/ImageSets/Main/Tag 2_train.txt")).toEqual(true);
-
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -175,7 +174,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeTextFileCalls.length).toEqual(6);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
-                .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
+                .toEqual((tagLengthInPbtxt * testProject.tags.length));
             expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
             expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
             expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
@@ -212,7 +211,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeTextFileCalls.length).toEqual(9);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
-                .toEqual((tagLengthInPbtxt * testProject.tags.length) + testProject.tags.length - 1);
+                .toEqual((tagLengthInPbtxt * testProject.tags.length));
             expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
             expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
             expect(writeTextFileCalls[3][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
