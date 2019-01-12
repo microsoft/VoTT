@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import axios, { AxiosResponse } from "axios";
 import {
-    AzureCustomVisionService, IAzureCustomVisionServiceOptions, IAzureCustomVisionProject,
+    AzureCustomVisionService, IAzureCustomVisionServiceOptions, IAzureCustomVisionProject, IAzureCustomVisionImage,
 } from "./azureCustomVisionService";
 import MockFactory from "../../../common/mockFactory";
 
@@ -171,6 +171,62 @@ describe("Azure Custom Vision Service", () => {
             expect(axios.post).toBeCalledWith(
                 expect.stringContaining(`${customVisionOptions.baseUrl}/projects/${projectId}/tags`),
                 null,
+                expect.anything(),
+            );
+        });
+    });
+
+    describe("Create Images", () => {
+        const projectId = "Create-Images-Project-Id";
+        const blob = new Blob(["Some binary data"]);
+
+        it("Creates new images with valid project id", async () => {
+            const imageId = shortid.generate();
+            const expectedImage: IAzureCustomVisionImage = {
+                id: imageId,
+                width: 800,
+                height: 600,
+                imageUri: `https://myserver.com/${imageId}`,
+                tags: [],
+                regions: [],
+            };
+
+            postMock.mockImplementationOnce((url, data, config) => {
+                return Promise.resolve<AxiosResponse>({
+                    headers: {},
+                    config,
+                    status: 200,
+                    statusText: "OK",
+                    data: {
+                        images: [{ image: expectedImage }],
+                    },
+                });
+            });
+
+            const result = await customVisionService.createImage(projectId, blob);
+            expect(result).toEqual(expectedImage);
+            expect(axios.post).toBeCalledWith(
+                expect.stringContaining(`${customVisionOptions.baseUrl}/projects/${projectId}/images`),
+                blob,
+                expect.anything(),
+            );
+        });
+
+        it("Rejects with invalid projectd id", async () => {
+            postMock.mockImplementationOnce((url, data, config) => {
+                return Promise.resolve<AxiosResponse>({
+                    headers: {},
+                    config,
+                    status: 404,
+                    statusText: "Not Found",
+                    data: {},
+                });
+            });
+
+            await expect(customVisionService.createImage(projectId, blob)).rejects.not.toBeNull();
+            expect(axios.post).toBeCalledWith(
+                expect.stringContaining(`${customVisionOptions.baseUrl}/projects/${projectId}/images`),
+                blob,
                 expect.anything(),
             );
         });
