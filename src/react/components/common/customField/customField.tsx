@@ -6,7 +6,6 @@ export default function CustomField(Widget: any, mapProps?: (props: FieldProps) 
     Guard.null(Widget);
 
     return function render(props: FieldProps) {
-        const { idSchema, schema, required } = props;
         const widgetProps = mapProps ? mapProps(props) : props;
         return (<Widget {...widgetProps} />);
     };

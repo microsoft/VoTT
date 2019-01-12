@@ -3,13 +3,28 @@ import ExportForm, { IExportFormProps, IExportFormState } from "./exportForm";
 import { mount } from "enzyme";
 import { IExportFormat } from "../../../../models/applicationState";
 import { ExportAssetState } from "../../../../providers/export/exportProvider";
+import MockFactory from "../../../../common/mockFactory";
+
+jest.mock("../../../../providers/export/exportProviderFactory");
+import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
 
 describe("Export Form Component", () => {
+    const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
+
     function createComponent(props: IExportFormProps) {
         return mount(
             <ExportForm {...props} />,
         );
     }
+
+    beforeAll(() => {
+        Object.defineProperty(ExportProviderFactory, "providers", {
+            get: jest.fn(() => exportProviderRegistrations),
+        });
+        Object.defineProperty(ExportProviderFactory, "defaultProvider", {
+            get: jest.fn(() => exportProviderRegistrations[0]),
+        });
+    });
 
     const onSubmitHandler = jest.fn();
 
@@ -53,7 +68,12 @@ describe("Export Form Component", () => {
 
     it("Form renders correctly", () => {
         const props: IExportFormProps = {
-            settings: null,
+            settings: {
+                providerType: "vottJson",
+                providerOptions: {
+                    assetState: ExportAssetState.Tagged,
+                },
+            },
             onSubmit: onSubmitHandler,
         };
 
