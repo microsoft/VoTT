@@ -11,11 +11,11 @@ import { IAzureCloudStorageOptions } from "../../../../providers/storage/azureBl
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import initialState from "../../../../redux/store/initialState";
 import createReduxStore from "../../../../redux/store/store";
+import registerProviders from "../../../../registerProviders";
 import CondensedList from "../../common/condensedList/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
-import registerProviders from "../../../../registerProviders";
 
 describe("Connections Page", () => {
     const connectionsRoute: string = "/connections";
@@ -130,6 +130,10 @@ describe("Connections Page", () => {
                 id: expect.any(String),
             };
 
+            const assetProvider = MockFactory.createAssetProvider();
+
+            AssetProviderFactory.createFromConnection = jest.fn(() => assetProvider);
+
             const options: IAzureCloudStorageOptions = connection.providerOptions as IAzureCloudStorageOptions;
 
             wrapper
@@ -162,6 +166,7 @@ describe("Connections Page", () => {
 
             setImmediate(() => {
                 expect(saveConnectionSpy).toBeCalledWith(connection);
+                expect(assetProvider.initialize).toBeCalled();
                 done();
             });
         });

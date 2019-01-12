@@ -7,6 +7,7 @@ import { constants } from "../common/constants";
 export interface IProjectService {
     save(project: IProject): Promise<IProject>;
     delete(project: IProject): Promise<void>;
+    isDuplicate(project: IProject, projectList: IProject[]): boolean;
 }
 
 export default class ProjectService implements IProjectService {
@@ -52,5 +53,28 @@ export default class ProjectService implements IProjectService {
                 reject(err);
             }
         });
+    }
+
+    public isDuplicate(project: IProject, projectList: IProject[]): boolean {
+        const projectId = project.id;
+        const projectName = project.name;
+        const sourceConnection = project.sourceConnection.name;
+        const targetConnection = project.targetConnection.name;
+        if (projectList && projectList.length > 0) {
+            const duplicate = (projectId === undefined) &&
+                             (projectList.find((p) =>
+                                p.name === projectName) !== undefined) &&
+                             (projectList.find((p) =>
+                                p.sourceConnection.name === sourceConnection) !== undefined) &&
+                             (projectList.find((p) =>
+                                p.targetConnection.name === targetConnection) !== undefined);
+            if (duplicate) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 }
