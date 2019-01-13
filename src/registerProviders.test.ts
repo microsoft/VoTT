@@ -8,10 +8,6 @@ import getHostProcess, { HostProcessType } from "./common/hostProcess";
 const hostProcess = getHostProcess();
 
 describe("Register Providers", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
     describe("Browser Registration", () => {
         it("Doesn't Register localFileSystemProxy", () => {
             const getHostProcessMock = getHostProcess as jest.Mock;

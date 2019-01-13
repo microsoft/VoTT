@@ -1,6 +1,6 @@
 import { IAsset, IConnection } from "../../models/applicationState";
 import Guard from "../../common/guard";
-import getHostProcess, { IHostProcess, HostProcessType } from "../../common/hostProcess";
+import getHostProcess, { HostProcessType } from "../../common/hostProcess";
 
 export interface IAssetProvider {
     initialize?(): Promise<void>;
