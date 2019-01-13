@@ -3,8 +3,6 @@ import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
 import getHostProcess, { HostProcessType } from "../../common/hostProcess";
 
-const hostProcess = getHostProcess();
-
 export interface IStorageProvider extends IAssetProvider {
 
     storageType: StorageType;
@@ -54,7 +52,7 @@ export class StorageProviderFactory {
             options.platformSupport = HostProcessType.All;
         }
 
-        if ((options.platformSupport & HostProcess.type) === 0) {
+        if ((options.platformSupport & getHostProcess().type) === 0) {
             return;
         }
 

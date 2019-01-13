@@ -42,8 +42,8 @@
         "release": "npm run build && npm run webpack:prod && electron-builder",
         "pretest": "./node_modules/.bin/tslint 'src/**/*.ts*'",
         "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
-        "test": "cross-env TEST=true react-scripts test --env=jsdom --silent",
-        "test:ci": "cross-env TEST=true CI=true npm run test",
+        "test": "react-scripts test --env=jsdom --silent",
+        "test:ci": "set CI=true && npm run test",
         "test:coverage": "npm run test -- --coverage",
         "postinstall": "electron-builder install-app-deps",
         "predebug": "npm run build && npm run webpack:dev"

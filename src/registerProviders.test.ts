@@ -1,15 +1,26 @@
 import registerProviders from "./registerProviders";
 import { StorageProviderFactory } from "./providers/storage/storageProviderFactory";
 import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
-import getHostProcess from "./common/hostProcess";
+
+jest.mock("./common/hostProcess");
+import getHostProcess, { HostProcessType } from "./common/hostProcess";
 
 const hostProcess = getHostProcess();
 
 describe("Register Providers", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     describe("Browser Registration", () => {
         it("Doesn't Register localFileSystemProxy", () => {
-            hostProcess.type = 2;
+            const getHostProcessMock = getHostProcess as jest.Mock;
+            getHostProcessMock.mockImplementation(() => {
+                return {
+                    type: HostProcessType.Browser,
+                    release: "browser",
+                };
+            });
 
             registerProviders();
 
@@ -20,7 +31,13 @@ describe("Register Providers", () => {
 
     describe("Electron Registration", () => {
         it("Does Register localFileSystemProxy", () => {
-            hostProcess.type = 1;
+            const getHostProcessMock = getHostProcess as jest.Mock;
+            getHostProcessMock.mockImplementation(() => {
+                return {
+                    type: HostProcessType.Electron,
+                    release: "electron",
+                };
+            });
 
             registerProviders();
 

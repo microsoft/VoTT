@@ -24,7 +24,7 @@ export enum HostProcessType {
 function getHostProcess(): IHostProcess {
     const osRelease = os.release().toLowerCase();
     let hostProcessType: HostProcessType;
-    if (osRelease.indexOf("electron") > -1 || process.env.TEST === "true") {
+    if (osRelease.indexOf("electron") > -1 || process.env.HOST_TYPE === "electron") {
         hostProcessType = HostProcessType.Electron;
     } else {
         hostProcessType = HostProcessType.Browser;

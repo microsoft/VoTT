@@ -1,8 +1,6 @@
 import { IAsset, IConnection } from "../../models/applicationState";
 import Guard from "../../common/guard";
-import getHostProcess, { HostProcessType } from "../../common/hostProcess";
-
-const hostProcess = getHostProcess();
+import getHostProcess, { IHostProcess, HostProcessType } from "../../common/hostProcess";
 
 export interface IAssetProvider {
     initialize?(): Promise<void>;
@@ -44,7 +42,7 @@ export class AssetProviderFactory {
             options.platformSupport = HostProcessType.All;
         }
 
-        if ((options.platformSupport & HostProcess.type) === 0) {
+        if ((options.platformSupport & getHostProcess().type) === 0) {
             return;
         }
 
