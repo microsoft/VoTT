@@ -1,3 +1,5 @@
+import os from "os";
+
 /**
  * @name - Host Process
  * @description - Describes the host process
@@ -19,20 +21,19 @@ export enum HostProcessType {
     All = 3,      // bits: 11
 }
 
-import os from "os";
-const osRelease = os.release().toLowerCase();
-
-function getHostProcessType(): HostProcessType {
+function getHostProcess(): IHostProcess {
+    const osRelease = os.release().toLowerCase();
+    let hostProcessType: HostProcessType;
     if (osRelease.indexOf("electron") > -1 || process.env.TEST === "true") {
-        return HostProcessType.Electron;
+        hostProcessType = HostProcessType.Electron;
     } else {
-        return HostProcessType.Browser;
+        hostProcessType = HostProcessType.Browser;
     }
+
+    return {
+        release: osRelease,
+        type: hostProcessType,
+    };
 }
 
-const hostProcess: IHostProcess = {
-    type: getHostProcessType(),
-    release: osRelease,
-};
-
-export default hostProcess;
+export default getHostProcess;

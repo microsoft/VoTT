@@ -1,7 +1,9 @@
 import registerProviders from "./registerProviders";
 import { StorageProviderFactory } from "./providers/storage/storageProviderFactory";
 import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
-import hostProcess from "./common/hostProcess";
+import getHostProcess from "./common/hostProcess";
+
+const hostProcess = getHostProcess();
 
 describe("Register Providers", () => {
 
