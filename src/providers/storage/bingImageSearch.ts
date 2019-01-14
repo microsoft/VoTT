@@ -3,6 +3,7 @@ import { IAsset, AssetType } from "../../models/applicationState";
 import { IAssetProvider } from "./assetProviderFactory";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
+import { createQueryString } from "../../common/utils";
 
 /**
  * Options for Bing Image Search
@@ -45,7 +46,7 @@ export class BingImageSearch implements IAssetProvider {
             aspect: this.options.aspectRatio,
         };
 
-        const url = `${BingImageSearch.SEARCH_URL}?${this.createQueryString(query)}`;
+        const url = `${BingImageSearch.SEARCH_URL}?${createQueryString(query)}`;
 
         const response = await axios.get(url, {
             headers: {
@@ -59,15 +60,5 @@ export class BingImageSearch implements IAssetProvider {
         return items
             .map((filePath) => AssetService.createAssetFromFilePath(filePath))
             .filter((asset) => asset.type !== AssetType.Unknown);
-    }
-
-    private createQueryString(object: any): string {
-        const parts: any[] = [];
-
-        for (const key of Object.getOwnPropertyNames(object)) {
-            parts.push(`${key}=${encodeURIComponent(object[key])}`);
-        }
-
-        return parts.join("&");
     }
 }
