@@ -1,6 +1,6 @@
 import { mount } from "enzyme";
 import React from "react";
-import EditorFooter from "./editorFooter";
+import EditorFooter, { IEditorFooterProps } from "./editorFooter";
 import MockFactory from "../../../../common/mockFactory";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("../../common/tagsInput/tagColors.json");
@@ -11,16 +11,22 @@ describe("Footer Component", () => {
 
     const originalTags = MockFactory.createTestTags();
 
+    function createComponent(props: IEditorFooterProps) {
+        return mount(
+            <EditorFooter {...props} />,
+        );
+    }
+
     beforeEach(() => {
         onChangeHandler = jest.fn();
         const onClickHandler = jest.fn();
-        wrapper = mount(
-            <EditorFooter
-                tags={originalTags}
-                displayHotKeys={true}
-                onTagClicked={onClickHandler}
-                onTagsChanged={onChangeHandler} />,
-        );
+
+        wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagClicked: onClickHandler,
+            onTagsChanged: onChangeHandler,
+        });
     });
 
     it("tags are initialized correctly", () => {
