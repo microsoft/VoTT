@@ -62,11 +62,11 @@ export default class ProjectService implements IProjectService {
         const targetConnection = project.targetConnection.name;
         if (projectList && projectList.length > 0) {
             const duplicate = (projectId === undefined) &&
-                             (projectList.find((p) =>
+                              (projectList.find((p) =>
                                 p.name === projectName) !== undefined) &&
-                             (projectList.find((p) =>
+                              (projectList.find((p) =>
                                 p.sourceConnection.name === sourceConnection) !== undefined) &&
-                             (projectList.find((p) =>
+                              (projectList.find((p) =>
                                 p.targetConnection.name === targetConnection) !== undefined);
             if (duplicate) {
                 return true;
