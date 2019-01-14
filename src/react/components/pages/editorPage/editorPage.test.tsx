@@ -168,6 +168,7 @@ describe("Editor Page Component", () => {
 });
 
     describe("Editor Page Footer integration", () => {
+        return true;
     });
 
     describe("Basic tag interaction tests", () => {
@@ -235,9 +236,8 @@ describe("Editor Page Component", () => {
             expect(spy).toBeCalledWith(project.tags[keyPressed - 1]);
         });
 
-    })
+    });
 });
-
 
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
@@ -252,4 +252,3 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
 
     return createReduxStore(initialState);
 }
-

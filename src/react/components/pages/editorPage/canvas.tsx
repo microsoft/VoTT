@@ -175,7 +175,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     public setSelectionMode: (selectionMode: any) => void;
 
-    private editor: Editor;
+    public editor: Editor;
 
     constructor(props, context) {
         super(props, context);

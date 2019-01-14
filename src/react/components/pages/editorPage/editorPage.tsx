@@ -7,7 +7,8 @@ import { bindActionCreators } from "redux";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { AssetState, EditorMode, IApplicationState, IAsset, IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+import { AssetState, EditorMode, IApplicationState, IAsset,
+        IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import Canvas from "./canvas";
