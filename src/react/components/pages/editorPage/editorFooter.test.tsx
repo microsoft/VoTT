@@ -16,26 +16,18 @@ describe("Footer Component", () => {
     }
 
     it("tags are initialized correctly", () => {
-        const onChangeHandler = jest.fn();
-        const onClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
             displayHotKeys: true,
-            onTagClicked: onClickHandler,
-            onTagsChanged: onChangeHandler,
         });
         const stateTags = wrapper.state().tags;
         expect(stateTags).toEqual(originalTags);
     });
 
     it("tags are empty", () => {
-        const onChangeHandler = jest.fn();
-        const onClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: [],
             displayHotKeys: true,
-            onTagClicked: onClickHandler,
-            onTagsChanged: onChangeHandler,
         });
         const stateTags = wrapper.state()["tags"];
         expect(stateTags).toEqual([]);
@@ -43,11 +35,9 @@ describe("Footer Component", () => {
 
     it("create a new tag from text box", () => {
         const onChangeHandler = jest.fn();
-        const onClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
             displayHotKeys: true,
-            onTagClicked: onClickHandler,
             onTagsChanged: onChangeHandler,
         });
         const newTagName = "My new tag";
@@ -63,11 +53,9 @@ describe("Footer Component", () => {
 
     it("remove a tag", () => {
         const onChangeHandler = jest.fn();
-        const onClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
             displayHotKeys: true,
-            onTagClicked: onClickHandler,
             onTagsChanged: onChangeHandler,
         });
         expect(wrapper.state().tags).toHaveLength(originalTags.length);
@@ -82,11 +70,9 @@ describe("Footer Component", () => {
 
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
         const onChangeHandler = jest.fn();
-        const onClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
             displayHotKeys: true,
-            onTagClicked: onClickHandler,
             onTagsChanged: onChangeHandler,
         });
         wrapper.find("div.tag")
@@ -98,11 +84,9 @@ describe("Footer Component", () => {
 
     it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
         const onChangeHandler = jest.fn();
-        const onClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
             displayHotKeys: true,
-            onTagClicked: onClickHandler,
             onTagsChanged: onChangeHandler,
         });
         wrapper.find("div.tag")
@@ -111,6 +95,38 @@ describe("Footer Component", () => {
         wrapper.find("button.btn.btn-secondary").simulate("click");
 
         expect(onChangeHandler).not.toBeCalled();
+    });
+
+    it("clicking tag without ctrl calls onTagClickHandler ", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagsChanged: onChangeHandler,
+            onTagClicked: onTagClickHandler,
+        });
+        wrapper.find("div.tag")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name }});
+
+        expect(onTagClickHandler).toBeCalledWith(originalTags[0])
+    });
+
+    it("clicking tag with ctrl does not call onTagClickHandler ", () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagsChanged: onChangeHandler,
+            onTagClicked: onTagClickHandler,
+        });
+        wrapper.find("div.tag")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
+
+        expect(onTagClickHandler).not.toBeCalled();
     });
 
 });

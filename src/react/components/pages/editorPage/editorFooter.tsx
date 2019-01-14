@@ -5,9 +5,9 @@ import { debug } from "util";
 
 export interface IEditorFooterProps {
     tags: ITag[];
-    onTagsChanged: (value) => void;
-    onTagClicked: (value) => void;
     displayHotKeys: boolean;
+    onTagsChanged?: (value) => void;
+    onTagClicked?: (value) => void;
 }
 
 export interface IEditorFooterState {
