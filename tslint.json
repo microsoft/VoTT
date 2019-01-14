@@ -9,7 +9,9 @@
         "no-console": false,
         "no-shadowed-variable": false,
         "ordered-imports": false,
-        "no-string-literal": false
+        "no-string-literal": false,
+        "no-bitwise": false,
+        "function-constructor": false
     },
     "rulesDirectory": []
 }

@@ -15,7 +15,11 @@ export interface IExportProviderRegistrationOptions {
  */
 export class ExportProviderFactory {
     public static get providers() {
-        return { ...ExportProviderFactory.providerRegistery };
+        return { ...ExportProviderFactory.providerRegistry };
+    }
+
+    public static get defaultProvider() {
+        return ExportProviderFactory.defaultProviderOptions;
     }
 
     /**
@@ -28,7 +32,11 @@ export class ExportProviderFactory {
         Guard.emtpy(options.displayName);
         Guard.null(options.factory);
 
-        ExportProviderFactory.providerRegistery[options.name] = options;
+        // The first provider registered will be the default
+        if (ExportProviderFactory.defaultProviderOptions === null) {
+            ExportProviderFactory.defaultProviderOptions = options;
+        }
+        ExportProviderFactory.providerRegistry[options.name] = options;
     }
 
     /**
@@ -41,7 +49,7 @@ export class ExportProviderFactory {
         Guard.emtpy(name);
         Guard.null(project);
 
-        const handler = ExportProviderFactory.providerRegistery[name];
+        const handler = ExportProviderFactory.providerRegistry[name];
         if (!handler) {
             throw new Error(`No export provider has been registered with name '${name}'`);
         }
@@ -57,5 +65,6 @@ export class ExportProviderFactory {
         );
     }
 
-    private static providerRegistery: { [id: string]: IExportProviderRegistrationOptions } = {};
+    private static providerRegistry: { [id: string]: IExportProviderRegistrationOptions } = {};
+    private static defaultProviderOptions: IExportProviderRegistrationOptions = null;
 }

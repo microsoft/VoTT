@@ -43,6 +43,25 @@ describe("Export Provider Factory", () => {
         expect(provider).toBeInstanceOf(TestExportProvider);
     });
 
+    it("ensures default is correct", () => {
+        expect(Object.keys(ExportProviderFactory.providers).length).toEqual(1);
+        ExportProviderFactory.register({
+            name: "testProvider2",
+            displayName: "Second Test Provider",
+            factory: (project) => new TestExportProvider(project),
+        });
+        ExportProviderFactory.register({
+            name: "testProvider3",
+            displayName: "Third Test Provider",
+            factory: (project) => new TestExportProvider(project),
+        });
+        expect(Object.keys(ExportProviderFactory.providers).length).toEqual(3);
+        expect(ExportProviderFactory.defaultProvider).not.toBeNull();
+        expect(ExportProviderFactory.defaultProvider.name).toEqual("testProvider");
+        expect(ExportProviderFactory.defaultProvider.displayName).toEqual("Test Provider");
+
+    });
+
     it("throws error if provider is not found", () => {
         expect(() => ExportProviderFactory.create(
             "unknown",

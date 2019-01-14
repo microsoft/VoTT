@@ -8,6 +8,7 @@ import { LocalFileSystemProxy } from "./providers/storage/localFileSystemProxy";
 import { StorageProviderFactory } from "./providers/storage/storageProviderFactory";
 import registerToolbar from "./registerToolbar";
 import { strings } from "./common/strings";
+import { HostProcessType } from "./common/hostProcess";
 import { AzureCustomVisionProvider } from "./providers/export/azureCustomVision";
 
 export default function registerProviders() {
@@ -15,6 +16,7 @@ export default function registerProviders() {
     StorageProviderFactory.register({
         name: "localFileSystemProxy",
         displayName: strings.connections.providers.local.title,
+        platformSupport: HostProcessType.Electron,
         factory: (options) => new LocalFileSystemProxy(options),
     });
     StorageProviderFactory.register({
@@ -27,6 +29,7 @@ export default function registerProviders() {
     AssetProviderFactory.register({
         name: "localFileSystemProxy",
         displayName: strings.connections.providers.local.title,
+        platformSupport: HostProcessType.Electron,
         factory: (options) => new LocalFileSystemProxy(options),
     });
     AssetProviderFactory.register({
