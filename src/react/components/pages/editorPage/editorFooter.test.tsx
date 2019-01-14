@@ -1,6 +1,7 @@
 import { mount } from "enzyme";
 import React from "react";
 import EditorFooter from "./editorFooter";
+import MockFactory from "../../../../common/mockFactory";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("../../common/tagsInput/tagColors.json");
 
@@ -8,16 +9,7 @@ describe("Footer Component", () => {
     let wrapper: any = null;
     let onChangeHandler: (value: any) => void;
 
-    const originalTags = [
-        {
-            name: "Tag1",
-            color: "#800000",
-        },
-        {
-            name: "Tag2",
-            color: "#008080",
-        },
-    ];
+    const originalTags = MockFactory.createTestTags();
 
     beforeEach(() => {
         onChangeHandler = jest.fn();
@@ -54,19 +46,22 @@ describe("Footer Component", () => {
         wrapper.find("input").simulate("change", { target: { value: newTagName } });
         wrapper.find("input").simulate("keyDown", { keyCode: 13 });
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.state().tags).toHaveLength(3);
-        expect(wrapper.state().tags[2].name).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.state().tags[2].color);
+
+        const tags = wrapper.state().tags;
+        expect(tags).toHaveLength(originalTags.length + 1);
+        expect(tags[tags.length - 1].name).toEqual(newTagName);
+        expect(TagColors).toContain(tags[tags.length - 1].color);
     });
 
     it("remove a tag", () => {
-        expect(wrapper.state().tags).toHaveLength(2);
+        expect(wrapper.state().tags).toHaveLength(originalTags.length);
         wrapper.find("a.ReactTags__remove")
             .last().simulate("click");
         expect(onChangeHandler).toBeCalled();
-        expect(wrapper.state().tags).toHaveLength(1);
-        expect(wrapper.state().tags[0].name).toEqual(originalTags[0].name);
-        expect(wrapper.state().tags[0].color).toEqual(originalTags[0].color);
+        const tags = wrapper.state().tags;
+        expect(tags).toHaveLength(originalTags.length - 1);
+        expect(tags[0].name).toEqual(originalTags[0].name);
+        expect(tags[0].color).toEqual(originalTags[0].color);
     });
 
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
