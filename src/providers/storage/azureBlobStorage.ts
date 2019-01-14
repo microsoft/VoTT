@@ -250,7 +250,7 @@ export class AzureBlobStorage implements IStorageProvider {
     }
 
     /**
-     * 
+     *
      * @param url - URL for Azure Blob
      */
     public getFileName(url: string) {

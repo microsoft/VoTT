@@ -49,14 +49,14 @@ export class AssetProviderFactory {
     /**
      * Register Asset provider based on name and a factory
      * @param name - Name of Asset Provider
-     * @param factory - Function that instantiates Asset Provider 
+     * @param factory - Function that instantiates Asset Provider
      */
     public static register(name: string, factory: (options?: any) => IAssetProvider);
 
     /**
      * Register Asset provider based on name and a factory
      * @param name - Name of Asset Provider
-     * @param factory - Function that instantiates Asset Provider 
+     * @param factory - Function that instantiates Asset Provider
      */
     public static register(nameOrOptions: any, factory?: (options?: any) => IAssetProvider) {
         Guard.null(nameOrOptions);

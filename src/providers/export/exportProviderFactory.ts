@@ -23,7 +23,7 @@ export class ExportProviderFactory {
     }
 
     /**
-     * @returns Options from specified default provider 
+     * @returns Options from specified default provider
      */
     public static get defaultProvider() {
         return ExportProviderFactory.defaultProviderOptions;
