@@ -1,5 +1,8 @@
-import { AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
-    IConnection, IExportFormat, IProject, ITag, StorageType } from "../models/applicationState";
+import shortid from "shortid";
+import {
+    AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
+    IConnection, IExportFormat, IProject, ITag, StorageType,
+} from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -11,6 +14,9 @@ import IProjectActions, * as projectActions from "../redux/actions/projectAction
 import { IProjectService } from "../services/projectService";
 import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
+import {
+    IAzureCustomVisionTag, IAzureCustomVisionRegion,
+} from "../providers/export/azureCustomVision/azureCustomVisionService";
 
 export default class MockFactory {
 
@@ -571,6 +577,44 @@ export default class MockFactory {
             pathname: null,
             search: null,
             state: null,
+        };
+    }
+
+    public static createAzureCustomVisionTags(count: number = 10): IAzureCustomVisionTag[] {
+        const tags: IAzureCustomVisionTag[] = [];
+        for (let i = 1; i <= count; i++) {
+            tags.push(MockFactory.createAzureCustomVisionTag(`Tag ${i}`));
+        }
+
+        return tags;
+    }
+
+    public static createAzureCustomVisionTag(name: string): IAzureCustomVisionTag {
+        return {
+            id: shortid.generate(),
+            name,
+            description: `Description for ${name}`,
+            imageCount: 0,
+        };
+    }
+
+    public static createAzureCustomVisionRegions(count: number = 10): IAzureCustomVisionRegion[] {
+        const regions: IAzureCustomVisionRegion[] = [];
+        for (let i = 1; i <= count; i++) {
+            regions.push(MockFactory.createAzureCustomVisionRegion());
+        }
+
+        return regions;
+    }
+
+    public static createAzureCustomVisionRegion(): IAzureCustomVisionRegion {
+        return {
+            imageId: shortid.generate(),
+            tagId: shortid.generate(),
+            left: 0,
+            top: 0,
+            width: 1,
+            height: 1,
         };
     }
 
