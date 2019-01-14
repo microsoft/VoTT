@@ -1,53 +1,55 @@
-import { mount } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import React from "react";
-import EditorFooter, { IEditorFooterProps } from "./editorFooter";
+import EditorFooter, { IEditorFooterProps, IEditorFooterState } from "./editorFooter";
 import MockFactory from "../../../../common/mockFactory";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("../../common/tagsInput/tagColors.json");
 
 describe("Footer Component", () => {
-    let wrapper: any = null;
-    let onChangeHandler: (value: any) => void;
 
     const originalTags = MockFactory.createTestTags();
 
-    function createComponent(props: IEditorFooterProps) {
+    function createComponent(props: IEditorFooterProps): ReactWrapper<IEditorFooterProps, IEditorFooterState> {
         return mount(
             <EditorFooter {...props} />,
         );
     }
 
-    beforeEach(() => {
-        onChangeHandler = jest.fn();
+    it("tags are initialized correctly", () => {
+        const onChangeHandler = jest.fn();
         const onClickHandler = jest.fn();
-
-        wrapper = createComponent({
+        const wrapper = createComponent({
             tags: originalTags,
             displayHotKeys: true,
             onTagClicked: onClickHandler,
             onTagsChanged: onChangeHandler,
         });
-    });
-
-    it("tags are initialized correctly", () => {
         const stateTags = wrapper.state().tags;
         expect(stateTags).toEqual(originalTags);
     });
 
     it("tags are empty", () => {
+        const onChangeHandler = jest.fn();
         const onClickHandler = jest.fn();
-        const emptyWrapper = mount(
-            <EditorFooter
-                tags={[]}
-                displayHotKeys={true}
-                onTagClicked={onClickHandler}
-                onTagsChanged={onChangeHandler} />,
-        );
-        const stateTags = emptyWrapper.state()["tags"];
+        const wrapper = createComponent({
+            tags: [],
+            displayHotKeys: true,
+            onTagClicked: onClickHandler,
+            onTagsChanged: onChangeHandler,
+        });
+        const stateTags = wrapper.state()["tags"];
         expect(stateTags).toEqual([]);
     });
 
     it("create a new tag from text box", () => {
+        const onChangeHandler = jest.fn();
+        const onClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagClicked: onClickHandler,
+            onTagsChanged: onChangeHandler,
+        });
         const newTagName = "My new tag";
         wrapper.find("input").simulate("change", { target: { value: newTagName } });
         wrapper.find("input").simulate("keyDown", { keyCode: 13 });
@@ -60,6 +62,14 @@ describe("Footer Component", () => {
     });
 
     it("remove a tag", () => {
+        const onChangeHandler = jest.fn();
+        const onClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagClicked: onClickHandler,
+            onTagsChanged: onChangeHandler,
+        });
         expect(wrapper.state().tags).toHaveLength(originalTags.length);
         wrapper.find("a.ReactTags__remove")
             .last().simulate("click");
@@ -71,6 +81,14 @@ describe("Footer Component", () => {
     });
 
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
+        const onChangeHandler = jest.fn();
+        const onClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagClicked: onClickHandler,
+            onTagsChanged: onChangeHandler,
+        });
         wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
@@ -79,6 +97,14 @@ describe("Footer Component", () => {
     });
 
     it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
+        const onChangeHandler = jest.fn();
+        const onClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagClicked: onClickHandler,
+            onTagsChanged: onChangeHandler,
+        });
         wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
