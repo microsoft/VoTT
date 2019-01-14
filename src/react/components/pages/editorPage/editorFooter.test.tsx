@@ -110,7 +110,7 @@ describe("Footer Component", () => {
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name }});
 
-        expect(onTagClickHandler).toBeCalledWith(originalTags[0])
+        expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
     });
 
     it("clicking tag with ctrl does not call onTagClickHandler ", () => {
