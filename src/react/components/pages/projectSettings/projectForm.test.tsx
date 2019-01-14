@@ -2,10 +2,9 @@ import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
-import { KeyCodes } from "../../common/tagsInput/tagsInput";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
-import ProjectForm, { IProjectFormProps, IProjectFormState } from "./projectForm";
+import { KeyCodes } from "../../../../common/utils";
 import registerProviders from "../../../../registerProviders";
+import ProjectForm, { IProjectFormProps, IProjectFormState } from "./projectForm";
 
 describe("Project Form Component", () => {
     const project = MockFactory.createTestProject("TestProject");

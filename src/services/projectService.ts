@@ -3,6 +3,7 @@ import { StorageProviderFactory } from "../providers/storage/storageProviderFact
 import { IProject } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
+import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 
 export interface IProjectService {
     save(project: IProject): Promise<IProject>;
@@ -24,6 +25,9 @@ export default class ProjectService implements IProjectService {
                     project.targetConnection.providerType,
                     project.targetConnection.providerOptions,
                 );
+
+                await this.saveExportSettings(project);
+                await this.saveProjectFile(project);
 
                 await storageProvider.writeText(
                     `${project.name}${constants.projectFileExtension}`,
@@ -76,5 +80,30 @@ export default class ProjectService implements IProjectService {
         } else {
             return true;
         }
+    }
+
+    private async saveExportSettings(project: IProject): Promise<void> {
+        if (!project.exportFormat || !project.exportFormat.providerType) {
+            return Promise.resolve();
+        }
+
+        const exportProvider = ExportProviderFactory.createFromProject(project);
+
+        if (!exportProvider.save) {
+            return Promise.resolve();
+        }
+
+        project.exportFormat.providerOptions = await exportProvider.save(project.exportFormat);
+    }
+
+    private async saveProjectFile(project: IProject): Promise<void> {
+        const storageProvider = StorageProviderFactory.create(
+            project.targetConnection.providerType,
+            project.targetConnection.providerOptions,
+        );
+
+        await storageProvider.writeText(
+            `${project.name}${constants.projectFileExtension}`,
+            JSON.stringify(project, null, 4));
     }
 }

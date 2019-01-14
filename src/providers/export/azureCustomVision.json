@@ -1,1 +1,112 @@
-{}
+{
+    "type": "object",
+    "title": "Azure Custom Vision",
+    "required": [
+        "assetState",
+        "apiKey"
+    ],
+    "properties": {
+        "assetState": {
+            "type": "string",
+            "title": "Asset State",
+            "description": "Which assets to include in the export",
+            "enum": [
+                "all",
+                "visited",
+                "tagged"
+            ],
+            "default": "all",
+            "enumNames": [
+                "All Assets",
+                "Only Visisted Assets",
+                "Only Tagged Assets"
+            ]
+        },
+        "apiKey": {
+            "type": "string",
+            "title": "API Key"
+        },
+        "newOrExisting": {
+            "type": "string",
+            "title": "New or existing project",
+            "enum": [
+                "New Project",
+                "Existing Project"
+            ],
+            "default": "Existing Project"
+        }
+    },
+    "dependencies": {
+        "newOrExisting": {
+            "oneOf": [
+                {
+                    "properties": {
+                        "newOrExisting": {
+                            "enum": [
+                                "New Project"
+                            ]
+                        },
+                        "name": {
+                            "type": "string",
+                            "title": "Project Name"
+                        },
+                        "description": {
+                            "type": "string",
+                            "title": "Project Description"
+                        },
+                        "projectType": {
+                            "type": "string",
+                            "title": "Project Type",
+                            "enum": [
+                                "Classification",
+                                "Object Detection"
+                            ],
+                            "enumNames": [
+                                "Classification",
+                                "Object Detection"
+                            ],
+                            "default": "Classification"
+                        },
+                        "classificationType": {
+                            "type": "string",
+                            "title": "Classification Type",
+                            "enum": [
+                                "Multilabel",
+                                "Multiclass"
+                            ],
+                            "enumNames": [
+                                "Multiple tags per image",
+                                "Single tag per image"
+                            ],
+                            "default": "Multilabel"
+                        },
+                        "domainId": {
+                            "type": "string",
+                            "title": "Domain"
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "domainId"
+                    ]
+                },
+                {
+                    "properties": {
+                        "newOrExisting": {
+                            "enum": [
+                                "Existing Project"
+                            ]
+                        },
+                        "projectId": {
+                            "type": "string",
+                            "title": "Project Name"
+                        }
+                    },
+                    "required": [
+                        "projectId"
+                    ]
+                }
+            ]
+        }
+    }
+}
