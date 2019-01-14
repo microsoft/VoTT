@@ -49,7 +49,7 @@ export default class HtmlFileReader {
                 throw new Error("Asset not supported");
         }
     }
-    
+
     private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {
         return new Promise((resolve, reject) => {
             const video = document.createElement("video") as HTMLVideoElement;

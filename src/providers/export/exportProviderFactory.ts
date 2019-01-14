@@ -11,13 +11,20 @@ export interface IExportProviderRegistrationOptions {
 
 /**
  * @name - Export Provider Factory
- * @description - Creates instance of export providers based on request providery type
+ * @description - Creates instance of export providers based on request provider type
  */
 export class ExportProviderFactory {
+
+    /**
+     * @returns Dictionary of registered providers
+     */
     public static get providers() {
         return { ...ExportProviderFactory.providerRegistry };
     }
 
+    /**
+     * @returns Options from specified default provider 
+     */
     public static get defaultProvider() {
         return ExportProviderFactory.defaultProviderOptions;
     }
@@ -57,6 +64,10 @@ export class ExportProviderFactory {
         return handler.factory(project, options);
     }
 
+    /**
+     * Create export provider from project
+     * @param project VoTT project
+     */
     public static createFromProject(project: IProject): IExportProvider {
         return ExportProviderFactory.create(
             project.exportFormat.providerType,

@@ -210,7 +210,7 @@ export default class MockFactory {
     }
 
     /**
-     * 
+     *
      * @param name Name of connection
      */
     public static createTestCloudConnection(name: string = "test"): IConnection {
@@ -377,8 +377,8 @@ export default class MockFactory {
     }
 
     /**
-     * 
-     * @param name 
+     *
+     * @param name
      */
     public static createExportProviderRegistration(name: string) {
         const registration: IExportProviderRegistrationOptions = {
@@ -471,18 +471,6 @@ export default class MockFactory {
         };
     }
 
-
-    private static pageProps(projectId: string, method: string) {
-        return {
-            project: null,
-            recentProjects: MockFactory.createTestProjects(),
-            actions: (projectActions as any) as IProjectActions,
-            history: this.history(),
-            location: this.location(),
-            match: this.match(projectId, method),
-        };
-    }
-
     /**
      * Creates fake IProjectSettingsPageProps
      * @param projectId Current project ID
@@ -514,6 +502,28 @@ export default class MockFactory {
             connections: testConnections,
             recentProjects: testProjects,
             currentProject: testProjects[0],
+        };
+    }
+
+    /**
+     * Runs function that updates the UI, and flushes call stack
+     * @param func - The function that updates the UI
+     */
+    public static flushUi(func: () => void): Promise<void> {
+        return new Promise<void>((resolve) => {
+            func();
+            setImmediate(resolve);
+        });
+    }
+
+    private static pageProps(projectId: string, method: string) {
+        return {
+            project: null,
+            recentProjects: MockFactory.createTestProjects(),
+            actions: (projectActions as any) as IProjectActions,
+            history: this.history(),
+            location: this.location(),
+            match: this.match(projectId, method),
         };
     }
 
@@ -562,17 +572,6 @@ export default class MockFactory {
             search: null,
             state: null,
         };
-    }
-
-    /**
-     * Runs function that updates the UI, and flushes call stack
-     * @param func - The function that updates the UI
-     */
-    public static flushUi(func: () => void): Promise<void> {
-        return new Promise<void>((resolve) => {
-            func();
-            setImmediate(resolve);
-        });
     }
 
     /**

@@ -18,21 +18,34 @@ export interface IAzureCustomVisionOptions {
     domainId?: string;
 }
 
+/**
+ * Enum for new or existing Custom Vision projects
+ */
 export enum NewOrExisting {
     New = "New Project",
     Existing = "Existing Project",
 }
 
+/**
+ * Export provider for Azure Custom Vision Service
+ */
 export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVisionOptions> {
     constructor(project: IProject, options: IAzureCustomVisionOptions) {
         super(project, options);
         Guard.null(options);
     }
 
+    /**
+     * Export project to Azure Custom Vision service
+     */
     public export(): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
+    /**
+     * Save export format to Azure Custom Vision Service via REST API
+     * @param exportFormat Provider type and options for export
+     */
     public async save(exportFormat: IExportFormat): Promise<IAzureCustomVisionOptions> {
         const customVisionOptions = exportFormat.providerOptions as IAzureCustomVisionOptions;
 

@@ -3,6 +3,19 @@ import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
 import HostProcess, { HostProcessType } from "../../common/hostProcess";
 
+/**
+ * Interface for all VoTT Storage Providers
+ * @member storageType - Type of Storage (local, cloud)
+ * @member readText - Read text from path
+ * @member readBinary - Read Buffer from path
+ * @member deleteFile - Delete file from path
+ * @member writeText - Write text to file at path
+ * @member writeBinary - Write buffer to file at path
+ * @member listFiles - List files in container within storage provider
+ * @member listContainers - List containers in storage provider
+ * @member createContainer - Create container within storage provider
+ * @member deleteContainer - Delete a container from a storage provider
+ */
 export interface IStorageProvider extends IAssetProvider {
 
     storageType: StorageType;
@@ -21,18 +34,42 @@ export interface IStorageProvider extends IAssetProvider {
     deleteContainer(folderPath: string): Promise<void>;
 }
 
+/**
+ * Interface for registration options of Storage Providers
+ * @member factory - Function to instantiate storage provider
+ */
 export interface IStorageProviderRegistrationOptions extends IAssetProviderRegistrationOptions {
     factory: (options?: any) => IStorageProvider;
 }
 
+/**
+ * @name - Storage Provider Factory
+ * @description - Creates instance of Storage Providers based on request provider type
+ */
 export class StorageProviderFactory {
+    /**
+     * @returns - Dictionary of registered Storage Providers
+     */
     public static get providers() {
         return { ...StorageProviderFactory.providerRegistry };
     }
 
+    /**
+     * Register a Storage Provider based on options
+     * @param options - Storage Provider options
+     */
     public static register(options: IStorageProviderRegistrationOptions);
+    /**
+     * Register Storage Provider based on name and a factory
+     * @param name - Name of Storage Provider
+     * @param factory - Function that instantiates Storage Provider
+     */
     public static register(name: string, factory: (options?: any) => IStorageProvider);
-
+    /**
+     * Register Storage Provider based on name and a factory
+     * @param name - Name of Storage Provider
+     * @param factory - Function that instantiates Storage Provider
+     */
     public static register(nameOrOptions: any, factory?: (options?: any) => IStorageProvider) {
         Guard.null(nameOrOptions);
 
@@ -59,10 +96,19 @@ export class StorageProviderFactory {
         StorageProviderFactory.providerRegistry[options.name] = options;
     }
 
+    /**
+     * Create Storage Provider from provider type and options specified in connection
+     * @param connection Connection for a Storage Provider
+     */
     public static createFromConnection(connection: IConnection) {
         return this.create(connection.providerType, connection.providerOptions);
     }
 
+    /**
+     * Create Storage Provider from registered Storage Provider name and options
+     * @param name - Name of Storage Provider
+     * @param options - Options for Storage Provider
+     */
     public static create(name: string, options?: any): IStorageProvider {
         Guard.emtpy(name);
 
@@ -74,6 +120,10 @@ export class StorageProviderFactory {
         return registrationOptions.factory(options);
     }
 
+    /**
+     * Indicates whether or not a Storage Provider has been registered
+     * @param providerType - Name of Storage Provider
+     */
     public static isRegistered(providerType: string): boolean {
         return this.providers[providerType] !== undefined;
     }
