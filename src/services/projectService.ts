@@ -60,12 +60,12 @@ export default class ProjectService implements IProjectService {
     }
 
     public isDuplicate(project: IProject, projectList: IProject[]): boolean {
-        const duplicateProjects = projectList.find((p) => 
-            p.id !== project.id && 
-            p.name === project.name && 
-            JSON.stringify(p.targetConnection.providerOptions) === JSON.stringify(project.targetConnection.providerOptions)
+        const duplicateProjects = projectList.find((p) =>
+            p.id !== project.id &&
+            p.name === project.name &&
+            JSON.stringify(p.targetConnection.providerOptions) ===
+                JSON.stringify(project.targetConnection.providerOptions),
         );
-    
         return (duplicateProjects !== undefined);
     }
 
