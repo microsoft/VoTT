@@ -2,14 +2,23 @@ import { ITag } from "../../../../models/applicationState";
 import TagsInput, { ITagsInputProps, IReactTag, ITagsInputState } from "../../common/tagsInput/tagsInput";
 import React from "react";
 
+/**
+ * Properties for Editor Tags Input
+ * @member displayHotKeys - True to display index of first 10 tags (for hot keys)
+ * @member onTagClick - Function to call when tag is clicked
+ * @member onTagShiftClick - Function to call when tag is clicked while holding shift
+ */
 export interface IEditorTagsInputProps extends ITagsInputProps {
     displayHotKeys: boolean;
     onTagClick?: (tag: ITag) => void;
     onTagShiftClick?: (tag: ITag) => void;
 }
 
-// const numericKeyCodes = [...inclusiveRange(48, 58), ...inclusiveRange(96, 105)]
-
+/**
+ * @name - Editor Tags Input
+ * @description - Enhanced version of TagsInput. Allows for hot key display and two additional
+ * click handlers (normal click and shift+click)
+ */
 export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
 
     /**
