@@ -5,7 +5,17 @@ import { AssetProviderFactory, IAssetProvider } from "../providers/storage/asset
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
 
+/**
+ * @name - Asset Service
+ * @description - Functions for dealing with project assets
+ */
 export class AssetService {
+
+    /**
+     * Create IAsset from filePath
+     * @param filePath - filepath of asset
+     * @param fileName - name of asset
+     */
     public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
         Guard.emtpy(filePath);
 
@@ -27,6 +37,10 @@ export class AssetService {
         };
     }
 
+    /**
+     * Get Asset Type from format (file extension)
+     * @param format - File extension of asset
+     */
     public static getAssetType(format: string): AssetType {
         switch (format.toLowerCase()) {
             case "gif":
@@ -56,6 +70,9 @@ export class AssetService {
         Guard.null(project);
     }
 
+    /**
+     * Get Asset Provider from project's source connction
+     */
     protected get assetProvider(): IAssetProvider {
         if (!this.assetProviderInstance) {
             this.assetProviderInstance = AssetProviderFactory.create(
@@ -67,6 +84,9 @@ export class AssetService {
         }
     }
 
+    /**
+     * Get Storage Provider from project's target connection
+     */
     protected get storageProvider(): IStorageProvider {
         if (!this.storageProviderInstance) {
             this.storageProviderInstance = StorageProviderFactory.create(
@@ -78,10 +98,17 @@ export class AssetService {
         return this.storageProviderInstance;
     }
 
+    /**
+     * Get assets from provider
+     */
     public async getAssets(): Promise<IAsset[]> {
         return await this.assetProvider.getAssets();
     }
 
+    /**
+     * Save metadata for asset
+     * @param metadata - Metadata for asset
+     */
     public async save(metadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(metadata);
 
@@ -91,6 +118,10 @@ export class AssetService {
         return metadata;
     }
 
+    /**
+     * Get metadata for asset
+     * @param asset - Asset for which to retrieve metadata
+     */
     public async getAssetMetadata(asset: IAsset): Promise<IAssetMetadata> {
         Guard.null(asset);
 
