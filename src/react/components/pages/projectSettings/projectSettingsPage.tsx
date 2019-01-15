@@ -67,8 +67,15 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         const projectToUpdate: IProject = {
             ...formData,
         };
+
         await this.props.actions.saveProject(projectToUpdate);
-        this.props.history.push(`/projects/${this.props.project.id}/edit`);
+
+        const isNew = !(!!projectToUpdate.id);
+        if (isNew) {
+            this.props.history.push(`/projects/${this.props.project.id}/edit`);
+        } else {
+            this.props.history.goBack();
+        }
     }
 
     private onFormCancel() {
