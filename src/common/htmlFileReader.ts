@@ -39,6 +39,13 @@ export default class HtmlFileReader {
         }
     }
 
+    public static async readAssetAttributesWithBuffer(base64: string)
+        : Promise<{ width: number, height: number, duration?: number }> {
+        Guard.null(base64);
+
+        return await this.readImageAttributes("data:image;base64," + base64);
+    }
+
     /**
      * Downloads the binary blob from the blob path
      * @param asset The asset to download
