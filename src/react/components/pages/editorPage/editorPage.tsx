@@ -1,18 +1,20 @@
-import React from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
 import _ from "lodash";
-import { IApplicationState, IProject, IAsset, IAssetMetadata, AssetState } from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import React from "react";
+import keydown from "react-keydown";
+import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
+import { bindActionCreators } from "redux";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import "./editorPage.scss";
+import { strings } from "../../../../common/strings";
+import { AssetState, IApplicationState, IAsset,
+    IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import AssetPreview from "./assetPreview";
 import EditorFooter from "./editorFooter";
+import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import { strings } from "../../../../common/strings";
 
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -39,6 +41,14 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
+function getCtrlNumericKeys(): string[] {
+    const keys: string[] = [];
+    for (let i = 0; i <= 9; i++) {
+        keys.push(`ctrl+${i.toString()}`);
+    }
+    return keys;
+}
+
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     private loadingProjectAssets: boolean = false;
@@ -62,6 +72,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.selectAsset = this.selectAsset.bind(this);
         this.onFooterChange = this.onFooterChange.bind(this);
+        this.handleTagHotKey = this.handleTagHotKey.bind(this);
+        this.onTagClicked = this.onTagClicked.bind(this);
     }
 
     public async componentDidMount() {
@@ -114,12 +126,38 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     </div>
                     <div>
                         <EditorFooter
+                            displayHotKeys={true}
                             tags={this.props.project.tags}
-                            onTagsChanged={this.onFooterChange} />
+                            onTagsChanged={this.onFooterChange}
+                            onTagClicked={this.onTagClicked}
+                            />
                     </div>
                 </div>
             </div>
         );
+    }
+
+    public onTagClicked(tag: ITag) {
+        // Stub for now, waiting for Phil's PR
+        return;
+    }
+
+    @keydown(getCtrlNumericKeys())
+    public handleTagHotKey(event) {
+        const key = parseInt(event.key, 10);
+        if (isNaN(key)) {
+            return;
+        }
+        let tag: ITag;
+        const tags = this.props.project.tags;
+        if (key === 0) {
+            if (tags.length >= 10) {
+                tag = tags[9];
+            }
+        } else if (tags.length >= key) {
+            tag = tags[key - 1];
+        }
+        this.onTagClicked(tag);
     }
 
     private onFooterChange(footerState) {

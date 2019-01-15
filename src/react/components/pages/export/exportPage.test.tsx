@@ -7,16 +7,19 @@ import ExportPage, { IExportPageProps } from "./exportPage";
 import { IApplicationState, IProject } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
-import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
 import MockFactory from "../../../../common/mockFactory";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 
+jest.mock("../../../../providers/export/exportProviderFactory");
+import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
+
 describe("Export Page", () => {
+    const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
-    function createCompoent(store, props: IExportPageProps): ReactWrapper {
+    function createComponent(store, props: IExportPageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -25,6 +28,15 @@ describe("Export Page", () => {
             </Provider>,
         );
     }
+
+    beforeAll(() => {
+        Object.defineProperty(ExportProviderFactory, "providers", {
+            get: jest.fn(() => exportProviderRegistrations),
+        });
+        Object.defineProperty(ExportProviderFactory, "defaultProvider", {
+            get: jest.fn(() => exportProviderRegistrations[0]),
+        });
+    });
 
     beforeEach(() => {
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
@@ -36,7 +48,7 @@ describe("Export Page", () => {
         const props = createProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         const exportPage = wrapper.find(ExportPage).childAt(0);
 
         expect(loadProjectSpy).not.toBeCalled();
@@ -49,7 +61,7 @@ describe("Export Page", () => {
         const props = createProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         const exportPage = wrapper.find(ExportPage).childAt(0);
 
         setImmediate(() => {
@@ -75,7 +87,7 @@ describe("Export Page", () => {
 
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         wrapper.find("form").simulate("submit");
         wrapper.update();
 

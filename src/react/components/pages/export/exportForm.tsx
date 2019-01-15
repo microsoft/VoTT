@@ -1,9 +1,13 @@
 import React from "react";
-import Form, { FormValidation, IChangeEvent, ISubmitEvent, Widget } from "react-jsonschema-form";
+import _ from "lodash";
+import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat } from "../../../../models/applicationState";
+import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
+import ExportProviderPicker from "../../common/exportProviderPicker/exportProviderPicker";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ExternalPicker from "../../common/externalPicker/externalPicker";
+
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -26,6 +30,7 @@ export interface IExportFormState {
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
     private widgets = {
         externalPicker: (ExternalPicker as any) as Widget,
+        exportProviderPicker: (ExportProviderPicker as any) as Widget,
     };
 
     constructor(props, context) {
@@ -114,7 +119,10 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
     }
 
     private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
-        const providerType = exportFormat ? exportFormat.providerType : null;
+
+        // If no provider type was specified on bind, pick the default provider
+        const providerType = (exportFormat && exportFormat.providerType) ?
+            exportFormat.providerType : ExportProviderFactory.defaultProvider.name;
         let newFormSchema: any = this.state.formSchema;
         let newUiSchema: any = this.state.uiSchema;
 
@@ -133,6 +141,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         if (resetProviderOptions) {
             formData.providerOptions = {};
         }
+        formData.providerType = providerType;
 
         this.setState({
             providerName: providerType,

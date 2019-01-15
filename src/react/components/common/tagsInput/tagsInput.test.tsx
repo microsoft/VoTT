@@ -1,7 +1,8 @@
 import { mount } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
-import TagsInput, { ITagsInputProps, KeyCodes } from "./tagsInput";
+import { KeyCodes } from "../../../../common/utils";
+import TagsInput, { ITagsInputProps } from "./tagsInput";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("./tagColors.json");
 
@@ -134,27 +135,6 @@ describe("Tags Input Component", () => {
         expect(wrapper.find(TagsInput).state().selectedTag.color).toEqual(originalTags[0].color);
     });
 
-    it("ctrl clicking tag does not call onTagClick or OnTagShiftClick", () => {
-        const onChangeHandler = jest.fn();
-        const onTagClickHandler = jest.fn();
-        const onTagShiftClickHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
-            onTagClick: onTagClickHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        // Shows modal
-        expect(wrapper.find(TagsInput).state().showModal).toBe(true);
-        // Does not Call onTagShiftClick
-        expect(onTagShiftClickHandler).not.toBeCalled();
-        // Does not call onTagClick
-        expect(onTagClickHandler).not.toBeCalled();
-    });
-
     it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
@@ -181,101 +161,5 @@ describe("Tags Input Component", () => {
         wrapper.find("button.btn.btn-secondary").simulate("click");
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).not.toBeCalled();
-    });
-
-    it("clicking tag calls onTagClick handler", () => {
-        const onChangeHandler = jest.fn();
-        const onTagClickHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagClick: onTagClickHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}});
-        expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
-    });
-
-    it("clicking tag does not call onTagClick handler when not specified", () => {
-        const onChangeHandler = jest.fn();
-        const onTagClickHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagClick: null,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}});
-        expect(onTagClickHandler).not.toBeCalled();
-    });
-
-    it("clicking tag does not open modal or call onTagShiftClick handler", () => {
-        const onChangeHandler = jest.fn();
-        const onTagClickHandler = jest.fn();
-        const onTagShiftClickHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
-            onTagClick: onTagClickHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}});
-        expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
-        // Does not show modal
-        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
-        // Does not call onTagShiftClick
-        expect(onTagShiftClickHandler).not.toBeCalled();
-    });
-
-    it("shift clicking tag calls onTagShiftClick handler", () => {
-        const onChangeHandler = jest.fn();
-        const onTagShiftClickHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
-        expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
-    });
-
-    it("shift clicking tag does not open modal or call onTagClick handler", () => {
-        const onChangeHandler = jest.fn();
-        const onTagClickHandler = jest.fn();
-        const onTagShiftClickHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
-            onTagClick: onTagClickHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
-        expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
-        // Does not show modal
-        expect(wrapper.find(TagsInput).state().showModal).toBe(false);
-        // Does not call onTagClick
-        expect(onTagClickHandler).not.toBeCalled();
-    });
-
-    it("shift clicking tag does not call onTagShiftClick handler when not specified", () => {
-        const onChangeHandler = jest.fn();
-        const onTagClickHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            onChange: onChangeHandler,
-            onTagShiftClick: null,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
-        expect(onTagClickHandler).not.toBeCalled();
     });
 });

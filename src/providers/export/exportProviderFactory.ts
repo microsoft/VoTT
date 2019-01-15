@@ -2,25 +2,41 @@ import Guard from "../../common/guard";
 import { IExportProvider } from "./exportProvider";
 import { IProject } from "../../models/applicationState";
 
+export interface IExportProviderRegistrationOptions {
+    name: string;
+    displayName: string;
+    description?: string;
+    factory: (project, IProject, options?: any) => IExportProvider;
+}
+
 /**
  * @name - Export Provider Factory
  * @description - Creates instance of export providers based on request providery type
  */
 export class ExportProviderFactory {
-    public static get handlers() {
-        return { ...ExportProviderFactory.handlerRegistry };
+    public static get providers() {
+        return { ...ExportProviderFactory.providerRegistry };
+    }
+
+    public static get defaultProvider() {
+        return ExportProviderFactory.defaultProviderOptions;
     }
 
     /**
      * Registers a factory method for the specified export provider type
-     * @param name - The name of the export provider
-     * @param factory - The factory method to construct new instances
+     * @param options - The options to use when registering an export provider
      */
-    public static register(name: string, factory: (project, IProject, options?: any) => IExportProvider) {
-        Guard.emtpy(name);
-        Guard.null(factory);
+    public static register(options: IExportProviderRegistrationOptions) {
+        Guard.null(options);
+        Guard.emtpy(options.name);
+        Guard.emtpy(options.displayName);
+        Guard.null(options.factory);
 
-        ExportProviderFactory.handlerRegistry[name] = factory;
+        // The first provider registered will be the default
+        if (ExportProviderFactory.defaultProviderOptions === null) {
+            ExportProviderFactory.defaultProviderOptions = options;
+        }
+        ExportProviderFactory.providerRegistry[options.name] = options;
     }
 
     /**
@@ -33,12 +49,12 @@ export class ExportProviderFactory {
         Guard.emtpy(name);
         Guard.null(project);
 
-        const handler = ExportProviderFactory.handlerRegistry[name];
+        const handler = ExportProviderFactory.providerRegistry[name];
         if (!handler) {
             throw new Error(`No export provider has been registered with name '${name}'`);
         }
 
-        return handler(project, options);
+        return handler.factory(project, options);
     }
 
     public static createFromProject(project: IProject): IExportProvider {
@@ -49,5 +65,6 @@ export class ExportProviderFactory {
         );
     }
 
-    private static handlerRegistry: { [id: string]: (project: IProject, options?: any) => IExportProvider } = {};
+    private static providerRegistry: { [id: string]: IExportProviderRegistrationOptions } = {};
+    private static defaultProviderOptions: IExportProviderRegistrationOptions = null;
 }
