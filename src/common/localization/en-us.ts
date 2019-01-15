@@ -49,6 +49,10 @@ export const english: IAppStrings = {
             title: "Target Connection",
             description: "Where to save the project and exported data",
         },
+        videoSettings: {
+            title: "Video Settings",
+            description: "Blah blah video settings",
+        },
         addConnection: "Add Connection",
     },
     tags: {

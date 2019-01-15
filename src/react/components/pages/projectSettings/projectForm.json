@@ -15,6 +15,14 @@
             "description": "${strings.projectSettings.targetConnection.description}",
             "type": "object"
         },
+        "videoframerate": {
+            "title": "Video Frame Rate",
+            "type": "string"
+        },
+        "videoformat": {
+            "title": "Video Format",
+            "type": "string"
+        },
         "description": {
             "title": "${strings.common.description}",
             "type": "string"

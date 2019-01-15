@@ -49,6 +49,10 @@ export const spanish: IAppStrings = {
             title: "Conexión de Destino",
             description: "Donde se guarda su proyecto y sus datos exportados",
         },
+        videoSettings: {
+            title: "Video Settings",
+            description: "Blah blah video settings",
+        },
         addConnection: "Agregar Conexión",
     },
     tags: {

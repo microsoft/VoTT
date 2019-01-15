@@ -51,6 +51,10 @@ export interface IAppStrings {
             title: string;
             description: string;
         }
+        videoSettings: {
+            title: string;
+            description: string;
+        },
         addConnection: string;
     };
     tags: {
