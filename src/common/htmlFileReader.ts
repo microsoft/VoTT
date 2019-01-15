@@ -2,7 +2,15 @@ import axios, { AxiosRequestConfig } from "axios";
 import { IAsset, AssetType } from "../models/applicationState";
 import Guard from "./guard";
 
+/**
+ * Helper class for reading HTML files
+ */
 export default class HtmlFileReader {
+
+    /**
+     * Reads the file and returns the string value contained
+     * @param file HTML file to read
+     */
     public static readAsText(file: File): Promise<string | ArrayBuffer> {
         Guard.null(file);
 
@@ -25,6 +33,10 @@ export default class HtmlFileReader {
         });
     }
 
+    /**
+     * Reads attributes from asset depending on type (video or image)
+     * @param asset Asset to read from
+     */
     public static async readAssetAttributes(asset: IAsset)
         : Promise<{ width: number, height: number, duration?: number }> {
         Guard.null(asset);

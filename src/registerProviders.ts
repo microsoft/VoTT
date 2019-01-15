@@ -11,6 +11,9 @@ import { strings } from "./common/strings";
 import { HostProcessType } from "./common/hostProcess";
 import { AzureCustomVisionProvider } from "./providers/export/azureCustomVision";
 
+/**
+ * Registers storage, asset and export providers, as well as all toolbar items
+ */
 export default function registerProviders() {
     // Storage Providers
     StorageProviderFactory.register({

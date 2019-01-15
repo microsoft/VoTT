@@ -44,6 +44,9 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         Guard.null(options);
     }
 
+    /**
+     * Export project to TensorFlow PascalVOC
+     */
     public async export(): Promise<void> {
         const assetService = new AssetService(this.project);
 

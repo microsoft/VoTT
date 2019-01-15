@@ -13,6 +13,9 @@ import {
 } from "./azureCustomVision/azureCustomVisionService";
 import HtmlFileReader from "../../common/htmlFileReader";
 
+/**
+ * Options for Azure Custom Vision Service
+ */
 export interface IAzureCustomVisionExportOptions {
     assetState: ExportAssetState;
     newOrExisting: NewOrExisting;
@@ -25,6 +28,9 @@ export interface IAzureCustomVisionExportOptions {
     domainId?: string;
 }
 
+/**
+ * Enum for new or existing Custom Vision projects
+ */
 export interface ITagList {
     [index: string]: IAzureCustomVisionTag;
 }
