@@ -2,6 +2,13 @@ import React from "react";
 import { IConnection } from "../../../../models/applicationState";
 import { Link } from "react-router-dom";
 
+/**
+ * Properties for Connection Picker
+ * @member id - ID for HTML select element
+ * @member value - Selected value of picker
+ * @member connections - Array of connections for choosing
+ * @member onChange - Function to call on change of selection
+ */
 interface IConnectionPickerProps {
     id?: string;
     value: any;
@@ -9,10 +16,18 @@ interface IConnectionPickerProps {
     onChange: (value) => void;
 }
 
+/**
+ * State for Connection Picker
+ * @member value - Selected value
+ */
 interface IConnectionPickerState {
     value: any;
 }
 
+/**
+ * @name - Connection Picker
+ * @description - Enhanced dropdown for selecting a Connection
+ */
 export default class ConnectionPicker extends React.Component<IConnectionPickerProps, IConnectionPickerState> {
     constructor(props, context) {
         super(props, context);

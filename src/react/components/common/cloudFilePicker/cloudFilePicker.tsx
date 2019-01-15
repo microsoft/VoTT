@@ -5,6 +5,13 @@ import { IConnection, StorageType } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import CondensedList, { ListItem } from "../condensedList/condensedList";
 
+/**
+ * Properties for Cloud File Picker
+ * @member connections - Array of connections to choose from
+ * @member onSubmit - Function to call with contents of selected file
+ * @member onCancel - Optional function to call on modal closed
+ * @member fileExtension - Filter on files with extension
+ */
 export interface ICloudFilePickerProps {
     connections: IConnection[];
     onSubmit: (content: string) => void;
@@ -13,6 +20,16 @@ export interface ICloudFilePickerProps {
     fileExtension?: string;
 }
 
+/**
+ * State for Cloud File Picker
+ * @member isOpen - Cloud File Picker is open
+ * @member modalHeader - Header for Picker modal
+ * @member condensedList - List of rendered objects for picking
+ * @member selectedConnection - Connection selected in picker
+ * @member selectedFile - File selected in picker
+ * @member okDisabled - Ok button is disabled
+ * @member backDisabled - Back button is disabled
+ */
 export interface ICloudFilePickerState {
     isOpen: boolean;
     modalHeader: string;
@@ -23,6 +40,10 @@ export interface ICloudFilePickerState {
     backDisabled: boolean;
 }
 
+/**
+ * @name - Cloud File Picker
+ * @description - Modal to choose and read file from cloud connections
+ */
 export class CloudFilePicker extends React.Component<ICloudFilePickerProps, ICloudFilePickerState> {
 
     constructor(props) {
@@ -71,10 +92,16 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
         );
     }
 
+    /**
+     * Open Cloud File Picker
+     */
     public open(): void {
         this.setState({isOpen: true});
     }
 
+    /**
+     * Close Cloud File Picker
+     */
     public close(): void {
         this.setState(this.getInitialState(),
             () => {

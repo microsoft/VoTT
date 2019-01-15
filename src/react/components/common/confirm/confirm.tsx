@@ -2,6 +2,15 @@ import React, { RefObject } from "react";
 import { Button } from "reactstrap";
 import MessageBox, { IMessageBoxProps } from "../messageBox/messageBox";
 
+/**
+ * Properties for Confirm Component
+ * @member confirmButtonText - Text displayed on 'Confirm' button. Default 'Yes'
+ * @member cancelButtonText - Text displayed on 'Cancel' button. Default 'No'
+ * @member confirmButtonColor - Color of 'Confirm' button. Default 'primary'
+ * @member cancelButtonColor - Color of 'Cancel' button. Default 'secondary'
+ * @member onConfirm - Function to call on confirm
+ * @member onCancel - Function to call on cancel
+ */
 export interface IConfirmProps extends IMessageBoxProps {
     confirmButtonText?: string;
     cancelButtonText?: string;
@@ -11,10 +20,18 @@ export interface IConfirmProps extends IMessageBoxProps {
     onCancel?: (...params: any[]) => void;
 }
 
+/**
+ * State for Confirm Component
+ * @member params - Open ended parameters that are passed on opening modal
+ */
 export interface IConfirmState {
     params: any[];
 }
 
+/**
+ * @name - Confirm
+ * @description - Dialog for confirming an action
+ */
 export default class Confirm extends React.Component<IConfirmProps, IConfirmState> {
     private messageBox: RefObject<MessageBox>;
 
@@ -53,10 +70,17 @@ export default class Confirm extends React.Component<IConfirmProps, IConfirmStat
         );
     }
 
+    /**
+     * Open Confirm Dialog
+     * @param params - Array of parameters passed to onConfirm function
+     */
     public open(...params: any[]): void {
         this.setState({ params }, () => this.messageBox.current.open());
     }
 
+    /**
+     * Close Confirm Dialog
+     */
     public close(): void {
         this.messageBox.current.close();
     }
