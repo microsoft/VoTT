@@ -1,5 +1,8 @@
 import { IAppStrings } from "../strings";
 
+/**
+ * App Strings for Spanish language
+ */
 export const spanish: IAppStrings = {
     appName: "Herramienta Visual de Etiquetado de Objetos",
     common: {

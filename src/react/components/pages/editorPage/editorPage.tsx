@@ -128,7 +128,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         <EditorFooter
                             displayHotKeys={true}
                             tags={this.props.project.tags}
-                            onTagsChanged={this.onFooterChange} />
+                            onTagsChanged={this.onFooterChange}
+                            onTagClicked={this.onTagClicked}
+                            />
                     </div>
                 </div>
             </div>

@@ -1,7 +1,16 @@
+import axios, { AxiosRequestConfig } from "axios";
 import { IAsset, AssetType } from "../models/applicationState";
 import Guard from "./guard";
 
+/**
+ * Helper class for reading HTML files
+ */
 export default class HtmlFileReader {
+
+    /**
+     * Reads the file and returns the string value contained
+     * @param file HTML file to read
+     */
     public static readAsText(file: File): Promise<string | ArrayBuffer> {
         Guard.null(file);
 
@@ -24,6 +33,10 @@ export default class HtmlFileReader {
         });
     }
 
+    /**
+     * Reads attributes from asset depending on type (video or image)
+     * @param asset Asset to read from
+     */
     public static async readAssetAttributes(asset: IAsset)
         : Promise<{ width: number, height: number, duration?: number }> {
         Guard.null(asset);
@@ -36,6 +49,33 @@ export default class HtmlFileReader {
             default:
                 throw new Error("Asset not supported");
         }
+    }
+
+    public static async readAssetAttributesWithBuffer(base64: string)
+        : Promise<{ width: number, height: number, duration?: number }> {
+        Guard.null(base64);
+
+        return await this.readImageAttributes("data:image;base64," + base64);
+    }
+
+    /**
+     * Downloads the binary blob from the blob path
+     * @param asset The asset to download
+     */
+    public static async getAssetBlob(asset: IAsset): Promise<Blob> {
+        Guard.null(asset);
+
+        const config: AxiosRequestConfig = {
+            responseType: "blob",
+        };
+
+        // Download the asset binary from the storage provider
+        const response = await axios.get<Blob>(asset.path, config);
+        if (response.status !== 200) {
+            throw new Error("Error downloading asset binary");
+        }
+
+        return response.data;
     }
 
     private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {
