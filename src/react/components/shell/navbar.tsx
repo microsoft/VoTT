@@ -2,6 +2,10 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { strings } from "../../../common/strings";
 
+/**
+ * @name - Navbar
+ * @description - Main navigation bar that remains visible throughout app experience
+ */
 export default function Navbar() {
     return (
         <nav className="bg-lighter-2 app-navbar">

@@ -13,12 +13,26 @@ const formSchema = addLocValues(require("./exportForm.json"));
 // tslint:disable-next-line:no-var-requires
 const uiSchema = addLocValues(require("./exportForm.ui.json"));
 
+/**
+ * Properties for Export Form
+ * @member settings - Current settings for Export
+ * @member onSubmit - Function to call on form submission
+ * @member onCancel - Function to call on form cancellation
+ */
 export interface IExportFormProps extends React.Props<ExportForm> {
     settings: IExportFormat;
     onSubmit: (exportFormat: IExportFormat) => void;
     onCancel?: () => void;
 }
 
+/**
+ * State for Export Form
+ * @member classNames - Class names for HTML form component
+ * @member providerName - Name of export provider
+ * @member formSchema - JSON Form Schema for export form
+ * @member uiSchema - JSON Form UI Schema for export form
+ * @member formData - Current state of form data as Export Format
+ */
 export interface IExportFormState {
     classNames: string[];
     providerName: string;
@@ -27,6 +41,10 @@ export interface IExportFormState {
     formData: IExportFormat;
 }
 
+/**
+ * @name - Export Form
+ * @description - Form to view/edit settings for exporting of project
+ */
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
     private widgets = {
         externalPicker: (ExternalPicker as any) as Widget,
