@@ -45,7 +45,7 @@ export default class HtmlFileReader {
 
         return await this.readImageAttributes("data:image;base64," + base64);
     }
-  
+
     /**
      * Downloads the binary blob from the blob path
      * @param asset The asset to download
