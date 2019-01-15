@@ -24,7 +24,7 @@ export interface IAlertState {
 
 /**
  * @name - Alert
- * @description - Generic Alert dialog  
+ * @description - Generic Alert dialog
  */
 export default class Alert extends React.Component<IAlertProps, IAlertState> {
     private messageBox: RefObject<MessageBox>;

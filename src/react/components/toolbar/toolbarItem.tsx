@@ -8,7 +8,7 @@ import IProjectActions from "../../../redux/actions/projectActions";
  * @member icon - Icon for toolbar item
  * @member tooltip - Tooltip to apply upon selection
  * @member group - Name of item group in which to include item
- * @member type - Type of toolbar item (Action or State) 
+ * @member type - Type of toolbar item (Action or State)
  */
 export interface IToolbarItemMetadata {
     name: string;
