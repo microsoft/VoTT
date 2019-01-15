@@ -1,3 +1,6 @@
+/**
+ * Redux Action types
+ */
 export enum ActionTypes {
     // App
     TOGGLE_DEV_TOOLS_SUCCESS = "TOGGLE_DEV_TOOLS_SUCCESS",
