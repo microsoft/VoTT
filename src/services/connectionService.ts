@@ -16,7 +16,7 @@ export interface IConnectionService {
  * @description - Functions for dealing with project connections
  */
 export default class ConnectionService implements IConnectionService {
-    
+
     /**
      * Save a connection
      * @param connection - Connection to save
