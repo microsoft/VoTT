@@ -6,6 +6,13 @@ import { ITag } from "../../../../../models/applicationState";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./tagEditorModal.json"));
 
+/**
+ * Properties for Tag Editor Modal
+ * @member tag - Tag for editing
+ * @member showModal - Modal is visible
+ * @member onOk - Function to call when 'Ok' button is clicked
+ * @member onCancel - Function to call when 'Cancel' button is clicked or modal closed
+ */
 export interface ITagEditorModalProps {
     tag: ITag;
     showModal: boolean;
@@ -13,6 +20,11 @@ export interface ITagEditorModalProps {
     onCancel: () => void;
 }
 
+/**
+ * State for Tag Editor Modal
+ * @member tag - Current tag being edited
+ * @member isOpen - Modal is open
+ */
 export interface ITagEditorModalState {
     tag: ITag;
     isOpen: boolean;

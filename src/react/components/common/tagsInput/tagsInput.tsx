@@ -15,6 +15,9 @@ const TagColors = require("./tagColors.json");
  * tags input component. Rather than name, uses 'id'.
  * Requires text attribute, which is used to inject
  * HTML to customize the tags
+ * @member id - Unique identifier for tag (name)
+ * @member text - Text to display on tag (can be HTML object)
+ * @member color - Hex color of box to display left of tag name
  */
 export interface IReactTag {
     id: string;
@@ -24,10 +27,8 @@ export interface IReactTag {
 
 /**
  * Properties required for TagsInput component
- * tags - ITag[] or stringified ITag[]
- * onChange - function to call on tags change
- * onTagClick - function to call when tag is clicked
- * onTagShiftClick - function to call when tag is clicked while holding shift key
+ * @member tags - ITag[] or stringified ITag[]
+ * @member onChange - function to call on tags change
  */
 export interface ITagsInputProps {
     tags: ITag[];
@@ -36,11 +37,11 @@ export interface ITagsInputProps {
 
 /**
  * Current state of tags input component
- * tags - IReactTag[] - tags used in lower level component
- * currentTagColorIndex - rotates initial color to apply to tags
- * selectedTag - tag that was most recently double clicked,
+ * @member tags - IReactTag[] - tags used in lower level component
+ * @member currentTagColorIndex - rotates initial color to apply to tags
+ * @member selectedTag - tag that was most recently double clicked,
  *     used to populate modal
- * showModal - boolean to show tag editor modal or not
+ * @member showModal - boolean to show tag editor modal or not
  */
 export interface ITagsInputState {
     tags: IReactTag[];
@@ -118,13 +119,17 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
      * @param event Click event
      */
     protected handleTagClick(event) {
-        const text = this.getTagText(event);
+        const text = this.getTagIdFromClick(event);
         const tag = this.getTag(text);
         if (event.ctrlKey) {
             this.openEditModal(tag);
         }
     }
 
+    /**
+     * Opens editor modal with specified tag as values
+     * @param tag - Set as selected tag to display in editor modal
+     */
     protected openEditModal(tag: IReactTag) {
         this.setState({
             selectedTag: tag,
@@ -146,7 +151,11 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
         return match;
     }
 
-    protected getTagText(event): string {
+    /**
+     * Gets tag ID (name) from a click event
+     * @param event Click event
+     */
+    protected getTagIdFromClick(event): string {
         if (event.target.lastChild) {
             return event.target.lastChild.data;
         }

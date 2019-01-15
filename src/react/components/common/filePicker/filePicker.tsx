@@ -2,11 +2,20 @@ import React, { SyntheticEvent } from "react";
 import shortid from "shortid";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 
+/**
+ * Properties for File Picker
+ * @member - Function to call on change of file selection
+ * @member - Function to call on file picking error
+ */
 interface IFilePickerProps {
     onChange: (sender: SyntheticEvent, fileText: string | ArrayBuffer) => void;
     onError: (sender: SyntheticEvent, error: any) => void;
 }
 
+/**
+ * @name - File Picker
+ * @description - Pick file from local file system
+ */
 export default class FilePicker extends React.Component<IFilePickerProps> {
     private fileInput;
 
@@ -17,6 +26,9 @@ export default class FilePicker extends React.Component<IFilePickerProps> {
         this.onFileUploaded = this.onFileUploaded.bind(this);
     }
 
+    /**
+     * Call click on current file input
+     */
     public upload = () => {
         this.fileInput.current.click();
     }
