@@ -1,7 +1,7 @@
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "./assetProviderFactory";
 import Guard from "../../common/guard";
 import { IConnection, StorageType } from "../../models/applicationState";
-import HostProcess, { HostProcessType } from "../../common/hostProcess";
+import getHostProcess, { HostProcessType } from "../../common/hostProcess";
 
 /**
  * Interface for all VoTT Storage Providers
@@ -89,7 +89,7 @@ export class StorageProviderFactory {
             options.platformSupport = HostProcessType.All;
         }
 
-        if ((options.platformSupport & HostProcess.type) === 0) {
+        if ((options.platformSupport & getHostProcess().type) === 0) {
             return;
         }
 

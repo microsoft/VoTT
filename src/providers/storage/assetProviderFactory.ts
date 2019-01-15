@@ -1,6 +1,6 @@
 import { IAsset, IConnection } from "../../models/applicationState";
 import Guard from "../../common/guard";
-import HostProcess, { HostProcessType } from "../../common/hostProcess";
+import getHostProcess, { HostProcessType } from "../../common/hostProcess";
 
 /**
  * Interface for VoTT Asset Providers
@@ -77,7 +77,7 @@ export class AssetProviderFactory {
             options.platformSupport = HostProcessType.All;
         }
 
-        if ((options.platformSupport & HostProcess.type) === 0) {
+        if ((options.platformSupport & getHostProcess().type) === 0) {
             return;
         }
 
