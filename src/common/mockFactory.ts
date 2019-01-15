@@ -299,13 +299,28 @@ export default class MockFactory {
         return registration;
     }
 
-    public static createFakeCanvas() {
+    public static createTestCanvas() {
         const canvasProps = {
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
         };
         return new Canvas({canvasProps}, {});
+    }
+
+    public static createTestRegion(id = null){
+        const testRegion: any = {
+            height: 100,
+            origin: {x: 0, y: 0},
+            points: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1,y: 1}],
+            tags: [],
+            type: "RECTANGLE",
+            width: 100,
+        };
+        if(id){
+            testRegion.id = id; 
+        };
+        return  testRegion;
     }
 
     public static createAssetProviderRegistration(name: string) {
