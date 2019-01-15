@@ -19,6 +19,10 @@ function mapStateToProps(state: IApplicationState) {
     };
 }
 
+/**
+ * @name - App
+ * @description - Root level component for VoTT Application
+ */
 @connect(mapStateToProps)
 class App extends React.Component<IAppProps> {
     constructor(props, context) {
