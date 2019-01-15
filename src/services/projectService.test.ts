@@ -101,7 +101,7 @@ describe("Project Service", () => {
         await expect(projectSerivce.delete(testProject)).rejects.toEqual(expectedError);
     });
 
-    it("isDuplicate returns false when called with a new project", async () => {
+    it("isDuplicate returns false when called with a unique project", async () => {
         testProject = MockFactory.createTestProject("TestProject");
         projectList = MockFactory.createTestProjects();
         expect(projectSerivce.isDuplicate(testProject, projectList)).toEqual(false);

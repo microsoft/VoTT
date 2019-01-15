@@ -60,26 +60,13 @@ export default class ProjectService implements IProjectService {
     }
 
     public isDuplicate(project: IProject, projectList: IProject[]): boolean {
-        const projectId = project.id;
-        const projectName = project.name;
-        const sourceConnection = project.sourceConnection.name;
-        const targetConnection = project.targetConnection.name;
-        if (projectList && projectList.length > 0) {
-            const duplicate = (projectId === undefined) &&
-                              (projectList.find((p) =>
-                                p.name === projectName) !== undefined) &&
-                              (projectList.find((p) =>
-                                p.sourceConnection.name === sourceConnection) !== undefined) &&
-                              (projectList.find((p) =>
-                                p.targetConnection.name === targetConnection) !== undefined);
-            if (duplicate) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
+        const duplicateProjects = projectList.find((p) => 
+            p.id !== project.id && 
+            p.name === project.name && 
+            JSON.stringify(p.targetConnection.providerOptions) === JSON.stringify(project.targetConnection.providerOptions)
+        );
+    
+        return (duplicateProjects !== undefined);
     }
 
     private async saveExportSettings(project: IProject): Promise<void> {
