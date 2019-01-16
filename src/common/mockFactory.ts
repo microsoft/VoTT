@@ -1,13 +1,13 @@
 import shortid from "shortid";
 import {
-    AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
+    AssetState, AssetType, IAppError, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, IVideoSettings,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
 import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProviderFactory";
-import { ExportProviderFactory, IExportProviderRegistrationOptions } from "../providers/export/exportProviderFactory";
+import { IExportProviderRegistrationOptions } from "../providers/export/exportProviderFactory";
 import { IProjectSettingsPageProps } from "../react/components/pages/projectSettings/projectSettingsPage";
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
@@ -19,6 +19,19 @@ import {
 } from "../providers/export/azureCustomVision/azureCustomVisionService";
 
 export default class MockFactory {
+
+    /**
+     * Creates sample IAppError
+     * @param {string} title to be display in  Alert
+     * @param {string} message to be display in body of Alert
+     * @returns {IAppError}
+     */
+    public static createAppError(title: string = "", message: string = ""): IAppError {
+        return {
+            title,
+            message,
+        };
+    }
 
     /**
      * Creates fake IAsset
@@ -518,6 +531,7 @@ export default class MockFactory {
             recentProjects: testProjects,
             currentProject: testProjects[0],
             ...state,
+            appError: null,
         };
     }
 
