@@ -7,6 +7,12 @@ import ExportForm from "./exportForm";
 import { IProject, IApplicationState, IExportFormat } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 
+/**
+ * Properties for Export Page
+ * @member project - Project being edited
+ * @member recentProjects - Array of projects recently viewed/edited
+ * @member actions - Project actions
+ */
 export interface IExportPageProps extends RouteComponentProps, React.Props<ExportPage> {
     project: IProject;
     recentProjects: IProject[];
@@ -26,6 +32,10 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
+/**
+ * @name - Export Page
+ * @description - Page for adding/editing/removing export configurations
+ */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ExportPage extends React.Component<IExportPageProps> {
     private emptyExportFormat: IExportFormat = {

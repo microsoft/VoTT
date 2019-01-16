@@ -1,8 +1,19 @@
 import React, { SyntheticEvent } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
+/**
+ * Accepts any number of parameters and returns a string
+ */
 export type MessageFormatHandler = (...params: any[]) => string;
 
+/**
+ * Properties for Message Box component
+ * @member title - Title for message box
+ * @member message - Message for message box
+ * @member params - Array of additional parameters
+ * @member onButtonSelect - Function to call when button is selected
+ * @member onCancel - Function to call upon cancel
+ */
 export interface IMessageBoxProps {
     title: string;
     message: string | MessageFormatHandler;
@@ -11,12 +22,21 @@ export interface IMessageBoxProps {
     onCancel?: () => void;
 }
 
+/**
+ * State for Message Box
+ * @member isOpen - Message box is open
+ * @member isRendered - Message box is rendered
+ * @member isButtonSelected - Message box button is selected
+ */
 export interface IMessageBoxState {
     isOpen: boolean;
     isRendered: boolean;
     isButtonSelected: boolean;
 }
 
+/**
+ * Generic modal that displays a message
+ */
 export default class MessageBox extends React.Component<IMessageBoxProps, IMessageBoxState> {
     constructor(props, context) {
         super(props, context);

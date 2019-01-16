@@ -3,16 +3,30 @@ import { AutoSizer, List } from "react-virtualized";
 import { IAsset, AssetState } from "../../../../models/applicationState";
 import AssetPreview from "./assetPreview";
 
+/**
+ * Properties for Editor Side Bar
+ * @member assets - Array of assets to be previewed
+ * @member onAssetSelected - Function to call when asset from side bar is selected
+ * @member selectedAsset - Asset initially selected
+ */
 export interface IEditorSideBarProps {
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
     selectedAsset?: IAsset;
 }
 
+/**
+ * State for Editor Side Bar
+ * @member selectedAsset - Asset selected from side bar
+ */
 export interface IEditorSideBarState {
     selectedAsset: IAsset;
 }
 
+/**
+ * @name - Editor Side Bar
+ * @description - Side bar for editor page
+ */
 export default class EditorSideBar extends React.Component<IEditorSideBarProps, IEditorSideBarState> {
     private listRef: React.RefObject<List>;
 

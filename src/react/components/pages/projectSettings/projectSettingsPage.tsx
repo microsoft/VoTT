@@ -7,6 +7,13 @@ import IProjectActions, * as projectActions from "../../../../redux/actions/proj
 import { IApplicationState, IProject, IConnection } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 
+/**
+ * Properties for Project Settings Page
+ * @member project - Project being edited
+ * @member recentProjects - Array of projects recently viewed/edited
+ * @member actions - Project actions
+ * @member connections - Array of connections available for projects
+ */
 export interface IProjectSettingsPageProps extends RouteComponentProps, React.Props<ProjectSettingsPage> {
     project: IProject;
     recentProjects: IProject[];
@@ -28,6 +35,10 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
+/**
+ * @name - Project Settings Page
+ * @description - Page for adding/editing/removing projects
+ */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps> {
     constructor(props, context) {
