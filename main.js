@@ -42,6 +42,16 @@ function createWindow () {
     slashes: true
   }));
 
+  ipcMain.on('setAppTitle', function(event, arg) {
+    let text = arg;
+    if (text !== undefined && text !== null) {
+      text = `${text} - VoTT - ${module.exports.version}`;
+    } else {
+      text = `VoTT - ${module.exports.version}`;
+    }
+    mainWindow.webContents.send('setAppTitleWithVersion', text);
+  });
+
   ipcMain.on('setFilePath', function (event, arg) {
     mainWindow.setRepresentedFilename(arg);
 

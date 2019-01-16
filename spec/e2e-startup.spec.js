@@ -26,7 +26,7 @@ describe('E2E - Startup', () => {
             app.browserWindow.getURL()
                 .then(url => expect(url).toContain('src/index.html'))
                 .then(() => app.client.getTitle())
-                .then(title => expect(title).toEqual('Visual Object Tagging Tool'))
+                .then(title => expect(title).toContain('Visual Object Tagging Tool'))
                 .then(done);
         });
 
