@@ -110,7 +110,7 @@ function Detection(videotagging, visitedFrames) {
                         if(self.videotagging.imagelist){
                             return (self.videotagging.imageIndex >= self.videotagging.imagelist.length);
                         } else{
-                            return (self.videotagging.video.currentTime >= self.videotagging.video.duration);
+                            return (self.videotagging.video.currentTime + 1 >= self.videotagging.video.duration);
                         }
                     }
                 }
