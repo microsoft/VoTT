@@ -1,4 +1,4 @@
-import { enc, lib, LibWordArray, AES } from "crypto-js";
+import { enc, lib, AES } from "crypto-js";
 import Guard from "./guard";
 
 /**
@@ -6,9 +6,7 @@ import Guard from "./guard";
  * @param keySize The key size to use, defaults to 32bit
  */
 export function generateKey(keySize: number = 32): string {
-    const randomWords = (lib.WordArray.random(keySize) as any) as LibWordArray;
-    const words = lib.WordArray.create(randomWords.words);
-    return enc.Base64.stringify(words);
+    return lib.WordArray.random(keySize).toString(enc.Base64);
 }
 
 /**
