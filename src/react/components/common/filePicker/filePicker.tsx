@@ -4,8 +4,8 @@ import HtmlFileReader from "../../../../common/htmlFileReader";
 
 /**
  * Properties for File Picker
- * @member - Function to call on change of file selection
- * @member - Function to call on file picking error
+ * @member onChange - Function to call on change of file selection
+ * @member onError - Function to call on file picking error
  */
 interface IFilePickerProps {
     onChange: (sender: SyntheticEvent, fileText: string | ArrayBuffer) => void;

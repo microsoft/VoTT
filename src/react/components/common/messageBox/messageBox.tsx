@@ -2,7 +2,7 @@ import React, { SyntheticEvent } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 /**
- * Accepts any number of parameters and return a string
+ * Accepts any number of parameters and returns a string
  */
 export type MessageFormatHandler = (...params: any[]) => string;
 
