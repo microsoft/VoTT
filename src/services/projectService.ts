@@ -5,13 +5,27 @@ import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 
+/**
+ * Functions required for a project service
+ * @member save - Save a project
+ * @member delete - Delete a project
+ */
 export interface IProjectService {
     save(project: IProject): Promise<IProject>;
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
 }
 
+/**
+ * @name - Project Service
+ * @description - Functions for dealing with projects
+ */
 export default class ProjectService implements IProjectService {
+
+    /**
+     * Save a project
+     * @param project - Project to save
+     */
     public save(project: IProject) {
         Guard.null(project);
 
@@ -40,6 +54,10 @@ export default class ProjectService implements IProjectService {
         });
     }
 
+    /**
+     * Delete a project
+     * @param project - Project to delete
+     */
     public delete(project: IProject) {
         Guard.null(project);
 
