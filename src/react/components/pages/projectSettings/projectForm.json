@@ -27,6 +27,7 @@
                     "title": "${strings.projectSettings.videoSettings.frameExtractionRate}",
                     "description": "${strings.projectSettings.videoSettings.description}",
                     "type": "integer",
+                    "default": 15,
                     "minimum": 1
                 }
             },
