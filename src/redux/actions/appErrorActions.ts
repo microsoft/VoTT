@@ -16,7 +16,7 @@ export default interface IAppErrorActions {
 
 /**
  * show alert popup to indicate error
- * @param {IAppError} the error to display in alert
+ * @param appError {IAppError} the error to display in alert
  * @returns {(dispatch: Dispatch) => void}
  */
 export function showError(appError: IAppError): (dispatch: Dispatch) => void {
@@ -51,7 +51,6 @@ export interface IClearErrorAction extends Action<string> {
 
 /**
  * Instance of show error action
- * @type {(payload: IShowAppErrorAction["payload"]) => IPayloadAction<IShowAppErrorAction["type"], IShowAppErrorAction["payload"]>}
  */
 export const showErrorAction = createPayloadAction<IShowAppErrorAction>(ActionTypes.SHOW_ERROR);
 
