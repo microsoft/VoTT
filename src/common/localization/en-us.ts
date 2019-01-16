@@ -51,7 +51,8 @@ export const english: IAppStrings = {
         },
         videoSettings: {
             title: "Video Settings",
-            description: "Blah blah video settings",
+            description: "The rate at which frames are extracted for tagging.",
+            frameExtractionRate: "Frame Extraction Rate (frames per a video second)",
         },
         addConnection: "Add Connection",
     },

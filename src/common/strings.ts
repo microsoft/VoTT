@@ -54,6 +54,7 @@ export interface IAppStrings {
         videoSettings: {
             title: string;
             description: string;
+            frameExtractionRate: string;
         },
         addConnection: string;
     };

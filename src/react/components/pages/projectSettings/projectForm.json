@@ -15,17 +15,24 @@
             "description": "${strings.projectSettings.targetConnection.description}",
             "type": "object"
         },
-        "videoframerate": {
-            "title": "Video Frame Rate",
-            "type": "string"
-        },
-        "videoformat": {
-            "title": "Video Format",
-            "type": "string"
-        },
         "description": {
             "title": "${strings.common.description}",
             "type": "string"
+        },
+        "videoSettings": {
+            "title": "${strings.projectSettings.videoSettings.title}",
+            "type": "object",
+            "properties": {
+                "frameExtractionRate": {
+                    "title": "${strings.projectSettings.videoSettings.frameExtractionRate}",
+                    "description": "${strings.projectSettings.videoSettings.description}",
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "required": [
+                "frameExtractionRate"
+            ]
         },
         "tags": {
             "title": "${strings.tags.title}",
@@ -35,6 +42,7 @@
     "required": [
         "name",
         "sourceConnection",
-        "targetConnection"
+        "targetConnection",
+        "videoSettings"
     ]
 }
