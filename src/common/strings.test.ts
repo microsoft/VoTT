@@ -80,6 +80,11 @@ describe("Localization tests", () => {
                 expect(formProps.sourceConnection.description).toEqual(lProj.sourceConnection.description);
                 expect(formProps.targetConnection.title).toEqual(lProj.targetConnection.title);
                 expect(formProps.targetConnection.description).toEqual(lProj.targetConnection.description);
+                expect(formProps.videoSettings.title).toEqual(lProj.videoSettings.title);
+                expect(formProps.videoSettings.properties.frameExtractionRate.description).toEqual(
+                    lProj.videoSettings.description);
+                expect(formProps.videoSettings.properties.frameExtractionRate.title).toEqual(
+                    lProj.videoSettings.frameExtractionRate);
                 expect(formProps.description.title).toEqual(common.description);
                 expect(formProps.tags.title).toEqual(languageJson.tags.title);
             }
