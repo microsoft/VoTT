@@ -4,27 +4,15 @@ import { strings } from "../../../../common/strings";
 import { Player, ControlBar, CurrentTimeDisplay, TimeDivider,
     BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
 
-/**
- * Properties for Asset Preview
- * @member asset - Asset for preview
- */
 interface IAssetPreviewProps {
     asset: IAsset;
     videoSettings: IAssetVideoSettings;
 }
 
-/**
- * State for Asset Preview
- * @member loaded - Asset is loaded
- */
 interface IAssetPreviewState {
     loaded: boolean;
 }
 
-/**
- * @name - Asset Preview
- * @description - Small preview of assets for selection in editor page
- */
 export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     private playerRef: React.RefObject<Player>;
 
