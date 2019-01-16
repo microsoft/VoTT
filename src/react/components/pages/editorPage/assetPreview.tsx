@@ -2,26 +2,14 @@ import React from "react";
 import { IAsset, AssetType } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 
-/**
- * Properties for Asset Preview
- * @member asset - Asset for preview
- */
 interface IAssetPreviewProps {
     asset: IAsset;
 }
 
-/**
- * State for Asset Preview
- * @member loaded - Asset is loaded
- */
 interface IAssetPreviewState {
     loaded: boolean;
 }
 
-/**
- * @name - Asset Preview
- * @description - Small preview of assets for selection in editor page
- */
 export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     constructor(props, context) {
         super(props, context);
@@ -45,11 +33,11 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <img src={"file://#${asset.path.replace(/(^\w+:|^)\/\//, '')}"} onLoad={this.onAssetLoad} />
+                    <img src={`file://#${asset.path.replace(/(^\w+:|^)\/\//, "")}`} onLoad={this.onAssetLoad} />
                 }
                 {asset.type === AssetType.Video &&
                     <video onLoadedData={this.onAssetLoad}>
-                        <source src={"file://#${asset.path.replace(/(^\w+:|^)\/\//, '')}#t=5.0"} />
+                        <source src={`file://#${asset.path.replace(/(^\w+:|^)\/\//, "")}#t=5.0`} />
                     </video>
                 }
                 {asset.type === AssetType.Unknown &&
