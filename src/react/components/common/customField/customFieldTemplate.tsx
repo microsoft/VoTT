@@ -3,11 +3,18 @@ import { FieldTemplateProps } from "react-jsonschema-form";
 
 export default function CustomFieldTemplate(props: FieldTemplateProps) {
     const { id, label, required, description, rawErrors, children } = props;
-    const classNames = ["form-group"];
-    if (rawErrors && rawErrors.length > 0) {
-        classNames.push("is-invalid");
-    } else {
-        classNames.push("is-valid");
+    const classNames = [];
+    if (props.schema.type !== "object") {
+        classNames.push("form-group");
+        if (rawErrors && rawErrors.length > 0) {
+            classNames.push("is-invalid");
+        } else {
+            classNames.push("is-valid");
+        }
+    }
+
+    if (props.schema.type === "object" || props.schema.type === "array") {
+        return children;
     }
 
     return (

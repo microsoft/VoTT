@@ -1,13 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import deepmerge from "deepmerge";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
-import { IApplicationState, IAppSettings, IConnection } from "../../../../models/applicationState";
-import Form from "react-jsonschema-form";
+import { IApplicationState, IAppSettings } from "../../../../models/applicationState";
+import Form, { FormValidation } from "react-jsonschema-form";
 import "./appSettingsPage.scss";
 import { strings, addLocValues } from "../../../../common/strings";
-import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
+import { ArrayFieldTemplate } from "../../common/arrayField/arrayFieldTemplate";
+import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+import { ObjectFieldTemplate } from "../../common/objectField/objectFieldTemplate";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./appSettingsPage.json"));
 // tslint:disable-next-line:no-var-requires
@@ -21,7 +22,6 @@ const uiSchema = addLocValues(require("./appSettingsPage.ui.json"));
  */
 interface IAppSettingsProps {
     appSettings: IAppSettings;
-    connections: IConnection[];
     actions: IApplicationActions;
 }
 
@@ -35,11 +35,11 @@ interface IAppSettingsState {
     formSchema: any;
     uiSchema: any;
     appSettings: IAppSettings;
+    classNames: string[];
 }
 
 function mapStateToProps(state: IApplicationState) {
     return {
-        connections: state.connections,
         appSettings: state.appSettings,
     };
 }
@@ -55,30 +55,20 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class AppSettingsPage extends React.Component<IAppSettingsProps, IAppSettingsState> {
-    private widgets: any = {
-        connectionPicker: ConnectionPicker,
-    };
-
     constructor(props: IAppSettingsProps) {
         super(props);
 
         this.state = {
             formSchema: { ...formSchema },
-            uiSchema: this.getUiSchema(),
+            uiSchema: { ...uiSchema },
             appSettings: { ...this.props.appSettings },
+            classNames: ["needs-validation"],
         };
 
         this.toggleDevTools = this.toggleDevTools.bind(this);
         this.reloadApp = this.reloadApp.bind(this);
         this.onFormSubmit = this.onFormSubmit.bind(this);
-    }
-
-    public componentDidUpdate(prevProps) {
-        if (prevProps.connections !== this.props.connections) {
-            this.setState({
-                uiSchema: this.getUiSchema(),
-            });
-        }
+        this.onFormValidate = this.onFormValidate.bind(this);
     }
 
     public render() {
@@ -88,7 +78,14 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
                 <div className="app-settings-page">
                     <div className="app-settings-page-form">
                         <Form
-                            widgets={this.widgets}
+                            className={this.state.classNames.join(" ")}
+                            showErrorList={false}
+                            liveValidate={true}
+                            noHtml5Validate={true}
+                            ObjectFieldTemplate={ObjectFieldTemplate}
+                            FieldTemplate={CustomFieldTemplate}
+                            ArrayFieldTemplate={ArrayFieldTemplate}
+                            validate={this.onFormValidate}
                             schema={this.state.formSchema}
                             uiSchema={this.state.uiSchema}
                             formData={this.state.appSettings}
@@ -113,16 +110,14 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
         );
     }
 
-    private getUiSchema(): any {
-        const overrideUiSchema = {
-            connectionId: {
-                "ui:options": {
-                    connections: this.props.connections,
-                },
-            },
-        };
+    private onFormValidate(appSettings: IAppSettings, errors: FormValidation) {
+        if (this.state.classNames.indexOf("was-validated") === -1) {
+            this.setState({
+                classNames: [...this.state.classNames, "was-validated"],
+            });
+        }
 
-        return deepmerge(uiSchema, overrideUiSchema);
+        return errors;
     }
 
     private onFormSubmit = (form) => {
