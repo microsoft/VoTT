@@ -3,6 +3,7 @@ import * as appSettings from "./applicationReducer";
 import * as connections from "./connectionsReducer";
 import * as currentProject from "./currentProjectReducer";
 import * as recentProjects from "./recentProjectsReducer";
+import * as appError from "./appErrorReducer";
 
 /**
  * All application reducers
@@ -16,4 +17,5 @@ export default combineReducers({
     connections: connections.reducer,
     recentProjects: recentProjects.reducer,
     currentProject: currentProject.reducer,
+    appError: appError.reducer,
 });

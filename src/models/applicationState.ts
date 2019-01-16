@@ -5,12 +5,27 @@
  * @member connections - Global list of connections available to application
  * @member recentProjects - List of recently used projects
  * @member currentProject - The active project being edited
+ * @member appError - error in the app if any
  */
 export interface IApplicationState {
     appSettings: IAppSettings;
     connections: IConnection[];
     recentProjects: IProject[];
     currentProject: IProject;
+    appError?: IAppError;
+}
+
+/**
+ * @name - Application Error
+ * @description - Defines error detail
+ * @member title - title of the error to display
+ * @member message - message of the error to display
+ * @member errorCode - error category
+ */
+export interface IAppError {
+    title?: string;
+    message: string;
+    errorCode?: string;
 }
 
 /**

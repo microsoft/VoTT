@@ -16,6 +16,10 @@ import {
     IExportProjectAction,
     IDeleteProjectAction,
 } from "./projectActions";
+import {
+    IShowAppErrorAction,
+    IClearErrorAction,
+} from "./appErrorActions";
 
 /**
  * Data payload dispatched from the action and delivered to reducer
@@ -75,4 +79,6 @@ export type AnyAction = IOtherAction |
     ILoadProjectAssetsAction |
     ISaveAssetMetadataAction |
     ILoadAssetMetadataAction |
-    IExportProjectAction;
+    IExportProjectAction |
+    IShowAppErrorAction |
+    IClearErrorAction;
