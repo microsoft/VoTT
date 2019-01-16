@@ -79,9 +79,9 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
             ...formData,
         };
 
-        const isNew = !(!!projectToUpdate.id);
         await this.props.actions.saveProject(projectToUpdate);
 
+        const isNew = !(!!projectToUpdate.id);
         if (isNew) {
             this.props.history.push(`/projects/${this.props.project.id}/edit`);
         } else {

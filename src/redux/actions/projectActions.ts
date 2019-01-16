@@ -36,11 +36,17 @@ export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<
  * Dispatches Save Project action and resolves with IProject
  * @param project - Project to save
  */
-export function saveProject(project: IProject): (dispatch: Dispatch) => Promise<IProject> {
-    return async (dispatch: Dispatch) => {
+export function saveProject(project: IProject):
+  (dispatch: Dispatch, getState: any) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: any) => {
         const projectService = new ProjectService();
-        project = await projectService.save(project);
-        dispatch(saveProjectAction(project));
+        const projectList = getState().recentProjects;
+        if (!projectService.isDuplicate(project, projectList)) {
+            project = await projectService.save(project);
+            dispatch(saveProjectAction(project));
+        } else {
+            throw new Error("Cannot create duplicate projects");
+        }
         return project;
     };
 }

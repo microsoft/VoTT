@@ -434,6 +434,7 @@ export default class MockFactory {
         return {
             save: jest.fn((project: IProject) => Promise.resolve()),
             delete: jest.fn((project: IProject) => Promise.resolve()),
+            isDuplicate: jest.fn((project: IProject, projectList: IProject[]) => true),
         };
     }
 
@@ -499,7 +500,7 @@ export default class MockFactory {
     /**
      * Creates fake IApplicationState
      */
-    public static initialState(): IApplicationState {
+    public static initialState(state?: any): IApplicationState {
         const testProjects = MockFactory.createTestProjects();
         const testConnections = MockFactory.createTestConnections();
 
@@ -508,6 +509,7 @@ export default class MockFactory {
             connections: testConnections,
             recentProjects: testProjects,
             currentProject: testProjects[0],
+            ...state,
         };
     }
 

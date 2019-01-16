@@ -149,5 +149,5 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
         recentProjects: [project],
     };
 
-    return createReduxStore(initialState);
+    return createReduxStore(initialState, false);
 }

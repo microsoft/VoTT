@@ -13,6 +13,7 @@ import { ExportProviderFactory } from "../providers/export/exportProviderFactory
 export interface IProjectService {
     save(project: IProject): Promise<IProject>;
     delete(project: IProject): Promise<void>;
+    isDuplicate(project: IProject, projectList: IProject[]): boolean;
 }
 
 /**
@@ -74,6 +75,16 @@ export default class ProjectService implements IProjectService {
                 reject(err);
             }
         });
+    }
+
+    public isDuplicate(project: IProject, projectList: IProject[]): boolean {
+        const duplicateProjects = projectList.find((p) =>
+            p.id !== project.id &&
+            p.name === project.name &&
+            JSON.stringify(p.targetConnection.providerOptions) ===
+                JSON.stringify(project.targetConnection.providerOptions),
+        );
+        return (duplicateProjects !== undefined);
     }
 
     private async saveExportSettings(project: IProject): Promise<void> {
