@@ -8,7 +8,7 @@ import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { AssetState, EditorMode, IApplicationState, IAsset,
-        IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+        IAssetMetadata, IProject, ITag, ITagMetadata } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import Canvas from "./canvas";
@@ -126,7 +126,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     ref={this.canvas}
                                     selectedAsset={this.state.selectedAsset}
                                     onAssetMetadataChanged={this.onAssetMetadataChanged.bind(this)}
-                                    editorMode={this.state.mode}/>
+                                    editorMode={this.state.mode}
+                                    project={this.props.project}/>
                             </div>
                         }
                     </div>
@@ -142,7 +143,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         );
     }
 
-    public onTagClicked(tag: ITag) {
+    public onTagClicked(tag: ITagMetadata) {
         const selectedAsset = this.state.selectedAsset;
         if (selectedAsset.selectedRegions && selectedAsset.selectedRegions.length) {
             selectedAsset.selectedRegions.map((region) => {
@@ -154,7 +155,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 }
                 if (region.tags.length) {
                     this.canvas.current.updateTagsById(region.id,
-                        new TagsDescriptor(region.tags.map((tempTag) => new Tag(tempTag.name, tempTag.color))));
+                        new TagsDescriptor(region.tags.map((tempTag) => new Tag(tempTag.name,
+                            this.props.project.tags.find((t) => t.name === tempTag.name).color))));
                 } else {
                     this.canvas.current.updateTagsById(region.id, null);
                 }
@@ -171,14 +173,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (isNaN(key)) {
             return;
         }
-        let tag: ITag;
+        let tag: ITagMetadata;
         const tags = this.props.project.tags;
         if (key === 0) {
             if (tags.length >= 10) {
-                tag = tags[9];
+                tag = {name: tags[9].name};
             }
         } else if (tags.length >= key) {
-            tag = tags[key - 1];
+            tag = {name: tags[key - 1].name};
         }
         this.onTagClicked(tag);
     }

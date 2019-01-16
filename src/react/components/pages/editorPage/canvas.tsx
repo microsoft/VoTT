@@ -1,6 +1,7 @@
 import React from "react";
 import * as shortid from "shortid";
-import { IAssetMetadata, IRegion, RegionType, AssetState, ITag, EditorMode } from "../../../../models/applicationState";
+import { IAssetMetadata, IRegion, RegionType,
+        AssetState, EditorMode, IProject } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
@@ -12,6 +13,7 @@ export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
     onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
+    project: IProject;
 }
 
 interface ICanvasState {
@@ -359,7 +361,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                                                             this.regionTypeToType(region.type));
                     if (region.tags.length) {
                         this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
-                                        new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name, tag.color))));
+                                        new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name,
+                                            this.props.project.tags.find((t) => t.name === tag.name).color))));
                     } else {
                         this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor());
                     }

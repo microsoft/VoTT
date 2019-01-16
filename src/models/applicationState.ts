@@ -1,6 +1,3 @@
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
-import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
-
 /**
  * @name - Application State
  * @description - Defines the root level application state
@@ -163,7 +160,7 @@ export interface ISize {
 export interface IRegion {
     id: string;
     type: RegionType;
-    tags: ITag[];
+    tags: ITagMetadata[];
     height: number;
     width: number;
     origin: IPoint;
@@ -178,7 +175,7 @@ export interface IRegion {
  */
 export interface ITagMetadata {
     name: string;
-    properties: object;
+    properties?: object;
 }
 
 /**

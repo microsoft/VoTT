@@ -308,18 +308,18 @@ export default class MockFactory {
         return new Canvas({canvasProps}, {});
     }
 
-    public static createTestRegion(id = null){
+    public static createTestRegion(id = null) {
         const testRegion: any = {
             height: 100,
             origin: {x: 0, y: 0},
-            points: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1,y: 1}],
+            points: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}],
             tags: [],
             type: "RECTANGLE",
             width: 100,
         };
-        if(id){
-            testRegion.id = id; 
-        };
+        if (id) {
+            testRegion.id = id;
+        }
         return  testRegion;
     }
 
