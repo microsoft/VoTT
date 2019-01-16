@@ -147,30 +147,6 @@ describe("Editor Page Component", () => {
         });
     });
 
-    describe("Editor Page Toolbar integration", () => {
-
-    beforeAll(() => {
-        registerToolbar();
-    });
-
-    it("clicking polygon mode button changes mode", () => {
-        const project = MockFactory.createTestProject();
-        const store = createReduxStore({
-            ...MockFactory.initialState(),
-            currentProject: project,
-        });
-        const wrapper = createComponent(store, MockFactory.editorPageProps());
-        const poly = wrapper.find(DrawPolygon).first();
-        expect(poly.exists()).toBe(true);
-        poly.find("button").simulate("click");
-        expect(getState(wrapper).mode).toEqual(EditorMode.Polygon);
-    });
-});
-
-    describe("Editor Page Footer integration", () => {
-        return true;
-    });
-
     describe("Basic tag interaction tests", () => {
         it("tags are initialized correctly", () => {
             const project = MockFactory.createTestProject();

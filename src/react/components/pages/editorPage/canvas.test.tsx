@@ -29,7 +29,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 //     addContentSource: jest.fn()
 // }))
 
-fdescribe("Editor Canvas", () => {
+describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, {}, Canvas> = null;
     const onAssetMetadataChanged = jest.fn();
 
@@ -84,7 +84,7 @@ fdescribe("Editor Canvas", () => {
         const testRegion = MockFactory.createTestRegion("test-region");
         testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
         wrapper.prop("selectedAsset").regions.push(testRegion);
-        canvas.onRegionMove("id", createTestRegionData());
+        canvas.onRegionMove("test-region", createTestRegionData());
         expect(onAssetMetadataChanged).toBeCalled();
         expect(wrapper.prop("selectedAsset").regions).toMatchObject([MockFactory.createTestRegion("test-region")]);
     });
