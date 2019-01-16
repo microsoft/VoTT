@@ -12,10 +12,12 @@ import { AssetService } from "../../../../services/assetService";
 import ProjectService from "../../../../services/projectService";
 import { DrawPolygon } from "../../toolbar/drawPolygon";
 import EditorPage, { IEditorPageProps } from "./editorPage";
+jest.mock("vott-ct");
+import { CanvasTools } from "vott-ct";
 
 jest.mock("../../../../services/projectService");
 
-function createComponent(store, props: IEditorPageProps): ReactWrapper {
+function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
         <Provider store={store}>
             <Router>
@@ -32,6 +34,12 @@ function getState(wrapper) {
 describe("Editor Page Component", () => {
     let assetServiceMock: jest.Mocked<typeof AssetService> = null;
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
+
+    beforeAll(() => {
+        const editorMock = CanvasTools.Editor as any;
+        editorMock.prototype.RM = new CanvasTools.Region.RegionsManager(null, null, null);
+        editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
+    });
 
     beforeEach(() => {
         assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
@@ -194,22 +202,34 @@ describe("Editor Page Component", () => {
         });
 
         it("calls onTagClick handler when hot key is pressed", () => {
-            const project = MockFactory.createTestProject();
+            const testProject = MockFactory.createTestProject("TestProject");
+            const testAssets = MockFactory.createTestAssets(5);
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
 
-            const store = createReduxStore({
-                ...MockFactory.initialState(),
-                currentProject: project,
+            AssetProviderFactory.create = jest.fn(() => {
+                return {
+                    getAssets: jest.fn(() => Promise.resolve(testAssets)),
+                };
             });
 
-            const props = MockFactory.editorPageProps();
-            const wrapper = createComponent(store, props);
+            let savedAssetMetadata: IAssetMetadata = null;
 
+            assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
+                savedAssetMetadata = { ...assetMetadata };
+                return Promise.resolve(savedAssetMetadata);
+            });
+
+            const wrapper = createComponent(store, props);
             const editorPage = wrapper.find(EditorPage).childAt(0);
+
             const spy = jest.spyOn(editorPage.instance() as EditorPage, "onTagClicked");
 
             const keyPressed = 2;
-            (editorPage.instance() as EditorPage).handleTagHotKey({ctrlKey: true, key: keyPressed.toString()});
-            expect(spy).toBeCalledWith(project.tags[keyPressed - 1]);
+            setImmediate(() => {
+                (editorPage.instance() as EditorPage).handleTagHotKey({ctrlKey: true, key: keyPressed.toString()});
+                expect(spy).toBeCalledWith({name: testProject.tags[keyPressed - 1].name});
+            });
         });
 
     });
