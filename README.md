@@ -47,6 +47,12 @@ The tool supports the following **features**:
         npm start
     ```
 
+#### NOTE: Installation on Windows from repo  
+  
+  Python 2.7 and VCBuild.exe are requirements for building VoTT using 'npm install'.  
+  If Python is in the path, the install won't attempt to install it again.  
+  To install VCBuild.exe without Visual Studio, use 'npm install -g windows-build-tools' at an Administrator cmd prompt.  
+
  ### Installing CNTK with the FRCNN Prerequisites for Reviewing Model
 
 *Please note that installation of **CNTK and FASTER-RCNN dependencies** are **optional for tagging** and are **only required for CNTK model review and training**.*
