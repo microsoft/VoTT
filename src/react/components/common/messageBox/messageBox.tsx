@@ -75,8 +75,7 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
         });
     }
 
-    // tslint:disable-next-line:max-line-length
-    public componentDidUpdate(prevProps: Readonly<IMessageBoxProps>, prevState: Readonly<IMessageBoxState>, snapshot?: any): void {
+    public componentDidUpdate(prevProps: Readonly<IMessageBoxProps>): void {
         if (prevProps.show !== this.props.show) {
             this.setState({
                 isOpen: this.props.show,
