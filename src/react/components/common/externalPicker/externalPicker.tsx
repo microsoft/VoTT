@@ -8,6 +8,15 @@ interface IKeyValuePair {
     value: string;
 }
 
+/**
+ * Options for External Picker
+ * @member method - HTTP method
+ * @member url - URL for request
+ * @member keySelector - Key attribute from HTTP response
+ * @member valueSelector - Value attribute from HTTP response
+ * @member authHeaderName - Authorization header name
+ * @member authHeaderValue - Authorization header value
+ */
 export interface IExternalPickerUiOptions {
     method: string;
     url: string;
@@ -17,14 +26,25 @@ export interface IExternalPickerUiOptions {
     authHeaderValue?: string;
 }
 
+/**
+ * Properties for External Picker
+ * @member options - External Picker UI options
+ */
 export interface IExternalPickerProps extends FieldProps {
     options: IExternalPickerUiOptions;
 }
 
+/**
+ * State for External Picker
+ * @member items - Items loaded from external source as options
+ */
 export interface IExternalPickerState {
     items: IKeyValuePair[];
 }
 
+/**
+ * Dropdown that provides options from an external HTTP source
+ */
 export default class ExternalPicker extends React.Component<IExternalPickerProps, any> {
     constructor(props, context) {
         super(props, context);

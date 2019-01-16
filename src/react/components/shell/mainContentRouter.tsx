@@ -9,6 +9,10 @@ import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
 import ProfileSettingsPage from "../pages/profileSettingsPage";
 
+/**
+ * @name - Main Content Router
+ * @description - Controls main content pane based on route
+ */
 export default function MainContentRouter() {
     return (
         <div className="app-content">

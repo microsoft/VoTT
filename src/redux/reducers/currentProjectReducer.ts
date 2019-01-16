@@ -3,6 +3,17 @@ import { ActionTypes } from "../actions/actionTypes";
 import { IProject } from "../../models/applicationState";
 import { AnyAction } from "../actions/actionCreators";
 
+/**
+ * Reducer for project. Actions handled:
+ * DELETE_PROJECT_SUCCESS
+ * CLOSE_PROJECT_SUCCESS
+ * LOAD_PROJECT_SUCCESS
+ * SAVE_PROJECT_SUCCESS
+ * LOAD_PROJECT_ASSETS_SUCCESS
+ * SAVE_ASSET_METADATA_SUCCESS
+ * @param state - Current project
+ * @param action - Action that was dispatched
+ */
 export const reducer = (state: IProject = null, action: AnyAction): IProject => {
     switch (action.type) {
         case ActionTypes.DELETE_PROJECT_SUCCESS:

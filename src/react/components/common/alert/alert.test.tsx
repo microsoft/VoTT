@@ -8,6 +8,7 @@ describe("Alert component", () => {
         title: "Test Title",
         message: "Test Message",
         onClose: modalCloseHandler,
+        show: false,
     };
 
     function createComponent(props: IAlertProps): ReactWrapper<IAlertProps, IAlertState, Alert> {
@@ -25,12 +26,12 @@ describe("Alert component", () => {
         expect(Alert).toBeDefined();
     });
 
-    it("Renders nothing if not activiated", () => {
+    it("Renders nothing if not activated", () => {
         const wrapper = createComponent(defaultProps);
         expect(wrapper.html()).toBeNull();
     });
 
-    it("Renders modal when activiated", () => {
+    it("Renders modal when activated", () => {
         const wrapper = createComponent(defaultProps);
 
         wrapper.instance().open();
@@ -58,7 +59,7 @@ describe("Alert component", () => {
     });
 
     it("Calls onClose handler when clicking positive button", () => {
-        const arg = { value: "test" };
+        const arg = {value: "test"};
         const wrapper = createComponent(defaultProps);
 
         wrapper.instance().open(arg);
@@ -67,4 +68,19 @@ describe("Alert component", () => {
         wrapper.find(".modal-footer button").first().simulate("click");
         expect(modalCloseHandler).toBeCalledWith(arg);
     });
+
+    it("Renders modal if prop.show is set to true", () => {
+        const props: IAlertProps = {
+            title: "Test Title",
+            message: "Test Message",
+            onClose: modalCloseHandler,
+            show: true,
+        };
+
+        const wrapper = createComponent(props);
+        expect(wrapper.find(".modal-title").text()).toEqual(defaultProps.title);
+        expect(wrapper.find(".modal-body").text()).toEqual(defaultProps.message);
+        expect(wrapper.find(".modal-footer button").length).toEqual(1);
+    });
+
 });

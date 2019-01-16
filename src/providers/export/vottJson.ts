@@ -23,6 +23,9 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOption
         Guard.null(options);
     }
 
+    /**
+     * Export project to VoTT JSON format
+     */
     public async export(): Promise<void> {
         const assetService = new AssetService(this.project);
 

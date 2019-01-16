@@ -6,6 +6,11 @@ import rootReducer from "../reducers";
 import { IApplicationState } from "../../models/applicationState";
 import { createLocalStorage, mergeInitialState } from "../middleware/localStorage";
 
+/**
+ * Creates initial redux store from initial aplication state
+ * @param initialState - Initial state of application
+ * @param loadFromLocalStorage - Load from local storage if true
+ */
 export default function createReduxStore(
     initialState?: IApplicationState,
     loadFromLocalStorage: boolean = true): Store {

@@ -1,6 +1,10 @@
 import { ToolbarItem } from "./toolbarItem";
 import { toast } from "react-toastify";
 
+/**
+ * @name - Save Project
+ * @description - Toolbar item to save current project
+ */
 export class SaveProject extends ToolbarItem {
     protected async onItemClick() {
         try {

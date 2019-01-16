@@ -99,7 +99,7 @@ describe("Editor Page Component", () => {
     });
 
     it("Raises onAssetSelected handler when an asset is selected from the sidebar", (done) => {
-        // create test project and asset
+        // create` test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets(5);
         const defaultAsset = testAssets[0];
