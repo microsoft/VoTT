@@ -5,20 +5,43 @@ import { TokenCredential, AnonymousCredential,
     ContainerURL, StorageURL, ServiceURL, Credential, Aborter,
     BlobURL, BlockBlobURL } from "@azure/storage-blob";
 
+/**
+ * Options for Azure Cloud Storage
+ * @member accountName - Name of Storage Account
+ * @member containerName - Name of targeted container
+ * @member createContainer - Option for creating container in `initialize()`
+ * @member sas - Shared Access Signature (SAS) token for accessing Azure Blob Storage
+ * @member oauthToken - Not yet implemented. Optional token for accessing Azure Blob Storage
+ */
 export interface IAzureCloudStorageOptions {
     accountName: string;
     containerName: string;
     createContainer: boolean;
-    oauthToken?: string;
     sas?: string;
+    oauthToken?: string;
 }
 
+/**
+ * Storage Provider for Azure Blob Storage
+ */
 export class AzureBlobStorage implements IStorageProvider {
 
+    /**
+     * Storage type
+     * @returns - StorageType.Cloud
+     */
     public storageType: StorageType = StorageType.Cloud;
 
     constructor(private options?: IAzureCloudStorageOptions) {}
 
+    /**
+     * Initialize connection to Blob Storage account & container
+     * If `createContainer` was specified in options, this function
+     * creates the container. Otherwise, validates that container
+     * is contained in list of containers
+     * @throws - Error if container does not exist or not able to
+     * connect to Azure Blob Storage
+     */
     public initialize(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
@@ -40,6 +63,10 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
+    /**
+     * Reads text from specified blob
+     * @param blobName - Name of blob in container
+     */
     public readText(blobName: string): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             try {
@@ -53,13 +80,21 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
-    public async readBinary(path: string) {
-        const text = await this.readText(path);
+    /**
+     * Reads Buffer from specified blob
+     * @param blobName - Name of blob in container
+     */
+    public async readBinary(blobName: string) {
+        const text = await this.readText(blobName);
         return Buffer.from(text);
     }
 
+    /**
+     * Writes text to blob in container
+     * @param blobName - Name of blob in container
+     * @param content - Content to write to blob (string or Buffer)
+     */
     public async writeText(blobName: string, content: string | Buffer) {
-        // await this.initialize(); // TODO Move this to more central location, called by IStorageProvider
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const blockBlobURL = this.getBlockBlobURL(blobName);
@@ -75,10 +110,19 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
+    /**
+     * Writes buffer to blob in container
+     * @param blobName - Name of blob in container
+     * @param content - Buffer to write to blob
+     */
     public writeBinary(blobName: string, content: Buffer) {
         return this.writeText(blobName, content);
     }
 
+    /**
+     * Deletes file from container
+     * @param blobName - Name of blob in container
+     */
     public deleteFile(blobName: string): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
@@ -90,6 +134,14 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
+    /**
+     * Lists files in container
+     * @param path - NOT USED IN CURRENT IMPLEMENTATION. Only uses container
+     * as specified in Azure Cloud Storage Options. Included to satisfy
+     * Storage Provider interface
+     * @param ext - Extension of files to filter on when retrieving files
+     * from container
+     */
     public listFiles(path: string, ext?: string): Promise<string[]> {
         return new Promise<string[]>(async (resolve, reject) => {
             try {
@@ -115,6 +167,11 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
+    /**
+     * Lists the containers with in the Azure Blob Storage account
+     * @param path - NOT USED IN CURRENT IMPLEMENTATION. Lists containers in storage account.
+     * Path does not really make sense in this scenario. Included to satisfy interface
+     */
     public listContainers(path: string) {
         return new Promise<string[]>(async (resolve, reject) => {
             try {
@@ -137,11 +194,17 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
+    /**
+     * Creates container specified in Azure Cloud Storage options
+     * @param containerName - NOT USED IN CURRENT IMPLEMENTATION. Because `containerName`
+     * is a required attribute of the Azure Cloud Storage options used to instantiate the
+     * provider, this function creates that container. Included to satisfy interface
+     */
     public createContainer(containerName: string): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const containerURL = this.getContainerURL();
-                const createContainerResponse = await containerURL.create(Aborter.none);
+                await containerURL.create(Aborter.none);
                 resolve();
             } catch (e) {
                 reject(e);
@@ -150,7 +213,13 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
-    public deleteContainer(path: string): Promise<void> {
+    /**
+     * Deletes container specified in Azure Cloud Storage options
+     * @param containerName - NOT USED IN CURRENT IMPLEMENTATION. Because `containerName`
+     * is a required attribute of the Azure Cloud Storage options used to instantiate the
+     * provider, this function creates that container. Included to satisfy interface
+     */
+    public deleteContainer(containerName: string): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 await this.getContainerURL().delete(Aborter.none);
@@ -161,6 +230,11 @@ export class AzureBlobStorage implements IStorageProvider {
         });
     }
 
+    /**
+     * Retrieves assets from Azure Blob Storage container
+     * @param containerName - Container from which to retrieve assets. Defaults to
+     * container specified in Azure Cloud Storage options
+     */
     public async getAssets(containerName?: string): Promise<IAsset[]> {
         containerName = (containerName) ? containerName : this.options.containerName;
         const files = await this.listFiles(containerName);
@@ -175,15 +249,27 @@ export class AzureBlobStorage implements IStorageProvider {
         return result;
     }
 
+    /**
+     *
+     * @param url - URL for Azure Blob
+     */
     public getFileName(url: string) {
         const pathParts = url.split("/");
         return pathParts[pathParts.length - 1].split("?")[0];
     }
 
+    /**
+     * @returns - URL for Azure Blob Storage account with SAS token appended if specified
+     */
     public getAccountUrl(): string {
         return `https://${this.options.accountName}.blob.core.windows.net` + (this.options.sas || "");
     }
 
+    /**
+     * Gets a Credential object. OAuthToken if specified in options, anonymous
+     * credential otherwise (uses the SAS token)
+     * @returns - Credential object from Azure Storage SDK
+     */
     private getCredential(): Credential {
         if (this.options.oauthToken) {
             return new TokenCredential(this.options.oauthToken);

@@ -11,6 +11,9 @@ describe("Export Provider Factory", () => {
             providerType: "TestExportProvider",
             providerOptions: {},
         },
+        videoSettings: {
+            frameExtractionRate: 15,
+        },
         sourceConnection: null,
         tags: [],
         targetConnection: null,

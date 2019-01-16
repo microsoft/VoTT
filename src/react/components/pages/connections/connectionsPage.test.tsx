@@ -170,7 +170,6 @@ describe("Connections Page", () => {
                 done();
             });
         });
-
     });
 
     describe("selecting connections", () => {

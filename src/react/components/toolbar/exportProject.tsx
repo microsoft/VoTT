@@ -1,6 +1,10 @@
 import { ToolbarItem } from "./toolbarItem";
 import { toast } from "react-toastify";
 
+/**
+ * @name - Export Project
+ * @description - Toolbar item to export current project
+ */
 export class ExportProject extends ToolbarItem {
     protected async onItemClick() {
         const infoId = toast.info(`Started export for ${this.props.project.name}...`, { autoClose: false });

@@ -47,6 +47,7 @@ export interface IProject {
     sourceConnection: IConnection;
     targetConnection: IConnection;
     exportFormat: IExportFormat;
+    videoSettings: IVideoSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
 }
@@ -101,6 +102,15 @@ export interface IConnection {
 export interface IExportFormat {
     providerType: string;
     providerOptions: any;
+}
+
+/**
+ * @name - Video Tagging Settings
+ * @description - Defines the video settings within a VoTT project
+ * @member frameExtractionRate - Extraction rate for a video (number of frames per second of video)
+ */
+export interface IVideoSettings {
+    frameExtractionRate: number;
 }
 
 /**

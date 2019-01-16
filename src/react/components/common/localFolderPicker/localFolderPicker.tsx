@@ -2,16 +2,30 @@ import React from "react";
 import { LocalFileSystemProxy } from "../../../../providers/storage/localFileSystemProxy";
 import { strings } from "../../../../common/strings";
 
+/**
+ * Properties for Local Folder Picker
+ * @member id - ID for HTML form control element
+ * @member value - Initial value for picker
+ * @member onChange - Function to call on change to selected value
+ */
 interface ILocalFolderPickerProps {
     id?: string;
     value: string;
     onChange: (value) => void;
 }
 
+/**
+ * State for Local Folder Picker
+ * @member value - Selected folder
+ */
 interface ILocalFolderPickerState {
     value: string;
 }
 
+/**
+ * @name - Local Folder Picker
+ * @description - Select folder from local file system
+ */
 export default class LocalFolderPicker extends React.Component<ILocalFolderPickerProps, ILocalFolderPickerState> {
     private localFileSystem: LocalFileSystemProxy;
 

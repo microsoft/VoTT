@@ -1,5 +1,8 @@
 import { IAppStrings } from "../strings";
 
+/**
+ * App Strings for Spanish language
+ */
 export const spanish: IAppStrings = {
     appName: "Herramienta Visual de Etiquetado de Objetos",
     common: {
@@ -48,6 +51,11 @@ export const spanish: IAppStrings = {
         targetConnection: {
             title: "Conexión de Destino",
             description: "Donde se guarda su proyecto y sus datos exportados",
+        },
+        videoSettings: {
+            title: "Ajustes de video",
+            description: "La velocidad a la que se extraen los marcos para el etiquetado.",
+            frameExtractionRate: "Tasa de extracción de cuadros (cuadros por segundo de video)",
         },
         addConnection: "Agregar Conexión",
     },

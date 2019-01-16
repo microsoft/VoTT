@@ -3,6 +3,13 @@ import { NavLink } from "react-router-dom";
 import ConditionalNavLink from "../common/conditionalNavLink/conditionalNavLink";
 import { strings } from "../../../common/strings";
 
+/**
+ * Side bar that remains visible throughout app experience
+ * Contains links to editor, settings, export, etc.
+ * @param param0 - {
+ *      project - IProject
+ * }
+ */
 export default function Sidebar({ project }) {
     const projectId = project ? project.id : null;
 
