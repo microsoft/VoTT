@@ -12,11 +12,13 @@ import FilePicker from "../../common/filePicker/filePicker";
 import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
+import IAppErrorActions, * as appErrorActions from "../../../../redux/actions/appErrorActions";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
+    appErrorActions: IAppErrorActions;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -29,6 +31,7 @@ function mapStateToProps(state: IApplicationState) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        appErrorActions: bindActionCreators(appErrorActions, dispatch),
     };
 }
 
@@ -107,7 +110,9 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} '${project.name}'?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
+
             </div>
+
         );
     }
 
@@ -116,8 +121,20 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUpload = (e, projectJson) => {
-        const project: IProject = JSON.parse(projectJson);
+        let project: IProject;
+        try {
+            project = JSON.parse(projectJson);
+        } catch (error) {
+            this.props.appErrorActions.showError({
+                title: "Homepage has an error",
+                message: "File is not valid json",
+            });
+
+            return;
+        }
+
         this.loadSelectedProject(project);
+
     }
 
     private onProjectFileUploadError = (e, err) => {
