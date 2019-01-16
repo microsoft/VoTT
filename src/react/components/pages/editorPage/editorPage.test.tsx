@@ -15,7 +15,7 @@ import EditorPage, { IEditorPageProps } from "./editorPage";
 
 jest.mock("../../../../services/projectService");
 
-function createCompoent(store, props: IEditorPageProps): ReactWrapper {
+function createComponent(store, props: IEditorPageProps): ReactWrapper {
     return mount(
         <Provider store={store}>
             <Router>
@@ -57,10 +57,10 @@ describe("Editor Page Component", () => {
     it("Sets project state from redux store", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, true);
-        const props = MockFactory.editorPageSettingsProps(testProject.id);
+        const props = MockFactory.editorPageProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         const editorPage = wrapper.find(EditorPage).childAt(0);
 
         expect(loadProjectSpy).not.toBeCalled();
@@ -71,7 +71,7 @@ describe("Editor Page Component", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets(5);
         const store = createStore(testProject, true);
-        const props = MockFactory.editorPageSettingsProps(testProject.id);
+        const props = MockFactory.editorPageProps(testProject.id);
 
         AssetProviderFactory.create = jest.fn(() => {
             return {
@@ -86,7 +86,7 @@ describe("Editor Page Component", () => {
             return Promise.resolve(savedAssetMetadata);
         });
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         const editorPage = wrapper.find(EditorPage).childAt(0);
 
         const partialProject = {
@@ -110,7 +110,7 @@ describe("Editor Page Component", () => {
 
         // mock store and props
         const store = createStore(testProject, true);
-        const props = MockFactory.editorPageSettingsProps(testProject.id);
+        const props = MockFactory.editorPageProps(testProject.id);
 
         // mock out the asset provider create method
         AssetProviderFactory.create = jest.fn(() => {
@@ -132,7 +132,7 @@ describe("Editor Page Component", () => {
         const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
 
         // create mock editor page
-        createCompoent(store, props);
+        createComponent(store, props);
 
         const partialProject = {
             id: testProject.id,
@@ -159,7 +159,7 @@ describe("Editor Page Component", () => {
             ...MockFactory.initialState(),
             currentProject: project,
         });
-        const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+        const wrapper = createComponent(store, MockFactory.editorPageProps());
         const poly = wrapper.find(DrawPolygon).first();
         expect(poly.exists()).toBe(true);
         poly.find("button").simulate("click");
@@ -178,7 +178,7 @@ describe("Editor Page Component", () => {
                 ...MockFactory.initialState(),
                 currentProject: project,
             });
-            const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
             expect(getState(wrapper).project.tags).toEqual(project.tags);
         });
 
@@ -188,7 +188,7 @@ describe("Editor Page Component", () => {
                 ...MockFactory.initialState(),
                 currentProject: project,
             });
-            const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
             expect(getState(wrapper).project.tags).toEqual(project.tags);
 
             const newTagName = "My new tag";
@@ -208,7 +208,7 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const wrapper = createCompoent(store, MockFactory.editorPageSettingsProps());
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
             expect(getState(wrapper).project.tags).toEqual(project.tags);
             wrapper.find("a.ReactTags__remove")
                 .last().simulate("click");
@@ -225,8 +225,8 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
 
-            const props = MockFactory.editorPageSettingsProps();
-            const wrapper = createCompoent(store, props);
+            const props = MockFactory.editorPageProps();
+            const wrapper = createComponent(store, props);
 
             const editorPage = wrapper.find(EditorPage).childAt(0);
             const spy = jest.spyOn(editorPage.instance() as EditorPage, "onTagClicked");

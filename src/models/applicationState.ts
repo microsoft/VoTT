@@ -161,10 +161,11 @@ export interface IRegion {
     id: string;
     type: RegionType;
     tags: ITagMetadata[];
-    height: number;
-    width: number;
-    origin: IPoint;
-    points: IPoint[];
+    height?: number;
+    width?: number;
+    origin?: IPoint;
+    points?: IPoint[];
+    boundingBox?: IBoundingBox;
 }
 
 /**
@@ -176,6 +177,21 @@ export interface IRegion {
 export interface ITagMetadata {
     name: string;
     properties?: object;
+}
+
+/**
+ * @name - Bouding Box
+ * @description - Defines the tag usage within a bounding box region
+ * @member left - Defines the left x boundary for the start of the bounding box
+ * @member top - Defines the top y boundary for the start of the boudning box
+ * @member width - Defines the width of the bounding box
+ * @member height - Defines the height of the bounding box
+ */
+export interface IBoundingBox {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
 }
 
 /**
@@ -226,6 +242,7 @@ export enum RegionType {
     Point = "POINT",
     Rectangle = "RECTANGLE",
     Polygon = "POLYGON",
+    Square = "SQUARE",
 }
 
 export enum EditorMode {

@@ -9,7 +9,7 @@ import { AssetType } from "../../models/applicationState";
 
 describe("Azure blob functions", () => {
 
-    const ad = MockFactory.fakeAzureData();
+    const ad = MockFactory.createAzureData();
     const options = ad.options;
 
     const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;

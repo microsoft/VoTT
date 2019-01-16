@@ -9,6 +9,9 @@ import { ZoomIn } from "./react/components/toolbar/zoomIn";
 import { ZoomOut } from "./react/components/toolbar/zoomOut";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
 
+/**
+ * Registers items for toolbar
+ */
 export default function registerToolbar() {
     ToolbarItemFactory.register(Select, {
         name: "selectCanvas",
