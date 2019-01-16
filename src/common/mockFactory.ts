@@ -1,6 +1,6 @@
 import shortid from "shortid";
 import {
-    AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
+    AssetState, AssetType, IAppError, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -19,6 +19,19 @@ import {
 } from "../providers/export/azureCustomVision/azureCustomVisionService";
 
 export default class MockFactory {
+
+    /**
+     * Creates sample IAppError
+     * @param {string} title to be display in  Alert
+     * @param {string} message to be display in body of Alert
+     * @returns {IAppError}
+     */
+    public static createAppError(title: string = "", message: string = ""): IAppError {
+        return {
+            title,
+            message,
+        };
+    }
 
     /**
      * Creates fake IAsset
@@ -508,6 +521,7 @@ export default class MockFactory {
             connections: testConnections,
             recentProjects: testProjects,
             currentProject: testProjects[0],
+            appError: null,
         };
     }
 

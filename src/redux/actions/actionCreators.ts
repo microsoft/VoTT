@@ -16,6 +16,10 @@ import {
     IExportProjectAction,
     IDeleteProjectAction,
 } from "./projectActions";
+import {
+    IShowAppErrorAction,
+    IClearErrorAction,
+} from "./appErrorActions";
 
 export interface IPayloadAction<TType, TPayload> extends Action<TType> {
     payload: TPayload;
@@ -55,4 +59,6 @@ export type AnyAction = IOtherAction |
     ILoadProjectAssetsAction |
     ISaveAssetMetadataAction |
     ILoadAssetMetadataAction |
-    IExportProjectAction;
+    IExportProjectAction |
+    IShowAppErrorAction |
+    IClearErrorAction;

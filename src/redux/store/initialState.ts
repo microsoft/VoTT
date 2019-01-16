@@ -6,8 +6,9 @@ const initialState: IApplicationState = {
         connection: null,
     },
     connections: null, // sampleConnections,
-    recentProjects: null, // sampeProjects,
+    recentProjects: null, // sampleProjects,
     currentProject: null,
+    appError: null,
 };
 
 export default initialState;
