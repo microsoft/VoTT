@@ -150,20 +150,6 @@
     background: rgb(64,64,64);
 }
 
-#toolbarzone {
-    grid-row: 1;
-    grid-column: 1/2;
-    z-index: 10;
-}
-
-#toolbarzone svg {
-    width: 64px;
-    height: 100%;
-    margin-right:5px;
-    background: #666;
-    box-shadow: 0 0 0.5px #999, 5px 0px 10px -5px rgb(0,0,0);
-}
-
 #selectionzone {
     grid-row: 1;
     grid-column: 2/3;
