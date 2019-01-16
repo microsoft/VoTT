@@ -13,12 +13,24 @@ const formSchema = addLocValues(require("./appSettingsPage.json"));
 // tslint:disable-next-line:no-var-requires
 const uiSchema = addLocValues(require("./appSettingsPage.ui.json"));
 
+/**
+ * Props for App Settings Page
+ * @member appSettings - Current Application settings
+ * @member connections - Application connections
+ * @member actions - Application actions
+ */
 interface IAppSettingsProps {
     appSettings: IAppSettings;
     connections: IConnection[];
     actions: IApplicationActions;
 }
 
+/**
+ * State for App Settings Page
+ * @member formSchema - JSON Form Schema for page
+ * @member uiSchema - JSON Form UI Schema for page
+ * @member appSettings - Application settings
+ */
 interface IAppSettingsState {
     formSchema: any;
     uiSchema: any;
@@ -38,6 +50,9 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
+/**
+ * Page for viewing and editing application settings
+ */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class AppSettingsPage extends React.Component<IAppSettingsProps, IAppSettingsState> {
     private widgets: any = {

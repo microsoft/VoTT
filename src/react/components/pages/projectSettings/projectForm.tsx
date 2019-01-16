@@ -14,9 +14,10 @@ const uiSchema = addLocValues(require("./projectForm.ui.json"));
 
 /**
  * Required properties for Project Settings form
- * project: IProject - project to fill form
- * connections: IConnection[] - array of connections to use in project
- * onSubmit: function to call on form submit
+ * @member project - Current project to fill form
+ * @member connections - Array of connections to use in project
+ * @member onSubmit - Function to call on form submission
+ * @member onCancel - Function to call on form cancellation
  */
 export interface IProjectFormProps extends React.Props<ProjectForm> {
     project: IProject;
@@ -27,9 +28,10 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
 
 /**
  * Project Form State
- * formData - data containing details of project
- * formSchema - json schema of form
- * uiSchema - json UI schema of form
+ * @member classNames - Class names for HTML form element
+ * @member formData - data containing details of project
+ * @member formSchema - json schema of form
+ * @member uiSchema - json UI schema of form
  */
 export interface IProjectFormState {
     classNames: string[];
@@ -39,7 +41,8 @@ export interface IProjectFormState {
 }
 
 /**
- * Form for editing or creating VoTT projects
+ * @name - Project Form
+ * @description - Form for editing or creating VoTT projects
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
     private fields = {
@@ -79,6 +82,15 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 ...this.props.project,
             },
         };
+
+        // Set the default video settings if they are not already set
+        if (this.props.project) {
+            if (this.state.formData.videoSettings === null || this.state.formData.videoSettings === undefined) {
+                this.state.formData.videoSettings = {
+                    frameExtractionRate: this.state.formSchema.videoSettings.properties.frameExtractionRate.default,
+                };
+            }
+       }
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onFormCancel = this.onFormCancel.bind(this);
@@ -138,9 +150,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         return errors;
     }
 
-    /**
-     * Called when form is submitted
-     */
     private onFormSubmit(args: ISubmitEvent<IProject>) {
         const project: IProject = {
             ...args.formData,

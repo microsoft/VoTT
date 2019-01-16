@@ -1,3 +1,6 @@
+/**
+ * Redux Action types
+ */
 export enum ActionTypes {
     // App
     TOGGLE_DEV_TOOLS_SUCCESS = "TOGGLE_DEV_TOOLS_SUCCESS",
@@ -22,4 +25,7 @@ export enum ActionTypes {
     LOAD_ASSET_METADATA_SUCCESS = "LOAD_ASSET_METADATA_SUCCESS",
 
     ANY_OTHER_ACTION = "ANY_OTHER_ACTION_SUCCESS",
+
+    SHOW_ERROR= "SHOW_ERROR",
+    CLEAR_ERROR = "CLEAR_ERROR",
 }

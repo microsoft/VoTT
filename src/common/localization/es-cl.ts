@@ -52,6 +52,11 @@ export const spanish: IAppStrings = {
             title: "Conexión de Destino",
             description: "Donde se guarda su proyecto y sus datos exportados",
         },
+        videoSettings: {
+            title: "Ajustes de video",
+            description: "La velocidad a la que se extraen los marcos para el etiquetado.",
+            frameExtractionRate: "Tasa de extracción de cuadros (cuadros por segundo de video)",
+        },
         addConnection: "Agregar Conexión",
     },
     tags: {

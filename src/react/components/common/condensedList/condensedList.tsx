@@ -2,15 +2,28 @@ import React, { SyntheticEvent } from "react";
 import "./condensedList.scss";
 import { Link } from "react-router-dom";
 
+/**
+ * Properties for Condensed List Component
+ * @member title - Title of condensed list
+ * @member items - Array of items to be rendered
+ * @member newLinkTo - Link for list items
+ * @member onClick - Function to call on clicking items
+ * @member onDelete - Function to call on deleting items
+ * @member Component - Component to be rendered for list items
+ */
 interface ICondensedListProps {
     title: string;
+    Component: any;
     items: any[];
     newLinkTo?: string;
     onClick?: (item) => void;
     onDelete?: (item) => void;
-    Component: any;
 }
 
+/**
+ * @name - Condensed List
+ * @description - Clickable, deletable and linkable list of items
+ */
 export default class CondensedList extends React.Component<ICondensedListProps> {
     constructor(props, context) {
         super(props, context);
@@ -68,6 +81,10 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
     }
 }
 
+/**
+ * Generic list item with an onClick function and a name
+ * @param param0 - {item: {name: ""}, onClick: (item) => void;}
+ */
 export function ListItem({ item, onClick }) {
     return (
         <li>

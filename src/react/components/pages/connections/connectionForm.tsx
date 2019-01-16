@@ -10,12 +10,26 @@ const formSchema = addLocValues(require("./connectionForm.json"));
 // tslint:disable-next-line:no-var-requires
 const uiSchema = addLocValues(require("./connectionForm.ui.json"));
 
+/**
+ * Properties for Connection form
+ * @member connection - Form being viewed/edited
+ * @member onSubmit - Function called upon form submission
+ * @member onCancel - Function called upon cancellation of form
+ */
 export interface IConnectionFormProps extends React.Props<ConnectionForm> {
     connection: IConnection;
     onSubmit: (connection: IConnection) => void;
     onCancel?: () => void;
 }
 
+/**
+ * State for Connection Form
+ * @member providerName - Name of connection provider
+ * @member formSchema - JSON Form Schema
+ * @member uiSchema - JSON Form UI Schema
+ * @member formData - Current state of form data as a Connection
+ * @member classNames - HTML Class names for form element
+ */
 export interface IConnectionFormState {
     providerName: string;
     formSchema: any;
@@ -24,6 +38,9 @@ export interface IConnectionFormState {
     classNames: string[];
 }
 
+/**
+ * Form for viewing, creating and editing connections
+ */
 export default class ConnectionForm extends React.Component<IConnectionFormProps, IConnectionFormState> {
     private widgets = {
         localFolderPicker: (LocalFolderPicker as any) as Widget,

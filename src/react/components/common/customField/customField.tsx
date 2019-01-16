@@ -2,6 +2,11 @@ import React from "react";
 import { FieldProps } from "react-jsonschema-form";
 import Guard from "../../../../common/guard";
 
+/**
+ * Custom field for react-jsonschema-form
+ * @param Widget UI Widget for form
+ * @param mapProps Function mapping props to an object
+ */
 export default function CustomField(Widget: any, mapProps?: (props: FieldProps) => any) {
     Guard.null(Widget);
 

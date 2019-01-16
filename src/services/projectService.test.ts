@@ -9,6 +9,7 @@ import { ExportProviderFactory } from "../providers/export/exportProviderFactory
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
     let testProject: IProject = null;
+    let projectList: IProject[] = null;
 
     const storageProviderMock = {
         writeText: jest.fn((project) => Promise.resolve(project)),
@@ -98,5 +99,18 @@ describe("Project Service", () => {
         createMock.mockImplementationOnce(() => { throw expectedError; });
 
         await expect(projectSerivce.delete(testProject)).rejects.toEqual(expectedError);
+    });
+
+    it("isDuplicate returns false when called with a unique project", async () => {
+        testProject = MockFactory.createTestProject("TestProject");
+        projectList = MockFactory.createTestProjects();
+        expect(projectSerivce.isDuplicate(testProject, projectList)).toEqual(false);
+    });
+
+    it("isDuplicate returns true when called with a duplicate project", async () => {
+        testProject = MockFactory.createTestProject("1");
+        testProject.id = undefined;
+        projectList = MockFactory.createTestProjects();
+        expect(projectSerivce.isDuplicate(testProject, projectList)).toEqual(true);
     });
 });

@@ -8,6 +8,12 @@ import "./editorToolbar.scss";
 import { Select } from "../../toolbar/select";
 import Canvas from "./canvas";
 
+/**
+ * Properties for Editor Toolbar
+ * @member project - Current project being edited
+ * @member actions - Actions to be performed on project
+ * @member items - Registered Toolbar items
+ */
 export interface IEditorToolbarProps {
     project: IProject;
     actions: IProjectActions;
@@ -16,10 +22,18 @@ export interface IEditorToolbarProps {
     onEditorModeChange: (mode: EditorMode) => void;
 }
 
+/**
+ * State of IEditorToolbar
+ * @member selectedItem - Item selected from toolbar
+ */
 export interface IEditorToolbarState {
     selectedItem: any;
 }
 
+/**
+ * @name - Editor Toolbar
+ * @description - Collection of buttons that perform actions in toolbar on editor page
+ */
 export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorToolbarState> {
     constructor(props, context) {
         super(props, context);

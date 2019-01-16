@@ -19,6 +19,22 @@
             "title": "${strings.common.description}",
             "type": "string"
         },
+        "videoSettings": {
+            "title": "${strings.projectSettings.videoSettings.title}",
+            "type": "object",
+            "properties": {
+                "frameExtractionRate": {
+                    "title": "${strings.projectSettings.videoSettings.frameExtractionRate}",
+                    "description": "${strings.projectSettings.videoSettings.description}",
+                    "type": "integer",
+                    "default": 15,
+                    "minimum": 1
+                }
+            },
+            "required": [
+                "frameExtractionRate"
+            ]
+        },
         "tags": {
             "title": "${strings.tags.title}",
             "type": "array"
@@ -27,6 +43,7 @@
     "required": [
         "name",
         "sourceConnection",
-        "targetConnection"
+        "targetConnection",
+        "videoSettings"
     ]
 }

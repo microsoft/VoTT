@@ -17,12 +17,23 @@ import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 
+/**
+ * Properties for Editor Page
+ * @member project - Project being edited
+ * @member recentProjects - Array of projects recently viewed/edited
+ * @member actions - Project actions
+ */
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
     recentProjects: IProject[];
     actions: IProjectActions;
 }
 
+/**
+ * State for Editor Page
+ * @member project - Project being edited
+ * @member assets - Array of assets in project
+ */
 interface IEditorPageState {
     project: IProject;
     assets: IAsset[];
@@ -51,6 +62,10 @@ function getCtrlNumericKeys(): string[] {
     return keys;
 }
 
+/**
+ * @name - Editor Page
+ * @description - Page for adding/editing/removing tags to assets
+ */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     private loadingProjectAssets: boolean = false;
@@ -143,6 +158,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         );
     }
 
+    /**
+     * Called when a tag from footer is clicked
+     * @param tag Tag clicked
+     */
     public onTagClicked(tag: ITagMetadata) {
         const selectedAsset = this.state.selectedAsset;
         if (selectedAsset.selectedRegions && selectedAsset.selectedRegions.length) {
@@ -167,6 +186,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.onAssetMetadataChanged(selectedAsset);
     }
 
+    /**
+     * Listens for CTRL+{number key} and calls `onTagClicked` with tag corresponding to that number
+     * @param event KeyDown event
+     */
     @keydown(getCtrlNumericKeys())
     public handleTagHotKey(event) {
         const key = parseInt(event.key, 10);

@@ -37,7 +37,7 @@ describe("Project Redux Actions", () => {
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 
         const project = MockFactory.createTestProject("Project1");
-        const result = await projectActions.saveProject(project)(store.dispatch);
+        const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);

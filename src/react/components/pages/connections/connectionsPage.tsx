@@ -1,23 +1,30 @@
 import React from "react";
-import { Route } from "react-router-dom";
 import { connect } from "react-redux";
+import { Route, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import ConnectionItem from "./connectionItem";
-import CondensedList from "../../common/condensedList/condensedList";
-import { IApplicationState, IConnection } from "../../../../models/applicationState";
-import { RouteComponentProps } from "react-router-dom";
-import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
-import ConnectionForm from "./connectionForm";
-import "./connectionsPage.scss";
 import { strings } from "../../../../common/strings";
+import { IApplicationState, IConnection } from "../../../../models/applicationState";
+import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
+import CondensedList from "../../common/condensedList/condensedList";
 import Confirm from "../../common/confirm/confirm";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
+import ConnectionForm from "./connectionForm";
+import ConnectionItem from "./connectionItem";
+import "./connectionsPage.scss";
 
+/**
+ * Properties for Connection Page
+ * @member connections - Array of Connections
+ * @member actions - Actions to perform
+ */
 export interface IConnectionPageProps extends RouteComponentProps, React.Props<ConnectionPage> {
     connections: IConnection[];
     actions: IConnectionActions;
 }
 
+/**
+ * State of Connection Page
+ * @member connection - Connection currently being viewed/edited
+ */
 export interface IConnectionPageState {
     connection: IConnection;
 }
@@ -34,6 +41,9 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
+/**
+ * Page for viewing/editing connections
+ */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ConnectionPage extends React.Component<IConnectionPageProps, IConnectionPageState> {
     private confirmDelete: React.RefObject<Confirm>;
