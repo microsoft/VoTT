@@ -20,6 +20,7 @@ export interface IMessageBoxProps {
     params?: any[];
     onButtonSelect?: (button: HTMLButtonElement) => void;
     onCancel?: () => void;
+    show?: boolean;
 }
 
 /**
@@ -42,8 +43,8 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
         super(props, context);
 
         this.state = {
-            isOpen: false,
-            isRendered: false,
+            isOpen: props.show,
+            isRendered: props.show,
             isButtonSelected: false,
         };
 
@@ -92,6 +93,15 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
                 this.props.onCancel();
             }
         });
+    }
+
+    public componentDidUpdate(prevProps: Readonly<IMessageBoxProps>): void {
+        if (prevProps.show !== this.props.show) {
+            this.setState({
+                isOpen: this.props.show,
+                isRendered: this.props.show,
+            });
+        }
     }
 
     private onFooterClick(evt: SyntheticEvent) {

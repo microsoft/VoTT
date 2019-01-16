@@ -12,6 +12,7 @@ export interface IAlertProps extends IMessageBoxProps {
     closeButtonText?: string;
     closeButtonColor?: string;
     onClose?: () => void;
+    show?: boolean;
 }
 
 /**
@@ -45,14 +46,19 @@ export default class Alert extends React.Component<IAlertProps, IAlertState> {
 
     public render() {
         return (
-            <MessageBox ref={this.messageBox}
+            <MessageBox
+                ref={this.messageBox}
                 title={this.props.title}
                 message={this.props.message}
-                params={this.state.params}>
+                params={this.state.params}
+                show={this.props.show}
+            >
                 <Button
                     autoFocus={true}
                     color={this.props.closeButtonColor || "primary"}
-                    onClick={this.onCloseClick}>{this.props.closeButtonText || "OK"}
+                    onClick={this.onCloseClick}
+                >
+                    {this.props.closeButtonText || "OK"}
                 </Button>
             </MessageBox>
         );

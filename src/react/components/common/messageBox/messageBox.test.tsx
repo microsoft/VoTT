@@ -10,6 +10,7 @@ describe("MessageBox component", () => {
     const defaultProps: IMessageBoxProps = {
         title: "Test Title",
         message: "Test Message",
+        show: false,
         onButtonSelect: buttonSelectHandler,
         onCancel: cancelHandler,
     };
@@ -34,12 +35,12 @@ describe("MessageBox component", () => {
         expect(MessageBox).toBeDefined();
     });
 
-    it("Renders nothing if not activiated", () => {
+    it("Renders nothing if not activated", () => {
         const wrapper = createComponent(defaultProps);
         expect(wrapper.html()).toBeNull();
     });
 
-    it("Renders modal when activiated", () => {
+    it("Renders modal when activated", () => {
         const wrapper = createComponent(defaultProps);
 
         wrapper.instance().open();
@@ -57,7 +58,7 @@ describe("MessageBox component", () => {
         const props: IMessageBoxProps = {
             ...defaultProps,
             message: (testObject) => testObject.value,
-            params: [testObject],
+            params: [ testObject ],
         };
         const wrapper = createComponent(props);
 
@@ -88,5 +89,37 @@ describe("MessageBox component", () => {
         wrapper.find(".modal-header button.close").simulate("click");
 
         expect(cancelHandler).toBeCalled();
+    });
+
+    it("set correct initial state base on props", () => {
+        const props: IMessageBoxProps = {
+            title: "Test Title",
+            message: "Test Message",
+            show: true,
+            onButtonSelect: buttonSelectHandler,
+            onCancel: cancelHandler,
+        };
+
+        const wrapper = createComponent(props);
+
+        expect(wrapper.instance().state.isOpen).toBe(true);
+        expect(wrapper.instance().state.isRendered).toBe(true);
+        expect(wrapper.instance().state.isButtonSelected).toBe(false);
+
+    });
+
+    describe("componentDidUpdate", () => {
+        it("toggle isOpen and isRendered if show is different", () => {
+            const wrapper = createComponent(defaultProps);
+
+            const show = true;
+
+            wrapper.setProps({
+                show: true,
+            });
+
+            expect(wrapper.instance().state.isOpen).toBe(show);
+            expect(wrapper.instance().state.isRendered).toBe(show);
+        });
     });
 });
