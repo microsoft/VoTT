@@ -1,5 +1,18 @@
 import React from "react";
-import { TagsInput } from "vott-react";
+import { ITag } from "../../../../models/applicationState";
+import { TagsInput, ITagsInputProps } from "vott-react";
+
+/**
+ * Properties for Editor Tags Input
+ * @member displayHotKeys - True to display index of first 10 tags (for hot keys)
+ * @member onTagClick - Function to call when tag is clicked
+ * @member onTagShiftClick - Function to call when tag is clicked while holding shift
+ */
+export interface IEditorTagsInputProps extends ITagsInputProps {
+    displayHotKeys: boolean;
+    onTagClick?: (tag: ITag) => void;
+    onTagShiftClick?: (tag: ITag) => void;
+}
 
 /**
  * @name - Editor Tags Input
