@@ -10,13 +10,10 @@ import { IApplicationState } from "../../models/applicationState";
 const initialState: IApplicationState = {
     appSettings: {
         devToolsEnabled: false,
-        securityTokens: [
-            { name: "Token1", key: "ABC123" },
-            { name: "Token2", key: "XYZ456" },
-        ],
+        securityTokens: [],
     },
-    connections: null, // sampleConnections,
-    recentProjects: null, // sampleProjects,
+    connections: [],
+    recentProjects: [],
     currentProject: null,
     appError: null,
 };

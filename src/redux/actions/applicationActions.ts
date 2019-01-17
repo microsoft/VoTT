@@ -2,6 +2,7 @@ import { Action, Dispatch } from "redux";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { ActionTypes } from "./actionTypes";
 import { createPayloadAction, createAction, IPayloadAction } from "./actionCreators";
+import { IAppSettings } from "../../models/applicationState";
 
 /**
  * Actions to make changes to application settings
@@ -9,8 +10,9 @@ import { createPayloadAction, createAction, IPayloadAction } from "./actionCreat
  * @member reloadApplication - Reload application
  */
 export default interface IApplicationActions {
-    toggleDevTools(show: boolean): void;
-    reloadApplication(): void;
+    toggleDevTools(show: boolean): Promise<void>;
+    reloadApplication(): Promise<void>;
+    saveAppSettings(appSettings: IAppSettings): IAppSettings;
 }
 
 /**
@@ -39,8 +41,22 @@ export function reloadApplication(): (dipatch: Dispatch) => Promise<void> {
 }
 
 /**
+ * Save app settings
+ */
+export function saveAppSettings(appSettings: IAppSettings): (dispath: Dispatch) => IAppSettings {
+    return (dispatch: Dispatch) => {
+        dispatch(saveAppSettingsAction(appSettings));
+        return { ...appSettings };
+    };
+}
+
+/**
  * Toggle Dev Tools Redux Action type
  */
+        return { ...appSettings };
+    };
+}
+
 export interface IToggleDevToolsAction extends IPayloadAction<string, boolean> {
     type: ActionTypes.TOGGLE_DEV_TOOLS_SUCCESS;
 }
@@ -53,6 +69,13 @@ export interface IRefreshApplicationAction extends Action<string> {
 }
 
 /**
+ * Save app settings action type
+ */
+export interface ISaveAppSettingsAction extends IPayloadAction<string, IAppSettings> {
+    type: ActionTypes.SAVE_APP_SETTINGS_SUCCESS;
+}
+
+/**
  * Instance of toggle dev tools action
  */
 export const toggleDevToolsAction = createPayloadAction<IToggleDevToolsAction>(ActionTypes.TOGGLE_DEV_TOOLS_SUCCESS);
@@ -60,3 +83,4 @@ export const toggleDevToolsAction = createPayloadAction<IToggleDevToolsAction>(A
  * Instance of refresh app action
  */
 export const refreshApplicationAction = createAction<IRefreshApplicationAction>(ActionTypes.REFRESH_APP_SUCCESS);
+export const saveAppSettingsAction = createPayloadAction<ISaveAppSettingsAction>(ActionTypes.SAVE_APP_SETTINGS_SUCCESS);
