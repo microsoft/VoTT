@@ -38,7 +38,7 @@ describe("Draw Polygon Toolbar Item", () => {
         canvasMock.prototype.setSelectionMode = jest.fn((selectionMode) => selectionMode);
     });
 
-    it("Sets the editor mode to Polygon on click", async () => {
+    it("Sets the editor to Polygon mode on click", async () => {
         actions.saveProject = jest.fn(() => Promise.resolve());
         const props = createProps();
         wrapper = createComponent(props);
