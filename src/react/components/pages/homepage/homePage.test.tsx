@@ -86,7 +86,7 @@ describe("Connection Picker Component", () => {
         });
     });
 
-    it("should call open project action after successfull file upload", async (done) => {
+    it("should call open project action after successfull file upload", async () => {
         const store = createStore(recentProjects);
         const props = createProps();
 
@@ -109,12 +109,8 @@ describe("Connection Picker Component", () => {
 
         await MockFactory.flushUi();
 
-        setImmediate(() => {
-            expect(uploadSpy).toBeCalled();
-            expect(openProjectSpy).toBeCalledWith(testProject);
-
-            done();
-        });
+        expect(uploadSpy).toBeCalled();
+        expect(openProjectSpy).toBeCalledWith(testProject);
     });
 
     function createProps(): IHomepageProps {
