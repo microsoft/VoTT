@@ -86,6 +86,37 @@ describe("Connection Picker Component", () => {
         });
     });
 
+    it("should call open project action after successfull file upload", async (done) => {
+        const store = createStore(recentProjects);
+        const props = createProps();
+
+        const openProjectSpy = jest.spyOn(props.actions, "loadProject");
+        const testProject = recentProjects[0];
+        const testProjectJson = JSON.stringify(testProject);
+        const testBlob = new Blob([testProjectJson], { type: "application/json" });
+
+        const wrapper = createComponent(store, props);
+
+        const fileUpload = wrapper.find("a.file-upload").first();
+        const fileInput = wrapper.find(`input[type="file"]`);
+        const filePicker = wrapper.find(FilePicker);
+        const uploadSpy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
+
+        fileUpload.simulate("click");
+        await MockFactory.flushUi(() => {
+            fileInput.simulate("change", ({ target: { files: [testBlob] } }));
+        });
+
+        await MockFactory.flushUi();
+
+        setImmediate(() => {
+            expect(uploadSpy).toBeCalled();
+            expect(openProjectSpy).toBeCalledWith(testProject);
+
+            done();
+        });
+    });
+
     function createProps(): IHomepageProps {
         return {
             recentProjects: [],
