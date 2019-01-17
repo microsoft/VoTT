@@ -33,11 +33,11 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <img src={`file://#${asset.path.replace(/(^\w+:|^)\/\//, "")}`} onLoad={this.onAssetLoad} />
+                    <img src={this.checkAssetPathProtocol(asset.path)} onLoad={this.onAssetLoad} />
                 }
                 {asset.type === AssetType.Video &&
                     <video onLoadedData={this.onAssetLoad}>
-                        <source src={`file://#${asset.path.replace(/(^\w+:|^)\/\//, "")}#t=5.0`} />
+                        <source src={this.checkAssetPathProtocol(asset.path) + "t=5.0"} />
                     </video>
                 }
                 {asset.type === AssetType.Unknown &&
@@ -45,6 +45,13 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                 }
             </div>
         );
+    }
+
+    private checkAssetPathProtocol(assetPath: string): string {
+        if (assetPath.toLowerCase().startsWith("http://") || assetPath.toLowerCase().startsWith("https://")) {
+            return assetPath;
+        }
+        return "file://" + assetPath;
     }
 
     private onAssetLoad() {
