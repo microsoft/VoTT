@@ -31,12 +31,15 @@ describe("Crypto", () => {
     it("encrypts & decrypts a value with incorrect key does not match", () => {
         const expected = "Hello, I am a string";
         const encryptKey = generateKey();
-        const decryptKey = generateKey();
+        const decryptKey = "some random key";
 
-        const encrypted = encrypt(expected, encryptKey);
-        const decrypted = decrypt(encrypted, decryptKey);
-
-        expect(expected).not.toEqual(decrypted);
+        try {
+            const encrypted = encrypt(expected, encryptKey);
+            const decrypted = decrypt(encrypted, decryptKey);
+            expect(expected).not.toEqual(decrypted);
+        } catch (e) {
+            expect(e.message).toEqual("Error decrypting data - Malformed UTF-8 data");
+        }
     });
 
     it("encrypts the same value multiple times generates different encrypted data which can both be decrypted", () => {
