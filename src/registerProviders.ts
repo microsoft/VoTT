@@ -1,5 +1,6 @@
 import { ExportProviderFactory } from "./providers/export/exportProviderFactory";
 import { TFPascalVOCJsonExportProvider } from "./providers/export/tensorFlowPascalVOC";
+import { TFRecordsJsonExportProvider } from "./providers/export/tensorFlowRecords";
 import { VottJsonExportProvider } from "./providers/export/vottJson";
 import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
 import { AzureBlobStorage } from "./providers/storage/azureBlobStorage";
@@ -56,6 +57,11 @@ export default function registerProviders() {
         name: "tensorFlowPascalVOC",
         displayName: strings.export.providers.tfPascalVoc,
         factory: (project, options) => new TFPascalVOCJsonExportProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "tensorFlowRecords",
+        displayName: strings.export.providers.tfRecords,
+        factory: (project, options) => new TFRecordsJsonExportProvider(project, options),
     });
     ExportProviderFactory.register({
         name: "azureCustomVision",
