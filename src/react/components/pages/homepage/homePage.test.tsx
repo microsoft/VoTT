@@ -149,10 +149,7 @@ describe("Connection Picker Component", () => {
     function createStore(recentProjects: IProject[]): Store<IApplicationState, AnyAction> {
         const initialState: IApplicationState = {
             currentProject: null,
-            appSettings: {
-                connection: null,
-                devToolsEnabled: false,
-            },
+            appSettings: MockFactory.appSettings(),
             connections: [],
             recentProjects,
         };

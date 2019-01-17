@@ -73,37 +73,43 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps, 
 
     public render() {
         return (
-            <div className="m-3 text-light">
-                <h3><i className="fas fa-cog fa-1x"></i><span className="px-2">{strings.appSettings.title}</span></h3>
-                <div className="app-settings-page">
-                    <div className="app-settings-page-form">
-                        <Form
-                            className={this.state.classNames.join(" ")}
-                            showErrorList={false}
-                            liveValidate={true}
-                            noHtml5Validate={true}
-                            ObjectFieldTemplate={ObjectFieldTemplate}
-                            FieldTemplate={CustomFieldTemplate}
-                            ArrayFieldTemplate={ArrayFieldTemplate}
-                            validate={this.onFormValidate}
-                            schema={this.state.formSchema}
-                            uiSchema={this.state.uiSchema}
-                            formData={this.state.appSettings}
-                            onSubmit={this.onFormSubmit} />
+            <div className="text-light app-settings-page">
+                <div className="app-settings-page-form p-3">
+                    <h3>
+                        <i className="fas fa-cog fa-1x"></i>
+                        <span className="px-2">{strings.appSettings.title}</span>
+                    </h3>
+                    <Form
+                        className={this.state.classNames.join(" ")}
+                        showErrorList={false}
+                        liveValidate={true}
+                        noHtml5Validate={true}
+                        ObjectFieldTemplate={ObjectFieldTemplate}
+                        FieldTemplate={CustomFieldTemplate}
+                        ArrayFieldTemplate={ArrayFieldTemplate}
+                        validate={this.onFormValidate}
+                        schema={this.state.formSchema}
+                        uiSchema={this.state.uiSchema}
+                        formData={this.state.appSettings}
+                        onSubmit={this.onFormSubmit}>
+                        <div>
+                            <button type="submit" className="btn btn-success mr-1">Save Settings</button>
+                            <button type="button" className="btn btn-secondary">Cancel</button>
+                        </div>
+                    </Form>
+                </div>
+                <div className="app-settings-page-sidebar p-3 bg-lighter-1">
+                    <div className="my-3">
+                        <p>{strings.appSettings.devTools.description}</p>
+                        <button className="btn btn-primary btn-sm"
+                            onClick={this.toggleDevTools}>{strings.appSettings.devTools.button}
+                        </button>
                     </div>
-                    <div className="app-settings-page-sidebar px-2">
-                        <div className="my-3">
-                            <p>{strings.appSettings.devTools.description}</p>
-                            <button className="btn btn-primary btn-sm"
-                                onClick={this.toggleDevTools}>{strings.appSettings.devTools.button}
-                            </button>
-                        </div>
-                        <div className="my-3">
-                            <p>{strings.appSettings.reload.description}</p>
-                            <button className="btn btn-primary btn-sm"
-                                onClick={this.reloadApp}>{strings.appSettings.reload.button}
-                            </button>
-                        </div>
+                    <div className="my-3">
+                        <p>{strings.appSettings.reload.description}</p>
+                        <button className="btn btn-primary btn-sm"
+                            onClick={this.reloadApp}>{strings.appSettings.reload.button}
+                        </button>
                     </div>
                 </div>
             </div>
