@@ -115,9 +115,9 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.cloudFilePicker.current.open();
     }
 
-    private onProjectFileUpload = (e, projectJson) => {
+    private onProjectFileUpload = async (e, projectJson) => {
         const project: IProject = JSON.parse(projectJson);
-        this.loadSelectedProject(project);
+        await this.loadSelectedProject(project);
     }
 
     private onProjectFileUploadError = (e, err) => {
