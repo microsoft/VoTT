@@ -83,16 +83,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             },
         };
 
-        // Set the default video settings if they are not already set
-        if (this.props.project) {
-            if (this.state.formData.videoSettings === null || this.state.formData.videoSettings === undefined) {
-                this.state.formData.videoSettings = {
-                    frameExtractionRate:
-                    this.state.formSchema.properties.videoSettings.properties.frameExtractionRate.default,
-                };
-            }
-       }
-
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onFormCancel = this.onFormCancel.bind(this);
         this.onFormValidate = this.onFormValidate.bind(this);
