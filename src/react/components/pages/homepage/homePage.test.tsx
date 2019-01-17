@@ -11,6 +11,7 @@ import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
 import FilePicker from "../../common/filePicker/filePicker";
 import HomePage, { IHomepageProps } from "./homePage";
+import IAppErrorActions, * as appErrorActions from "../../../../redux/actions/appErrorActions";
 
 jest.mock("../../../../services/projectService");
 
@@ -86,11 +87,9 @@ describe("Connection Picker Component", () => {
         });
     });
 
-    it("should call open project action after successfull file upload", async () => {
-        const store = createStore(recentProjects);
-        const props = createProps();
-
+    it("should call open project action after successful file upload", async () => {
         const openProjectSpy = jest.spyOn(props.actions, "loadProject");
+
         const testProject = recentProjects[0];
         const testProjectJson = JSON.stringify(testProject);
         const testBlob = new Blob([testProjectJson], { type: "application/json" });
@@ -111,6 +110,31 @@ describe("Connection Picker Component", () => {
 
         expect(uploadSpy).toBeCalled();
         expect(openProjectSpy).toBeCalledWith(testProject);
+    });
+
+    it("should call showError action when passed an invalid json project", async () => {
+        // refactoring warning: action spy have to be created before creating component
+        const showErrorSpy = jest.spyOn(props.appErrorActions, "showError");
+
+        const wrapper = createComponent(store, props);
+        const textBlob = new Blob([ "foo" ], { type: "text/plain" });
+
+        const fileUpload = wrapper.find("a.file-upload").first();
+        const fileInput = wrapper.find(`input[type="file"]`);
+
+        fileUpload.simulate("click");
+        await MockFactory.flushUi(() => {
+            fileInput.simulate("change", ({ target: { files: [textBlob] } }));
+        });
+
+        await MockFactory.flushUi();
+
+        const expectedAppError = {
+            title: "Homepage has an error",
+            message: "File is not valid json",
+        };
+
+        expect(showErrorSpy).toBeCalledWith(expectedAppError);
     });
 
     function createProps(): IHomepageProps {
@@ -137,6 +161,7 @@ describe("Connection Picker Component", () => {
                 state: null,
             },
             actions: (projectActions as any) as IProjectActions,
+            appErrorActions: (appErrorActions as any) as IAppErrorActions,
             match: {
                 params: {},
                 isExact: true,
@@ -155,6 +180,7 @@ describe("Connection Picker Component", () => {
             },
             connections: [],
             recentProjects,
+            appError: null,
         };
 
         return createReduxStore(initialState);

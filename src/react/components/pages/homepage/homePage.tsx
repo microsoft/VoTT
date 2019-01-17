@@ -12,11 +12,13 @@ import FilePicker from "../../common/filePicker/filePicker";
 import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
+import IAppErrorActions, * as appErrorActions from "../../../../redux/actions/appErrorActions";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
+    appErrorActions: IAppErrorActions;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -29,6 +31,7 @@ function mapStateToProps(state: IApplicationState) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        appErrorActions: bindActionCreators(appErrorActions, dispatch),
     };
 }
 
@@ -107,7 +110,9 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} '${project.name}'?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
+
             </div>
+
         );
     }
 
@@ -115,9 +120,20 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.cloudFilePicker.current.open();
     }
 
-    private onProjectFileUpload = async (e, projectJson) => {
-        const project: IProject = JSON.parse(projectJson);
-        await this.loadSelectedProject(project);
+    private onProjectFileUpload = async (e, project) => {
+        let projectJson: IProject;
+        try {
+            projectJson = JSON.parse(project);
+        } catch (error) {
+            this.props.appErrorActions.showError({
+                title: "Homepage has an error",
+                message: "File is not valid json",
+            });
+
+            return;
+        }
+
+        await this.loadSelectedProject(projectJson);
     }
 
     private onProjectFileUploadError = (e, err) => {
