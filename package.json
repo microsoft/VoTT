@@ -24,7 +24,9 @@
         "redux-logger": "^3.0.6",
         "redux-thunk": "^2.3.0",
         "rimraf": "^2.6.2",
-        "shortid": "^2.2.14"
+        "shortid": "^2.2.14",
+        "fast-crc32c": "^1.0.4",
+        "tfrecord": "^0.2.0"
     },
     "scripts": {
         "start": "nf start -p 3000",
