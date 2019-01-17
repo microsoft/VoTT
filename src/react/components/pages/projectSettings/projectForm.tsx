@@ -8,6 +8,11 @@ import { StorageProviderFactory } from "../../../../providers/storage/storagePro
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/securityTokenPicker/securityTokenPicker";
+import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
+import { TagsInput, ITagsInputProps, TagEditorModal } from "vott-react";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
+import { ITag } from "vott-react/dist/models/models";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -49,9 +54,6 @@ export interface IProjectFormState {
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
 
-    private tagsInput: React.RefObject<TagsInput>;
-    private tagEditorModal: React.RefObject<TagEditorModal>;
-
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -63,7 +65,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             },
             tags: (this.props.project) ? this.props.project.tags : [],
         };
-        this.tagsInput = React.createRef<TagsInput>();
         this.tagEditorModal = React.createRef<TagEditorModal>();
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -82,6 +83,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 formData: { ...this.props.project },
             });
         }
+    }
+
+    private onTagClick(tag: ITag) {
+        this.tagEditorModal.current.open(tag);
+    }
+
+    private onTagModalOk(tag: ITag) {
+        this.tagEditorModal.current.close();
     }
 
     public render() {
@@ -111,7 +120,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     tagNameText={strings.tags.modal.name}
                     tagColorText={strings.tags.modal.color}
                     saveText={strings.common.save}
-                    cancelText={strings.common.cancel}
+                    cancelText={strings.common.cancel}                    
                 />
             </Form>
         );
