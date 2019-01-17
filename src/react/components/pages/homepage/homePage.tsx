@@ -110,9 +110,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} '${project.name}'?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
-
             </div>
-
         );
     }
 
