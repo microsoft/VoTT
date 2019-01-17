@@ -5,10 +5,9 @@ import { IConnection, IProject, IAppSettings } from "../../../../models/applicat
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
-import TagsInput, { ITagsInputProps } from "../../common/tagsInput/tagsInput";
+import { TagsInput, ITagsInputProps, TagEditorModal } from "vott-react";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
-import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/securityTokenPicker/securityTokenPicker";
-import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
+import { ITag } from "vott-react/dist/models/models";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -48,6 +47,9 @@ export interface IProjectFormState {
  * @description - Form for editing or creating VoTT projects
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
+    
+    private tagEditorModal: React.RefObject<TagEditorModal>;
+    
     private fields = {
         securityToken: CustomField<ISecurityTokenPickerProps>(SecurityTokenPicker, (props) => ({
             id: props.idSchema.$id,
@@ -72,10 +74,22 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 onChange: props.onChange,
             };
         }),
+<<<<<<< HEAD
         tagsInput: CustomField<ITagsInputProps>(TagsInput, (props) => ({
             tags: props.formData,
             onChange: props.onChange,
         })),
+=======
+        tagsInput: CustomField(TagsInput, (props) => {
+            const tagsInputProps : ITagsInputProps = {
+                tags: props.formData,
+                onChange: props.onChange,
+                placeHolder: strings.tags.placeholder,
+                onCtrlTagClick: this.onTagClick,
+            }
+            return tagsInputProps;
+        }),
+>>>>>>> most of code in place, just need to get it to compile
     };
 
     constructor(props, context) {
@@ -88,10 +102,13 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 ...this.props.project,
             },
         };
+        this.tagEditorModal = React.createRef<TagEditorModal>();
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onFormCancel = this.onFormCancel.bind(this);
         this.onFormValidate = this.onFormValidate.bind(this);
+        this.onTagClick = this.onTagClick.bind(this);
+        this.onTagModalOk = this.onTagModalOk.bind(this);
     }
     /**
      * Updates state if project from properties has changed
@@ -103,6 +120,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 formData: { ...this.props.project },
             });
         }
+    }
+
+    private onTagClick(tag: ITag) {
+        this.tagEditorModal.current.open(tag);
+    }
+
+    private onTagModalOk(tag: ITag) {
+        this.tagEditorModal.current.close();
     }
 
     public render() {
@@ -125,6 +150,15 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                         type="button"
                         onClick={this.onFormCancel}>{strings.common.cancel}</button>
                 </div>
+                <TagEditorModal
+                    ref={this.tagEditorModal}
+                    onOk={this.onTagModalOk}
+
+                    tagNameText={strings.tags.modal.name}
+                    tagColorText={strings.tags.modal.color}
+                    saveText={strings.common.save}
+                    cancelText={strings.common.cancel}                    
+                />
             </Form>
         );
     }
