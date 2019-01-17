@@ -30,7 +30,7 @@ export function encrypt(message: string, secret: string): string {
 
         return enc.Base64.stringify(words);
     } catch (e) {
-        throw new Error("Error encrypting data");
+        throw new Error(`Error encrypting data - ${e.message}`);
     }
 }
 
@@ -56,6 +56,6 @@ export function decrypt(encodedMessage: string, secret: string): string {
 
         return decrypted.toString(enc.Utf8);
     } catch (e) {
-        throw new Error("Error decrypting data");
+        throw new Error(`Error decrypting data - ${e.message}`);
     }
 }
