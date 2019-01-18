@@ -53,10 +53,6 @@ export function saveAppSettings(appSettings: IAppSettings): (dispath: Dispatch) 
 /**
  * Toggle Dev Tools Redux Action type
  */
-        return { ...appSettings };
-    };
-}
-
 export interface IToggleDevToolsAction extends IPayloadAction<string, boolean> {
     type: ActionTypes.TOGGLE_DEV_TOOLS_SUCCESS;
 }
@@ -83,4 +79,7 @@ export const toggleDevToolsAction = createPayloadAction<IToggleDevToolsAction>(A
  * Instance of refresh app action
  */
 export const refreshApplicationAction = createAction<IRefreshApplicationAction>(ActionTypes.REFRESH_APP_SUCCESS);
+/**
+ * Instance of save app settings action
+ */
 export const saveAppSettingsAction = createPayloadAction<ISaveAppSettingsAction>(ActionTypes.SAVE_APP_SETTINGS_SUCCESS);
