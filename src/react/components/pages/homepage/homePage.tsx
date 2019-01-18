@@ -122,16 +122,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
         let projectJson: IProject;
         try {
             projectJson = JSON.parse(project);
+            await this.loadSelectedProject(projectJson);
         } catch (error) {
             this.props.appErrorActions.showError({
                 title: strings.homePage.loadProjectError.title,
                 message: strings.homePage.loadProjectError.message,
             });
-
-            return;
         }
-
-        await this.loadSelectedProject(projectJson);
     }
 
     private onProjectFileUploadError = (e, err) => {
