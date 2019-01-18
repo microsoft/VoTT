@@ -6,9 +6,9 @@ import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ArrayFieldTemplate } from "../../common/arrayField/arrayFieldTemplate";
 import { IAppSettings } from "../../../../models/applicationState";
 // tslint:disable-next-line:no-var-requires
-const formSchema = addLocValues(require("./appSettingsPage.json"));
+const formSchema = addLocValues(require("./appSettingsForm.json"));
 // tslint:disable-next-line:no-var-requires
-const uiSchema = addLocValues(require("./appSettingsPage.ui.json"));
+const uiSchema = addLocValues(require("./appSettingsForm.ui.json"));
 
 export interface IAppSettingsFormProps extends React.Props<AppSettingsForm> {
     appSettings: IAppSettings;
@@ -67,10 +67,10 @@ export class AppSettingsForm extends React.Component<IAppSettingsFormProps, IApp
                     formData={this.state.appSettings}
                     onSubmit={(form) => this.props.onSubmit(form.formData)}>
                     <div>
-                        <button type="submit" className="btn btn-success mr-1">Save Settings</button>
+                        <button type="submit" className="btn btn-success mr-1">{strings.appSettings.save}</button>
                         <button type="button"
                             className="btn btn-secondary btn-cancel"
-                            onClick={this.onFormCancel}>Cancel</button>
+                            onClick={this.onFormCancel}>{strings.common.cancel}</button>
                     </div>
                 </Form>
             </div>

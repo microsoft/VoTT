@@ -13,6 +13,7 @@ export interface IAppStrings {
         description: string;
         submit: string;
         cancel: string;
+        delete: string;
         provider: string;
         homePage: string;
     };
@@ -35,6 +36,19 @@ export interface IAppStrings {
         title: string;
         storageTitle: string;
         uiHelp: string;
+        save: string;
+        securityToken: {
+            name: {
+                title: string;
+            },
+            key: {
+                title: string;
+            },
+        },
+        securityTokens: {
+            title: string;
+            description: string;
+        },
         devTools: {
             description: string;
             button: string;

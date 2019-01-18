@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrayFieldTemplateProps } from "react-jsonschema-form";
+import { strings } from "../../../../common/strings";
 
 export function ArrayFieldTemplate(props: ArrayFieldTemplateProps) {
     return (
@@ -22,7 +23,7 @@ export function ArrayFieldTemplate(props: ArrayFieldTemplateProps) {
                                 className="btn btn-sm btn-danger"
                                 onClick={item.onDropIndexClick(item.index)}>
                                 <i className="fas fa-trash"></i>
-                                <span className="ml-1">Delete</span>
+                                <span className="ml-1">{strings.common.delete}</span>
                             </button>
                         </div>
                     }
