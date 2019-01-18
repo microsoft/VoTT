@@ -1,10 +1,11 @@
 import React from "react";
 import { strings, addLocValues } from "../../../../common/strings";
-import Form, { FormValidation } from "react-jsonschema-form";
+import Form, { FormValidation, Widget } from "react-jsonschema-form";
 import { ObjectFieldTemplate } from "../../common/objectField/objectFieldTemplate";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ArrayFieldTemplate } from "../../common/arrayField/arrayFieldTemplate";
 import { IAppSettings } from "../../../../models/applicationState";
+import { SecurityTokenInput } from "../../common/securityTokenInput/securityTokenInput";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./appSettingsForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -24,6 +25,10 @@ export interface IAppSettingsFormState {
 }
 
 export class AppSettingsForm extends React.Component<IAppSettingsFormProps, IAppSettingsFormState> {
+    private widgets = {
+        securityToken: (SecurityTokenInput as any) as Widget,
+    };
+
     constructor(props: IAppSettingsFormProps) {
         super(props);
 
@@ -58,6 +63,7 @@ export class AppSettingsForm extends React.Component<IAppSettingsFormProps, IApp
                     showErrorList={false}
                     liveValidate={true}
                     noHtml5Validate={true}
+                    widgets={this.widgets}
                     ObjectFieldTemplate={ObjectFieldTemplate}
                     FieldTemplate={CustomFieldTemplate}
                     ArrayFieldTemplate={ArrayFieldTemplate}
