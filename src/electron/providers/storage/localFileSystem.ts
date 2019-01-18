@@ -30,7 +30,7 @@ export default class LocalFileSystem implements IStorageProvider {
 
     public readText(filePath: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            fs.readFile(filePath, (err: NodeJS.ErrnoException, data: Buffer) => {
+            fs.readFile(path.normalize(filePath), (err: NodeJS.ErrnoException, data: Buffer) => {
                 if (err) {
                     return reject(err);
                 }
@@ -42,7 +42,7 @@ export default class LocalFileSystem implements IStorageProvider {
 
     public readBinary(filePath: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
-            fs.readFile(filePath, (err: NodeJS.ErrnoException, data: Buffer) => {
+            fs.readFile(path.normalize(filePath), (err: NodeJS.ErrnoException, data: Buffer) => {
                 if (err) {
                     return reject(err);
                 }
@@ -54,13 +54,13 @@ export default class LocalFileSystem implements IStorageProvider {
 
     public writeBinary(filePath: string, contents: Buffer): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const containerName: fs.PathLike = path.dirname(filePath);
+            const containerName: fs.PathLike = path.normalize(path.dirname(filePath));
             const exists = fs.existsSync(containerName);
             if (!exists) {
                 fs.mkdirSync(containerName);
             }
 
-            fs.writeFile(filePath, contents, (err) => {
+            fs.writeFile(path.normalize(filePath), contents, (err) => {
                 if (err) {
                     return reject(err);
                 }
@@ -77,7 +77,7 @@ export default class LocalFileSystem implements IStorageProvider {
 
     public deleteFile(filePath: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const exists = fs.existsSync(filePath);
+            const exists = fs.existsSync(path.normalize(filePath));
             if (exists) {
                 fs.unlink(filePath, (err) => {
                     if (err) {
@@ -91,20 +91,20 @@ export default class LocalFileSystem implements IStorageProvider {
     }
 
     public listFiles(folderPath: string): Promise<string[]> {
-        return this.listItems(folderPath, (stats) => !stats.isDirectory());
+        return this.listItems(path.normalize(folderPath), (stats) => !stats.isDirectory());
     }
 
     public listContainers(folderPath: string): Promise<string[]> {
-        return this.listItems(folderPath, (stats) => stats.isDirectory());
+        return this.listItems(path.normalize(folderPath), (stats) => stats.isDirectory());
     }
 
     public createContainer(folderPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            fs.exists(folderPath, (exists) => {
+            fs.exists(path.normalize(folderPath), (exists) => {
                 if (exists) {
                     resolve();
                 } else {
-                    fs.mkdir(folderPath, (err) => {
+                    fs.mkdir(path.normalize(folderPath), (err) => {
                         if (err) {
                             return reject(err);
                         }
@@ -118,9 +118,9 @@ export default class LocalFileSystem implements IStorageProvider {
 
     public deleteContainer(folderPath: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            fs.exists(folderPath, (exists) => {
+            fs.exists(path.normalize(folderPath), (exists) => {
                 if (exists) {
-                    rimraf(folderPath, (err) => {
+                    rimraf(path.normalize(folderPath), (err) => {
                         if (err) {
                             return reject(err);
                         }
@@ -135,7 +135,7 @@ export default class LocalFileSystem implements IStorageProvider {
     }
 
     public async getAssets(folderPath?: string): Promise<IAsset[]> {
-        return (await this.listFiles(folderPath))
+        return (await this.listFiles(path.normalize(folderPath)))
             .map((filePath) => AssetService.createAssetFromFilePath(filePath))
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
@@ -148,7 +148,7 @@ export default class LocalFileSystem implements IStorageProvider {
      */
     private listItems(folderPath: string, predicate: (stats: fs.Stats) => boolean) {
         return new Promise<string[]>((resolve, reject) => {
-            fs.readdir(folderPath, async (err: NodeJS.ErrnoException, fileSystemItems: string[]) => {
+            fs.readdir(path.normalize(folderPath), async (err: NodeJS.ErrnoException, fileSystemItems: string[]) => {
                 if (err) {
                     return reject(err);
                 }
