@@ -124,8 +124,8 @@ export default class HomePage extends React.Component<IHomepageProps> {
             projectJson = JSON.parse(project);
         } catch (error) {
             this.props.appErrorActions.showError({
-                title: "Homepage has an error",
-                message: "File is not valid json",
+                title: strings.homePage.loadProjectError.title,
+                message: strings.homePage.loadProjectError.message,
             });
 
             return;

@@ -30,6 +30,10 @@ export interface IAppStrings {
             confirmation: string;
         }
         recentProjects: string;
+        loadProjectError: {
+            title: string;
+            message: string;
+        }
     };
     appSettings: {
         title: string;

@@ -130,7 +130,7 @@ describe("Connection Picker Component", () => {
         await MockFactory.flushUi();
 
         const expectedAppError = {
-            title: "Homepage has an error",
+            title: "Project Loading has an error",
             message: "File is not valid json",
         };
 
