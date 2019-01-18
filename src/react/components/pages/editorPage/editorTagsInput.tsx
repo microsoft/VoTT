@@ -10,8 +10,6 @@ import { TagsInput, ITagsInputProps } from "vott-react";
  */
 export interface IEditorTagsInputProps extends ITagsInputProps {
     displayHotKeys: boolean;
-    onTagClick?: (tag: ITag) => void;
-    onTagShiftClick?: (tag: ITag) => void;
 }
 
 /**
