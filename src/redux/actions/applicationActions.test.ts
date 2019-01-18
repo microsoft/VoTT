@@ -40,7 +40,7 @@ describe("Application Redux Actions", () => {
         expect(IpcRendererProxy.send).toBeCalledWith("RELOAD_APP");
     });
 
-    it("Save app settings action saves state", () => {
+    it("Save app settings action saves state", async () => {
         const appSettings: IAppSettings = {
             devToolsEnabled: false,
             securityTokens: [
@@ -50,7 +50,7 @@ describe("Application Redux Actions", () => {
             ],
         };
 
-        const result = applicationActions.saveAppSettings(appSettings)(store.dispatch);
+        const result = await applicationActions.saveAppSettings(appSettings)(store.dispatch);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);

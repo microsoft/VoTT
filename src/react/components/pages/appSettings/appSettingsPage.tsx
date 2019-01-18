@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
  * @member connections - Application connections
  * @member actions - Application actions
  */
-interface IAppSettingsProps extends RouteComponentProps, React.Props<AppSettingsPage> {
+export interface IAppSettingsProps extends RouteComponentProps, React.Props<AppSettingsPage> {
     appSettings: IAppSettings;
     actions: IApplicationActions;
 }
@@ -62,13 +62,13 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps> 
                 <div className="app-settings-page-sidebar p-3 bg-lighter-1">
                     <div className="my-3">
                         <p>{strings.appSettings.devTools.description}</p>
-                        <button className="btn btn-primary btn-sm"
+                        <button id="toggleDevTools" className="btn btn-primary btn-sm"
                             onClick={this.toggleDevTools}>{strings.appSettings.devTools.button}
                         </button>
                     </div>
                     <div className="my-3">
                         <p>{strings.appSettings.reload.description}</p>
-                        <button className="btn btn-primary btn-sm"
+                        <button id="refreshApp" className="btn btn-primary btn-sm"
                             onClick={this.reloadApp}>{strings.appSettings.reload.button}
                         </button>
                     </div>
@@ -77,8 +77,8 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps> 
         );
     }
 
-    private onFormSubmit(appSettings: IAppSettings) {
-        this.props.actions.saveAppSettings(appSettings);
+    private async onFormSubmit(appSettings: IAppSettings) {
+        await this.props.actions.saveAppSettings(appSettings);
         toast.success(`Successfully saved application settings`);
         this.props.history.goBack();
     }
