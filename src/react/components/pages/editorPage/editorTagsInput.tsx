@@ -10,8 +10,6 @@ import { TagsInput, ITagsInputProps } from "vott-react";
  */
 export interface IEditorTagsInputProps extends ITagsInputProps {
     displayHotKeys: boolean;
-    onTagClick?: (tag: ITag) => void;
-    onTagShiftClick?: (tag: ITag) => void;
 }
 
 /**
@@ -34,24 +32,6 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
                 {(showIndex) ? `[${index}]  ` : ""}{name}
             </span>
         );
-    }
-
-    /**
-     * Calls the onTagClick handler if not null with clicked tag
-     * @param event Click event
-     */
-    protected handleTagClick(event) {
-        const text = this.getTagIdFromClick(event);
-        const tag = this.getTag(text);
-        if (event.ctrlKey) {
-            this.openEditModal(tag);
-        } else if (event.shiftKey && this.props.onTagShiftClick) {
-            // Calls provided onTagShiftClick
-            this.props.onTagShiftClick(this.toItag(tag));
-        } else if (this.props.onTagClick) {
-            // Calls provided onTagClick function
-            this.props.onTagClick(this.toItag(tag));
-        }
     }
 
     private indexOfTag(id: string): number {
