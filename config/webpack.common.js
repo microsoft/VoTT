@@ -20,7 +20,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [".ts", ".js"]
+    extensions: [".ts", ".js", ".scss"]
   },
   output: {
     filename: "main.js",

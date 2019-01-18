@@ -1,13 +1,12 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
-import { IConnection, IProject, IAppSettings } from "../../../../models/applicationState";
+import { IConnection, IProject, ITag } from "../../../../models/applicationState";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { TagsInput, ITagsInputProps, TagEditorModal } from "vott-react";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
-import { ITag } from "vott-react/dist/models/models";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
