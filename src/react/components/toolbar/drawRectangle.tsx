@@ -9,7 +9,6 @@ import { EditorMode } from "../../../models/applicationState";
 export class DrawRectangle extends ToolbarItem {
     protected onItemClick() {
         console.log("Draw Rectangle");
-        this.props.canvas.setSelectionMode(SelectionMode.RECT);
-        this.props.onEditorModeChange(EditorMode.Rectangle);
+        this.props.onClick(this);
     }
 }

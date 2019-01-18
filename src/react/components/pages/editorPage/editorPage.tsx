@@ -16,6 +16,8 @@ import EditorFooter from "./editorFooter";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
+import { ToolbarItem } from "../../toolbar/toolbarItem";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 /**
  * Properties for Editor Page
@@ -131,8 +133,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         <EditorToolbar project={this.props.project}
                             items={this.toolbarItems}
                             actions={this.props.actions}
-                            canvas={this.canvas.current}
-                            onEditorModeChange={this.setEditorMode.bind(this)}/>
+                            onToolbarItemSelected={this.onToolbarItemSelected}/>
                     </div>
                     <div className="editor-page-content-body">
                         {selectedAsset &&
@@ -221,6 +222,35 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({project}, async () => {
             await this.props.actions.saveProject(project);
         });
+    }
+
+    private  onToolbarItemSelected(toolbarItem: ToolbarItem) {
+        switch (toolbarItem.props.name) {
+            case "drawRectangle":
+                this.canvas.current.setSelectionMode(SelectionMode.RECT);
+                break;
+            case "drawPolygon":
+                this.canvas.current.setSelectionMode(SelectionMode.POLYGON);
+                break;
+            case "drawPolyline":
+                this.canvas.current.setSelectionMode(SelectionMode.POLYLINE);
+                break;
+            case "drawPoint":
+                this.canvas.current.setSelectionMode(SelectionMode.POINT);
+                break;
+            case "drawCopyRect":
+                this.canvas.current.setSelectionMode(SelectionMode.COPYRECT);
+                break;
+            case "selectCanvas":
+                this.canvas.current.setSelectionMode(SelectionMode.NONE);
+                break;
+            case "panCanvas":
+                this.canvas.current.setSelectionMode(SelectionMode.NONE);
+                break;
+            default:
+                console.log(toolbarItem.props.name);
+                break;
+        }
     }
 
     private async selectAsset(asset: IAsset) {

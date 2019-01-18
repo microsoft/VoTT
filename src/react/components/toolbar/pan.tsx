@@ -8,7 +8,6 @@ import { EditorMode } from "../../../models/applicationState";
  */
 export class Pan extends ToolbarItem {
     protected onItemClick() {
-        this.props.canvas.setSelectionMode(SelectionMode.NONE);
-        this.props.onEditorModeChange(EditorMode.None);
+        this.props.onClick(this);
     }
 }

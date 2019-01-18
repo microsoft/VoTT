@@ -18,8 +18,7 @@ export interface IEditorToolbarProps {
     project: IProject;
     actions: IProjectActions;
     items: IToolbarItemRegistration[];
-    canvas: Canvas;
-    onEditorModeChange: (mode: EditorMode) => void;
+    onToolbarItemSelected: (toolbarItem: ToolbarItem) => void;
 }
 
 /**
@@ -62,8 +61,6 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
                                 project: this.props.project,
                                 active: this.isComponentActive(this.state.selectedItem, registration),
                                 onClick: this.onToolbarItemSelected,
-                                canvas: this.props.canvas,
-                                onEditorModeChange: this.props.onEditorModeChange,
                             };
                             const ToolbarItem = registration.component;
 
@@ -78,6 +75,8 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
     private onToolbarItemSelected(toolbarItem: ToolbarItem) {
         this.setState({
             selectedItem: Object.getPrototypeOf(toolbarItem),
+        }, () => {
+            this.props.onToolbarItemSelected(toolbarItem);
         });
     }
 

@@ -264,12 +264,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             id,
             type: this.editorModeToType(this.props.editorMode),
             tags: [],
-            height: scaledRegionData.height,
-            width: scaledRegionData.width,
-            origin: {x: scaledRegionData.x, y: scaledRegionData.y},
+            bound: {
+                height: scaledRegionData.height,
+                width: scaledRegionData.width,
+                x: scaledRegionData.x,
+                y: scaledRegionData.y,
+            },
             points: scaledRegionData.points,
         };
-
         const currentAssetMetadata = this.props.selectedAsset;
         currentAssetMetadata.regions.push(newRegion);
         currentAssetMetadata.selectedRegions = [newRegion];
@@ -353,10 +355,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.addContentSource(e.target);
             if (this.props.selectedAsset.regions.length) {
                 this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    const loadedRegionData = new RegionData(region.origin.x,
-                                                            region.origin.y,
-                                                            region.width,
-                                                            region.height,
+                    const loadedRegionData = new RegionData(region.boundingBox.x,
+                                                            region.boundingBox.y,
+                                                            region.boundingBox.width,
+                                                            region.boundingBox.height,
                                                             region.points.map((point) => new Point2D(point.x, point.y)),
                                                             this.regionTypeToType(region.type));
                     if (region.tags.length) {

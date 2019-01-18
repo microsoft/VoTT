@@ -28,8 +28,6 @@ describe("Draw Rectangle Toolbar Item", () => {
             active: true,
             project: testProject,
             onClick: clickHandler,
-            onEditorModeChange: jest.fn(),
-            canvas: MockFactory.createTestCanvas(),
         };
     }
 
@@ -45,6 +43,6 @@ describe("Draw Rectangle Toolbar Item", () => {
 
         await MockFactory.flushUi(() => wrapper.simulate("click"));
 
-        expect(props.onEditorModeChange).toBeCalledWith(EditorMode.Rectangle);
+        expect(props.onClick).toBeCalledWith(wrapper.instance());
     });
 });

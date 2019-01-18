@@ -9,7 +9,6 @@ import { EditorMode } from "../../../models/applicationState";
 export class DrawPolygon extends ToolbarItem {
     protected onItemClick() {
         console.log("Draw Polygon");
-        this.props.canvas.setSelectionMode(SelectionMode.POLYGON);
-        this.props.onEditorModeChange(EditorMode.Polygon);
+        this.props.onClick(this);
     }
 }

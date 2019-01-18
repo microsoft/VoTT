@@ -186,9 +186,6 @@ export interface IRegion {
     id: string;
     type: RegionType;
     tags: ITagMetadata[];
-    height?: number;
-    width?: number;
-    origin?: IPoint;
     points?: IPoint[];
     boundingBox?: IBoundingBox;
 }
@@ -207,14 +204,14 @@ export interface ITagMetadata {
 /**
  * @name - Bouding Box
  * @description - Defines the tag usage within a bounding box region
- * @member left - Defines the left x boundary for the start of the bounding box
- * @member top - Defines the top y boundary for the start of the boudning box
+ * @member x - Defines the left x boundary for the start of the bounding box
+ * @member y - Defines the top y boundary for the start of the boudning box
  * @member width - Defines the width of the bounding box
  * @member height - Defines the height of the bounding box
  */
 export interface IBoundingBox {
-    left: number;
-    top: number;
+    x: number;
+    y: number;
     width: number;
     height: number;
 }

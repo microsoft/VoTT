@@ -28,8 +28,6 @@ describe("Pan Toolbar Item", () => {
             active: true,
             project: testProject,
             onClick: clickHandler,
-            onEditorModeChange: jest.fn(),
-            canvas: MockFactory.createTestCanvas(),
         };
     }
 
@@ -45,6 +43,6 @@ describe("Pan Toolbar Item", () => {
 
         await MockFactory.flushUi(() => wrapper.simulate("click"));
 
-        expect(props.onEditorModeChange).toBeCalledWith(EditorMode.None);
+        expect(props.onClick).toBeCalledWith(wrapper.instance());
     });
 });

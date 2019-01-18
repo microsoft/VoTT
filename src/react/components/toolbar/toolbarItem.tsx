@@ -41,8 +41,6 @@ export interface IToolbarItemProps extends IToolbarItemMetadata {
     project: IProject;
     active: boolean;
     onClick: (item: ToolbarItem) => void;
-    canvas: Canvas;
-    onEditorModeChange: (mode: EditorMode) => void;
 }
 
 /**
