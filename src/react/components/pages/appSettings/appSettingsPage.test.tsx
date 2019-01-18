@@ -40,7 +40,7 @@ describe("App Settings Page", () => {
         expect(wrapper.find("button#refreshApp").length).toEqual(1);
     });
 
-    it("calls saveAppSettings Redux application on save", async () => {
+    it("Saves app settings when click on save button", async () => {
         const appSettings = MockFactory.appSettings();
         const store = createStore(appSettings);
         const props = createProps();
@@ -48,7 +48,7 @@ describe("App Settings Page", () => {
         const goBackSpy = jest.spyOn(props.history, "goBack");
 
         const wrapper = createComponent(store, props);
-        wrapper.find("form").simulate("submit");
+        await MockFactory.flushUi(() => wrapper.find("form").simulate("submit"));
         wrapper.update();
 
         expect(saveAppSettingsSpy).toBeCalledWith(appSettings);
