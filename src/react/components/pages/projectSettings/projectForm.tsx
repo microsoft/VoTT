@@ -4,7 +4,6 @@ import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
 import "vott-react/build/lib/components/TagsInput/tagsInput.css";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag } from "../../../../models/applicationState";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
@@ -12,7 +11,6 @@ import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/sec
 import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
 import { TagsInput, ITagsInputProps, TagEditorModal } from "vott-react";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
-import { ITag } from "vott-react/dist/models/models";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
