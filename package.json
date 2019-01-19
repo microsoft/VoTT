@@ -45,6 +45,7 @@
         "test": "react-scripts test --env=jsdom --silent",
         "test:ci": "cross-env CI=true npm run test",
         "test:coverage": "npm run test -- --coverage",
+        "plato": "./node_modules/.bin/tsc --noEmit false --outDir js-src && ./node_modules/.bin/plato -r -d plato-report js-src",
         "postinstall": "electron-builder install-app-deps",
         "predebug": "npm run build && npm run webpack:dev"
     },
@@ -82,6 +83,7 @@
         "jest-enzyme": "^7.0.1",
         "jquery": "^3.3.1",
         "node-sass": "^4.10.0",
+        "plato": "^1.7.0",
         "popper.js": "^1.14.6",
         "react-jsonschema-form": "^1.0.6",
         "react-modal": "^3.6.1",

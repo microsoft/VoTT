@@ -33,3 +33,6 @@ secrets.sh
 
 # ide
 .idea
+
+# compile
+js-src/
