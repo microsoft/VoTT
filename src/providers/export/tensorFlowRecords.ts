@@ -9,8 +9,7 @@ import axios from "axios";
 import { all } from "deepmerge";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
-import { Example, createWriter } from "tfrecord";
-// const tfrecord = require("tfrecord");
+import { TFRecordsImageMessage, ObjectMessage } from "./tensorFlowRecordsProtoBuf_pb";
 
 /**
  * @name - ITFRecordsJsonExportOptions
@@ -79,6 +78,22 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         await this.storageProvider.createContainer(exportFolderName);
 
         await this.exportPBTXT(exportFolderName, this.project);
+
+        // example code
+        const objectMessage = new ObjectMessage();
+        objectMessage.setDifficult(0);
+        objectMessage.setTruncated(0);
+        const imageMessage = new TFRecordsImageMessage();
+        imageMessage.setHeight(123);
+        imageMessage.setWidth(456);
+        imageMessage.setFilename("file name");
+        imageMessage.setSourceId("source id");
+        imageMessage.setObject(objectMessage);
+        const bytes = imageMessage.serializeBinary();
+        const pbFileName = `${exportFolderName}/jacopo.tfrecord`;
+        const buffer = new Buffer(bytes);
+        await this.storageProvider.writeBinary(pbFileName, buffer);
+
         // await this.exportRecords(exportFolderName, allAssets);
     }
 
@@ -199,11 +214,5 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
             await this.storageProvider.writeText(pbtxtFileName, items.join(""));
         }
-    }
-
-    private async writeRecord(filePath: string, example: any) {
-        const writer = await createWriter(filePath);
-        // await writer.writeExample(example);
-        // await writer.close();
     }
 }
