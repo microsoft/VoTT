@@ -9,7 +9,7 @@ import axios from "axios";
 import { all } from "deepmerge";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
-import { TFRecordsImageMessage, ObjectMessage } from "./tensorFlowRecordsProtoBuf_pb";
+import { TFRecordsImageMessage, Features, Feature, FeatureLists, BytesList } from "./tensorFlowRecordsProtoBuf_pb";
 
 /**
  * @name - ITFRecordsJsonExportOptions
@@ -80,15 +80,23 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         await this.exportPBTXT(exportFolderName, this.project);
 
         // example code
-        const objectMessage = new ObjectMessage();
-        objectMessage.setDifficult(0);
-        objectMessage.setTruncated(0);
+        const byteList = new BytesList();
+        byteList.addValue("Jacopo Mangiavacchi");
+
+        const feature = new Feature();
+        feature.setBytesList(byteList);
+
+        const contextFeatures = new Features();
+        const contextFeatureMap = contextFeatures.getFeatureMap();
+        contextFeatureMap.set("image/width", feature);
+
+        // const list = new FeatureLists();
+        // list["image/lista"] = [123, 456, 789];
+
         const imageMessage = new TFRecordsImageMessage();
-        imageMessage.setHeight(123);
-        imageMessage.setWidth(456);
-        imageMessage.setFilename("file name");
-        imageMessage.setSourceId("source id");
-        imageMessage.setObject(objectMessage);
+        imageMessage.setContext(contextFeatures);
+        // imageMessage.setFeatureLists(list);
+
         const bytes = imageMessage.serializeBinary();
         const pbFileName = `${exportFolderName}/jacopo.tfrecord`;
         const buffer = new Buffer(bytes);
