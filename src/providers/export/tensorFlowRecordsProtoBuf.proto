@@ -1,0 +1,17 @@
+
+syntax = "proto3";
+package tfrecordsimagepackage;
+
+message ObjectMessage {
+  int32 difficult = 1;
+  int32 truncated = 2;
+}
+
+message TFRecordsImageMessage {
+    int32 height = 1;
+    int32 width = 2;
+    string filename = 3;
+    string source_id = 4;
+    ObjectMessage object = 5;
+}
+
