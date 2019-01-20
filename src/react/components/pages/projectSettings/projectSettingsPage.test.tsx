@@ -1,17 +1,13 @@
 import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import { Provider } from "react-redux";
-import { AnyAction, Store } from "redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
 import createReduxStore from "../../../../redux/store/store";
-import { IApplicationState } from "../../../../models/applicationState";
-import initialState from "../../../../redux/store/initialState";
 import ProjectSettingsPage, { IProjectSettingsPageProps } from "./projectSettingsPage";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
-import { ConformsPredicateObject } from "lodash";
 
 describe("Project settings page", () => {
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
@@ -33,7 +29,7 @@ describe("Project settings page", () => {
     it("Form submission calls save project action", (done) => {
         const store = createReduxStore(MockFactory.initialState());
         const props = MockFactory.projectSettingsProps();
-        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+        const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
         const wrapper = createCompoent(store, props);
         wrapper.find("form").simulate("submit");
@@ -52,7 +48,7 @@ describe("Project settings page", () => {
         };
         const store = createReduxStore(MockFactory.initialState(initialStateOverride));
         const props = MockFactory.projectSettingsProps();
-        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+        const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
 
         const wrapper = createCompoent(store, props);
         wrapper.setProps({
@@ -64,7 +60,7 @@ describe("Project settings page", () => {
                 },
             },
             actions: {
-                saveProject: props.actions.saveProject,
+                saveProject: props.projectActions.saveProject,
             },
         });
         wrapper.find("form").simulate("submit");
@@ -78,7 +74,7 @@ describe("Project settings page", () => {
     it("calls save project when user creates a unique project", (done) => {
         const store = createReduxStore(MockFactory.initialState());
         const props = MockFactory.projectSettingsProps();
-        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+        const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
         const project = MockFactory.createTestProject("25");
 
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));

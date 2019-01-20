@@ -1,11 +1,13 @@
 import { Dispatch, Action } from "redux";
 import ProjectService from "../../services/projectService";
-import { IProject, IAsset, IAssetMetadata } from "../../models/applicationState";
+import { IProject, IAsset, IAssetMetadata, IApplicationState, ISecurityToken, IAppSettings } from "../../models/applicationState";
 import { ActionTypes } from "./actionTypes";
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
+import { generateKey } from "../../common/crypto";
+import { saveAppSettingsAction } from "./applicationActions";
 
 /**
  * Actions to be performed in relation to projects
@@ -37,11 +39,27 @@ export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<
  * @param project - Project to save
  */
 export function saveProject(project: IProject):
-  (dispatch: Dispatch, getState: any) => Promise<IProject> {
-    return async (dispatch: Dispatch, getState: any) => {
+    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        const appState = getState();
         const projectService = new ProjectService();
-        const projectList = getState().recentProjects;
-        if (!projectService.isDuplicate(project, projectList)) {
+        if (!projectService.isDuplicate(project, appState.recentProjects)) {
+            // Auto-generate project security token if not selected
+            if (!appState.appSettings.securityTokens.find((st) => st.name === project.securityToken)) {
+                const updatedAppSettings: IAppSettings = {
+                    devToolsEnabled: appState.appSettings.devToolsEnabled,
+                    securityTokens: [...appState.appSettings.securityTokens],
+                };
+                const securityToken: ISecurityToken = {
+                    name: `${project.name} Token`,
+                    key: generateKey(),
+                };
+
+                updatedAppSettings.securityTokens.push(securityToken);
+                await dispatch(saveAppSettingsAction(updatedAppSettings));
+                project.securityToken = securityToken.name;
+            }
+
             project = await projectService.save(project);
             dispatch(saveProjectAction(project));
         } else {

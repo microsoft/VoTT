@@ -64,15 +64,19 @@ export interface IAppStrings {
     };
     projectSettings: {
         title: string;
+        securityToken: {
+            title: string;
+            description: string;
+        },
         save: string;
         sourceConnection: {
             title: string;
             description: string;
-        }
+        },
         targetConnection: {
             title: string;
             description: string;
-        }
+        },
         videoSettings: {
             title: string;
             description: string;

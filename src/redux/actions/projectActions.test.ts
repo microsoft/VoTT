@@ -11,13 +11,14 @@ jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { IExportProvider } from "../../providers/export/exportProvider";
+import { IApplicationState } from "../../models/applicationState";
 
 describe("Project Redux Actions", () => {
-    let store: MockStoreEnhanced;
+    let store: MockStoreEnhanced<IApplicationState>;
 
     beforeEach(() => {
         const middleware = [thunk];
-        store = createMockStore(middleware)();
+        store = createMockStore<IApplicationState>(middleware)();
     });
     it("Load Project action resolves a promise and dispatches redux action", async () => {
         const project = MockFactory.createTestProject("Project1");

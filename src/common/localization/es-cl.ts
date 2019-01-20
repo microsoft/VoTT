@@ -62,6 +62,10 @@ export const spanish: IAppStrings = {
     },
     projectSettings: {
         title: "Configuración de Proyecto",
+        securityToken: {
+            title: "Token de seguridad",
+            description: "Se utiliza para cifrar datos confidenciales dentro de archivos de proyecto",
+        },
         save: "Guardar el Proyecto",
         sourceConnection: {
             title: "Conexión de Origen",
