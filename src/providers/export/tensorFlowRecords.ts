@@ -108,6 +108,19 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         return features;
     }
 
+    private addIntArrayFeature(features: Features, key: string, value: number[]): Features {
+        const intList = new Int64List();
+        intList.setValueList(value);
+
+        const feature = new Feature();
+        feature.setInt64List(intList);
+
+        const featuresMap = features.getFeatureMap();
+        featuresMap.set(key, feature);
+
+        return features;
+    }
+
     private async writeTFRecord(fileNamePath: string, features: Features) {
         const imageMessage = new TFRecordsImageMessage();
         imageMessage.setContext(features);
@@ -167,10 +180,10 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                     .toString(CryptoJS.enc.Base64));
                 this.addStringFeature(features, "image/encoded", image64);
                 this.addStringFeature(features, "image/format", element.asset.name.split(".").pop());
-                this.addStringFeature(features, "image/object/bbox/xmin", "x");
-                this.addStringFeature(features, "image/object/bbox/ymin", "x");
-                this.addStringFeature(features, "image/object/bbox/xmax", "x");
-                this.addStringFeature(features, "image/object/bbox/ymax", "x");
+                this.addIntArrayFeature(features, "image/object/bbox/xmin", imageInfo.xmin);
+                this.addIntArrayFeature(features, "image/object/bbox/ymin", imageInfo.ymin);
+                this.addIntArrayFeature(features, "image/object/bbox/xmax", imageInfo.xmax);
+                this.addIntArrayFeature(features, "image/object/bbox/ymax", imageInfo.ymax);
                 this.addStringFeature(features, "image/object/class/text", "x");
                 this.addStringFeature(features, "image/object/class/label", "x");
                 this.addIntFeature(features, "image/object/difficult", 0);
