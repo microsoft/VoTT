@@ -78,31 +78,36 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         await this.storageProvider.createContainer(exportFolderName);
 
         await this.exportPBTXT(exportFolderName, this.project);
+        // await this.exportRecords(exportFolderName, allAssets);
 
         // example code
+        const features = new Features();
+        this.addStringFeature(features, "image/width", "Mangiavacchi");
+        this.addStringFeature(features, "image/height", "Mangiavacchi");
+        const pbFileNamePath = `${exportFolderName}/jacopo.tfrecord`;
+        await this.writeTFRecord(pbFileNamePath, features);
+    }
+
+    private addStringFeature(features: Features, key: string, value: string): Features {
         const byteList = new BytesList();
-        byteList.addValue("Jacopo Mangiavacchi");
+        byteList.addValue(value);
 
         const feature = new Feature();
         feature.setBytesList(byteList);
 
-        const contextFeatures = new Features();
-        const contextFeatureMap = contextFeatures.getFeatureMap();
-        contextFeatureMap.set("image/width", feature);
+        const featuresMap = features.getFeatureMap();
+        featuresMap.set(key, feature);
 
-        // const list = new FeatureLists();
-        // list["image/lista"] = [123, 456, 789];
+        return features;
+    }
 
+    private async writeTFRecord(fileNamePath: string, features: Features) {
         const imageMessage = new TFRecordsImageMessage();
-        imageMessage.setContext(contextFeatures);
-        // imageMessage.setFeatureLists(list);
+        imageMessage.setContext(features);
 
         const bytes = imageMessage.serializeBinary();
-        const pbFileName = `${exportFolderName}/jacopo.tfrecord`;
         const buffer = new Buffer(bytes);
-        await this.storageProvider.writeBinary(pbFileName, buffer);
-
-        // await this.exportRecords(exportFolderName, allAssets);
+        await this.storageProvider.writeBinary(fileNamePath, buffer);
     }
 
     private async exportRecords(exportFolderName: string, allAssets: IAssetMetadata[]) {
