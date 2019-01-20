@@ -21,18 +21,14 @@ export interface ITFRecordsJsonExportOptions {
     assetState: ExportAssetState;
 }
 
-interface IObjectInfo {
-    name: string;
-    xmin: number;
-    ymin: number;
-    xmax: number;
-    ymax: number;
-}
-
 interface IImageInfo {
     width: number;
     height: number;
-    objects: IObjectInfo[];
+    name: string[];
+    xmin: number[];
+    ymin: number[];
+    xmax: number[];
+    ymax: number[];
 }
 
 /**
@@ -40,8 +36,6 @@ interface IImageInfo {
  * @description - Exports a project into a single JSON file that include all configured assets
  */
 export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonExportOptions> {
-    private imagesInfo = new Map<string, IImageInfo>();
-
     constructor(project: IProject, options: ITFRecordsJsonExportOptions) {
         super(project, options);
         Guard.null(options);
@@ -146,38 +140,42 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 const image64 = btoa(new Uint8Array(response.data).
                     reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
-                // const imageInfo: IImageInfo = {
-                //     width: element.asset.size ? element.asset.size.width : 0,
-                //     height: element.asset.size ? element.asset.size.height : 0,
-                //     objects: tagObjects,
-                // };
+                const imageInfo: IImageInfo = {
+                    width: element.asset.size ? element.asset.size.width : 0,
+                    height: element.asset.size ? element.asset.size.height : 0,
+                    name: [],
+                    xmin: [],
+                    ymin: [],
+                    xmax: [],
+                    ymax: [],
+                };
 
-                // this.imagesInfo.set(element.asset.name, imageInfo);
+                if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
+                    await this.updateImageSizeInfo(image64, imageInfo);
+                }
 
-                // if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
-                //     await this.updateImageSizeInfo(response.data, imageFileName, element.asset.name);
-                // }
+                // Get Array of all Box shaped tag for the Asset
+                this.updateAssetTagArrays(element, imageInfo);
 
                 // Generate TFRecord
                 const features = new Features();
-                this.addIntFeature(features, "image/height", 123);
-                this.addIntFeature(features, "image/width", 456);
+                this.addIntFeature(features, "image/height", imageInfo.height);
+                this.addIntFeature(features, "image/width", imageInfo.width);
                 this.addStringFeature(features, "image/filename", element.asset.name);
                 this.addStringFeature(features, "image/source_id", element.asset.name);
                 this.addStringFeature(features, "image/key/sha256", CryptoJS.SHA256(image64)
                     .toString(CryptoJS.enc.Base64));
                 this.addStringFeature(features, "image/encoded", image64);
-                this.addStringFeature(features, "image/format", ".jpg");
+                this.addStringFeature(features, "image/format", element.asset.name.split(".").pop());
                 this.addStringFeature(features, "image/object/bbox/xmin", "x");
                 this.addStringFeature(features, "image/object/bbox/ymin", "x");
                 this.addStringFeature(features, "image/object/bbox/xmax", "x");
                 this.addStringFeature(features, "image/object/bbox/ymax", "x");
-                this.addStringFeature(features, "image/object/difficult", "0");
-                this.addStringFeature(features, "image/object/truncated", "x");
-                this.addStringFeature(features, "image/object/view", "x");
-
-                // // Get Array of all Box shaped tag for the Asset
-                // const tagObjects = this.getAssetTagArray(element);
+                this.addStringFeature(features, "image/object/class/text", "x");
+                this.addStringFeature(features, "image/object/class/label", "x");
+                this.addIntFeature(features, "image/object/difficult", 0);
+                this.addIntFeature(features, "image/object/truncated", 0);
+                this.addStringFeature(features, "image/object/view", "Unspecified");
 
                 // Save TFRecord
                 const fileName = element.asset.name.split(".").slice(0, -1).join(".");
@@ -198,48 +196,31 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         });
     }
 
-    private getAssetTagArray(element: IAssetMetadata): IObjectInfo[] {
-        const tagObjects = [];
+    private async updateImageSizeInfo(image64: string, imageInfo: IImageInfo) {
+        if (image64.length > 10) {
+            const assetProps = await HtmlFileReader.readAssetAttributesWithBuffer(image64);
+            if (assetProps) {
+                imageInfo.width = assetProps.width;
+                imageInfo.height = assetProps.height;
+            } else {
+                console.log("imageInfo not found");
+            }
+        }
+    }
+
+    private updateAssetTagArrays(element: IAssetMetadata, imageInfo: IImageInfo) {
         element.regions.filter((region) => (region.type === RegionType.Rectangle ||
                                                    region.type === RegionType.Square) &&
                                                    region.points.length === 2)
                                .forEach((region) => {
                                     region.tags.forEach((tag) => {
-                                        const objectInfo: IObjectInfo = {
-                                            name: tag.name,
-                                            xmin: region.points[0].x,
-                                            ymin: region.points[0].y,
-                                            xmax: region.points[1].x,
-                                            ymax: region.points[1].y,
-                                        };
-
-                                        tagObjects.push(objectInfo);
+                                        imageInfo.name.push(tag.name);
+                                        imageInfo.xmin.push(region.points[0].x);
+                                        imageInfo.ymin.push(region.points[0].y);
+                                        imageInfo.xmax.push(region.points[1].x);
+                                        imageInfo.ymax.push(region.points[1].y);
                                     });
                                 });
-        return tagObjects;
-    }
-
-    private async updateImageSizeInfo(imageBuffer: any, imageFileName: string, assetName: string) {
-        // Get Base64
-        const image64 = btoa(new Uint8Array(imageBuffer).
-            reduce((data, byte) => data + String.fromCharCode(byte), ""));
-
-        if (image64.length < 10) {
-            // Ignore the error at the moment
-            // TODO: Refactor ExportProvider abstract class export() method
-            //       to return Promise<object> with an object containing
-            //       the number of files succesfully exported out of total
-            console.log(`Image not valid ${imageFileName}`);
-        } else {
-            const assetProps = await HtmlFileReader.readAssetAttributesWithBuffer(image64);
-            const imageInfo = this.imagesInfo.get(assetName);
-            if (imageInfo && assetProps) {
-                imageInfo.width = assetProps.width;
-                imageInfo.height = assetProps.height;
-            } else {
-                console.log(`imageInfo for element ${assetName} not found (${assetProps})`);
-            }
-        }
     }
 
     private async exportPBTXT(exportFolderName: string, project: IProject) {
