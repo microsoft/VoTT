@@ -7,9 +7,11 @@ import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import axios from "axios";
 import { all } from "deepmerge";
-import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOCTemplates";
+import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
-import { TFRecordsImageMessage, Features, Feature, FeatureLists, BytesList } from "./tensorFlowRecordsProtoBuf_pb";
+import { TFRecordsImageMessage, Features, Feature,
+         BytesList, Int64List } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
+import CryptoJS from "crypto-js";
 
 /**
  * @name - ITFRecordsJsonExportOptions
@@ -78,22 +80,33 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         await this.storageProvider.createContainer(exportFolderName);
 
         await this.exportPBTXT(exportFolderName, this.project);
-        // await this.exportRecords(exportFolderName, allAssets);
-
-        // example code
-        const features = new Features();
-        this.addStringFeature(features, "image/width", "Mangiavacchi");
-        this.addStringFeature(features, "image/height", "Mangiavacchi");
-        const pbFileNamePath = `${exportFolderName}/jacopo.tfrecord`;
-        await this.writeTFRecord(pbFileNamePath, features);
+        await this.exportRecords(exportFolderName, allAssets);
     }
 
     private addStringFeature(features: Features, key: string, value: string): Features {
+        const enc = new TextEncoder();
+        return this.addBinaryArrayFeature(features, key, enc.encode(value));
+    }
+
+    private addBinaryArrayFeature(features: Features, key: string, value: Uint8Array): Features {
         const byteList = new BytesList();
         byteList.addValue(value);
 
         const feature = new Feature();
         feature.setBytesList(byteList);
+
+        const featuresMap = features.getFeatureMap();
+        featuresMap.set(key, feature);
+
+        return features;
+    }
+
+    private addIntFeature(features: Features, key: string, value: number): Features {
+        const intList = new Int64List();
+        intList.addValue(value);
+
+        const feature = new Feature();
+        feature.setInt64List(intList);
 
         const featuresMap = features.getFeatureMap();
         featuresMap.set(key, feature);
@@ -124,33 +137,52 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
     private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const imageFileName = `${exportFolderName}/${element.asset.name}`;
-
             // Get image
             axios.get(element.asset.path, {
                 responseType: "arraybuffer",
             })
             .then(async (response) => {
-                // Get buffer
-                const buffer = new Buffer(response.data);
+                // Get Base64
+                const image64 = btoa(new Uint8Array(response.data).
+                    reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
-                // Write Binary
-                await this.storageProvider.writeBinary(imageFileName, buffer);
+                // const imageInfo: IImageInfo = {
+                //     width: element.asset.size ? element.asset.size.width : 0,
+                //     height: element.asset.size ? element.asset.size.height : 0,
+                //     objects: tagObjects,
+                // };
 
-                // Get Array of all Box shaped tag for the Asset
-                const tagObjects = this.getAssetTagArray(element);
+                // this.imagesInfo.set(element.asset.name, imageInfo);
 
-                const imageInfo: IImageInfo = {
-                    width: element.asset.size ? element.asset.size.width : 0,
-                    height: element.asset.size ? element.asset.size.height : 0,
-                    objects: tagObjects,
-                };
+                // if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
+                //     await this.updateImageSizeInfo(response.data, imageFileName, element.asset.name);
+                // }
 
-                this.imagesInfo.set(element.asset.name, imageInfo);
+                // Generate TFRecord
+                const features = new Features();
+                this.addIntFeature(features, "image/height", 123);
+                this.addIntFeature(features, "image/width", 456);
+                this.addStringFeature(features, "image/filename", element.asset.name);
+                this.addStringFeature(features, "image/source_id", element.asset.name);
+                this.addStringFeature(features, "image/key/sha256", CryptoJS.SHA256(image64)
+                    .toString(CryptoJS.enc.Base64));
+                this.addStringFeature(features, "image/encoded", image64);
+                this.addStringFeature(features, "image/format", ".jpg");
+                this.addStringFeature(features, "image/object/bbox/xmin", "x");
+                this.addStringFeature(features, "image/object/bbox/ymin", "x");
+                this.addStringFeature(features, "image/object/bbox/xmax", "x");
+                this.addStringFeature(features, "image/object/bbox/ymax", "x");
+                this.addStringFeature(features, "image/object/difficult", "0");
+                this.addStringFeature(features, "image/object/truncated", "x");
+                this.addStringFeature(features, "image/object/view", "x");
 
-                if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
-                    await this.updateImageSizeInfo(response.data, imageFileName, element.asset.name);
-                }
+                // // Get Array of all Box shaped tag for the Asset
+                // const tagObjects = this.getAssetTagArray(element);
+
+                // Save TFRecord
+                const fileName = element.asset.name.split(".").slice(0, -1).join(".");
+                const fileNamePath = `${exportFolderName}/${fileName}.tfrecord`;
+                await this.writeTFRecord(fileNamePath, features);
 
                 resolve();
             })
@@ -159,7 +191,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 // TODO: Refactor ExportProvider abstract class export() method
                 //       to return Promise<object> with an object containing
                 //       the number of files succesfully exported out of total
-                console.log(`Error downloading ${imageFileName} - ${err}`);
+                console.log(`Error downloading ${element.asset.path} - ${err}`);
                 resolve();
                 // eject(err);
             });
@@ -190,7 +222,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     private async updateImageSizeInfo(imageBuffer: any, imageFileName: string, assetName: string) {
         // Get Base64
         const image64 = btoa(new Uint8Array(imageBuffer).
-        reduce((data, byte) => data + String.fromCharCode(byte), ""));
+            reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
         if (image64.length < 10) {
             // Ignore the error at the moment
