@@ -10,7 +10,7 @@ import { all } from "deepmerge";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
 import { TFRecordsImageMessage, Features, Feature,
-         BytesList, Int64List } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
+         BytesList, Int64List, FeatureList, FeatureLists } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
 import CryptoJS from "crypto-js";
 
 /**
@@ -24,11 +24,13 @@ export interface ITFRecordsJsonExportOptions {
 interface IImageInfo {
     width: number;
     height: number;
-    name: string[];
+    text: string[];
+    label: number[];
     xmin: number[];
     ymin: number[];
     xmax: number[];
     ymax: number[];
+    view: string[];
 }
 
 /**
@@ -77,12 +79,12 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         await this.exportRecords(exportFolderName, allAssets);
     }
 
-    private addStringFeature(features: Features, key: string, value: string): Features {
+    private addStringFeature(features: Features, key: string, value: string) {
         const enc = new TextEncoder();
-        return this.addBinaryArrayFeature(features, key, enc.encode(value));
+        this.addBinaryArrayFeature(features, key, enc.encode(value));
     }
 
-    private addBinaryArrayFeature(features: Features, key: string, value: Uint8Array): Features {
+    private addBinaryArrayFeature(features: Features, key: string, value: Uint8Array) {
         const byteList = new BytesList();
         byteList.addValue(value);
 
@@ -91,11 +93,9 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
         const featuresMap = features.getFeatureMap();
         featuresMap.set(key, feature);
-
-        return features;
     }
 
-    private addIntFeature(features: Features, key: string, value: number): Features {
+    private addIntFeature(features: Features, key: string, value: number) {
         const intList = new Int64List();
         intList.addValue(value);
 
@@ -104,26 +104,47 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
         const featuresMap = features.getFeatureMap();
         featuresMap.set(key, feature);
-
-        return features;
     }
 
-    private addIntArrayFeature(features: Features, key: string, value: number[]): Features {
-        const intList = new Int64List();
-        intList.setValueList(value);
+    private addIntArrayFeatureList(featureLists: FeatureLists, key: string, values: number[]) {
+        const featureList = new FeatureList();
 
-        const feature = new Feature();
-        feature.setInt64List(intList);
+        values.forEach((value) => {
+            const intList = new Int64List();
+            intList.addValue(value);
 
-        const featuresMap = features.getFeatureMap();
-        featuresMap.set(key, feature);
+            const feature = new Feature();
+            feature.setInt64List(intList);
 
-        return features;
+            featureList.addFeature(feature);
+        });
+
+        const featureListsMap = featureLists.getFeatureListMap();
+        featureListsMap.set(key, featureList);
     }
 
-    private async writeTFRecord(fileNamePath: string, features: Features) {
+    private addStringArrayFeatureList(featureLists: FeatureLists, key: string, values: string[]) {
+        const enc = new TextEncoder();
+        const featureList = new FeatureList();
+
+        values.forEach((value) => {
+            const byteList = new BytesList();
+            byteList.addValue(enc.encode(value));
+
+            const feature = new Feature();
+            feature.setBytesList(byteList);
+
+            featureList.addFeature(feature);
+        });
+
+        const featureListsMap = featureLists.getFeatureListMap();
+        featureListsMap.set(key, featureList);
+    }
+
+    private async writeTFRecord(fileNamePath: string, features: Features, featureLists: FeatureLists) {
         const imageMessage = new TFRecordsImageMessage();
         imageMessage.setContext(features);
+        imageMessage.setFeatureLists(featureLists);
 
         const bytes = imageMessage.serializeBinary();
         const buffer = new Buffer(bytes);
@@ -156,11 +177,13 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 const imageInfo: IImageInfo = {
                     width: element.asset.size ? element.asset.size.width : 0,
                     height: element.asset.size ? element.asset.size.height : 0,
-                    name: [],
-                    xmin: [],
-                    ymin: [],
-                    xmax: [],
-                    ymax: [],
+                    text: ["abc", "def"],
+                    label: [7, 8],
+                    xmin: [0, 1],
+                    ymin: [2, 3],
+                    xmax: [4, 5],
+                    ymax: [6, 7],
+                    view: ["Unspecified", "Unspecified"],
                 };
 
                 if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
@@ -172,6 +195,8 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
                 // Generate TFRecord
                 const features = new Features();
+                const featureLists = new FeatureLists();
+
                 this.addIntFeature(features, "image/height", imageInfo.height);
                 this.addIntFeature(features, "image/width", imageInfo.width);
                 this.addStringFeature(features, "image/filename", element.asset.name);
@@ -180,20 +205,20 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                     .toString(CryptoJS.enc.Base64));
                 this.addStringFeature(features, "image/encoded", image64);
                 this.addStringFeature(features, "image/format", element.asset.name.split(".").pop());
-                this.addIntArrayFeature(features, "image/object/bbox/xmin", imageInfo.xmin);
-                this.addIntArrayFeature(features, "image/object/bbox/ymin", imageInfo.ymin);
-                this.addIntArrayFeature(features, "image/object/bbox/xmax", imageInfo.xmax);
-                this.addIntArrayFeature(features, "image/object/bbox/ymax", imageInfo.ymax);
-                this.addStringFeature(features, "image/object/class/text", "x");
-                this.addStringFeature(features, "image/object/class/label", "x");
+                this.addIntArrayFeatureList(featureLists, "image/object/bbox/xmin", imageInfo.xmin);
+                this.addIntArrayFeatureList(featureLists, "image/object/bbox/ymin", imageInfo.ymin);
+                this.addIntArrayFeatureList(featureLists, "image/object/bbox/xmax", imageInfo.xmax);
+                this.addIntArrayFeatureList(featureLists, "image/object/bbox/ymax", imageInfo.ymax);
+                this.addStringArrayFeatureList(featureLists, "image/object/class/text", imageInfo.text);
+                this.addIntArrayFeatureList(featureLists, "image/object/class/label", imageInfo.label);
                 this.addIntFeature(features, "image/object/difficult", 0);
                 this.addIntFeature(features, "image/object/truncated", 0);
-                this.addStringFeature(features, "image/object/view", "Unspecified");
+                this.addStringArrayFeatureList(featureLists, "image/object/view", imageInfo.view);
 
                 // Save TFRecord
                 const fileName = element.asset.name.split(".").slice(0, -1).join(".");
                 const fileNamePath = `${exportFolderName}/${fileName}.tfrecord`;
-                await this.writeTFRecord(fileNamePath, features);
+                await this.writeTFRecord(fileNamePath, features, featureLists);
 
                 resolve();
             })
@@ -227,11 +252,13 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                                                    region.points.length === 2)
                                .forEach((region) => {
                                     region.tags.forEach((tag) => {
-                                        imageInfo.name.push(tag.name);
+                                        imageInfo.text.push(tag.name);
+                                        imageInfo.label.push(0); // TODO: Get tag position in global tags
                                         imageInfo.xmin.push(region.points[0].x);
                                         imageInfo.ymin.push(region.points[0].y);
                                         imageInfo.xmax.push(region.points[1].x);
                                         imageInfo.ymax.push(region.points[1].y);
+                                        imageInfo.view.push("Unspecified");
                                     });
                                 });
     }
