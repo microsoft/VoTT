@@ -113,35 +113,14 @@ describe("TFRecords Json Export Provider", () => {
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
-
-            expect(createContainerCalls.length).toEqual(5);
-            expect(createContainerCalls[1][0].endsWith("/JPEGImages")).toEqual(true);
-            expect(createContainerCalls[2][0].endsWith("/Annotations")).toEqual(true);
-            expect(createContainerCalls[3][0].endsWith("/ImageSets")).toEqual(true);
-            expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
+            expect(createContainerCalls.length).toEqual(1);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(4);
-            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
-            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
-            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
-            expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4")).toEqual(true);
-
-            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeTextFileCalls.length).toEqual(11);
-            expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
-            expect(writeTextFileCalls[0][1].length)
-                .toEqual((tagLengthInPbtxt * testProject.tags.length));
-            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
-            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
-            expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/Annotations/Asset 4.xml")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 1_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 2_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[8][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[9][0].endsWith("/ImageSets/Main/Tag 1_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[10][0].endsWith("/ImageSets/Main/Tag 2_train.txt")).toEqual(true);
+            expect(writeBinaryCalls[0][0].endsWith("Asset 1.tfrecord")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("Asset 2.tfrecord")).toEqual(true);
+            expect(writeBinaryCalls[2][0].endsWith("Asset 3.tfrecord")).toEqual(true);
+            expect(writeBinaryCalls[3][0].endsWith("Asset 4.tfrecord")).toEqual(true);
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -157,29 +136,13 @@ describe("TFRecords Json Export Provider", () => {
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
-
-            expect(createContainerCalls.length).toEqual(5);
-            expect(createContainerCalls[1][0].endsWith("/JPEGImages")).toEqual(true);
-            expect(createContainerCalls[2][0].endsWith("/Annotations")).toEqual(true);
-            expect(createContainerCalls[3][0].endsWith("/ImageSets")).toEqual(true);
-            expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
+            expect(createContainerCalls.length).toEqual(1);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(3);
-            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
-            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
-            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
-
-            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeTextFileCalls.length).toEqual(6);
-            expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
-            expect(writeTextFileCalls[0][1].length)
-                .toEqual((tagLengthInPbtxt * testProject.tags.length));
-            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
-            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
-            expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
+            expect(writeBinaryCalls[0][0].endsWith("Asset 1.tfrecord")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("Asset 2.tfrecord")).toEqual(true);
+            expect(writeBinaryCalls[2][0].endsWith("Asset 3.tfrecord")).toEqual(true);
         });
 
         it("Exports only tagged assets", async () => {
@@ -195,31 +158,12 @@ describe("TFRecords Json Export Provider", () => {
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const createContainerCalls = storageProviderMock.mock.instances[0].createContainer.mock.calls;
-
-            expect(createContainerCalls.length).toEqual(5);
-            expect(createContainerCalls[1][0].endsWith("/JPEGImages")).toEqual(true);
-            expect(createContainerCalls[2][0].endsWith("/Annotations")).toEqual(true);
-            expect(createContainerCalls[3][0].endsWith("/ImageSets")).toEqual(true);
-            expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
+            expect(createContainerCalls.length).toEqual(1);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(2);
-            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
-            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
-
-            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
-            expect(writeTextFileCalls.length).toEqual(9);
-            expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
-            expect(writeTextFileCalls[0][1].length)
-                .toEqual((tagLengthInPbtxt * testProject.tags.length));
-            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
-            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
-            expect(writeTextFileCalls[3][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 1_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 2_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 1_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[8][0].endsWith("/ImageSets/Main/Tag 2_train.txt")).toEqual(true);
+            expect(writeBinaryCalls[0][0].endsWith("Asset 1.tfrecord")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("Asset 2.tfrecord")).toEqual(true);
         });
     });
 });
