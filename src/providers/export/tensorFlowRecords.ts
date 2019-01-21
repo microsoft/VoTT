@@ -177,13 +177,13 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 const imageInfo: IImageInfo = {
                     width: element.asset.size ? element.asset.size.width : 0,
                     height: element.asset.size ? element.asset.size.height : 0,
-                    text: ["abc", "def"],
-                    label: [7, 8],
-                    xmin: [0, 1],
-                    ymin: [2, 3],
-                    xmax: [4, 5],
-                    ymax: [6, 7],
-                    view: ["Unspecified", "Unspecified"],
+                    text: [],
+                    label: [],
+                    xmin: [],
+                    ymin: [],
+                    xmax: [],
+                    ymax: [],
+                    view: [],
                 };
 
                 if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
