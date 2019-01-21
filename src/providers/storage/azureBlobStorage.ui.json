@@ -1,1 +1,5 @@
-{}
+{
+    "sas": {
+        "ui:widget": "protectedInput"
+    }
+}

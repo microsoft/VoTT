@@ -5,7 +5,9 @@ import { ObjectFieldTemplate } from "../../common/objectField/objectFieldTemplat
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ArrayFieldTemplate } from "../../common/arrayField/arrayFieldTemplate";
 import { IAppSettings } from "../../../../models/applicationState";
-import { SecurityTokenInput } from "../../common/securityTokenInput/securityTokenInput";
+import { ProtectedInput } from "../../common/protectedInput/protectedInput";
+import CustomField from "../../common/customField/customField";
+import { generateKey } from "../../../../common/crypto";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./appSettingsForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -25,8 +27,13 @@ export interface IAppSettingsFormState {
 }
 
 export class AppSettingsForm extends React.Component<IAppSettingsFormProps, IAppSettingsFormState> {
-    private widgets = {
-        securityToken: (SecurityTokenInput as any) as Widget,
+    private fields = {
+        securityToken: CustomField(ProtectedInput, (props) => ({
+            id: props.idSchema.$id,
+            readonly: true,
+            value: props.formData || generateKey(),
+            onChange: props.onChange,
+        })),
     };
 
     constructor(props: IAppSettingsFormProps) {
@@ -63,7 +70,7 @@ export class AppSettingsForm extends React.Component<IAppSettingsFormProps, IApp
                     showErrorList={false}
                     liveValidate={true}
                     noHtml5Validate={true}
-                    widgets={this.widgets}
+                    fields={this.fields}
                     ObjectFieldTemplate={ObjectFieldTemplate}
                     FieldTemplate={CustomFieldTemplate}
                     ArrayFieldTemplate={ArrayFieldTemplate}

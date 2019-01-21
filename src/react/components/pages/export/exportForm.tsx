@@ -7,6 +7,7 @@ import { ExportProviderFactory } from "../../../../providers/export/exportProvid
 import ExportProviderPicker from "../../common/exportProviderPicker/exportProviderPicker";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ExternalPicker from "../../common/externalPicker/externalPicker";
+import { ProtectedInput } from "../../common/protectedInput/protectedInput";
 
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
@@ -49,6 +50,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
     private widgets = {
         externalPicker: (ExternalPicker as any) as Widget,
         exportProviderPicker: (ExportProviderPicker as any) as Widget,
+        protectedInput: (ProtectedInput as any) as Widget,
     };
 
     constructor(props, context) {

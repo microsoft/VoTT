@@ -2,6 +2,14 @@ import React, { SyntheticEvent } from "react";
 import { ISecurityToken } from "../../../../models/applicationState";
 import { JSONSchema6 } from "json-schema";
 
+/**
+ * Security Token Picker Properties
+ * @member id - The id to bind to the input element
+ * @member schema - The JSON schema for the associated field
+ * @member value - The value to bind to the input element
+ * @member securityTokens - The list of security tokens to display
+ * @member onChange - The event handler to call when the input value changes
+ */
 export interface ISecurityTokenPickerProps {
     id?: string;
     schema: JSONSchema6;
@@ -10,6 +18,10 @@ export interface ISecurityTokenPickerProps {
     onChange: (value: string) => void;
 }
 
+/**
+ * Security Token Picker
+ * @description - Used to display a list of security tokens
+ */
 export class SecurityTokenPicker extends React.Component<ISecurityTokenPickerProps> {
     constructor(props) {
         super(props);
@@ -31,10 +43,6 @@ export class SecurityTokenPicker extends React.Component<ISecurityTokenPickerPro
 
     private onChange(e: SyntheticEvent) {
         const inputElement = e.target as HTMLSelectElement;
-        if (!inputElement.value) {
-            this.props.onChange(undefined);
-        } else {
-            this.props.onChange(inputElement.value);
-        }
+        this.props.onChange(inputElement.value ? inputElement.value : undefined);
     }
 }

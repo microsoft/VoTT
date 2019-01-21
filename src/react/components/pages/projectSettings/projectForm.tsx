@@ -1,13 +1,13 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
-import { IConnection, IProject, ISecurityToken, IAppSettings } from "../../../../models/applicationState";
+import { IConnection, IProject, IAppSettings } from "../../../../models/applicationState";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import TagsInput, { ITagsInputProps } from "../../common/tagsInput/tagsInput";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
-import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/securityTokenInput/securityTokenPicker";
+import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/securityTokenPicker/securityTokenPicker";
 import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
