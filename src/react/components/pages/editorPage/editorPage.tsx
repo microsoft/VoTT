@@ -231,27 +231,28 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private  onToolbarItemSelected(toolbarItem: ToolbarItem) {
+        const setSelectionMode = this.canvas.current.setSelectionMode;
         switch (toolbarItem.props.name) {
             case "drawRectangle":
-                this.canvas.current.setSelectionMode(SelectionMode.RECT);
+                setSelectionMode(SelectionMode.RECT);
                 break;
             case "drawPolygon":
-                this.canvas.current.setSelectionMode(SelectionMode.POLYGON);
+                setSelectionMode(SelectionMode.POLYGON);
                 break;
             case "drawPolyline":
-                this.canvas.current.setSelectionMode(SelectionMode.POLYLINE);
+                setSelectionMode(SelectionMode.POLYLINE);
                 break;
             case "drawPoint":
-                this.canvas.current.setSelectionMode(SelectionMode.POINT);
+                setSelectionMode(SelectionMode.POINT);
                 break;
             case "drawCopyRect":
-                this.canvas.current.setSelectionMode(SelectionMode.COPYRECT);
+                setSelectionMode(SelectionMode.COPYRECT);
                 break;
             case "selectCanvas":
-                this.canvas.current.setSelectionMode(SelectionMode.NONE);
+                setSelectionMode(SelectionMode.NONE);
                 break;
             case "panCanvas":
-                this.canvas.current.setSelectionMode(SelectionMode.NONE);
+                setSelectionMode(SelectionMode.NONE);
                 break;
             default:
                 console.log(toolbarItem.props.name);

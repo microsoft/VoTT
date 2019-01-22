@@ -6,7 +6,6 @@ import { IProject, EditorMode } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
 import "./editorToolbar.scss";
 import { Select } from "../../toolbar/select";
-import Canvas from "./canvas";
 
 /**
  * Properties for Editor Toolbar

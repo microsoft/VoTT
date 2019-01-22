@@ -1,6 +1,4 @@
 import { ToolbarItem } from "./toolbarItem";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
-import { EditorMode } from "../../../models/applicationState";
 
 /**
  * @name - Draw Rectangle

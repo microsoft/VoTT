@@ -3,9 +3,7 @@ import { IToolbarItemProps, ToolbarItemType } from "./toolbarItem";
 import { mount, ReactWrapper } from "enzyme";
 import IProjectActions, * as projectActions from "../../../redux/actions/projectActions";
 import MockFactory from "../../../common/mockFactory";
-import { EditorMode } from "../../../models/applicationState";
 import { Pan } from "./pan";
-import Canvas from "../pages/editorPage/canvas";
 
 describe("Pan Toolbar Item", () => {
     const testProject = MockFactory.createTestProject("TestProject");
@@ -30,11 +28,6 @@ describe("Pan Toolbar Item", () => {
             onClick: clickHandler,
         };
     }
-
-    beforeAll(() => {
-        const canvasMock = Canvas;
-        canvasMock.prototype.setSelectionMode = jest.fn((selectionMode) => selectionMode);
-    });
 
     it("Sets the editor mode to Rectangle on click", async () => {
         actions.saveProject = jest.fn(() => Promise.resolve());

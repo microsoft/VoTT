@@ -3,8 +3,6 @@ import { IToolbarItemProps, ToolbarItemType } from "./toolbarItem";
 import { mount, ReactWrapper } from "enzyme";
 import IProjectActions, * as projectActions from "../../../redux/actions/projectActions";
 import MockFactory from "../../../common/mockFactory";
-import { EditorMode } from "../../../models/applicationState";
-import Canvas from "../pages/editorPage/canvas";
 import { Select } from "./select";
 
 describe("Select Toolbar Item", () => {
@@ -30,11 +28,6 @@ describe("Select Toolbar Item", () => {
             onClick: clickHandler,
         };
     }
-
-    beforeAll(() => {
-        const canvasMock = Canvas;
-        canvasMock.prototype.setSelectionMode = jest.fn((selectionMode) => selectionMode);
-    });
 
     it("Sets the editor mode to Select on click", async () => {
         actions.saveProject = jest.fn(() => Promise.resolve());
