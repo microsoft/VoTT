@@ -238,10 +238,7 @@ describe("Editor Page Component", () => {
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
         currentProject: setCurrentProject ? project : null,
-        appSettings: {
-            connection: null,
-            devToolsEnabled: false,
-        },
+        appSettings: MockFactory.appSettings(),
         connections: [],
         recentProjects: [project],
     };

@@ -519,12 +519,9 @@ export default class MockFactory {
      * Creates fake IAppSettings
      */
     public static appSettings(): IAppSettings {
-        const testConnection = MockFactory.createTestConnection("Test");
-
         return {
             devToolsEnabled: false,
-            connection: testConnection,
-            connectionId: testConnection.id,
+            securityTokens: [],
         };
     }
 
