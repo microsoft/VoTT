@@ -45,7 +45,7 @@
         "test": "react-scripts test --env=jsdom --silent",
         "test:ci": "cross-env CI=true npm run test",
         "test:coverage": "npm run test -- --coverage",
-        "plato": "./node_modules/.bin/tsc --noEmit false --outDir js-src && ./node_modules/.bin/plato -r -d plato-report js-src",
+        "plato": "tsc --noEmit false --outDir js-src && plato -r -d plato-report js-src",
         "postinstall": "electron-builder install-app-deps",
         "predebug": "npm run build && npm run webpack:dev"
     },
