@@ -52,24 +52,24 @@ class App extends React.Component<IAppProps> {
         const errorMessage = showError ? this.props.appError.message : "";
 
         return (
-            <Router>
-                <div className="app-shell">
-                    <Alert title={errorTitle}
-                        message={errorMessage}
-                        closeButtonColor="info"
-                        show={showError}
-                        onClose={this.props.actions.clearError}
-                    />
-                    <ErrorBoundary>
+            <ErrorBoundary>
+                <Router>
+                    <div className="app-shell">
+                        <Alert title={errorTitle}
+                            message={errorMessage}
+                            closeButtonColor="info"
+                            show={showError}
+                            onClose={this.props.actions.clearError}
+                        />
                         <Navbar />
                         <div className="app-main">
                             <Sidebar project={this.props.currentProject} />
                             <MainContentRouter />
                         </div>
                         <ToastContainer />
-                    </ErrorBoundary>
-                </div>
-            </Router>
+                    </div>
+                </Router>
+            </ErrorBoundary>
         );
     }
 }
