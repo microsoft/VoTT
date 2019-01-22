@@ -80,8 +80,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     }
 
     private addStringFeature(features: Features, key: string, value: string) {
-        const enc = new TextEncoder();
-        this.addBinaryArrayFeature(features, key, enc.encode(value));
+        this.addBinaryArrayFeature(features, key, this.textEncode(value));
     }
 
     private addBinaryArrayFeature(features: Features, key: string, value: Uint8Array) {
@@ -124,12 +123,11 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     }
 
     private addStringArrayFeatureList(featureLists: FeatureLists, key: string, values: string[]) {
-        const enc = new TextEncoder();
         const featureList = new FeatureList();
 
         values.forEach((value) => {
             const byteList = new BytesList();
-            byteList.addValue(enc.encode(value));
+            byteList.addValue(this.textEncode(value));
 
             const feature = new Feature();
             feature.setBytesList(byteList);
@@ -280,5 +278,14 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
             await this.storageProvider.writeText(pbtxtFileName, items.join(""));
         }
+    }
+
+    private textEncode(str: string): Uint8Array {
+        const utf8 = unescape(encodeURIComponent(str));
+        const result = new Uint8Array(utf8.length);
+        for (let i = 0; i < utf8.length; i++) {
+            result[i] = utf8.charCodeAt(i);
+        }
+        return result;
     }
 }

@@ -42,7 +42,7 @@ export default class MockFactory {
         return {
             id: `asset-${name}`,
             format: "jpg",
-            name: `Asset ${name}`,
+            name: `Asset ${name}.jpg`,
             path: `C:\\Desktop\\asset${name}.jpg`,
             state: assetState,
             type: AssetType.Image,
