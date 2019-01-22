@@ -5,7 +5,8 @@ import { IConnection, IProject, ITag } from "../../../../models/applicationState
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
-import { TagsInput, ITagsInputProps, TagEditorModal } from "vott-react";
+import { default as TagsInput, ITagsInputProps } from "../../common/tagsInput/tagsInput";
+import { default as TagEditorModal } from "../../common/tagEditorModal/tagEditorModal";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
@@ -36,7 +37,9 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
  */
 export interface IProjectFormState {
     classNames: string[];
-    formData: any;
+    tags: ITag[];
+    selectedTag: ITag;
+    formData: IProject;
     formSchema: any;
     uiSchema: any;
 }
@@ -81,8 +84,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 =======
         tagsInput: CustomField(TagsInput, (props) => {
             const tagsInputProps : ITagsInputProps = {
-                tags: props.formData,
-                onChange: props.onChange,
+                tags: this.state.tags,
+                onChange: this.onTagsChange,
                 placeHolder: strings.tags.placeholder,
                 onCtrlTagClick: this.onTagClick,
             }
@@ -100,6 +103,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             formData: {
                 ...this.props.project,
             },
+            tags: (this.props.project) ? this.props.project.tags : [],
+            selectedTag: null
         };
         this.tagEditorModal = React.createRef<TagEditorModal>();
 
@@ -107,7 +112,9 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         this.onFormCancel = this.onFormCancel.bind(this);
         this.onFormValidate = this.onFormValidate.bind(this);
         this.onTagClick = this.onTagClick.bind(this);
+        this.onTagsChange = this.onTagsChange.bind(this);
         this.onTagModalOk = this.onTagModalOk.bind(this);
+        this.onTagModalCancel = this.onTagModalCancel.bind(this);
     }
     /**
      * Updates state if project from properties has changed
@@ -121,12 +128,49 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         }
     }
 
+    private onTagsChange(tags: ITag[]) {
+        this.setState({tags});
+    }
+
     private onTagClick(tag: ITag) {
-        this.tagEditorModal.current.open(tag);
+        this.setState({
+            selectedTag: tag
+        }, () => {
+            this.tagEditorModal.current.open(tag);
+        });
     }
 
     private onTagModalOk(tag: ITag) {
+        /**
+         * If this was a name change (names are not equal), don't allow
+         * the new tag to be named with a name that currently exists
+         * in other tags. Probably should include an error message.
+         * For now, just doesn't allow the action to take place. Modal
+         * won't close and user won't be able to set the name. This is
+         * similar to how the component handles duplicate naming at the
+         * creation level. If user enters name that already exists in
+         * tags, the component just doesn't do anything.
+         */
+        if(tag.name !== this.state.selectedTag.name && this.state.tags.some((t) => t.name === tag.name)) {
+            return;
+        }
+        this.setState((prevState: IProjectFormState) => {
+            return {
+                tags: prevState.tags.map((t) => {
+                    if (t.name === prevState.selectedTag.name) {
+                        return tag;
+                    }
+                    return t;
+                })
+            }
+        });
         this.tagEditorModal.current.close();
+    }
+
+    private onTagModalCancel() {
+        this.setState({
+            selectedTag: null
+        });
     }
 
     public render() {
@@ -152,6 +196,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 <TagEditorModal
                     ref={this.tagEditorModal}
                     onOk={this.onTagModalOk}
+                    onCancel={this.onTagModalCancel}
 
                     tagNameText={strings.tags.modal.name}
                     tagColorText={strings.tags.modal.color}
@@ -183,6 +228,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     private onFormSubmit(args: ISubmitEvent<IProject>) {
         const project: IProject = {
             ...args.formData,
+            tags: this.state.tags
         };
         this.props.onSubmit(project);
     }
