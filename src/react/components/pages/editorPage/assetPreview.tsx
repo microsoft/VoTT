@@ -52,13 +52,13 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <img src={asset.path} onLoad={this.onAssetLoad} />
+                    <img src={this.checkAssetPathProtocol(asset.path)} onLoad={this.onAssetLoad} />
                 }
                 {asset.type === AssetType.Video &&
                     <Player ref={this.playerRef}
                         fluid={false} autoPlay={videoSettings.shouldAutoPlayVideo}
                         poster={videoSettings.posterSource}
-                        src={`${asset.path}`}
+                        src={`${this.checkAssetPathProtocol(asset.path)}`}
                     >
                     {videoSettings.shouldShowPlayControls &&
                         <ControlBar>
@@ -92,6 +92,13 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                 loaded: true,
             });
         }
+    }
+
+    private checkAssetPathProtocol(assetPath: string): string {
+        if (assetPath.toLowerCase().startsWith("http://") || assetPath.toLowerCase().startsWith("https://")) {
+            return assetPath;
+        }
+        return "file://" + assetPath;
     }
 
     private onAssetLoad() {
