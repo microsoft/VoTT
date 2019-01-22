@@ -2,6 +2,8 @@
 
 [![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6?branchName=v2) [![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/v2/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)
 
+[CODE COMPLEXITY](https://microsoft.github.io/VoTT/)
+
 The `v2` branch is a complete reboot of the original VoTT, and currently don't share git histories. The purpose of `v2` is to create a more extensible version of the original application while leveraging more recent frameworks such as React/Redux.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). For available scripts and other related info, see [our docs](docs/REACTAPP.md).
@@ -13,7 +15,7 @@ We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests
 ### Issues
 
 - Look for duplicate issues & comment on thread if experiencing something similar
-- Fill in template information (platform, OS, version, screenshots, etc.) 
+- Fill in template information (platform, OS, version, screenshots, etc.)
 
 ### Pull Requests
 
@@ -33,6 +35,11 @@ Try to keep PRs small to decrease the time required to review and merge
 
 1. This repo use EditorConfig to maintain consistent style, please refer to
    this [guide](docs/STYLE.md) for more information.
+
+### Code complexity
+
+1. You can view the latest code analysis report [here](https://microsoft.github.io/VoTT/)
+1. More info about the analysi tool [here](docs/PLATO.md)
 
 ## Usage
 
