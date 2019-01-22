@@ -20,11 +20,7 @@ describe("Editor Canvas", () => {
     }
 
     function createComponent(props: ICanvasProps): ReactWrapper<ICanvasProps, {}, Canvas> {
-        try {
-            return mount(<Canvas {...props} />);
-        } catch (e) {
-            console.log(e);
-        }
+        return mount(<Canvas {...props} />);
     }
 
     function createProps(): ICanvasProps {
