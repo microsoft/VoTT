@@ -12,11 +12,13 @@ import FilePicker from "../../common/filePicker/filePicker";
 import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
+import IAppErrorActions, * as appErrorActions from "../../../../redux/actions/appErrorActions";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
+    appErrorActions: IAppErrorActions;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -29,6 +31,7 @@ function mapStateToProps(state: IApplicationState) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        appErrorActions: bindActionCreators(appErrorActions, dispatch),
     };
 }
 
@@ -115,9 +118,17 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.cloudFilePicker.current.open();
     }
 
-    private onProjectFileUpload = (e, projectJson) => {
-        const project: IProject = JSON.parse(projectJson);
-        this.loadSelectedProject(project);
+    private onProjectFileUpload = async (e, project) => {
+        let projectJson: IProject;
+        try {
+            projectJson = JSON.parse(project);
+            await this.loadSelectedProject(projectJson);
+        } catch (error) {
+            this.props.appErrorActions.showError({
+                title: strings.homePage.loadProjectError.title,
+                message: strings.homePage.loadProjectError.message,
+            });
+        }
     }
 
     private onProjectFileUploadError = (e, err) => {

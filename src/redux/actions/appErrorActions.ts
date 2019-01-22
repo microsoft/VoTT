@@ -6,7 +6,7 @@ import { ActionTypes } from "./actionTypes";
 /**
  * Action to display alert when there's an error in the app
  * @member showError
- * @memeber clearError
+ * @member clearError
  * @interface
  */
 export default interface IAppErrorActions {

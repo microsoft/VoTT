@@ -27,6 +27,10 @@ export const spanish: IAppStrings = {
             title: "Borrar Proyecto",
             confirmation: "¿Está seguro que quiere borrar el proyecto",
         },
+        loadProjectError: {
+            title: "Proyecto de carga tiene un error",
+            message: "El archivo no es válido json",
+        },
     },
     appSettings: {
         title: "Configuración de Aplicación",
