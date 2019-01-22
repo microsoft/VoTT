@@ -7,7 +7,7 @@ import { bindActionCreators } from "redux";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { strings } from "../../../../common/strings";
 import { AssetState, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+    IAssetMetadata, IProject, ITag, IAssetVideoSettings } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import AssetPreview from "./assetPreview";
@@ -106,6 +106,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
+        const editorVideoSetting: IAssetVideoSettings = {
+            shouldAutoPlayVideo: true,
+            posterSource: null,
+            shouldShowPlayControls: true,
+        };
 
         if (!project) {
             return (<div>Loading...</div>);
@@ -129,7 +134,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="editor-page-content-body">
                         {selectedAsset &&
                             <div className="canvas-container">
-                                <AssetPreview asset={selectedAsset.asset} />
+                                <AssetPreview asset={selectedAsset.asset} videoSettings={ editorVideoSetting} />
                                 {selectedAsset.asset.size &&
                                     <div>
                                         {strings.editorPage.width}: {selectedAsset.asset.size.width}

@@ -1,16 +1,33 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../../models/applicationState";
+import { IAsset, AssetType, IAssetVideoSettings } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
+import { Player, ControlBar, CurrentTimeDisplay, TimeDivider,
+    PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
 
+/**
+ * Properties for Asset Preview
+ * @member asset - Asset for preview
+ */
 interface IAssetPreviewProps {
     asset: IAsset;
+    videoSettings: IAssetVideoSettings;
 }
 
+/**
+ * State for Asset Preview
+ * @member loaded - Asset is loaded
+ */
 interface IAssetPreviewState {
     loaded: boolean;
 }
 
+/**
+ * @name - Asset Preview
+ * @description - Small preview of assets for selection in editor page
+ */
 export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
+    private playerRef: React.RefObject<Player>;
+
     constructor(props, context) {
         super(props, context);
 
@@ -19,11 +36,13 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
         };
 
         this.onAssetLoad = this.onAssetLoad.bind(this);
+        this.playerRef = React.createRef<Player>();
     }
 
     public render() {
         const { loaded } = this.state;
         const { asset } = this.props;
+        const { videoSettings } = this.props;
 
         return (
             <div className="asset-preview">
@@ -33,12 +52,23 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <img src={this.checkAssetPathProtocol(asset.path)} onLoad={this.onAssetLoad} />
+                    <img src={asset.path} onLoad={this.onAssetLoad} />
                 }
                 {asset.type === AssetType.Video &&
-                    <video onLoadedData={this.onAssetLoad}>
-                        <source src={this.checkAssetPathProtocol(asset.path) + "t=5.0"} />
-                    </video>
+                    <Player ref={this.playerRef}
+                        fluid={false} autoPlay={videoSettings.shouldAutoPlayVideo}
+                        poster={videoSettings.posterSource}
+                        src={`${asset.path}`}
+                    >
+                    {videoSettings.shouldShowPlayControls &&
+                        <ControlBar>
+                            <CurrentTimeDisplay order={1.1} />
+                            <TimeDivider order={1.2} />
+                            <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
+                            <VolumeMenuButton enabled order={7.2} />
+                        </ControlBar>
+                    }
+                    </Player>
                 }
                 {asset.type === AssetType.Unknown &&
                     <div>{strings.editorPage.assetError}</div>
@@ -47,11 +77,21 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
         );
     }
 
-    private checkAssetPathProtocol(assetPath: string): string {
-        if (assetPath.toLowerCase().startsWith("http://") || assetPath.toLowerCase().startsWith("https://")) {
-            return assetPath;
+    public componentDidMount() {
+        // subscribe state change for the video if it has been loaded
+        if (this.playerRef != null && this.playerRef.current != null) {
+            this.playerRef.current.subscribeToStateChange(this.handleVideoStateChange.bind(this));
         }
-        return "file://" + assetPath;
+    }
+
+    private handleVideoStateChange(state, previousState) {
+        // When we have a duration, and we've buffered some data, we will mark
+        // the asset as loaded
+        if ((state.duration > 0) && (state.buffered.length > 0)) {
+            this.setState({
+                loaded: true,
+            });
+        }
     }
 
     private onAssetLoad() {

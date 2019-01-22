@@ -62,7 +62,7 @@ export interface IProject {
     sourceConnection: IConnection;
     targetConnection: IConnection;
     exportFormat: IExportFormat;
-    videoSettings: IVideoSettings;
+    videoSettings: IProjectVideoSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
 }
@@ -120,12 +120,25 @@ export interface IExportFormat {
 }
 
 /**
- * @name - Video Tagging Settings
+ * @name - Video Tagging Settings for the project
  * @description - Defines the video settings within a VoTT project
  * @member frameExtractionRate - Extraction rate for a video (number of frames per second of video)
  */
-export interface IVideoSettings {
+export interface IProjectVideoSettings {
     frameExtractionRate: number;
+}
+
+/**
+ * @name - Asset Video Settings
+ * @description - Defines the settings for video assets
+ * @member shouldAutoPlayVideo - true if the video should auto play when loaded, false otherwise
+ * @member posterSource - Source location of the image to display when the video is not playing,
+ * null for default (first frame of video)
+ */
+export interface IAssetVideoSettings {
+    shouldAutoPlayVideo: boolean;
+    posterSource: string;
+    shouldShowPlayControls: boolean;
 }
 
 /**
