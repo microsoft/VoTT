@@ -32,13 +32,11 @@ export interface IAppError {
  * @name - Application settings
  * @description - Defines the root level configuration options for the application
  * @member devToolsEnabled - Whether dev tools are current open and enabled
- * @member connectionId - Reference to the connection used to store application settings
- * @member connection - Reference to the connection used to store the application settings
+ * @member securityTokens - Token used to encrypt sensitive project settings
  */
 export interface IAppSettings {
     devToolsEnabled: boolean;
-    connectionId?: string;
-    connection: IConnection;
+    securityTokens: ISecurityToken[];
 }
 
 /**
@@ -199,7 +197,7 @@ export interface ITagMetadata {
 }
 
 /**
- * @name - Bouding Box
+ * @name - Bounding Box
  * @description - Defines the tag usage within a bounding box region
  * @member left - Defines the left x boundary for the start of the bounding box
  * @member top - Defines the top y boundary for the start of the boudning box
@@ -260,4 +258,13 @@ export enum RegionType {
     Square = "SQUARE",
     Rectangle = "RECTANGLE",
     Polygon = "POLYGON",
+}
+
+export interface ISecureString {
+    encrypted: string;
+}
+
+export interface ISecurityToken {
+    name: string;
+    key: string;
 }

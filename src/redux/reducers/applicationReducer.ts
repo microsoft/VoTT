@@ -15,6 +15,8 @@ export const reducer = (state: IAppSettings = null, action: AnyAction): IAppSett
             return { ...state, devToolsEnabled: action.payload };
         case ActionTypes.REFRESH_APP_SUCCESS:
             return { ...state };
+        case ActionTypes.SAVE_APP_SETTINGS_SUCCESS:
+            return { ...action.payload };
         default:
             return state;
     }

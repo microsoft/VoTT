@@ -10,10 +10,10 @@ import { IApplicationState } from "../../models/applicationState";
 const initialState: IApplicationState = {
     appSettings: {
         devToolsEnabled: false,
-        connection: null,
+        securityTokens: [],
     },
-    connections: null, // sampleConnections,
-    recentProjects: null, // sampleProjects,
+    connections: [],
+    recentProjects: [],
     currentProject: null,
     appError: null,
 };

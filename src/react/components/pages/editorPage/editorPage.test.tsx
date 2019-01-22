@@ -6,7 +6,6 @@ import { Store, AnyAction } from "redux";
 import EditorPage, { IEditorPageProps } from "./editorPage";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import { IApplicationState, IProject, IAssetMetadata } from "../../../../models/applicationState";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
 import MockFactory from "../../../../common/mockFactory";
 import { AssetService } from "../../../../services/assetService";
@@ -164,10 +163,7 @@ describe("Editor Page Component", () => {
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
         currentProject: setCurrentProject ? project : null,
-        appSettings: {
-            connection: null,
-            devToolsEnabled: false,
-        },
+        appSettings: MockFactory.appSettings(),
         connections: [],
         recentProjects: [project],
     };
