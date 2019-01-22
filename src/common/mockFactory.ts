@@ -516,7 +516,8 @@ export default class MockFactory {
      */
     public static projectService(): IProjectService {
         return {
-            save: jest.fn((project: IProject) => Promise.resolve()),
+            load: jest.fn((project: IProject) => Promise.resolve(project)),
+            save: jest.fn((project: IProject) => Promise.resolve(project)),
             delete: jest.fn((project: IProject) => Promise.resolve()),
             isDuplicate: jest.fn((project: IProject, projectList: IProject[]) => true),
         };

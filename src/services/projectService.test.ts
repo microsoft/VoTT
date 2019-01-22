@@ -2,7 +2,6 @@ import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { IProject, IExportFormat } from "../models/applicationState";
-import { error } from "util";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 
@@ -46,7 +45,7 @@ describe("Project Service", () => {
     it("Save calls configured export provider save when defined", async () => {
         testProject.exportFormat = {
             providerType: "azureCustomVision",
-            providerOptions: {},
+            providerOptions: null,
         };
 
         const result = await projectSerivce.save(testProject);

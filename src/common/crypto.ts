@@ -1,5 +1,6 @@
 import { enc, lib, AES } from "crypto-js";
 import Guard from "./guard";
+import { string } from "prop-types";
 
 /**
  * Generates a random base64 encoded key to be used for encryption
@@ -34,6 +35,12 @@ export function encrypt(message: string, secret: string): string {
     }
 }
 
+export function encryptObject(message: any, secret: string): string {
+    Guard.null(message);
+
+    return encrypt(JSON.stringify(message), secret);
+}
+
 /**
  * Decrypts the specified message with the provided key
  * @param encodedMessage The base64 encoded encrypted data
@@ -58,4 +65,9 @@ export function decrypt(encodedMessage: string, secret: string): string {
     } catch (e) {
         throw new Error(`Error decrypting data - ${e.message}`);
     }
+}
+
+export function decryptObject<T = any>(encodedMessage: string, secret: string): T {
+    const json = decrypt(encodedMessage, secret);
+    return JSON.parse(json) as T;
 }

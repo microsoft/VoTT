@@ -22,7 +22,7 @@ describe("Project Redux Actions", () => {
     });
     it("Load Project action resolves a promise and dispatches redux action", async () => {
         const project = MockFactory.createTestProject("Project1");
-        const result = await projectActions.loadProject(project)(store.dispatch);
+        const result = await projectActions.loadProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);

@@ -40,7 +40,7 @@ function mapDispatchToProps(dispatch) {
 export default class ExportPage extends React.Component<IExportPageProps> {
     private emptyExportFormat: IExportFormat = {
         providerType: "",
-        providerOptions: {},
+        providerOptions: null,
     };
 
     constructor(props, context) {

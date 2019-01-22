@@ -1,6 +1,9 @@
 import { Dispatch, Action } from "redux";
 import ProjectService from "../../services/projectService";
-import { IProject, IAsset, IAssetMetadata, IApplicationState, ISecurityToken, IAppSettings } from "../../models/applicationState";
+import {
+    IProject, IAsset, IAssetMetadata, IApplicationState,
+    ISecurityToken, IAppSettings,
+} from "../../models/applicationState";
 import { ActionTypes } from "./actionTypes";
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
@@ -27,8 +30,14 @@ export default interface IProjectActions {
  * Dispatches Load Project action and resolves with IProject
  * @param project - Project to load
  */
-export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<IProject> {
-    return (dispatch: Dispatch) => {
+export function loadProject(project: IProject):
+    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        const appState = getState();
+        const securityToken = appState.appSettings.securityTokens.find((st) => st.name === project.securityToken);
+        const projectService = new ProjectService();
+        project = await projectService.load(project, securityToken);
+
         dispatch(loadProjectAction(project));
         return Promise.resolve(project);
     };
@@ -42,6 +51,7 @@ export function saveProject(project: IProject):
     (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
+        let appSettings = appState.appSettings;
         const projectService = new ProjectService();
         if (!projectService.isDuplicate(project, appState.recentProjects)) {
             // Auto-generate project security token if not selected
@@ -57,10 +67,12 @@ export function saveProject(project: IProject):
 
                 updatedAppSettings.securityTokens.push(securityToken);
                 await dispatch(saveAppSettingsAction(updatedAppSettings));
+                appSettings = updatedAppSettings;
                 project.securityToken = securityToken.name;
             }
 
-            project = await projectService.save(project);
+            const securityToken = appSettings.securityTokens.find((st) => st.name === project.securityToken);
+            project = await projectService.save(project, securityToken);
             dispatch(saveProjectAction(project));
         } else {
             throw new Error("Cannot create duplicate projects");

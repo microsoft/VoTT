@@ -1,7 +1,5 @@
 import React, { RefObject, SyntheticEvent } from "react";
 import { FieldProps } from "react-jsonschema-form";
-import { decrypt, encrypt } from "../../../../common/crypto";
-import { ISecureString } from "../../../../models/applicationState";
 
 /**
  * Protected input properties
@@ -9,8 +7,7 @@ import { ISecureString } from "../../../../models/applicationState";
  * @member securityToken - Optional value used to encrypt/decrypt the value
  */
 export interface IProtectedInputProps extends FieldProps {
-    value: string | ISecureString;
-    securityToken?: string;
+    value: string;
 }
 
 /** Protected input state
@@ -19,7 +16,7 @@ export interface IProtectedInputProps extends FieldProps {
  */
 export interface IProtectedInputState {
     showKey: boolean;
-    decryptedValue: string;
+    value: string;
 }
 
 /**
@@ -34,7 +31,7 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
 
         this.state = {
             showKey: false,
-            decryptedValue: this.getDecryptedValue(),
+            value: this.props.value,
         };
 
         this.toggleKeyVisibility = this.toggleKeyVisibility.bind(this);
@@ -48,7 +45,7 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
 
     public render() {
         const { id, readonly } = this.props;
-        const { showKey, decryptedValue } = this.state;
+        const { showKey, value } = this.state;
 
         return (
             <div className="input-group">
@@ -57,7 +54,7 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
                     type={showKey ? "text" : "password"}
                     readOnly={readonly}
                     className="form-control"
-                    value={decryptedValue}
+                    value={value}
                     onChange={this.onChange} />
                 <div className="input-group-append">
                     <button type="button"
@@ -77,25 +74,9 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
         );
     }
 
-    private getDecryptedValue(): string {
-        const secureString = this.props.value as ISecureString;
-        if (this.props.securityToken && secureString && secureString.encrypted) {
-            return decrypt(secureString.encrypted, this.props.securityToken);
-        }
-
-        return this.props.value as string;
-    }
-
     private onChange(e: SyntheticEvent) {
         const input = e.target as HTMLInputElement;
-        let value: string | ISecureString = input.value;
-        if (this.props.securityToken) {
-            value = {
-                encrypted: encrypt(input.value, this.props.securityToken),
-            };
-        }
-
-        this.props.onChange(value ? value : undefined);
+        this.props.onChange(input.value ? input.value : undefined);
     }
 
     private toggleKeyVisibility() {

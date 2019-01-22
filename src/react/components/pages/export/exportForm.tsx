@@ -159,7 +159,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
         const formData = { ...exportFormat };
         if (resetProviderOptions) {
-            formData.providerOptions = {};
+            formData.providerOptions = null;
         }
         formData.providerType = providerType;
 
