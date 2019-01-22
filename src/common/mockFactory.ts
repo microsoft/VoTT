@@ -446,11 +446,11 @@ export default class MockFactory {
 
     public static createTestRegion(id = null) {
         const testRegion: any = {
-            bound: {
+            boundingBox: {
                 height: 100,
                 width: 100,
-                x: 0,
-                y: 0,
+                left: 0,
+                top: 0,
             },
             points: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}],
             tags: [],
