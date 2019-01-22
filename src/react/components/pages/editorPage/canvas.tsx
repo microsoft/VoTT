@@ -18,6 +18,7 @@ export interface ICanvasProps {
 
 interface ICanvasState {
     loaded: boolean;
+    selectedRegions?: IRegion[];
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
@@ -184,6 +185,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         this.state = {
             loaded: false,
+            selectedRegions: [],
         };
     }
 
@@ -231,6 +233,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public componentDidUpdate(prevProps) {
         if (this.props.selectedAsset.asset.path !== prevProps.selectedAsset.asset.path) {
             this.updateEditor();
+            if (this.props.selectedAsset.regions.length) {
+                this.updateSelected([]);
+            }
         }
     }
 
@@ -264,21 +269,20 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             id,
             type: this.editorModeToType(this.props.editorMode),
             tags: [],
-            bound: {
+            boundingBox: {
                 height: scaledRegionData.height,
                 width: scaledRegionData.width,
-                x: scaledRegionData.x,
-                y: scaledRegionData.y,
+                left: scaledRegionData.x,
+                top: scaledRegionData.y,
             },
             points: scaledRegionData.points,
         };
         const currentAssetMetadata = this.props.selectedAsset;
         currentAssetMetadata.regions.push(newRegion);
-        currentAssetMetadata.selectedRegions = [newRegion];
+        this.updateSelected([newRegion]);
         if (currentAssetMetadata.regions.length) {
             currentAssetMetadata.asset.state = AssetState.Tagged;
         }
-
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 
@@ -300,7 +304,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             movedRegion.points = scaledRegionData.points;
         }
         currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
-        currentAssetMetadata.selectedRegions = [movedRegion];
+        this.updateSelected([movedRegion]);
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 
@@ -318,8 +322,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (!currentAssetMetadata.regions.length) {
             currentAssetMetadata.asset.state = AssetState.Visited;
         }
-        currentAssetMetadata.selectedRegions = [];
         this.props.onAssetMetadataChanged(currentAssetMetadata);
+        this.updateSelected([]);
     }
 
     /**
@@ -330,15 +334,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     public onRegionSelected = (id: string, multiselect: boolean) => {
-        const currentAssetMetadata = this.props.selectedAsset;
+        let selectedRegions = this.state.selectedRegions;
         if (multiselect) {
-            currentAssetMetadata.selectedRegions.push(
-                                                this.props.selectedAsset.regions.find((region) => region.id === id));
+            selectedRegions.push(
+                this.props.selectedAsset.regions.find((region) => region.id === id));
         } else {
-            currentAssetMetadata.selectedRegions = [
-                                                this.props.selectedAsset.regions.find((region) => region.id === id)];
+            selectedRegions = [
+                this.props.selectedAsset.regions.find((region) => region.id === id)];
         }
-        this.props.onAssetMetadataChanged(currentAssetMetadata);
+        this.updateSelected(selectedRegions);
     }
 
     /**
@@ -355,8 +359,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.addContentSource(e.target);
             if (this.props.selectedAsset.regions.length) {
                 this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    const loadedRegionData = new RegionData(region.boundingBox.x,
-                                                            region.boundingBox.y,
+                    const loadedRegionData = new RegionData(region.boundingBox.left,
+                                                            region.boundingBox.top,
                                                             region.boundingBox.width,
                                                             region.boundingBox.height,
                                                             region.points.map((point) => new Point2D(point.x, point.y)),
@@ -368,10 +372,22 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     } else {
                         this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor());
                     }
+                    if (this.state.selectedRegions) {
+                        this.setState({
+                            selectedRegions: [this.props.selectedAsset.regions[
+                                this.props.selectedAsset.regions.length - 1]],
+                        });
+                    }
                 });
             }
         });
         image.src = this.props.selectedAsset.asset.path;
+    }
+
+    private updateSelected(selectedRegions: IRegion[]) {
+        this.setState({
+            selectedRegions,
+        });
     }
 
     private regionTypeToType(regionType: RegionType) {

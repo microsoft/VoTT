@@ -80,7 +80,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.state = {
             project: this.props.project,
             assets: [],
-            mode: EditorMode.Select,
+            mode: EditorMode.Rectangle,
         };
 
         this.toolbarItems = ToolbarItemFactory.getToolbarItems();
@@ -97,6 +97,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.onFooterChange = this.onFooterChange.bind(this);
         this.handleTagHotKey = this.handleTagHotKey.bind(this);
         this.onTagClicked = this.onTagClicked.bind(this);
+        this.onToolbarItemSelected = this.onToolbarItemSelected.bind(this);
+        this.onAssetMetadataChanged = this.onAssetMetadataChanged.bind(this);
     }
 
     public async componentDidMount() {
@@ -141,7 +143,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 <Canvas
                                     ref={this.canvas}
                                     selectedAsset={this.state.selectedAsset}
-                                    onAssetMetadataChanged={this.onAssetMetadataChanged.bind(this)}
+                                    onAssetMetadataChanged={this.onAssetMetadataChanged}
                                     editorMode={this.state.mode}
                                     project={this.props.project}/>
                             </div>
@@ -152,7 +154,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             displayHotKeys={true}
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked.bind(this)} />
+                            onTagClicked={this.onTagClicked} />
                     </div>
                 </div>
             </div>
@@ -165,20 +167,24 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     public onTagClicked(tag: ITagMetadata) {
         const selectedAsset = this.state.selectedAsset;
-        if (selectedAsset.selectedRegions && selectedAsset.selectedRegions.length) {
-            selectedAsset.selectedRegions.map((region) => {
-                const tagIndex = region.tags.findIndex((existingTag) => existingTag.name === tag.name);
+        if (this.canvas.current.state.selectedRegions && this.canvas.current.state.selectedRegions.length) {
+            const selectedRegions = this.canvas.current.state.selectedRegions;
+            selectedRegions.map((region) => {
+                const selectedIndex = selectedAsset.regions.findIndex((r) => r.id === region.id);
+                const selectedRegion = selectedAsset.regions[selectedIndex];
+                const tagIndex = selectedRegion.tags.findIndex(
+                    (existingTag) => existingTag.name === tag.name);
                 if (tagIndex === -1) {
-                    region.tags.push(tag);
+                    selectedRegion.tags.push(tag);
                 } else {
-                    region.tags.splice(tagIndex, 1);
+                    selectedRegion.tags.splice(tagIndex, 1);
                 }
-                if (region.tags.length) {
-                    this.canvas.current.updateTagsById(region.id,
-                        new TagsDescriptor(region.tags.map((tempTag) => new Tag(tempTag.name,
+                if (selectedRegion.tags.length) {
+                    this.canvas.current.updateTagsById(selectedRegion.id,
+                        new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag.name,
                             this.props.project.tags.find((t) => t.name === tempTag.name).color))));
                 } else {
-                    this.canvas.current.updateTagsById(region.id, null);
+                    this.canvas.current.updateTagsById(selectedRegion.id, null);
                 }
 
                 return region;

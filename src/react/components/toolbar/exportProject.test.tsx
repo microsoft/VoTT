@@ -30,8 +30,6 @@ describe("Export Project Toolbar Item", () => {
             active: true,
             project: testProject,
             onClick: clickHandler,
-            onEditorModeChange: jest.fn(),
-            canvas: MockFactory.createTestCanvas(),
         };
     }
 

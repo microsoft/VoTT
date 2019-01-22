@@ -23,8 +23,6 @@ describe("Toolbar Item", () => {
             tooltip: "Test Item Tooltip",
             onClick: onClickHandler,
             type: ToolbarItemType.Action,
-            canvas: MockFactory.createTestCanvas(),
-            onEditorModeChange: () => null,
         };
     }
 

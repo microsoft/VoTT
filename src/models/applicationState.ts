@@ -159,7 +159,6 @@ export interface IAsset {
 export interface IAssetMetadata {
     asset: IAsset;
     regions: IRegion[];
-    selectedRegions?: IRegion[];
     timestamp?: string;
 }
 
@@ -204,14 +203,14 @@ export interface ITagMetadata {
 /**
  * @name - Bouding Box
  * @description - Defines the tag usage within a bounding box region
- * @member x - Defines the left x boundary for the start of the bounding box
- * @member y - Defines the top y boundary for the start of the boudning box
+ * @member left - Defines the left x boundary for the start of the bounding box
+ * @member top - Defines the top y boundary for the start of the boudning box
  * @member width - Defines the width of the bounding box
  * @member height - Defines the height of the bounding box
  */
 export interface IBoundingBox {
-    x: number;
-    y: number;
+    left: number;
+    top: number;
     width: number;
     height: number;
 }

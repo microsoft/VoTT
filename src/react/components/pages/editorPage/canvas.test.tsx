@@ -9,26 +9,6 @@ import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 
 jest.mock("vott-ct");
 import { CanvasTools } from "vott-ct";
-import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-// import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
-// jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
-// import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
-// const Editor = jest.genMockFromModule("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
-// Editor.RM = new RegionsManager(null,null,null);
-// import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-
-// jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor", () => () => ({
-//     scaleRegionToFrameSize: jest.fn(),//() => 0,
-//     scaleRegionToSourceSize: jest.fn(),//() => 0,
-//     setSelectionMode: jest.fn(),//() => SelectionMode.RECT,
-//     RM: new RegionsManager(null, null, null),
-//     onSelectionEnd: jest.fn(),
-//     onRegionMove: jest.fn(),
-//     onRegionDelete: jest.fn(),
-//     onRegionSelected: jest.fn(),
-//     addContentSource: jest.fn()
-// }))
-
 describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, {}, Canvas> = null;
     const onAssetMetadataChanged = jest.fn();
@@ -76,7 +56,7 @@ describe("Editor Canvas", () => {
 
         expect(onAssetMetadataChanged).toBeCalled();
         expect(wrapper.prop("selectedAsset").regions).toMatchObject([testRegion]);
-        expect(wrapper.prop("selectedAsset").selectedRegions).toMatchObject([testRegion]);
+        expect(wrapper.instance().state.selectedRegions).toMatchObject([testRegion]);
     });
 
     it("onRegionMove edits region info in asset", () => {
@@ -97,7 +77,7 @@ describe("Editor Canvas", () => {
         canvas.onRegionDelete("test-region");
         expect(onAssetMetadataChanged).toBeCalled();
         expect(wrapper.prop("selectedAsset").regions.length).toEqual(0);
-        expect(wrapper.prop("selectedAsset").selectedRegions.length).toEqual(0);
+        expect(wrapper.instance().state.selectedRegions.length).toEqual(0);
     });
 
     it("onRegionSelected adds region to list of selected regions on asset", () => {
@@ -108,12 +88,12 @@ describe("Editor Canvas", () => {
         wrapper.prop("selectedAsset").regions.push(testRegion2);
         expect(wrapper.prop("selectedAsset").regions.length).toEqual(2);
         canvas.onRegionSelected("test1", false);
-        expect(wrapper.prop("selectedAsset").selectedRegions.length).toEqual(1);
-        expect(wrapper.prop("selectedAsset").selectedRegions)
+        expect(wrapper.instance().state.selectedRegions.length).toEqual(1);
+        expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([MockFactory.createTestRegion("test1")]);
         canvas.onRegionSelected("test2", true);
-        expect(wrapper.prop("selectedAsset").selectedRegions.length).toEqual(2);
-        expect(wrapper.prop("selectedAsset").selectedRegions)
+        expect(wrapper.instance().state.selectedRegions.length).toEqual(2);
+        expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
     });
 });
