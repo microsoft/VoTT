@@ -1,7 +1,6 @@
 import React from "react";
-import { IProject, RegionType, EditorMode } from "../../../models/applicationState";
+import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
-import Canvas from "../pages/editorPage/canvas";
 
 /**
  * Toolbar Item Metadata

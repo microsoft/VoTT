@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { default as React, RefObject } from "react";
+import React, { RefObject } from "react";
 import keydown from "react-keydown";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";

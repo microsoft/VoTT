@@ -191,7 +191,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public componentDidMount() {
         const ct = CanvasTools;
-        const sz = document.getElementById("editorzone") as unknown as HTMLDivElement;
+        const sz = document.getElementById("editor-zone") as unknown as HTMLDivElement;
 
         // @ts-ignore
         this.editor = new ct.Editor(sz);
@@ -238,15 +238,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             }
         }
     }
-
     public render() {
         // const { loaded } = this.state;
         // const { svgHost } = this.props;
 
         return (
-            <div id="ctZone">
-                <div id="selectionzone">
-                    <div id="editorzone"></div>
+            <div id="ct-zone">
+                <div id="selection-zone">
+                    <div id="editor-zone" className="full-size"></div>
                 </div>
             </div>
         );
