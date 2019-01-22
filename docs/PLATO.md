@@ -2,7 +2,7 @@
 
 We're using [plato](https://github.com/es-analysis/plato) to analyze code complexity.
 
-You can view the report on the latest commit [here](https://microsoft.github.io/VoTT/)
+You can view the report on the latest `v2` commit [here](https://microsoft.github.io/VoTT/)
 
 ## Local development
 
