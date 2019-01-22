@@ -565,9 +565,11 @@ export default class MockFactory {
      * Runs function that updates the UI, and flushes call stack
      * @param func - The function that updates the UI
      */
-    public static flushUi(func: () => void): Promise<void> {
+    public static flushUi(func: () => void = null): Promise<void> {
         return new Promise<void>((resolve) => {
-            func();
+            if (func) {
+                func();
+            }
             setImmediate(resolve);
         });
     }
