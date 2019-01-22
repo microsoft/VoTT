@@ -121,6 +121,12 @@ describe("TFRecords Json Export Provider", () => {
             expect(writeBinaryCalls[1][0].endsWith("Asset 2.tfrecord")).toEqual(true);
             expect(writeBinaryCalls[2][0].endsWith("Asset 3.tfrecord")).toEqual(true);
             expect(writeBinaryCalls[3][0].endsWith("Asset 4.tfrecord")).toEqual(true);
+
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            expect(writeTextFileCalls.length).toEqual(1);
+            expect(writeTextFileCalls[0][0].endsWith("tf_label_map.pbtxt")).toEqual(true);
+            expect(writeTextFileCalls[0][1].length)
+                .toEqual((tagLengthInPbtxt * testProject.tags.length));
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -143,6 +149,12 @@ describe("TFRecords Json Export Provider", () => {
             expect(writeBinaryCalls[0][0].endsWith("Asset 1.tfrecord")).toEqual(true);
             expect(writeBinaryCalls[1][0].endsWith("Asset 2.tfrecord")).toEqual(true);
             expect(writeBinaryCalls[2][0].endsWith("Asset 3.tfrecord")).toEqual(true);
+
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            expect(writeTextFileCalls.length).toEqual(1);
+            expect(writeTextFileCalls[0][0].endsWith("tf_label_map.pbtxt")).toEqual(true);
+            expect(writeTextFileCalls[0][1].length)
+                .toEqual((tagLengthInPbtxt * testProject.tags.length));
         });
 
         it("Exports only tagged assets", async () => {
@@ -164,6 +176,12 @@ describe("TFRecords Json Export Provider", () => {
             expect(writeBinaryCalls.length).toEqual(2);
             expect(writeBinaryCalls[0][0].endsWith("Asset 1.tfrecord")).toEqual(true);
             expect(writeBinaryCalls[1][0].endsWith("Asset 2.tfrecord")).toEqual(true);
+
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            expect(writeTextFileCalls.length).toEqual(1);
+            expect(writeTextFileCalls[0][0].endsWith("tf_label_map.pbtxt")).toEqual(true);
+            expect(writeTextFileCalls[0][1].length)
+                .toEqual((tagLengthInPbtxt * testProject.tags.length));
         });
     });
 });
