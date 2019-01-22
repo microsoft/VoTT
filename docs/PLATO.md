@@ -28,5 +28,5 @@ You can view the report on the latest commit [here](https://microsoft.github.io/
     * Run following command
 
         ```bash
-        tsc --noEmit false --outDir js-src && plato -r -d plato-report  js-src
+        tsc --noEmit false --outDir js-src && plato -r -d plato-report js-src
         ```
