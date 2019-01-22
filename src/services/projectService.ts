@@ -31,11 +31,12 @@ export default class ProjectService implements IProjectService {
     public load(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
+        let loadedProject: IProject = project;
         if (securityToken) {
-            project = this.decryptProject(project, securityToken);
+            loadedProject = this.decryptProject(project, securityToken);
         }
 
-        return Promise.resolve(project);
+        return Promise.resolve(loadedProject);
     }
 
     /**
@@ -51,14 +52,11 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
+                const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
+
                 if (securityToken) {
                     project = this.encryptProject(project, securityToken);
                 }
-
-                const storageProvider = StorageProviderFactory.create(
-                    project.targetConnection.providerType,
-                    project.targetConnection.providerOptions,
-                );
 
                 await this.saveExportSettings(project);
                 await this.saveProjectFile(project);
@@ -137,7 +135,7 @@ export default class ProjectService implements IProjectService {
             ...project,
             sourceConnection: { ...project.sourceConnection },
             targetConnection: { ...project.targetConnection },
-            exportFormat: { ...project.exportFormat },
+            exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
         };
 
         encrypted.sourceConnection.providerOptions =
@@ -158,7 +156,7 @@ export default class ProjectService implements IProjectService {
             ...project,
             sourceConnection: { ...project.sourceConnection },
             targetConnection: { ...project.targetConnection },
-            exportFormat: { ...project.exportFormat },
+            exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
         };
 
         decrypted.sourceConnection.providerOptions =

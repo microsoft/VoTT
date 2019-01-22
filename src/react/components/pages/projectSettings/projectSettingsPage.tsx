@@ -7,6 +7,7 @@ import { strings } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject, IConnection, IAppSettings } from "../../../../models/applicationState";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
+import { generateKey } from "../../../../common/crypto";
 
 /**
  * Properties for Project Settings Page
@@ -80,14 +81,12 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         );
     }
 
-    private onFormSubmit = async (formData) => {
-        const projectToUpdate: IProject = {
-            ...formData,
-        };
+    private onFormSubmit = async (project: IProject) => {
+        const isNew = !(!!project.id);
 
-        await this.props.projectActions.saveProject(projectToUpdate);
+        await this.ensureSecurityToken(project);
+        await this.props.projectActions.saveProject(project);
 
-        const isNew = !(!!projectToUpdate.id);
         if (isNew) {
             this.props.history.push(`/projects/${this.props.project.id}/edit`);
         } else {
@@ -97,5 +96,33 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
 
     private onFormCancel() {
         this.props.history.goBack();
+    }
+
+    /**
+     * Ensures that a valid security token is associated with the project, otherwise creates one
+     * @param project The project to validate
+     */
+    private async ensureSecurityToken(project: IProject): Promise<IProject> {
+        let securityToken = this.props.appSettings.securityTokens
+            .find((st) => st.name === project.securityToken);
+
+        if (securityToken) {
+            return project;
+        }
+
+        securityToken = {
+            name: `${project.name} Token`,
+            key: generateKey(),
+        };
+
+        const updatedAppSettings: IAppSettings = {
+            devToolsEnabled: this.props.appSettings.devToolsEnabled,
+            securityTokens: [...this.props.appSettings.securityTokens, securityToken],
+        };
+
+        await this.props.applicationActions.saveAppSettings(updatedAppSettings);
+
+        project.securityToken = securityToken.name;
+        return project;
     }
 }

@@ -60,6 +60,7 @@ export interface IAppSettings {
  * @description - Defines the structure of a VoTT project
  * @member id - Unique identifier
  * @member name - User defined name
+ * @member securityToken - The Base64 encoded token used to encrypt sensitive project data
  * @member description - User defined description
  * @member tags - User defined list of tags
  * @member sourceConnection - Full source connection details

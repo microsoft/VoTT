@@ -34,12 +34,14 @@ export function loadProject(project: IProject):
     (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
-        const securityToken = appState.appSettings.securityTokens.find((st) => st.name === project.securityToken);
         const projectService = new ProjectService();
-        project = await projectService.load(project, securityToken);
+        const securityToken = appState.appSettings.securityTokens
+            .find((st) => st.name === project.securityToken);
 
-        dispatch(loadProjectAction(project));
-        return Promise.resolve(project);
+        const loadedProject = await projectService.load(project, securityToken);
+
+        dispatch(loadProjectAction(loadedProject));
+        return loadedProject;
     };
 }
 
@@ -51,33 +53,20 @@ export function saveProject(project: IProject):
     (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
-        let appSettings = appState.appSettings;
         const projectService = new ProjectService();
-        if (!projectService.isDuplicate(project, appState.recentProjects)) {
-            // Auto-generate project security token if not selected
-            if (!appState.appSettings.securityTokens.find((st) => st.name === project.securityToken)) {
-                const updatedAppSettings: IAppSettings = {
-                    devToolsEnabled: appState.appSettings.devToolsEnabled,
-                    securityTokens: [...appState.appSettings.securityTokens],
-                };
-                const securityToken: ISecurityToken = {
-                    name: `${project.name} Token`,
-                    key: generateKey(),
-                };
 
-                updatedAppSettings.securityTokens.push(securityToken);
-                await dispatch(saveAppSettingsAction(updatedAppSettings));
-                appSettings = updatedAppSettings;
-                project.securityToken = securityToken.name;
-            }
-
-            const securityToken = appSettings.securityTokens.find((st) => st.name === project.securityToken);
-            project = await projectService.save(project, securityToken);
-            dispatch(saveProjectAction(project));
-        } else {
+        if (projectService.isDuplicate(project, appState.recentProjects)) {
             throw new Error("Cannot create duplicate projects");
         }
-        return project;
+
+        const securityToken = appState.appSettings.securityTokens
+            .find((st) => st.name === project.securityToken);
+
+        const savedProject = await projectService.save(project, securityToken);
+        dispatch(saveProjectAction(savedProject));
+        dispatch(loadProjectAction(savedProject));
+
+        return savedProject;
     };
 }
 
