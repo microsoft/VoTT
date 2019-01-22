@@ -60,14 +60,12 @@ class App extends React.Component<IAppProps> {
                         show={showError}
                         onClose={this.props.actions.clearError}
                     />
-                    <ErrorBoundary>
-                        <Navbar />
-                        <div className="app-main">
-                            <Sidebar project={this.props.currentProject} />
-                            <MainContentRouter />
-                        </div>
-                        <ToastContainer />
-                    </ErrorBoundary>
+                    <Navbar />
+                    <div className="app-main">
+                        <Sidebar project={this.props.currentProject} />
+                        <MainContentRouter />
+                    </div>
+                    <ToastContainer />
                 </div>
             </Router>
         );
