@@ -12,6 +12,7 @@ import { strings, interpolate } from "../../common/strings";
 import { TFRecordsImageMessage, Features, Feature,
          BytesList, Int64List, FeatureList, FeatureLists } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
 import CryptoJS from "crypto-js";
+import CRC32 from "crc-32";
 
 /**
  * @name - ITFRecordsJsonExportOptions
@@ -146,6 +147,16 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
         const bytes = imageMessage.serializeBinary();
         const buffer = new Buffer(bytes);
+        const length = buffer.length;
+
+        const lengthCRC = CRC32.buf([length]);
+        const bufferCRC = CRC32.buf(buffer);
+
+        const outBuffer = Buffer.concat([new Buffer([length]),
+                                         new Buffer([lengthCRC]),
+                                         buffer,
+                                         new Buffer([bufferCRC])]);
+
         await this.storageProvider.writeBinary(fileNamePath, buffer);
     }
 
