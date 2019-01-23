@@ -41,7 +41,6 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         return (
             <div>
                 <EditorTagsInput
-                    displayHotKeys={this.props.displayHotKeys}
                     tags={this.state.tags}
                     onChange={this.onTagsChanged}
                     onTagClick={this.props.onTagClicked}

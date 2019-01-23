@@ -12,6 +12,6 @@ export default function CustomField<Props = {}>(Widget: any, mapProps?: (props: 
 
     return function render(props: FieldProps) {
         const widgetProps = mapProps ? mapProps(props) : props;
-        return (<Widget {...widgetProps} />);
+        return ( <Widget {...widgetProps} /> );
     };
 }
