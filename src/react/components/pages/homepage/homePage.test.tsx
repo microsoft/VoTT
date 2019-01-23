@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState, IProject } from "../../../../models/applicationState";
+import { IApplicationState, IProject, AppErrorType } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
@@ -132,7 +132,7 @@ describe("Connection Picker Component", () => {
         const expectedAppError = {
             title: "Project Loading has an error",
             message: "File is not valid json",
-            errorType: "generic",
+            errorType: AppErrorType.Generic,
         };
 
         expect(showErrorSpy).toBeCalledWith(expectedAppError);
