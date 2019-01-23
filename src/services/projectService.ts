@@ -13,9 +13,11 @@ import { encryptObject, decryptObject } from "../common/crypto";
  */
 export interface IProjectService {
     load(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
-    save(project: IProject, securityToken?: ISecurityToken): Promise<IProject>;
+    save(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
+    encryptProject(project: IProject, securityToken: ISecurityToken): IProject;
+    decryptProject(project: IProject, securityToken: ISecurityToken): IProject;
 }
 
 /**
@@ -31,10 +33,7 @@ export default class ProjectService implements IProjectService {
     public load(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
-        let loadedProject: IProject = project;
-        if (securityToken) {
-            loadedProject = this.decryptProject(project, securityToken);
-        }
+        const loadedProject = this.decryptProject(project, securityToken);
 
         return Promise.resolve(loadedProject);
     }
@@ -43,7 +42,7 @@ export default class ProjectService implements IProjectService {
      * Save a project
      * @param project - Project to save
      */
-    public save(project: IProject, securityToken: ISecurityToken = null): Promise<IProject> {
+    public save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
         return new Promise<IProject>(async (resolve, reject) => {
@@ -53,17 +52,14 @@ export default class ProjectService implements IProjectService {
                 }
 
                 const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
-
-                if (securityToken) {
-                    project = this.encryptProject(project, securityToken);
-                }
-
                 await this.saveExportSettings(project);
+                project = this.encryptProject(project, securityToken);
                 await this.saveProjectFile(project);
 
                 await storageProvider.writeText(
                     `${project.name}${constants.projectFileExtension}`,
-                    JSON.stringify(project, null, 4));
+                    JSON.stringify(project, null, 4),
+                );
 
                 resolve(project);
             } catch (err) {
@@ -105,6 +101,48 @@ export default class ProjectService implements IProjectService {
         return (duplicateProjects !== undefined);
     }
 
+    public encryptProject(project: IProject, securityToken: ISecurityToken): IProject {
+        const encrypted: IProject = {
+            ...project,
+            sourceConnection: { ...project.sourceConnection },
+            targetConnection: { ...project.targetConnection },
+            exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
+        };
+
+        encrypted.sourceConnection.providerOptions =
+            this.encryptProviderOptions(project.sourceConnection.providerOptions, securityToken.key);
+        encrypted.targetConnection.providerOptions =
+            this.encryptProviderOptions(project.targetConnection.providerOptions, securityToken.key);
+
+        if (encrypted.exportFormat) {
+            encrypted.exportFormat.providerOptions =
+                this.encryptProviderOptions(project.exportFormat.providerOptions, securityToken.key);
+        }
+
+        return encrypted;
+    }
+
+    public decryptProject(project: IProject, securityToken: ISecurityToken): IProject {
+        const decrypted: IProject = {
+            ...project,
+            sourceConnection: { ...project.sourceConnection },
+            targetConnection: { ...project.targetConnection },
+            exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
+        };
+
+        decrypted.sourceConnection.providerOptions =
+            this.decryptProviderOptions(decrypted.sourceConnection.providerOptions, securityToken.key);
+        decrypted.targetConnection.providerOptions =
+            this.decryptProviderOptions(decrypted.targetConnection.providerOptions, securityToken.key);
+
+        if (decrypted.exportFormat) {
+            decrypted.exportFormat.providerOptions =
+                this.decryptProviderOptions(decrypted.exportFormat.providerOptions, securityToken.key);
+        }
+
+        return decrypted;
+    }
+
     private async saveExportSettings(project: IProject): Promise<void> {
         if (!project.exportFormat || !project.exportFormat.providerType) {
             return Promise.resolve();
@@ -130,51 +168,13 @@ export default class ProjectService implements IProjectService {
             JSON.stringify(project, null, 4));
     }
 
-    private encryptProject(project: IProject, securityToken: ISecurityToken): IProject {
-        const encrypted: IProject = {
-            ...project,
-            sourceConnection: { ...project.sourceConnection },
-            targetConnection: { ...project.targetConnection },
-            exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
-        };
-
-        encrypted.sourceConnection.providerOptions =
-            this.encryptProviderOptions(project.sourceConnection.providerOptions, securityToken.key);
-        encrypted.targetConnection.providerOptions =
-            this.encryptProviderOptions(project.targetConnection.providerOptions, securityToken.key);
-
-        if (encrypted.exportFormat) {
-            encrypted.exportFormat.providerOptions =
-                this.encryptProviderOptions(project.exportFormat.providerOptions, securityToken.key);
-        }
-
-        return encrypted;
-    }
-
-    private decryptProject(project: IProject, securityToken: ISecurityToken): IProject {
-        const decrypted: IProject = {
-            ...project,
-            sourceConnection: { ...project.sourceConnection },
-            targetConnection: { ...project.targetConnection },
-            exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
-        };
-
-        decrypted.sourceConnection.providerOptions =
-            this.decryptProviderOptions(decrypted.sourceConnection.providerOptions, securityToken.key);
-        decrypted.targetConnection.providerOptions =
-            this.decryptProviderOptions(decrypted.targetConnection.providerOptions, securityToken.key);
-
-        if (decrypted.exportFormat) {
-            decrypted.exportFormat.providerOptions =
-                this.decryptProviderOptions(decrypted.exportFormat.providerOptions, securityToken.key);
-        }
-
-        return decrypted;
-    }
-
-    private encryptProviderOptions(providerOptions: IProviderOptions, secret: string): ISecureString {
+    private encryptProviderOptions(providerOptions: IProviderOptions | ISecureString, secret: string): ISecureString {
         if (!providerOptions) {
             return null;
+        }
+
+        if (providerOptions.encrypted) {
+            return providerOptions as ISecureString;
         }
 
         return {
@@ -182,10 +182,10 @@ export default class ProjectService implements IProjectService {
         };
     }
 
-    private decryptProviderOptions<T = IProviderOptions>(providerOptions: IProviderOptions, secret): T {
+    private decryptProviderOptions<T = IProviderOptions>(providerOptions: IProviderOptions | ISecureString, secret): T {
         const secureString = providerOptions as ISecureString;
         if (!(secureString && secureString.encrypted)) {
-            return null;
+            return providerOptions as T;
         }
 
         return decryptObject(providerOptions.encrypted, secret) as T;
