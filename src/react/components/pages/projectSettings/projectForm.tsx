@@ -1,16 +1,12 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
-import "vott-react/build/lib/components/TagsInput/tagsInput.css";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag } from "../../../../models/applicationState";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
-import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/securityTokenPicker/securityTokenPicker";
-import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
-import { TagsInput, ITagsInputProps, TagEditorModal } from "vott-react";
-import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -53,6 +49,7 @@ export interface IProjectFormState {
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
     
+    private tagsInput: React.RefObject<TagsInput>;
     private tagEditorModal: React.RefObject<TagEditorModal>;
     
     private fields = {
@@ -97,6 +94,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             tags: (this.props.project) ? this.props.project.tags : [],
             selectedTag: null
         };
+        this.tagsInput = React.createRef<TagsInput>();
         this.tagEditorModal = React.createRef<TagEditorModal>();
 
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -131,30 +129,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         });
     }
 
-    private onTagModalOk(tag: ITag) {
-        /**
-         * If this was a name change (names are not equal), don't allow
-         * the new tag to be named with a name that currently exists
-         * in other tags. Probably should include an error message.
-         * For now, just doesn't allow the action to take place. Modal
-         * won't close and user won't be able to set the name. This is
-         * similar to how the component handles duplicate naming at the
-         * creation level. If user enters name that already exists in
-         * tags, the component just doesn't do anything.
-         */
-        if(tag.name !== this.state.selectedTag.name && this.state.tags.some((t) => t.name === tag.name)) {
-            return;
-        }
-        this.setState((prevState: IProjectFormState) => {
-            return {
-                tags: prevState.tags.map((t) => {
-                    if (t.name === prevState.selectedTag.name) {
-                        return tag;
-                    }
-                    return t;
-                })
-            }
-        });
+    private onTagModalOk(oldTag: ITag, newTag: ITag) {
+        this.tagsInput.current.updateTag(oldTag, newTag);
         this.tagEditorModal.current.close();
     }
 
