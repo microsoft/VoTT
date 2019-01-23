@@ -41,7 +41,6 @@ export default class ErrorBoundary extends React.Component<IErrorBoundaryProps> 
     }
 
     public render() {
-        //
         if (
             this.props.appError &&
             this.props.appError.errorType === IAppErrorType.Render
