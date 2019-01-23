@@ -21,6 +21,7 @@ import {
 } from "../providers/export/azureCustomVision/azureCustomVisionService";
 import IApplicationActions, * as applicationActions from "../redux/actions/applicationActions";
 import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSystemProxy";
+import { generateKey } from "./crypto";
 
 export default class MockFactory {
 
@@ -567,7 +568,9 @@ export default class MockFactory {
     public static appSettings(): IAppSettings {
         return {
             devToolsEnabled: false,
-            securityTokens: [],
+            securityTokens: [
+                { name: "Security-Token-Project1", key: generateKey() },
+            ],
         };
     }
 

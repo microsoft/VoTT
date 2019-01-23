@@ -12,17 +12,25 @@ import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { IExportProvider } from "../../providers/export/exportProvider";
 import { IApplicationState } from "../../models/applicationState";
+import initialState from "../store/initialState";
 
 describe("Project Redux Actions", () => {
     let store: MockStoreEnhanced<IApplicationState>;
+    const projectService = new ProjectService();
+    const appSettings = MockFactory.appSettings();
 
     beforeEach(() => {
         const middleware = [thunk];
-        store = createMockStore<IApplicationState>(middleware)();
+        const mockState: IApplicationState = {
+            ...initialState,
+            appSettings,
+        };
+        store = createMockStore<IApplicationState>(middleware)(mockState);
     });
     it("Load Project action resolves a promise and dispatches redux action", async () => {
         const project = MockFactory.createTestProject("Project1");
-        const result = await projectActions.loadProject(project)(store.dispatch, store.getState);
+        const encryptedProject = projectService.encryptProject(project, appSettings.securityTokens[0]);
+        const result = await projectActions.loadProject(encryptedProject)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
