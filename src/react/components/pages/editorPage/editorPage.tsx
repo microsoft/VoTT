@@ -134,7 +134,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="editor-page-content-body">
                         {selectedAsset &&
                             <div className="canvas-container">
-                                <AssetPreview asset={selectedAsset.asset} videoSettings={ editorVideoSetting} />
+                                <AssetPreview asset={selectedAsset.asset} videoSettings={editorVideoSetting} />
                                 {selectedAsset.asset.size &&
                                     <div>
                                         {strings.editorPage.width}: {selectedAsset.asset.size.width}
