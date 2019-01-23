@@ -13,6 +13,8 @@ import { TFRecordsImageMessage, Features, Feature,
          BytesList, Int64List, FeatureList, FeatureLists } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
 import CryptoJS from "crypto-js";
 import CRC32 from "crc-32";
+import { systemErrorRetryPolicy } from "@azure/ms-rest-js";
+import { SystemErrorRetryPolicy } from "@azure/ms-rest-js/es/lib/policies/systemErrorRetryPolicy";
 
 /**
  * @name - ITFRecordsJsonExportOptions
@@ -141,23 +143,46 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     }
 
     private async writeTFRecord(fileNamePath: string, features: Features, featureLists: FeatureLists) {
+        // A TFRecords file contains a sequence of strings with CRC
+        // hashes. Each record has the format
+        //
+        //     uint64 length
+        //     uint32 masked_crc32_of_length
+        //     byte   data[length]
+        //     uint32 masked_crc32_of_data
+
         const imageMessage = new TFRecordsImageMessage();
         imageMessage.setFeatures(features);
         imageMessage.setFeatureLists(featureLists);
 
         const bytes = imageMessage.serializeBinary();
-        const buffer = new Buffer(bytes);
-        const length = buffer.length;
+        const bufferData = new Buffer(bytes);
+        const length = bufferData.length;
 
         const lengthCRC = CRC32.buf([length]);
-        const bufferCRC = CRC32.buf(buffer);
+        const bufferCRC = CRC32.buf(bufferData);
 
-        const outBuffer = Buffer.concat([new Buffer([length]),
-                                         new Buffer([lengthCRC]),
-                                         buffer,
-                                         new Buffer([bufferCRC])]);
+        try {
+            const bufferLength = Buffer.allocUnsafe(8);
+            bufferLength.writeUInt32BE(length >> 8, 0);      // write the high order bits (shifted over)
+            bufferLength.writeUInt32BE(length & 0x00ff, 4);  // write the low order bits
 
-        await this.storageProvider.writeBinary(fileNamePath, buffer);
+            const bufferLengthCRC = Buffer.allocUnsafe(4);
+            bufferLengthCRC.writeInt32LE(lengthCRC, 0);
+
+            const bufferDataCRC = Buffer.allocUnsafe(4);
+            bufferDataCRC.writeInt32LE(bufferCRC, 0);
+
+            const outBuffer = Buffer.concat([bufferLength,
+                                             bufferLengthCRC,
+                                             bufferData,
+                                             bufferDataCRC]);
+
+            await this.storageProvider.writeBinary(fileNamePath, outBuffer);
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     private async exportRecords(exportFolderName: string, allAssets: IAssetMetadata[]) {
@@ -186,13 +211,13 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 const imageInfo: IImageInfo = {
                     width: element.asset.size ? element.asset.size.width : 0,
                     height: element.asset.size ? element.asset.size.height : 0,
-                    text: ["label"],
-                    label: [0],
-                    xmin: [0],
-                    ymin: [0],
-                    xmax: [100],
-                    ymax: [100],
-                    view: ["Unspecified"],
+                    text: [],
+                    label: [],
+                    xmin: [],
+                    ymin: [],
+                    xmax: [],
+                    ymax: [],
+                    view: [],
                 };
 
                 if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
