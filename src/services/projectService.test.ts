@@ -5,6 +5,7 @@ import { IProject, IExportFormat, ISecurityToken } from "../models/applicationSt
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { generateKey } from "../common/crypto";
+import { encryptProject } from "../common/utils";
 
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
@@ -35,7 +36,7 @@ describe("Project Service", () => {
     });
 
     it("Load decrypts any project settings using the specified key", async () => {
-        const encryptedProject = projectSerivce.encryptProject(testProject, securityToken);
+        const encryptedProject = encryptProject(testProject, securityToken);
         const decryptedProject = await projectSerivce.load(encryptedProject, securityToken);
 
         expect(decryptedProject).toEqual(testProject);
@@ -134,18 +135,5 @@ describe("Project Service", () => {
         testProject.id = undefined;
         projectList = MockFactory.createTestProjects();
         expect(projectSerivce.isDuplicate(testProject, projectList)).toEqual(true);
-    });
-
-    it("encrypt project does not double encrypt project", () => {
-        const encryptedProject = projectSerivce.encryptProject(testProject, securityToken);
-        const doubleEncryptedProject = projectSerivce.encryptProject(encryptedProject, securityToken);
-
-        expect(encryptedProject).toEqual(doubleEncryptedProject);
-    });
-
-    it("decrypt project detects already decrypted project settings", () => {
-        const decryptedProject = projectSerivce.decryptProject(testProject, securityToken);
-
-        expect(decryptedProject).toEqual(testProject);
     });
 });

@@ -1,6 +1,5 @@
 import { enc, lib, AES } from "crypto-js";
 import Guard from "./guard";
-import { string } from "prop-types";
 
 /**
  * Generates a random base64 encoded key to be used for encryption

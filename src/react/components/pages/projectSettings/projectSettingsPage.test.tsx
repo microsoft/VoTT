@@ -24,15 +24,19 @@ describe("Project settings page", () => {
 
     beforeEach(() => {
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.load = jest.fn((project) => ({ ...project }));
     });
 
     it("Form submission calls save project action", (done) => {
         const store = createReduxStore(MockFactory.initialState());
         const props = MockFactory.projectSettingsProps();
         const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
+
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
+
         const wrapper = createCompoent(store, props);
         wrapper.find("form").simulate("submit");
+
         setImmediate(() => {
             expect(saveProjectSpy).toBeCalled();
             done();
@@ -40,7 +44,6 @@ describe("Project settings page", () => {
     });
 
     it("Throws an error when a user tries to create a duplicate project", async (done) => {
-        const context: any = null;
         const project = MockFactory.createTestProject("1");
         project.id = "25";
         const initialStateOverride = {
