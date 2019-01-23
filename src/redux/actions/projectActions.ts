@@ -35,9 +35,14 @@ export function loadProject(project: IProject):
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         const projectService = new ProjectService();
+
+        // Lookup security token used to decrypt project settings
         const securityToken = appState.appSettings.securityTokens
             .find((st) => st.name === project.securityToken);
 
+        if (!securityToken) {
+            throw new Error(`Cannot locate security token '${project.securityToken}' from project`);
+        }
         const loadedProject = await projectService.load(project, securityToken);
 
         dispatch(loadProjectAction(loadedProject));
@@ -56,15 +61,22 @@ export function saveProject(project: IProject):
         const projectService = new ProjectService();
 
         if (projectService.isDuplicate(project, appState.recentProjects)) {
-            throw new Error("Cannot create duplicate projects");
+            throw new Error(`Project with name '${project.name}
+                already exists with the same target connection '${project.targetConnection.name}'`);
         }
 
         const securityToken = appState.appSettings.securityTokens
             .find((st) => st.name === project.securityToken);
 
+        if (!securityToken) {
+            throw new Error(`Cannot locate security token '${project.securityToken}' from project`);
+        }
+
         const savedProject = await projectService.save(project, securityToken);
         dispatch(saveProjectAction(savedProject));
-        dispatch(loadProjectAction(savedProject));
+
+        // Reload project after save actions
+        await loadProject(savedProject)(dispatch, getState);
 
         return savedProject;
     };

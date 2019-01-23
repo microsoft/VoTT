@@ -8,6 +8,7 @@ import ExportProviderPicker from "../../common/exportProviderPicker/exportProvid
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ExternalPicker from "../../common/externalPicker/externalPicker";
 import { ProtectedInput } from "../../common/protectedInput/protectedInput";
+import { ExportAssetState } from "../../../../providers/export/exportProvider";
 
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
@@ -159,7 +160,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
         const formData = { ...exportFormat };
         if (resetProviderOptions) {
-            formData.providerOptions = null;
+            formData.providerOptions = { assetState: ExportAssetState.All };
         }
         formData.providerType = providerType;
 

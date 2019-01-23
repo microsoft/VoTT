@@ -76,7 +76,8 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
 
     private onChange(e: SyntheticEvent) {
         const input = e.target as HTMLInputElement;
-        this.props.onChange(input.value ? input.value : undefined);
+        const value = input.value ? input.value : undefined;
+        this.setState({ value }, () => this.props.onChange(value));
     }
 
     private toggleKeyVisibility() {

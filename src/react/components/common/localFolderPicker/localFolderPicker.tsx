@@ -46,7 +46,7 @@ export default class LocalFolderPicker extends React.Component<ILocalFolderPicke
 
         return (
             <div className="input-group">
-                <input id={id} type="text" className="form-control" value={value} readOnly />
+                <input id={id} type="text" className="form-control" value={value} readOnly={true} />
                 <div className="input-group-append">
                     <button className="btn btn-primary"
                         type="button"
