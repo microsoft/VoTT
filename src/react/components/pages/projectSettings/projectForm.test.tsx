@@ -5,7 +5,7 @@ import MockFactory from "../../../../common/mockFactory";
 import { KeyCodes } from "../../../../common/utils";
 import registerProviders from "../../../../registerProviders";
 import ProjectForm, { IProjectFormProps, IProjectFormState } from "./projectForm";
-import { IVideoSettings } from "../../../../models/applicationState";
+import { IProjectVideoSettings } from "../../../../models/applicationState";
 
 describe("Project Form Component", () => {
     const project = MockFactory.createTestProject("TestProject");
@@ -200,7 +200,7 @@ describe("Project Form Component", () => {
         });
         it("Has initial state loaded correctly", () => {
             const formData = wrapper.state().formData;
-            const defaultVideoSettings: IVideoSettings = { frameExtractionRate: 15 };
+            const defaultVideoSettings: IProjectVideoSettings = { frameExtractionRate: 15 };
             expect(formData.name).toBe(undefined);
             expect(formData.sourceConnection).toEqual({});
             expect(formData.targetConnection).toEqual({});

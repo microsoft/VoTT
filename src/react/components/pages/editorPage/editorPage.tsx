@@ -8,7 +8,7 @@ import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { AssetState, EditorMode, IApplicationState, IAsset,
-        IAssetMetadata, IProject, ITag, ITagMetadata } from "../../../../models/applicationState";
+        IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import Canvas from "./canvas";
@@ -116,6 +116,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
+        const editorVideoSetting: IAssetVideoSettings = {
+            shouldAutoPlayVideo: true,
+            posterSource: null,
+            shouldShowPlayControls: true,
+        };
 
         if (!project) {
             return (<div>Loading...</div>);
@@ -146,6 +151,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     onAssetMetadataChanged={this.onAssetMetadataChanged}
                                     editorMode={this.state.mode}
                                     project={this.props.project}/>
+                                {/* <AssetPreview asset={selectedAsset.asset} videoSettings={editorVideoSetting} />
+                                {selectedAsset.asset.size &&
+                                    <div>
+                                        {strings.editorPage.width}: {selectedAsset.asset.size.width}
+                                        {strings.editorPage.height}: {selectedAsset.asset.size.height}
+                                    </div>
+                                } */}
                             </div>
                         }
                     </div>

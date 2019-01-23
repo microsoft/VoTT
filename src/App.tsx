@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -52,24 +52,26 @@ class App extends React.Component<IAppProps> {
         const errorMessage = showError ? this.props.appError.message : "";
 
         return (
-            <Router>
-                <div className="app-shell">
-                    <Alert title={errorTitle}
-                        message={errorMessage}
-                        closeButtonColor="info"
-                        show={showError}
-                        onClose={this.props.actions.clearError}
-                    />
-                    <ErrorBoundary>
-                        <Navbar />
-                        <div className="app-main">
-                            <Sidebar project={this.props.currentProject} />
-                            <MainContentRouter />
+            <Fragment>
+                <Alert title={errorTitle}
+                    message={errorMessage}
+                    closeButtonColor="info"
+                    show={showError}
+                    onClose={this.props.actions.clearError}
+                />
+                <ErrorBoundary>
+                    <Router>
+                        <div className="app-shell">
+                            <Navbar />
+                            <div className="app-main">
+                                <Sidebar project={this.props.currentProject} />
+                                <MainContentRouter />
+                            </div>
+                            <ToastContainer />
                         </div>
-                        <ToastContainer />
-                    </ErrorBoundary>
-                </div>
-            </Router>
+                    </Router >
+                </ErrorBoundary >
+            </Fragment>
         );
     }
 }
