@@ -174,7 +174,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
         // mask returns a masked representation of crc.
         const imageMessage = new TFRecordsImageMessage();
-        imageMessage.setFeatures(features);
+        imageMessage.setContext(features);
         imageMessage.setFeatureLists(featureLists);
 
         const bytes = imageMessage.serializeBinary();
@@ -200,8 +200,8 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
             const bufferLength = Buffer.allocUnsafe(8);
             // Write 64bit Int with two write32 calls
             // https://stackoverflow.com/questions/14730980/nodejs-write-64bit-unsigned-integer-to-buffer
-            bufferLength.writeUInt32BE(length >> 8, 0);      // write the high order bits (shifted over)
-            bufferLength.writeUInt32BE(length & 0x00ff, 4);  // write the low order bits
+            bufferLength.writeUInt32LE(length >> 8, 0);      // write the high order bits (shifted over)
+            bufferLength.writeUInt32LE(length & 0x00ff, 4);  // write the low order bits
 
             const bufferLengthMaskedCRC = Buffer.allocUnsafe(4);
             bufferLengthMaskedCRC.writeUInt32LE(lengthMaskedCRC, 0);
