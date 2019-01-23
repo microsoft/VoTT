@@ -47,7 +47,7 @@ message FeatureLists {
 // Containers for TFRecords Image data.
 //
 message TFRecordsImageMessage {
-  Features context = 1;
+  Features features = 1;
   FeatureLists feature_lists = 2;
 };
 

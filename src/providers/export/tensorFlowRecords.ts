@@ -141,7 +141,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
     private async writeTFRecord(fileNamePath: string, features: Features, featureLists: FeatureLists) {
         const imageMessage = new TFRecordsImageMessage();
-        imageMessage.setContext(features);
+        imageMessage.setFeatures(features);
         imageMessage.setFeatureLists(featureLists);
 
         const bytes = imageMessage.serializeBinary();
@@ -175,13 +175,13 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 const imageInfo: IImageInfo = {
                     width: element.asset.size ? element.asset.size.width : 0,
                     height: element.asset.size ? element.asset.size.height : 0,
-                    text: [],
-                    label: [],
-                    xmin: [],
-                    ymin: [],
-                    xmax: [],
-                    ymax: [],
-                    view: [],
+                    text: ["label"],
+                    label: [0],
+                    xmin: [0],
+                    ymin: [0],
+                    xmax: [100],
+                    ymax: [100],
+                    view: ["Unspecified"],
                 };
 
                 if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {

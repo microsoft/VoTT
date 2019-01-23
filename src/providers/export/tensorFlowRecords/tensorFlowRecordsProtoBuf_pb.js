@@ -1311,7 +1311,7 @@ proto.tensorflow.TFRecordsImageMessage.prototype.toObject = function(opt_include
  */
 proto.tensorflow.TFRecordsImageMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
-    context: (f = msg.getContext()) && proto.tensorflow.Features.toObject(includeInstance, f),
+    features: (f = msg.getFeatures()) && proto.tensorflow.Features.toObject(includeInstance, f),
     featureLists: (f = msg.getFeatureLists()) && proto.tensorflow.FeatureLists.toObject(includeInstance, f)
   };
 
@@ -1352,7 +1352,7 @@ proto.tensorflow.TFRecordsImageMessage.deserializeBinaryFromReader = function(ms
     case 1:
       var value = new proto.tensorflow.Features;
       reader.readMessage(value,proto.tensorflow.Features.deserializeBinaryFromReader);
-      msg.setContext(value);
+      msg.setFeatures(value);
       break;
     case 2:
       var value = new proto.tensorflow.FeatureLists;
@@ -1388,7 +1388,7 @@ proto.tensorflow.TFRecordsImageMessage.prototype.serializeBinary = function() {
  */
 proto.tensorflow.TFRecordsImageMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getContext();
+  f = message.getFeatures();
   if (f != null) {
     writer.writeMessage(
       1,
@@ -1408,23 +1408,23 @@ proto.tensorflow.TFRecordsImageMessage.serializeBinaryToWriter = function(messag
 
 
 /**
- * optional Features context = 1;
+ * optional Features features = 1;
  * @return {?proto.tensorflow.Features}
  */
-proto.tensorflow.TFRecordsImageMessage.prototype.getContext = function() {
+proto.tensorflow.TFRecordsImageMessage.prototype.getFeatures = function() {
   return /** @type{?proto.tensorflow.Features} */ (
     jspb.Message.getWrapperField(this, proto.tensorflow.Features, 1));
 };
 
 
 /** @param {?proto.tensorflow.Features|undefined} value */
-proto.tensorflow.TFRecordsImageMessage.prototype.setContext = function(value) {
+proto.tensorflow.TFRecordsImageMessage.prototype.setFeatures = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.tensorflow.TFRecordsImageMessage.prototype.clearContext = function() {
-  this.setContext(undefined);
+proto.tensorflow.TFRecordsImageMessage.prototype.clearFeatures = function() {
+  this.setFeatures(undefined);
 };
 
 
@@ -1432,7 +1432,7 @@ proto.tensorflow.TFRecordsImageMessage.prototype.clearContext = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.tensorflow.TFRecordsImageMessage.prototype.hasContext = function() {
+proto.tensorflow.TFRecordsImageMessage.prototype.hasFeatures = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
