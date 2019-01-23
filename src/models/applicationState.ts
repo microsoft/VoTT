@@ -26,6 +26,12 @@ export interface IAppError {
     title?: string;
     message: string;
     errorCode?: string;
+    errorType: string;
+}
+
+export enum IAppErrorType {
+    Generic = "generic",
+    Render = "render",
 }
 
 /**

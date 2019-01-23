@@ -117,7 +117,7 @@ describe("Connection Picker Component", () => {
         const showErrorSpy = jest.spyOn(props.appErrorActions, "showError");
 
         const wrapper = createComponent(store, props);
-        const textBlob = new Blob([ "foo" ], { type: "text/plain" });
+        const textBlob = new Blob(["foo"], { type: "text/plain" });
 
         const fileUpload = wrapper.find("a.file-upload").first();
         const fileInput = wrapper.find(`input[type="file"]`);
@@ -132,6 +132,7 @@ describe("Connection Picker Component", () => {
         const expectedAppError = {
             title: "Project Loading has an error",
             message: "File is not valid json",
+            errorType: "generic",
         };
 
         expect(showErrorSpy).toBeCalledWith(expectedAppError);

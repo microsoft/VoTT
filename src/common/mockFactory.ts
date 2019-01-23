@@ -26,12 +26,14 @@ export default class MockFactory {
      * Creates sample IAppError
      * @param {string} title to be display in  Alert
      * @param {string} message to be display in body of Alert
+     * @param {string} errorType to specify whether this is a render error or generic exception thrown
      * @returns {IAppError}
      */
-    public static createAppError(title: string = "", message: string = ""): IAppError {
+    public static createAppError(title: string = "", message: string = "", errorType: string = "generic"): IAppError {
         return {
             title,
             message,
+            errorType,
         };
     }
 
