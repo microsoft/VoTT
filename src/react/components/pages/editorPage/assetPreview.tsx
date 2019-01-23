@@ -2,7 +2,7 @@ import React from "react";
 import { IAsset, AssetType, IAssetVideoSettings } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { Player, ControlBar, CurrentTimeDisplay, TimeDivider,
-    PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
+    BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
 
 /**
  * Properties for Asset Preview
@@ -56,10 +56,12 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                 }
                 {asset.type === AssetType.Video &&
                     <Player ref={this.playerRef}
-                        fluid={false} autoPlay={videoSettings.shouldAutoPlayVideo}
+                        fluid={true}
+                        autoPlay={videoSettings.shouldAutoPlayVideo}
                         poster={videoSettings.posterSource}
                         src={`${this.checkAssetPathProtocol(asset.path)}`}
                     >
+                    <BigPlayButton position="center" />
                     {videoSettings.shouldShowPlayControls &&
                         <ControlBar>
                             <CurrentTimeDisplay order={1.1} />
@@ -79,7 +81,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
 
     public componentDidMount() {
         // subscribe state change for the video if it has been loaded
-        if (this.playerRef != null && this.playerRef.current != null) {
+        if (this.playerRef && this.playerRef.current) {
             this.playerRef.current.subscribeToStateChange(this.handleVideoStateChange.bind(this));
         }
     }
