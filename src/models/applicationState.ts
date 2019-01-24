@@ -26,6 +26,16 @@ export interface IAppError {
     title?: string;
     message: string;
     errorCode?: string;
+    errorType: string;
+}
+
+/**
+ * @enum Generic - describe an error happened in an eventhandler, async function etc.
+ * @enum Render - describe an error happened inside render
+ */
+export enum AppErrorType {
+    Generic = "generic",
+    Render = "render",
 }
 
 /**

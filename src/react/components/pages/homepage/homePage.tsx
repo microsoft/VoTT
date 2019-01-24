@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
-import { IApplicationState, IConnection, IProject } from "../../../../models/applicationState";
+import { IApplicationState, IConnection, IProject, AppErrorType } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
@@ -127,6 +127,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
             this.props.appErrorActions.showError({
                 title: strings.homePage.loadProjectError.title,
                 message: strings.homePage.loadProjectError.message,
+                errorType: AppErrorType.Generic,
             });
         }
     }

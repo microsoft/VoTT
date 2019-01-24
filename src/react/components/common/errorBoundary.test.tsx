@@ -12,7 +12,7 @@ const ERROR_MSG = "Uncaught Exception from Child Component";
 
 class ChildComponent extends React.Component {
     public render() {
-        return <div/>;
+        return <div />;
     }
 }
 
@@ -25,7 +25,7 @@ describe("ErrorBoundary Component", () => {
         return mount(
             <Provider store={store}>
                 <ErrorBoundary{...props}>
-                    <ChildComponent/>
+                    <ChildComponent />
                 </ErrorBoundary>
             </Provider>,
         );
@@ -46,7 +46,7 @@ describe("ErrorBoundary Component", () => {
         const error = new Error(ERROR_MSG);
         wrapper.find(ChildComponent).simulateError(error);
 
-        expect(showError).toBeCalledWith({ title: "Error", message: ERROR_MSG});
+        expect(showError).toBeCalledWith({ title: "Error", message: ERROR_MSG, errorType: "render" });
     });
 
     it("does not render anything when there's an error", () => {

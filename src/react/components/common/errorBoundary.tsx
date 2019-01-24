@@ -3,7 +3,11 @@ import { connect } from "react-redux";
 import IAppErrorActions from "../../../redux/actions/appErrorActions";
 import { bindActionCreators } from "redux";
 import * as appErrorActions from "../../../redux/actions/appErrorActions";
-import { IAppError, IApplicationState } from "../../../models/applicationState";
+import {
+    IAppError,
+    IApplicationState,
+    AppErrorType,
+} from "../../../models/applicationState";
 
 export interface IErrorBoundaryProps {
     appError?: IAppError;
@@ -32,11 +36,15 @@ export default class ErrorBoundary extends React.Component<IErrorBoundaryProps> 
         this.props.actions.showError({
             title: error.name,
             message: error.message,
+            errorType: AppErrorType.Render,
         });
     }
 
     public render() {
-        if (this.props.appError) {
+        if (
+            this.props.appError &&
+            this.props.appError.errorType === AppErrorType.Render
+        ) {
             return null;
         }
 
