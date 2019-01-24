@@ -171,8 +171,19 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         // https://github.com/tensorflow/tensorflow/blob/754048a0453a04a761e112ae5d99c149eb9910dd/
         //    tensorflow/core/lib/hash/crc32c.h#L33.
         // const maskDelta uint32 = 0xa282ead8
-
         // mask returns a masked representation of crc.
+
+        const lengthAndCrcMetadataBuffer = new ArrayBuffer(12);
+        const lengthAndCrcBuffer = new Uint8Array(lengthAndCrcMetadataBuffer, 0, 12);
+        const lengthAndCrc = new DataView(lengthAndCrcMetadataBuffer, 0, 12);
+
+        const recordCrcMetadataBuffer = new ArrayBuffer(4);
+        const recordCrcBuffer = new Uint8Array(recordCrcMetadataBuffer, 0, 4);
+        const recordCrc = new DataView(recordCrcMetadataBuffer, 0, 4);
+
+        // The high-order bits of length will alwas be unset.
+        lengthAndCrc.setUint32(4, 0, true);
+
         const imageMessage = new TFRecordsImageMessage();
         imageMessage.setContext(features);
         imageMessage.setFeatureLists(featureLists);
@@ -181,7 +192,13 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         const bufferData = new Buffer(bytes);
         const length = bufferData.length;
 
-        let lengthCRC = CRC32.buf([length]);
+        const lengthCRCMetadataBuffer = new ArrayBuffer(8);
+        const lengthCRCBuffer = new Uint8Array(lengthCRCMetadataBuffer, 0, 8);
+        const lengthCrc = new DataView(lengthCRCMetadataBuffer, 0, 8);
+        lengthCrc.setUint32(4, 0, true);
+        lengthCrc.setUint32(0, length, true);
+        let lengthCRC = CRC32.buf(lengthCRCBuffer);
+
         let bufferCRC = CRC32.buf(bufferData);
 
         // Fix CRC32 bug sometimes returning negative number
@@ -197,20 +214,14 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         const bufferMaskedCRC = this.maskCrc(bufferCRC);
 
         try {
-            const bufferLength = Buffer.allocUnsafe(8);
-            // Write 64bit Int with two write32 calls
-            // https://stackoverflow.com/questions/14730980/nodejs-write-64bit-unsigned-integer-to-buffer
-            bufferLength.writeUInt32LE(length >> 8, 0);      // write the high order bits (shifted over)
-            bufferLength.writeUInt32LE(length & 0x00ff, 4);  // write the low order bits
+            lengthAndCrc.setUint32(0, length, true);
+            lengthAndCrc.setUint32(8, lengthMaskedCRC, true);
+            const bufferLengthAndMaskedCRC = new Buffer(lengthAndCrcBuffer);
 
-            const bufferLengthMaskedCRC = Buffer.allocUnsafe(4);
-            bufferLengthMaskedCRC.writeUInt32LE(lengthMaskedCRC, 0);
+            recordCrc.setUint32(0, bufferMaskedCRC, true);
+            const bufferDataMaskedCRC = new Buffer(recordCrcBuffer);
 
-            const bufferDataMaskedCRC = Buffer.allocUnsafe(4);
-            bufferDataMaskedCRC.writeUInt32LE(bufferMaskedCRC, 0);
-
-            const outBuffer = Buffer.concat([bufferLength,
-                                             bufferLengthMaskedCRC,
+            const outBuffer = Buffer.concat([bufferLengthAndMaskedCRC,
                                              bufferData,
                                              bufferDataMaskedCRC]);
 
