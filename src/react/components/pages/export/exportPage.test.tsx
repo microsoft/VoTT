@@ -40,6 +40,7 @@ describe("Export Page", () => {
 
     beforeEach(() => {
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve(project));
     });
 
     it("Sets project state from redux store", () => {
@@ -55,18 +56,20 @@ describe("Export Page", () => {
         expect(exportPage.prop("project")).toEqual(testProject);
     });
 
-    it("Sets project state from route params", (done) => {
+    it("Sets project state from route params", async (done) => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, false);
         const props = createProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
         const wrapper = createComponent(store, props);
-        const exportPage = wrapper.find(ExportPage).childAt(0);
+        wrapper.update();
+        await MockFactory.flushUi();
 
         setImmediate(() => {
-            expect(loadProjectSpy).toHaveBeenCalledWith(testProject);
+            const exportPage = wrapper.find(ExportPage).childAt(0);
             expect(exportPage.prop("project")).toEqual(testProject);
+            expect(loadProjectSpy).toHaveBeenCalledWith(testProject);
             done();
         });
     });
