@@ -315,5 +315,5 @@ function createProps(route: string): IConnectionPageProps {
 }
 
 function createStore(state?: IApplicationState): Store<any, AnyAction> {
-    return createReduxStore(state, false);
+    return createReduxStore(state);
 }

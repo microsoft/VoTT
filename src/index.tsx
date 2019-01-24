@@ -14,7 +14,7 @@ import registerProviders from "./registerProviders";
 
 registerProviders();
 const defaultState: IApplicationState = initialState;
-const store = createReduxStore(defaultState);
+const store = createReduxStore(defaultState, true);
 
 ReactDOM.render(
     <Provider store={store}>
