@@ -28,7 +28,8 @@
         "redux-logger": "^3.0.6",
         "redux-thunk": "^2.3.0",
         "rimraf": "^2.6.2",
-        "shortid": "^2.2.14"
+        "shortid": "^2.2.14",
+        "vott-react": "git://github.com/Microsoft/vott-react.git#tbarlow12/fix-build"
     },
     "scripts": {
         "start": "nf start -p 3000",
