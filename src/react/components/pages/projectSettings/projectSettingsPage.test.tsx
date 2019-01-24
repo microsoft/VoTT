@@ -8,6 +8,7 @@ import ProjectSettingsPage, { IProjectSettingsPageProps } from "./projectSetting
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
+import { IAppSettings } from "../../../../models/applicationState";
 
 describe("Project settings page", () => {
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
@@ -75,26 +76,38 @@ describe("Project settings page", () => {
     });
 
     it("calls save project when user creates a unique project", (done) => {
-        const store = createReduxStore(MockFactory.initialState());
+        const initialState = MockFactory.initialState();
+
+        // New Project should not have id or security token set by default
+        const project = { ...initialState.recentProjects[0] };
+        project.id = null;
+        project.name = "Brand New Project";
+        project.securityToken = "";
+
+        // Override currentProject to load the form values
+        initialState.currentProject = project;
+
+        const store = createReduxStore(initialState);
         const props = MockFactory.projectSettingsProps();
         const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
-        const project = MockFactory.createTestProject("25");
+        const saveAppSettingsSpy = jest.spyOn(props.applicationActions, "saveAppSettings");
 
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
         const wrapper = createCompoent(store, props);
-        wrapper.setProps({
-            form: {
-                name: project.name,
-                connections: {
-                    source: project.sourceConnection,
-                    target: project.targetConnection,
-                },
-            },
-        });
-
         wrapper.find("form").simulate("submit");
+
         setImmediate(() => {
-            expect(saveProjectSpy).toBeCalled();
+            // New security token was created for new project
+            expect(saveAppSettingsSpy).toBeCalled();
+            const appSettings = saveAppSettingsSpy.mock.calls[0][0] as IAppSettings;
+            expect(appSettings.securityTokens.length).toEqual(initialState.appSettings.securityTokens.length + 1);
+
+            // New project was saved with new security token
+            expect(saveProjectSpy).toBeCalledWith({
+                ...project,
+                securityToken: `${project.name} Token`,
+            });
+
             done();
         });
     });
