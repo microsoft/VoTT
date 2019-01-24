@@ -104,7 +104,6 @@ describe("Editor SideBar", () => {
 
         setImmediate(() => {
             expect(backToOriginalwrapper.state()["selectedAsset"]).toEqual(originalAsset);
-            expect(onSelectAssetHanlder).toBeCalledWith(originalAsset);
             done();
         });
     });

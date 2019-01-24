@@ -52,6 +52,7 @@ describe("Editor Page Component", () => {
 
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve({ ...project }));
+        projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve({ ...project }));
 
         AssetProviderFactory.create = jest.fn(() => {
             return {
@@ -225,8 +226,8 @@ describe("Editor Page Component", () => {
 
             const keyPressed = 2;
             setImmediate(() => {
-                (editorPage.instance() as EditorPage).handleTagHotKey({ctrlKey: true, key: keyPressed.toString()});
-                expect(spy).toBeCalledWith({name: testProject.tags[keyPressed - 1].name});
+                (editorPage.instance() as EditorPage).handleTagHotKey({ ctrlKey: true, key: keyPressed.toString() });
+                expect(spy).toBeCalledWith({ name: testProject.tags[keyPressed - 1].name });
             });
         });
 
