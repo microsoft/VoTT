@@ -18,7 +18,7 @@ class ChildComponent extends React.Component {
 
 describe("ErrorBoundary Component", () => {
     function createStore(state?: IApplicationState): Store<any, AnyAction> {
-        return createReduxStore(state, false);
+        return createReduxStore(state);
     }
 
     function createComponent(store, props: IErrorBoundaryProps): ReactWrapper {

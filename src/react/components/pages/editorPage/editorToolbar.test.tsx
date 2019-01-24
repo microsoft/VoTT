@@ -7,6 +7,7 @@ import registerToolbar from "../../../../registerToolbar";
 import { ReactWrapper, mount } from "enzyme";
 import { Select } from "../../toolbar/select";
 import { ZoomIn } from "../../toolbar/zoomIn";
+import { ToolbarItem } from "../../toolbar/toolbarItem";
 
 describe("Editor Toolbar", () => {
     let wrapper: ReactWrapper = null;
@@ -20,6 +21,7 @@ describe("Editor Toolbar", () => {
             actions: MockFactory.projectActions(),
             project: MockFactory.createTestProject("TestProject"),
             items: ToolbarItemFactory.getToolbarItems(),
+            onToolbarItemSelected: (toolbarItem: ToolbarItem) => null,
         };
     }
 

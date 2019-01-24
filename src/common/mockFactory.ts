@@ -1,7 +1,8 @@
 import shortid from "shortid";
 import {
-    AssetState, AssetType, IAppError, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
-    IConnection, IExportFormat, IProject, ITag, StorageType, IProjectVideoSettings,
+    AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
+    IConnection, IExportFormat, IProject, ITag, StorageType, EditorMode,
+    IAppError, IProjectVideoSettings,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -12,6 +13,7 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import Canvas from "../react/components/pages/editorPage/canvas";
 import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
 import {
@@ -457,6 +459,33 @@ export default class MockFactory {
         };
 
         return registration;
+    }
+
+    public static createTestCanvas() {
+        const canvasProps = {
+            selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
+            onAssetMetadataChanged: jest.fn(),
+            editorMode: EditorMode.Rectangle,
+        };
+        return new Canvas({canvasProps}, {});
+    }
+
+    public static createTestRegion(id = null) {
+        const testRegion: any = {
+            boundingBox: {
+                height: 100,
+                width: 100,
+                left: 0,
+                top: 0,
+            },
+            points: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}],
+            tags: [],
+            type: "RECTANGLE",
+        };
+        if (id) {
+            testRegion.id = id;
+        }
+        return  testRegion;
     }
 
     /**
