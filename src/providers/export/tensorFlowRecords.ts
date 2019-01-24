@@ -12,7 +12,7 @@ import { strings, interpolate } from "../../common/strings";
 import { TFRecordsImageMessage, Features, Feature,
          BytesList, Int64List, FeatureList, FeatureLists } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
 import CryptoJS from "crypto-js";
-import CRC32 from "crc-32";
+import crc32 from "buffer-crc32";
 import { systemErrorRetryPolicy } from "@azure/ms-rest-js";
 import { SystemErrorRetryPolicy } from "@azure/ms-rest-js/es/lib/policies/systemErrorRetryPolicy";
 
@@ -197,18 +197,9 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         const lengthCrc = new DataView(lengthCRCMetadataBuffer, 0, 8);
         lengthCrc.setUint32(4, 0, true);
         lengthCrc.setUint32(0, length, true);
-        let lengthCRC = CRC32.buf(lengthCRCBuffer);
+        const lengthCRC = crc32.unsigned(new Buffer(lengthCRCBuffer));
 
-        let bufferCRC = CRC32.buf(bufferData);
-
-        // Fix CRC32 bug sometimes returning negative number
-        // https://github.com/h2non/jshashes/issues/11
-        if (lengthCRC < 0) {
-            lengthCRC = lengthCRC >>> 0;
-        }
-        if (bufferCRC < 0) {
-            bufferCRC = bufferCRC >>> 0;
-        }
+        const bufferCRC = crc32.unsigned(bufferData);
 
         const lengthMaskedCRC = this.maskCrc(lengthCRC);
         const bufferMaskedCRC = this.maskCrc(bufferCRC);
