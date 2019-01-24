@@ -7,7 +7,6 @@ import { StorageProviderFactory } from "../../../../providers/storage/storagePro
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
-// import "./projectForm.scss";
 import "vott-react/build/lib/components/tagsInput/tagsInput.css";
 
 // tslint:disable-next-line:no-var-requires

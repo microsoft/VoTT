@@ -2,8 +2,6 @@ import { mount, ReactWrapper } from "enzyme";
 import React from "react";
 import EditorFooter, { IEditorFooterProps, IEditorFooterState } from "./editorFooter";
 import MockFactory from "../../../../common/mockFactory";
-// tslint:disable-next-line:no-var-requires
-const TagColors = require("../../common/tagsInput/tagColors.json");
 
 describe("Footer Component", () => {
 
@@ -48,7 +46,6 @@ describe("Footer Component", () => {
         const tags = wrapper.state().tags;
         expect(tags).toHaveLength(originalTags.length + 1);
         expect(tags[tags.length - 1].name).toEqual(newTagName);
-        expect(TagColors).toContain(tags[tags.length - 1].color);
     });
 
     it("remove a tag", () => {
@@ -97,7 +94,7 @@ describe("Footer Component", () => {
         expect(onChangeHandler).not.toBeCalled();
     });
 
-    it("clicking tag without ctrl calls onTagClickHandler ", () => {
+    it("clicking tag calls onTagClickHandler ", () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
