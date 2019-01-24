@@ -15,16 +15,6 @@ import { AssetService } from "../../services/assetService";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 
-function _base64ToArrayBuffer(base64: string) {
-    const binaryString =  window.atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array( len );
-    for (let i = 0; i < len; i++)        {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
-
 describe("TFRecords Json Export Provider", () => {
     const baseTestProject = MockFactory.createTestProject("Test Project");
     baseTestProject.assets = {

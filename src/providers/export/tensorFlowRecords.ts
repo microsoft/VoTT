@@ -1,14 +1,14 @@
 import _ from "lodash";
+import CryptoJS from "crypto-js";
+import axios from "axios";
 import { ExportProvider, ExportAssetState } from "./exportProvider";
 import { IProject, AssetState, AssetType, IAsset,
          IAssetMetadata, RegionType, ITag } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
-import axios from "axios";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
-import CryptoJS from "crypto-js";
 import { TFRecordsImageMessage, Features, Feature,
          BytesList, Int64List, FeatureList, FeatureLists } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
 import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer } from "./tensorFlowRecords/tensorFlowHelpers";
