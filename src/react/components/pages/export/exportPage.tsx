@@ -59,6 +59,12 @@ export default class ExportPage extends React.Component<IExportPageProps> {
         this.onFormCancel = this.onFormCancel.bind(this);
     }
 
+    public componentDidUpdate(prevProps: Readonly<IExportPageProps>) {
+        if (prevProps.project !== this.props.project) {
+            console.log("different");
+        }
+    }
+
     public render() {
         const exportFormat = this.props.project && this.props.project.exportFormat
             ? this.props.project.exportFormat

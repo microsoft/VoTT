@@ -19,7 +19,7 @@ describe("Export Page", () => {
     const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
-    function createComponent(store, props: IExportPageProps): ReactWrapper {
+    function createComponent(store, props: IExportPageProps): ReactWrapper<IExportPageProps> {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -63,12 +63,10 @@ describe("Export Page", () => {
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
         const wrapper = createComponent(store, props);
-        wrapper.update();
-        await MockFactory.flushUi();
 
         setImmediate(() => {
-            const exportPage = wrapper.find(ExportPage).childAt(0);
-            expect(exportPage.prop("project")).toEqual(testProject);
+            const exportPage = wrapper.find(ExportPage).childAt(0).instance() as ExportPage;
+            expect(exportPage.props.project).toEqual(testProject);
             expect(loadProjectSpy).toHaveBeenCalledWith(testProject);
             done();
         });
