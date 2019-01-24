@@ -52,6 +52,75 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     private tagsInput: React.RefObject<TagsInput>;
     private tagEditorModal: React.RefObject<TagEditorModal>;
 
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            classNames: ["needs-validation"],
+            uiSchema: { ...uiSchema },
+            formSchema: { ...formSchema },
+            formData: {
+                ...this.props.project,
+            },
+            tags: (this.props.project) ? this.props.project.tags : [],
+            selectedTag: null,
+        };
+        this.tagsInput = React.createRef<TagsInput>();
+        this.tagEditorModal = React.createRef<TagEditorModal>();
+
+        this.onFormSubmit = this.onFormSubmit.bind(this);
+        this.onFormCancel = this.onFormCancel.bind(this);
+        this.onFormValidate = this.onFormValidate.bind(this);
+        this.onTagClick = this.onTagClick.bind(this);
+        this.onTagsChange = this.onTagsChange.bind(this);
+        this.onTagModalOk = this.onTagModalOk.bind(this);
+        this.onTagModalCancel = this.onTagModalCancel.bind(this);
+    }
+    /**
+     * Updates state if project from properties has changed
+     * @param prevProps - previously set properties
+     */
+    public componentDidUpdate(prevProps: IProjectFormProps) {
+        if (prevProps.project !== this.props.project) {
+            this.setState({
+                formData: { ...this.props.project },
+            });
+        }
+    }
+
+    public render() {
+        return (
+            <Form
+                className={this.state.classNames.join(" ")}
+                showErrorList={false}
+                liveValidate={true}
+                noHtml5Validate={true}
+                FieldTemplate={CustomFieldTemplate}
+                validate={this.onFormValidate}
+                fields={this.fields()}
+                schema={this.state.formSchema}
+                uiSchema={this.state.uiSchema}
+                formData={this.state.formData}
+                onSubmit={this.onFormSubmit}>
+                <div>
+                    <button className="btn btn-success mr-1" type="submit">{strings.projectSettings.save}</button>
+                    <button className="btn btn-secondary btn-cancel"
+                        type="button"
+                        onClick={this.onFormCancel}>{strings.common.cancel}</button>
+                </div>
+                <TagEditorModal
+                    ref={this.tagEditorModal}
+                    onOk={this.onTagModalOk}
+                    onCancel={this.onTagModalCancel}
+
+                    tagNameText={strings.tags.modal.name}
+                    tagColorText={strings.tags.modal.color}
+                    saveText={strings.common.save}
+                    cancelText={strings.common.cancel}
+                />
+            </Form>
+        );
+    }
+
     private fields() {
         return {
             sourceConnection: CustomField(ConnectionPicker, (props) => {
@@ -85,48 +154,13 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         };
     }
 
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            classNames: ["needs-validation"],
-            uiSchema: { ...uiSchema },
-            formSchema: { ...formSchema },
-            formData: {
-                ...this.props.project,
-            },
-            tags: (this.props.project) ? this.props.project.tags : [],
-            selectedTag: null
-        };
-        this.tagsInput = React.createRef<TagsInput>();
-        this.tagEditorModal = React.createRef<TagEditorModal>();
-
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onFormCancel = this.onFormCancel.bind(this);
-        this.onFormValidate = this.onFormValidate.bind(this);
-        this.onTagClick = this.onTagClick.bind(this);
-        this.onTagsChange = this.onTagsChange.bind(this);
-        this.onTagModalOk = this.onTagModalOk.bind(this);
-        this.onTagModalCancel = this.onTagModalCancel.bind(this);
-    }
-    /**
-     * Updates state if project from properties has changed
-     * @param prevProps - previously set properties
-     */
-    public componentDidUpdate(prevProps: IProjectFormProps) {
-        if (prevProps.project !== this.props.project) {
-            this.setState({
-                formData: { ...this.props.project },
-            });
-        }
-    }
-
     private onTagsChange(tags: ITag[]) {
         this.setState({tags});
     }
 
     private onTagClick(tag: ITag) {
         this.setState({
-            selectedTag: tag
+            selectedTag: tag,
         }, () => {
             this.tagEditorModal.current.open(tag);
         });
@@ -139,42 +173,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     private onTagModalCancel() {
         this.setState({
-            selectedTag: null
+            selectedTag: null,
         });
-    }
-
-    public render() {
-        return (
-            <Form
-                className={this.state.classNames.join(" ")}
-                showErrorList={false}
-                liveValidate={true}
-                noHtml5Validate={true}
-                FieldTemplate={CustomFieldTemplate}
-                validate={this.onFormValidate}
-                fields={this.fields()}
-                schema={this.state.formSchema}
-                uiSchema={this.state.uiSchema}
-                formData={this.state.formData}
-                onSubmit={this.onFormSubmit}>
-                <div>
-                    <button className="btn btn-success mr-1" type="submit">{strings.projectSettings.save}</button>
-                    <button className="btn btn-secondary btn-cancel"
-                        type="button"
-                        onClick={this.onFormCancel}>{strings.common.cancel}</button>
-                </div>
-                <TagEditorModal
-                    ref={this.tagEditorModal}
-                    onOk={this.onTagModalOk}
-                    onCancel={this.onTagModalCancel}
-
-                    tagNameText={strings.tags.modal.name}
-                    tagColorText={strings.tags.modal.color}
-                    saveText={strings.common.save}
-                    cancelText={strings.common.cancel}                    
-                />
-            </Form>
-        );
     }
 
     private onFormValidate(project: IProject, errors: FormValidation) {
@@ -198,7 +198,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     private onFormSubmit(args: ISubmitEvent<IProject>) {
         const project: IProject = {
             ...args.formData,
-            tags: this.state.tags
+            tags: this.state.tags,
         };
         this.props.onSubmit(project);
     }

@@ -16,7 +16,7 @@ describe("Tags Input Component", () => {
         return mount(
             // Listing props one by one because of 'ref' typescript error.
             // Example: https://github.com/ant-design/ant-design/issues/10405
-            <EditorTagsInput 
+            <EditorTagsInput
                 tags={props.tags}
                 onChange={props.onChange}
                 placeHolder={props.placeHolder}
