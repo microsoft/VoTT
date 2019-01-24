@@ -40,6 +40,10 @@ export enum AppErrorType {
     Render = "render",
 }
 
+/**
+ * @name - Provider Options
+ * @description - Property map of key values used within a export / asset / storage provider
+ */
 export interface IProviderOptions {
     [key: string]: any;
 }

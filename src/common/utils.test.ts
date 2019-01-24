@@ -45,7 +45,7 @@ describe("Helper functions", () => {
             expect(encryptedProject).toEqual(doubleEncryptedProject);
         });
 
-        it("decrypt project detects already decrypted project settings", () => {
+        it("decrypt project does not attempt to decrypt already decrtyped data", () => {
             const decryptedProject = decryptProject(testProject, securityToken);
 
             expect(decryptedProject).toEqual(testProject);
