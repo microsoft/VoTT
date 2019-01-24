@@ -1,13 +1,15 @@
 import React, { RefObject, SyntheticEvent } from "react";
-import { FieldProps } from "react-jsonschema-form";
 
 /**
  * Protected input properties
  * @member value - The value to bind to the component
  * @member securityToken - Optional value used to encrypt/decrypt the value
  */
-export interface IProtectedInputProps extends FieldProps {
+export interface IProtectedInputProps extends React.Props<ProtectedInput> {
+    id: string;
     value: string;
+    readOnly?: boolean;
+    onChange: (value: string) => void;
 }
 
 /** Protected input state
@@ -44,7 +46,7 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
     }
 
     public render() {
-        const { id, readonly } = this.props;
+        const { id, readOnly } = this.props;
         const { showKey, value } = this.state;
 
         return (
@@ -52,20 +54,20 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
                 <input id={id}
                     ref={this.inputElement}
                     type={showKey ? "text" : "password"}
-                    readOnly={readonly}
+                    readOnly={readOnly}
                     className="form-control"
                     value={value}
                     onChange={this.onChange} />
                 <div className="input-group-append">
                     <button type="button"
                         title={showKey ? "Hide" : "Show"}
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-visibility"
                         onClick={this.toggleKeyVisibility}>
                         <i className={showKey ? "fas fa-eye-slash" : "fas fa-eye"}></i>
                     </button>
                     <button type="button"
                         title="Copy"
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-copy"
                         onClick={this.copyKey}>
                         <i className="fas fa-copy"></i>
                     </button>
