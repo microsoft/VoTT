@@ -29,9 +29,9 @@
         "redux-thunk": "^2.3.0",
         "rimraf": "^2.6.2",
         "shortid": "^2.2.14",
-        "video-react": "^0.13.2",
-        "vott-ct": "^2.1.11"
-        "vott-react": "github:Microsoft/vott-react#master"
+        "vott-react": "git://github.com/Microsoft/vott-react.git#master",
+        "vott-ct": "^2.1.11",
+        "video-react": "^0.13.2"
     },
     "scripts": {
         "start": "nf start -p 3000",
