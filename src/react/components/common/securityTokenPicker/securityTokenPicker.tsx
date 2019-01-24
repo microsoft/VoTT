@@ -1,18 +1,15 @@
 import React, { SyntheticEvent } from "react";
 import { ISecurityToken } from "../../../../models/applicationState";
-import { JSONSchema6 } from "json-schema";
 
 /**
  * Security Token Picker Properties
  * @member id - The id to bind to the input element
- * @member schema - The JSON schema for the associated field
  * @member value - The value to bind to the input element
  * @member securityTokens - The list of security tokens to display
  * @member onChange - The event handler to call when the input value changes
  */
 export interface ISecurityTokenPickerProps {
     id?: string;
-    schema: JSONSchema6;
     value: string;
     securityTokens: ISecurityToken[];
     onChange: (value: string) => void;

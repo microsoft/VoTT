@@ -564,10 +564,7 @@ export default class MockFactory {
      * Creates fake IAppSettings
      */
     public static appSettings(): IAppSettings {
-        const securityTokens: ISecurityToken[] = [];
-        for (let i = 1; i <= 10; i++) {
-            securityTokens.push(MockFactory.createSecurityToken(i.toString()));
-        }
+        const securityTokens = MockFactory.createSecurityTokens();
 
         return {
             devToolsEnabled: false,
@@ -587,6 +584,19 @@ export default class MockFactory {
             name: `Security-Token-${nameSuffix}`,
             key: generateKey(),
         };
+    }
+
+    /**
+     * Creates test security tokens
+     * @param count The number of tokens to generate (default: 10)
+     */
+    public static createSecurityTokens(count: number = 10): ISecurityToken[] {
+        const securityTokens: ISecurityToken[] = [];
+        for (let i = 1; i <= 10; i++) {
+            securityTokens.push(MockFactory.createSecurityToken(i.toString()));
+        }
+
+        return securityTokens;
     }
 
     /**
