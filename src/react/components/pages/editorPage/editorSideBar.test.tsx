@@ -1,5 +1,5 @@
 import React from "react";
-import EditorSideBar, { IEditorSideBarProps } from "./editorSideBar";
+import EditorSideBar, { IEditorSideBarProps, IEditorSideBarState } from "./editorSideBar";
 import { ReactWrapper, mount } from "enzyme";
 import { AutoSizer, List } from "react-virtualized";
 import MockFactory from "../../../../common/mockFactory";
@@ -8,7 +8,7 @@ describe("Editor SideBar", () => {
     const onSelectAssetHanlder = jest.fn();
     const testAssets = MockFactory.createTestAssets();
 
-    function createComponent(props: IEditorSideBarProps): ReactWrapper {
+    function createComponent(props: IEditorSideBarProps): ReactWrapper<IEditorSideBarProps, IEditorSideBarState> {
         return mount(<EditorSideBar {...props} />);
     }
 
@@ -31,7 +31,7 @@ describe("Editor SideBar", () => {
         };
 
         const wrapper = createComponent(props);
-        expect(wrapper.state("selectedAsset")).not.toBeDefined();
+        expect(wrapper.state().selectedAsset).not.toBeDefined();
     });
 
     it("Initializes state with asset selected", () => {
@@ -42,7 +42,7 @@ describe("Editor SideBar", () => {
         };
 
         const wrapper = createComponent(props);
-        expect(wrapper.state("selectedAsset")).toEqual(props.selectedAsset);
+        expect(wrapper.state().selectedAsset).toEqual(props.selectedAsset);
     });
 
     it("Updates states after props have changed", (done) => {
@@ -58,7 +58,7 @@ describe("Editor SideBar", () => {
         });
 
         setImmediate(() => {
-            expect(wrapper.state("selectedAsset")).toEqual(testAssets[0]);
+            expect(wrapper.state().selectedAsset).toEqual(testAssets[0]);
             done();
         });
     });
@@ -77,7 +77,7 @@ describe("Editor SideBar", () => {
         });
 
         setImmediate(() => {
-            expect(wrapper.state()["selectedAsset"]).toEqual(nextAsset);
+            expect(wrapper.state().selectedAsset).toEqual(nextAsset);
             done();
         });
     });
@@ -96,6 +96,11 @@ describe("Editor SideBar", () => {
             selectedAsset: nextAsset,
         });
 
+        setImmediate(() => {
+            expect(wrapper.state().selectedAsset).toEqual(nextAsset);
+            done();
+        });
+
         const originalAsset = testAssets[0];
         const backToOriginalwrapper = createComponent(props);
         backToOriginalwrapper.setProps({
@@ -103,7 +108,7 @@ describe("Editor SideBar", () => {
         });
 
         setImmediate(() => {
-            expect(backToOriginalwrapper.state()["selectedAsset"]).toEqual(originalAsset);
+            expect(backToOriginalwrapper.state().selectedAsset).toEqual(originalAsset);
             done();
         });
     });
