@@ -247,24 +247,31 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         switch (toolbarItem.props.name) {
             case "drawRectangle":
                 setSelectionMode(SelectionMode.RECT);
+                this.setEditorMode(EditorMode.Rectangle);
                 break;
             case "drawPolygon":
                 setSelectionMode(SelectionMode.POLYGON);
+                this.setEditorMode(EditorMode.Polygon);
                 break;
             case "drawPolyline":
                 setSelectionMode(SelectionMode.POLYLINE);
+                this.setEditorMode(EditorMode.Polyline);
                 break;
             case "drawPoint":
                 setSelectionMode(SelectionMode.POINT);
+                this.setEditorMode(EditorMode.Point);
                 break;
             case "drawCopyRect":
                 setSelectionMode(SelectionMode.COPYRECT);
+                this.setEditorMode(EditorMode.CopyRect);
                 break;
             case "selectCanvas":
                 setSelectionMode(SelectionMode.NONE);
+                this.setEditorMode(EditorMode.Select);
                 break;
             case "panCanvas":
                 setSelectionMode(SelectionMode.NONE);
+                this.setEditorMode(EditorMode.Select);
                 break;
             default:
                 console.log(toolbarItem.props.name);
