@@ -6,15 +6,12 @@ import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import axios from "axios";
-import { all } from "deepmerge";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
+import CryptoJS from "crypto-js";
 import { TFRecordsImageMessage, Features, Feature,
          BytesList, Int64List, FeatureList, FeatureLists } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
-import CryptoJS from "crypto-js";
-import crc32 from "buffer-crc32";
-import { systemErrorRetryPolicy } from "@azure/ms-rest-js";
-import { SystemErrorRetryPolicy } from "@azure/ms-rest-js/es/lib/policies/systemErrorRetryPolicy";
+import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer } from "./tensorFlowRecords/tensorFlowHelpers";
 
 /**
  * @name - ITFRecordsJsonExportOptions
@@ -142,80 +139,30 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         featureListsMap.set(key, featureList);
     }
 
-    // CRC-masking function used by TensorFlow.
-    private maskCrc(value: number): number {
-        const kCrc32MaskDelta = 0xa282ead8;
-        const fourGb = Math.pow(2, 32);
-
-        return (((value >>> 15) | (value << 17)) + kCrc32MaskDelta) % fourGb;
-    }
-
     private async writeTFRecord(fileNamePath: string, features: Features, featureLists: FeatureLists) {
-        // A TFRecords file contains a sequence of strings with CRC
-        // hashes. Each record has the format
-        //
-        //     uint64 length
-        //     uint32 masked_crc32_of_length
-        //     byte   data[length]
-        //     uint32 masked_crc32_of_data
-        //
-        // and the records are concatenated together to produce the file. The
-        // CRC32s are described here, and the mask of a CRC is
-        //
-        //     masked_crc = ((crc >> 15) | (crc << 17)) + 0xa282ead8ul
-        //
-        // For more information, please refer to
-        // https://www.tensorflow.org/versions/master/api_docs/python/python_io.html#tfrecords-format-details.
-
-        // maskDelta is a magic number taken from
-        // https://github.com/tensorflow/tensorflow/blob/754048a0453a04a761e112ae5d99c149eb9910dd/
-        //    tensorflow/core/lib/hash/crc32c.h#L33.
-        // const maskDelta uint32 = 0xa282ead8
-        // mask returns a masked representation of crc.
-
-        const lengthAndCrcMetadataBuffer = new ArrayBuffer(12);
-        const lengthAndCrcBuffer = new Uint8Array(lengthAndCrcMetadataBuffer, 0, 12);
-        const lengthAndCrc = new DataView(lengthAndCrcMetadataBuffer, 0, 12);
-
-        const recordCrcMetadataBuffer = new ArrayBuffer(4);
-        const recordCrcBuffer = new Uint8Array(recordCrcMetadataBuffer, 0, 4);
-        const recordCrc = new DataView(recordCrcMetadataBuffer, 0, 4);
-
-        // The high-order bits of length will alwas be unset.
-        lengthAndCrc.setUint32(4, 0, true);
-
-        const imageMessage = new TFRecordsImageMessage();
-        imageMessage.setContext(features);
-        imageMessage.setFeatureLists(featureLists);
-
-        const bytes = imageMessage.serializeBinary();
-        const bufferData = new Buffer(bytes);
-        const length = bufferData.length;
-
-        const lengthCRCMetadataBuffer = new ArrayBuffer(8);
-        const lengthCRCBuffer = new Uint8Array(lengthCRCMetadataBuffer, 0, 8);
-        const lengthCrc = new DataView(lengthCRCMetadataBuffer, 0, 8);
-        lengthCrc.setUint32(4, 0, true);
-        lengthCrc.setUint32(0, length, true);
-        const lengthCRC = crc32.unsigned(new Buffer(lengthCRCBuffer));
-
-        const bufferCRC = crc32.unsigned(bufferData);
-
-        const lengthMaskedCRC = this.maskCrc(lengthCRC);
-        const bufferMaskedCRC = this.maskCrc(bufferCRC);
-
         try {
-            lengthAndCrc.setUint32(0, length, true);
-            lengthAndCrc.setUint32(8, lengthMaskedCRC, true);
-            const bufferLengthAndMaskedCRC = new Buffer(lengthAndCrcBuffer);
+            // Get Protocol Buffer TFRecords object with exported image features
+            const imageMessage = new TFRecordsImageMessage();
+            imageMessage.setContext(features);
+            imageMessage.setFeatureLists(featureLists);
 
-            recordCrc.setUint32(0, bufferMaskedCRC, true);
-            const bufferDataMaskedCRC = new Buffer(recordCrcBuffer);
+            // Serialize Protocol Buffer in a buffer
+            const bytes = imageMessage.serializeBinary();
+            const bufferData = new Buffer(bytes);
+            const length = bufferData.length;
 
-            const outBuffer = Buffer.concat([bufferLengthAndMaskedCRC,
+            // Get TFRecords CRCs for TFRecords Header and Footer
+            const bufferLength = getInt64Buffer(length);
+            const bufferLengthMaskedCRC = getInt32Buffer(maskCrc(crc32c(bufferLength)));
+            const bufferDataMaskedCRC = getInt32Buffer(maskCrc(crc32c(bufferData)));
+
+            // Concatenate all TFRecords Header, Data and Footer buffer
+            const outBuffer = Buffer.concat([bufferLength,
+                                             bufferLengthMaskedCRC,
                                              bufferData,
                                              bufferDataMaskedCRC]);
 
+            // Write TFRecords
             await this.storageProvider.writeBinary(fileNamePath, outBuffer);
 
         } catch (error) {

@@ -7,8 +7,6 @@
         "@azure/storage-blob": "^10.3.0",
         "axios": "^0.18.0",
         "bootstrap": "^4.1.3",
-        "buffer-crc32": "^0.2.13",
-        "cryptojs": "^2.5.3",
         "deepmerge": "^2.2.1",
         "google-protobuf": "^3.6.1",
         "lodash": "^4.17.11",
