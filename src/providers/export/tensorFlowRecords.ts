@@ -267,8 +267,10 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                                                    region.points.length === 2)
                                .forEach((region) => {
                                     region.tags.forEach((tag) => {
+                                        const index = this.project.tags.map((pTag) => pTag.name).indexOf(tag.name);
+
                                         imageInfo.text.push(tag.name);
-                                        imageInfo.label.push(0); // TODO: Get tag position in global tags
+                                        imageInfo.label.push(index);
                                         imageInfo.xmin.push(region.points[0].x);
                                         imageInfo.ymin.push(region.points[0].y);
                                         imageInfo.xmax.push(region.points[1].x);
