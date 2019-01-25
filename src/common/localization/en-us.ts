@@ -28,16 +28,6 @@ export const english: IAppStrings = {
             title: "Delete Project",
             confirmation: "Are you sure you want to delete project",
         },
-        errors: {
-            loadProjectError: {
-                title: "Error loading project file",
-                message: "Ensure project security token exists",
-            },
-            projectParseError: {
-                title: "Error parsing project file",
-                message: "Project file is not valid json",
-            },
-        },
     },
     appSettings: {
         title: "Application Settings",
@@ -172,5 +162,28 @@ export const english: IAppStrings = {
     },
     profile: {
         settings: "Profile Settings",
+    },
+    errors: {
+        Unknown: {
+            title: "Unknown Error",
+            message: "The app encounted an unknown error.  Please try again.",
+        },
+        ProjectUploadError: {
+            title: "Error Uploading File",
+            message: `There was an error uploading the file.
+                Please verify the file is of the correct type and try again.`,
+        },
+        GenericRenderError: {
+            title: "Error loading project file",
+            message: "Ensure project security token exists",
+        },
+        ProjectInvalidSecurityToken: {
+            title: "Error loading project file",
+            message: "Ensure project security token exists",
+        },
+        ProjectInvalidJson: {
+            title: "Error parsing project file",
+            message: "Project file is not valid json",
+        },
     },
 };

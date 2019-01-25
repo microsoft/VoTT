@@ -34,11 +34,11 @@ export interface IAppError {
  * Enum of supported error codes
  */
 export enum ErrorCode {
-    Unknown,
-    GenericRenderError,
-    ProjectInvalidJson,
-    ProjectInvalidSecurityToken,
-    ProjectUploadError,
+    Unknown = "Unknown",
+    GenericRenderError = "GenericRenderError",
+    ProjectInvalidJson = "ProjectInvalidJson",
+    ProjectInvalidSecurityToken = "ProjectInvalidSecurityToken",
+    ProjectUploadError = "ProjectUploadError",
 }
 
 /**

@@ -12,6 +12,7 @@ import ErrorBoundary from "./react/components/common/errorBoundary";
 import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActions";
 import { bindActionCreators } from "redux";
 import Alert from "./react/components/common/alert/alert";
+import { strings } from "./common/strings";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -65,8 +66,8 @@ class App extends React.Component<IAppProps> {
 
     public render() {
         const showError = (this.props.appError !== null);
-        const errorTitle = showError ? this.props.appError.title : "";
-        const errorMessage = showError ? this.props.appError.message : "";
+        const errorTitle = showError ? strings.errors[this.props.appError.errorCode].title : "";
+        const errorMessage = showError ? strings.errors[this.props.appError.errorCode].message : "";
 
         return (
             <Fragment>

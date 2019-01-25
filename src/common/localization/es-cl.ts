@@ -28,16 +28,6 @@ export const spanish: IAppStrings = {
             title: "Borrar Proyecto",
             confirmation: "¿Está seguro que quiere borrar el proyecto",
         },
-        errors: {
-            loadProjectError: {
-                title: "Error al cargar el archivo de proyecto",
-                message: "Asegúrese de que el token de seguridad del proyecto existe",
-            },
-            projectParseError: {
-                title: "Error al analizar el archivo de proyecto",
-                message: "El archivo de proyecto no es válido JSON",
-            },
-        },
     },
     appSettings: {
         title: "Configuración de Aplicación",
@@ -173,5 +163,28 @@ export const spanish: IAppStrings = {
     },
     profile: {
         settings: "Configuración de Perfíl",
+    },
+    errors: {
+        Unknown: {
+            title: "Error desconocido",
+            message: "La aplicación contó un error desconocido.  Por favor inténtalo de nuevo.",
+        },
+        ProjectUploadError: {
+            title: "Error al cargar el archivo",
+            message: `Se ha cargado un error al cargar el archivo.
+                Compruebe que el archivo es del tipo correcto e inténtelo de nuevo.`,
+        },
+        GenericRenderError: {
+            title: "Error desconocido",
+            message: "La aplicación contó un error desconocido.  Por favor inténtalo de nuevo.",
+        },
+        ProjectInvalidSecurityToken: {
+            title: "Error al cargar el archivo de proyecto",
+            message: "Asegúrese de que el token de seguridad del proyecto existe",
+        },
+        ProjectInvalidJson: {
+            title: "Error al analizar el archivo de proyecto",
+            message: "El archivo de proyecto no es válido JSON",
+        },
     },
 };

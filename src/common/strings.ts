@@ -31,16 +31,6 @@ export interface IAppStrings {
             confirmation: string;
         },
         recentProjects: string,
-        errors: {
-            projectParseError: {
-                title: string,
-                message: string,
-            },
-            loadProjectError: {
-                title: string;
-                message: string;
-            },
-        }
     };
     appSettings: {
         title: string;
@@ -176,6 +166,18 @@ export interface IAppStrings {
     profile: {
         settings: string;
     };
+    errors: {
+        Unknown: IErrorMetadata,
+        ProjectInvalidJson: IErrorMetadata,
+        ProjectInvalidSecurityToken: IErrorMetadata,
+        ProjectUploadError: IErrorMetadata,
+        GenericRenderError: IErrorMetadata,
+    };
+}
+
+interface IErrorMetadata {
+    title: string;
+    message: string;
 }
 
 interface IStrings extends LocalizedStringsMethods, IAppStrings { }
