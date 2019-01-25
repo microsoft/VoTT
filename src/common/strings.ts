@@ -181,6 +181,7 @@ export interface IAppStrings {
         ProjectInvalidSecurityToken: IErrorMetadata,
         ProjectUploadError: IErrorMetadata,
         GenericRenderError: IErrorMetadata,
+        SecurityTokenNotFound: IErrorMetadata,
     };
 }
 

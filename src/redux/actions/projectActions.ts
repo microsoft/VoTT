@@ -1,16 +1,14 @@
 import { Dispatch, Action } from "redux";
 import ProjectService from "../../services/projectService";
-import {
-    IProject, IAsset, IAssetMetadata, IApplicationState,
-    ISecurityToken, IAppSettings,
-} from "../../models/applicationState";
 import { ActionTypes } from "./actionTypes";
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
+import {
+    IProject, IAsset, IAssetMetadata, IApplicationState,
+    ErrorCode, AppError,
+} from "../../models/applicationState";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
-import { generateKey } from "../../common/crypto";
-import { saveAppSettingsAction } from "./applicationActions";
 
 /**
  * Actions to be performed in relation to projects
@@ -41,7 +39,7 @@ export function loadProject(project: IProject):
             .find((st) => st.name === project.securityToken);
 
         if (!securityToken) {
-            throw new Error(`Cannot locate security token '${project.securityToken}' from project`);
+            throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
         const loadedProject = await projectService.load(project, securityToken);
 
@@ -69,7 +67,7 @@ export function saveProject(project: IProject):
             .find((st) => st.name === project.securityToken);
 
         if (!securityToken) {
-            throw new Error(`Cannot locate security token '${project.securityToken}' from project`);
+            throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
         const savedProject = await projectService.save(project, securityToken);

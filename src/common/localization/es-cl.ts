@@ -195,5 +195,11 @@ export const spanish: IAppStrings = {
             title: "Error al analizar el archivo de proyecto",
             message: "El archivo de proyecto no es válido JSON",
         },
+        SecurityTokenNotFound: {
+            title: "Error loading project file",
+            message: `El token de seguridad al que hace referencia el proyecto no se encuentra en la
+                configuración de la aplicación actual. Compruebe que existe el token de seguridad e intente
+                volver a cargar el proyecto.`,
+        },
     },
 };

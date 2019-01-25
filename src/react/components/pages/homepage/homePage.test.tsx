@@ -111,17 +111,6 @@ describe("Connection Picker Component", () => {
         expect(openProjectSpy).toBeCalledWith(testProject);
     });
 
-    // it("should call showError action when passed an invalid json project", async () => {
-    //     const wrapper = createComponent(store, props);
-    //     const textBlob = new Blob(["foo"], { type: "text/plain" });
-
-    //     const fileUpload = wrapper.find("a.file-upload").first();
-    //     const fileInput = wrapper.find(`input[type="file"]`);
-
-    //     fileUpload.simulate("click");
-    //     expect(() => fileInput.simulate("change", ({ target: { files: [textBlob] } }))).toThrowError();
-    // });
-
     function createProps(): IHomepageProps {
         return {
             recentProjects: [],

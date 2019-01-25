@@ -188,12 +188,17 @@ export const english: IAppStrings = {
         },
         ProjectInvalidSecurityToken: {
             title: "Error loading project file",
-            message: `The security token referenced by the project cannot be found in your current application.
-                Verify that the security token for the project has been set within your local application settings`,
+            message: `The security token referenced by the project is invalid.
+                Verify that the security token for the project has been set correctly within your application settings`,
         },
         ProjectInvalidJson: {
             title: "Error parsing project file",
             message: "The selected project files does not contain valid JSON. Please check the file any try again.",
+        },
+        SecurityTokenNotFound: {
+            title: "Error loading project file",
+            message: `The security token referenced by the project cannot be found in your current application settings.
+                Verify the security token exists and try to reload the project.`,
         },
     },
 };
