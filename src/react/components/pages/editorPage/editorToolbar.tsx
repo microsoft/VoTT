@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { IToolbarItemRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions from "../../../../redux/actions/projectActions";
-import { IProject } from "../../../../models/applicationState";
+import { IProject, EditorMode } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
 import "./editorToolbar.scss";
 import { Select } from "../../toolbar/select";
@@ -17,6 +17,7 @@ export interface IEditorToolbarProps {
     project: IProject;
     actions: IProjectActions;
     items: IToolbarItemRegistration[];
+    onToolbarItemSelected: (toolbarItem: ToolbarItem) => void;
 }
 
 /**
@@ -73,6 +74,8 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
     private onToolbarItemSelected(toolbarItem: ToolbarItem) {
         this.setState({
             selectedItem: Object.getPrototypeOf(toolbarItem),
+        }, () => {
+            this.props.onToolbarItemSelected(toolbarItem);
         });
     }
 

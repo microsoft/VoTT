@@ -26,19 +26,27 @@ export interface IAppError {
     title?: string;
     message: string;
     errorCode?: string;
+    errorType: string;
+}
+
+/**
+ * @enum Generic - describe an error happened in an eventhandler, async function etc.
+ * @enum Render - describe an error happened inside render
+ */
+export enum AppErrorType {
+    Generic = "generic",
+    Render = "render",
 }
 
 /**
  * @name - Application settings
  * @description - Defines the root level configuration options for the application
  * @member devToolsEnabled - Whether dev tools are current open and enabled
- * @member connectionId - Reference to the connection used to store application settings
- * @member connection - Reference to the connection used to store the application settings
+ * @member securityTokens - Token used to encrypt sensitive project settings
  */
 export interface IAppSettings {
     devToolsEnabled: boolean;
-    connectionId?: string;
-    connection: IConnection;
+    securityTokens: ISecurityToken[];
 }
 
 /**
@@ -62,7 +70,7 @@ export interface IProject {
     sourceConnection: IConnection;
     targetConnection: IConnection;
     exportFormat: IExportFormat;
-    videoSettings: IVideoSettings;
+    videoSettings: IProjectVideoSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
 }
@@ -120,12 +128,25 @@ export interface IExportFormat {
 }
 
 /**
- * @name - Video Tagging Settings
+ * @name - Video Tagging Settings for the project
  * @description - Defines the video settings within a VoTT project
  * @member frameExtractionRate - Extraction rate for a video (number of frames per second of video)
  */
-export interface IVideoSettings {
+export interface IProjectVideoSettings {
     frameExtractionRate: number;
+}
+
+/**
+ * @name - Asset Video Settings
+ * @description - Defines the settings for video assets
+ * @member shouldAutoPlayVideo - true if the video should auto play when loaded, false otherwise
+ * @member posterSource - Source location of the image to display when the video is not playing,
+ * null for default (first frame of video)
+ */
+export interface IAssetVideoSettings {
+    shouldAutoPlayVideo: boolean;
+    posterSource: string;
+    shouldShowPlayControls: boolean;
 }
 
 /**
@@ -152,6 +173,8 @@ export interface IAsset {
  * @name - Asset Metadata
  * @description - Format to store asset metadata for each asset within a project
  * @member asset - References an asset within the project
+ * @member regions - The list of regions drawn on the asset
+ * @member selectedRegion - The currently selected regions
  * @member timestamp - The timestamp of the asset typically used for video durations / frames
  */
 export interface IAssetMetadata {
@@ -199,7 +222,7 @@ export interface ITagMetadata {
 }
 
 /**
- * @name - Bouding Box
+ * @name - Bounding Box
  * @description - Defines the tag usage within a bounding box region
  * @member left - Defines the left x boundary for the start of the bounding box
  * @member top - Defines the top y boundary for the start of the boudning box
@@ -257,7 +280,28 @@ export enum AssetState {
  * @member Polygon - Specifies a region as a multi-point polygon
  */
 export enum RegionType {
-    Square = "SQUARE",
+    Polyline = "POLYLINE",
+    Point = "POINT",
     Rectangle = "RECTANGLE",
     Polygon = "POLYGON",
+    Square = "SQUARE",
+}
+
+export enum EditorMode {
+    Rectangle = "RECT",
+    Polygon = "POLYGON",
+    Polyline = "POLYLINE",
+    Point = "POINT",
+    Select = "SELECT",
+    CopyRect = "COPYRECT",
+    None = "NONE",
+}
+
+export interface ISecureString {
+    encrypted: string;
+}
+
+export interface ISecurityToken {
+    name: string;
+    key: string;
 }

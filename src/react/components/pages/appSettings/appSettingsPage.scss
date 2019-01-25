@@ -1,12 +1,13 @@
 .app-settings-page {
     display: flex;
     flex-direction: row;
+    height: 100%;
 
     &-form {
         flex-grow: 1;
     }
 
     &-sidebar {
-        flex-basis: 50vw;
+        flex-basis: 30vw;
     }
 }

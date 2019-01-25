@@ -3,6 +3,7 @@ import thunk from "redux-thunk";
 import * as applicationActions from "./applicationActions";
 import { ActionTypes } from "./actionTypes";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
+import { IAppSettings } from "../../models/applicationState";
 
 describe("Application Redux Actions", () => {
     let store: MockStoreEnhanced;
@@ -37,5 +38,27 @@ describe("Application Redux Actions", () => {
         });
 
         expect(IpcRendererProxy.send).toBeCalledWith("RELOAD_APP");
+    });
+
+    it("Save app settings action saves state", async () => {
+        const appSettings: IAppSettings = {
+            devToolsEnabled: false,
+            securityTokens: [
+                { name: "A", key: "1" },
+                { name: "B", key: "2" },
+                { name: "C", key: "3" },
+            ],
+        };
+
+        const result = await applicationActions.saveAppSettings(appSettings)(store.dispatch);
+        const actions = store.getActions();
+
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.SAVE_APP_SETTINGS_SUCCESS,
+            payload: appSettings,
+        });
+
+        expect(result).toEqual(appSettings);
     });
 });

@@ -141,13 +141,10 @@ function createProps(projectId: string): IExportPageProps {
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
         currentProject: setCurrentProject ? project : null,
-        appSettings: {
-            connection: null,
-            devToolsEnabled: false,
-        },
+        appSettings: MockFactory.appSettings(),
         connections: [],
         recentProjects: [project],
     };
 
-    return createReduxStore(initialState, false);
+    return createReduxStore(initialState);
 }

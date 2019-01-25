@@ -10,6 +10,7 @@ export const spanish: IAppStrings = {
         description: "Descripción",
         submit: "Enviar",
         cancel: "Cancelar",
+        delete: "Eliminar",
         provider: "Proveedor",
         homePage: "Página de Inicio",
     },
@@ -36,6 +37,20 @@ export const spanish: IAppStrings = {
         title: "Configuración de Aplicación",
         storageTitle: "Configuración de Almacenamiento",
         uiHelp: "Donde se guardan sus configuraciones",
+        save: "Guardar configuración",
+        securityToken: {
+            name: {
+                title: "Nombre",
+            },
+            key: {
+                title: "Clave",
+            },
+        },
+        securityTokens: {
+            title: "Tokens de seguridad",
+            // tslint:disable-next-line:max-line-length
+            description: "Los tokens de seguridad se utilizan para cifrar datos confidenciales dentro de la configuración del proyecto",
+        },
         devTools: {
             description: "Abrir herramientas de desarrollo de aplicaciones para ayudar a diagnosticar problemas.",
             button: "Alternar Herramientas de Desarrollo",

@@ -9,21 +9,19 @@ import { createLocalStorage, mergeInitialState } from "../middleware/localStorag
 /**
  * Creates initial redux store from initial aplication state
  * @param initialState - Initial state of application
- * @param loadFromLocalStorage - Load from local storage if true
+ * @param useLocalStorage - Whether or not to use localStorage middleware
  */
 export default function createReduxStore(
     initialState?: IApplicationState,
-    loadFromLocalStorage: boolean = true): Store {
+    useLocalStorage: boolean = false): Store {
     const paths: string[] = ["appSettings", "connections", "recentProjects"];
+    const middlewares = useLocalStorage
+        ? applyMiddleware(thunk, reduxImmutableStateInvarient(), createLogger(), createLocalStorage({ paths }))
+        : applyMiddleware(thunk, reduxImmutableStateInvarient(), createLogger());
 
     return createStore(
         rootReducer,
-        loadFromLocalStorage ? mergeInitialState(initialState, paths) : initialState,
-        applyMiddleware(
-            thunk,
-            reduxImmutableStateInvarient(),
-            createLogger(),
-            createLocalStorage({ paths }),
-        ),
+        useLocalStorage ? mergeInitialState(initialState, paths) : initialState,
+        middlewares,
     );
 }

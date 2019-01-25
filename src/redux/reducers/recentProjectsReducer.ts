@@ -39,7 +39,6 @@ export const reducer = (state: IProject[] = [], action: AnyAction): IProject[] =
                 }
                 return updatedProject;
             });
-            localStorage.setItem("projects", JSON.stringify(newState));
             return newState;
         default:
             return state;

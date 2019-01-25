@@ -10,6 +10,7 @@ export const english: IAppStrings = {
         description: "Description",
         submit: "Submit",
         cancel: "Cancel",
+        delete: "Delete",
         provider: "Provider",
         homePage: "Home Page",
     },
@@ -36,6 +37,19 @@ export const english: IAppStrings = {
         title: "Application Settings",
         storageTitle: "Storage Settings",
         uiHelp: "Where your settings are stored",
+        save: "Save Settings",
+        securityToken: {
+            name: {
+                title: "Name",
+            },
+            key: {
+                title: "Key",
+            },
+        },
+        securityTokens: {
+            title: "Security Tokens",
+            description: "Security tokens are used to encrypt sensitive data within your project configuration",
+        },
         devTools: {
             description: "Open application developer tools to help diagnose issues",
             button: "Toggle Developer Tools",

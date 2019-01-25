@@ -1,7 +1,8 @@
 import shortid from "shortid";
 import {
-    AssetState, AssetType, IAppError, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
-    IConnection, IExportFormat, IProject, ITag, StorageType, IVideoSettings,
+    AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
+    IConnection, IExportFormat, IProject, ITag, StorageType, EditorMode,
+    IAppError, IProjectVideoSettings, AppErrorType,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -12,6 +13,7 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
+import Canvas from "../react/components/pages/editorPage/canvas";
 import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
 import {
@@ -24,12 +26,18 @@ export default class MockFactory {
      * Creates sample IAppError
      * @param {string} title to be display in  Alert
      * @param {string} message to be display in body of Alert
+     * @param {string} errorType to specify whether this is a render error or generic exception thrown
      * @returns {IAppError}
      */
-    public static createAppError(title: string = "", message: string = ""): IAppError {
+    public static createAppError(
+        title: string = "",
+        message: string = "",
+        errorType: string = AppErrorType.Generic,
+    ): IAppError {
         return {
             title,
             message,
+            errorType,
         };
     }
 
@@ -54,13 +62,39 @@ export default class MockFactory {
     }
 
     /**
+     * @name Create Video Test Asset
+     * @description Creates fake video IAsset
+     * @param name Name of asset
+     * @param assetState State of asset
+     */
+    public static createVideoTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
+        return {
+            id: `videoasset-${name}`,
+            format: "mp4",
+            name: `Video Asset ${name}`,
+            path: `C:\\Desktop\\videoasset${name}.mp4`,
+            state: assetState,
+            type: AssetType.Video,
+            size: {
+                width: 800,
+                height: 600,
+            },
+        };
+    }
+
+    /**
      * Creates array of fake IAsset
      * @param count Number of assets to create
      */
     public static createTestAssets(count: number = 10): IAsset[] {
         const assets: IAsset[] = [];
-        for (let i = 1; i <= count; i++) {
-            assets.push(MockFactory.createTestAsset(i.toString()));
+        for (let i = 1; i <= count / 2; i++) {
+            assets.push(MockFactory.createVideoTestAsset(i.toString()));
+        }
+        if (count > 1) {
+            for (let i = 1; i <= count / 2; i++) {
+                assets.push(MockFactory.createTestAsset(i.toString()));
+            }
         }
 
         return assets;
@@ -112,9 +146,9 @@ export default class MockFactory {
     }
 
     /**
-     * Creates fake IVideoSettings with default values
+     * Creates fake IProjectVideoSettings with default values
      */
-    public static createVideoSettings(): IVideoSettings {
+    public static createVideoSettings(): IProjectVideoSettings {
         return { frameExtractionRate: 15 };
     }
 
@@ -433,6 +467,33 @@ export default class MockFactory {
         return registration;
     }
 
+    public static createTestCanvas() {
+        const canvasProps = {
+            selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
+            onAssetMetadataChanged: jest.fn(),
+            editorMode: EditorMode.Rectangle,
+        };
+        return new Canvas({ canvasProps }, {});
+    }
+
+    public static createTestRegion(id = null) {
+        const testRegion: any = {
+            boundingBox: {
+                height: 100,
+                width: 100,
+                left: 0,
+                top: 0,
+            },
+            points: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }],
+            tags: [],
+            type: "RECTANGLE",
+        };
+        if (id) {
+            testRegion.id = id;
+        }
+        return testRegion;
+    }
+
     /**
      * Creates fake IAssetProviderRegistrationOptions
      * @param name Name of asset provider
@@ -490,12 +551,9 @@ export default class MockFactory {
      * Creates fake IAppSettings
      */
     public static appSettings(): IAppSettings {
-        const testConnection = MockFactory.createTestConnection("Test");
-
         return {
             devToolsEnabled: false,
-            connection: testConnection,
-            connectionId: testConnection.id,
+            securityTokens: [],
         };
     }
 

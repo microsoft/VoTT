@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState, IProject } from "../../../../models/applicationState";
+import { IApplicationState, IProject, AppErrorType } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
@@ -117,7 +117,7 @@ describe("Connection Picker Component", () => {
         const showErrorSpy = jest.spyOn(props.appErrorActions, "showError");
 
         const wrapper = createComponent(store, props);
-        const textBlob = new Blob([ "foo" ], { type: "text/plain" });
+        const textBlob = new Blob(["foo"], { type: "text/plain" });
 
         const fileUpload = wrapper.find("a.file-upload").first();
         const fileInput = wrapper.find(`input[type="file"]`);
@@ -132,6 +132,7 @@ describe("Connection Picker Component", () => {
         const expectedAppError = {
             title: "Project Loading has an error",
             message: "File is not valid json",
+            errorType: AppErrorType.Generic,
         };
 
         expect(showErrorSpy).toBeCalledWith(expectedAppError);
@@ -174,10 +175,7 @@ describe("Connection Picker Component", () => {
     function createStore(recentProjects: IProject[]): Store<IApplicationState, AnyAction> {
         const initialState: IApplicationState = {
             currentProject: null,
-            appSettings: {
-                connection: null,
-                devToolsEnabled: false,
-            },
+            appSettings: MockFactory.appSettings(),
             connections: [],
             recentProjects,
             appError: null,
