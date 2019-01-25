@@ -9,8 +9,8 @@ import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
-import { TFRecordsImageMessage, Features, Feature,
-         BytesList, Int64List, FeatureList, FeatureLists } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
+import { TFRecordsImageMessage, Features, Feature, FeatureList, FeatureLists,
+         BytesList, Int64List, FloatList } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
 import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer } from "./tensorFlowRecords/tensorFlowHelpers";
 
 /**
@@ -30,6 +30,8 @@ interface IImageInfo {
     ymin: number[];
     xmax: number[];
     ymax: number[];
+    difficult: number[];
+    truncated: number[];
     view: string[];
 }
 
@@ -97,6 +99,32 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     private addIntFeature(features: Features, key: string, value: number) {
         const intList = new Int64List();
         intList.addValue(value);
+
+        const feature = new Feature();
+        feature.setInt64List(intList);
+
+        const featuresMap = features.getFeatureMap();
+        featuresMap.set(key, feature);
+    }
+
+    private addFloatArrayFeature(features: Features, key: string, values: number[]) {
+        const floatList = new FloatList();
+        values.forEach((value) => {
+            floatList.addValue(value);
+        });
+
+        const feature = new Feature();
+        feature.setFloatList(floatList);
+
+        const featuresMap = features.getFeatureMap();
+        featuresMap.set(key, feature);
+    }
+
+    private addIntArrayFeature(features: Features, key: string, values: number[]) {
+        const intList = new Int64List();
+        values.forEach((value) => {
+            intList.addValue(value);
+        });
 
         const feature = new Feature();
         feature.setInt64List(intList);
@@ -193,13 +221,15 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 const imageInfo: IImageInfo = {
                     width: element.asset.size ? element.asset.size.width : 0,
                     height: element.asset.size ? element.asset.size.height : 0,
-                    text: [],
-                    label: [],
-                    xmin: [],
-                    ymin: [],
-                    xmax: [],
-                    ymax: [],
-                    view: [],
+                    text: ["a", "b"],
+                    label: [0, 1],
+                    xmin: [0, 0],
+                    ymin: [0, 0],
+                    xmax: [100, 100],
+                    ymax: [100, 100],
+                    difficult: [0, 0],
+                    truncated: [0, 0],
+                    view: ["Unspecified", "Unspecified"],
                 };
 
                 if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
@@ -221,14 +251,14 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                     .toString(CryptoJS.enc.Base64));
                 this.addBinaryArrayFeature(features, "image/encoded", imageBuffer);
                 this.addStringFeature(features, "image/format", element.asset.name.split(".").pop());
-                this.addIntArrayFeatureList(featureLists, "image/object/bbox/xmin", imageInfo.xmin);
-                this.addIntArrayFeatureList(featureLists, "image/object/bbox/ymin", imageInfo.ymin);
-                this.addIntArrayFeatureList(featureLists, "image/object/bbox/xmax", imageInfo.xmax);
-                this.addIntArrayFeatureList(featureLists, "image/object/bbox/ymax", imageInfo.ymax);
+                this.addFloatArrayFeature(features, "image/object/bbox/xmin", imageInfo.xmin);
+                this.addFloatArrayFeature(features, "image/object/bbox/ymin", imageInfo.ymin);
+                this.addFloatArrayFeature(features, "image/object/bbox/xmax", imageInfo.xmax);
+                this.addFloatArrayFeature(features, "image/object/bbox/ymax", imageInfo.ymax);
                 this.addStringArrayFeatureList(featureLists, "image/object/class/text", imageInfo.text);
                 this.addIntArrayFeatureList(featureLists, "image/object/class/label", imageInfo.label);
-                this.addIntFeature(features, "image/object/difficult", 0);
-                this.addIntFeature(features, "image/object/truncated", 0);
+                this.addIntArrayFeature(features, "image/object/difficult", imageInfo.difficult);
+                this.addIntArrayFeature(features, "image/object/truncated", imageInfo.truncated);
                 this.addStringArrayFeatureList(featureLists, "image/object/view", imageInfo.view);
 
                 // Save TFRecord
@@ -275,6 +305,8 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                                         imageInfo.ymin.push(region.points[0].y);
                                         imageInfo.xmax.push(region.points[1].x);
                                         imageInfo.ymax.push(region.points[1].y);
+                                        imageInfo.difficult.push(0);
+                                        imageInfo.truncated.push(0);
                                         imageInfo.view.push("Unspecified");
                                     });
                                 });
