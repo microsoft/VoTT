@@ -1,6 +1,6 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
-import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
+import { TagEditorModal  } from "vott-react";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
@@ -42,7 +42,6 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
 export interface IProjectFormState {
     classNames: string[];
     tags: ITag[];
-    selectedTag: ITag;
     formData: IProject;
     formSchema: any;
     uiSchema: any;
@@ -67,8 +66,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 ...this.props.project,
             },
             tags: (this.props.project) ? this.props.project.tags : [],
-            selectedTag: null,
         };
+        debugger;
         this.tagsInput = React.createRef<TagsInput>();
         this.tagEditorModal = React.createRef<TagEditorModal>();
 
@@ -76,9 +75,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         this.onFormCancel = this.onFormCancel.bind(this);
         this.onFormValidate = this.onFormValidate.bind(this);
         this.onTagClick = this.onTagClick.bind(this);
-        this.onTagsChange = this.onTagsChange.bind(this);
         this.onTagModalOk = this.onTagModalOk.bind(this);
-        this.onTagModalCancel = this.onTagModalCancel.bind(this);
     }
     /**
      * Updates state if project from properties has changed
@@ -115,7 +112,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 <TagEditorModal
                     ref={this.tagEditorModal}
                     onOk={this.onTagModalOk}
-                    onCancel={this.onTagModalCancel}
 
                     tagNameText={strings.tags.modal.name}
                     tagColorText={strings.tags.modal.color}
@@ -149,7 +145,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             tagsInput: CustomField(TagsInput, (props) => {
                 const tagsInputProps: ITagsInputProps = {
                     tags: this.state.tags,
-                    onChange: this.onTagsChange,
+                    onChange: props.onChange,
                     placeHolder: strings.tags.placeholder,
                     onCtrlTagClick: this.onTagClick,
                     ref: this.tagsInput,
@@ -159,27 +155,13 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         };
     }
 
-    private onTagsChange(tags: ITag[]) {
-        this.setState({tags});
-    }
-
     private onTagClick(tag: ITag) {
-        this.setState({
-            selectedTag: tag,
-        }, () => {
-            this.tagEditorModal.current.open(tag);
-        });
+        this.tagEditorModal.current.open(tag);
     }
 
     private onTagModalOk(oldTag: ITag, newTag: ITag) {
         this.tagsInput.current.updateTag(oldTag, newTag);
         this.tagEditorModal.current.close();
-    }
-
-    private onTagModalCancel() {
-        this.setState({
-            selectedTag: null,
-        });
     }
 
     private onFormValidate(project: IProject, errors: FormValidation) {
@@ -201,6 +183,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     }
 
     private onFormSubmit(args: ISubmitEvent<IProject>) {
+        debugger;
         const project: IProject = {
             ...args.formData,
             tags: this.state.tags,
