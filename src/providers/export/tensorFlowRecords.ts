@@ -166,7 +166,11 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
             await this.storageProvider.writeBinary(fileNamePath, outBuffer);
 
         } catch (error) {
-            console.log(error);
+            // Ignore the error at the moment
+            // TODO: Refactor ExportProvider abstract class export() method
+            //       to return Promise<object> with an object containing
+            //       the number of files succesfully exported out of total
+            console.log(`Error Writing TFRecords ${fileNamePath} - ${error}`);
         }
     }
 
@@ -175,11 +179,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
             return this.exportSingleRecord(exportFolderName, element);
         });
 
-        try {
-            await Promise.all(allImageExports);
-        } catch (err) {
-            console.log(err);
-        }
+        await Promise.all(allImageExports);
     }
 
     private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata): Promise<void> {
