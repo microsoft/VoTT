@@ -7,7 +7,7 @@ import Guard from "../../../../common/guard";
  * @param Widget UI Widget for form
  * @param mapProps Function mapping props to an object
  */
-export default function CustomField(Widget: any, mapProps?: (props: FieldProps) => any) {
+export default function CustomField<Props = {}>(Widget: any, mapProps?: (props: FieldProps) => Props) {
     Guard.null(Widget);
 
     return function render(props: FieldProps) {

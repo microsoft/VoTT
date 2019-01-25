@@ -23,27 +23,6 @@ describe("Current Project Reducer", () => {
         expect(result).toEqual(testProject);
     });
 
-    it("Save project updates current project when project ids matches", () => {
-        const currentProject = MockFactory.createTestProject("TestProject");
-        const updatedProject = { ...currentProject, name: currentProject.name += "Updated" };
-
-        const state: IProject = currentProject;
-        const action = saveProjectAction(updatedProject);
-        const result = reducer(state, action);
-        expect(result).not.toBe(state);
-        expect(result).toEqual(updatedProject);
-    });
-
-    it("Save project is noop when project ids do not match", () => {
-        const currentProject = MockFactory.createTestProject("1");
-        const updatedProject = MockFactory.createTestProject("2");
-
-        const state: IProject = currentProject;
-        const action = saveProjectAction(updatedProject);
-        const result = reducer(state, action);
-        expect(result).toBe(state);
-    });
-
     it("Close project clears out current project", () => {
         const currentProject = MockFactory.createTestProject("1");
         const state: IProject = currentProject;

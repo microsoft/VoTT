@@ -1,11 +1,16 @@
 import { Dispatch, Action } from "redux";
 import ProjectService from "../../services/projectService";
-import { IProject, IAsset, IAssetMetadata } from "../../models/applicationState";
+import {
+    IProject, IAsset, IAssetMetadata, IApplicationState,
+    ISecurityToken, IAppSettings,
+} from "../../models/applicationState";
 import { ActionTypes } from "./actionTypes";
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
+import { generateKey } from "../../common/crypto";
+import { saveAppSettingsAction } from "./applicationActions";
 
 /**
  * Actions to be performed in relation to projects
@@ -25,10 +30,23 @@ export default interface IProjectActions {
  * Dispatches Load Project action and resolves with IProject
  * @param project - Project to load
  */
-export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<IProject> {
-    return (dispatch: Dispatch) => {
-        dispatch(loadProjectAction(project));
-        return Promise.resolve(project);
+export function loadProject(project: IProject):
+    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        const appState = getState();
+        const projectService = new ProjectService();
+
+        // Lookup security token used to decrypt project settings
+        const securityToken = appState.appSettings.securityTokens
+            .find((st) => st.name === project.securityToken);
+
+        if (!securityToken) {
+            throw new Error(`Cannot locate security token '${project.securityToken}' from project`);
+        }
+        const loadedProject = await projectService.load(project, securityToken);
+
+        dispatch(loadProjectAction(loadedProject));
+        return loadedProject;
     };
 }
 
@@ -37,17 +55,30 @@ export function loadProject(project: IProject): (dispatch: Dispatch) => Promise<
  * @param project - Project to save
  */
 export function saveProject(project: IProject):
-  (dispatch: Dispatch, getState: any) => Promise<IProject> {
-    return async (dispatch: Dispatch, getState: any) => {
+    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        const appState = getState();
         const projectService = new ProjectService();
-        const projectList = getState().recentProjects;
-        if (!projectService.isDuplicate(project, projectList)) {
-            project = await projectService.save(project);
-            dispatch(saveProjectAction(project));
-        } else {
-            throw new Error("Cannot create duplicate projects");
+
+        if (projectService.isDuplicate(project, appState.recentProjects)) {
+            throw new Error(`Project with name '${project.name}
+                already exists with the same target connection '${project.targetConnection.name}'`);
         }
-        return project;
+
+        const securityToken = appState.appSettings.securityTokens
+            .find((st) => st.name === project.securityToken);
+
+        if (!securityToken) {
+            throw new Error(`Cannot locate security token '${project.securityToken}' from project`);
+        }
+
+        const savedProject = await projectService.save(project, securityToken);
+        dispatch(saveProjectAction(savedProject));
+
+        // Reload project after save actions
+        await loadProject(savedProject)(dispatch, getState);
+
+        return savedProject;
     };
 }
 

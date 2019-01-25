@@ -19,7 +19,7 @@ describe("Export Page", () => {
     const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
-    function createComponent(store, props: IExportPageProps): ReactWrapper {
+    function createComponent(store, props: IExportPageProps): ReactWrapper<IExportPageProps> {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -40,6 +40,7 @@ describe("Export Page", () => {
 
     beforeEach(() => {
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve(project));
     });
 
     it("Sets project state from redux store", () => {
@@ -55,18 +56,18 @@ describe("Export Page", () => {
         expect(exportPage.prop("project")).toEqual(testProject);
     });
 
-    it("Sets project state from route params", (done) => {
+    it("Sets project state from route params", async (done) => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, false);
         const props = createProps(testProject.id);
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
         const wrapper = createComponent(store, props);
-        const exportPage = wrapper.find(ExportPage).childAt(0);
 
         setImmediate(() => {
+            const exportPage = wrapper.find(ExportPage).childAt(0).instance() as ExportPage;
+            expect(exportPage.props.project).toEqual(testProject);
             expect(loadProjectSpy).toHaveBeenCalledWith(testProject);
-            expect(exportPage.prop("project")).toEqual(testProject);
             done();
         });
     });

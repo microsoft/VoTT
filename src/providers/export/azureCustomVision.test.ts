@@ -4,7 +4,10 @@ import { AzureCustomVisionProvider, IAzureCustomVisionExportOptions, NewOrExisti
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
-import { IProject, AssetState, IAsset, IAssetMetadata, RegionType, IRegion } from "../../models/applicationState";
+import {
+    IProject, AssetState, IAsset, IAssetMetadata,
+    RegionType, IRegion, IExportProviderOptions,
+} from "../../models/applicationState";
 import { ExportAssetState } from "./exportProvider";
 jest.mock("./azureCustomVision/azureCustomVisionService");
 import {
@@ -18,6 +21,20 @@ import HtmlFileReader from "../../common/htmlFileReader";
 
 describe("Azure Custom Vision Export Provider", () => {
     let testProject: IProject = null;
+    const defaultOptions: IAzureCustomVisionExportOptions = {
+        apiKey: expect.any(String),
+        assetState: ExportAssetState.All,
+        newOrExisting: NewOrExisting.New,
+        projectId: expect.any(String),
+    };
+
+    function createProvider(project: IProject): AzureCustomVisionProvider {
+
+        return new AzureCustomVisionProvider(
+            project,
+            project.exportFormat.providerOptions as IAzureCustomVisionExportOptions,
+        );
+    }
 
     beforeEach(() => {
         jest.resetAllMocks();
@@ -32,6 +49,7 @@ describe("Azure Custom Vision Export Provider", () => {
             exportFormat: {
                 providerType: "azureCustomVision",
                 providerOptions: {
+                    assetState: ExportAssetState.All,
                     projectdId: "azure-custom-vision-project-1",
                     apiKey: "ABC123",
                 },
@@ -60,30 +78,23 @@ describe("Azure Custom Vision Export Provider", () => {
             });
         });
 
-        const customVisionOptions: IAzureCustomVisionExportOptions = {
-            apiKey: expect.any(String),
-            assetState: ExportAssetState.All,
-            newOrExisting: NewOrExisting.New,
-            projectId: expect.any(String),
-        };
-
-        testProject.exportFormat.providerOptions = customVisionOptions;
-        const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+        testProject.exportFormat.providerOptions = defaultOptions;
+        const provider = createProvider(testProject);
         const newOptions = await provider.save(testProject.exportFormat);
 
         const customVisionProject: IAzureCustomVisionProject = {
-            name: customVisionOptions.name,
-            description: customVisionOptions.description,
-            classificationType: customVisionOptions.classificationType,
-            domainId: customVisionOptions.domainId,
-            projectType: customVisionOptions.projectType,
+            name: defaultOptions.name,
+            description: defaultOptions.description,
+            classificationType: defaultOptions.classificationType,
+            domainId: defaultOptions.domainId,
+            projectType: defaultOptions.projectType,
         };
 
         expect(AzureCustomVisionService.prototype.create).toBeCalledWith(customVisionProject);
 
         expect(newOptions).toEqual(expect.objectContaining({
-            assetState: customVisionOptions.assetState,
-            apiKey: customVisionOptions.apiKey,
+            assetState: defaultOptions.assetState,
+            apiKey: defaultOptions.apiKey,
             projectId: expect.any(String),
             newOrExisting: NewOrExisting.Existing,
         }));
@@ -93,28 +104,20 @@ describe("Azure Custom Vision Export Provider", () => {
         const customVisionMock = AzureCustomVisionService as jest.Mocked<typeof AzureCustomVisionService>;
         customVisionMock.prototype.create = jest.fn((project) => Promise.reject("Error creating project"));
 
-        const customVisionOptions: IAzureCustomVisionExportOptions = {
-            apiKey: expect.any(String),
-            assetState: ExportAssetState.All,
-            newOrExisting: NewOrExisting.New,
-            projectId: expect.any(String),
-        };
+        testProject.exportFormat.providerOptions = defaultOptions;
+        const provider = createProvider(testProject);
 
-        testProject.exportFormat.providerOptions = customVisionOptions;
-        const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
         await expect(provider.save(testProject.exportFormat)).rejects.not.toBeNull();
     });
 
     it("Calling save with Existing project returns existing provider settings", async () => {
         const customVisionOptions: IAzureCustomVisionExportOptions = {
-            apiKey: expect.any(String),
-            assetState: ExportAssetState.All,
+            ...defaultOptions,
             newOrExisting: NewOrExisting.Existing,
-            projectId: expect.any(String),
         };
 
         testProject.exportFormat.providerOptions = customVisionOptions;
-        const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+        const provider = createProvider(testProject);
         const newOptions = await provider.save(testProject.exportFormat);
 
         expect(newOptions).toEqual(customVisionOptions);
@@ -176,11 +179,10 @@ describe("Azure Custom Vision Export Provider", () => {
         });
 
         it("Uploads binaries, regions & tags for all assets", async () => {
-            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
             const allAssets = _.values(testProject.assets);
             const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
-            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
-
+            const provider = createProvider(testProject);
             const results = await provider.export();
 
             expect(results).not.toBeNull();
@@ -191,15 +193,15 @@ describe("Azure Custom Vision Export Provider", () => {
         });
 
         it("Uploads binaries, regions & tags for visited assets", async () => {
-            testProject.exportFormat.providerOptions.assetState = ExportAssetState.Visited;
+            (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.Visited;
             const visitedAssets = _
                 .values(testProject.assets)
                 .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
             const taggedAssets = _
                 .values(testProject.assets)
                 .filter((asset) => asset.state === AssetState.Tagged);
-            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
 
+            const provider = createProvider(testProject);
             const results = await provider.export();
 
             expect(results).not.toBeNull();
@@ -210,10 +212,9 @@ describe("Azure Custom Vision Export Provider", () => {
         });
 
         it("Uploads binaries, regions & tags for tagged assets", async () => {
-            testProject.exportFormat.providerOptions.assetState = ExportAssetState.Tagged;
+            (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.Tagged;
             const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
-            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
-
+            const provider = createProvider(testProject);
             const results = await provider.export();
 
             expect(results).not.toBeNull();
@@ -234,19 +235,19 @@ describe("Azure Custom Vision Export Provider", () => {
                 return Promise.resolve(existingTags);
             });
 
-            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
-
+            const provider = createProvider(testProject);
             await provider.export();
+
             expect(AzureCustomVisionService.prototype.createTag)
                 .toBeCalledTimes(testProject.tags.length - existingTags.length);
         });
 
         it("Returns export results", async () => {
-            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
             const allAssets = _.values(testProject.assets);
-            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
-
+            const provider = createProvider(testProject);
             const results = await provider.export();
+
             expect(results.count).toEqual(allAssets.length);
             expect(results.completed.length).toEqual(allAssets.length);
             expect(results.errors.length).toEqual(0);
@@ -263,11 +264,12 @@ describe("Azure Custom Vision Export Provider", () => {
                     }
                 });
 
-            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
-            const allAssets = _.values(testProject.assets);
-            const provider = new AzureCustomVisionProvider(testProject, testProject.exportFormat.providerOptions);
+            (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
 
+            const allAssets = _.values(testProject.assets);
+            const provider = createProvider(testProject);
             const results = await provider.export();
+
             expect(results.count).toEqual(allAssets.length);
             expect(results.completed.length).toEqual(allAssets.length - 1);
             expect(results.errors.length).toEqual(1);

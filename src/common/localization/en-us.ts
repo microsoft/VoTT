@@ -61,6 +61,10 @@ export const english: IAppStrings = {
     },
     projectSettings: {
         title: "Project Settings",
+        securityToken: {
+            title: "Security Token",
+            description: "Used to encrypt sensitive data within project files",
+        },
         save: "Save Project",
         sourceConnection: {
             title: "Source Connection",

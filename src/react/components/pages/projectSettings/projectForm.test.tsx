@@ -9,6 +9,7 @@ import { IProjectVideoSettings } from "../../../../models/applicationState";
 
 describe("Project Form Component", () => {
     const project = MockFactory.createTestProject("TestProject");
+    const appSettings = MockFactory.appSettings();
     const connections = MockFactory.createTestConnections();
     let wrapper: ReactWrapper<IProjectFormProps, IProjectFormState> = null;
     let onSubmitHandler: jest.Mock = null;
@@ -34,6 +35,7 @@ describe("Project Form Component", () => {
             wrapper = createComponent({
                 project,
                 connections,
+                appSettings,
                 onSubmit: onSubmitHandler,
                 onCancel: onCancelHandler,
             });
@@ -172,6 +174,7 @@ describe("Project Form Component", () => {
 
             const newWrapper = createComponent({
                 project,
+                appSettings,
                 connections: newConnections,
                 onSubmit: onSubmitHandler,
                 onCancel: onCancelHandler,
@@ -193,6 +196,7 @@ describe("Project Form Component", () => {
             onCancelHandler = jest.fn();
             wrapper = createComponent({
                 project: null,
+                appSettings,
                 connections,
                 onSubmit: onSubmitHandler,
                 onCancel: onCancelHandler,

@@ -5,7 +5,7 @@ import Guard from "../../common/guard";
 import { AssetService } from "../../services/assetService";
 import {
     IProject, IExportFormat, IAsset, AssetState, IAssetMetadata,
-    IBoundingBox, ISize,
+    IBoundingBox, ISize, IProviderOptions,
 } from "../../models/applicationState";
 import {
     AzureCustomVisionService, IAzureCustomVisionServiceOptions, IAzureCustomVisionProject,
@@ -16,7 +16,7 @@ import HtmlFileReader from "../../common/htmlFileReader";
 /**
  * Options for Azure Custom Vision Service
  */
-export interface IAzureCustomVisionExportOptions {
+export interface IAzureCustomVisionExportOptions extends IProviderOptions {
     assetState: ExportAssetState;
     newOrExisting: NewOrExisting;
     apiKey: string;

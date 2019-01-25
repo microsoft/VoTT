@@ -1,4 +1,7 @@
 {
+    "securityToken": {
+        "ui:field": "securityToken"
+    },
     "description": {
         "ui:widget": "textarea"
     },

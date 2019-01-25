@@ -1,4 +1,4 @@
-import { generateKey, encrypt, decrypt } from "./crypto";
+import { generateKey, encrypt, decrypt, encryptObject, decryptObject } from "./crypto";
 
 describe("Crypto", () => {
     it("generates a key", () => {
@@ -64,5 +64,34 @@ describe("Crypto", () => {
         const secret = generateKey();
 
         expect(() => decrypt("ABC123XYZSDAFASDFS23453", secret)).toThrowError();
+    });
+
+    it("encrypts and decrypts a javascript object", () => {
+        const secret = generateKey();
+        const original = {
+            firstName: "John",
+            lastName: "Doe",
+            active: true,
+            age: 30,
+        };
+
+        const encrypted = encryptObject(original, secret);
+        const decrypted = decryptObject(encrypted, secret);
+
+        expect(original).toEqual(decrypted);
+    });
+
+    it("decrypt object fails with invalid key", () => {
+        const key1 = generateKey();
+        const key2 = generateKey();
+        const original = {
+            firstName: "John",
+            lastName: "Doe",
+            active: true,
+            age: 30,
+        };
+
+        const encrypted = encryptObject(original, key1);
+        expect(() => decryptObject(encrypted, key2)).toThrowError();
     });
 });

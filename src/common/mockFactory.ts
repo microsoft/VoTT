@@ -1,8 +1,8 @@
 import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
-    IConnection, IExportFormat, IProject, ITag, StorageType, EditorMode,
-    IAppError, IProjectVideoSettings, AppErrorType,
+    IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
+    IAppError, IProjectVideoSettings, AppErrorType, EditorMode,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -19,6 +19,9 @@ import { IEditorPageProps } from "../react/components/pages/editorPage/editorPag
 import {
     IAzureCustomVisionTag, IAzureCustomVisionRegion,
 } from "../providers/export/azureCustomVision/azureCustomVisionService";
+import IApplicationActions, * as applicationActions from "../redux/actions/applicationActions";
+import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSystemProxy";
+import { generateKey } from "./crypto";
 
 export default class MockFactory {
 
@@ -135,6 +138,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
+            securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),
             sourceConnection: connection,
@@ -161,6 +165,12 @@ export default class MockFactory {
             containerName: "container0",
             sas: "sas",
             createContainer: undefined,
+        };
+    }
+
+    public static createLocalFileSystemOptions(): ILocalFileSystemProxyOptions {
+        return {
+            folderPath: "C:\\projects\\vott\\project",
         };
     }
 
@@ -193,14 +203,14 @@ export default class MockFactory {
      * Creates fake data for testing Azure Cloud Storage
      */
     public static createAzureData() {
-        const options = this.createAzureOptions();
+        const options = MockFactory.createAzureOptions();
         return {
             blobName: "file1.jpg",
             blobText: "This is the content",
             fileType: "image/jpg",
             containerName: options.containerName,
-            containers: this.createAzureContainers(),
-            blobs: this.createAzureBlobs(),
+            containers: MockFactory.createAzureContainers(),
+            blobs: MockFactory.createAzureBlobs(),
             options,
         };
     }
@@ -275,7 +285,7 @@ export default class MockFactory {
      * @param name Name of connection
      */
     public static createTestCloudConnection(name: string = "test"): IConnection {
-        return this.createTestConnection(name, "azureBlobStorage");
+        return MockFactory.createTestConnection(name, "azureBlobStorage");
     }
 
     /**
@@ -302,7 +312,7 @@ export default class MockFactory {
             name: `Connection ${name}`,
             description: `Description for Connection ${name}`,
             providerType,
-            providerOptions: this.getProviderOptions(providerType),
+            providerOptions: MockFactory.getProviderOptions(providerType),
         };
     }
 
@@ -323,10 +333,12 @@ export default class MockFactory {
      */
     public static getProviderOptions(providerType) {
         switch (providerType) {
+            case "localFileSystemProxy":
+                return MockFactory.createLocalFileSystemOptions();
             case "azureBlobStorage":
-                return this.createAzureOptions();
+                return MockFactory.createAzureOptions();
             case "bingImageSearch":
-                return this.createBingOptions();
+                return MockFactory.createBingOptions();
             default:
                 return {};
         }
@@ -355,7 +367,7 @@ export default class MockFactory {
             deleteFile: jest.fn(),
             writeText: jest.fn(),
             writeBinary: jest.fn(),
-            listFiles: jest.fn(() => Promise.resolve(this.createFileList())),
+            listFiles: jest.fn(() => Promise.resolve(MockFactory.createFileList())),
             listContainers: jest.fn(),
             createContainer: jest.fn(),
             deleteContainer: jest.fn(),
@@ -369,8 +381,8 @@ export default class MockFactory {
      */
     public static createStorageProviderFromConnection(connection: IConnection): IStorageProvider {
         return {
-            ...this.createStorageProvider(),
-            storageType: this.getStorageType(connection.providerType),
+            ...MockFactory.createStorageProvider(),
+            storageType: MockFactory.getStorageType(connection.providerType),
         };
     }
 
@@ -514,7 +526,8 @@ export default class MockFactory {
      */
     public static projectService(): IProjectService {
         return {
-            save: jest.fn((project: IProject) => Promise.resolve()),
+            load: jest.fn((project: IProject) => Promise.resolve(project)),
+            save: jest.fn((project: IProject) => Promise.resolve(project)),
             delete: jest.fn((project: IProject) => Promise.resolve()),
             isDuplicate: jest.fn((project: IProject, projectList: IProject[]) => true),
         };
@@ -551,10 +564,39 @@ export default class MockFactory {
      * Creates fake IAppSettings
      */
     public static appSettings(): IAppSettings {
+        const securityTokens = MockFactory.createSecurityTokens();
+
         return {
             devToolsEnabled: false,
-            securityTokens: [],
+            securityTokens: [
+                ...securityTokens,
+                MockFactory.createSecurityToken("TestProject"),
+            ],
         };
+    }
+
+    /**
+     * Creates a security token used for testing
+     * @param nameSuffix The name suffix to apply to the security token name
+     */
+    public static createSecurityToken(nameSuffix: string): ISecurityToken {
+        return {
+            name: `Security-Token-${nameSuffix}`,
+            key: generateKey(),
+        };
+    }
+
+    /**
+     * Creates test security tokens
+     * @param count The number of tokens to generate (default: 10)
+     */
+    public static createSecurityTokens(count: number = 10): ISecurityToken[] {
+        const securityTokens: ISecurityToken[] = [];
+        for (let i = 1; i <= 10; i++) {
+            securityTokens.push(MockFactory.createSecurityToken(i.toString()));
+        }
+
+        return securityTokens;
     }
 
     /**
@@ -563,8 +605,9 @@ export default class MockFactory {
      */
     public static projectSettingsProps(projectId?: string): IProjectSettingsPageProps {
         return {
-            ...this.pageProps(projectId, "settings"),
-            connections: this.createTestConnections(),
+            ...MockFactory.pageProps(projectId, "settings"),
+            connections: MockFactory.createTestConnections(),
+            appSettings: MockFactory.appSettings(),
         };
     }
 
@@ -573,7 +616,10 @@ export default class MockFactory {
      * @param projectId Current project ID
      */
     public static editorPageProps(projectId?: string): IEditorPageProps {
-        return this.pageProps(projectId, "edit");
+        return {
+            actions: (projectActions as any) as IProjectActions,
+            ...MockFactory.pageProps(projectId, "edit"),
+        };
     }
 
     /**
@@ -648,10 +694,11 @@ export default class MockFactory {
         return {
             project: null,
             recentProjects: MockFactory.createTestProjects(),
-            actions: (projectActions as any) as IProjectActions,
-            history: this.history(),
-            location: this.location(),
-            match: this.match(projectId, method),
+            projectActions: (projectActions as any) as IProjectActions,
+            applicationActions: (applicationActions as any) as IApplicationActions,
+            history: MockFactory.history(),
+            location: MockFactory.location(),
+            match: MockFactory.match(projectId, method),
         };
     }
 

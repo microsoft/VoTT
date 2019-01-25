@@ -24,13 +24,6 @@ describe("MessageBox component", () => {
             </MessageBox>);
     }
 
-    afterEach(() => {
-        const node = document.body;
-        while (node.firstChild) {
-            node.removeChild(node.firstChild);
-        }
-    });
-
     it("Is defined", () => {
         expect(MessageBox).toBeDefined();
     });

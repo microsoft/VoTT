@@ -5,6 +5,7 @@ import LocalFolderPicker from "../../common/localFolderPicker/localFolderPicker"
 import { strings, addLocValues } from "../../../../common/strings";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ConnectionProviderPicker from "../../common/connectionProviderPicker/connectionProviderPicker";
+import { ProtectedInput } from "../../common/protectedInput/protectedInput";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./connectionForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -45,6 +46,7 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
     private widgets = {
         localFolderPicker: (LocalFolderPicker as any) as Widget,
         connectionProviderPicker: (ConnectionProviderPicker as any) as Widget,
+        protectedInput: (ProtectedInput as any) as Widget,
     };
 
     constructor(props, context) {

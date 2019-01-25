@@ -1,3 +1,5 @@
+import { ExportAssetState } from "../providers/export/exportProvider";
+
 /**
  * @name - Application State
  * @description - Defines the root level application state
@@ -39,6 +41,14 @@ export enum AppErrorType {
 }
 
 /**
+ * @name - Provider Options
+ * @description - Property map of key values used within a export / asset / storage provider
+ */
+export interface IProviderOptions {
+    [key: string]: any;
+}
+
+/**
  * @name - Application settings
  * @description - Defines the root level configuration options for the application
  * @member devToolsEnabled - Whether dev tools are current open and enabled
@@ -54,6 +64,7 @@ export interface IAppSettings {
  * @description - Defines the structure of a VoTT project
  * @member id - Unique identifier
  * @member name - User defined name
+ * @member securityToken - The Base64 encoded token used to encrypt sensitive project data
  * @member description - User defined description
  * @member tags - User defined list of tags
  * @member sourceConnection - Full source connection details
@@ -65,6 +76,7 @@ export interface IAppSettings {
 export interface IProject {
     id: string;
     name: string;
+    securityToken: string;
     description?: string;
     tags: ITag[];
     sourceConnection: IConnection;
@@ -111,7 +123,11 @@ export interface IConnection {
     name: string;
     description?: string;
     providerType: string;
-    providerOptions: object;
+    providerOptions: IProviderOptions | ISecureString;
+}
+
+export interface IExportProviderOptions extends IProviderOptions {
+    assetState: ExportAssetState;
 }
 
 /**
@@ -124,7 +140,7 @@ export interface IConnection {
  */
 export interface IExportFormat {
     providerType: string;
-    providerOptions: any;
+    providerOptions: IExportProviderOptions | ISecureString;
 }
 
 /**

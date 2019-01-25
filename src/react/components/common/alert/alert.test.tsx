@@ -15,13 +15,6 @@ describe("Alert component", () => {
         return mount(<Alert {...props}></Alert>);
     }
 
-    afterEach(() => {
-        const node = document.body;
-        while (node.firstChild) {
-            node.removeChild(node.firstChild);
-        }
-    });
-
     it("Is defined", () => {
         expect(Alert).toBeDefined();
     });

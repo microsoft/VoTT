@@ -1,23 +1,10 @@
 import { ExportProviderFactory } from "./exportProviderFactory";
 import { ExportProvider } from "./exportProvider";
 import { IProject } from "../../models/applicationState";
+import MockFactory from "../../common/mockFactory";
 
 describe("Export Provider Factory", () => {
-    const testProject: IProject = {
-        id: "1",
-        name: "Test Project",
-        autoSave: true,
-        exportFormat: {
-            providerType: "TestExportProvider",
-            providerOptions: {},
-        },
-        videoSettings: {
-            frameExtractionRate: 15,
-        },
-        sourceConnection: null,
-        tags: [],
-        targetConnection: null,
-    };
+    const testProject: IProject = MockFactory.createTestProject("TestProject");
 
     it("registers new export providers", () => {
         expect(Object.keys(ExportProviderFactory.providers).length).toEqual(0);

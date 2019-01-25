@@ -21,12 +21,6 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             return null;
         case ActionTypes.LOAD_PROJECT_SUCCESS:
             return { ...action.payload };
-        case ActionTypes.SAVE_PROJECT_SUCCESS:
-            if (!state || state.id === action.payload.id) {
-                return { ...action.payload };
-            } else {
-                return state;
-            }
         case ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS:
             if (state) {
                 const currentAssets = { ...state.assets } || {};

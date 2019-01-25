@@ -11,17 +11,29 @@ jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { IExportProvider } from "../../providers/export/exportProvider";
+import { IApplicationState } from "../../models/applicationState";
+import initialState from "../store/initialState";
 
 describe("Project Redux Actions", () => {
-    let store: MockStoreEnhanced;
+    let store: MockStoreEnhanced<IApplicationState>;
+    let projectServiceMock: jest.Mocked<typeof ProjectService>;
+    const appSettings = MockFactory.appSettings();
 
     beforeEach(() => {
         const middleware = [thunk];
-        store = createMockStore(middleware)();
+        const mockState: IApplicationState = {
+            ...initialState,
+            appSettings,
+        };
+        store = createMockStore<IApplicationState>(middleware)(mockState);
+        projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve(project));
     });
+
     it("Load Project action resolves a promise and dispatches redux action", async () => {
-        const project = MockFactory.createTestProject("Project1");
-        const result = await projectActions.loadProject(project)(store.dispatch);
+        const project = MockFactory.createTestProject("TestProject");
+        const securityToken = appSettings.securityTokens.find((st) => st.name === project.securityToken);
+        const result = await projectActions.loadProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
@@ -30,30 +42,35 @@ describe("Project Redux Actions", () => {
             payload: project,
         });
         expect(result).toEqual(project);
+        expect(projectServiceMock.prototype.load).toBeCalledWith(project, securityToken);
     });
 
     it("Save Project action calls project service and dispatches redux action", async () => {
-        const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 
-        const project = MockFactory.createTestProject("Project1");
+        const project = MockFactory.createTestProject("TestProject");
+        const securityToken = appSettings.securityTokens.find((st) => st.name === project.securityToken);
         const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
-        expect(actions.length).toEqual(1);
+        expect(actions.length).toEqual(2);
         expect(actions[0]).toEqual({
             type: ActionTypes.SAVE_PROJECT_SUCCESS,
             payload: project,
         });
+        expect(actions[1]).toEqual({
+            type: ActionTypes.LOAD_PROJECT_SUCCESS,
+            payload: project,
+        });
         expect(result).toEqual(project);
-        expect(projectServiceMock.prototype.save).toBeCalledWith(project);
+        expect(projectServiceMock.prototype.save).toBeCalledWith(project, securityToken);
+        expect(projectServiceMock.prototype.load).toBeCalledWith(project, securityToken);
     });
 
     it("Delete Project action calls project service and dispatches redux action", async () => {
-        const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
 
-        const project = MockFactory.createTestProject("Project1");
+        const project = MockFactory.createTestProject("TestProject");
         await projectActions.deleteProject(project)(store.dispatch);
         const actions = store.getActions();
 
@@ -80,7 +97,7 @@ describe("Project Redux Actions", () => {
         const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
         mockAssetService.prototype.getAssets = jest.fn(() => Promise.resolve(testAssets));
 
-        const project = MockFactory.createTestProject("Project1");
+        const project = MockFactory.createTestProject("TestProject");
         const results = await projectActions.loadAssets(project)(store.dispatch);
         const actions = store.getActions();
 
@@ -100,7 +117,7 @@ describe("Project Redux Actions", () => {
         const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
         mockAssetService.prototype.getAssetMetadata = jest.fn(() => assetMetadata);
 
-        const project = MockFactory.createTestProject("Project1");
+        const project = MockFactory.createTestProject("TestProject");
         const result = await projectActions.loadAssetMetadata(project, asset)(store.dispatch);
         const actions = store.getActions();
 
@@ -120,7 +137,7 @@ describe("Project Redux Actions", () => {
         const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
         mockAssetService.prototype.save = jest.fn(() => assetMetadata);
 
-        const project = MockFactory.createTestProject("Project1");
+        const project = MockFactory.createTestProject("TestProject");
         const result = await projectActions.saveAssetMetadata(project, assetMetadata)(store.dispatch);
         const actions = store.getActions();
 
@@ -141,7 +158,7 @@ describe("Project Redux Actions", () => {
         };
         ExportProviderFactory.create = jest.fn(() => mockExportProvider);
 
-        const project = MockFactory.createTestProject("Project1");
+        const project = MockFactory.createTestProject("TestProject");
         await projectActions.exportProject(project)(store.dispatch);
         const actions = store.getActions();
 

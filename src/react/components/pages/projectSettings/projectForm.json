@@ -5,6 +5,11 @@
             "title": "${strings.common.displayName}",
             "type": "string"
         },
+        "securityToken": {
+            "title": "${strings.projectSettings.securityToken.title}",
+            "description": "${strings.projectSettings.securityToken.description}",
+            "type": "string"
+        },
         "sourceConnection": {
             "title": "${strings.projectSettings.sourceConnection.title}",
             "description": "${strings.projectSettings.sourceConnection.description}",

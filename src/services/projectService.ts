@@ -1,9 +1,10 @@
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject } from "../models/applicationState";
+import { IProject, ISecurityToken } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
+import { decryptProject, encryptProject } from "../common/utils";
 
 /**
  * Functions required for a project service
@@ -11,7 +12,8 @@ import { ExportProviderFactory } from "../providers/export/exportProviderFactory
  * @member delete - Delete a project
  */
 export interface IProjectService {
-    save(project: IProject): Promise<IProject>;
+    load(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
+    save(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
 }
@@ -21,12 +23,24 @@ export interface IProjectService {
  * @description - Functions for dealing with projects
  */
 export default class ProjectService implements IProjectService {
+    /**
+     * Loads a project
+     * @param project The project JSON to load
+     * @param securityToken The security token used to decrypt sensitive project settings
+     */
+    public load(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
+        Guard.null(project);
+
+        const loadedProject = decryptProject(project, securityToken);
+
+        return Promise.resolve(loadedProject);
+    }
 
     /**
      * Save a project
      * @param project - Project to save
      */
-    public save(project: IProject) {
+    public save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
         return new Promise<IProject>(async (resolve, reject) => {
@@ -35,17 +49,15 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
-                const storageProvider = StorageProviderFactory.create(
-                    project.targetConnection.providerType,
-                    project.targetConnection.providerOptions,
-                );
-
+                const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
                 await this.saveExportSettings(project);
+                project = encryptProject(project, securityToken);
                 await this.saveProjectFile(project);
 
                 await storageProvider.writeText(
                     `${project.name}${constants.projectFileExtension}`,
-                    JSON.stringify(project, null, 4));
+                    JSON.stringify(project, null, 4),
+                );
 
                 resolve(project);
             } catch (err) {
@@ -58,7 +70,7 @@ export default class ProjectService implements IProjectService {
      * Delete a project
      * @param project - Project to delete
      */
-    public delete(project: IProject) {
+    public delete(project: IProject): Promise<void> {
         Guard.null(project);
 
         return new Promise<void>(async (resolve, reject) => {
@@ -82,7 +94,7 @@ export default class ProjectService implements IProjectService {
             p.id !== project.id &&
             p.name === project.name &&
             JSON.stringify(p.targetConnection.providerOptions) ===
-                JSON.stringify(project.targetConnection.providerOptions),
+            JSON.stringify(project.targetConnection.providerOptions),
         );
         return (duplicateProjects !== undefined);
     }

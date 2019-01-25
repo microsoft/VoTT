@@ -1,15 +1,17 @@
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, IExportFormat } from "../models/applicationState";
-import { error } from "util";
+import { IProject, IExportFormat, ISecurityToken } from "../models/applicationState";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
+import { generateKey } from "../common/crypto";
+import { encryptProject } from "../common/utils";
 
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
     let testProject: IProject = null;
     let projectList: IProject[] = null;
+    let securityToken: ISecurityToken = null;
 
     const storageProviderMock = {
         writeText: jest.fn((project) => Promise.resolve(project)),
@@ -25,14 +27,36 @@ describe("Project Service", () => {
     ExportProviderFactory.create = jest.fn(() => exportProviderMock);
 
     beforeEach(() => {
+        securityToken = {
+            name: "TestToken",
+            key: generateKey(),
+        };
         testProject = MockFactory.createTestProject("TestProject");
         projectSerivce = new ProjectService();
     });
 
-    it("Saves calls project storage provider to write project", async () => {
-        const result = await projectSerivce.save(testProject);
+    it("Load decrypts any project settings using the specified key", async () => {
+        const encryptedProject = encryptProject(testProject, securityToken);
+        const decryptedProject = await projectSerivce.load(encryptedProject, securityToken);
 
-        expect(result).toEqual(testProject);
+        expect(decryptedProject).toEqual(testProject);
+    });
+
+    it("Saves calls project storage provider to write project", async () => {
+        const result = await projectSerivce.save(testProject, securityToken);
+
+        const encryptedProject: IProject = { ...testProject };
+        encryptedProject.sourceConnection.providerOptions = {
+            encrypted: expect.any(String),
+        };
+        encryptedProject.targetConnection.providerOptions = {
+            encrypted: expect.any(String),
+        };
+        encryptedProject.exportFormat.providerOptions = {
+            encrypted: expect.any(String),
+        };
+
+        expect(result).toEqual(encryptedProject);
         expect(StorageProviderFactory.create).toBeCalledWith(
             testProject.targetConnection.providerType,
             testProject.targetConnection.providerOptions,
@@ -46,12 +70,11 @@ describe("Project Service", () => {
     it("Save calls configured export provider save when defined", async () => {
         testProject.exportFormat = {
             providerType: "azureCustomVision",
-            providerOptions: {},
+            providerOptions: null,
         };
 
-        const result = await projectSerivce.save(testProject);
+        await projectSerivce.save(testProject, securityToken);
 
-        expect(result).toEqual(testProject);
         expect(ExportProviderFactory.create).toBeCalledWith(
             testProject.exportFormat.providerType,
             testProject,
@@ -63,7 +86,7 @@ describe("Project Service", () => {
     it("Save throws error if writing to storage provider fails", async () => {
         const expectedError = "Error writing to storage provider";
         storageProviderMock.writeText.mockImplementationOnce(() => Promise.reject(expectedError));
-        await expect(projectSerivce.save(testProject)).rejects.toEqual(expectedError);
+        await expect(projectSerivce.save(testProject, securityToken)).rejects.toEqual(expectedError);
     });
 
     it("Save throws error if storage provider cannot be created", async () => {
@@ -71,7 +94,7 @@ describe("Project Service", () => {
         const createMock = StorageProviderFactory.create as jest.Mock;
         createMock.mockImplementationOnce(() => { throw expectedError; });
 
-        await expect(projectSerivce.save(testProject)).rejects.toEqual(expectedError);
+        await expect(projectSerivce.save(testProject, securityToken)).rejects.toEqual(expectedError);
     });
 
     it("Delete calls project storage provider to delete project", async () => {

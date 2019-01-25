@@ -78,13 +78,13 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         this.setState({
             selectedAsset: asset,
         }, () => {
-            this.props.onAssetSelected(asset);
             this.listRef.current.forceUpdateGrid();
         });
     }
 
     private onAssetClicked(asset: IAsset) {
         this.selectAsset(asset);
+        this.props.onAssetSelected(asset);
     }
 
     private rowRenderer({ key, index, style }) {

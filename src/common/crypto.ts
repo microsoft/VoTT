@@ -35,6 +35,17 @@ export function encrypt(message: string, secret: string): string {
 }
 
 /**
+ * Encryptes a javascript object with the specified key
+ * @param message - The javascript object to encrypt
+ * @param secret - The secret to encrypt the message
+ */
+export function encryptObject(message: any, secret: string): string {
+    Guard.null(message);
+
+    return encrypt(JSON.stringify(message), secret);
+}
+
+/**
  * Decrypts the specified message with the provided key
  * @param encodedMessage The base64 encoded encrypted data
  * @param secret The base64 encoded secret
@@ -58,4 +69,13 @@ export function decrypt(encodedMessage: string, secret: string): string {
     } catch (e) {
         throw new Error(`Error decrypting data - ${e.message}`);
     }
+}
+/**
+ * Decryptes a javascript object with the specified key
+ * @param message - The encrypted base64 encded message
+ * @param secret - The secret to decrypt the message
+ */
+export function decryptObject<T = any>(encodedMessage: string, secret: string): T {
+    const json = decrypt(encodedMessage, secret);
+    return JSON.parse(json) as T;
 }

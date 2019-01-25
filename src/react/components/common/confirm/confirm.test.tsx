@@ -16,13 +16,6 @@ describe("Confirm component", () => {
         return mount(<Confirm {...props}></Confirm>);
     }
 
-    afterEach(() => {
-        const node = document.body;
-        while (node.firstChild) {
-            node.removeChild(node.firstChild);
-        }
-    });
-
     it("Is defined", () => {
         expect(Confirm).toBeDefined();
     });

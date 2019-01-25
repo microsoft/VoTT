@@ -1,4 +1,7 @@
 {
+    "apiKey": {
+        "ui:widget": "protectedInput"
+    },
     "description": {
         "ui:widget": "textarea"
     },
