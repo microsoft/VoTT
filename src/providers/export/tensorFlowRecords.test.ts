@@ -7,7 +7,7 @@ import { ExportProviderFactory } from "./exportProviderFactory";
 import { IProject, IAssetMetadata, AssetState, IRegion, RegionType,
          ITagMetadata, IPoint } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
@@ -28,8 +28,12 @@ describe("TFRecords Json Export Provider", () => {
 
     const tagLengthInPbtxt = 31;
 
-    axios.get = jest.fn(() => {
-        return Promise.resolve({
+    axios.get = jest.fn((url, config) => {
+        return Promise.resolve<AxiosResponse>({
+            config,
+            headers: null,
+            status: 200,
+            statusText: "OK",
             data: [1, 2, 3],
         });
     });

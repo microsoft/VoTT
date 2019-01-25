@@ -59,7 +59,7 @@ export default class HtmlFileReader {
     }
 
     /**
-     * Downloads the binary blob from the blob path
+     * Downloads the binary blob from the asset path
      * @param asset The asset to download
      */
     public static async getAssetBlob(asset: IAsset): Promise<Blob> {
@@ -76,6 +76,16 @@ export default class HtmlFileReader {
         }
 
         return response.data;
+    }
+
+    /**
+     * Downloads the binary array from the asset path
+     * @param asset The asset to download
+     */
+    public static async getAssetArray(asset: IAsset): Promise<Uint8Array> {
+        const blob = await this.getAssetBlob(asset);
+        const byteArray = await new Response(blob).arrayBuffer();
+        return new Uint8Array(byteArray);
     }
 
     private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {

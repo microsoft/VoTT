@@ -183,13 +183,10 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     }
 
     private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            // Get image
-            axios.get(element.asset.path, {
-                responseType: "arraybuffer",
-            })
-            .then(async (response) => {
-                const imageBuffer = new Uint8Array(response.data);
+        return new Promise<void>(async (resolve, reject) => {
+            try {
+                const imageBuffer = await HtmlFileReader.getAssetArray(element.asset);
+
                 // Get Base64
                 const image64 = btoa(imageBuffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
@@ -240,16 +237,15 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 await this.writeTFRecord(fileNamePath, features, featureLists);
 
                 resolve();
-            })
-            .catch((err) => {
+            } catch (error) {
                 // Ignore the error at the moment
                 // TODO: Refactor ExportProvider abstract class export() method
                 //       to return Promise<object> with an object containing
                 //       the number of files succesfully exported out of total
-                console.log(`Error downloading ${element.asset.path} - ${err}`);
+                console.log(`Error downloading ${element.asset.path} - ${error}`);
                 resolve();
                 // eject(err);
-            });
+            }
         });
     }
 
