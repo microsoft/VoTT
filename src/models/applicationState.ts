@@ -46,8 +46,15 @@ export enum ErrorCode {
  * Base application error
  */
 export class AppError extends Error implements IAppError {
-    constructor(public errorCode: ErrorCode, public message: string, public title: string = null) {
+    public errorCode: ErrorCode;
+    public message: string;
+    public title?: string;
+
+    constructor(errorCode: ErrorCode, message: string, title: string = null) {
         super(message);
+        this.errorCode = errorCode;
+        this.message = message;
+        this.title = title;
     }
 }
 
