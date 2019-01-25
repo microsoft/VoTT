@@ -54,6 +54,9 @@ export const english: IAppStrings = {
             description: "Reload the app discarding all current changes",
             button: "Refresh Application",
         },
+        messages: {
+            saveSuccess: "Successfully saved application settings",
+        },
     },
     projectSettings: {
         title: "Project Settings",
@@ -76,6 +79,9 @@ export const english: IAppStrings = {
             frameExtractionRate: "Frame Extraction Rate (frames per a video second)",
         },
         addConnection: "Add Connection",
+        messages: {
+            saveSuccess: "Successfully saved ${project.name} project settings",
+        },
     },
     tags: {
         title: "Tags",
@@ -156,6 +162,9 @@ export const english: IAppStrings = {
             tfRecords: "Tensorflow Records",
             tfPascalVoc: "Tensorflow Pascal VOC",
         },
+        messages: {
+            saveSuccess: "Successfully saved export settings",
+        },
     },
     activeLearning: {
         title: "Active Learning",
@@ -166,24 +175,25 @@ export const english: IAppStrings = {
     errors: {
         Unknown: {
             title: "Unknown Error",
-            message: "The app encounted an unknown error.  Please try again.",
+            message: "The app encounted an unknown error. Please try again.",
         },
         ProjectUploadError: {
             title: "Error Uploading File",
             message: `There was an error uploading the file.
-                Please verify the file is of the correct type and try again.`,
+                Please verify the file is of the correct format and try again.`,
         },
         GenericRenderError: {
-            title: "Error loading project file",
-            message: "Ensure project security token exists",
+            title: "Error Loading Application",
+            message: "An error occured while rendering the application. Please try again",
         },
         ProjectInvalidSecurityToken: {
             title: "Error loading project file",
-            message: "Ensure project security token exists",
+            message: `The security token referenced by the project cannot be found in your current application.
+                Verify that the security token for the project has been set within your local application settings`,
         },
         ProjectInvalidJson: {
             title: "Error parsing project file",
-            message: "Project file is not valid json",
+            message: "The selected project files does not contain valid JSON. Please check the file any try again.",
         },
     },
 };

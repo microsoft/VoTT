@@ -56,7 +56,10 @@ export interface IAppStrings {
         reload: {
             description: string;
             button: string;
-        }
+        },
+        messages: {
+            saveSuccess: string;
+        },
     };
     projectSettings: {
         title: string;
@@ -78,7 +81,10 @@ export interface IAppStrings {
             description: string;
             frameExtractionRate: string;
         },
-        addConnection: string;
+        addConnection: string,
+        messages: {
+            saveSuccess: string;
+        },
     };
     tags: {
         title: string;
@@ -158,6 +164,9 @@ export interface IAppStrings {
             azureCV: string;
             tfRecords: string;
             tfPascalVoc: string;
+        },
+        messages: {
+            saveSuccess: string;
         },
     };
     activeLearning: {

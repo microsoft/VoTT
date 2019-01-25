@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
-import { IApplicationState, IConnection, IProject, ErrorCode, AppError } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
@@ -12,13 +11,15 @@ import FilePicker from "../../common/filePicker/filePicker";
 import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
-import IAppErrorActions, * as appErrorActions from "../../../../redux/actions/appErrorActions";
+import {
+    IApplicationState, IConnection, IProject,
+    ErrorCode, AppError, IAppError,
+} from "../../../../models/applicationState";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
-    appErrorActions: IAppErrorActions;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -31,7 +32,6 @@ function mapStateToProps(state: IApplicationState) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
-        appErrorActions: bindActionCreators(appErrorActions, dispatch),
     };
 }
 
@@ -130,7 +130,12 @@ export default class HomePage extends React.Component<IHomepageProps> {
         await this.loadSelectedProject(projectJson);
     }
 
-    private onProjectFileUploadError = () => {
+    private onProjectFileUploadError = (e, error: any) => {
+        const appError = error as IAppError;
+        if (appError && appError.errorCode) {
+            throw appError;
+        }
+
         throw new AppError(ErrorCode.ProjectUploadError, "Error uploading project file");
     }
 

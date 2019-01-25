@@ -38,7 +38,7 @@ function mapDispatchToProps(dispatch) {
  * @description - Root level component for VoTT Application
  */
 @connect(mapStateToProps, mapDispatchToProps)
-class App extends React.Component<IAppProps> {
+export default class App extends React.Component<IAppProps> {
     constructor(props, context) {
         super(props, context);
 
@@ -46,37 +46,31 @@ class App extends React.Component<IAppProps> {
             currentProject: this.props.currentProject,
         };
 
-        this.onApplicationError = this.onApplicationError.bind(this);
+        this.onWindowError = this.onWindowError.bind(this);
+        this.onUnhandedRejection = this.onUnhandedRejection.bind(this);
     }
 
     public componentDidMount() {
-        window.onerror = this.onApplicationError;
-        window.addEventListener("unhandledrejection", this.onApplicationError);
-    }
-
-    public onApplicationError(error: PromiseRejectionEvent) {
-        if (error.reason) {
-            let appError = error.reason as IAppError;
-            if (!appError.errorCode) {
-                appError = new AppError(ErrorCode.Unknown, "Error", "An unknown error occurred");
-            }
-            this.props.actions.showError(appError);
-        }
+        window.onerror = this.onWindowError;
+        window.addEventListener("unhandledrejection", this.onUnhandedRejection);
     }
 
     public render() {
-        const showError = (this.props.appError !== null);
-        const errorTitle = showError ? strings.errors[this.props.appError.errorCode].title : "";
-        const errorMessage = showError ? strings.errors[this.props.appError.errorCode].message : "";
+        const showError = !!this.props.appError;
+        let displayError: IAppError = null;
+        if (showError) {
+            displayError = this.getDisplayError(this.props.appError);
+        }
 
         return (
             <Fragment>
-                <Alert title={errorTitle}
-                    message={errorMessage}
-                    closeButtonColor="info"
-                    show={showError}
-                    onClose={this.props.actions.clearError}
-                />
+                {showError &&
+                    <Alert title={displayError.title}
+                        message={displayError.message}
+                        closeButtonColor="secondary"
+                        show={showError}
+                        onClose={this.props.actions.clearError} />
+                }
                 <ErrorBoundary>
                     <Router>
                         <div className="app-shell">
@@ -92,6 +86,79 @@ class App extends React.Component<IAppProps> {
             </Fragment>
         );
     }
-}
 
-export default App;
+    private onWindowError(message: string, url: string, lineNo: number, columnNo: number, error: any) {
+        let appError: IAppError = null;
+        if (error && error.errorCode && error.message) {
+            // Manually thrown AppError
+            appError = {
+                errorCode: error.errorCode,
+                message: error.message,
+                title: error.title,
+            };
+        } else {
+            // Other error like object
+            appError = {
+                errorCode: ErrorCode.Unknown,
+                message: error.message,
+                title: error.name,
+            };
+        }
+        this.props.actions.showError(appError);
+        return true;
+    }
+
+    private onUnhandedRejection(error: PromiseRejectionEvent) {
+        let appError: IAppError = null;
+
+        // Promise rejection with reason
+        if (error.reason) {
+            if (typeof (error.reason) === "string") {
+                // Promise rejection with string base reason
+                appError = {
+                    errorCode: ErrorCode.Unknown,
+                    message: error.reason,
+                };
+            } else if (error.reason.errorCode && error.reason.message) {
+                // Promise rejection with AppError
+                const reason = error.reason as IAppError;
+                appError = {
+                    errorCode: reason.errorCode,
+                    message: reason.message,
+                    title: reason.title,
+                };
+            } else if (error.reason.message) {
+                // Promise rejection with other error like object
+                const reason = error.reason as Error;
+                appError = {
+                    errorCode: ErrorCode.Unknown,
+                    message: reason.message,
+                };
+            }
+        }
+
+        if (!appError) {
+            appError = new AppError(ErrorCode.Unknown, "Unknown Error occurred");
+        }
+
+        this.props.actions.showError(appError);
+        error.preventDefault();
+    }
+
+    /**
+     * Gets a localized version of the error
+     * @param appError The error thrown by the application
+     */
+    private getDisplayError(appError: IAppError): IAppError {
+        const localizedError = strings.errors[appError.errorCode];
+        if (!localizedError) {
+            return appError;
+        }
+
+        return {
+            errorCode: appError.errorCode,
+            message: localizedError.message || strings.errors.Unknown.message,
+            title: localizedError.title || strings.errors.Unknown.title,
+        };
+    }
+}

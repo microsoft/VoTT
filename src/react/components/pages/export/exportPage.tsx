@@ -7,6 +7,7 @@ import ExportForm from "./exportForm";
 import { IProject, IApplicationState, IExportFormat } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ExportAssetState } from "../../../../providers/export/exportProvider";
+import { toast } from "react-toastify";
 
 /**
  * Properties for Export Page
@@ -89,6 +90,7 @@ export default class ExportPage extends React.Component<IExportPageProps> {
         };
 
         await this.props.actions.saveProject(projectToUpdate);
+        toast.success(strings.export.messages.saveSuccess);
         this.props.history.goBack();
     }
 

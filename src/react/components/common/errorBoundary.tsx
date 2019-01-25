@@ -1,4 +1,4 @@
-import React, { ErrorInfo } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import IAppErrorActions from "../../../redux/actions/appErrorActions";
 import { bindActionCreators } from "redux";
@@ -28,7 +28,7 @@ export default class ErrorBoundary extends React.Component<IErrorBoundaryProps> 
         super(props);
     }
 
-    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    public componentDidCatch(error: Error) {
         this.props.actions.showError({
             errorCode: ErrorCode.GenericRenderError,
             title: error.name,
@@ -37,7 +37,7 @@ export default class ErrorBoundary extends React.Component<IErrorBoundaryProps> 
     }
 
     public render() {
-        if (this.props.appError) {
+        if (this.props.appError && this.props.appError.errorCode === ErrorCode.GenericRenderError) {
             return null;
         }
 

@@ -55,6 +55,9 @@ export const spanish: IAppStrings = {
             description: "Recargar la aplicación descartando todos los cambios actuales",
             button: "Recargar la aplicación",
         },
+        messages: {
+            saveSuccess: "Configuración de la aplicación guardada correctamente",
+        },
     },
     projectSettings: {
         title: "Configuración de Proyecto",
@@ -77,6 +80,9 @@ export const spanish: IAppStrings = {
             frameExtractionRate: "Tasa de extracción de cuadros (cuadros por segundo de video)",
         },
         addConnection: "Agregar Conexión",
+        messages: {
+            saveSuccess: "Guardado correctamente ${project.name} configuración del proyecto",
+        },
     },
     tags: {
         title: "Etiquetas",
@@ -156,6 +162,9 @@ export const spanish: IAppStrings = {
             azureCV: "Servicio de Visión Personalizada Azure",
             tfRecords: "Registros de Tensorflow",
             tfPascalVoc: "Tensorflow Pascal VOC",
+        },
+        messages: {
+            saveSuccess: "Configuración de exportación guardada correctamente",
         },
     },
     activeLearning: {
