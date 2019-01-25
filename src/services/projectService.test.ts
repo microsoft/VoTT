@@ -45,7 +45,12 @@ describe("Project Service", () => {
     it("Saves calls project storage provider to write project", async () => {
         const result = await projectSerivce.save(testProject, securityToken);
 
-        const encryptedProject: IProject = { ...testProject };
+        const encryptedProject: IProject = {
+            ...testProject,
+            sourceConnection: { ...testProject.sourceConnection },
+            targetConnection: { ...testProject.targetConnection },
+            exportFormat: { ...testProject.exportFormat },
+        };
         encryptedProject.sourceConnection.providerOptions = {
             encrypted: expect.any(String),
         };
