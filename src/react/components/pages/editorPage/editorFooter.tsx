@@ -32,7 +32,7 @@ export interface IEditorFooterState {
  * @description - Footer of the editor page. Contains EditorTagsInput component
  */
 export default class EditorFooter extends React.Component<IEditorFooterProps, IEditorFooterState> {
-    
+
     private editorTagsInput: React.RefObject<EditorTagsInput>;
     private tagEditorModal: React.RefObject<TagEditorModal>;
 
@@ -40,7 +40,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         super(props);
         this.state = {
             tags: props.tags,
-            selectedTag: null
+            selectedTag: null,
         };
         this.editorTagsInput = React.createRef<EditorTagsInput>();
         this.tagEditorModal = React.createRef<TagEditorModal>();
@@ -73,7 +73,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
 
     private onCtrlTagClicked(tag: ITag) {
         this.setState({
-            selectedTag: tag
+            selectedTag: tag,
         }, () => {
             this.tagEditorModal.current.open(tag);
         });
