@@ -21,20 +21,16 @@ export interface IAppStrings {
         newProject: string;
         openLocalProject: {
             title: string;
-        }
+        },
         openCloudProject: {
             title: string;
             selectConnection: string;
-        }
+        },
         deleteProject: {
             title: string;
             confirmation: string;
-        }
-        recentProjects: string;
-        loadProjectError: {
-            title: string;
-            message: string;
-        }
+        },
+        recentProjects: string,
     };
     appSettings: {
         title: string;
@@ -60,7 +56,10 @@ export interface IAppStrings {
         reload: {
             description: string;
             button: string;
-        }
+        },
+        messages: {
+            saveSuccess: string;
+        },
     };
     projectSettings: {
         title: string;
@@ -82,7 +81,10 @@ export interface IAppStrings {
             description: string;
             frameExtractionRate: string;
         },
-        addConnection: string;
+        addConnection: string,
+        messages: {
+            saveSuccess: string;
+        },
     };
     tags: {
         title: string;
@@ -163,6 +165,9 @@ export interface IAppStrings {
             tfRecords: string;
             tfPascalVoc: string;
         },
+        messages: {
+            saveSuccess: string;
+        },
     };
     activeLearning: {
         title: string;
@@ -170,6 +175,19 @@ export interface IAppStrings {
     profile: {
         settings: string;
     };
+    errors: {
+        unknown: IErrorMetadata,
+        projectInvalidJson: IErrorMetadata,
+        projectInvalidSecurityToken: IErrorMetadata,
+        projectUploadError: IErrorMetadata,
+        genericRenderError: IErrorMetadata,
+        securityTokenNotFound: IErrorMetadata,
+    };
+}
+
+interface IErrorMetadata {
+    title: string;
+    message: string;
 }
 
 interface IStrings extends LocalizedStringsMethods, IAppStrings { }

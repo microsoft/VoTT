@@ -28,10 +28,6 @@ export const spanish: IAppStrings = {
             title: "Borrar Proyecto",
             confirmation: "¿Está seguro que quiere borrar el proyecto",
         },
-        loadProjectError: {
-            title: "Proyecto de carga tiene un error",
-            message: "El archivo no es válido json",
-        },
     },
     appSettings: {
         title: "Configuración de Aplicación",
@@ -59,6 +55,9 @@ export const spanish: IAppStrings = {
             description: "Recargar la aplicación descartando todos los cambios actuales",
             button: "Recargar la aplicación",
         },
+        messages: {
+            saveSuccess: "Configuración de la aplicación guardada correctamente",
+        },
     },
     projectSettings: {
         title: "Configuración de Proyecto",
@@ -81,6 +80,9 @@ export const spanish: IAppStrings = {
             frameExtractionRate: "Tasa de extracción de cuadros (cuadros por segundo de video)",
         },
         addConnection: "Agregar Conexión",
+        messages: {
+            saveSuccess: "Guardado correctamente ${project.name} configuración del proyecto",
+        },
     },
     tags: {
         title: "Etiquetas",
@@ -161,11 +163,43 @@ export const spanish: IAppStrings = {
             tfRecords: "Registros de Tensorflow",
             tfPascalVoc: "Tensorflow Pascal VOC",
         },
+        messages: {
+            saveSuccess: "Configuración de exportación guardada correctamente",
+        },
     },
     activeLearning: {
         title: "Aprendizaje Activo",
     },
     profile: {
         settings: "Configuración de Perfíl",
+    },
+    errors: {
+        unknown: {
+            title: "Error desconocido",
+            message: "La aplicación contó un error desconocido.  Por favor inténtalo de nuevo.",
+        },
+        projectUploadError: {
+            title: "Error al cargar el archivo",
+            message: `Se ha cargado un error al cargar el archivo.
+                Compruebe que el archivo es del tipo correcto e inténtelo de nuevo.`,
+        },
+        genericRenderError: {
+            title: "Error desconocido",
+            message: "La aplicación contó un error desconocido.  Por favor inténtalo de nuevo.",
+        },
+        projectInvalidSecurityToken: {
+            title: "Error al cargar el archivo de proyecto",
+            message: "Asegúrese de que el token de seguridad del proyecto existe",
+        },
+        projectInvalidJson: {
+            title: "Error al analizar el archivo de proyecto",
+            message: "El archivo de proyecto no es válido JSON",
+        },
+        securityTokenNotFound: {
+            title: "Error loading project file",
+            message: `El token de seguridad al que hace referencia el proyecto no se encuentra en la
+                configuración de la aplicación actual. Compruebe que existe el token de seguridad e intente
+                volver a cargar el proyecto.`,
+        },
     },
 };

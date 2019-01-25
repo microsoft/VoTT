@@ -4,14 +4,13 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState, IProject, AppErrorType } from "../../../../models/applicationState";
+import { IApplicationState, IProject } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
 import FilePicker from "../../common/filePicker/filePicker";
 import HomePage, { IHomepageProps } from "./homePage";
-import IAppErrorActions, * as appErrorActions from "../../../../redux/actions/appErrorActions";
 
 jest.mock("../../../../services/projectService");
 
@@ -112,32 +111,6 @@ describe("Connection Picker Component", () => {
         expect(openProjectSpy).toBeCalledWith(testProject);
     });
 
-    it("should call showError action when passed an invalid json project", async () => {
-        // refactoring warning: action spy have to be created before creating component
-        const showErrorSpy = jest.spyOn(props.appErrorActions, "showError");
-
-        const wrapper = createComponent(store, props);
-        const textBlob = new Blob(["foo"], { type: "text/plain" });
-
-        const fileUpload = wrapper.find("a.file-upload").first();
-        const fileInput = wrapper.find(`input[type="file"]`);
-
-        fileUpload.simulate("click");
-        await MockFactory.flushUi(() => {
-            fileInput.simulate("change", ({ target: { files: [textBlob] } }));
-        });
-
-        await MockFactory.flushUi();
-
-        const expectedAppError = {
-            title: "Project Loading has an error",
-            message: "File is not valid json",
-            errorType: AppErrorType.Generic,
-        };
-
-        expect(showErrorSpy).toBeCalledWith(expectedAppError);
-    });
-
     function createProps(): IHomepageProps {
         return {
             recentProjects: [],
@@ -162,7 +135,6 @@ describe("Connection Picker Component", () => {
                 state: null,
             },
             actions: (projectActions as any) as IProjectActions,
-            appErrorActions: (appErrorActions as any) as IAppErrorActions,
             match: {
                 params: {},
                 isExact: true,

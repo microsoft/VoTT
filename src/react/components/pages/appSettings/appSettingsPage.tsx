@@ -79,7 +79,7 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps> 
 
     private async onFormSubmit(appSettings: IAppSettings) {
         await this.props.actions.saveAppSettings(appSettings);
-        toast.success(`Successfully saved application settings`);
+        toast.success(strings.appSettings.messages.saveSuccess);
         this.props.history.goBack();
     }
 

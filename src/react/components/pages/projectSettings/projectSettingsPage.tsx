@@ -3,11 +3,12 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { RouteComponentProps } from "react-router-dom";
 import ProjectForm from "./projectForm";
-import { strings } from "../../../../common/strings";
+import { strings, interpolate } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject, IConnection, IAppSettings } from "../../../../models/applicationState";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { generateKey } from "../../../../common/crypto";
+import { toast } from "react-toastify";
 
 /**
  * Properties for Project Settings Page
@@ -86,6 +87,8 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
 
         await this.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
+
+        toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }));
 
         if (isNew) {
             this.props.history.push(`/projects/${this.props.project.id}/edit`);

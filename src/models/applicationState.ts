@@ -25,19 +25,39 @@ export interface IApplicationState {
  * @member errorCode - error category
  */
 export interface IAppError {
-    title?: string;
+    errorCode: ErrorCode;
     message: string;
-    errorCode?: string;
-    errorType: string;
+    title?: string;
 }
 
 /**
- * @enum Generic - describe an error happened in an eventhandler, async function etc.
- * @enum Render - describe an error happened inside render
+ * Enum of supported error codes
  */
-export enum AppErrorType {
-    Generic = "generic",
-    Render = "render",
+export enum ErrorCode {
+    // Note that the value of the enum is in camelCase while
+    // the enum key is in Pascal casing
+    Unknown = "unknown",
+    GenericRenderError = "genericRenderError",
+    ProjectInvalidJson = "projectInvalidJson",
+    ProjectInvalidSecurityToken = "projectInvalidSecurityToken",
+    ProjectUploadError = "projectUploadError",
+    SecurityTokenNotFound = "securityTokenNotFound",
+}
+
+/**
+ * Base application error
+ */
+export class AppError extends Error implements IAppError {
+    public errorCode: ErrorCode;
+    public message: string;
+    public title?: string;
+
+    constructor(errorCode: ErrorCode, message: string, title: string = null) {
+        super(message);
+        this.errorCode = errorCode;
+        this.message = message;
+        this.title = title;
+    }
 }
 
 /**

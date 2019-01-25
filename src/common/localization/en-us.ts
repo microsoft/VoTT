@@ -28,10 +28,6 @@ export const english: IAppStrings = {
             title: "Delete Project",
             confirmation: "Are you sure you want to delete project",
         },
-        loadProjectError: {
-            title: "Project Loading has an error",
-            message: "File is not valid json",
-        },
     },
     appSettings: {
         title: "Application Settings",
@@ -58,6 +54,9 @@ export const english: IAppStrings = {
             description: "Reload the app discarding all current changes",
             button: "Refresh Application",
         },
+        messages: {
+            saveSuccess: "Successfully saved application settings",
+        },
     },
     projectSettings: {
         title: "Project Settings",
@@ -80,6 +79,9 @@ export const english: IAppStrings = {
             frameExtractionRate: "Frame Extraction Rate (frames per a video second)",
         },
         addConnection: "Add Connection",
+        messages: {
+            saveSuccess: "Successfully saved ${project.name} project settings",
+        },
     },
     tags: {
         title: "Tags",
@@ -160,11 +162,43 @@ export const english: IAppStrings = {
             tfRecords: "Tensorflow Records",
             tfPascalVoc: "Tensorflow Pascal VOC",
         },
+        messages: {
+            saveSuccess: "Successfully saved export settings",
+        },
     },
     activeLearning: {
         title: "Active Learning",
     },
     profile: {
         settings: "Profile Settings",
+    },
+    errors: {
+        unknown: {
+            title: "Unknown Error",
+            message: "The app encounted an unknown error. Please try again.",
+        },
+        projectUploadError: {
+            title: "Error Uploading File",
+            message: `There was an error uploading the file.
+                Please verify the file is of the correct format and try again.`,
+        },
+        genericRenderError: {
+            title: "Error Loading Application",
+            message: "An error occured while rendering the application. Please try again",
+        },
+        projectInvalidSecurityToken: {
+            title: "Error loading project file",
+            message: `The security token referenced by the project is invalid.
+                Verify that the security token for the project has been set correctly within your application settings`,
+        },
+        projectInvalidJson: {
+            title: "Error parsing project file",
+            message: "The selected project files does not contain valid JSON. Please check the file any try again.",
+        },
+        securityTokenNotFound: {
+            title: "Error loading project file",
+            message: `The security token referenced by the project cannot be found in your current application settings.
+                Verify the security token exists and try to reload the project.`,
+        },
     },
 };

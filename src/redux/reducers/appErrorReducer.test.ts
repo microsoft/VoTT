@@ -1,5 +1,5 @@
 import { reducer } from "./appErrorReducer";
-import { IAppError } from "../../models/applicationState";
+import { IAppError, ErrorCode } from "../../models/applicationState";
 import { clearErrorAction, showErrorAction } from "../actions/appErrorActions";
 import { anyOtherAction } from "../actions/actionCreators";
 import MockFactory from "../../common/mockFactory";
@@ -13,6 +13,7 @@ describe("AppError Reducer", () => {
 
     it("ShowError discard previous state and return an appError", () => {
         const appError = MockFactory.createAppError(
+            ErrorCode.Unknown,
             "Sample Error Title",
             "Sample Error Message",
         );
