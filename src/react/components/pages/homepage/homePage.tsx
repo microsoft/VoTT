@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
-import { IApplicationState, IConnection, IProject, AppErrorType } from "../../../../models/applicationState";
+import { IApplicationState, IConnection, IProject, ErrorCode, AppError } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
@@ -120,20 +120,18 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private onProjectFileUpload = async (e, project) => {
         let projectJson: IProject;
+
         try {
             projectJson = JSON.parse(project);
-            await this.loadSelectedProject(projectJson);
         } catch (error) {
-            this.props.appErrorActions.showError({
-                title: strings.homePage.loadProjectError.title,
-                message: strings.homePage.loadProjectError.message,
-                errorType: AppErrorType.Generic,
-            });
+            throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
         }
+
+        await this.loadSelectedProject(projectJson);
     }
 
-    private onProjectFileUploadError = (e, err) => {
-        console.error(err);
+    private onProjectFileUploadError = () => {
+        throw new AppError(ErrorCode.ProjectUploadError, "Error uploading project file");
     }
 
     private loadSelectedProject = async (project: IProject) => {
@@ -144,5 +142,4 @@ export default class HomePage extends React.Component<IHomepageProps> {
     private deleteProject = async (project: IProject) => {
         await this.props.actions.deleteProject(project);
     }
-
 }

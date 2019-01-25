@@ -28,9 +28,15 @@ export const english: IAppStrings = {
             title: "Delete Project",
             confirmation: "Are you sure you want to delete project",
         },
-        loadProjectError: {
-            title: "Project Loading has an error",
-            message: "File is not valid json",
+        errors: {
+            loadProjectError: {
+                title: "Error loading project file",
+                message: "Ensure project security token exists",
+            },
+            projectParseError: {
+                title: "Error parsing project file",
+                message: "Project file is not valid json",
+            },
         },
     },
     appSettings: {

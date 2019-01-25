@@ -28,9 +28,15 @@ export const spanish: IAppStrings = {
             title: "Borrar Proyecto",
             confirmation: "¿Está seguro que quiere borrar el proyecto",
         },
-        loadProjectError: {
-            title: "Proyecto de carga tiene un error",
-            message: "El archivo no es válido json",
+        errors: {
+            loadProjectError: {
+                title: "Error al cargar el archivo de proyecto",
+                message: "Asegúrese de que el token de seguridad del proyecto existe",
+            },
+            projectParseError: {
+                title: "Error al analizar el archivo de proyecto",
+                message: "El archivo de proyecto no es válido JSON",
+            },
         },
     },
     appSettings: {

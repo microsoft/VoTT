@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    IAppError, IProjectVideoSettings, AppErrorType, EditorMode,
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -29,18 +29,16 @@ export default class MockFactory {
      * Creates sample IAppError
      * @param {string} title to be display in  Alert
      * @param {string} message to be display in body of Alert
-     * @param {string} errorType to specify whether this is a render error or generic exception thrown
      * @returns {IAppError}
      */
     public static createAppError(
+        errorCode: ErrorCode = ErrorCode.Unknown,
         title: string = "",
-        message: string = "",
-        errorType: string = AppErrorType.Generic,
-    ): IAppError {
+        message: string = ""): IAppError {
         return {
+            errorCode,
             title,
             message,
-            errorType,
         };
     }
 

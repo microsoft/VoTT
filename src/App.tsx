@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import Navbar from "./react/components/shell/navbar";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
-import { IAppError, IApplicationState, IProject } from "./models/applicationState";
+import { IAppError, IApplicationState, IProject, AppError, ErrorCode } from "./models/applicationState";
 import "./App.scss";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorBoundary from "./react/components/common/errorBoundary";
@@ -44,6 +44,23 @@ class App extends React.Component<IAppProps> {
         this.state = {
             currentProject: this.props.currentProject,
         };
+
+        this.onApplicationError = this.onApplicationError.bind(this);
+    }
+
+    public componentDidMount() {
+        window.onerror = this.onApplicationError;
+        window.addEventListener("unhandledrejection", this.onApplicationError);
+    }
+
+    public onApplicationError(error: PromiseRejectionEvent) {
+        if (error.reason) {
+            let appError = error.reason as IAppError;
+            if (!appError.errorCode) {
+                appError = new AppError(ErrorCode.Unknown, "Error", "An unknown error occurred");
+            }
+            this.props.actions.showError(appError);
+        }
     }
 
     public render() {

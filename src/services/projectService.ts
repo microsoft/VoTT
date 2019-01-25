@@ -1,6 +1,6 @@
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, ISecurityToken } from "../models/applicationState";
+import { IProject, ISecurityToken, AppError, ErrorCode } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
@@ -31,9 +31,13 @@ export default class ProjectService implements IProjectService {
     public load(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
-        const loadedProject = decryptProject(project, securityToken);
-
-        return Promise.resolve(loadedProject);
+        try {
+            const loadedProject = decryptProject(project, securityToken);
+            return Promise.resolve(loadedProject);
+        } catch (e) {
+            const error = new AppError(ErrorCode.ProjectInvalidSecurityToken, "Error decrypting project settings");
+            return Promise.reject(error);
+        }
     }
 
     /**

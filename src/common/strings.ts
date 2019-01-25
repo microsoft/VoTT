@@ -21,19 +21,25 @@ export interface IAppStrings {
         newProject: string;
         openLocalProject: {
             title: string;
-        }
+        },
         openCloudProject: {
             title: string;
             selectConnection: string;
-        }
+        },
         deleteProject: {
             title: string;
             confirmation: string;
-        }
-        recentProjects: string;
-        loadProjectError: {
-            title: string;
-            message: string;
+        },
+        recentProjects: string,
+        errors: {
+            projectParseError: {
+                title: string,
+                message: string,
+            },
+            loadProjectError: {
+                title: string;
+                message: string;
+            },
         }
     };
     appSettings: {

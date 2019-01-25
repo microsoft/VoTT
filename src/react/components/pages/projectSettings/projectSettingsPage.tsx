@@ -8,6 +8,7 @@ import IProjectActions, * as projectActions from "../../../../redux/actions/proj
 import { IApplicationState, IProject, IConnection, IAppSettings } from "../../../../models/applicationState";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { generateKey } from "../../../../common/crypto";
+import { toast } from "react-toastify";
 
 /**
  * Properties for Project Settings Page
@@ -86,6 +87,8 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
 
         await this.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
+
+        toast.success(`Successfully saved project settings for ${project.name}`);
 
         if (isNew) {
             this.props.history.push(`/projects/${this.props.project.id}/edit`);
