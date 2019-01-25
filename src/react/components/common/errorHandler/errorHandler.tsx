@@ -2,6 +2,7 @@ import React from "react";
 import { IAppError, ErrorCode, AppError } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import Alert from "../alert/alert";
+import { instanceOf } from "prop-types";
 
 /**
  * Component properties for ErrorHandler component
@@ -35,9 +36,9 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
 
     public render() {
         const showError = !!this.props.error;
-        let displayError: IAppError = null;
+        let localizedError: IAppError = null;
         if (showError) {
-            displayError = this.getDisplayError(this.props.error);
+            localizedError = this.getLocalizedError(this.props.error);
         }
 
         if (!showError) {
@@ -45,8 +46,8 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         }
 
         return (
-            <Alert title={displayError ? displayError.title : ""}
-                message={displayError ? displayError.message : ""}
+            <Alert title={localizedError ? localizedError.title : ""}
+                message={localizedError ? localizedError.message : ""}
                 closeButtonColor="secondary"
                 show={showError}
                 onClose={this.props.onClearError} />
@@ -114,7 +115,7 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      * Gets a localized version of the error
      * @param appError The error thrown by the application
      */
-    private getDisplayError(appError: IAppError): IAppError {
+    private getLocalizedError(appError: IAppError): IAppError {
         const localizedError = strings.errors[appError.errorCode];
         if (!localizedError) {
             return appError;
@@ -122,8 +123,8 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
 
         return {
             errorCode: appError.errorCode,
-            message: localizedError.message || strings.errors.Unknown.message,
-            title: localizedError.title || strings.errors.Unknown.title,
+            message: localizedError.message || strings.errors.unknown.message,
+            title: localizedError.title || strings.errors.unknown.title,
         };
     }
 }

@@ -174,28 +174,28 @@ export const spanish: IAppStrings = {
         settings: "Configuración de Perfíl",
     },
     errors: {
-        Unknown: {
+        unknown: {
             title: "Error desconocido",
             message: "La aplicación contó un error desconocido.  Por favor inténtalo de nuevo.",
         },
-        ProjectUploadError: {
+        projectUploadError: {
             title: "Error al cargar el archivo",
             message: `Se ha cargado un error al cargar el archivo.
                 Compruebe que el archivo es del tipo correcto e inténtelo de nuevo.`,
         },
-        GenericRenderError: {
+        genericRenderError: {
             title: "Error desconocido",
             message: "La aplicación contó un error desconocido.  Por favor inténtalo de nuevo.",
         },
-        ProjectInvalidSecurityToken: {
+        projectInvalidSecurityToken: {
             title: "Error al cargar el archivo de proyecto",
             message: "Asegúrese de que el token de seguridad del proyecto existe",
         },
-        ProjectInvalidJson: {
+        projectInvalidJson: {
             title: "Error al analizar el archivo de proyecto",
             message: "El archivo de proyecto no es válido JSON",
         },
-        SecurityTokenNotFound: {
+        securityTokenNotFound: {
             title: "Error loading project file",
             message: `El token de seguridad al que hace referencia el proyecto no se encuentra en la
                 configuración de la aplicación actual. Compruebe que existe el token de seguridad e intente

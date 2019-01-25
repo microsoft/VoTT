@@ -176,12 +176,12 @@ export interface IAppStrings {
         settings: string;
     };
     errors: {
-        Unknown: IErrorMetadata,
-        ProjectInvalidJson: IErrorMetadata,
-        ProjectInvalidSecurityToken: IErrorMetadata,
-        ProjectUploadError: IErrorMetadata,
-        GenericRenderError: IErrorMetadata,
-        SecurityTokenNotFound: IErrorMetadata,
+        unknown: IErrorMetadata,
+        projectInvalidJson: IErrorMetadata,
+        projectInvalidSecurityToken: IErrorMetadata,
+        projectUploadError: IErrorMetadata,
+        genericRenderError: IErrorMetadata,
+        securityTokenNotFound: IErrorMetadata,
     };
 }
 

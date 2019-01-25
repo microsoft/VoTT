@@ -34,12 +34,14 @@ export interface IAppError {
  * Enum of supported error codes
  */
 export enum ErrorCode {
-    Unknown = "Unknown",
-    GenericRenderError = "GenericRenderError",
-    ProjectInvalidJson = "ProjectInvalidJson",
-    ProjectInvalidSecurityToken = "ProjectInvalidSecurityToken",
-    ProjectUploadError = "ProjectUploadError",
-    SecurityTokenNotFound = "SecurityTokenNotFound",
+    // Note that the value of the enum is in camelCase while
+    // the enum key is in Pascal casing
+    Unknown = "unknown",
+    GenericRenderError = "genericRenderError",
+    ProjectInvalidJson = "projectInvalidJson",
+    ProjectInvalidSecurityToken = "projectInvalidSecurityToken",
+    ProjectUploadError = "projectUploadError",
+    SecurityTokenNotFound = "securityTokenNotFound",
 }
 
 /**

@@ -173,29 +173,29 @@ export const english: IAppStrings = {
         settings: "Profile Settings",
     },
     errors: {
-        Unknown: {
+        unknown: {
             title: "Unknown Error",
             message: "The app encounted an unknown error. Please try again.",
         },
-        ProjectUploadError: {
+        projectUploadError: {
             title: "Error Uploading File",
             message: `There was an error uploading the file.
                 Please verify the file is of the correct format and try again.`,
         },
-        GenericRenderError: {
+        genericRenderError: {
             title: "Error Loading Application",
             message: "An error occured while rendering the application. Please try again",
         },
-        ProjectInvalidSecurityToken: {
+        projectInvalidSecurityToken: {
             title: "Error loading project file",
             message: `The security token referenced by the project is invalid.
                 Verify that the security token for the project has been set correctly within your application settings`,
         },
-        ProjectInvalidJson: {
+        projectInvalidJson: {
             title: "Error parsing project file",
             message: "The selected project files does not contain valid JSON. Please check the file any try again.",
         },
-        SecurityTokenNotFound: {
+        securityTokenNotFound: {
             title: "Error loading project file",
             message: `The security token referenced by the project cannot be found in your current application settings.
                 Verify the security token exists and try to reload the project.`,

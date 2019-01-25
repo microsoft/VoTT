@@ -131,9 +131,8 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUploadError = (e, error: any) => {
-        const appError = error as IAppError;
-        if (appError && appError.errorCode) {
-            throw appError;
+        if (error instanceof AppError) {
+            throw error;
         }
 
         throw new AppError(ErrorCode.ProjectUploadError, "Error uploading project file");

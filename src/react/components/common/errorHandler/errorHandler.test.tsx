@@ -37,8 +37,8 @@ describe("Error Handler Component", () => {
         const wrapper = createComponent(props);
         const alert = wrapper.find(Alert);
         expect(alert.exists()).toBe(true);
-        expect(alert.prop("title")).toEqual(strings.errors.Unknown.title);
-        expect(alert.prop("message")).toEqual(strings.errors.Unknown.message);
+        expect(alert.prop("title")).toEqual(strings.errors.unknown.title);
+        expect(alert.prop("message")).toEqual(strings.errors.unknown.message);
     });
 
     it("renders an alert with localized error messages", () => {
@@ -46,7 +46,7 @@ describe("Error Handler Component", () => {
             ...defaultProps,
             error: {
                 errorCode: ErrorCode.ProjectInvalidJson,
-                message: "JSON is messaed up",
+                message: "JSON is messed up",
                 title: "JSON error",
             },
         };
@@ -54,8 +54,8 @@ describe("Error Handler Component", () => {
         const wrapper = createComponent(props);
         const alert = wrapper.find(Alert);
         expect(alert.exists()).toBe(true);
-        expect(alert.prop("title")).toEqual(strings.errors.ProjectInvalidJson.title);
-        expect(alert.prop("message")).toEqual(strings.errors.ProjectInvalidJson.message);
+        expect(alert.prop("title")).toEqual(strings.errors.projectInvalidJson.title);
+        expect(alert.prop("message")).toEqual(strings.errors.projectInvalidJson.message);
     });
 
     it("calls onError when window Error is thrown", () => {

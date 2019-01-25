@@ -27,8 +27,9 @@ export default class MockFactory {
 
     /**
      * Creates sample IAppError
-     * @param {string} title to be display in  Alert
-     * @param {string} message to be display in body of Alert
+     * @param errorCode The error code to map to the error
+     * @param title The title of the error
+     * @param message The detailed error message
      * @returns {IAppError}
      */
     public static createAppError(
