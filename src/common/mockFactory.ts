@@ -467,7 +467,7 @@ export default class MockFactory {
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
         };
-        return new Canvas({canvasProps}, {});
+        return new Canvas({ canvasProps }, {});
     }
 
     public static createTestRegion(id = null) {
@@ -478,14 +478,14 @@ export default class MockFactory {
                 left: 0,
                 top: 0,
             },
-            points: [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}],
+            points: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }],
             tags: [],
             type: "RECTANGLE",
         };
         if (id) {
             testRegion.id = id;
         }
-        return  testRegion;
+        return testRegion;
     }
 
     /**
@@ -597,6 +597,26 @@ export default class MockFactory {
                 func();
             }
             setImmediate(resolve);
+        });
+    }
+
+    /**
+     * Runs and waits for a condidtion to be met and resolves a promise
+     * @param predicate The predicate to evaluate the condition
+     * @param interval The interval to check the value
+     */
+    public static waitForCondition(predicate: () => boolean, interval: number = 100): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const handle = setInterval(() => {
+                try {
+                    if (predicate()) {
+                        clearInterval(handle);
+                        resolve();
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            }, interval);
         });
     }
 

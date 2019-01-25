@@ -36,7 +36,7 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
  * @member project - Project being edited
  * @member assets - Array of assets in project
  */
-interface IEditorPageState {
+export interface IEditorPageState {
     project: IProject;
     assets: IAsset[];
     mode: EditorMode;

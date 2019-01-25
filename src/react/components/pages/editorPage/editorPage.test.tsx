@@ -9,10 +9,14 @@ import { AssetProviderFactory } from "../../../../providers/storage/assetProvide
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
 import ProjectService from "../../../../services/projectService";
-import EditorPage, { IEditorPageProps } from "./editorPage";
+import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 jest.mock("vott-ct");
 import { CanvasTools } from "vott-ct";
 import registerToolbar from "../../../../registerToolbar";
+import { DrawPolygon } from "../../toolbar/drawPolygon";
+import { DrawRectangle } from "../../toolbar/drawRectangle";
+import { Select } from "../../toolbar/select";
+import { Pan } from "../../toolbar/pan";
 
 jest.mock("../../../../services/projectService");
 
@@ -155,7 +159,7 @@ describe("Editor Page Component", () => {
     });
 
     describe("Basic toolbar test", () => {
-        it("editor mode is changed correctly", (done) => {
+        it("editor mode is changed correctly", async () => {
             registerToolbar();
             const testProject = MockFactory.createTestProject("TestProject");
             const testAssets = MockFactory.createTestAssets(5);
@@ -176,13 +180,26 @@ describe("Editor Page Component", () => {
             });
 
             const wrapper = createComponent(store, props);
-            wrapper.update();
 
-            setTimeout(() => {
-                wrapper.find("DrawPolygon").simulate("click");
-                expect(getState(wrapper).mode).toEqual(EditorMode.Polygon);
-                done();
-            }, 2000);
+            await MockFactory.waitForCondition(() => {
+                const editorPage = wrapper
+                    .find(EditorPage)
+                    .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+                return !!editorPage.state().selectedAsset;
+            });
+
+            wrapper.find(DrawPolygon).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Polygon);
+
+            wrapper.find(DrawRectangle).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Rectangle);
+
+            wrapper.find(Select).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Select);
+
+            wrapper.find(Pan).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Select);
         });
     });
 
@@ -258,8 +275,8 @@ describe("Editor Page Component", () => {
 
             const keyPressed = 2;
             setImmediate(() => {
-                (editorPage.instance() as EditorPage).handleTagHotKey({ctrlKey: true, key: keyPressed.toString()});
-                expect(spy).toBeCalledWith({name: testProject.tags[keyPressed - 1].name});
+                (editorPage.instance() as EditorPage).handleTagHotKey({ ctrlKey: true, key: keyPressed.toString() });
+                expect(spy).toBeCalledWith({ name: testProject.tags[keyPressed - 1].name });
             });
         });
 
