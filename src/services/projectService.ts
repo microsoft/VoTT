@@ -56,7 +56,6 @@ export default class ProjectService implements IProjectService {
                 const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
                 await this.saveExportSettings(project);
                 project = encryptProject(project, securityToken);
-                await this.saveProjectFile(project);
 
                 await storageProvider.writeText(
                     `${project.name}${constants.projectFileExtension}`,
@@ -115,16 +114,5 @@ export default class ProjectService implements IProjectService {
         }
 
         project.exportFormat.providerOptions = await exportProvider.save(project.exportFormat);
-    }
-
-    private async saveProjectFile(project: IProject): Promise<void> {
-        const storageProvider = StorageProviderFactory.create(
-            project.targetConnection.providerType,
-            project.targetConnection.providerOptions,
-        );
-
-        await storageProvider.writeText(
-            `${project.name}${constants.projectFileExtension}`,
-            JSON.stringify(project, null, 4));
     }
 }
