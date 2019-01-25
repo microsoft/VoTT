@@ -189,9 +189,9 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 responseType: "arraybuffer",
             })
             .then(async (response) => {
+                const imageBuffer = new Uint8Array(response.data);
                 // Get Base64
-                const image64 = btoa(new Uint8Array(response.data).
-                    reduce((data, byte) => data + String.fromCharCode(byte), ""));
+                const image64 = btoa(imageBuffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
                 const imageInfo: IImageInfo = {
                     width: element.asset.size ? element.asset.size.width : 0,
@@ -220,9 +220,9 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 this.addIntFeature(features, "image/width", imageInfo.width);
                 this.addStringFeature(features, "image/filename", element.asset.name);
                 this.addStringFeature(features, "image/source_id", element.asset.name);
-                this.addStringFeature(features, "image/key/sha256", CryptoJS.SHA256(image64)
+                this.addStringFeature(features, "image/key/sha256", CryptoJS.SHA256(imageBuffer)
                     .toString(CryptoJS.enc.Base64));
-                this.addStringFeature(features, "image/encoded", image64);
+                this.addBinaryArrayFeature(features, "image/encoded", imageBuffer);
                 this.addStringFeature(features, "image/format", element.asset.name.split(".").pop());
                 this.addIntArrayFeatureList(featureLists, "image/object/bbox/xmin", imageInfo.xmin);
                 this.addIntArrayFeatureList(featureLists, "image/object/bbox/ymin", imageInfo.ymin);
