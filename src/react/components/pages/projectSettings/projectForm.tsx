@@ -1,17 +1,21 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
-import { TagEditorModal  } from "vott-react";
+import { TagEditorModal, TagsInput, ITagsInputProps } from "vott-react";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+<<<<<<< HEAD
 import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/securityTokenPicker/securityTokenPicker";
 import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
 
 import "vott-react/build/lib/components/tagsInput/tagsInput.css";
 
+=======
+import "vott-react/build/lib/components/TagsInput/tagsInput.css";
+>>>>>>> Fixing project form
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -67,7 +71,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             },
             tags: (this.props.project) ? this.props.project.tags : [],
         };
-        debugger;
         this.tagsInput = React.createRef<TagsInput>();
         this.tagEditorModal = React.createRef<TagEditorModal>();
 
