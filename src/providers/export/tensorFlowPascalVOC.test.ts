@@ -122,10 +122,10 @@ describe("TFPascalVOC Json Export Provider", () => {
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(4);
-            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
-            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
-            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
-            expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4")).toEqual(true);
+            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1.jpg")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2.jpg")).toEqual(true);
+            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3.jpg")).toEqual(true);
+            expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4.jpg")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
             expect(writeTextFileCalls.length).toEqual(11);
@@ -166,9 +166,9 @@ describe("TFPascalVOC Json Export Provider", () => {
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(3);
-            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
-            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
-            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3")).toEqual(true);
+            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1.jpg")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2.jpg")).toEqual(true);
+            expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3.jpg")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
             expect(writeTextFileCalls.length).toEqual(6);
@@ -204,8 +204,8 @@ describe("TFPascalVOC Json Export Provider", () => {
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
             expect(writeBinaryCalls.length).toEqual(2);
-            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1")).toEqual(true);
-            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2")).toEqual(true);
+            expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1.jpg")).toEqual(true);
+            expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2.jpg")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
             expect(writeTextFileCalls.length).toEqual(9);
