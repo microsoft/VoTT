@@ -102,7 +102,15 @@ export class AssetService {
      * Get assets from provider
      */
     public async getAssets(): Promise<IAsset[]> {
-        return await this.assetProvider.getAssets();
+        const assets = await this.assetProvider.getAssets();
+
+        return assets.map((asset) => {
+            if (!asset.path.toLowerCase().startsWith("http://") && !asset.path.toLowerCase().startsWith("https://")) {
+                asset.path = "file:" + asset.path;
+            }
+
+            return asset;
+        });
     }
 
     /**
