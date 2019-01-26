@@ -353,7 +353,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.deleteAllRegions();
         const image = new Image();
         image.addEventListener("load", (e) => {
-            console.log("loading");
             // @ts-ignore
             this.editor.addContentSource(e.target);
             if (this.props.selectedAsset.regions.length) {

@@ -8,6 +8,8 @@ import { Pan } from "./react/components/toolbar/pan";
 import { ZoomIn } from "./react/components/toolbar/zoomIn";
 import { ZoomOut } from "./react/components/toolbar/zoomOut";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
+import { NextAsset } from "./react/components/toolbar/nextAsset";
+import { PreviousAsset } from "./react/components/toolbar/previousAsset";
 
 /**
  * Registers items for toolbar
@@ -59,6 +61,24 @@ export default function registerToolbar() {
         icon: "fa-search-minus",
         group: "zoom",
         type: ToolbarItemType.Action,
+    });
+
+    ToolbarItemFactory.register(PreviousAsset, {
+        name: "navigatePreviousAsset",
+        tooltip: "Previous Asset",
+        icon: "fas fa-arrow-circle-left",
+        group: "navigation",
+        type: ToolbarItemType.Action,
+        accelerator: "ArrowLeft",
+    });
+
+    ToolbarItemFactory.register(NextAsset, {
+        name: "navigateNextAsset",
+        tooltip: "Next Asset",
+        icon: "fas fa-arrow-circle-right",
+        group: "navigation",
+        type: ToolbarItemType.Action,
+        accelerator: "ArrowRight",
     });
 
     ToolbarItemFactory.register(SaveProject, {

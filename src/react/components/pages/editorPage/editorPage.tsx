@@ -1,14 +1,15 @@
 import _ from "lodash";
 import React, { RefObject } from "react";
-import keydown from "react-keydown";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { AssetState, EditorMode, IApplicationState, IAsset,
-        IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings } from "../../../../models/applicationState";
+import {
+    AssetState, EditorMode, IApplicationState, IAsset,
+    IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings,
+} from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import Canvas from "./canvas";
@@ -18,6 +19,7 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { KeyboardManager, KeyboardContext, IKeyboardContext } from "../../common/keyboardManager/keyboardManager";
 
 /**
  * Properties for Editor Page
@@ -56,20 +58,15 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-function getCtrlNumericKeys(): string[] {
-    const keys: string[] = [];
-    for (let i = 0; i <= 9; i++) {
-        keys.push(`ctrl+${i.toString()}`);
-    }
-    return keys;
-}
-
 /**
  * @name - Editor Page
  * @description - Page for adding/editing/removing tags to assets
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
+    public static contextType = KeyboardContext;
+    public context!: IKeyboardContext;
+
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = [];
     private canvas: RefObject<Canvas>;
@@ -99,6 +96,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.onTagClicked = this.onTagClicked.bind(this);
         this.onToolbarItemSelected = this.onToolbarItemSelected.bind(this);
         this.onAssetMetadataChanged = this.onAssetMetadataChanged.bind(this);
+
+        for (let i = 0; i <= 9; i++) {
+            this.context.keyboard.addHandler(`Ctrl+${i}`, this.handleTagHotKey);
+        }
     }
 
     public async componentDidMount() {
@@ -140,7 +141,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         <EditorToolbar project={this.props.project}
                             items={this.toolbarItems}
                             actions={this.props.actions}
-                            onToolbarItemSelected={this.onToolbarItemSelected}/>
+                            onToolbarItemSelected={this.onToolbarItemSelected} />
                     </div>
                     <div className="editor-page-content-body">
                         {selectedAsset &&
@@ -150,7 +151,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     selectedAsset={this.state.selectedAsset}
                                     onAssetMetadataChanged={this.onAssetMetadataChanged}
                                     editorMode={this.state.mode}
-                                    project={this.props.project}/>
+                                    project={this.props.project} />
                                 {/* <AssetPreview asset={selectedAsset.asset} videoSettings={editorVideoSetting} />
                                 {selectedAsset.asset.size &&
                                     <div>
@@ -209,8 +210,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Listens for CTRL+{number key} and calls `onTagClicked` with tag corresponding to that number
      * @param event KeyDown event
      */
-    @keydown(getCtrlNumericKeys())
-    public handleTagHotKey(event) {
+    public handleTagHotKey(event: KeyboardEvent) {
         const key = parseInt(event.key, 10);
         if (isNaN(key)) {
             return;
@@ -219,10 +219,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const tags = this.props.project.tags;
         if (key === 0) {
             if (tags.length >= 10) {
-                tag = {name: tags[9].name};
+                tag = { name: tags[9].name };
             }
         } else if (tags.length >= key) {
-            tag = {name: tags[key - 1].name};
+            tag = { name: tags[key - 1].name };
         }
         this.onTagClicked(tag);
     }
@@ -237,13 +237,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             ...this.props.project,
             tags: footerState.tags,
         };
-        this.setState({project}, async () => {
+        this.setState({ project }, async () => {
             await this.props.actions.saveProject(project);
         });
     }
 
-    private  onToolbarItemSelected(toolbarItem: ToolbarItem) {
+    private onToolbarItemSelected(toolbarItem: ToolbarItem) {
         const setSelectionMode = this.canvas.current.setSelectionMode;
+        const currentIndex = this.state.assets
+            .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
+
         switch (toolbarItem.props.name) {
             case "drawRectangle":
                 setSelectionMode(SelectionMode.RECT);
@@ -265,6 +268,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 break;
             case "panCanvas":
                 setSelectionMode(SelectionMode.NONE);
+                break;
+            case "navigatePreviousAsset":
+                this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+                break;
+            case "navigateNextAsset":
+                this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
                 break;
             default:
                 console.log(toolbarItem.props.name);

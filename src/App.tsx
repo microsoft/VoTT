@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActions";
 import { bindActionCreators } from "redux";
 import { ErrorHandler } from "./react/components/common/errorHandler/errorHandler";
+import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -62,16 +63,18 @@ export default class App extends React.Component<IAppProps> {
                     onClearError={this.props.actions.clearError} />
                 {/* Don't render app contents during a render error */}
                 {(!this.props.appError || this.props.appError.errorCode !== ErrorCode.GenericRenderError) &&
-                    <Router>
-                        <div className="app-shell">
-                            <Navbar />
-                            <div className="app-main">
-                                <Sidebar project={this.props.currentProject} />
-                                <MainContentRouter />
+                    <KeyboardManager>
+                        <Router>
+                            <div className="app-shell">
+                                <Navbar />
+                                <div className="app-main">
+                                    <Sidebar project={this.props.currentProject} />
+                                    <MainContentRouter />
+                                </div>
+                                <ToastContainer />
                             </div>
-                            <ToastContainer />
-                        </div>
-                    </Router >
+                        </Router >
+                    </KeyboardManager>
                 }
             </Fragment>
         );
