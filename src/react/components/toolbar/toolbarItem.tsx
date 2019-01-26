@@ -1,7 +1,8 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
 import { IKeyboardContext, KeyboardContext } from "../common/keyboardManager/keyboardManager";
+import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
 
 /**
  * Toolbar Item Metadata
@@ -58,10 +59,6 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
 
         this.onItemClick = this.onItemClick.bind(this);
         this.onClick = this.onClick.bind(this);
-
-        if (this.props.accelerator) {
-            this.unregisterKeyboardHandler = this.context.keyboard.addHandler(this.props.accelerator, this.onClick);
-        }
     }
 
     public componentWillUnmount() {
@@ -77,12 +74,17 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
         }
 
         return (
-            <button type="button"
-                className={className.join(" ")}
-                title={this.props.tooltip}
-                onClick={this.onClick}>
-                <i className={"fas " + this.props.icon} />
-            </button>
+            <Fragment>
+                {this.props.accelerator &&
+                    <KeyboardBinding accelerator={this.props.accelerator} onKeyDown={this.onClick} />
+                }
+                <button type="button"
+                    className={className.join(" ")}
+                    title={this.props.tooltip}
+                    onClick={this.onClick}>
+                    <i className={"fas " + this.props.icon} />
+                </button>
+            </Fragment>
         );
     }
 
