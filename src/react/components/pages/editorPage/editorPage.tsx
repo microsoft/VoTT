@@ -20,6 +20,7 @@ import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyboardManager, KeyboardContext, IKeyboardContext } from "../../common/keyboardManager/keyboardManager";
+import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 
 /**
  * Properties for Editor Page
@@ -96,10 +97,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.onTagClicked = this.onTagClicked.bind(this);
         this.onToolbarItemSelected = this.onToolbarItemSelected.bind(this);
         this.onAssetMetadataChanged = this.onAssetMetadataChanged.bind(this);
-
-        for (let i = 0; i <= 9; i++) {
-            this.context.keyboard.addHandler(`Ctrl+${i}`, this.handleTagHotKey);
-        }
     }
 
     public async componentDidMount() {
@@ -129,6 +126,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         return (
             <div className="editor-page">
+                {[...Array(10).keys()].map((index) => {
+                    return (<KeyboardBinding accelerator={`Ctrl+${index}`} onKeyDown={this.handleTagHotKey} />);
+                })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
                         assets={assets}
