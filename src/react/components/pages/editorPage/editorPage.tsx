@@ -7,8 +7,10 @@ import { bindActionCreators } from "redux";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { AssetState, EditorMode, IApplicationState, IAsset,
-        IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings } from "../../../../models/applicationState";
+import {
+    AssetState, EditorMode, IApplicationState, IAsset,
+    IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings
+} from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import Canvas from "./canvas";
@@ -140,25 +142,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         <EditorToolbar project={this.props.project}
                             items={this.toolbarItems}
                             actions={this.props.actions}
-                            onToolbarItemSelected={this.onToolbarItemSelected}/>
+                            onToolbarItemSelected={this.onToolbarItemSelected} />
                     </div>
                     <div className="editor-page-content-body">
                         {selectedAsset &&
-                            <div className="canvas-container">
-                                <Canvas
-                                    ref={this.canvas}
-                                    selectedAsset={this.state.selectedAsset}
-                                    onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                    editorMode={this.state.mode}
-                                    project={this.props.project}/>
-                                {/* <AssetPreview asset={selectedAsset.asset} videoSettings={editorVideoSetting} />
-                                {selectedAsset.asset.size &&
-                                    <div>
-                                        {strings.editorPage.width}: {selectedAsset.asset.size.width}
-                                        {strings.editorPage.height}: {selectedAsset.asset.size.height}
-                                    </div>
-                                } */}
-                            </div>
+                            <Canvas
+                                ref={this.canvas}
+                                selectedAsset={this.state.selectedAsset}
+                                onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                editorMode={this.state.mode}
+                                project={this.props.project} />
                         }
                     </div>
                     <div>
@@ -219,10 +212,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const tags = this.props.project.tags;
         if (key === 0) {
             if (tags.length >= 10) {
-                tag = {name: tags[9].name};
+                tag = { name: tags[9].name };
             }
         } else if (tags.length >= key) {
-            tag = {name: tags[key - 1].name};
+            tag = { name: tags[key - 1].name };
         }
         this.onTagClicked(tag);
     }
@@ -237,12 +230,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             ...this.props.project,
             tags: footerState.tags,
         };
-        this.setState({project}, async () => {
+        this.setState({ project }, async () => {
             await this.props.actions.saveProject(project);
         });
     }
 
-    private  onToolbarItemSelected(toolbarItem: ToolbarItem) {
+    private onToolbarItemSelected(toolbarItem: ToolbarItem) {
         const setSelectionMode = this.canvas.current.setSelectionMode;
         switch (toolbarItem.props.name) {
             case "drawRectangle":
