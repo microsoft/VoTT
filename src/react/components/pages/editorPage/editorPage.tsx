@@ -1,6 +1,5 @@
 import _ from "lodash";
 import React, { RefObject } from "react";
-import keydown from "react-keydown";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
@@ -20,6 +19,7 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { KeyboardManager, KeyboardContext, IKeyboardContext } from "../../common/keyboardManager/keyboardManager";
 
 /**
  * Properties for Editor Page
@@ -58,20 +58,15 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-function getCtrlNumericKeys(): string[] {
-    const keys: string[] = [];
-    for (let i = 0; i <= 9; i++) {
-        keys.push(`ctrl+${i.toString()}`);
-    }
-    return keys;
-}
-
 /**
  * @name - Editor Page
  * @description - Page for adding/editing/removing tags to assets
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
+    public static contextType = KeyboardContext;
+    public context!: IKeyboardContext;
+
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = [];
     private canvas: RefObject<Canvas>;
@@ -101,6 +96,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.onTagClicked = this.onTagClicked.bind(this);
         this.onToolbarItemSelected = this.onToolbarItemSelected.bind(this);
         this.onAssetMetadataChanged = this.onAssetMetadataChanged.bind(this);
+
+        for (let i = 0; i <= 9; i++) {
+            this.context.keyboard.addHandler(`Ctrl+${i}`, this.handleTagHotKey);
+        }
     }
 
     public async componentDidMount() {
@@ -202,8 +201,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Listens for CTRL+{number key} and calls `onTagClicked` with tag corresponding to that number
      * @param event KeyDown event
      */
-    @keydown(getCtrlNumericKeys())
-    public handleTagHotKey(event) {
+    public handleTagHotKey(event: KeyboardEvent) {
         const key = parseInt(event.key, 10);
         if (isNaN(key)) {
             return;
@@ -239,6 +237,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         let selectionMode: SelectionMode = null;
         let editorMode: EditorMode = null;
 
+
         switch (toolbarItem.props.name) {
             case "drawRectangle":
                 selectionMode = SelectionMode.RECT;
@@ -258,7 +257,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 break;
             case "panCanvas":
                 selectionMode = SelectionMode.NONE;
-                editorMode = EditorMode.Select;
+                break;
+            case "navigatePreviousAsset":
+                this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+                break;
+            case "navigateNextAsset":
+                this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
                 break;
         }
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
+import { IKeyboardContext, KeyboardContext } from "../common/keyboardManager/keyboardManager";
 
 /**
  * Toolbar Item Metadata
@@ -16,6 +17,7 @@ export interface IToolbarItemMetadata {
     tooltip: string;
     group: string;
     type: ToolbarItemType;
+    accelerator?: string;
 }
 
 /**
@@ -47,11 +49,25 @@ export interface IToolbarItemProps extends IToolbarItemMetadata {
  * @description - Controls for Editor Page Toolbar
  */
 export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
+    public static contextType = KeyboardContext;
+    public context!: IKeyboardContext;
+    private unregisterKeyboardHandler: () => void;
+
     constructor(props, context) {
         super(props, context);
 
         this.onItemClick = this.onItemClick.bind(this);
         this.onClick = this.onClick.bind(this);
+
+        if (this.props.accelerator) {
+            this.unregisterKeyboardHandler = this.context.keyboard.addHandler(this.props.accelerator, this.onClick);
+        }
+    }
+
+    public componentWillUnmount() {
+        if (this.unregisterKeyboardHandler) {
+            this.unregisterKeyboardHandler();
+        }
     }
 
     public render() {
