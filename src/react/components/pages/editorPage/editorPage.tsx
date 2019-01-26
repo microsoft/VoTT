@@ -253,15 +253,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 setSelectionMode(SelectionMode.POLYGON);
                 this.setEditorMode(EditorMode.Polygon);
                 break;
-            case "drawPolyline":
-                setSelectionMode(SelectionMode.POLYLINE);
-                this.setEditorMode(EditorMode.Polyline);
-                break;
-            case "drawPoint":
-                setSelectionMode(SelectionMode.POINT);
-                this.setEditorMode(EditorMode.Point);
-                break;
-            case "drawCopyRect":
+            case "copyRectangle":
                 setSelectionMode(SelectionMode.COPYRECT);
                 this.setEditorMode(EditorMode.CopyRect);
                 break;
