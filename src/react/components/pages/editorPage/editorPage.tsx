@@ -240,7 +240,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const currentIndex = this.state.assets
             .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
 
-        const setSelectionMode = this.canvas.current.setSelectionMode;
+        const setSelectionMode = this.canvas.current.editor.AS.setSelectionMode;
         const playerRef = this.canvas.current.videoPlayer.current;
         const playerSate = playerRef.getState().player;
         switch (toolbarItem.props.name) {
@@ -280,7 +280,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         if (selectionMode) {
-            this.canvas.current.editor.setSelectionMode(selectionMode, null);
+            this.canvas.current.editor.AS.setSelectionMode(selectionMode, null);
         }
 
         if (editorMode) {

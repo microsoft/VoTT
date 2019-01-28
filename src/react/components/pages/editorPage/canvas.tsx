@@ -40,7 +40,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         canvasEnabled: true,
     };
 
-    private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
+    public videoPlayer: React.RefObject<Player> = React.createRef<Player>();
 
     public componentDidMount = async () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
