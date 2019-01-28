@@ -48,12 +48,13 @@ export default class MockFactory {
      * @param name Name of asset
      * @param assetState State of asset
      */
-    public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
+    public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited,
+                                  path: string = `C:\\Desktop\\asset${name}.jpg`): IAsset {
         return {
             id: `asset-${name}`,
             format: "jpg",
             name: `Asset ${name}.jpg`,
-            path: `C:\\Desktop\\asset${name}.jpg`,
+            path: `${path}`,
             state: assetState,
             type: AssetType.Image,
             size: {
@@ -61,6 +62,15 @@ export default class MockFactory {
                 height: 600,
             },
         };
+    }
+
+    /**
+     * Creates fake IAsset
+     * @param name Name of asset
+     * @param assetState State of asset
+     */
+    public static createWebTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
+        return MockFactory.createTestAsset(name, assetState, `https://image.com/asset${name}.jpg`);
     }
 
     /**
@@ -98,6 +108,18 @@ export default class MockFactory {
                 assets.push(MockFactory.createTestAsset(i.toString()));
             }
         }
+
+        return assets;
+    }
+
+    /**
+     * Creates array of fake IAsset with different protocols
+     * @param count Number of assets to create
+     */
+    public static createMixProtocolTestAssets(): IAsset[] {
+        const assets: IAsset[] = [];
+        assets.push(MockFactory.createTestAsset("0"));
+        assets.push(MockFactory.createWebTestAsset("1"));
 
         return assets;
     }
