@@ -4,14 +4,19 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState, IAssetMetadata, IProject } from "../../../../models/applicationState";
+import { IApplicationState, IAssetMetadata, IProject, EditorMode } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
 import ProjectService from "../../../../services/projectService";
-import EditorPage, { IEditorPageProps } from "./editorPage";
+import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 jest.mock("vott-ct");
 import { CanvasTools } from "vott-ct";
+import registerToolbar from "../../../../registerToolbar";
+import { DrawPolygon } from "../../toolbar/drawPolygon";
+import { DrawRectangle } from "../../toolbar/drawRectangle";
+import { Select } from "../../toolbar/select";
+import { Pan } from "../../toolbar/pan";
 
 jest.mock("../../../../services/projectService");
 
@@ -151,6 +156,51 @@ describe("Editor Page Component", () => {
             expect(saveAssetMetadataSpy).toBeCalledWith(expect.objectContaining(partialProject), savedAssetMetadata);
             expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
             done();
+        });
+    });
+
+    describe("Basic toolbar test", () => {
+        it("editor mode is changed correctly", async () => {
+            registerToolbar();
+            const testProject = MockFactory.createTestProject("TestProject");
+            const testAssets = MockFactory.createTestAssets(5);
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+
+            AssetProviderFactory.create = jest.fn(() => {
+                return {
+                    getAssets: jest.fn(() => Promise.resolve(testAssets)),
+                };
+            });
+
+            let savedAssetMetadata: IAssetMetadata = null;
+
+            assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
+                savedAssetMetadata = { ...assetMetadata };
+                return Promise.resolve(savedAssetMetadata);
+            });
+
+            const wrapper = createComponent(store, props);
+
+            await MockFactory.waitForCondition(() => {
+                const editorPage = wrapper
+                    .find(EditorPage)
+                    .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+                return !!editorPage.state().selectedAsset;
+            });
+
+            wrapper.find(DrawPolygon).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Polygon);
+
+            wrapper.find(DrawRectangle).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Rectangle);
+
+            wrapper.find(Select).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Select);
+
+            wrapper.find(Pan).simulate("click");
+            expect(getState(wrapper).mode).toEqual(EditorMode.Select);
         });
     });
 

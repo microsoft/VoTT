@@ -651,6 +651,26 @@ export default class MockFactory {
         });
     }
 
+    /**
+     * Runs and waits for a condidtion to be met and resolves a promise
+     * @param predicate The predicate to evaluate the condition
+     * @param interval The interval to check the value
+     */
+    public static waitForCondition(predicate: () => boolean, interval: number = 100): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const handle = setInterval(() => {
+                try {
+                    if (predicate()) {
+                        clearInterval(handle);
+                        resolve();
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            }, interval);
+        });
+    }
+
     public static createAzureCustomVisionTags(count: number = 10): IAzureCustomVisionTag[] {
         const tags: IAzureCustomVisionTag[] = [];
         for (let i = 1; i <= count; i++) {

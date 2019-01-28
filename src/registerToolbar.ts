@@ -8,6 +8,7 @@ import { Pan } from "./react/components/toolbar/pan";
 import { ZoomIn } from "./react/components/toolbar/zoomIn";
 import { ZoomOut } from "./react/components/toolbar/zoomOut";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
+import { CopyRectangle } from "./react/components/toolbar/copyRectangle";
 
 /**
  * Registers items for toolbar
@@ -33,6 +34,14 @@ export default function registerToolbar() {
         name: "drawRectangle",
         tooltip: "Draw Rectangle",
         icon: "fa-vector-square",
+        group: "canvas",
+        type: ToolbarItemType.State,
+    });
+
+    ToolbarItemFactory.register(CopyRectangle, {
+        name: "copyRectangle",
+        tooltip: "Copy Rectangle",
+        icon: "fa-clone",
         group: "canvas",
         type: ToolbarItemType.State,
     });

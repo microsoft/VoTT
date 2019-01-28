@@ -36,7 +36,7 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
  * @member project - Project being edited
  * @member assets - Array of assets in project
  */
-interface IEditorPageState {
+export interface IEditorPageState {
     project: IProject;
     assets: IAsset[];
     mode: EditorMode;
@@ -247,24 +247,23 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         switch (toolbarItem.props.name) {
             case "drawRectangle":
                 setSelectionMode(SelectionMode.RECT);
+                this.setEditorMode(EditorMode.Rectangle);
                 break;
             case "drawPolygon":
                 setSelectionMode(SelectionMode.POLYGON);
+                this.setEditorMode(EditorMode.Polygon);
                 break;
-            case "drawPolyline":
-                setSelectionMode(SelectionMode.POLYLINE);
-                break;
-            case "drawPoint":
-                setSelectionMode(SelectionMode.POINT);
-                break;
-            case "drawCopyRect":
+            case "copyRectangle":
                 setSelectionMode(SelectionMode.COPYRECT);
+                this.setEditorMode(EditorMode.CopyRect);
                 break;
             case "selectCanvas":
                 setSelectionMode(SelectionMode.NONE);
+                this.setEditorMode(EditorMode.Select);
                 break;
             case "panCanvas":
                 setSelectionMode(SelectionMode.NONE);
+                this.setEditorMode(EditorMode.Select);
                 break;
             default:
                 console.log(toolbarItem.props.name);
