@@ -151,7 +151,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 selectedAsset={this.state.selectedAsset}
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.mode}
-                                project={this.props.project} />
+                                project={this.props.project}/>
                         }
                     </div>
                     <div>
