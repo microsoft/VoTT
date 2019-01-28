@@ -1,7 +1,7 @@
 import React from "react";
 import * as shortid from "shortid";
-import { IAssetMetadata, IRegion, RegionType,
-        AssetState, EditorMode, IProject, AssetType } from "../../../../models/applicationState";
+import { IAssetMetadata, IRegion, RegionType, IAppError,
+        AssetState, EditorMode, IProject, AssetType, ErrorCode } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
 import { Player, ControlBar, CurrentTimeDisplay, TimeDivider,
     BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
@@ -10,6 +10,8 @@ import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/Regi
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { strings } from "../../../../common/strings";
+import { ErrorHandler, IErrorHandlerProps } from "../../../../react/components/common/errorHandler/errorHandler";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -260,6 +262,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             }
             { selectedAsset.asset.type === AssetType.Video &&
                 <div id="ct-zone">
+                    <div id="selection-zone">
+                        <div id="editor-zone" className="full-size">
+                        </div>
+                    </div>
                     <Player ref={this.playerRef}
                         fluid={false} width={"100%"} height={"100%"}
                         autoPlay={true}
@@ -274,10 +280,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                             <VolumeMenuButton enabled order={7.2} />
                         </ControlBar>
                     </Player>
-                    <div id="selection-zone">
-                        <div id="editor-zone" className="full-size">
-                        </div>
-                    </div>
                 </div>
             }
             </React.Fragment>
@@ -395,18 +397,21 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             });
             image.src = this.props.selectedAsset.asset.path;
         } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
-            this.freeze("Video playing");
             if (this.playerRef && this.playerRef.current) {
                 this.playerRef.current.subscribeToStateChange((state, prev) => {
                     // If the video is paused, add this frame to the editor content
                     if (state.paused && !state.waiting && state.hasStarted) {
-                        this.unfreeze();
                         this.updateRegions();
                     } else if (!state.paused) {
                         this.editor.addContentSource(this.playerRef.current.video.video);
                     }
                 });
             } else {
+                const errorInfo: IAppError = {
+                    errorCode: ErrorCode.Unknown,
+                    message: strings.errors.unknown.message,
+                    title: strings.errors.unknown.title,
+                };
                 // How do we want to handle this error case?
             }
         } else {

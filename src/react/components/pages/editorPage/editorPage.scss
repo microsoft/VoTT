@@ -133,13 +133,19 @@
 }
 
 #ct-zone {
+    position: relative;
     flex-grow: 1;
     padding: 5px;
 }
 
 #selection-zone {
+    position: absolute;
     padding: 5px;
+    top: 0;
+    left: 0;
     height: 100%;
+    width: 100%;
+    z-index: 0;
     background-color: $lighter-3;
 }
 
