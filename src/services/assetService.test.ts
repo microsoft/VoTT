@@ -121,4 +121,45 @@ describe("Asset Service", () => {
             expect(result).toBe(assetMetadata);
         });
     });
+
+    describe("Assets Protocol Tests", () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const testAssets = MockFactory.createMixProtocolTestAssets();
+        let assetService: AssetService = null;
+        let assetProviderMock: IAssetProvider = null;
+        let storageProviderMock: any = null;
+
+        beforeEach(() => {
+            assetProviderMock = {
+                getAssets: () => Promise.resolve(testAssets),
+            };
+
+            storageProviderMock = {
+                readText: jest.fn((filePath) => {
+                    const assetMetadata: IAssetMetadata = {
+                        asset: testAssets[0],
+                        regions: [],
+                        timestamp: null,
+                    };
+
+                    return JSON.stringify(assetMetadata, null, 4);
+                }),
+                writeText: jest.fn((filePath, contents) => true),
+            };
+
+            AssetProviderFactory.create = jest.fn(() => assetProviderMock);
+            StorageProviderFactory.create = jest.fn(() => storageProviderMock);
+
+            assetService = new AssetService(testProject);
+        });
+
+        it("Check file protocol", async () => {
+            const assets = await assetService.getAssets();
+
+            expect(assets.length).toEqual(2);
+            expect(assets[0].path).toEqual("file:C:\\Desktop\\asset0.jpg");
+            expect(assets[1].path).toEqual("https://image.com/asset1.jpg");
+        });
+
+    });
 });
