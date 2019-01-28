@@ -109,3 +109,16 @@ export function getInt32Buffer(value: number): Buffer {
 
     return new Buffer(intArray);
 }
+
+/**
+ * @s - Input string
+ * @description - Get a Uint8Array representation of an input string value
+ */
+export function  textEncode(str: string): Uint8Array {
+    const utf8 = unescape(encodeURIComponent(str));
+    const result = new Uint8Array(utf8.length);
+    for (let i = 0; i < utf8.length; i++) {
+        result[i] = utf8.charCodeAt(i);
+    }
+    return result;
+}

@@ -7,11 +7,9 @@ import { IProject, AssetState, AssetType, IAsset,
 import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
-import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
+import { itemTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
-import { TFRecordsImageMessage, Features, Feature, FeatureList,
-         BytesList, Int64List, FloatList } from "./tensorFlowRecords/tensorFlowRecordsProtoBuf_pb";
-import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer } from "./tensorFlowRecords/tensorFlowHelpers";
+import { TFRecordsBuilder } from "./tensorFlowRecords/tensorFlowBuilder";
 
 /**
  * @name - ITFRecordsJsonExportOptions
@@ -79,71 +77,6 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
         await this.exportPBTXT(exportFolderName, this.project);
         await this.exportRecords(exportFolderName, allAssets);
-    }
-
-    private addIntFeature(features: Features, key: string, value: number) {
-        const intList = new Int64List();
-        intList.addValue(value);
-
-        const feature = new Feature();
-        feature.setInt64List(intList);
-
-        const featuresMap = features.getFeatureMap();
-        featuresMap.set(key, feature);
-    }
-
-    private addIntArrayFeature(features: Features, key: string, values: number[]) {
-        const intList = new Int64List();
-        values.forEach((value) => {
-            intList.addValue(value);
-        });
-
-        const feature = new Feature();
-        feature.setInt64List(intList);
-
-        const featuresMap = features.getFeatureMap();
-        featuresMap.set(key, feature);
-    }
-
-    private addFloatArrayFeature(features: Features, key: string, values: number[]) {
-        const floatList = new FloatList();
-        values.forEach((value) => {
-            floatList.addValue(value);
-        });
-
-        const feature = new Feature();
-        feature.setFloatList(floatList);
-
-        const featuresMap = features.getFeatureMap();
-        featuresMap.set(key, feature);
-    }
-
-    private addStringFeature(features: Features, key: string, value: string) {
-        this.addBinaryArrayFeature(features, key, this.textEncode(value));
-    }
-
-    private addBinaryArrayFeature(features: Features, key: string, value: Uint8Array) {
-        const byteList = new BytesList();
-        byteList.addValue(value);
-
-        const feature = new Feature();
-        feature.setBytesList(byteList);
-
-        const featuresMap = features.getFeatureMap();
-        featuresMap.set(key, feature);
-    }
-
-    private addStringArrayFeature(features: Features, key: string, values: string[]) {
-        const byteList = new BytesList();
-        values.forEach((value) => {
-            byteList.addValue(this.textEncode(value));
-        });
-
-        const feature = new Feature();
-        feature.setBytesList(byteList);
-
-        const featuresMap = features.getFeatureMap();
-        featuresMap.set(key, feature);
     }
 
     private async writeTFRecord(fileNamePath: string, features: Features) {
@@ -218,25 +151,25 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 this.updateAssetTagArrays(element, imageInfo);
 
                 // Generate TFRecord
-                const features = new Features();
+                const builder = new TFRecordsBuilder();
 
-                this.addIntFeature(features, "image/height", imageInfo.height);
-                this.addIntFeature(features, "image/width", imageInfo.width);
-                this.addStringFeature(features, "image/filename", element.asset.name);
-                this.addStringFeature(features, "image/source_id", element.asset.name);
-                this.addStringFeature(features, "image/key/sha256", CryptoJS.SHA256(imageBuffer)
+                builder.addIntFeature("image/height", imageInfo.height);
+                builder.addIntFeature("image/width", imageInfo.width);
+                builder.addStringFeature("image/filename", element.asset.name);
+                builder.addStringFeature("image/source_id", element.asset.name);
+                builder.addStringFeature("image/key/sha256", CryptoJS.SHA256(imageBuffer)
                     .toString(CryptoJS.enc.Base64));
-                this.addBinaryArrayFeature(features, "image/encoded", imageBuffer);
-                this.addStringFeature(features, "image/format", element.asset.name.split(".").pop());
-                this.addFloatArrayFeature(features, "image/object/bbox/xmin", imageInfo.xmin);
-                this.addFloatArrayFeature(features, "image/object/bbox/ymin", imageInfo.ymin);
-                this.addFloatArrayFeature(features, "image/object/bbox/xmax", imageInfo.xmax);
-                this.addFloatArrayFeature(features, "image/object/bbox/ymax", imageInfo.ymax);
-                this.addStringArrayFeature(features, "image/object/class/text", imageInfo.text);
-                this.addIntArrayFeature(features, "image/object/class/label", imageInfo.label);
-                this.addIntArrayFeature(features, "image/object/difficult", imageInfo.difficult);
-                this.addIntArrayFeature(features, "image/object/truncated", imageInfo.truncated);
-                this.addStringArrayFeature(features, "image/object/view", imageInfo.view);
+                builder.addBinaryArrayFeature("image/encoded", imageBuffer);
+                builder.addStringFeature("image/format", element.asset.name.split(".").pop());
+                builder.addFloatArrayFeature("image/object/bbox/xmin", imageInfo.xmin);
+                builder.addFloatArrayFeature("image/object/bbox/ymin", imageInfo.ymin);
+                builder.addFloatArrayFeature("image/object/bbox/xmax", imageInfo.xmax);
+                builder.addFloatArrayFeature("image/object/bbox/ymax", imageInfo.ymax);
+                builder.addStringArrayFeature("image/object/class/text", imageInfo.text);
+                builder.addIntArrayFeature("image/object/class/label", imageInfo.label);
+                builder.addIntArrayFeature("image/object/difficult", imageInfo.difficult);
+                builder.addIntArrayFeature("image/object/truncated", imageInfo.truncated);
+                builder.addStringArrayFeature("image/object/view", imageInfo.view);
 
                 // Save TFRecord
                 const fileName = element.asset.name.split(".").slice(0, -1).join(".");
@@ -306,14 +239,5 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
             await this.storageProvider.writeText(pbtxtFileName, items.join(""));
         }
-    }
-
-    private textEncode(str: string): Uint8Array {
-        const utf8 = unescape(encodeURIComponent(str));
-        const result = new Uint8Array(utf8.length);
-        for (let i = 0; i < utf8.length; i++) {
-            result[i] = utf8.charCodeAt(i);
-        }
-        return result;
     }
 }
