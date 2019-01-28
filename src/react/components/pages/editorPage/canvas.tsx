@@ -1,8 +1,10 @@
 import React from "react";
 import * as shortid from "shortid";
 import { IAssetMetadata, IRegion, RegionType,
-        AssetState, EditorMode, IProject } from "../../../../models/applicationState";
+        AssetState, EditorMode, IProject, AssetType } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
+import { Player, ControlBar, CurrentTimeDisplay, TimeDivider,
+    BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
@@ -180,6 +182,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public editor: Editor;
 
+    private playerRef: React.RefObject<Player>;
+
     constructor(props, context) {
         super(props, context);
 
@@ -187,6 +191,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             loaded: false,
             selectedRegions: [],
         };
+
+        this.playerRef = React.createRef<Player>();
     }
 
     public componentDidMount() {
@@ -241,14 +247,41 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public render() {
         // const { loaded } = this.state;
         // const { svgHost } = this.props;
+        const { selectedAsset } = this.props;
 
         return (
-            <div id="ct-zone">
-                <div id="selection-zone">
-                    <div id="editor-zone" className="full-size"></div>
+            <React.Fragment>
+            {selectedAsset.asset.type === AssetType.Image &&
+                <div id="ct-zone">
+                    <div id="selection-zone">
+                        <div id="editor-zone" className="full-size" />
+                    </div>
                 </div>
-            </div>
-        );
+            }
+            { selectedAsset.asset.type === AssetType.Video &&
+                <div id="ct-zone">
+                    <Player ref={this.playerRef}
+                        fluid={false} width={"100%"} height={"100%"}
+                        autoPlay={true}
+                        poster={""}
+                        src={`${selectedAsset.asset.path}`}
+                    >
+                        <BigPlayButton position="center" />
+                        <ControlBar>
+                            <CurrentTimeDisplay order={1.1} />
+                            <TimeDivider order={1.2} />
+                            <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
+                            <VolumeMenuButton enabled order={7.2} />
+                        </ControlBar>
+                    </Player>
+                    <div id="selection-zone">
+                        <div id="editor-zone" className="full-size">
+                        </div>
+                    </div>
+                </div>
+            }
+            </React.Fragment>
+            );
     }
 
     /**
@@ -351,36 +384,62 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private updateEditor = () => {
         this.deleteAllRegions();
-        const image = new Image();
-        image.addEventListener("load", (e) => {
-            console.log("loading");
-            // @ts-ignore
-            this.editor.addContentSource(e.target);
-            if (this.props.selectedAsset.regions.length) {
-                this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    const loadedRegionData = new RegionData(region.boundingBox.left,
-                                                            region.boundingBox.top,
-                                                            region.boundingBox.width,
-                                                            region.boundingBox.height,
-                                                            region.points.map((point) => new Point2D(point.x, point.y)),
-                                                            this.regionTypeToType(region.type));
-                    if (region.tags.length) {
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
-                                        new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name,
-                                            this.props.project.tags.find((t) => t.name === tag.name).color))));
-                    } else {
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor());
-                    }
-                    if (this.state.selectedRegions) {
-                        this.setState({
-                            selectedRegions: [this.props.selectedAsset.regions[
-                                this.props.selectedAsset.regions.length - 1]],
-                        });
+        // We need to check if we're looking for a video or image
+        if (this.props.selectedAsset.asset.type === AssetType.Image) {
+            const image = new Image();
+            image.addEventListener("load", (e) => {
+                console.log("loading");
+                // @ts-ignore
+                this.editor.addContentSource(e.target);
+                this.updateRegions();
+            });
+            image.src = this.props.selectedAsset.asset.path;
+        } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
+            this.freeze("Video playing");
+            if (this.playerRef && this.playerRef.current) {
+                this.playerRef.current.subscribeToStateChange((state, prev) => {
+                    // If the video is paused, add this frame to the editor content
+                    if (state.paused && !state.waiting && state.hasStarted) {
+                        this.unfreeze();
+                        this.updateRegions();
+                    } else if (!state.paused) {
+                        this.editor.addContentSource(this.playerRef.current.video.video);
                     }
                 });
+            } else {
+                // How do we want to handle this error case?
             }
-        });
-        image.src = this.props.selectedAsset.asset.path;
+        } else {
+            // How do we want to handle this error case? Is it an error case?
+        }
+    }
+
+    private updateRegions() {
+        if (this.props.selectedAsset.regions.length) {
+            this.props.selectedAsset.regions.forEach((region: IRegion) => {
+                const loadedRegionData = new RegionData(region.boundingBox.left,
+                                                        region.boundingBox.top,
+                                                        region.boundingBox.width,
+                                                        region.boundingBox.height,
+                                                        region.points.map((point) =>
+                                                            new Point2D(point.x, point.y)),
+                                                        this.regionTypeToType(region.type));
+                if (region.tags.length) {
+                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
+                                    new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name,
+                                        this.props.project.tags.find((t) => t.name === tag.name).color))));
+                } else {
+                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
+                        new TagsDescriptor());
+                }
+                if (this.state.selectedRegions) {
+                    this.setState({
+                        selectedRegions: [this.props.selectedAsset.regions[
+                            this.props.selectedAsset.regions.length - 1]],
+                    });
+                }
+            });
+        }
     }
 
     private updateSelected(selectedRegions: IRegion[]) {
