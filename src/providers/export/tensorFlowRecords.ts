@@ -79,40 +79,6 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
         await this.exportRecords(exportFolderName, allAssets);
     }
 
-    private async writeTFRecord(fileNamePath: string, features: Features) {
-        try {
-            // Get Protocol Buffer TFRecords object with exported image features
-            const imageMessage = new TFRecordsImageMessage();
-            imageMessage.setContext(features);
-
-            // Serialize Protocol Buffer in a buffer
-            const bytes = imageMessage.serializeBinary();
-            const bufferData = new Buffer(bytes);
-            const length = bufferData.length;
-
-            // Get TFRecords CRCs for TFRecords Header and Footer
-            const bufferLength = getInt64Buffer(length);
-            const bufferLengthMaskedCRC = getInt32Buffer(maskCrc(crc32c(bufferLength)));
-            const bufferDataMaskedCRC = getInt32Buffer(maskCrc(crc32c(bufferData)));
-
-            // Concatenate all TFRecords Header, Data and Footer buffer
-            const outBuffer = Buffer.concat([bufferLength,
-                                             bufferLengthMaskedCRC,
-                                             bufferData,
-                                             bufferDataMaskedCRC]);
-
-            // Write TFRecords
-            await this.storageProvider.writeBinary(fileNamePath, outBuffer);
-
-        } catch (error) {
-            // Ignore the error at the moment
-            // TODO: Refactor ExportProvider abstract class export() method
-            //       to return Promise<object> with an object containing
-            //       the number of files succesfully exported out of total
-            console.log(`Error Writing TFRecords ${fileNamePath} - ${error}`);
-        }
-    }
-
     private async exportRecords(exportFolderName: string, allAssets: IAssetMetadata[]) {
         const allImageExports = allAssets.map((element) => {
             return this.exportSingleRecord(exportFolderName, element);
@@ -159,7 +125,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 builder.addStringFeature("image/source_id", element.asset.name);
                 builder.addStringFeature("image/key/sha256", CryptoJS.SHA256(imageBuffer)
                     .toString(CryptoJS.enc.Base64));
-                builder.addBinaryArrayFeature("image/encoded", imageBuffer);
+                builder.addBinaryFeature("image/encoded", imageBuffer);
                 builder.addStringFeature("image/format", element.asset.name.split(".").pop());
                 builder.addFloatArrayFeature("image/object/bbox/xmin", imageInfo.xmin);
                 builder.addFloatArrayFeature("image/object/bbox/ymin", imageInfo.ymin);
@@ -171,10 +137,10 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 builder.addIntArrayFeature("image/object/truncated", imageInfo.truncated);
                 builder.addStringArrayFeature("image/object/view", imageInfo.view);
 
-                // Save TFRecord
+                // Save TFRecords
                 const fileName = element.asset.name.split(".").slice(0, -1).join(".");
                 const fileNamePath = `${exportFolderName}/${fileName}.tfrecord`;
-                await this.writeTFRecord(fileNamePath, features);
+                await this.writeTFRecords(fileNamePath, [builder.releaseTFRecord()]);
 
                 resolve();
             } catch (error) {
@@ -187,6 +153,14 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 // eject(err);
             }
         });
+    }
+
+    private async writeTFRecords(fileNamePath: string, buffers: Buffer[]) {
+        // Get TFRecords buffer
+        const tfRecords = TFRecordsBuilder.releaseTFRecords(buffers);
+
+        // Write TFRecords
+        await this.storageProvider.writeBinary(fileNamePath, tfRecords);
     }
 
     private async updateImageSizeInfo(image64: string, imageInfo: IImageInfo) {
