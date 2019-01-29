@@ -173,7 +173,6 @@ describe("Editor Page Component", () => {
                 state: AssetState.Visited,
             },
             regions: [MockFactory.createMockRegion()],
-            timestamp: null,
         };
 
         setImmediate(() => {
@@ -283,7 +282,6 @@ describe("Editor Page Component", () => {
                     state: AssetState.Visited,
                 },
                 regions: [MockFactory.createMockRegion()],
-                timestamp: null,
             };
 
             expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);
@@ -302,7 +300,6 @@ describe("Editor Page Component", () => {
                     state: AssetState.Visited,
                 },
                 regions: [MockFactory.createMockRegion()],
-                timestamp: null,
             };
 
             expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);
