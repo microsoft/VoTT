@@ -8,7 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings,
+    IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings, AssetType,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -20,6 +20,7 @@ import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
+import { select } from "snapsvg";
 
 /**
  * Properties for Editor Page
@@ -43,6 +44,7 @@ export interface IEditorPageState {
     assets: IAsset[];
     mode: EditorMode;
     selectedAsset?: IAssetMetadata;
+    canvasAsset?: IAssetMetadata;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -272,8 +274,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
+    private bool hasChildAssets(asset: IAsset) {
+        return asset.type === AssetType.Video;
+    }
+
     private async selectAsset(asset: IAsset) {
-        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, selectedAsset);
         if (assetMetadata.asset.state === AssetState.NotVisited) {
             assetMetadata.asset.state = AssetState.Visited;
         }
@@ -287,12 +293,28 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.error(err);
         }
 
-        this.onAssetMetadataChanged(assetMetadata);
+        let canvasAsset = asset;
+
+        if (this.hasChildAssets(asset)) {
+            const childAsset = { ...asset };
+            childAsset.timestamp = 0;
+            childAsset.path = `${childAsset.path}?timestamp=${childAsset.timestamp}`;
+            childAsset.parent = asset.id;
+            canvasAsset = childAsset;
+        }
+
+        this.onAssetMetadataChanged(selectedAsset);
 
         this.setState({
             selectedAsset: assetMetadata,
+            canvasAsset: canvasAsset,
             assets: _.values(this.props.project.assets),
         });
+    }
+
+    private onVideoPaused() {
+        const childAsset = { ...this.state.selectedAsset.asset };
+        this.selectAsset(childAsset);
     }
 
     private async loadProjectAssets() {
