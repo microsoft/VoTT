@@ -104,9 +104,16 @@
                 }
             }
 
-            img, video {
+            img {
                 display: inline-block;
                 margin: auto;
+                max-width: 100%;
+                max-height: 100%;
+            }
+
+            video {
+                display: inline-block;
+                margin: 0px;
                 max-width: 100%;
                 max-height: 100%;
             }
