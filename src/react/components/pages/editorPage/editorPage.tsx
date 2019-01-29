@@ -292,6 +292,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         return asset.type === AssetType.Video;
     }
 
+    private bool hasChildAssets(asset: IAsset) {
+        return asset.type === AssetType.Video;
+    }
+
     private async selectAsset(asset: IAsset) {
         let assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
         if (assetMetadata.asset.state === AssetState.NotVisited) {
