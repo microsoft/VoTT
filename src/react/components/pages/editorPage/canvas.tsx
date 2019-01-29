@@ -194,7 +194,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const sz = document.getElementById("editor-zone") as unknown as HTMLDivElement;
 
         // @ts-ignore
-        this.editor = new ct.Editor(sz).api;
+        this.editor = new ct.Editor(sz);
 
         // Expose CanvasTools Editor API
         this.scaleRegionToFrameSize = this.editor.scaleRegionToFrameSize.bind(this.editor);
