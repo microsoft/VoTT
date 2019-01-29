@@ -44,7 +44,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
         this.editor = new CanvasTools.Editor(sz);
         this.editor.onSelectionEnd = this.onSelectionEnd;
-        this.editor.onRegionMove = this.onRegionMove;
+        this.editor.onRegionMove = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
 
@@ -131,7 +131,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {RegionData} regionData the RegionData of moved region
      * @returns {void}
      */
-    public onRegionMove = (id: string, regionData: RegionData) => {
+    public onRegionMoveEnd = (id: string, regionData: RegionData) => {
         const ct = CanvasTools;
         const currentAssetMetadata = this.props.selectedAsset;
         const movedRegionIndex = currentAssetMetadata.regions.findIndex((region) => region.id === id);
