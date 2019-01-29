@@ -40,7 +40,7 @@ describe("Editor Page Component", () => {
 
     beforeAll(() => {
         const editorMock = CanvasTools.Editor as any;
-        editorMock.prototype.RM = new CanvasTools.Region.RegionsManager(null, null, null);
+        editorMock.prototype.RM = new CanvasTools.Region.RegionsManager(null, null);
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
     });
 

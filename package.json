@@ -27,8 +27,8 @@
         "redux-thunk": "^2.3.0",
         "rimraf": "^2.6.2",
         "shortid": "^2.2.14",
-        "vott-ct": "^2.1.11",
-        "video-react": "^0.13.2"
+        "video-react": "^0.13.2",
+        "vott-ct": "^2.1.17"
     },
     "scripts": {
         "start": "nf start -p 3000",
