@@ -393,8 +393,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             if (this.playerRef && this.playerRef.current && this.selectionRef && this.selectionRef.current) {
                 // Update the selection div to have 5px padding (same as the video player)
                 // and remove 3.0em from the height (height of the control bar)
-                this.selectionRef.current.style.padding = "5px";
-                this.selectionRef.current.style.height = "calc(100% - 3.0em)";
+                this.selectionRef.current.style.height = "calc(100% - 2.0em)";
+                this.playerRef.current.manager.rootElement.style.position = "absolute";
                 this.playerRef.current.subscribeToStateChange((state, prev) => {
                     // If the video is paused, add this frame to the editor content
                     if (state.paused && !state.waiting && state.hasStarted) {
