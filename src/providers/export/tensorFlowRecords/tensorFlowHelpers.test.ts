@@ -1,4 +1,4 @@
-import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer } from "./tensorFlowHelpers";
+import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer, textEncode } from "./tensorFlowHelpers";
 
 describe("TFRecords Helper Functions", () => {
     describe("Run getInt64Buffer method test", () => {
@@ -29,6 +29,12 @@ describe("TFRecords Helper Functions", () => {
         it("Check maskCrc for for number 164865", async () => {
             expect(getInt32Buffer(maskCrc(crc32c(getInt64Buffer(164865)))))
                 .toEqual(new Buffer([5, 135, 25, 235]));
+        });
+    });
+
+    describe("Run textEncode method test", () => {
+        it("Check textEncode for string 'ABC123'", async () => {
+            expect(textEncode("ABC123")).toEqual(new Uint8Array([65, 66, 67, 49, 50, 51]));
         });
     });
 });
