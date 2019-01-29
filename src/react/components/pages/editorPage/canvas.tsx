@@ -252,37 +252,27 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const { selectedAsset } = this.props;
 
         return (
-            <React.Fragment>
-            {selectedAsset.asset.type === AssetType.Image &&
                 <div id="ct-zone">
+                    { selectedAsset.asset.type === AssetType.Video &&
+                        <Player ref={this.playerRef}
+                            fluid={false} width={"100%"} height={"100%"}
+                            autoPlay={true}
+                            poster={""}
+                            src={`${selectedAsset.asset.path}`}
+                        >
+                            <BigPlayButton position="center" />
+                            <ControlBar>
+                                <CurrentTimeDisplay order={1.1} />
+                                <TimeDivider order={1.2} />
+                                <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
+                                <VolumeMenuButton enabled order={7.2} />
+                            </ControlBar>
+                        </Player>
+                    }
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
                     </div>
-                </div>
-            }
-            { selectedAsset.asset.type === AssetType.Video &&
-                <div id="ct-zone">
-                    <div id="selection-zone">
-                        <div id="editor-zone" className="full-size">
-                        </div>
-                    </div>
-                    <Player ref={this.playerRef}
-                        fluid={false} width={"100%"} height={"100%"}
-                        autoPlay={true}
-                        poster={""}
-                        src={`${selectedAsset.asset.path}`}
-                    >
-                        <BigPlayButton position="center" />
-                        <ControlBar>
-                            <CurrentTimeDisplay order={1.1} />
-                            <TimeDivider order={1.2} />
-                            <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
-                            <VolumeMenuButton enabled order={7.2} />
-                        </ControlBar>
-                    </Player>
-                </div>
-            }
-            </React.Fragment>
+            </div>
             );
     }
 
@@ -401,8 +391,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 this.playerRef.current.subscribeToStateChange((state, prev) => {
                     // If the video is paused, add this frame to the editor content
                     if (state.paused && !state.waiting && state.hasStarted) {
+                        // If we're paused, make sure we're behind the canvas so we can tag
+                        this.playerRef.current.manager.rootElement.style.zIndex = 0;
                         this.updateRegions();
                     } else if (!state.paused) {
+                        // We need to make sure we're on top if we are playing
+                        this.playerRef.current.manager.rootElement.style.zIndex = 9001;
                         this.editor.addContentSource(this.playerRef.current.video.video);
                     }
                 });
