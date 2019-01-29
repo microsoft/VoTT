@@ -65,7 +65,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public render = () => {
         const { selectedAsset } = this.props;
-        const validHeight = selectedAsset.asset.type === AssetType.Video ? "95%" : "100%";
 
         return (
             <div id="ct-zone" className={this.state.canvasEnabled ? "canvas-enabled" : "canvas-disabled"}>
