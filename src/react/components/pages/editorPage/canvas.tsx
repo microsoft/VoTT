@@ -185,6 +185,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public editor: Editor;
 
     private playerRef: React.RefObject<Player>;
+    private selectionRef: React.RefObject<HTMLDivElement>;
 
     constructor(props, context) {
         super(props, context);
@@ -195,6 +196,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         };
 
         this.playerRef = React.createRef<Player>();
+        this.selectionRef = React.createRef<HTMLDivElement>();
     }
 
     public componentDidMount() {
@@ -250,6 +252,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // const { loaded } = this.state;
         // const { svgHost } = this.props;
         const { selectedAsset } = this.props;
+        const validHeight = selectedAsset.asset.type === AssetType.Video ? "95%" : "100%";
 
         return (
                 <div id="ct-zone">
@@ -269,7 +272,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                             </ControlBar>
                         </Player>
                     }
-                    <div id="selection-zone">
+                    <div id="selection-zone" ref={this.selectionRef}>
                         <div id="editor-zone" className="full-size" />
                     </div>
             </div>
@@ -387,17 +390,21 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             });
             image.src = this.props.selectedAsset.asset.path;
         } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
-            if (this.playerRef && this.playerRef.current) {
+            if (this.playerRef && this.playerRef.current && this.selectionRef && this.selectionRef.current) {
+                // Update the selection div to have 5px padding (same as the video player)
+                // and remove 3.0em from the height (height of the control bar)
+                this.selectionRef.current.style.padding = "5px";
+                this.selectionRef.current.style.height = "calc(100% - 3.0em)";
                 this.playerRef.current.subscribeToStateChange((state, prev) => {
                     // If the video is paused, add this frame to the editor content
                     if (state.paused && !state.waiting && state.hasStarted) {
                         // If we're paused, make sure we're behind the canvas so we can tag
                         this.playerRef.current.manager.rootElement.style.zIndex = 0;
+                        this.editor.addContentSource(this.playerRef.current.video.video);
                         this.updateRegions();
                     } else if (!state.paused) {
                         // We need to make sure we're on top if we are playing
                         this.playerRef.current.manager.rootElement.style.zIndex = 9001;
-                        this.editor.addContentSource(this.playerRef.current.video.video);
                     }
                 });
             } else {
