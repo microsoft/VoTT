@@ -9,9 +9,9 @@ import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
-import { TFRecordsBuilder } from "./tensorFlowRecords/tensorFlowBuilder";
+import { TFRecordsBuilder, FeatureType } from "./tensorFlowRecords/tensorFlowBuilder";
 
-/**
+/**64
  * @name - ITFRecordsJsonExportOptions
  * @description - Defines the configurable options for the Vott JSON Export provider
  */
@@ -119,28 +119,28 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                 // Generate TFRecord
                 const builder = new TFRecordsBuilder();
 
-                builder.addIntFeature("image/height", imageInfo.height);
-                builder.addIntFeature("image/width", imageInfo.width);
-                builder.addStringFeature("image/filename", element.asset.name);
-                builder.addStringFeature("image/source_id", element.asset.name);
-                builder.addStringFeature("image/key/sha256", CryptoJS.SHA256(imageBuffer)
+                builder.addFeature("image/height", FeatureType.Int64, imageInfo.height);
+                builder.addFeature("image/width", FeatureType.Int64, imageInfo.width);
+                builder.addFeature("image/filename", FeatureType.String, element.asset.name);
+                builder.addFeature("image/source_id", FeatureType.String, element.asset.name);
+                builder.addFeature("image/key/sha256", FeatureType.String, CryptoJS.SHA256(imageBuffer)
                     .toString(CryptoJS.enc.Base64));
-                builder.addBinaryFeature("image/encoded", imageBuffer);
-                builder.addStringFeature("image/format", element.asset.name.split(".").pop());
-                builder.addFloatArrayFeature("image/object/bbox/xmin", imageInfo.xmin);
-                builder.addFloatArrayFeature("image/object/bbox/ymin", imageInfo.ymin);
-                builder.addFloatArrayFeature("image/object/bbox/xmax", imageInfo.xmax);
-                builder.addFloatArrayFeature("image/object/bbox/ymax", imageInfo.ymax);
-                builder.addStringArrayFeature("image/object/class/text", imageInfo.text);
-                builder.addIntArrayFeature("image/object/class/label", imageInfo.label);
-                builder.addIntArrayFeature("image/object/difficult", imageInfo.difficult);
-                builder.addIntArrayFeature("image/object/truncated", imageInfo.truncated);
-                builder.addStringArrayFeature("image/object/view", imageInfo.view);
+                builder.addFeature("image/encoded", FeatureType.Binary, imageBuffer);
+                builder.addFeature("image/format", FeatureType.String, element.asset.name.split(".").pop());
+                builder.addArrayFeature("image/object/bbox/xmin", FeatureType.Float, imageInfo.xmin);
+                builder.addArrayFeature("image/object/bbox/ymin", FeatureType.Float, imageInfo.ymin);
+                builder.addArrayFeature("image/object/bbox/xmax", FeatureType.Float, imageInfo.xmax);
+                builder.addArrayFeature("image/object/bbox/ymax", FeatureType.Float, imageInfo.ymax);
+                builder.addArrayFeature("image/object/class/text", FeatureType.String, imageInfo.text);
+                builder.addArrayFeature("image/object/class/label", FeatureType.Int64, imageInfo.label);
+                builder.addArrayFeature("image/object/difficult", FeatureType.Int64, imageInfo.difficult);
+                builder.addArrayFeature("image/object/truncated", FeatureType.Int64, imageInfo.truncated);
+                builder.addArrayFeature("image/object/view", FeatureType.String, imageInfo.view);
 
                 // Save TFRecords
                 const fileName = element.asset.name.split(".").slice(0, -1).join(".");
                 const fileNamePath = `${exportFolderName}/${fileName}.tfrecord`;
-                await this.writeTFRecords(fileNamePath, [builder.releaseTFRecord()]);
+                await this.writeTFRecords(fileNamePath, [builder.build()]);
 
                 resolve();
             } catch (error) {
@@ -157,7 +157,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
     private async writeTFRecords(fileNamePath: string, buffers: Buffer[]) {
         // Get TFRecords buffer
-        const tfRecords = TFRecordsBuilder.releaseTFRecords(buffers);
+        const tfRecords = TFRecordsBuilder.buildTFRecords(buffers);
 
         // Write TFRecords
         await this.storageProvider.writeBinary(fileNamePath, tfRecords);
