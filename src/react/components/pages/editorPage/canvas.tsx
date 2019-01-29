@@ -252,7 +252,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // const { loaded } = this.state;
         // const { svgHost } = this.props;
         const { selectedAsset } = this.props;
-        const validHeight = selectedAsset.asset.type === AssetType.Video ? "95%" : "100%";
 
         return (
                 <div id="ct-zone">
@@ -391,10 +390,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             image.src = this.props.selectedAsset.asset.path;
         } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
             if (this.playerRef && this.playerRef.current && this.selectionRef && this.selectionRef.current) {
-                // Update the selection div to have 5px padding (same as the video player)
-                // and remove 3.0em from the height (height of the control bar)
+                // Update the selection div to remove 2.0em from the height (height of the control bar)
                 this.selectionRef.current.style.height = "calc(100% - 2.0em)";
-                this.playerRef.current.manager.rootElement.style.position = "absolute";
                 this.playerRef.current.subscribeToStateChange((state, prev) => {
                     // If the video is paused, add this frame to the editor content
                     if (state.paused && !state.waiting && state.hasStarted) {
@@ -416,7 +413,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 // How do we want to handle this error case?
             }
         } else {
-            // How do we want to handle this error case? Is it an error case?
+            // How do we want to handle this error case? Is it an error case? We don't know what type of
+            // asset this is?
         }
     }
 
