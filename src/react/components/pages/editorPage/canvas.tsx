@@ -249,8 +249,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
     public render() {
-        // const { loaded } = this.state;
-        // const { svgHost } = this.props;
         const { selectedAsset } = this.props;
 
         return (
@@ -380,42 +378,55 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.deleteAllRegions();
         // We need to check if we're looking for a video or image
         if (this.props.selectedAsset.asset.type === AssetType.Image) {
-            const image = new Image();
-            image.addEventListener("load", (e) => {
-                console.log("loading");
-                // @ts-ignore
-                this.editor.addContentSource(e.target);
-                this.updateRegions();
-            });
-            image.src = this.props.selectedAsset.asset.path;
+            this.loadImage();
         } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
-            if (this.playerRef && this.playerRef.current && this.selectionRef && this.selectionRef.current) {
-                // Update the selection div to remove 2.0em from the height (height of the control bar)
-                this.selectionRef.current.style.height = "calc(100% - 2.0em)";
-                this.playerRef.current.subscribeToStateChange((state, prev) => {
-                    // If the video is paused, add this frame to the editor content
-                    if (state.paused && !state.waiting && state.hasStarted) {
-                        // If we're paused, make sure we're behind the canvas so we can tag
-                        this.playerRef.current.manager.rootElement.style.zIndex = 0;
-                        this.editor.addContentSource(this.playerRef.current.video.video);
-                        this.updateRegions();
-                    } else if (!state.paused) {
-                        // We need to make sure we're on top if we are playing
-                        this.playerRef.current.manager.rootElement.style.zIndex = 9001;
-                    }
-                });
-            } else {
-                const errorInfo: IAppError = {
-                    errorCode: ErrorCode.Unknown,
-                    message: strings.errors.unknown.message,
-                    title: strings.errors.unknown.title,
-                };
-                // How do we want to handle this error case?
-            }
+            this.loadVideo();
         } else {
-            // How do we want to handle this error case? Is it an error case? We don't know what type of
-            // asset this is?
+            // We don't know what type of asset this is?
+            throw new Error(strings.editorPage.assetError);
         }
+    }
+
+    /**
+     * @name loadVideo
+     * @description loads a video into the canvas
+     * @returns {void}
+     */
+    private loadVideo() {
+        if (this.playerRef && this.playerRef.current && this.selectionRef && this.selectionRef.current) {
+            // Update the selection div to remove 2.0em from the height (height of the control bar)
+            this.selectionRef.current.style.height = "calc(100% - 2.0em)";
+            this.playerRef.current.subscribeToStateChange((state, prev) => {
+                // If the video is paused, add this frame to the editor content
+                if (state.paused && !state.waiting && state.hasStarted) {
+                    // If we're paused, make sure we're behind the canvas so we can tag
+                    this.playerRef.current.manager.rootElement.style.zIndex = 0;
+                    this.editor.addContentSource(this.playerRef.current.video.video);
+                    this.updateRegions();
+                } else if (!state.paused) {
+                    // We need to make sure we're on top if we are playing
+                    this.playerRef.current.manager.rootElement.style.zIndex = 9001;
+                }
+            });
+        } else {
+            // Something has gone majorly wrong to get to this spot
+            throw new Error(strings.errors.unknown.message);
+        }
+    }
+
+    /**
+     * @name loadImage
+     * @description loads an image into the canvas
+     * @returns {void}
+     */
+    private loadImage() {
+        const image = new Image();
+        image.addEventListener("load", (e) => {
+            // @ts-ignore
+            this.editor.addContentSource(e.target);
+            this.updateRegions();
+        });
+        image.src = this.props.selectedAsset.asset.path;
     }
 
     private updateRegions() {
