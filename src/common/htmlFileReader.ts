@@ -105,21 +105,6 @@ export default class HtmlFileReader {
         });
     }
 
-    // private static readVideoFrameAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {
-    //     return new Promise((resolve, reject) => {
-    //         const video = document.createElement("video") as HTMLVideoElement;
-    //         video.onloadedmetadata = () => {
-    //             resolve({
-    //                 width: video.videoWidth,
-    //                 height: video.videoHeight,
-    //                 duration: video.duration,
-    //             });
-    //         };
-    //         video.onerror = reject;
-    //         video.src = url;
-    //     });
-    // }
-
     private static readImageAttributes(url: string): Promise<{ width: number, height: number }> {
         return new Promise((resolve, reject) => {
             const image = document.createElement("img") as HTMLImageElement;
