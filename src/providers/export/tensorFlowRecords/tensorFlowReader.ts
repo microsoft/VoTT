@@ -53,7 +53,7 @@ export class TFRecordsReader {
     /**
      * @description - Return the number of TFRecords read
      */
-    public length(): number {
+    get length(): number {
         return this.imageMessages.length;
     }
 

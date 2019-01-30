@@ -19,7 +19,7 @@ describe("TFRecords Reader/Builder Integration test", () => {
 
             const reader = new TFRecordsReader(tfrecords);
 
-            expect(reader.length()).toEqual(1);
+            expect(reader.length).toEqual(1);
         });
 
         it("Check multiple TFRecords", async () => {
@@ -33,7 +33,7 @@ describe("TFRecords Reader/Builder Integration test", () => {
 
             const reader = new TFRecordsReader(tfrecords);
 
-            expect(reader.length()).toEqual(2);
+            expect(reader.length).toEqual(2);
         });
     });
 });
