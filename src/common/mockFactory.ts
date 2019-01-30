@@ -96,40 +96,6 @@ export default class MockFactory {
     }
 
     /**
-     * @name Create Unknown Asset type
-     * @description Creates fake IAsset with unknown type
-     * @param name Name of asset
-     * @param assetState State of asset
-     */
-    public static createUnknownTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
-        return {
-            id: `unkasset-${name}`,
-            format: ".docx",
-            name: `Unknown Asset ${name}`,
-            path: `C:\\Desktop\\unkasset${name}.docx`,
-            state: assetState,
-            type: AssetType.Unknown,
-            size: {
-                width: 800,
-                height: 600,
-            },
-        };
-    }
-
-    /**
-     * Creates array of fake IAsset with unknown types
-     * @param count Number of assets to create
-     */
-    public static createUnknownTypeTestAssets(count: number = 5): IAsset[] {
-        const assets: IAsset[] = [];
-        for (let i = 1; i <= count; i++) {
-            assets.push(MockFactory.createUnknownTestAsset(i.toString()));
-        }
-
-        return assets;
-    }
-
-    /**
      * Creates a mock region
      */
     public static createMockRegion(): IRegion {
