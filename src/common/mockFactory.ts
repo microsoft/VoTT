@@ -568,8 +568,10 @@ export default class MockFactory {
         const canvasProps: ICanvasProps = {
             project,
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
+            canvasAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
+            onVideoPaused: jest.fn(),
         };
         return new Canvas(canvasProps);
     }
