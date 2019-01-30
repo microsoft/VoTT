@@ -20,7 +20,7 @@ export class TFRecordsReader {
                 const lengthCrc = maskCrc(crc32c(lengthBuffer));
                 position += 8;
 
-                const expectedLengthCrc = tfrecords.readInt32LE(position);
+                const expectedLengthCrc = tfrecords.readUInt32LE(position);
                 position += 4;
 
                 if (lengthCrc !== expectedLengthCrc) {
@@ -32,7 +32,7 @@ export class TFRecordsReader {
                 const dataCrc = maskCrc(crc32c(dataBuffer));
                 position += dataLength;
 
-                const expectedDataCrc = tfrecords.readInt32LE(position);
+                const expectedDataCrc = tfrecords.readUInt32LE(position);
                 position += 4;
 
                 if (dataCrc !== expectedDataCrc) {
@@ -60,7 +60,7 @@ export class TFRecordsReader {
     /**
      * @description - Return the TFRecords in a JSON Object Array format
      */
-    public toJSON(): object {
-        return [];
+    public toJSONArray(): object[] {
+        return this.imageMessages.map((imageMessage) => imageMessage.toObject());
     }
 }
