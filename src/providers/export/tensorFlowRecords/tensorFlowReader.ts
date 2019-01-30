@@ -15,8 +15,9 @@ export class TFRecordsReader {
             let position = 0;
 
             while (position < tfrecords.length) {
-                const dataLength = readInt64(tfrecords, position);
-                const lengthCrc = maskCrc(crc32c(tfrecords.slice(position, position + 8)));
+                const lengthBuffer = tfrecords.slice(position, position + 8);
+                const dataLength = readInt64(lengthBuffer, 0);
+                const lengthCrc = maskCrc(crc32c(lengthBuffer));
                 position += 8;
 
                 const expectedLengthCrc = tfrecords.readInt32LE(position);
@@ -39,7 +40,10 @@ export class TFRecordsReader {
                     break;
                 }
 
-                // dataBuffer => TFRecord
+                // Deserialize TFRecord from dataBuffer
+                const imageMessage: TFRecordsImageMessage = TFRecordsImageMessage.deserializeBinary(dataBuffer);
+
+                this.imageMessages.push(imageMessage);
             }
         } catch (error) {
             console.log(error);
