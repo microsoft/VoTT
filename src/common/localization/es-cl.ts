@@ -201,5 +201,10 @@ export const spanish: IAppStrings = {
                 configuración de la aplicación actual. Compruebe que existe el token de seguridad e intente
                 volver a cargar el proyecto.`,
         },
+        canvasError: {
+            title: "Error al cargar el lienzo",
+            message: `Se produjo un error al cargar el lienzo, verifique los activos del
+                proyecto y vuelva a intentarlo.`,
+        },
     },
 };

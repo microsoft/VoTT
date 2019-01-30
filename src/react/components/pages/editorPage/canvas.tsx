@@ -382,7 +382,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.loadVideo();
         } else {
             // We don't know what type of asset this is?
-            throw new AppError(ErrorCode.Unknown, strings.editorPage.assetError);
+            throw new AppError(ErrorCode.CanvasError, strings.editorPage.assetError);
         }
     }
 
@@ -409,7 +409,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             });
         } else {
             // Something has gone majorly wrong to get to this spot
-            throw new AppError(ErrorCode.Unknown, strings.errors.unknown.message);
+            throw new AppError(ErrorCode.CanvasError, strings.errors.unknown.message);
         }
     }
 

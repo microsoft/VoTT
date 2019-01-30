@@ -200,5 +200,9 @@ export const english: IAppStrings = {
             message: `The security token referenced by the project cannot be found in your current application settings.
                 Verify the security token exists and try to reload the project.`,
         },
+        canvasError: {
+            title: "Error loading canvas",
+            message: "There was an error loading the canvas, check the project's assets and try again.",
+        },
     },
 };

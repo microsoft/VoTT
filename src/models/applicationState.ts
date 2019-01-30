@@ -42,6 +42,7 @@ export enum ErrorCode {
     ProjectInvalidSecurityToken = "projectInvalidSecurityToken",
     ProjectUploadError = "projectUploadError",
     SecurityTokenNotFound = "securityTokenNotFound",
+    CanvasError = "canvasError",
 }
 
 /**
