@@ -171,7 +171,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * @param tag Tag clicked
      */
     public onTagClicked(tag: ITagMetadata) {
-        const selectedAsset = this.state.selectedAsset;
+        const selectedAsset = this.state.canvasAsset;
         if (this.canvas.current.state.selectedRegions && this.canvas.current.state.selectedRegions.length) {
             const selectedRegions = this.canvas.current.state.selectedRegions;
             selectedRegions.map((region) => {
@@ -282,7 +282,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private async selectAsset(asset: IAsset) {
-        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+        let assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
         if (assetMetadata.asset.state === AssetState.NotVisited) {
             assetMetadata.asset.state = AssetState.Visited;
         }
@@ -299,6 +299,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         let canvasAsset = assetMetadata.asset;
 
         if (this.hasChildAssets(canvasAsset)) {
+            this.onAssetMetadataChanged(assetMetadata);
             const childAsset = AssetService.createAssetFromFilePath(`${canvasAsset.path}?timestamp=0`);
             childAsset.timestamp = 0;
             childAsset.parent = canvasAsset.id;
@@ -313,6 +314,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         canvasAssetMetadata.asset.size = canvasAsset.size;
 
         this.onAssetMetadataChanged(canvasAssetMetadata);
+
+        // Get parent asset is it's a video frame
+        if (canvasAsset.type === AssetType.Videoframe) {
+            const parentAsset = this.state.assets.find((a) => canvasAsset.parent === a.id);
+            assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, parentAsset);
+        }
 
         this.setState({
             selectedAsset: assetMetadata,
