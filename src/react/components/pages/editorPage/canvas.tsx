@@ -1,7 +1,7 @@
 import React from "react";
 import * as shortid from "shortid";
-import { IAssetMetadata, IRegion, RegionType, IAppError,
-        AssetState, EditorMode, IProject, AssetType, ErrorCode } from "../../../../models/applicationState";
+import { IAssetMetadata, IRegion, RegionType, AppError, ErrorCode,
+        AssetState, EditorMode, IProject, AssetType } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
 import { Player, ControlBar, CurrentTimeDisplay, TimeDivider,
     BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
@@ -11,7 +11,6 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { strings } from "../../../../common/strings";
-import { ErrorHandler, IErrorHandlerProps } from "../../../../react/components/common/errorHandler/errorHandler";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -383,7 +382,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.loadVideo();
         } else {
             // We don't know what type of asset this is?
-            throw new Error(strings.editorPage.assetError);
+            throw new AppError(ErrorCode.Unknown, strings.editorPage.assetError);
         }
     }
 
@@ -410,7 +409,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             });
         } else {
             // Something has gone majorly wrong to get to this spot
-            throw new Error(strings.errors.unknown.message);
+            throw new AppError(ErrorCode.Unknown, strings.errors.unknown.message);
         }
     }
 
