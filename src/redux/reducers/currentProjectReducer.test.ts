@@ -64,7 +64,6 @@ describe("Current Project Reducer", () => {
                 },
             },
             regions: [],
-            timestamp: null,
         };
 
         const action = saveAssetMetadataAction(assetMetadata);

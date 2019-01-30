@@ -29,6 +29,8 @@ describe("Editor Canvas", () => {
             onAssetMetadataChanged,
             editorMode: EditorMode.Rectangle,
             project: MockFactory.createTestProject(),
+            canvasAsset: MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("test")),
+            onVideoPaused: jest.fn(),
         };
     }
 

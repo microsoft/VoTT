@@ -63,7 +63,6 @@ describe("Editor Page Component", () => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
                 regions: [MockFactory.createMockRegion()],
-                timestamp: null,
             };
             return Promise.resolve(assetMetadata);
         });
