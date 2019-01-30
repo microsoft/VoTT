@@ -17,6 +17,7 @@ import { DrawPolygon } from "../../toolbar/drawPolygon";
 import { DrawRectangle } from "../../toolbar/drawRectangle";
 import { Select } from "../../toolbar/select";
 import { Pan } from "../../toolbar/pan";
+import { Player } from "video-react";
 
 jest.mock("../../../../services/projectService");
 
@@ -37,6 +38,8 @@ function getState(wrapper) {
 describe("Editor Page Component", () => {
     let assetServiceMock: jest.Mocked<typeof AssetService> = null;
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
+    let videoPlayerPausedMock: jest.Mocked<typeof Player> = null;
+    let videoPlayerUnpausedMock: jest.Mocked<typeof Player> = null;
 
     beforeAll(() => {
         const editorMock = CanvasTools.Editor as any;
@@ -49,7 +52,7 @@ describe("Editor Page Component", () => {
         assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
-                regions: [],
+                regions: [MockFactory.createMockRegion()],
                 timestamp: null,
             };
             return Promise.resolve(assetMetadata);
@@ -92,6 +95,16 @@ describe("Editor Page Component", () => {
         });
 
         let savedAssetMetadata: IAssetMetadata = null;
+        videoPlayerPausedMock = Player as jest.Mocked<typeof Player>;
+        videoPlayerPausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
+            // Set up some state that is unpaused
+            const state = {
+                paused: true,
+                waiting: false,
+                hasStarted: true,
+            };
+            callback(state, state);
+        });
 
         assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
             savedAssetMetadata = { ...assetMetadata };
@@ -132,6 +145,16 @@ describe("Editor Page Component", () => {
         });
 
         let savedAssetMetadata: IAssetMetadata = null;
+        videoPlayerUnpausedMock = Player as jest.Mocked<typeof Player>;
+        videoPlayerUnpausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
+            // Set up some state that is unpaused
+            const state = {
+                paused: false,
+                waiting: false,
+                hasStarted: true,
+            };
+            callback(state, state);
+        });
 
         // mock out the asset service save method
         assetServiceMock.prototype.save = jest.fn((assetMetadata) => {

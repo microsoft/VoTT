@@ -2,7 +2,8 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode, ITagMetadata,
+    IPoint, IRegion, RegionType, IBoundingBox,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -95,18 +96,55 @@ export default class MockFactory {
     }
 
     /**
+     * Creates a mock region
+     */
+    public static createMockRegion(): IRegion {
+        const mockTag: ITagMetadata = {
+            name: "Tag 1",
+            properties: null,
+        };
+
+        const mockStartPoint: IPoint = {
+            x: 1,
+            y: 2,
+        };
+
+        const mockEndPoint: IPoint = {
+            x: 3,
+            y: 4,
+        };
+
+        const mockBoundingBox: IBoundingBox = {
+            left: 0,
+            top: 0,
+            width: 256,
+            height: 256,
+        };
+
+        const mockRegion: IRegion = {
+            id: "id",
+            type: RegionType.Rectangle,
+            tags: [mockTag],
+            points: [mockStartPoint, mockEndPoint],
+            boundingBox: mockBoundingBox,
+        };
+
+        return mockRegion;
+    }
+
+    /**
      * Creates array of fake IAsset
      * @param count Number of assets to create
+     * @param videoFirst true if the first asset should be video; false otherwise
      */
-    public static createTestAssets(count: number = 10): IAsset[] {
+    public static createTestAssets(count: number = 10, videoFirst: boolean = true): IAsset[] {
         const assets: IAsset[] = [];
-        for (let i = 1; i <= count / 2; i++) {
-            assets.push(MockFactory.createVideoTestAsset(i.toString()));
-        }
-        if (count > 1) {
-            for (let i = 1; i <= count / 2; i++) {
-                assets.push(MockFactory.createTestAsset(i.toString()));
-            }
+        for (let i = 1; i <= count; i++) {
+            assets.push((i % 2 === 1) ?
+                videoFirst ? MockFactory.createVideoTestAsset(i.toString()) :
+                    MockFactory.createTestAsset(i.toString()) :
+                !videoFirst ? MockFactory.createVideoTestAsset(i.toString()) :
+                    MockFactory.createTestAsset(i.toString()));
         }
 
         return assets;

@@ -1,13 +1,16 @@
 import React from "react";
 import * as shortid from "shortid";
-import { IAssetMetadata, IRegion, RegionType,
-        AssetState, EditorMode, IProject } from "../../../../models/applicationState";
+import { IAssetMetadata, IRegion, RegionType, AppError, ErrorCode,
+        AssetState, EditorMode, IProject, AssetType } from "../../../../models/applicationState";
 import { CanvasTools } from "vott-ct";
+import { Player, ControlBar, CurrentTimeDisplay, TimeDivider,
+    BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton } from "video-react";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { strings } from "../../../../common/strings";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -180,6 +183,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public editor: Editor;
 
+    private playerRef: React.RefObject<Player>;
+    private selectionRef: React.RefObject<HTMLDivElement>;
+
     constructor(props, context) {
         super(props, context);
 
@@ -187,6 +193,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             loaded: false,
             selectedRegions: [],
         };
+
+        this.playerRef = React.createRef<Player>();
+        this.selectionRef = React.createRef<HTMLDivElement>();
     }
 
     public componentDidMount() {
@@ -239,16 +248,31 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
     public render() {
-        // const { loaded } = this.state;
-        // const { svgHost } = this.props;
+        const { selectedAsset } = this.props;
 
         return (
-            <div id="ct-zone">
-                <div id="selection-zone">
-                    <div id="editor-zone" className="full-size"></div>
-                </div>
+                <div id="ct-zone">
+                    { selectedAsset.asset.type === AssetType.Video &&
+                        <Player ref={this.playerRef}
+                            fluid={false} width={"100%"} height={"100%"}
+                            autoPlay={true}
+                            poster={""}
+                            src={`${selectedAsset.asset.path}`}
+                        >
+                            <BigPlayButton position="center" />
+                            <ControlBar>
+                                <CurrentTimeDisplay order={1.1} />
+                                <TimeDivider order={1.2} />
+                                <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
+                                <VolumeMenuButton enabled order={7.2} />
+                            </ControlBar>
+                        </Player>
+                    }
+                    <div id="selection-zone" ref={this.selectionRef}>
+                        <div id="editor-zone" className="full-size" />
+                    </div>
             </div>
-        );
+            );
     }
 
     /**
@@ -351,36 +375,85 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private updateEditor = () => {
         this.deleteAllRegions();
+        // We need to check if we're looking for a video or image
+        if (this.props.selectedAsset.asset.type === AssetType.Image) {
+            this.loadImage();
+        } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
+            this.loadVideo();
+        } else {
+            // We don't know what type of asset this is?
+            throw new AppError(ErrorCode.CanvasError, strings.editorPage.assetError);
+        }
+    }
+
+    /**
+     * @name loadVideo
+     * @description loads a video into the canvas
+     * @returns {void}
+     */
+    private loadVideo() {
+        if (this.playerRef && this.playerRef.current && this.selectionRef && this.selectionRef.current) {
+            // Update the selection div to remove 2.0em from the height (height of the control bar)
+            this.selectionRef.current.style.height = "calc(100% - 2.0em)";
+            this.playerRef.current.subscribeToStateChange((state, prev) => {
+                // If the video is paused, add this frame to the editor content
+                if (state.paused && !state.waiting && state.hasStarted) {
+                    // If we're paused, make sure we're behind the canvas so we can tag
+                    this.playerRef.current.manager.rootElement.style.zIndex = 0;
+                    this.editor.addContentSource(this.playerRef.current.video.video);
+                    this.updateRegions();
+                } else if (!state.paused) {
+                    // We need to make sure we're on top if we are playing
+                    this.playerRef.current.manager.rootElement.style.zIndex = 9001;
+                }
+            });
+        } else {
+            // Something has gone majorly wrong to get to this spot
+            throw new AppError(ErrorCode.CanvasError, strings.errors.unknown.message);
+        }
+    }
+
+    /**
+     * @name loadImage
+     * @description loads an image into the canvas
+     * @returns {void}
+     */
+    private loadImage() {
         const image = new Image();
         image.addEventListener("load", (e) => {
-            console.log("loading");
             // @ts-ignore
             this.editor.addContentSource(e.target);
-            if (this.props.selectedAsset.regions.length) {
-                this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                    const loadedRegionData = new RegionData(region.boundingBox.left,
-                                                            region.boundingBox.top,
-                                                            region.boundingBox.width,
-                                                            region.boundingBox.height,
-                                                            region.points.map((point) => new Point2D(point.x, point.y)),
-                                                            this.regionTypeToType(region.type));
-                    if (region.tags.length) {
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
-                                        new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name,
-                                            this.props.project.tags.find((t) => t.name === tag.name).color))));
-                    } else {
-                        this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData), new TagsDescriptor());
-                    }
-                    if (this.state.selectedRegions) {
-                        this.setState({
-                            selectedRegions: [this.props.selectedAsset.regions[
-                                this.props.selectedAsset.regions.length - 1]],
-                        });
-                    }
-                });
-            }
+            this.updateRegions();
         });
         image.src = this.props.selectedAsset.asset.path;
+    }
+
+    private updateRegions() {
+        if (this.props.selectedAsset.regions.length) {
+            this.props.selectedAsset.regions.forEach((region: IRegion) => {
+                const loadedRegionData = new RegionData(region.boundingBox.left,
+                                                        region.boundingBox.top,
+                                                        region.boundingBox.width,
+                                                        region.boundingBox.height,
+                                                        region.points.map((point) =>
+                                                            new Point2D(point.x, point.y)),
+                                                        this.regionTypeToType(region.type));
+                if (region.tags.length) {
+                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
+                                    new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name,
+                                        this.props.project.tags.find((t) => t.name === tag.name).color))));
+                } else {
+                    this.addRegion(region.id, this.scaleRegionToFrameSize(loadedRegionData),
+                        new TagsDescriptor());
+                }
+                if (this.state.selectedRegions) {
+                    this.setState({
+                        selectedRegions: [this.props.selectedAsset.regions[
+                            this.props.selectedAsset.regions.length - 1]],
+                    });
+                }
+            });
+        }
     }
 
     private updateSelected(selectedRegions: IRegion[]) {
