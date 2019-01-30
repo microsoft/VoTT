@@ -2,7 +2,8 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode, ITagMetadata,
+    IPoint, IRegion, RegionType, IBoundingBox,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -92,6 +93,77 @@ export default class MockFactory {
                 height: 600,
             },
         };
+    }
+
+    /**
+     * @name Create Unknown Asset type
+     * @description Creates fake IAsset with unknown type
+     * @param name Name of asset
+     * @param assetState State of asset
+     */
+    public static createUnknownTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
+        return {
+            id: `unkasset-${name}`,
+            format: ".docx",
+            name: `Unknown Asset ${name}`,
+            path: `C:\\Desktop\\unkasset${name}.docx`,
+            state: assetState,
+            type: AssetType.Unknown,
+            size: {
+                width: 800,
+                height: 600,
+            },
+        };
+    }
+
+    /**
+     * Creates array of fake IAsset with unknown types
+     * @param count Number of assets to create
+     */
+    public static createUnknownTypeTestAssets(count: number = 5): IAsset[] {
+        const assets: IAsset[] = [];
+        for (let i = 1; i <= count; i++) {
+            assets.push(MockFactory.createUnknownTestAsset(i.toString()));
+        }
+
+        return assets;
+    }
+
+    /**
+     * Creates a mock region
+     */
+    public static createMockRegion(): IRegion {
+        const mockTag: ITagMetadata = {
+            name: "Tag 1",
+            properties: null,
+        };
+
+        const mockStartPoint: IPoint = {
+            x: 1,
+            y: 2,
+        };
+
+        const mockEndPoint: IPoint = {
+            x: 3,
+            y: 4,
+        };
+
+        const mockBoundingBox: IBoundingBox = {
+            left: 0,
+            top: 0,
+            width: 256,
+            height: 256,
+        };
+
+        const mockRegion: IRegion = {
+            id: "id",
+            type: RegionType.Rectangle,
+            tags: [mockTag],
+            points: [mockStartPoint, mockEndPoint],
+            boundingBox: mockBoundingBox,
+        };
+
+        return mockRegion;
     }
 
     /**
