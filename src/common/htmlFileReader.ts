@@ -46,6 +46,8 @@ export default class HtmlFileReader {
                 return await this.readImageAttributes(asset.path);
             case AssetType.Video:
                 return await this.readVideoAttributes(asset.path);
+            // case AssetType.Videoframe:
+            //     return await this.readVideoFrameAttributes(asset.path);
             default:
                 throw new Error("Asset not supported");
         }
@@ -102,6 +104,21 @@ export default class HtmlFileReader {
             video.src = url;
         });
     }
+
+    // private static readVideoFrameAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {
+    //     return new Promise((resolve, reject) => {
+    //         const video = document.createElement("video") as HTMLVideoElement;
+    //         video.onloadedmetadata = () => {
+    //             resolve({
+    //                 width: video.videoWidth,
+    //                 height: video.videoHeight,
+    //                 duration: video.duration,
+    //             });
+    //         };
+    //         video.onerror = reject;
+    //         video.src = url;
+    //     });
+    // }
 
     private static readImageAttributes(url: string): Promise<{ width: number, height: number }> {
         return new Promise((resolve, reject) => {

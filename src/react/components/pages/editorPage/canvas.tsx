@@ -21,6 +21,8 @@ export interface ICanvasProps {
     onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
     project: IProject;
+    onVideoPaused: (timestamp: number) => void;
+    canvasAsset: IAssetMetadata;
 }
 
 interface ICanvasState {
@@ -113,7 +115,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             },
             points: scaledRegionData.points,
         };
-        const currentAssetMetadata = this.props.selectedAsset;
+        const currentAssetMetadata = this.props.canvasAsset;
         currentAssetMetadata.regions.push(newRegion);
         this.updateSelected([newRegion]);
 
@@ -132,7 +134,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     public onRegionMoveEnd = (id: string, regionData: RegionData) => {
         const ct = CanvasTools;
-        const currentAssetMetadata = this.props.selectedAsset;
+        const currentAssetMetadata = this.props.canvasAsset;
         const movedRegionIndex = currentAssetMetadata.regions.findIndex((region) => region.id === id);
         const movedRegion = currentAssetMetadata.regions[movedRegionIndex];
         const scaledRegionData = this.editor.scaleRegionToSourceSize(regionData);
@@ -176,10 +178,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         if (multiselect) {
             selectedRegions.push(
-                this.props.selectedAsset.regions.find((region) => region.id === id));
+                this.props.canvasAsset.regions.find((region) => region.id === id));
         } else {
             selectedRegions = [
-                this.props.selectedAsset.regions.find((region) => region.id === id)];
+                this.props.canvasAsset.regions.find((region) => region.id === id)];
         }
 
         this.updateSelected(selectedRegions);
@@ -274,8 +276,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 }
                 if (this.state.selectedRegions) {
                     this.setState({
-                        selectedRegions: [this.props.selectedAsset.regions[
-                            this.props.selectedAsset.regions.length - 1]],
+                        selectedRegions: [this.props.canvasAsset.regions[
+                            this.props.canvasAsset.regions.length - 1]],
                     });
                 }
             });

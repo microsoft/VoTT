@@ -204,6 +204,8 @@ export interface IAsset {
     path: string;
     size: ISize;
     format?: string;
+    timestamp?: number;
+    parent?: string;
 }
 
 /**
@@ -217,7 +219,6 @@ export interface IAsset {
 export interface IAssetMetadata {
     asset: IAsset;
     regions: IRegion[];
-    timestamp?: string;
 }
 
 /**
@@ -294,6 +295,7 @@ export enum AssetType {
     Unknown = 0,
     Image = 1,
     Video = 2,
+    Videoframe = 3,
 }
 
 /**

@@ -21,6 +21,7 @@ import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { select } from "snapsvg";
+import { AssetService } from "../../../../services/assetService";
 
 /**
  * Properties for Editor Page
@@ -146,9 +147,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             <Canvas
                                 ref={this.canvas}
                                 selectedAsset={this.state.selectedAsset}
+                                canvasAsset={this.state.canvasAsset}
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.mode}
-                                project={this.props.project} />
+                                project={this.props.project}
+                                onVideoPaused={this.onVideoPaused.bind(this)} />
                         }
                     </div>
                     <div>
@@ -274,12 +277,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
-    private bool hasChildAssets(asset: IAsset) {
+    private hasChildAssets(asset: IAsset): boolean {
         return asset.type === AssetType.Video;
     }
 
     private async selectAsset(asset: IAsset) {
-        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, selectedAsset);
+        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
         if (assetMetadata.asset.state === AssetState.NotVisited) {
             assetMetadata.asset.state = AssetState.Visited;
         }
@@ -293,27 +296,39 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.error(err);
         }
 
-        let canvasAsset = asset;
+        let canvasAsset = assetMetadata.asset;
 
-        if (this.hasChildAssets(asset)) {
-            const childAsset = { ...asset };
+        if (this.hasChildAssets(canvasAsset)) {
+            const childAsset = AssetService.createAssetFromFilePath(`${canvasAsset.path}?timestamp=0`);
             childAsset.timestamp = 0;
-            childAsset.path = `${childAsset.path}?timestamp=${childAsset.timestamp}`;
-            childAsset.parent = asset.id;
+            childAsset.parent = canvasAsset.id;
+            childAsset.type = 3;
+            childAsset.path = canvasAsset.path;
+            childAsset.size = canvasAsset.size;
             canvasAsset = childAsset;
         }
 
-        this.onAssetMetadataChanged(selectedAsset);
+        const canvasAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, canvasAsset);
+
+        canvasAssetMetadata.asset.size = canvasAsset.size;
+
+        this.onAssetMetadataChanged(canvasAssetMetadata);
 
         this.setState({
             selectedAsset: assetMetadata,
-            canvasAsset: canvasAsset,
+            canvasAsset: canvasAssetMetadata,
             assets: _.values(this.props.project.assets),
         });
     }
 
-    private onVideoPaused() {
-        const childAsset = { ...this.state.selectedAsset.asset };
+    private onVideoPaused(timestamp: number) {
+        const selectedAsset = this.state.selectedAsset.asset;
+        const childAsset = AssetService.createAssetFromFilePath(`${selectedAsset.path}?timestamp=${timestamp}`);
+        childAsset.timestamp = timestamp;
+        childAsset.parent = selectedAsset.id;
+        childAsset.type = 3;
+        childAsset.path = selectedAsset.path;
+        childAsset.size = selectedAsset.size;
         this.selectAsset(childAsset);
     }
 
