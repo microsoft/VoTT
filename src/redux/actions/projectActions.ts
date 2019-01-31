@@ -109,11 +109,6 @@ export function loadAssets(project: IProject): (dispatch: Dispatch) => Promise<I
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const assets = await assetService.getAssets();
-        // assets.forEach((asset) => {
-        //     if (encodeURI(asset.name) !== asset.name) {
-        //         asset.path = asset.path.replace(/[^\/]*$/, encodeURI(asset.name));
-        //     }
-        // });
         dispatch(loadProjectAssetsAction(assets));
 
         return assets;
