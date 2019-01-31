@@ -21,7 +21,7 @@ describe("TFRecords Reader/Builder Integration test", () => {
 
             expect(reader.length).toEqual(1);
 
-            const jsonImage = reader.toJSONArray();
+            const jsonImage = reader.toArray();
             expect(jsonImage.length).toEqual(1);
 
             expect(jsonImage[0]["context"].featureMap.length).toEqual(3);
@@ -48,7 +48,7 @@ describe("TFRecords Reader/Builder Integration test", () => {
 
             expect(reader.length).toEqual(2);
 
-            const jsonImage = reader.toJSONArray();
+            const jsonImage = reader.toArray();
             expect(jsonImage.length).toEqual(2);
 
             // Check First TFRecord

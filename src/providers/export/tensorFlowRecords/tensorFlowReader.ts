@@ -1,3 +1,4 @@
+import Guard from "../../../common/guard";
 import { TFRecordsImageMessage, Features, Feature, FeatureList,
     BytesList, Int64List, FloatList } from "./tensorFlowRecordsProtoBuf_pb";
 import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer, textEncode, readInt64 } from "./tensorFlowHelpers";
@@ -10,43 +11,41 @@ export class TFRecordsReader {
     private imageMessages: TFRecordsImageMessage[];
 
     constructor(tfrecords: Buffer) {
-        try {
-            this.imageMessages = [];
-            let position = 0;
+        Guard.null(tfrecords);
 
-            while (position < tfrecords.length) {
-                const lengthBuffer = tfrecords.slice(position, position + 8);
-                const dataLength = readInt64(lengthBuffer, 0);
-                const lengthCrc = maskCrc(crc32c(lengthBuffer));
-                position += 8;
+        this.imageMessages = [];
+        let position = 0;
 
-                const expectedLengthCrc = tfrecords.readUInt32LE(position);
-                position += 4;
+        while (position < tfrecords.length) {
+            const lengthBuffer = tfrecords.slice(position, position + 8);
+            const dataLength = readInt64(lengthBuffer);
+            const lengthCrc = maskCrc(crc32c(lengthBuffer));
+            position += 8;
 
-                if (lengthCrc !== expectedLengthCrc) {
-                    console.log("Wrong Length CRC");
-                    break;
-                }
+            const expectedLengthCrc = tfrecords.readUInt32LE(position);
+            position += 4;
 
-                const dataBuffer = tfrecords.slice(position, position + dataLength);
-                const dataCrc = maskCrc(crc32c(dataBuffer));
-                position += dataLength;
-
-                const expectedDataCrc = tfrecords.readUInt32LE(position);
-                position += 4;
-
-                if (dataCrc !== expectedDataCrc) {
-                    console.log("Wrong Data CRC");
-                    break;
-                }
-
-                // Deserialize TFRecord from dataBuffer
-                const imageMessage: TFRecordsImageMessage = TFRecordsImageMessage.deserializeBinary(dataBuffer);
-
-                this.imageMessages.push(imageMessage);
+            if (lengthCrc !== expectedLengthCrc) {
+                console.log("Wrong Length CRC");
+                break;
             }
-        } catch (error) {
-            console.log(error);
+
+            const dataBuffer = tfrecords.slice(position, position + dataLength);
+            const dataCrc = maskCrc(crc32c(dataBuffer));
+            position += dataLength;
+
+            const expectedDataCrc = tfrecords.readUInt32LE(position);
+            position += 4;
+
+            if (dataCrc !== expectedDataCrc) {
+                console.log("Wrong Data CRC");
+                break;
+            }
+
+            // Deserialize TFRecord from dataBuffer
+            const imageMessage: TFRecordsImageMessage = TFRecordsImageMessage.deserializeBinary(dataBuffer);
+
+            this.imageMessages.push(imageMessage);
         }
     }
 
@@ -60,7 +59,7 @@ export class TFRecordsReader {
     /**
      * @description - Return the TFRecords in a JSON Object Array format
      */
-    public toJSONArray(): object[] {
+    public toArray(): object[] {
         return this.imageMessages.map((imageMessage) => imageMessage.toObject());
     }
 }

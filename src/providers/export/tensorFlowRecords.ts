@@ -185,8 +185,8 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
                                         imageInfo.label.push(index);
                                         imageInfo.xmin.push(region.boundingBox.left);
                                         imageInfo.ymin.push(region.boundingBox.top);
-                                        imageInfo.xmax.push(region.boundingBox.width);
-                                        imageInfo.ymax.push(region.boundingBox.height);
+                                        imageInfo.xmax.push(region.boundingBox.left + region.boundingBox.width);
+                                        imageInfo.ymax.push(region.boundingBox.top + region.boundingBox.height);
                                         imageInfo.difficult.push(0);
                                         imageInfo.truncated.push(0);
                                         imageInfo.view.push("Unspecified");
