@@ -7,7 +7,6 @@ import { constants } from "../common/constants";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
-        let assetProviderMock: IAssetProvider = null;
         it("creates an asset from a file path", () => {
             const path = "C:\\dir1\\dir2\\asset1.jpg";
             const asset = AssetService.createAssetFromFilePath(path);
