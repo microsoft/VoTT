@@ -138,9 +138,7 @@ export class AssetService {
 
         const fileName = `${asset.id}${constants.assetMetadataFileExtension}`;
         try {
-            console.log(fileName)
             const json = await this.storageProvider.readText(fileName);
-            console.log(json);
             return JSON.parse(json) as IAssetMetadata;
         } catch (err) {
             return {
