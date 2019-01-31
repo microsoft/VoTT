@@ -7,6 +7,7 @@ import { constants } from "../common/constants";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
+        let assetProviderMock: IAssetProvider = null;
         it("creates an asset from a file path", () => {
             const path = "C:\\dir1\\dir2\\asset1.jpg";
             const asset = AssetService.createAssetFromFilePath(path);
@@ -14,6 +15,18 @@ describe("Asset Service", () => {
             expect(asset).not.toBeNull();
             expect(asset.id).toEqual(expect.any(String));
             expect(asset.name).toEqual("asset1.jpg");
+            expect(asset.type).toEqual(AssetType.Image);
+            expect(asset.path).toEqual(path);
+            expect(asset.format).toEqual("jpg");
+        });
+
+        it("creates an asset from an encoded file", () => {
+            const path = "C:\\dir1\\dir2\\asset%201.jpg";
+            const asset = AssetService.createAssetFromFilePath(path);
+
+            expect(asset).not.toBeNull();
+            expect(asset.id).toEqual(expect.any(String));
+            expect(asset.name).toEqual("asset%201.jpg");
             expect(asset.type).toEqual(AssetType.Image);
             expect(asset.path).toEqual(path);
             expect(asset.format).toEqual("jpg");
