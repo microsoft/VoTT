@@ -107,6 +107,9 @@ export class AssetService {
         return assets.map((asset) => {
             if (!asset.path.toLowerCase().startsWith("http://") && !asset.path.toLowerCase().startsWith("https://")) {
                 asset.path = "file:" + asset.path;
+                if (encodeURI(asset.name) !== asset.name) {
+                    encodeURI(asset.path);
+                }
             }
 
             return asset;
