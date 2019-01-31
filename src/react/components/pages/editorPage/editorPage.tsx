@@ -296,7 +296,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         await this.props.actions.loadAssets(this.props.project);
         const assets = _.values(this.props.project.assets);
-
+        
         this.setState({
             assets,
         }, async () => {

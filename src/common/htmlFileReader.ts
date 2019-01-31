@@ -13,7 +13,6 @@ export default class HtmlFileReader {
      */
     public static readAsText(file: File): Promise<string | ArrayBuffer> {
         Guard.null(file);
-        console.log("FILE: " +  file);
 
         return new Promise<string | ArrayBuffer>((resolve, reject) => {
             const reader = new FileReader();
@@ -41,9 +40,6 @@ export default class HtmlFileReader {
     public static async readAssetAttributes(asset: IAsset)
         : Promise<{ width: number, height: number, duration?: number }> {
         Guard.null(asset);
-        asset.path = decodeURIComponent(asset.path);
-        asset.name = decodeURIComponent(asset.name);
-        console.log(asset.path);
 
         switch (asset.type) {
             case AssetType.Image:
