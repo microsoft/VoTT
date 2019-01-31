@@ -2,6 +2,7 @@ import _ from "lodash";
 import { ActionTypes } from "../actions/actionTypes";
 import { IProject } from "../../models/applicationState";
 import { AnyAction } from "../actions/actionCreators";
+import { AssetService } from "../../services/assetService";
 
 /**
  * Reducer for project. Actions handled:
@@ -23,8 +24,19 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             return { ...action.payload };
         case ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS:
             if (state) {
+                // () => {
+                //     this.setState({
+                //         assets: this.state.assets.map((asset) => {
+                //             asset.name = decodeURIComponent(asset.name);
+                //             asset.path = decodeURIComponent(asset.path);
+                //         })
+                //     })
+                // }
                 const currentAssets = { ...state.assets } || {};
                 action.payload.forEach((asset) => {
+                    asset.name = decodeURIComponent(asset.name);
+                    asset.path = decodeURIComponent(asset.path);
+                    console.log(asset.path);
                     if (!currentAssets[asset.id]) {
                         currentAssets[asset.id] = asset;
                     }

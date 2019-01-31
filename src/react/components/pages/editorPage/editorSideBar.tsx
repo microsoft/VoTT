@@ -89,6 +89,8 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     private rowRenderer({ key, index, style }) {
         const asset = this.props.assets[index];
+        // asset.name = decodeURIComponent(asset.name);
+        // asset.path = decodeURIComponent(asset.path);
         const { selectedAsset } = this.state;
         const editorVideoSetting: IAssetVideoSettings = {
             shouldAutoPlayVideo: false,

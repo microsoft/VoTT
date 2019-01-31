@@ -109,6 +109,9 @@ export function loadAssets(project: IProject): (dispatch: Dispatch) => Promise<I
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const assets = await assetService.getAssets();
+        // assets.map((asset) => {
+        //     asset.path = decodeURIComponent(asset.path);
+        // })
         dispatch(loadProjectAssetsAction(assets));
 
         return assets;
@@ -124,6 +127,8 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const assetMetadata = await assetService.getAssetMetadata(asset);
+        assetMetadata.asset.name = decodeURIComponent(assetMetadata.asset.name);
+        assetMetadata.asset.path = decodeURIComponent(assetMetadata.asset.path);
         dispatch(loadAssetMetadataAction(assetMetadata));
 
         return { ...assetMetadata };
