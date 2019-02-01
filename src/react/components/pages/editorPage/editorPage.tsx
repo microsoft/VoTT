@@ -19,7 +19,6 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
-import { KeyboardManager, KeyboardContext, IKeyboardContext } from "../../common/keyboardManager/keyboardManager";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 
 /**
@@ -65,9 +64,6 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
-    public static contextType = KeyboardContext;
-    public context!: IKeyboardContext;
-
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = [];
     private canvas: RefObject<Canvas>;
