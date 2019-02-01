@@ -105,7 +105,13 @@ export class AssetService {
         const assets = await this.assetProvider.getAssets();
 
         return assets.map((asset) => {
-            if (!asset.path.toLowerCase().startsWith("http://") && !asset.path.toLowerCase().startsWith("https://")) {
+            const normalizedPath = asset.path.toLowerCase();
+
+            // If the path is not already prefixed with a protocol
+            // then assume it comes from the local file system
+            if (!normalizedPath.startsWith("http://") &&
+                !normalizedPath.startsWith("https://") &&
+                !normalizedPath.startsWith("file:")) {
                 asset.path = "file:" + asset.path;
             }
 
