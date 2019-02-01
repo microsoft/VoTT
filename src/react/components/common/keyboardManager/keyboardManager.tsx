@@ -10,15 +10,9 @@ export interface IKeyboardContext {
 export class KeyboardManager extends React.Component<any, IKeyboardContext> {
     public static contextType = KeyboardContext;
 
-    constructor(props, context) {
-        super(props, context);
-
-        this.state = {
-            keyboard: new KeyboardRegistrationManager(),
-        };
-
-        this.onKeyDown = this.onKeyDown.bind(this);
-    }
+    public state: IKeyboardContext = {
+        keyboard: new KeyboardRegistrationManager(),
+    };
 
     public componentDidMount() {
         window.addEventListener("keydown", this.onKeyDown);
@@ -36,7 +30,7 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
         );
     }
 
-    private onKeyDown(evt: KeyboardEvent) {
+    private onKeyDown = (evt: KeyboardEvent) => {
         if (evt.key === "Ctrl" || evt.key === "Control" || evt.key === "Alt") {
             return;
         }

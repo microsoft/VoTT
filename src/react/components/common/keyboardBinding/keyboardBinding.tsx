@@ -11,9 +11,7 @@ export class KeyboardBinding extends React.Component<IKeyboardBindingProps> {
     public context!: IKeyboardContext;
     private deregisterBinding: () => void;
 
-    constructor(props, context) {
-        super(props, context);
-
+    public componentDidMount() {
         this.deregisterBinding = this.context.keyboard.addHandler(this.props.accelerator, this.props.onKeyDown);
     }
 
