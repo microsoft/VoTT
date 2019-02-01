@@ -236,7 +236,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onToolbarItemSelected(toolbarItem: ToolbarItem) {
         let selectionMode: SelectionMode = null;
         let editorMode: EditorMode = null;
-
+        const currentIndex = this.state.assets
+            .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
 
         switch (toolbarItem.props.name) {
             case "drawRectangle":

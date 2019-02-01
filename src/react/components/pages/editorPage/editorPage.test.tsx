@@ -18,15 +18,18 @@ import { DrawRectangle } from "../../toolbar/drawRectangle";
 import { Select } from "../../toolbar/select";
 import { Pan } from "../../toolbar/pan";
 import { Player } from "video-react";
+import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
 
 jest.mock("../../../../services/projectService");
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
         <Provider store={store}>
-            <Router>
-                <EditorPage {...props} />
-            </Router>
+            <KeyboardManager>
+                <Router>
+                    <EditorPage {...props} />
+                </Router>
+            </KeyboardManager>
         </Provider>,
     );
 }
