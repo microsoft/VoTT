@@ -20,11 +20,16 @@
 // const maskDelta uint32 = 0xa282ead8
 // mask returns a masked representation of crc.
 
+import Guard from "../../../common/guard";
+import Int64 from "node-int64";
+import reverse from "buffer-reverse";
+
 /**
- * @s - Buffer input
+ * @buffer - Buffer input
  * @description - Calculate 32-bit CRC using the Castagnoli polynomial (0x1EDC6F41)
  */
-export function crc32c(s: Buffer): number {
+export function crc32c(buffer: Buffer): number {
+    Guard.null(buffer);
     const polynomial = 0x1EDC6F41;  // 0x04C11DB7 for crc32
     const initialValue = 0xFFFFFFFF;
     const finalXORValue = 0xFFFFFFFF;
@@ -55,8 +60,8 @@ export function crc32c(s: Buffer): number {
         table[i] = reverse(c, 32);
     }
 
-    for (i = 0; i < s.length; i++) {
-        c = s[i];
+    for (i = 0; i < buffer.length; i++) {
+        c = buffer[i];
         if (c > 255) {
         throw new RangeError();
         }
@@ -68,10 +73,11 @@ export function crc32c(s: Buffer): number {
 }
 
 /**
- * @s - Input CRC32 value
+ * @value - Input CRC32 value
  * @description - Mask an input CRC32 value according to the TensorFlow TFRecords specs
  */
 export function maskCrc(value: number): number {
+    Guard.null(value);
     const kCrc32MaskDelta = 0xa282ead8;
     const fourGb = Math.pow(2, 32);
 
@@ -79,10 +85,11 @@ export function maskCrc(value: number): number {
 }
 
 /**
- * @s - Input number value
+ * @value - Input number value
  * @description - Get a Buffer representation of a Int64 bit value
  */
 export function getInt64Buffer(value: number): Buffer {
+    Guard.null(value);
     const metadataBuffer = new ArrayBuffer(8);
     const intArray = new Uint8Array(metadataBuffer, 0, 8);
     const dataView = new DataView(metadataBuffer, 0, 8);
@@ -94,10 +101,11 @@ export function getInt64Buffer(value: number): Buffer {
 }
 
 /**
- * @s - Input number value
+ * @value - Input number value
  * @description - Get a Buffer representation of a Int32 bit value
  */
 export function getInt32Buffer(value: number): Buffer {
+    Guard.null(value);
     const fourGb = Math.pow(2, 32);
     const value32 = value % fourGb;
 
@@ -111,10 +119,11 @@ export function getInt32Buffer(value: number): Buffer {
 }
 
 /**
- * @s - Input string
+ * @str - Input string
  * @description - Get a Uint8Array representation of an input string value
  */
-export function  textEncode(str: string): Uint8Array {
+export function textEncode(str: string): Uint8Array {
+    Guard.null(str);
     const utf8 = unescape(encodeURIComponent(str));
     const result = new Uint8Array(utf8.length);
     for (let i = 0; i < utf8.length; i++) {
@@ -122,3 +131,16 @@ export function  textEncode(str: string): Uint8Array {
     }
     return result;
 }
+
+/**
+ * @buffer - Input buffer
+ * @description - Read an Int64 value from buffer
+ */
+export function readInt64(buffer: Buffer): number {
+    Guard.null(buffer);
+    Guard.expression(buffer.length, (num) => num >= 8);
+
+    buffer = reverse(buffer.slice(0, 8));
+    const int64 = new Int64(buffer, 0);
+    return int64.toNumber(true);
+  }

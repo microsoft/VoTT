@@ -176,19 +176,17 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     }
 
     private updateAssetTagArrays(element: IAssetMetadata, imageInfo: IImageInfo) {
-        element.regions.filter((region) => (region.type === RegionType.Rectangle ||
-                                                   region.type === RegionType.Square) &&
-                                                   region.points.length === 2)
+        element.regions.filter((region) => region.boundingBox)
                                .forEach((region) => {
                                     region.tags.forEach((tag) => {
                                         const index = this.project.tags.map((pTag) => pTag.name).indexOf(tag.name);
 
                                         imageInfo.text.push(tag.name);
                                         imageInfo.label.push(index);
-                                        imageInfo.xmin.push(region.points[0].x);
-                                        imageInfo.ymin.push(region.points[0].y);
-                                        imageInfo.xmax.push(region.points[1].x);
-                                        imageInfo.ymax.push(region.points[1].y);
+                                        imageInfo.xmin.push(region.boundingBox.left);
+                                        imageInfo.ymin.push(region.boundingBox.top);
+                                        imageInfo.xmax.push(region.boundingBox.left + region.boundingBox.width);
+                                        imageInfo.ymax.push(region.boundingBox.top + region.boundingBox.height);
                                         imageInfo.difficult.push(0);
                                         imageInfo.truncated.push(0);
                                         imageInfo.view.push("Unspecified");
