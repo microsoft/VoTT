@@ -155,8 +155,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     public onRegionDelete = (id: string) => {
         this.editor.RM.deleteRegionById(id);
-        const currentAssetMetadata = this.props.selectedAsset;
-        const deletedRegionIndex = this.props.selectedAsset.regions.findIndex((region) => region.id === id);
+        const currentAssetMetadata = this.props.canvasAsset;
+        const deletedRegionIndex = this.props.canvasAsset.regions.findIndex((region) => region.id === id);
         currentAssetMetadata.regions.splice(deletedRegionIndex, 1);
 
         if (!currentAssetMetadata.regions.length) {
@@ -245,7 +245,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
             // If we're paused, make sure we're behind the canvas so we can tag
             this.editor.RM.deleteAllRegions();
-            this.props.onVideoPaused(Math.floor(state.currentTime));
+            this.props.onVideoPaused(Math.round(state.currentTime));
             this.updateRegions();
             const video = this.videoPlayer.current.video.video as HTMLVideoElement;
             if (video.videoHeight > 0 && video.videoWidth > 0) {
@@ -262,8 +262,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private updateRegions = () => {
-        if (this.props.selectedAsset.regions.length) {
-            this.props.selectedAsset.regions.forEach((region: IRegion) => {
+        if (this.props.canvasAsset.regions.length) {
+            this.props.canvasAsset.regions.forEach((region: IRegion) => {
                 const loadedRegionData = new RegionData(region.boundingBox.left,
                     region.boundingBox.top,
                     region.boundingBox.width,

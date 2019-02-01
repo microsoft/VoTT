@@ -235,14 +235,15 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onToolbarItemSelected(toolbarItem: ToolbarItem) {
+        const assetType = this.state.selectedAsset.asset.type;
+        const playerRef = ( assetType === AssetType.Video ) ? this.canvas.current.videoPlayer.current : null;
+        const playerSate = ( assetType === AssetType.Video ) ? playerRef.getState().player : null;
         let selectionMode: SelectionMode = null;
         let editorMode: EditorMode = null;
         const currentIndex = this.state.assets
             .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
 
         const setSelectionMode = this.canvas.current.editor.AS.setSelectionMode;
-        const playerRef = this.canvas.current.videoPlayer.current;
-        const playerSate = playerRef.getState().player;
         switch (toolbarItem.props.name) {
             case "drawRectangle":
                 selectionMode = SelectionMode.RECT;
@@ -269,10 +270,18 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             case "navigateNextAsset":
                 this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
             case "stepFwd":
-                playerRef.seek(playerSate.currentTime + 1);
+                if (assetType === AssetType.Video) {
+                    playerRef.seek(playerSate.currentTime + 1);
+                } else {
+                    console.log("next");
+                }
                 break;
             case "stepBwd":
-                playerRef.seek(playerSate.currentTime - 1);
+                if (assetType === AssetType.Video) {
+                    playerRef.seek(playerSate.currentTime - 1);
+                } else {
+                    console.log("prev");
+                }
                 break;
             default:
                 console.log(toolbarItem.props.name);
