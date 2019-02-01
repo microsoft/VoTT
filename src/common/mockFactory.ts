@@ -98,6 +98,31 @@ export default class MockFactory {
     }
 
     /**
+     * @name createVideoFrameTestAsset
+     * @description Creates fake video frame IAsset
+     * @param name Name of asset
+     * @param assetState State of asset
+     */
+    public static createVideoFrameTestAsset(name: string,
+                                            assetState: AssetState = AssetState.NotVisited,
+                                            timestamp: number = 0): IAsset {
+        return {
+            id: `videoframeasset-${name}.mp4?timestamp=${timestamp}`,
+            format: "mp4",
+            name: `Video Frame Asset ${name}`,
+            path: `C:\\Desktop\\videoasset${name}.mp4`,
+            state: assetState,
+            type: AssetType.VideoFrame,
+            size: {
+                width: 800,
+                height: 600,
+            },
+            timestamp,
+            parent: `videoasset-${name}`,
+        };
+    }
+
+    /**
      * Creates a mock region
      */
     public static createMockRegion(): IRegion {

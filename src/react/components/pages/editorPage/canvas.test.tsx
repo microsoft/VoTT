@@ -3,36 +3,46 @@ import _ from "lodash";
 import MockFactory from "../../../../common/mockFactory";
 import { ReactWrapper, mount, shallow, ShallowWrapper } from "enzyme";
 import Canvas, { ICanvasProps } from "./canvas";
-import { EditorMode } from "../../../../models/applicationState";
+import { EditorMode, IAssetMetadata } from "../../../../models/applicationState";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
+import { Player } from "video-react";
 
 jest.mock("vott-ct");
 import { CanvasTools } from "vott-ct";
+import { AssetService } from "../../../../services/assetService";
+import ProjectService from "../../../../services/projectService";
+import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
+
+function createTestRegionData() {
+    const testRegionData = new RegionData(0, 0, 100, 100,
+        [new Point2D(0, 0), new Point2D(1, 0), new Point2D(0, 1), new Point2D(1, 1)], RegionDataType.Rect);
+    return testRegionData;
+}
+
+function createComponent(props: ICanvasProps): ReactWrapper<ICanvasProps, {}, Canvas> {
+    return mount(<Canvas {...props} />);
+}
+
+const onAssetMetadataChanged = jest.fn();
+
+function createProps(): ICanvasProps {
+    return {
+        selectedAsset: MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("test")),
+        onAssetMetadataChanged,
+        editorMode: EditorMode.Rectangle,
+        project: MockFactory.createTestProject(),
+        canvasAsset: MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("test")),
+        onVideoPaused: jest.fn(),
+    };
+}
+
 describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, {}, Canvas> = null;
-    const onAssetMetadataChanged = jest.fn();
-
-    function createTestRegionData() {
-        const testRegionData = new RegionData(0, 0, 100, 100,
-            [new Point2D(0, 0), new Point2D(1, 0), new Point2D(0, 1), new Point2D(1, 1)], RegionDataType.Rect);
-        return testRegionData;
-    }
-
-    function createComponent(props: ICanvasProps): ReactWrapper<ICanvasProps, {}, Canvas> {
-        return mount(<Canvas {...props} />);
-    }
-
-    function createProps(): ICanvasProps {
-        return {
-            selectedAsset: MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("test")),
-            onAssetMetadataChanged,
-            editorMode: EditorMode.Rectangle,
-            project: MockFactory.createTestProject(),
-            canvasAsset: MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("test")),
-            onVideoPaused: jest.fn(),
-        };
-    }
+    let assetServiceMock: jest.Mocked<typeof AssetService> = null;
+    let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
+    // let videoPlayerPausedMock: jest.Mocked<typeof Player> = null;
+    // let videoPlayerUnpausedMock: jest.Mocked<typeof Player> = null;
 
     beforeAll(() => {
         const editorMock = CanvasTools.Editor as any;
@@ -42,11 +52,29 @@ describe("Editor Canvas", () => {
     });
 
     beforeEach(() => {
-        const props = createProps();
-        wrapper = createComponent(props);
+        assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
+        assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
+            const assetMetadata: IAssetMetadata = {
+                asset: { ...asset },
+                regions: [MockFactory.createMockRegion()],
+            };
+            return Promise.resolve(assetMetadata);
+        });
+
+        projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve({ ...project }));
+        projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve({ ...project }));
+
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve([])),
+            };
+        });
     });
 
     it("onSelectionEnd adds region to asset and selects it", () => {
+        const props = createProps();
+        wrapper = createComponent(props);
         // tslint:disable-next-line:max-line-length
         const testCommit = createTestRegionData();
         const canvas = wrapper.instance();
@@ -59,6 +87,8 @@ describe("Editor Canvas", () => {
     });
 
     it("onRegionMove edits region info in asset", () => {
+        const props = createProps();
+        wrapper = createComponent(props);
         const canvas = wrapper.instance();
         const testRegion = MockFactory.createTestRegion("test-region");
         testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
@@ -69,6 +99,8 @@ describe("Editor Canvas", () => {
     });
 
     it("onRegionDelete removes region from asset and clears selectedRegions", () => {
+        const props = createProps();
+        wrapper = createComponent(props);
         const canvas = wrapper.instance();
         const testRegion = MockFactory.createTestRegion("test-region");
         wrapper.prop("canvasAsset").regions.push(testRegion);
@@ -80,6 +112,8 @@ describe("Editor Canvas", () => {
     });
 
     it("onRegionSelected adds region to list of selected regions on asset", () => {
+        const props = createProps();
+        wrapper = createComponent(props);
         const canvas = wrapper.instance();
         const testRegion1 = MockFactory.createTestRegion("test1");
         const testRegion2 = MockFactory.createTestRegion("test2");
@@ -94,5 +128,18 @@ describe("Editor Canvas", () => {
         expect(wrapper.instance().state.selectedRegions.length).toEqual(2);
         expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
+    });
+
+    it("onSelectionEnd adds region to correct video frame asset and selects it", () => {
+        // tslint:disable-next-line:max-line-length
+        const testCommit = createTestRegionData();
+        const canvas = wrapper.instance();
+        const testRegion  = MockFactory.createTestRegion();
+        canvas.onSelectionEnd(testCommit);
+
+        expect(onAssetMetadataChanged).toBeCalled();
+        expect(wrapper.prop("canvasAsset").regions).toMatchObject([testRegion]);
+        canvas.playerRef.current.pause();
+        expect(wrapper.instance().state.selectedRegions).toMatchObject([testRegion]);
     });
 });

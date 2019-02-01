@@ -54,6 +54,7 @@ describe("Editor Page Component", () => {
     beforeAll(() => {
         const editorMock = CanvasTools.Editor as any;
         editorMock.prototype.RM = new CanvasTools.Region.RegionsManager(null, null);
+        editorMock.prototype.AS = new CanvasTools.Selection.AreaSelector(null, null);
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
     });
 
@@ -124,13 +125,12 @@ describe("Editor Page Component", () => {
                 state: AssetState.Visited,
             },
             regions: [MockFactory.createMockRegion()],
-            timestamp: null,
         };
 
         setImmediate(() => {
-            expect(editorPage.props().project).toEqual(expect.objectContaining(partialProject));
-            expect(editorPage.state().assets.length).toEqual(testAssets.length);
-            expect(editorPage.state().selectedAsset).toEqual(expectedAssetMetadtata);
+            expect(editorPage.prop("project")).toEqual(expect.objectContaining(partialProject));
+            expect(editorPage.state("assets").length).toEqual(testAssets.length + 1);
+            expect(editorPage.state("canvasAsset")).toEqual(expectedAssetMetadtata);
             done();
         });
     });
@@ -183,6 +183,54 @@ describe("Editor Page Component", () => {
                 expectedAssetMetadtata,
             );
             expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+            done();
+        });
+    });
+
+    it("Video frame assets are created/saved correctly for videos", (done) => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const testAssets = MockFactory.createTestAssets(5);
+        const testRegion = MockFactory.createTestRegion("test-region");
+        const store = createStore(testProject, true);
+        const props = MockFactory.editorPageProps(testProject.id);
+
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
+        });
+
+        let savedAssetMetadata: IAssetMetadata = null;
+        videoPlayerPausedMock = Player as jest.Mocked<typeof Player>;
+        videoPlayerPausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
+            // Set up some state that is unpaused
+            const state = {
+                paused: true,
+                waiting: false,
+                hasStarted: true,
+            };
+            callback(state, state);
+        });
+
+        assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
+            savedAssetMetadata = { ...assetMetadata };
+            return Promise.resolve(savedAssetMetadata);
+        });
+
+        const wrapper = createComponent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0);
+
+        const partialProject = {
+            id: testProject.id,
+            name: testProject.name,
+        };
+
+        // editorPage.state("canvasAsset").regions.push(testRegion);
+
+        setImmediate(() => {
+            expect(editorPage.prop("project")).toEqual(expect.objectContaining(partialProject));
+            expect(editorPage.state("assets").length).toEqual(testAssets.length + 1);
+            expect(editorPage.state("canvasAsset")).toEqual(savedAssetMetadata);
             done();
         });
     });
