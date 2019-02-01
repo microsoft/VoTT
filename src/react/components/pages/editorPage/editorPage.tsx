@@ -241,7 +241,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
 
         const setSelectionMode = this.canvas.current.setSelectionMode;
-        const playerRef = this.canvas.current.playerRef.current;
+        const playerRef = this.canvas.current.videoPlayer.current;
         const playerSate = playerRef.getState().player;
         switch (toolbarItem.props.name) {
             case "drawRectangle":
