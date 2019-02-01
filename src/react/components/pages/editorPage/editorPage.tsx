@@ -185,11 +185,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     selectedRegion.tags.splice(tagIndex, 1);
                 }
                 if (selectedRegion.tags.length) {
-                    this.canvas.current.updateTagsById(selectedRegion.id,
+                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id,
                         new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag.name,
                             this.props.project.tags.find((t) => t.name === tempTag.name).color))));
                 } else {
-                    this.canvas.current.updateTagsById(selectedRegion.id, null);
+                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id, null);
                 }
 
                 return region;
@@ -236,31 +236,38 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onToolbarItemSelected(toolbarItem: ToolbarItem) {
-        const setSelectionMode = this.canvas.current.setSelectionMode;
+        let selectionMode: SelectionMode = null;
+        let editorMode: EditorMode = null;
+
         switch (toolbarItem.props.name) {
             case "drawRectangle":
-                setSelectionMode(SelectionMode.RECT);
-                this.setEditorMode(EditorMode.Rectangle);
+                selectionMode = SelectionMode.RECT;
+                editorMode = EditorMode.Rectangle;
                 break;
             case "drawPolygon":
-                setSelectionMode(SelectionMode.POLYGON);
-                this.setEditorMode(EditorMode.Polygon);
+                selectionMode = SelectionMode.POLYGON;
+                editorMode = EditorMode.Polygon;
                 break;
             case "copyRectangle":
-                setSelectionMode(SelectionMode.COPYRECT);
-                this.setEditorMode(EditorMode.CopyRect);
+                selectionMode = SelectionMode.COPYRECT;
+                editorMode = EditorMode.CopyRect;
                 break;
             case "selectCanvas":
-                setSelectionMode(SelectionMode.NONE);
-                this.setEditorMode(EditorMode.Select);
+                selectionMode = SelectionMode.NONE;
+                editorMode = EditorMode.Select;
                 break;
             case "panCanvas":
-                setSelectionMode(SelectionMode.NONE);
-                this.setEditorMode(EditorMode.Select);
+                selectionMode = SelectionMode.NONE;
+                editorMode = EditorMode.Select;
                 break;
-            default:
-                console.log(toolbarItem.props.name);
-                break;
+        }
+
+        if (selectionMode) {
+            this.canvas.current.editor.setSelectionMode(selectionMode, null);
+        }
+
+        if (editorMode) {
+            this.setEditorMode(editorMode);
         }
     }
 
@@ -311,6 +318,5 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             mode,
         });
-        console.log(mode);
     }
 }
