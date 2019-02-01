@@ -50,7 +50,7 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
 
 ## Running VoTT
 
-VoTT can be installed as as native application or run from source.
+VoTT can be installed as a native application or run from source.
 
 ### Download and install a release package for your platform (recommended)
 
@@ -119,24 +119,24 @@ Project settings can be modified after a project has been created, by clicking o
 
 #### Security Tokens
 
-Some project settings can include sensitive values, such as API keys or other shared secrets. Each project has will generate a security token that can be used to encrypt/decrypt sensitive project settings.
+Some project settings can include sensitive values, such as API keys or other shared secrets. Each project will generate a security token that can be used to encrypt/decrypt sensitive project settings.
 
 Security tokens can be found under 'Application Settings' by clicking the gear icon in the lower corner of the left hand navigation bar.
 
 **NOTE:** Project files can be shared among multiple people. In order to share sensitive project settings, *all parties must have/use the same security token.*
 
-The token name and key *must* match in order for sensitive values to successfully be decrypted.
+The token name and key *must* match in order for sensitive values to be successfully decrypted.
 
 ![alt text](docs/images/security-tokens.png "Security Tokens")
 
 ## Labeling an Image
 
-When a project is created or opened, the main tag editor window opens. The tag editor consists of of two main parts:
+When a project is created or opened, the main tag editor window opens. The tag editor consists of two main parts:
 
 * A preview pane that contains a scrollable list of images and videos, from the source target
 * The main editor tool that allows tags to be applied to drawn regions
 
-Selecting an image/video on the left will load that image in the main tag editor. Regions can then be drawn on the loaded asset and a tag can be applied.
+Selecting an image or video on the left will load that image in the main tag editor. Regions can then be drawn on the loaded asset and a tag can be applied.
 
 As desired, repeat this process for any additional assets.
 
@@ -154,14 +154,14 @@ Once assets have been labeled, they can be exported into a variety of formats:
 * TensorFlow (Pascal VOC and TFRecords)
 * VoTT (generic JSON schema)
 
-In addition, all assets can be exported or only visisted/tagged assets can be exported.  Click on the 'Export' icon in the left hand navigation. Select the appropriate export provider and which assets to export.
+In addition, users may choose to export all assets, only visited assets, or only tagged assets.  Click on the 'Export' icon in the left hand navigation. Select the appropriate export provider and which assets to export.
 
 ![alt text](docs/images/export-labels.png "Export Labels")
 
 
 # Collaborators
 
-VoTT was originally developed by the [Commercial Software Engineering (CSE) group at Microsoft](https://www.microsoft.com/developerblog/), in Israel.
+VoTT was originally developed by the [Commercial Software Engineering (CSE) group at Microsoft](https://www.microsoft.com/developerblog/) in Israel.
 
 # Contributing to VoTT
 
