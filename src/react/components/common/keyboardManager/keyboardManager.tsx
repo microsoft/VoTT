@@ -49,7 +49,7 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
             keyParts.push("Alt+");
         }
         keyParts.push(evt.key);
-        const handlers = this.state.keyboard.getHandlers(keyParts.join(""));
-        handlers.forEach((handler) => handler(evt));
+
+        this.state.keyboard.invokeHandlers(keyParts.join(""), evt);
     }
 }
