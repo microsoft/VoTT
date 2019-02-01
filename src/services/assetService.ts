@@ -1,5 +1,6 @@
 import MD5 from "md5.js";
 import Guard from "../common/guard";
+import path from "path";
 import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
@@ -107,9 +108,7 @@ export class AssetService {
         return assets.map((asset) => {
             if (!asset.path.toLowerCase().startsWith("http://") && !asset.path.toLowerCase().startsWith("https://")) {
                 asset.path = "file:" + asset.path;
-                if (encodeURI(asset.name) !== asset.name) {
-                    encodeURI(asset.path);
-                }
+                asset.path = encodeURI(asset.path.replace(/\\/g, "/"));
             }
 
             return asset;
