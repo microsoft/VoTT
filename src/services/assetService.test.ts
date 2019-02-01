@@ -136,7 +136,7 @@ describe("Asset Service", () => {
         it("getAssets encodes local file path", async () => {
             const testAsset = MockFactory.createTestAsset(" 11");
             testAssets.push(testAsset);
-            
+
             const result = await assetService.getAssets();
 
             expect(result[10].path).toEqual("file:C:/Desktop/asset%2011.jpg");
@@ -178,7 +178,7 @@ describe("Asset Service", () => {
             const assets = await assetService.getAssets();
 
             expect(assets.length).toEqual(2);
-            expect(assets[0].path).toEqual("file:C:\\Desktop\\asset0.jpg");
+            expect(assets[0].path).toEqual("file:C:/Desktop/asset0.jpg");
             expect(assets[1].path).toEqual("https://image.com/asset1.jpg");
         });
 
