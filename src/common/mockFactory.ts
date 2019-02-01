@@ -14,7 +14,7 @@ import { IProjectSettingsPageProps } from "../react/components/pages/projectSett
 import IConnectionActions from "../redux/actions/connectionActions";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 import { IProjectService } from "../services/projectService";
-import Canvas from "../react/components/pages/editorPage/canvas";
+import Canvas, { ICanvasProps } from "../react/components/pages/editorPage/canvas";
 import { IBingImageSearchOptions, BingImageSearchAspectRatio } from "../providers/storage/bingImageSearch";
 import { IEditorPageProps } from "../react/components/pages/editorPage/editorPage";
 import {
@@ -49,8 +49,10 @@ export default class MockFactory {
      * @param name Name of asset
      * @param assetState State of asset
      */
-    public static createTestAsset(name: string, assetState: AssetState = AssetState.NotVisited,
-                                  path: string = `C:\\Desktop\\asset${name}.jpg`): IAsset {
+    public static createTestAsset(
+        name: string,
+        assetState: AssetState = AssetState.NotVisited,
+        path: string = `C:\\Desktop\\asset${name}.jpg`): IAsset {
         return {
             id: `asset-${name}`,
             format: "jpg",
@@ -538,13 +540,14 @@ export default class MockFactory {
         return registration;
     }
 
-    public static createTestCanvas() {
-        const canvasProps = {
+    public static createTestCanvas(project: IProject = null) {
+        const canvasProps: ICanvasProps = {
+            project,
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
         };
-        return new Canvas({ canvasProps }, {});
+        return new Canvas(canvasProps);
     }
 
     public static createTestRegion(id = null) {
