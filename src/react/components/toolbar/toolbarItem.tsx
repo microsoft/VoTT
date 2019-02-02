@@ -1,6 +1,8 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
+import { IKeyboardContext, KeyboardContext } from "../common/keyboardManager/keyboardManager";
+import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
 
 /**
  * Toolbar Item Metadata
@@ -16,6 +18,7 @@ export interface IToolbarItemMetadata {
     tooltip: string;
     group: string;
     type: ToolbarItemType;
+    accelerator?: string;
 }
 
 /**
@@ -47,11 +50,21 @@ export interface IToolbarItemProps extends IToolbarItemMetadata {
  * @description - Controls for Editor Page Toolbar
  */
 export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
+    public static contextType = KeyboardContext;
+    public context!: IKeyboardContext;
+    private unregisterKeyboardHandler: () => void;
+
     constructor(props, context) {
         super(props, context);
 
         this.onItemClick = this.onItemClick.bind(this);
         this.onClick = this.onClick.bind(this);
+    }
+
+    public componentWillUnmount() {
+        if (this.unregisterKeyboardHandler) {
+            this.unregisterKeyboardHandler();
+        }
     }
 
     public render() {
@@ -61,12 +74,17 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
         }
 
         return (
-            <button type="button"
-                className={className.join(" ")}
-                title={this.props.tooltip}
-                onClick={this.onClick}>
-                <i className={"fas " + this.props.icon} />
-            </button>
+            <Fragment>
+                {this.props.accelerator &&
+                    <KeyboardBinding accelerator={this.props.accelerator} onKeyDown={this.onClick} />
+                }
+                <button type="button"
+                    className={className.join(" ")}
+                    title={this.props.tooltip}
+                    onClick={this.onClick}>
+                    <i className={"fas " + this.props.icon} />
+                </button>
+            </Fragment>
         );
     }
 

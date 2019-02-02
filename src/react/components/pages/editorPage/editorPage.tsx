@@ -1,6 +1,5 @@
 import _ from "lodash";
 import React, { RefObject } from "react";
-import keydown from "react-keydown";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
@@ -20,6 +19,7 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 
 /**
  * Properties for Editor Page
@@ -56,14 +56,6 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
     };
-}
-
-function getCtrlNumericKeys(): string[] {
-    const keys: string[] = [];
-    for (let i = 0; i <= 9; i++) {
-        keys.push(`ctrl+${i.toString()}`);
-    }
-    return keys;
 }
 
 /**
@@ -130,6 +122,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         return (
             <div className="editor-page">
+                {[...Array(10).keys()].map((index) => {
+                    return (<KeyboardBinding accelerator={`Ctrl+${index}`} onKeyDown={this.handleTagHotKey} />);
+                })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
                         assets={assets}
@@ -202,8 +197,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Listens for CTRL+{number key} and calls `onTagClicked` with tag corresponding to that number
      * @param event KeyDown event
      */
-    @keydown(getCtrlNumericKeys())
-    public handleTagHotKey(event) {
+    public handleTagHotKey(event: KeyboardEvent) {
         const key = parseInt(event.key, 10);
         if (isNaN(key)) {
             return;
@@ -238,6 +232,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onToolbarItemSelected(toolbarItem: ToolbarItem) {
         let selectionMode: SelectionMode = null;
         let editorMode: EditorMode = null;
+        const currentIndex = this.state.assets
+            .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
 
         switch (toolbarItem.props.name) {
             case "drawRectangle":
@@ -258,7 +254,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 break;
             case "panCanvas":
                 selectionMode = SelectionMode.NONE;
-                editorMode = EditorMode.Select;
+                break;
+            case "navigatePreviousAsset":
+                this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+                break;
+            case "navigateNextAsset":
+                this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
                 break;
         }
 

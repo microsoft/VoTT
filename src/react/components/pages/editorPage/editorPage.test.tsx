@@ -4,7 +4,10 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState, IAssetMetadata, IProject, EditorMode } from "../../../../models/applicationState";
+import {
+    IApplicationState, IAssetMetadata, IProject,
+    EditorMode, IAsset, AssetState,
+} from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
@@ -18,21 +21,26 @@ import { DrawRectangle } from "../../toolbar/drawRectangle";
 import { Select } from "../../toolbar/select";
 import { Pan } from "../../toolbar/pan";
 import { Player } from "video-react";
+import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
+import { NextAsset } from "../../toolbar/nextAsset";
+import { PreviousAsset } from "../../toolbar/previousAsset";
 
 jest.mock("../../../../services/projectService");
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
         <Provider store={store}>
-            <Router>
-                <EditorPage {...props} />
-            </Router>
+            <KeyboardManager>
+                <Router>
+                    <EditorPage {...props} />
+                </Router>
+            </KeyboardManager>
         </Provider>,
     );
 }
 
-function getState(wrapper) {
-    return wrapper.find(EditorPage).childAt(0).state();
+function getState(wrapper): IEditorPageState {
+    return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
 describe("Editor Page Component", () => {
@@ -40,6 +48,8 @@ describe("Editor Page Component", () => {
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
     let videoPlayerPausedMock: jest.Mocked<typeof Player> = null;
     let videoPlayerUnpausedMock: jest.Mocked<typeof Player> = null;
+
+    const testAssets: IAsset[] = MockFactory.createTestAssets(5);
 
     beforeAll(() => {
         const editorMock = CanvasTools.Editor as any;
@@ -57,6 +67,9 @@ describe("Editor Page Component", () => {
             };
             return Promise.resolve(assetMetadata);
         });
+        assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
+            return Promise.resolve({ ...assetMetadata });
+        });
 
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve({ ...project }));
@@ -64,7 +77,7 @@ describe("Editor Page Component", () => {
 
         AssetProviderFactory.create = jest.fn(() => {
             return {
-                getAssets: jest.fn(() => Promise.resolve([])),
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
             };
         });
     });
@@ -84,17 +97,9 @@ describe("Editor Page Component", () => {
 
     it("Loads project assets when state changes", (done) => {
         const testProject = MockFactory.createTestProject("TestProject");
-        const testAssets = MockFactory.createTestAssets(5);
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        AssetProviderFactory.create = jest.fn(() => {
-            return {
-                getAssets: jest.fn(() => Promise.resolve(testAssets)),
-            };
-        });
-
-        let savedAssetMetadata: IAssetMetadata = null;
         videoPlayerPausedMock = Player as jest.Mocked<typeof Player>;
         videoPlayerPausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
             // Set up some state that is unpaused
@@ -106,23 +111,27 @@ describe("Editor Page Component", () => {
             callback(state, state);
         });
 
-        assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
-            savedAssetMetadata = { ...assetMetadata };
-            return Promise.resolve(savedAssetMetadata);
-        });
-
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0);
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         const partialProject = {
             id: testProject.id,
             name: testProject.name,
         };
 
+        const expectedAssetMetadtata: IAssetMetadata = {
+            asset: {
+                ...testAssets[0],
+                state: AssetState.Visited,
+            },
+            regions: [MockFactory.createMockRegion()],
+            timestamp: null,
+        };
+
         setImmediate(() => {
-            expect(editorPage.prop("project")).toEqual(expect.objectContaining(partialProject));
-            expect(editorPage.state("assets").length).toEqual(testAssets.length);
-            expect(editorPage.state("selectedAsset")).toEqual(savedAssetMetadata);
+            expect(editorPage.props().project).toEqual(expect.objectContaining(partialProject));
+            expect(editorPage.state().assets.length).toEqual(testAssets.length);
+            expect(editorPage.state().selectedAsset).toEqual(expectedAssetMetadtata);
             done();
         });
     });
@@ -130,21 +139,12 @@ describe("Editor Page Component", () => {
     it("Raises onAssetSelected handler when an asset is selected from the sidebar", (done) => {
         // create test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
-        const testAssets = MockFactory.createTestAssets(5);
         const defaultAsset = testAssets[0];
 
         // mock store and props
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        // mock out the asset provider create method
-        AssetProviderFactory.create = jest.fn(() => {
-            return {
-                getAssets: jest.fn(() => Promise.resolve(testAssets)),
-            };
-        });
-
-        let savedAssetMetadata: IAssetMetadata = null;
         videoPlayerUnpausedMock = Player as jest.Mocked<typeof Player>;
         videoPlayerUnpausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
             // Set up some state that is unpaused
@@ -154,12 +154,6 @@ describe("Editor Page Component", () => {
                 hasStarted: true,
             };
             callback(state, state);
-        });
-
-        // mock out the asset service save method
-        assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
-            savedAssetMetadata = { ...assetMetadata };
-            return Promise.resolve(savedAssetMetadata);
         });
 
         const loadAssetMetadataSpy = jest.spyOn(props.actions, "loadAssetMetadata");
@@ -174,36 +168,39 @@ describe("Editor Page Component", () => {
             name: testProject.name,
         };
 
+        const expectedAssetMetadtata: IAssetMetadata = {
+            asset: {
+                ...testAssets[0],
+                state: AssetState.Visited,
+            },
+            regions: [MockFactory.createMockRegion()],
+            timestamp: null,
+        };
+
         setImmediate(() => {
             expect(loadAssetMetadataSpy).toBeCalledWith(expect.objectContaining(partialProject), defaultAsset);
-            expect(saveAssetMetadataSpy).toBeCalledWith(expect.objectContaining(partialProject), savedAssetMetadata);
+            expect(saveAssetMetadataSpy).toBeCalledWith(
+                expect.objectContaining(partialProject),
+                expectedAssetMetadtata,
+            );
             expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
             done();
         });
     });
 
     describe("Basic toolbar test", () => {
-        it("editor mode is changed correctly", async () => {
+        let wrapper: ReactWrapper = null;
+
+        beforeAll(() => {
             registerToolbar();
+        });
+
+        beforeEach(async () => {
             const testProject = MockFactory.createTestProject("TestProject");
-            const testAssets = MockFactory.createTestAssets(5);
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
 
-            AssetProviderFactory.create = jest.fn(() => {
-                return {
-                    getAssets: jest.fn(() => Promise.resolve(testAssets)),
-                };
-            });
-
-            let savedAssetMetadata: IAssetMetadata = null;
-
-            assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
-                savedAssetMetadata = { ...assetMetadata };
-                return Promise.resolve(savedAssetMetadata);
-            });
-
-            const wrapper = createComponent(store, props);
+            wrapper = createComponent(store, props);
 
             await MockFactory.waitForCondition(() => {
                 const editorPage = wrapper
@@ -212,7 +209,9 @@ describe("Editor Page Component", () => {
 
                 return !!editorPage.state().selectedAsset;
             });
+        });
 
+        it("editor mode is changed correctly", async () => {
             wrapper.find(DrawPolygon).simulate("click");
             expect(getState(wrapper).mode).toEqual(EditorMode.Polygon);
 
@@ -224,6 +223,42 @@ describe("Editor Page Component", () => {
 
             wrapper.find(Pan).simulate("click");
             expect(getState(wrapper).mode).toEqual(EditorMode.Select);
+        });
+
+        it("selects the next asset when clicking the 'Next Asset' button in the toolbar", async () => {
+            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 2
+
+            wrapper.update();
+
+            const expectedAssetMetadtata: IAssetMetadata = {
+                asset: {
+                    ...testAssets[1],
+                    state: AssetState.Visited,
+                },
+                regions: [MockFactory.createMockRegion()],
+                timestamp: null,
+            };
+
+            expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);
+        });
+
+        it("selects the previous asset when clicking the 'Previous Asset' button in the toolbar", async () => {
+            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 3
+            await MockFactory.flushUi(() => wrapper.find(PreviousAsset).simulate("click")); // Move to Asset 2
+
+            wrapper.update();
+
+            const expectedAssetMetadtata: IAssetMetadata = {
+                asset: {
+                    ...testAssets[1],
+                    state: AssetState.Visited,
+                },
+                regions: [MockFactory.createMockRegion()],
+                timestamp: null,
+            };
+
+            expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);
         });
     });
 
@@ -285,13 +320,6 @@ describe("Editor Page Component", () => {
                 };
             });
 
-            let savedAssetMetadata: IAssetMetadata = null;
-
-            assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
-                savedAssetMetadata = { ...assetMetadata };
-                return Promise.resolve(savedAssetMetadata);
-            });
-
             const wrapper = createComponent(store, props);
             const editorPage = wrapper.find(EditorPage).childAt(0);
 
@@ -299,11 +327,11 @@ describe("Editor Page Component", () => {
 
             const keyPressed = 2;
             setImmediate(() => {
-                (editorPage.instance() as EditorPage).handleTagHotKey({ ctrlKey: true, key: keyPressed.toString() });
+                (editorPage.instance() as EditorPage)
+                    .handleTagHotKey({ ctrlKey: true, key: keyPressed.toString() } as KeyboardEvent);
                 expect(spy).toBeCalledWith({ name: testProject.tags[keyPressed - 1].name });
             });
         });
-
     });
 });
 

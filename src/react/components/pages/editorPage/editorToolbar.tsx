@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { IToolbarItemRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions from "../../../../redux/actions/projectActions";
-import { IProject, EditorMode } from "../../../../models/applicationState";
+import { IProject } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
 import "./editorToolbar.scss";
 import { Select } from "../../toolbar/select";

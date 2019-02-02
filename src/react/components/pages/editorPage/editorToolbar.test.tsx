@@ -8,12 +8,17 @@ import { ReactWrapper, mount } from "enzyme";
 import { Select } from "../../toolbar/select";
 import { ZoomIn } from "../../toolbar/zoomIn";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
+import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
 
 describe("Editor Toolbar", () => {
     let wrapper: ReactWrapper = null;
 
     function createComponent(props: IEditorToolbarProps) {
-        return (mount(<EditorToolbar {...props} />));
+        return (mount(
+            <KeyboardManager>
+                <EditorToolbar {...props} />
+            </KeyboardManager>,
+        ));
     }
 
     function createProps(): IEditorToolbarProps {
@@ -35,7 +40,7 @@ describe("Editor Toolbar", () => {
     });
 
     it("Initializes state", () => {
-        const state = wrapper.state() as IEditorToolbarState;
+        const state = wrapper.find(EditorToolbar).state() as IEditorToolbarState;
         expect(state.selectedItem).toEqual(Select.prototype);
     });
 
@@ -53,11 +58,12 @@ describe("Editor Toolbar", () => {
         expect(items.length).toEqual(toolbarRegistry.length);
     });
 
-    it("Sets the selected toolbar item", () => {
+    it("Sets the selected toolbar item", async () => {
         const zoom = wrapper.find(ZoomIn).first();
         expect(zoom.exists()).toBe(true);
         zoom.find("button").simulate("click");
 
-        expect(wrapper.state("selectedItem")).toEqual(ZoomIn.prototype);
+        const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
+        expect(toolbar.state().selectedItem).toEqual(ZoomIn.prototype);
     });
 });

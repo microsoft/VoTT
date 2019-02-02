@@ -2,13 +2,19 @@ import React from "react";
 import { ToolbarItem, IToolbarItemProps, ToolbarItemType } from "./toolbarItem";
 import { mount, ReactWrapper } from "enzyme";
 import MockFactory from "../../../common/mockFactory";
+import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
+import { KeyboardManager } from "../common/keyboardManager/keyboardManager";
 
 describe("Toolbar Item", () => {
     let onClickHandler = jest.fn();
 
     function createComponent(props?: IToolbarItemProps): ReactWrapper {
         props = props || createProps();
-        return mount(<TestToolbarItem {...props} />);
+        return mount(
+            <KeyboardManager>
+                <TestToolbarItem {...props} />
+            </KeyboardManager>,
+        );
     }
 
     function createProps(): IToolbarItemProps {
@@ -32,6 +38,7 @@ describe("Toolbar Item", () => {
         const button = wrapper.find("button");
         expect(button.exists()).toBe(true);
         expect(button.prop("className")).toEqual("toolbar-btn");
+        expect(wrapper.find(KeyboardBinding).exists()).toBe(false);
     });
 
     it("Calls click handler when selected", () => {
@@ -47,6 +54,14 @@ describe("Toolbar Item", () => {
 
         const button = wrapper.find("button");
         expect(button.prop("className")).toEqual("toolbar-btn active");
+    });
+
+    it("Renders a keyboard binding when an accelerator is configured", () => {
+        const props = createProps();
+        props.accelerator = "Ctrl+1";
+
+        const wrapper = createComponent(props);
+        expect(wrapper.find(KeyboardBinding).exists()).toBe(true);
     });
 });
 
