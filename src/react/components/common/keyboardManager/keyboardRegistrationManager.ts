@@ -24,7 +24,7 @@ export class KeyboardRegistrationManager {
      * @param handler The keyboard event handler
      */
     public addHandler(keyCode: string, handler: KeyboardEventHandler): () => void {
-        Guard.emtpy(keyCode);
+        Guard.null(keyCode);
         Guard.null(handler);
 
         let keyRegistrations: KeyboardEventHandler[] = this.registrations[keyCode];
@@ -46,7 +46,7 @@ export class KeyboardRegistrationManager {
      * @param keyCode The key code combination, ex) Ctrl+1
      */
     public getHandlers(keyCode: string) {
-        Guard.emtpy(keyCode);
+        Guard.null(keyCode);
 
         const registrations = this.registrations[keyCode];
         return registrations ? [...registrations] : [];
@@ -58,7 +58,7 @@ export class KeyboardRegistrationManager {
      * @param evt The keyboard event that was raised
      */
     public invokeHandlers(keyCode: string, evt: KeyboardEvent) {
-        Guard.emtpy(keyCode);
+        Guard.null(keyCode);
         Guard.null(evt);
 
         const handlers = this.getHandlers(keyCode);
