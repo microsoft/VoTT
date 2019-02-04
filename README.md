@@ -1,6 +1,7 @@
 # VoTT (Visual Object Tagging Tool)
 
 [![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6?branchName=v2) [![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/v2/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=ncloc)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
 
 [Current Complexity Analysis Report](https://microsoft.github.io/VoTT/)
 
