@@ -1,17 +1,14 @@
-import React from "react";
+import React, { Fragment } from "react";
 import * as shortid from "shortid";
-import { BigPlayButton, ControlBar, CurrentTimeDisplay,
-    PlaybackRateMenuButton, Player, TimeDivider, VolumeMenuButton } from "video-react";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
-import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
-import { strings } from "../../../../common/strings";
-import { AppError, AssetState, AssetType, EditorMode,
-    ErrorCode, IAssetMetadata, IProject, IRegion, ITag, RegionType } from "../../../../models/applicationState";
+import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import {
+    AssetState, AssetType, EditorMode, IAssetMetadata,
+    IProject, IRegion, ITag, RegionType,
+} from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
+import AssetPreview, { ContentSource } from "./assetPreview";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -35,18 +32,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         canvasEnabled: true,
     };
 
-    private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
-
     public componentDidMount = async () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
-        this.editor = new CanvasTools.Editor(sz);
-        this.editor.onSelectionEnd = this.onSelectionEnd;
-        this.editor.onRegionMove = this.onRegionMove;
-        this.editor.onRegionDelete = this.onRegionDelete;
-        this.editor.onRegionSelected = this.onRegionSelected;
+        // this.editor = new CanvasTools.Editor(sz);
+        // this.editor.onSelectionEnd = this.onSelectionEnd;
+        // this.editor.onRegionMove = this.onRegionMove;
+        // this.editor.onRegionDelete = this.onRegionDelete;
+        // this.editor.onRegionSelected = this.onRegionSelected;
 
-        // Upload background image for selection
-        await this.updateEditor();
+        // // Upload background image for selection
+        // await this.updateEditor();
     }
 
     public componentDidUpdate = async (prevProps) => {
@@ -59,30 +54,17 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public render = () => {
-        const { selectedAsset } = this.props;
-
         return (
-            <div id="ct-zone" className={this.state.canvasEnabled ? "canvas-enabled" : "canvas-disabled"}>
-                {selectedAsset.asset.type === AssetType.Video &&
-                    <Player ref={this.videoPlayer}
-                        fluid={false} width={"100%"} height={"100%"}
-                        autoPlay={true}
-                        poster={""}
-                        src={`${selectedAsset.asset.path}`}
-                    >
-                        <BigPlayButton position="center" />
-                        <ControlBar>
-                            <CurrentTimeDisplay order={1.1} />
-                            <TimeDivider order={1.2} />
-                            <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
-                            <VolumeMenuButton enabled order={7.2} />
-                        </ControlBar>
-                    </Player>
-                }
-                <div id="selection-zone" className={`asset-${this.getAssetType()}`}>
-                    <div id="editor-zone" className="full-size" />
-                </div>
-            </div>
+            <Fragment>
+                {/* <div id="ct-zone" className={this.state.canvasEnabled ? "canvas-enabled" : "canvas-disabled"}>
+                    <div id="selection-zone" className={`asset-${this.getAssetType()}`}>
+                        <div id="editor-zone" className="full-size" />
+                    </div>
+                </div> */}
+                <AssetPreview autoPlay={true}
+                    asset={this.props.selectedAsset.asset}
+                    onAssetLoaded={this.onAssetLoaded} />
+            </Fragment>
         );
     }
 
@@ -194,6 +176,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.updateSelected(selectedRegions);
     }
 
+    private onAssetLoaded(contentSource: ContentSource) {
+        // Todo set canvas tools source.
+    }
+
     /**
      * Add tag to region if not there already, remove tag from region
      * if already contained in tags. Update tags in CanvasTools editor
@@ -219,68 +205,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private updateEditor = async () => {
         this.editor.RM.deleteAllRegions();
-        await this.loadAsset();
-    }
-
-    /**
-     * Loads the asset into the canvas editor
-     */
-    private loadAsset = async () => {
-        // We need to check if we're looking for a video or image
-        if (this.props.selectedAsset.asset.type === AssetType.Image) {
-            await this.loadImage();
-        } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
-            await this.loadVideo();
-        } else {
-            // We don't know what type of asset this is?
-            throw new AppError(ErrorCode.CanvasError, strings.editorPage.assetError);
-        }
-    }
-
-    /**
-     *  loads a video into the canvas
-     */
-    private loadVideo = () => {
-        this.setState({ canvasEnabled: false });
-        this.videoPlayer.current.subscribeToStateChange(this.onVideoStateChange);
-
-        return Promise.resolve();
-    }
-
-    /**
-     * loads an image into the canvas
-     */
-    private loadImage = () => {
-        return new Promise((resolve) => {
-            const image = new Image();
-            image.addEventListener("load", async (e) => {
-                await this.editor.addContentSource(e.target as HTMLImageElement);
-                this.updateRegions();
-                resolve();
-            });
-            image.src = this.props.selectedAsset.asset.path;
-        });
-    }
-
-    /**
-     * Reacts to changes in the video player state
-     * @param state The current state of the video player
-     * @param prev The previous state of the video player
-     */
-    private onVideoStateChange = async (state, prev) => {
-        // If the video is paused, add this frame to the editor content
-        if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
-            // If we're paused, make sure we're behind the canvas so we can tag
-            const video = this.videoPlayer.current.video.video as HTMLVideoElement;
-            if (video.videoHeight > 0 && video.videoWidth > 0) {
-                await this.editor.addContentSource(video);
-            }
-            this.setState({ canvasEnabled: true });
-            this.updateRegions();
-        } else if (!state.paused && state.paused !== prev.paused) {
-            // We need to make sure we're on top if we are playing
-            this.setState({ canvasEnabled: false });
-        }
     }
 
     private updateRegions = () => {

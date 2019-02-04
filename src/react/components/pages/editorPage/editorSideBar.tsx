@@ -1,6 +1,6 @@
 import React from "react";
 import { AutoSizer, List } from "react-virtualized";
-import { IAsset, AssetState, IAssetVideoSettings } from "../../../../models/applicationState";
+import { IAsset, AssetState } from "../../../../models/applicationState";
 import AssetPreview from "./assetPreview";
 
 /**
@@ -90,18 +90,13 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     private rowRenderer({ key, index, style }) {
         const asset = this.props.assets[index];
         const { selectedAsset } = this.state;
-        const editorVideoSetting: IAssetVideoSettings = {
-            shouldAutoPlayVideo: false,
-            posterSource: null,
-            shouldShowPlayControls: false,
-        };
 
         return (
             <div key={key} style={style}
                 className={this.getAssetCssClassNames(asset, selectedAsset)}
                 onClick={() => this.onAssetClicked(asset)}>
                 <div className="asset-item-image">
-                    <AssetPreview asset={asset} videoSettings={editorVideoSetting} />
+                    <AssetPreview asset={asset} />
                 </div>
                 <div className="asset-item-metadata">
                     <span className="asset-filename" title={asset.name}>{asset.name}</span>
