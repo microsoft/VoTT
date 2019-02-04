@@ -35,6 +35,14 @@
         &-footer {
             flex-basis: 100px;
         }
+
+        .video-react {
+            background-color: #1e2024 !important;
+
+            &-video {
+                height: calc(100% - 3em) !important;
+            }
+        }
     }
 
     .asset-item:first-child {
@@ -80,18 +88,11 @@
             width: 260px;
             height: 195px;
             overflow: hidden;
+            display: flex;
             outline: 1px solid $lighter-2;
             background-color: $darker-5;
             text-align: center;
             position: relative;
-
-            .asset-preview {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                width: 100%;
-                height: 100%;
-            }
 
             &:hover {
                 &::after {
@@ -102,13 +103,6 @@
                     background-color: $lighter-3;
                     z-index: 1;
                 }
-            }
-
-            img, video {
-                display: inline-block;
-                margin: auto;
-                max-width: 100%;
-                max-height: 100%;
             }
 
             .asset-loading {
@@ -128,6 +122,31 @@
                 display: inline-block;
                 white-space: nowrap;
             }
+        }
+    }
+}
+
+.asset-preview {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+
+    img {
+        display: block;
+        margin: auto;
+        max-width: 100%;
+        max-height: 100%;
+
+        &.landscape {
+            width: 100%;
+            height: auto;
+        }
+
+        &.portrait {
+            height: 100%;
+            width: auto;
         }
     }
 }
@@ -173,16 +192,6 @@ canvas {
 
 .video-react {
     font-family: inherit;
-    height: calc(100% - 30px) !important;
-
-    &-video {
-        background-color: #1e2024;
-        position: static !important;
-    }
-
-    &-control-bar {
-        position: static !important;
-    }
 
     * {
         font-family: inherit;
