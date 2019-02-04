@@ -6,7 +6,7 @@ import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState,
+    EditorMode, IAsset, AssetState, AssetType,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -230,6 +230,7 @@ describe("Editor Page Component", () => {
             expect(editorPage.prop("project")).toEqual(expect.objectContaining(partialProject));
             expect(editorPage.state("assets").length).toEqual(testAssets.length + 1);
             expect(editorPage.state("canvasAsset")).toEqual(savedAssetMetadata);
+            expect(editorPage.state("canvasAsset").asset.type).toEqual(AssetType.VideoFrame);
             done();
         });
     });

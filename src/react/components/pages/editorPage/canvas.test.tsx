@@ -100,16 +100,4 @@ describe("Editor Canvas", () => {
         expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
     });
-
-    it("onSelectionEnd adds region to correct video frame asset and selects it", () => {
-        const testCommit = createTestRegionData();
-        const canvas = wrapper.instance();
-        const testRegion  = MockFactory.createTestRegion();
-        canvas.onSelectionEnd(testCommit);
-
-        expect(onAssetMetadataChanged).toBeCalled();
-        expect(wrapper.prop("canvasAsset").regions).toMatchObject([testRegion]);
-        canvas.videoPlayer.current.pause();
-        expect(wrapper.instance().state.selectedRegions).toMatchObject([testRegion]);
-    });
 });
