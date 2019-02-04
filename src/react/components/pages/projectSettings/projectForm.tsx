@@ -1,7 +1,7 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
-import "vott-react/build/lib/components/TagsInput/tagsInput.css";
+import "vott-react/dist/css/tagsInput.css";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
