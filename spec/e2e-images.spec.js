@@ -6,7 +6,7 @@ const fs = require('fs');
 
 describe('E2E - Images', () => {
     let app = null;
-
+    
     beforeAll((done) => {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
         app = helper.initializeSpectron()
@@ -31,7 +31,7 @@ describe('E2E - Images', () => {
 
         it('clicking images directory loads tagging configuration', (done) => {
             app.client.click('#dirImage')
-                .then(() => app.client.waitForVisible('#load-form-container', 1000))
+                .then(() => app.client.waitForVisible('#load-form-container', 2000))
                 .then(() => app.client.isVisible('#load-form-container h2'))
                 .then(result => expect(result).toBeTruthy())
                 .then(() => app.client.getText('#load-form-container h2'))
