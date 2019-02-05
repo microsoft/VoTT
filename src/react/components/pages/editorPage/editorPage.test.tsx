@@ -231,6 +231,7 @@ describe("Editor Page Component", () => {
             expect(editorPage.state("assets").length).toEqual(testAssets.length + 1);
             expect(editorPage.state("canvasAsset")).toEqual(savedAssetMetadata);
             expect(editorPage.state("canvasAsset").asset.type).toEqual(AssetType.VideoFrame);
+            expect(editorPage.state("canvasAsset").asset.name).toContain("timestamp=0");
             done();
         });
     });
