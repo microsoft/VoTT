@@ -27,6 +27,7 @@
         }
 
         &-body {
+            position: relative;
             display: flex;
             flex-grow: 1;
             background-color: $darker-5;
@@ -41,6 +42,10 @@
 
             &-video {
                 height: calc(100% - 3em) !important;
+            }
+
+            &-control-bar, * {
+                display: static !important;
             }
         }
     }
@@ -152,11 +157,14 @@
 }
 
 #ct-zone {
-    position: relative;
-    flex-grow: 1;
+    position: absolute;
 
-    .asset-video {
-        height: calc(100% - 30px);
+    &.canvas-enabled {
+        z-index: 1;
+    }
+
+    *.canvas-disabled {
+        z-index: 0;
     }
 }
 
@@ -172,18 +180,6 @@
 .full-size {
     width: 100%;
     height: 100%;
-}
-
-.canvas-enabled {
-    .video-react {
-        z-index: 0;
-    }
-}
-
-.canvas-disabled {
-    .video-react {
-        z-index: 1;
-    }
 }
 
 canvas {
