@@ -15,6 +15,9 @@ import {
     Player, ControlBar, CurrentTimeDisplay, TimeDivider,
     BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
+import HtmlFileReader from "../../../../common/htmlFileReader";
+import { TFRecordsReader } from "../../../../providers/export/tensorFlowRecords/tensorFlowReader";
+import { FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -202,6 +205,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             await this.loadImage();
         } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
             await this.loadVideo();
+        } else if (this.props.selectedAsset.asset.type === AssetType.TFRecord) {
+            await this.loadTFRecord();
         } else {
             // We don't know what type of asset this is?
             throw new AppError(ErrorCode.CanvasError, strings.editorPage.assetError);
@@ -230,6 +235,28 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 resolve();
             });
             image.src = this.props.selectedAsset.asset.path;
+        });
+    }
+
+    /**
+     * loads an image into the canvas from a TFRecord
+     */
+    private loadTFRecord = () => {
+        return new Promise(async (resolve) => {
+            const image = new Image();
+            image.addEventListener("load", async (e) => {
+                await this.editor.addContentSource(e.target as HTMLImageElement);
+                this.updateRegions();
+                resolve();
+            });
+
+            const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(this.props.selectedAsset.asset));
+            const reader = new TFRecordsReader(tfrecords);
+            const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
+
+            // Get Base64
+            const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+            image.src = "data:image;base64," + image64;
         });
     }
 
