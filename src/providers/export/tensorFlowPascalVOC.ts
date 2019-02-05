@@ -6,7 +6,6 @@ import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import axios from "axios";
-import { all } from "deepmerge";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
 
