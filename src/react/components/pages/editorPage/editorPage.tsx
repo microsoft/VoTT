@@ -110,11 +110,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
-        const editorVideoSetting: IAssetVideoSettings = {
-            shouldAutoPlayVideo: true,
-            posterSource: null,
-            shouldShowPlayControls: true,
-        };
 
         if (!project) {
             return (<div>Loading...</div>);
@@ -123,7 +118,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         return (
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
-                    return (<KeyboardBinding accelerator={`Ctrl+${index}`} onKeyDown={this.handleTagHotKey} />);
+                    return (<KeyboardBinding
+                        key={index}
+                        accelerator={`Ctrl+${index}`}
+                        onKeyDown={this.handleTagHotKey} />);
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
