@@ -1,10 +1,10 @@
 import React from "react";
-import { IAssetProps, IAssetComponent } from "./assetPreview";
+import { IAssetProps } from "./assetPreview";
 
 export interface IImageProps extends IAssetProps, React.ClassAttributes<ImageAsset> {
 }
 
-export class ImageAsset extends React.Component<IImageProps> implements IAssetComponent {
+export class ImageAsset extends React.Component<IImageProps> {
     private image: React.RefObject<HTMLImageElement> = React.createRef();
 
     public render() {
@@ -17,13 +17,13 @@ export class ImageAsset extends React.Component<IImageProps> implements IAssetCo
         return (<img ref={this.image} className={className} src={this.props.asset.path} onLoad={this.onLoad} />);
     }
 
-    public getContentSource = () => {
-        return this.image.current;
-    }
-
     private onLoad = () => {
-        if (this.props.onAssetLoaded) {
-            this.props.onAssetLoaded(this.image.current);
+        if (this.props.onLoaded) {
+            this.props.onLoaded(this.image.current);
+        }
+
+        if (this.props.onActivated) {
+            this.props.onActivated(this.image.current);
         }
     }
 }
