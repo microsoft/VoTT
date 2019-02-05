@@ -1,5 +1,7 @@
 # VoTT: Visual Object Tagging Tool 1.5 
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Microsoft/VoTT.svg)](https://greenkeeper.io/)
+
 This tool provides end to end support for generating datasets and validating object detection models from video and image assets.
 
 ### End to End Object Detection Pipeline:
