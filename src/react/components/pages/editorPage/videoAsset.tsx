@@ -3,16 +3,24 @@ import {
     Player, BigPlayButton, ControlBar, CurrentTimeDisplay,
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
-import { IAssetProps, IAssetComponent } from "./assetPreview";
+import { IAssetProps } from "./assetPreview";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
 }
 
-export class VideoAsset extends React.Component<IVideoAssetProps> implements IAssetComponent {
+export interface IVideoAssetState {
+    loaded: boolean;
+}
+
+export class VideoAsset extends React.Component<IVideoAssetProps> {
     public static defaultProps: IVideoAssetProps = {
         autoPlay: true,
         asset: null,
+    };
+
+    public state: IVideoAssetState = {
+        loaded: false,
     };
 
     private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
@@ -34,7 +42,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> implements IAs
                 src={videoPath}
             >
                 <BigPlayButton position="center" />
-                <ControlBar>
+                <ControlBar autoHide={false}>
                     <CurrentTimeDisplay order={1.1} />
                     <TimeDivider order={1.2} />
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
@@ -48,24 +56,42 @@ export class VideoAsset extends React.Component<IVideoAssetProps> implements IAs
         this.videoPlayer.current.subscribeToStateChange(this.onVideoStateChange);
     }
 
-    public getContentSource = () => {
-        return this.videoPlayer.current.video.video;
+    public componentDidUpdate(prevProps: Readonly<IVideoAssetProps>) {
+        if (this.props.asset !== prevProps.asset) {
+            this.setState({ loaded: false });
+        }
     }
 
     private onVideoStateChange = (state, prev) => {
-        if (state.readyState === 4 && this.props.onAssetLoaded) {
-            this.props.onAssetLoaded(this.videoPlayer.current.video.video);
-        }
-        if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
-            this.onContentChanged();
+        if (!this.state.loaded && state.readyState === 4 && state.readyState !== prev.readyState) {
+            this.raiseLoaded();
+            this.raiseActivated();
+        } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
+            this.raiseDeactivated();
         } else if (!state.paused && state.paused !== prev.paused) {
-
+            this.raiseActivated();
         }
     }
 
-    private onContentChanged = () => {
-        if (this.props.onContentChanged) {
-            this.props.onContentChanged(this.videoPlayer.current.video.video);
+    private raiseLoaded = () => {
+        this.setState({
+            loaded: true,
+        }, () => {
+            if (this.props.onLoaded) {
+                this.props.onLoaded(this.videoPlayer.current.video.video);
+            }
+        });
+    }
+
+    private raiseActivated = () => {
+        if (this.props.onActivated) {
+            this.props.onActivated(this.videoPlayer.current.video.video);
+        }
+    }
+
+    private raiseDeactivated = () => {
+        if (this.props.onDeactivated) {
+            this.props.onDeactivated(this.videoPlayer.current.video.video);
         }
     }
 }
