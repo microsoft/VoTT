@@ -13,19 +13,19 @@ export default class HtmlFileReader {
      * Reads the file and returns the string value contained
      * @param file HTML file to read
      */
-    public static readAsText(file: File): Promise<IFileInfo> {
+    public static readAsText(file: File): Promise<string | ArrayBuffer | File> {
         Guard.null(file);
-        let fileInfo: IFileInfo;
+        let fileInfo: any;
 
-        return new Promise<IFileInfo>((resolve, reject) => {
+        return new Promise<string | ArrayBuffer | File>((resolve, reject) => {
             const reader = new FileReader();
             reader.onerror = reject;
             reader.onload = () => {
                 if (reader.result) {
                     fileInfo = {
                         content: reader.result,
-                        file,
-                    };
+                        file: file,
+                    }
                     resolve(fileInfo);
                 } else {
                     reject();
@@ -33,6 +33,7 @@ export default class HtmlFileReader {
             };
 
             try {
+                console.log("FILE: " + file);
                 reader.readAsText(file);
             } catch (err) {
                 reject(err);

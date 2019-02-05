@@ -13,11 +13,17 @@ import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
+<<<<<<< HEAD
     IApplicationState, IConnection, IProject, IFileInfo,
     ErrorCode, AppError, IAppError, IAppSettings,
 } from "../../../../models/applicationState";
 import { IV1Project, IV1Region } from "../../../../models/v1Models";
 import IMessageBox from "../../common/messageBox/messageBox";
+=======
+    IApplicationState, IConnection, IProject,
+    ErrorCode, AppError, IAppError, IV1Project,
+} from "../../../../models/applicationState";
+>>>>>>> add file data to homepage and create new project
 import ImportService from "../../../../services/importService";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
@@ -53,7 +59,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
     private deleteConfirm: React.RefObject<Confirm>;
     private cloudFilePicker: React.RefObject<CloudFilePicker>;
     private importConfirm: React.RefObject<Confirm>;
+<<<<<<< HEAD
     private settingsConfirm: React.RefObject<IMessageBox>;
+=======
+>>>>>>> add file data to homepage and create new project
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
@@ -66,7 +75,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.deleteConfirm = React.createRef<Confirm>();
         this.cloudFilePicker = React.createRef<CloudFilePicker>();
         this.importConfirm = React.createRef<Confirm>();
+<<<<<<< HEAD
         this.settingsConfirm = React.createRef<IMessageBox>();
+=======
+>>>>>>> add file data to homepage and create new project
 
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
@@ -130,6 +142,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     onConfirm={this.deleteProject} />
                 <Confirm title="Import Project"
                     ref={this.importConfirm}
+<<<<<<< HEAD
                     message={(project: IFileInfo) => `${strings.homePage.importProject.confirmation}
                         ${project.file.name} ${strings.homePage.importProject.recommendation}`}
                     confirmButtonColor="danger"
@@ -137,6 +150,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 <IMessageBox title="Confirm Settings"
                     ref={this.settingsConfirm}
                     message={"Please confirm your new v2 project settings."} />
+=======
+                    message={(project: any) => `${strings.homePage.importProject.confirmation} '${project.file.name}'
+                        ${strings.homePage.importProject.recommendation}`}
+                    confirmButtonColor="danger"
+                    onConfirm={this.convertProject} />
+                    {/*Above will change to (project) => this.convertProject(project)*/}
+>>>>>>> add file data to homepage and create new project
             </div>
         );
     }
@@ -151,7 +171,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUpload = async (e, project) => {
-        let projectJson: IProject;
+        // new args object, not just text
+        console.log(project);
+        // project is now an object with content (project text) and file
+        let projectJson: IProject; 
 
         try {
             projectJson = JSON.parse(project.content);
@@ -160,6 +183,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
 
         // need a better check to tell if its v1
+<<<<<<< HEAD
         if (projectJson.name == null) {
             try {
                 await this.importConfirm.current.open(project);
@@ -169,6 +193,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
         } else {
             await this.loadSelectedProject(projectJson);
         }
+=======
+        if (projectJson.name == null){
+            this.importConfirm.current.open(project);
+        }
+
+        // await this.loadSelectedProject(projectJson);
+>>>>>>> add file data to homepage and create new project
     }
 
     private onProjectFileUploadError = (e, error: any) => {
@@ -200,6 +231,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
     }
 
+<<<<<<< HEAD
     private convertProject = async (project: IFileInfo) => {
         const importService = new ImportService();
         let projectJson;
@@ -210,5 +242,11 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
         this.props.applicationActions.ensureSecurityToken(projectJson);
         await this.loadSelectedProject(projectJson);
+=======
+    private convertProject = async (project: any) => {
+        const importService = new ImportService(); 
+        const retvalue = await importService.convertV1(project);
+        console.log("RETURNED: " + retvalue);
+>>>>>>> add file data to homepage and create new project
     }
 }

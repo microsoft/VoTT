@@ -113,14 +113,58 @@ export interface IProject {
 }
 
 /**
- * @name - FileInfo
- * @description - Defines the file information and content for V1 projects
- * @member content - The content of a file (JSON string)
- * @member file - The File object point to the V1 project file
+ * @name - V1 Project
+ * @description - Defines the structure of a V1 Project
+ * @member frames - TODO: Add description
+ * @member framerate - TODO: Add description
+ * @member inputTags - TODO: Add description
+ * @member suggestiontype - TODO: Add description
+ * @member tags - TODO: Add description
+ * @member scd - TODO: Add description
+ * @member visitedFrames - TODO: Add description
+ * @member tagColors - TODO: Add description
  */
-export interface IFileInfo {
-    content: string | ArrayBuffer;
-    file: File;
+export interface IV1Project {
+    frames: {[frameName: string] : IV1Frame[]};
+    framerate: string;
+    inputTags: string;
+    suggestiontype: string;
+    tags: ITag[];
+    scd: IConnection;
+    visitedFrames: IConnection;
+    tagColors: IExportFormat;
+}
+
+/**
+ * @name - V1 Frame Object
+ * @description - Defines the structure of a V1 Frame
+ * @member x1 - TODO: Add description
+ * @member y1 - TODO: Add description
+ * @member x2 - TODO: Add description
+ * @member y2 - TODO: Add description
+ * @member width - TODO: Add description
+ * @member box - TODO: Add description
+ * @member points - TODO: Add description
+ * @member UID - TODO: Add description
+ * @member id - TODO: Add description
+ * @member types - TODO: Add description
+ * @member tags - TODO: Add description
+ * @member name - TODO: Add description
+ */
+export interface IV1Frame {
+    x1: {[frameName: string] : IV1Frame};
+    y1: string;
+    x2: string;
+    y2: string;
+    width: ITag[];
+    height: IConnection;
+    box: IConnection;
+    points: IExportFormat;
+    UID: string;
+    id: string;
+    type: string;
+    tags: string;
+    name: string;
 }
 
 /**

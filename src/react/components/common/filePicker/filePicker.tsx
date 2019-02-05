@@ -9,7 +9,7 @@ import { IFileInfo } from "../../../../models/applicationState";
  * @member onError - Function to call on file picking error
  */
 interface IFilePickerProps {
-    onChange: (sender: SyntheticEvent, fileText: IFileInfo) => void;
+    onChange: (sender: SyntheticEvent, fileText: string | ArrayBuffer | File) => void;
     onError: (sender: SyntheticEvent, error: any) => void;
 }
 
@@ -45,6 +45,8 @@ export default class FilePicker extends React.Component<IFilePickerProps> {
             this.props.onError(e, "No files were selected");
         }
 
+        // change filetext into object w/ name, path, etc
+        // refactor homepage
         HtmlFileReader.readAsText(e.target.files[0])
             .then((fileInfo) => this.props.onChange(e, fileInfo))
             .catch((err) => this.props.onError(e, err));
