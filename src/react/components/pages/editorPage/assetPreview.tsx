@@ -8,12 +8,9 @@ export type ContentSource = HTMLImageElement | HTMLVideoElement;
 
 export interface IAssetProps {
     asset: IAsset;
-    onAssetLoaded?: (contentSource: ContentSource) => void;
-    onContentChanged?: (contentSource: ContentSource) => void;
-}
-
-export interface IAssetComponent {
-    getContentSource(): HTMLImageElement | HTMLVideoElement;
+    onLoaded?: (ContentSource: ContentSource) => void;
+    onActivated?: (contentSource: ContentSource) => void;
+    onDeactivated?: (contentSource: ContentSource) => void;
 }
 
 /**
@@ -42,15 +39,9 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
         autoPlay: false,
     };
 
-    constructor(props, context) {
-        super(props, context);
-
-        this.state = {
-            loaded: false,
-        };
-
-        this.onAssetLoad = this.onAssetLoad.bind(this);
-    }
+    public state: IAssetPreviewState = {
+        loaded: false,
+    };
 
     public render() {
         const { loaded } = this.state;
@@ -64,10 +55,17 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <ImageAsset asset={asset} onAssetLoaded={this.onAssetLoad} />
+                    <ImageAsset asset={asset}
+                        onLoaded={this.onAssetLoad}
+                        onActivated={this.props.onActivated}
+                        onDeactivated={this.props.onDeactivated} />
                 }
                 {asset.type === AssetType.Video &&
-                    <VideoAsset asset={asset} onAssetLoaded={this.onAssetLoad} autoPlay={autoPlay} />
+                    <VideoAsset asset={asset}
+                        autoPlay={autoPlay}
+                        onLoaded={this.onAssetLoad}
+                        onActivated={this.props.onActivated}
+                        onDeactivated={this.props.onDeactivated} />
                 }
                 {asset.type === AssetType.Unknown &&
                     <div>{strings.editorPage.assetError}</div>
@@ -76,12 +74,12 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
         );
     }
 
-    private onAssetLoad(contentSource: ContentSource) {
+    private onAssetLoad = (contentSource: ContentSource) => {
         this.setState({
             loaded: true,
         }, () => {
-            if (this.props.onAssetLoaded) {
-                this.props.onAssetLoaded(contentSource);
+            if (this.props.onLoaded) {
+                this.props.onLoaded(contentSource);
             }
         });
     }
