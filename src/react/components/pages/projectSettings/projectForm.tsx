@@ -1,7 +1,10 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
+<<<<<<< Updated upstream
 import "vott-react/dist/css/tagsInput.css";
+=======
+>>>>>>> Stashed changes
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag, IAppSettings } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
@@ -11,7 +14,7 @@ import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { SecurityTokenPicker, ISecurityTokenPickerProps } from "../../common/securityTokenPicker/securityTokenPicker";
 import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
 
-import "vott-react/build/lib/components/tagsInput/tagsInput.css";
+import "vott-react/dist/css/tagsInput.css";
 
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
