@@ -28,6 +28,8 @@ interface IAssetPreviewState {
  */
 export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
 
+    private tfRecordImage64: string;
+
     constructor(props, context) {
         super(props, context);
 
@@ -38,7 +40,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
         this.onAssetLoad = this.onAssetLoad.bind(this);
     }
 
-    public async render() {
+    public render() {
         const { loaded } = this.state;
         const { asset } = this.props;
         const { videoSettings } = this.props;
@@ -59,13 +61,19 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </video>
                 }
                 {asset.type === AssetType.TFRecord &&
-                    <img src={await this.getTFRecordBase64Image(asset)} onLoad={this.onAssetLoad} />
+                    <img src={this.tfRecordImage64} onLoad={this.onAssetLoad} />
                 }
                 {asset.type === AssetType.Unknown &&
                     <div>{strings.editorPage.assetError}</div>
                 }
             </div>
         );
+    }
+
+    public async componentDidMount() {
+        if (this.props.asset.type === AssetType.TFRecord) {
+            this.tfRecordImage64 = await this.getTFRecordBase64Image(this.props.asset);
+        }
     }
 
     private async getTFRecordBase64Image(asset: IAsset): Promise<string> {
