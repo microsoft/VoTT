@@ -30,7 +30,7 @@
         "rimraf": "^2.6.2",
         "shortid": "^2.2.14",
         "video-react": "^0.13.2",
-        "vott-ct": "^2.1.11",
+        "vott-ct": "^2.1.17",
         "vott-react": "^0.2.2"
     },
     "scripts": {
@@ -92,6 +92,8 @@
         "node-sass": "^4.10.0",
         "plato": "^1.7.0",
         "popper.js": "^1.14.6",
+        "react-dnd": "^7.0.2",
+        "react-dnd-html5-backend": "^7.0.2",
         "react-jsonschema-form": "^1.0.6",
         "react-modal": "^3.6.1",
         "react-tag-input": "^6.1.0",

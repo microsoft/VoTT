@@ -3,7 +3,7 @@ import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
 import "vott-react/dist/css/tagsInput.css";
 import { addLocValues, strings } from "../../../../common/strings";
-import { IConnection, IProject, ITag } from "../../../../models/applicationState";
+import { IConnection, IProject, ITag, IAppSettings } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";

@@ -14,6 +14,7 @@ export interface IAppStrings {
         submit: string;
         cancel: string;
         save: string;
+        delete: string;
         provider: string;
         homePage: string;
     };
