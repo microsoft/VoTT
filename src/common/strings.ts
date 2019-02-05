@@ -31,6 +31,11 @@ export interface IAppStrings {
             title: string;
             confirmation: string;
         },
+        importProject: {
+            title: string;
+            confirmation: string;
+            recommendation: string;
+        },
         recentProjects: string,
     };
     appSettings: {

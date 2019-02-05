@@ -13,8 +13,9 @@ import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
     IApplicationState, IConnection, IProject,
-    ErrorCode, AppError, IAppError,
+    ErrorCode, AppError, IAppError, IV1Project,
 } from "../../../../models/applicationState";
+import ImportService from "../../../../services/importService";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -41,9 +42,27 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class HomePage extends React.Component<IHomepageProps> {
-    public state: IHomepageState = {
-        cloudPickerOpen: false,
-    };
+    private filePicker: React.RefObject<FilePicker>;
+    private deleteConfirm: React.RefObject<Confirm>;
+    private cloudFilePicker: React.RefObject<CloudFilePicker>;
+    private importConfirm: React.RefObject<Confirm>;
+
+    constructor(props: IHomepageProps, context) {
+        super(props, context);
+
+        this.state = {
+            cloudPickerOpen: false,
+        };
+
+        this.filePicker = React.createRef<FilePicker>();
+        this.deleteConfirm = React.createRef<Confirm>();
+        this.cloudFilePicker = React.createRef<CloudFilePicker>();
+        this.importConfirm = React.createRef<Confirm>();
+
+        this.loadSelectedProject = this.loadSelectedProject.bind(this);
+        this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
+        this.deleteProject = this.deleteProject.bind(this);
+        this.handleOpenCloudProjectClick = this.handleOpenCloudProjectClick.bind(this);
 
     private filePicker: React.RefObject<FilePicker> = React.createRef();
     private deleteConfirm: React.RefObject<Confirm> = React.createRef();
@@ -99,6 +118,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} '${project.name}'?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
+                <Confirm title="Import Project"
+                    ref={this.importConfirm}
+                    message={(project: any) => `${strings.homePage.importProject.confirmation} '${project.file.name}'
+                        ${strings.homePage.importProject.recommendation}`}
+                    confirmButtonColor="danger"
+                    onConfirm={this.convertProject} />
+                    {/*Above will change to (project) => this.convertProject(project)*/}
             </div>
         );
     }
@@ -113,15 +139,23 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUpload = async (e, project) => {
-        let projectJson: IProject;
+        // new args object, not just text
+        console.log(project);
+        // project is now an object with content (project text) and file
+        let projectJson: IProject; 
 
         try {
-            projectJson = JSON.parse(project);
+            projectJson = JSON.parse(project.content);
         } catch (error) {
             throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
         }
 
-        await this.loadSelectedProject(projectJson);
+        // need a better check to tell if its v1
+        if (projectJson.name == null){
+            this.importConfirm.current.open(project);
+        }
+
+        // await this.loadSelectedProject(projectJson);
     }
 
     private onProjectFileUploadError = (e, error: any) => {
@@ -143,5 +177,11 @@ export default class HomePage extends React.Component<IHomepageProps> {
         } catch (error) {
             throw new AppError(ErrorCode.ProjectDeleteError, "Error deleting project file");
         }
+    }
+
+    private convertProject = async (project: any) => {
+        const importService = new ImportService(); 
+        const retvalue = await importService.convertV1(project);
+        console.log("RETURNED: " + retvalue);
     }
 }
