@@ -1,6 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { IAsset, AssetType } from "../models/applicationState";
 import Guard from "./guard";
+import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
+import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
 /**
  * Helper class for reading HTML files
@@ -46,6 +48,8 @@ export default class HtmlFileReader {
                 return await this.readImageAttributes(asset.path);
             case AssetType.Video:
                 return await this.readVideoAttributes(asset.path);
+            case AssetType.TFRecord:
+                return await this.readTFRecordAttributes(asset);
             default:
                 throw new Error("Asset not supported");
         }
@@ -114,6 +118,17 @@ export default class HtmlFileReader {
             };
             image.onerror = reject;
             image.src = url;
+        });
+    }
+
+    private static readTFRecordAttributes(asset: IAsset): Promise<{ width: number, height: number }> {
+        // TODO: Get from TFRecord Reader
+        return new Promise(async (resolve, reject) => {
+            const tfrecords = new Buffer(await this.getAssetArray(asset));
+            const reader = new TFRecordsReader(tfrecords);
+            const value = reader.getFeature(0, "image/height", FeatureType.Int64);
+
+            return resolve({ width: 100, height: 100 });
         });
     }
 }
