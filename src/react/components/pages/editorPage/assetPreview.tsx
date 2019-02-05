@@ -61,7 +61,9 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </video>
                 }
                 {asset.type === AssetType.TFRecord &&
-                    <img src={this.tfRecordImage64} onLoad={this.onAssetLoad} />
+                    <div className="tfrecord-image" id={asset.id}>
+                        <img src={this.tfRecordImage64} onLoad={this.onAssetLoad} />
+                    </div>
                 }
                 {asset.type === AssetType.Unknown &&
                     <div>{strings.editorPage.assetError}</div>
@@ -73,6 +75,9 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
     public async componentDidMount() {
         if (this.props.asset.type === AssetType.TFRecord) {
             this.tfRecordImage64 = await this.getTFRecordBase64Image(this.props.asset);
+            const tfRecordDiv = document.getElementById(this.props.asset.id) as HTMLDivElement;
+            const tfRecordImage = tfRecordDiv.getElementsByTagName("img")[0];
+            tfRecordImage.src = this.tfRecordImage64;
         }
     }
 
