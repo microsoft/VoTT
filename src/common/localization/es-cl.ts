@@ -28,6 +28,11 @@ export const spanish: IAppStrings = {
             title: "Borrar Proyecto",
             confirmation: "¿Está seguro que quiere borrar el proyecto",
         },
+        importProject: {
+            title: "Importar Proyecto",
+            confirmation: "¿Está seguro que quiere convertir el proyecto",
+            recommendation: "a formato v2? Le recomendamos que haga una copia de seguridad de su archivo de proyecto",
+        },
     },
     appSettings: {
         title: "Configuración de Aplicación",

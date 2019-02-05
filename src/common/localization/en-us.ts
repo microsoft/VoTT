@@ -28,6 +28,11 @@ export const english: IAppStrings = {
             title: "Delete Project",
             confirmation: "Are you sure you want to delete project",
         },
+        importProject: {
+            title: "Import Project",
+            confirmation: "Are you sure you want to convert project",
+            recommendation: "to v2 format? We recommend you backup the project file first.",
+        },
     },
     appSettings: {
         title: "Application Settings",
