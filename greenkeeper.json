@@ -1,0 +1,22 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "package.json",
+        "src/lib/detection_algorithm_manager/package.json",
+        "src/lib/detection_algorithms/cntkfastercnn/package.json",
+        "src/lib/detection_algorithms/custom_vision/package.json",
+        "src/lib/detection_algorithms/interface/package.json",
+        "src/lib/detection_algorithms/kitti/package.json",
+        "src/lib/detection_algorithms/pascal_voc/package.json",
+        "src/lib/detection_algorithms/tfrecord/package.json",
+        "src/lib/detection_algorithms/yolo/package.json",
+        "src/lib/videotagging_extensions/package.json",
+        "src/public/js/bootstrap/package.json",
+        "src/public/js/jquery-ui/package.json",
+        "src/public/js/video-tagging/package.json",
+        "src/public/js/webcomponentsjs/package.json"
+      ]
+    }
+  }
+}
