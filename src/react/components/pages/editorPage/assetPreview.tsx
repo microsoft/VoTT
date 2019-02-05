@@ -1,6 +1,9 @@
 import React from "react";
 import { IAsset, AssetType, IAssetVideoSettings } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
+import HtmlFileReader from "../../../../common/htmlFileReader";
+import { TFRecordsReader } from "../../../../providers/export/tensorFlowRecords/tensorFlowReader";
+import { FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
 /**
  * Properties for Asset Preview
@@ -35,7 +38,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
         this.onAssetLoad = this.onAssetLoad.bind(this);
     }
 
-    public render() {
+    public async render() {
         const { loaded } = this.state;
         const { asset } = this.props;
         const { videoSettings } = this.props;
@@ -55,11 +58,24 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                         <source src={`${asset.path}#t=5.0`} />
                     </video>
                 }
+                {asset.type === AssetType.TFRecord &&
+                    <img src={await this.getTFRecordBase64Image(asset)} onLoad={this.onAssetLoad} />
+                }
                 {asset.type === AssetType.Unknown &&
                     <div>{strings.editorPage.assetError}</div>
                 }
             </div>
         );
+    }
+
+    private async getTFRecordBase64Image(asset: IAsset): Promise<string> {
+        const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
+        const reader = new TFRecordsReader(tfrecords);
+        const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
+
+        // Get Base64
+        const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+        return "data:image;base64," + image64;
     }
 
     private onAssetLoad() {
