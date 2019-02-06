@@ -1,4 +1,5 @@
 import shortid from "shortid";
+import MD5 from "md5.js";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
@@ -103,22 +104,22 @@ export default class MockFactory {
      * @param name Name of asset
      * @param assetState State of asset
      */
-    public static createVideoFrameTestAsset(name: string,
-                                            assetState: AssetState = AssetState.NotVisited,
+    public static createVideoFrameTestAsset(parent: IAsset,
                                             timestamp: number = 0): IAsset {
+        const hashPath = parent.path + "?timestamp=" + timestamp.toString();
         return {
-            id: `videoframeasset-${name}.mp4?timestamp=${timestamp}`,
+            id: new MD5().update(hashPath).digest("hex"),
             format: "mp4",
-            name: `Video Frame Asset ${name}`,
-            path: `C:\\Desktop\\videoasset${name}.mp4`,
-            state: assetState,
+            name: `videoframeasset-${parent.name}.mp4?timestamp=${timestamp}`,
+            path: parent.path,
+            state: AssetState.NotVisited,
             type: AssetType.VideoFrame,
             size: {
                 width: 800,
                 height: 600,
             },
             timestamp,
-            parent: `videoasset-${name}`,
+            parent: parent.id,
         };
     }
 

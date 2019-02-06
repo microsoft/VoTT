@@ -121,7 +121,7 @@ describe("Editor Page Component", () => {
 
         const expectedAssetMetadtata: IAssetMetadata = {
             asset: {
-                ...testAssets[0],
+                ...MockFactory.createVideoFrameTestAsset(testAssets[0]),
                 state: AssetState.Visited,
             },
             regions: [MockFactory.createMockRegion()],

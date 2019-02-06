@@ -322,6 +322,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             const childAsset = AssetService.createAssetFromFilePath(canvasAsset.path, null, 0);
             childAsset.parent = canvasAsset.id;
             childAsset.size = canvasAsset.size;
+            childAsset.state = AssetState.Visited;
             canvasAsset = childAsset;
         }
 
