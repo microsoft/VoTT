@@ -1,13 +1,16 @@
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { AssetProviderFactory } from "../providers/storage/assetProviderFactory";
-import { IProject, ISecurityToken, IAsset, ITag, IConnection, IV1Project, IAssetMetadata } from "../models/applicationState";
+import { IProject, ISecurityToken, IAsset, ITag, IConnection,
+         IV1Project, IAssetMetadata, IRegion, RegionType, AssetType, AssetState } from "../models/applicationState";
 // import Guard from "../common/guard";
 // import { constants } from "../common/constants";
 // import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 // import { decryptProject, encryptProject } from "../common/utils";
 import ConnectionService from "./connectionService";
 import { generateKey } from "../../src/common/crypto";
+import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
+import { Region } from "vott-ct/lib/js/CanvasTools/Region/Region";
 
 /**
  * Functions required for an import service
@@ -112,19 +115,129 @@ export default class ImportService {
 
     private generateAssets(project: any): { [index: string] : IAsset } {
         let assets: { [index: string] : IAsset };
-        let AssetMetadata: IAssetMetadata;
+        // let AssetMetadata: IAssetMetadata;
+        let generatedMetadata: IAssetMetadata;
+        let generatedRegion: IRegion;
+        let shape: RegionType;
         // For regions in assets:
         // generate separate AssetMetadata objects:
         // SHAPE: frames: {[frameName: string] : IV1Frame[]};
-        // const sizeByColor = {
-        //     red: 100,
-        //     green: 500,
-        //   };
-          
-          for (const [frameName, v1Frame] of Object.entries(project.frames)) {
+        // export interface IAssetMetadata {
+        //     asset: IAsset;
+        //     regions: IRegion[];
+        //     timestamp?: string;
+        // }
+        // export interface IRegion {
+        //     id: string;
+        //     type: RegionType;
+        //     tags: ITagMetadata[];
+        //     points?: IPoint[];
+        //     boundingBox?: IBoundingBox;
+        // }
+        // export interface IAsset {
+        //     id: string;
+        //     type: AssetType;
+        //     state: AssetState;
+        //     name: string;
+        //     path: string;
+        //     size: ISize;
+        //     format?: string;
+        // }
+
+        // "LOTR1.jpg":[  
+        //     {  
+        //        "x1":1575.5540166204985,
+        //        "y1":489.75761772853184,
+        //        "x2":1752.4930747922435,
+        //        "y2":822.6038781163435,
+        //        "width":1920,
+        //        "height":1080,
+        //        "box":{  
+        //           "x1":1575.5540166204985,
+        //           "y1":489.75761772853184,
+        //           "x2":1752.4930747922435,
+        //           "y2":822.6038781163435
+        //        },
+        //        "points":[  
+        //           {  
+        //              "x":1575.5540166204985,
+        //              "y":489.90840517241384
+        //           },
+        //           {  
+        //              "x":1752.4930747922438,
+        //              "y":489.90840517241384
+        //           },
+        //           {  
+        //              "x":1752.4930747922438,
+        //              "y":822.8571428571429
+        //           },
+        //           {  
+        //              "x":1575.5540166204985,
+        //              "y":822.8571428571429
+        //           }
+        //        ],
+        //        "UID":"c52b022e",
+        //        "id":0,
+        //        "type":"rect",
+        //        "tags":[  
+        //           "gandalf"
+        //        ],
+        //        "name":1
+        //     },
+
+        for (let frameName in project.frames){
+            let v1Frames = project.frames[frameName];
             console.log(frameName);
-            console.log(v1Frame);
-          }
+            console.log(v1Frames);
+
+            generatedMetadata = {
+                asset: {
+                    id: shortid.generate(),
+                    type: AssetType.Image,
+                    // have to check visited asset array in project.content
+                    state: AssetState.Visited,
+                    name: frameName,
+                    // this may or may not be right--check on Windows too
+                    path: `${project.file.path}/${frameName}`,
+                    // how th am I suppoed to find this out?
+                    size: {
+                        width: 1500,
+                        height: 1500,
+                    },
+                    //regex for file extension
+                    format: frameName,
+                },
+                regions: []
+            }
+            // v1Frames = list of regions...why not length?
+            for(let i=0;i<v1Frames.length;i++){
+                switch(v1Frames[i].type){
+                    case "rect":
+                        shape = RegionType.Rectangle;
+                    default:
+                        shape = RegionType.Rectangle;
+                }
+                generatedRegion = {
+                    id: v1Frames[i].UID,
+                    type: shape,
+                    // do I need to fill this in? one or the other?
+                    tags: v1Frames[i].tags,
+                    // points = 1:1 mapping
+                    points: v1Frames[i].points,
+                    // bounding box: height, width, left, top
+                    boundingBox: {
+                        height: v1Frames[i].height,
+                        width: v1Frames[i].width,
+                        left: v1Frames[i].x1,
+                        top: v1Frames[i].y1,
+                    }
+                }
+                generatedMetadata.regions.push(generatedRegion);
+            }
+            
+            
+            
+        }
         
         // and call AssetService.save
         // to generate the JSON files in the target storage provider.
