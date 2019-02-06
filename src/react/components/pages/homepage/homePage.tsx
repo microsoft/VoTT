@@ -13,17 +13,9 @@ import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
-<<<<<<< HEAD
-    IApplicationState, IConnection, IProject, IFileInfo,
-    ErrorCode, AppError, IAppError, IAppSettings,
-} from "../../../../models/applicationState";
-import { IV1Project, IV1Region } from "../../../../models/v1Models";
-import IMessageBox from "../../common/messageBox/messageBox";
-=======
     IApplicationState, IConnection, IProject,
     ErrorCode, AppError, IAppError, IV1Project,
 } from "../../../../models/applicationState";
->>>>>>> add file data to homepage and create new project
 import ImportService from "../../../../services/importService";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
@@ -172,7 +164,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private onProjectFileUpload = async (e, project) => {
         // new args object, not just text
-        console.log(project);
         // project is now an object with content (project text) and file
         let projectJson: IProject; 
 
@@ -195,11 +186,20 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
 =======
         if (projectJson.name == null){
-            this.importConfirm.current.open(project);
+            try {
+                await this.importConfirm.current.open(project);
+            } catch (error) {
+                console.log(error);
+            }
+            
         }
 
+<<<<<<< HEAD
         // await this.loadSelectedProject(projectJson);
 >>>>>>> add file data to homepage and create new project
+=======
+        await this.loadSelectedProject(projectJson);
+>>>>>>> tags not verified
     }
 
     private onProjectFileUploadError = (e, error: any) => {
@@ -245,8 +245,12 @@ export default class HomePage extends React.Component<IHomepageProps> {
 =======
     private convertProject = async (project: any) => {
         const importService = new ImportService(); 
+<<<<<<< HEAD
         const retvalue = await importService.convertV1(project);
         console.log("RETURNED: " + retvalue);
 >>>>>>> add file data to homepage and create new project
+=======
+        await importService.convertV1(project).then((content) => console.log("RETURNED:" + content))
+>>>>>>> tags not verified
     }
 }

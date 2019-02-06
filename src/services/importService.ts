@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { AssetProviderFactory } from "../providers/storage/assetProviderFactory";
-import { IProject, ISecurityToken, IAsset, ErrorCode, IConnection, IV1Project } from "../models/applicationState";
+import { IProject, ISecurityToken, IAsset, ITag, IConnection, IV1Project } from "../models/applicationState";
 // import Guard from "../common/guard";
 // import { constants } from "../common/constants";
 // import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
@@ -24,6 +24,7 @@ export interface IImportService {
  * @name - Import Service
  * @description - Functions for importing v1 projects to v2 application
  */
+// change any to { content, file } object eventually
 export default class ImportService {
     public convertV1(project: any): Promise<IProject> {
         return new Promise<IProject>((resolve, reject) => {
@@ -31,11 +32,13 @@ export default class ImportService {
             let convertedProject: IProject
             let connections: IConnection[];
             let dummyAsset: IAsset;
+            let tags: ITag[];
 
-            // this doesn't return what I want it to
             connections = this.generateConnections(project);
 
             console.log(connections);
+
+            tags = this.parseTags(project);
 
             originalProject = JSON.parse(project.content);
 
@@ -45,8 +48,7 @@ export default class ImportService {
                 name: project.file.name,
                 securityToken: generateKey(),
                 description: "Converted V1 Project",
-                // TODO: fill this array?:
-                tags: [],
+                tags: tags,
                 sourceConnection: connections[0],
                 targetConnection: connections[1],
                 exportFormat: null,
@@ -54,18 +56,18 @@ export default class ImportService {
                     frameExtractionRate: 15,
                 },
                 autoSave: true,
-                // TODO: fill this array?:
+                // TODO: fill this array? (kind of):
                 assets: { "index":  dummyAsset},
             };
 
             // call some create project method like from projectsettingspage
             // create security token (next line won't work)
 
+            console.log("CONVERTED PROJECT:" + convertedProject);
             return convertedProject;
         });
     }
 
-    // do I need inputs here? Probs filepath ones
     private generateConnections(project: any): IConnection[] {
         const connectionService = new ConnectionService();
 
@@ -87,11 +89,25 @@ export default class ImportService {
             },
         };
 
-        // how do I connect it to the actual file path?
-        // does that happen when I load a project too?
-
         let connections: IConnection[] = [sourceConnection, targetConnection];
 
         return(connections); 
+    }
+
+    // CHECK THIS TO MAKE SURE IT WORKS!
+    private parseTags(project: any): ITag[] {
+        let finalTags: ITag[];
+        const tagStrings = project.content.tags.split(",");
+        const tagColors = project.content.tagColors();
+        console.log(tagStrings);
+
+        for(let i=0;i<tagColors.length;i++){
+            let newTag = {
+                name: tagStrings[i],
+                color: tagColors[i],
+            }
+            finalTags.push(newTag);
+        }
+        return finalTags;
     }
 }
