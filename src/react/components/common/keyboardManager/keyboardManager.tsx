@@ -56,6 +56,19 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
     }
 
     private onKeyPress = (evt: KeyboardEvent) => {
-        this.state.keyboard.invokeHandlers(KeyEventType.KeyPress, evt.key, evt);
+        if (evt.key === "Ctrl" || evt.key === "Control" || evt.key === "Alt") {
+            return;
+        }
+
+        const keyParts = [];
+        if (evt.ctrlKey) {
+            keyParts.push("Ctrl+");
+        }
+        if (evt.altKey) {
+            keyParts.push("Alt+");
+        }
+        keyParts.push(evt.key);
+
+        this.state.keyboard.invokeHandlers(KeyEventType.KeyPress, keyParts.join(""), evt);
     }
 }

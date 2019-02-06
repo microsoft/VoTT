@@ -4,7 +4,7 @@ import Guard from "../../../../common/guard";
  * A map of keyboard event registrations
  */
 export interface IKeyboardRegistrations {
-    [eventKey: string]: {
+    [keyEventType: string]: {
         [key: string]: KeyboardEventHandler[]
     }
 }
