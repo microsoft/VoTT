@@ -107,20 +107,4 @@ export default function registerToolbar() {
         group: "project",
         type: ToolbarItemType.Action,
     });
-
-    ToolbarItemFactory.register(StepBwd, {
-        name: "stepBwd",
-        tooltip: "Step Bwd",
-        icon: "fa-step-backward",
-        group: "nav",
-        type: ToolbarItemType.Action,
-    });
-
-    ToolbarItemFactory.register(StepFwd, {
-        name: "stepFwd",
-        tooltip: "Step Fwd",
-        icon: "fa-step-forward",
-        group: "nav",
-        type: ToolbarItemType.Action,
-    });
 }

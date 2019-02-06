@@ -268,20 +268,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 break;
             case "navigateNextAsset":
                 this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
-            case "stepFwd":
-                if (assetType === AssetType.Video) {
-                    playerRef.seek(playerSate.currentTime + (1 / this.state.project.videoSettings.frameExtractionRate));
-                } else {
-                    console.log("next");
-                }
-                break;
-            case "stepBwd":
-                if (assetType === AssetType.Video) {
-                    playerRef.seek(playerSate.currentTime - (1 / this.state.project.videoSettings.frameExtractionRate));
-                } else {
-                    console.log("prev");
-                }
-                break;
             default:
                 console.log(toolbarItem.props.name);
                 break;

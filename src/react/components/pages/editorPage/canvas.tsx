@@ -15,6 +15,8 @@ import {
     Player, ControlBar, CurrentTimeDisplay, TimeDivider,
     BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
+import StepFwdButton from "../../toolbar/StepFwdButton";
+import StepBwdButton from "../../toolbar/StepBwdButton";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -81,6 +83,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                             <TimeDivider order={1.2} />
                             <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
                             <VolumeMenuButton enabled order={7.2} />
+                            <StepBwdButton player={this.videoPlayer}
+                                            frameRate={this.props.project.videoSettings.frameExtractionRate}
+                                            order={7.3}/>
+                            <StepFwdButton player={this.videoPlayer}
+                                            frameRate={this.props.project.videoSettings.frameExtractionRate}
+                                            order={7.4}/>
                         </ControlBar>
                     </Player>
                 }
