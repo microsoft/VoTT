@@ -34,13 +34,11 @@ export default class ImportService {
             let dummyAsset: IAsset;
             let tags: ITag[];
 
-            connections = this.generateConnections(project);
-
-            console.log(connections);
-
-            tags = this.parseTags(project);
+            connections = this.generateConnections(originalProject);
 
             originalProject = JSON.parse(project.content);
+
+            tags = this.parseTags(originalProject);
 
             // map v1 values to v2 values
             convertedProject = {
@@ -96,9 +94,9 @@ export default class ImportService {
 
     // CHECK THIS TO MAKE SURE IT WORKS!
     private parseTags(project: any): ITag[] {
-        let finalTags: ITag[];
-        const tagStrings = project.content.tags.split(",");
-        const tagColors = project.content.tagColors();
+        let finalTags: ITag[] = [];
+        const tagStrings = project.inputTags.split(",");
+        const tagColors = project.tag_colors;
         console.log(tagStrings);
 
         for(let i=0;i<tagColors.length;i++){

@@ -51,10 +51,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
     private deleteConfirm: React.RefObject<Confirm>;
     private cloudFilePicker: React.RefObject<CloudFilePicker>;
     private importConfirm: React.RefObject<Confirm>;
-<<<<<<< HEAD
-    private settingsConfirm: React.RefObject<IMessageBox>;
-=======
->>>>>>> add file data to homepage and create new project
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
@@ -67,10 +63,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.deleteConfirm = React.createRef<Confirm>();
         this.cloudFilePicker = React.createRef<CloudFilePicker>();
         this.importConfirm = React.createRef<Confirm>();
-<<<<<<< HEAD
-        this.settingsConfirm = React.createRef<IMessageBox>();
-=======
->>>>>>> add file data to homepage and create new project
 
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
@@ -134,21 +126,11 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     onConfirm={this.deleteProject} />
                 <Confirm title="Import Project"
                     ref={this.importConfirm}
-<<<<<<< HEAD
-                    message={(project: IFileInfo) => `${strings.homePage.importProject.confirmation}
-                        ${project.file.name} ${strings.homePage.importProject.recommendation}`}
-                    confirmButtonColor="danger"
-                    onConfirm={this.convertProject} />
-                <IMessageBox title="Confirm Settings"
-                    ref={this.settingsConfirm}
-                    message={"Please confirm your new v2 project settings."} />
-=======
                     message={(project: any) => `${strings.homePage.importProject.confirmation} '${project.file.name}'
                         ${strings.homePage.importProject.recommendation}`}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
                     {/*Above will change to (project) => this.convertProject(project)*/}
->>>>>>> add file data to homepage and create new project
             </div>
         );
     }
@@ -195,11 +177,15 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         // await this.loadSelectedProject(projectJson);
 >>>>>>> add file data to homepage and create new project
 =======
         await this.loadSelectedProject(projectJson);
 >>>>>>> tags not verified
+=======
+        // await this.loadSelectedProject(projectJson);
+>>>>>>> tags added to converted project
     }
 
     private onProjectFileUploadError = (e, error: any) => {
