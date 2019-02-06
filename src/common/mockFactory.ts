@@ -543,6 +543,7 @@ export default class MockFactory {
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
+            children: null,
         };
         return new Canvas(canvasProps);
     }
