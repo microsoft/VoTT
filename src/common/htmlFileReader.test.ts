@@ -130,32 +130,55 @@ describe("Html File Reader", () => {
         });
     });
 
-    it("Loads attributes for an tfrecord asset", async () => {
-        const expected = {
-            width: 1920,
-            height: 1080,
-        };
-
-        axios.get = jest.fn((url, config) => {
-            const builder = new TFRecordsBuilder();
-            builder.addFeature("image/height", FeatureType.Int64, expected.height);
-            builder.addFeature("image/width", FeatureType.Int64, expected.width);
-            const buffer = builder.build();
-            const tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
-
-            return Promise.resolve<AxiosResponse>({
-                config,
-                headers: null,
-                status: 200,
-                statusText: "OK",
-                data: tfrecords,
+    describe("Test non valid asset type", () => {
+        it("Test non valid asset type", async () => {
+            axios.get = jest.fn((url, config) => {
+                return Promise.resolve<AxiosResponse>({
+                    config,
+                    headers: null,
+                    status: 200,
+                    statusText: "OK",
+                    data: [1, 2, 3],
+                });
             });
+
+            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported");
+            try {
+                const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+            } catch (error) {
+                expect(error).toEqual(new Error("Asset not supported"));
+            }
         });
+    });
 
-        const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
-        const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+    describe("Test TFRecords", () => {
+        it("Loads attributes for an tfrecord asset", async () => {
+            const expected = {
+                width: 1920,
+                height: 1080,
+            };
 
-        expect(result.width).toEqual(expected.width);
-        expect(result.height).toEqual(expected.height);
+            axios.get = jest.fn((url, config) => {
+                const builder = new TFRecordsBuilder();
+                builder.addFeature("image/height", FeatureType.Int64, expected.height);
+                builder.addFeature("image/width", FeatureType.Int64, expected.width);
+                const buffer = builder.build();
+                const tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
+
+                return Promise.resolve<AxiosResponse>({
+                    config,
+                    headers: null,
+                    status: 200,
+                    statusText: "OK",
+                    data: tfrecords,
+                });
+            });
+
+            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
+            const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+
+            expect(result.width).toEqual(expected.width);
+            expect(result.height).toEqual(expected.height);
+        });
     });
 });
