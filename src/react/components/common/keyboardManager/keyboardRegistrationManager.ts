@@ -5,8 +5,8 @@ import Guard from "../../../../common/guard";
  */
 export interface IKeyboardRegistrations {
     [keyEventType: string]: {
-        [key: string]: KeyboardEventHandler[]
-    }
+        [key: string]: KeyboardEventHandler[],
+    };
 }
 
 /**
