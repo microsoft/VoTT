@@ -76,7 +76,7 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
         return (
             <Fragment>
                 {this.props.accelerator &&
-                    <KeyboardBinding accelerator={this.props.accelerator} onKeyDown={this.onClick} />
+                    <KeyboardBinding accelerator={this.props.accelerator} onKeyEvent={this.onClick} />
                 }
                 <button type="button"
                     className={className.join(" ")}

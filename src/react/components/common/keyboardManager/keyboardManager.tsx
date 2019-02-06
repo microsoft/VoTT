@@ -15,15 +15,15 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
     };
 
     public componentDidMount() {
-        window.addEventListener("keydown", this.onKeyDown);
-        window.addEventListener("keyup", this.onKeyUp);
-        window.addEventListener("keypress", this.onKeyPress);
+        window.addEventListener(KeyEventType.KeyDown, this.onKeyDown);
+        window.addEventListener(KeyEventType.KeyUp, this.onKeyUp);
+        window.addEventListener(KeyEventType.KeyPress, this.onKeyPress);
     }
 
     public componentWillUnmount() {
-        window.removeEventListener("keydown", this.onKeyDown);
-        window.removeEventListener("keyup", this.onKeyUp);
-        window.removeEventListener("keypress", this.onKeyPress);
+        window.removeEventListener(KeyEventType.KeyDown, this.onKeyDown);
+        window.removeEventListener(KeyEventType.KeyUp, this.onKeyUp);
+        window.removeEventListener(KeyEventType.KeyPress, this.onKeyPress);
     }
 
     public render() {

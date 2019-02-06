@@ -123,7 +123,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         return (
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
-                    return (<KeyboardBinding accelerator={`Ctrl+${index}`} onKeyDown={this.handleTagHotKey} />);
+                    return (<KeyboardBinding accelerator={`Ctrl+${index}`} onKeyEvent={this.handleTagHotKey} />);
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
