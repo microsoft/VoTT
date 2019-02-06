@@ -4,9 +4,11 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
+import { IAsset } from "../../../../models/applicationState";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
+    onChildAssetSelected?: (asset: IAsset) => void;
 }
 
 export interface IVideoAssetState {
@@ -64,11 +66,15 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     private onVideoStateChange = (state, prev) => {
         if (!this.state.loaded && state.readyState === 4 && state.readyState !== prev.readyState) {
+            // Video initial load complete
             this.raiseLoaded();
             this.raiseActivated();
         } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
+            // Video is paused
+            this.raiseChildAssetSelected();
             this.raiseDeactivated();
         } else if (!state.paused && state.paused !== prev.paused) {
+            // Video has resumed playing
             this.raiseActivated();
         }
     }
@@ -81,6 +87,10 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 this.props.onLoaded(this.videoPlayer.current.video.video);
             }
         });
+    }
+
+    private raiseChildAssetSelected = () => {
+
     }
 
     private raiseActivated = () => {
