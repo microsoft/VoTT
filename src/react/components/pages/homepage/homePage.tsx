@@ -149,7 +149,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
             
         }
 
-        await this.loadSelectedProject(projectJson);
+        // await this.loadSelectedProject(projectJson);
     }
 
     private onProjectFileUploadError = (e, error: any) => {
