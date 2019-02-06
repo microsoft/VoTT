@@ -201,7 +201,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param tag Tag to add or remove from region
      */
     private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
-        region.tags = CanvasHelpers.toggleTag(region.tags, tag);
+        CanvasHelpers.toggleTag(region.tags, tag);
         this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
     }
 

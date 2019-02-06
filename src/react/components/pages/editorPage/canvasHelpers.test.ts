@@ -1,36 +1,37 @@
 import CanvasHelpers from "./canvasHelpers";
 import MockFactory from "../../../../common/mockFactory";
+import { RegionType } from "../../../../models/applicationState";
+import { RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 
 describe("Canvas Helpers", () => {
     it("Adds a tag to list", () => {
-        const originalTags = MockFactory.createTestTags();
-        const originalLength = originalTags.length;
+        const tags = MockFactory.createTestTags();
+        const originalLength = tags.length;
         const newTag = MockFactory.createTestTag("New Tag");
-        const newTags = CanvasHelpers.toggleTag(
-            originalTags,
+        CanvasHelpers.toggleTag(
+            tags,
             newTag,
         );
-        expect(newTags).toHaveLength(originalLength + 1);
-        expect(newTags[newTags.length - 1]).toEqual(newTag);
+        expect(tags).toHaveLength(originalLength + 1);
+        expect(tags[tags.length - 1]).toEqual(newTag);
     });
 
     it("Removes a tag from list", () => {
-        const originalTags = MockFactory.createTestTags();
-        const originalLength = originalTags.length;
-        const originalFirstTag = originalTags[0];
-        const newTags = CanvasHelpers.toggleTag(
-            originalTags,
-            originalTags[0],
+        const tags = MockFactory.createTestTags();
+        const originalLength = tags.length;
+        const originalFirstTag = tags[0];
+        CanvasHelpers.toggleTag(
+            tags,
+            tags[0],
         );
-        expect(newTags).toHaveLength(originalLength - 1);
-        expect(newTags[0]).not.toEqual(originalFirstTag);
+        expect(tags).toHaveLength(originalLength - 1);
+        expect(tags[0]).not.toEqual(originalFirstTag);
     });
 
-    it("Creates region data from region", () => {
-        expect(true).toBeTruthy();
-    });
-
-    it("Creates a tag descriptor from region", () => {
-        expect(true).toBeTruthy();
+    it("Gets correct region data type", () => {
+        expect(CanvasHelpers.regionTypeToType(RegionType.Rectangle)).toEqual(RegionDataType.Rect);
+        expect(CanvasHelpers.regionTypeToType(RegionType.Polygon)).toEqual(RegionDataType.Polygon);
+        expect(CanvasHelpers.regionTypeToType(RegionType.Point)).toEqual(RegionDataType.Point);
+        expect(CanvasHelpers.regionTypeToType(RegionType.Polyline)).toEqual(RegionDataType.Polyline);
     });
 });

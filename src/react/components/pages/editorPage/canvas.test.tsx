@@ -9,6 +9,7 @@ import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 
 jest.mock("vott-ct");
 import { CanvasTools } from "vott-ct";
+import Tag from "reactstrap/lib/Tag";
 describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, {}, Canvas> = null;
     const onAssetMetadataChanged = jest.fn();
@@ -91,5 +92,21 @@ describe("Editor Canvas", () => {
         expect(wrapper.instance().state.selectedRegions.length).toEqual(2);
         expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
+    });
+
+    it("onTagClicked", () => {
+        const canvas = wrapper.instance();
+        const testRegion1 = MockFactory.createTestRegion("test1");
+        const testRegion2 = MockFactory.createTestRegion("test2");
+        wrapper.prop("selectedAsset").regions.push(testRegion1);
+        wrapper.prop("selectedAsset").regions.push(testRegion2);
+        canvas.onRegionSelected("test1", false);
+        canvas.onRegionSelected("test2", true);
+
+        const newTag = MockFactory.createTestTag();
+        canvas.onTagClicked(newTag);
+        for (const region of wrapper.instance().state.selectedRegions) {
+            expect(region.tags.findIndex((tag) => tag === newTag)).toBeGreaterThanOrEqual(0);
+        }
     });
 });
