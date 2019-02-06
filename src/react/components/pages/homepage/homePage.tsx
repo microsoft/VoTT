@@ -130,7 +130,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private onProjectFileUpload = async (e, project) => {
         // new args object, not just text
-        console.log(project);
         // project is now an object with content (project text) and file
         let projectJson: IProject; 
 
@@ -142,10 +141,15 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
         // need a better check to tell if its v1
         if (projectJson.name == null){
-            this.importConfirm.current.open(project);
+            try {
+                await this.importConfirm.current.open(project);
+            } catch (error) {
+                console.log(error);
+            }
+            
         }
 
-        // await this.loadSelectedProject(projectJson);
+        await this.loadSelectedProject(projectJson);
     }
 
     private onProjectFileUploadError = (e, error: any) => {
@@ -167,7 +171,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private convertProject = async (project: any) => {
         const importService = new ImportService(); 
-        const retvalue = await importService.convertV1(project);
-        console.log("RETURNED: " + retvalue);
+        await importService.convertV1(project).then((content) => console.log("RETURNED:" + content))
     }
 }
