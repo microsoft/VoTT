@@ -31,40 +31,40 @@ describe("Canvas Helpers", () => {
 
     it("Gets correct region data", () => {
         const expected = new RegionData(
-            0, 0, 100, 100, 
+            0, 0, 100, 100,
             [
-                new Point2D(0,0),
+                new Point2D(0, 0),
                 new Point2D(1, 0),
-                new Point2D(1,1),
-                new Point2D(0,0)
+                new Point2D(1, 1),
+                new Point2D(0, 0),
             ],
-            RegionDataType.Polygon
+            RegionDataType.Polygon,
         );
-        
+
         const region: IRegion = {
             id: "test",
             boundingBox: {
                 left: 0,
                 top: 0,
                 width: 100,
-                height: 100
+                height: 100,
             },
             points: [
                 {
-                    x: 0, y: 0
+                    x: 0, y: 0,
                 },
                 {
-                    x: 1, y: 0
+                    x: 1, y: 0,
                 },
                 {
-                    x: 1, y: 1
-                },{
-                    x: 0, y: 0
+                    x: 1, y: 1,
+                }, {
+                    x: 0, y: 0,
                 },
             ],
             type: RegionType.Polygon,
-            tags: []
-        }
+            tags: [],
+        };
         expect(CanvasHelpers.getRegionData(region)).toEqual(expected);
     });
 
