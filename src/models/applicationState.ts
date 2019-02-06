@@ -130,9 +130,9 @@ export interface IV1Project {
     inputTags: string;
     suggestiontype: string;
     tags: ITag[];
-    scd: IConnection;
-    visitedFrames: IConnection;
-    tagColors: IExportFormat;
+    scd: boolean;
+    visitedFrames: string[];
+    tagColors: string[];
 }
 
 /**
