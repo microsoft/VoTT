@@ -28,7 +28,7 @@ export default class CanvasHelpers {
 
     /**
      * Get RegionData (CanvasTools) from IRegion
-     * @param region IRegion from Canvas
+     * @param region IRegion from Canvas component
      */
     public static getRegionData(region: IRegion): RegionData {
         return new RegionData(region.boundingBox.left,
