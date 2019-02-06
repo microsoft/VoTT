@@ -20,6 +20,7 @@ import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
+import AssetPreview from "./assetPreview";
 
 /**
  * Properties for Editor Page
@@ -43,6 +44,7 @@ export interface IEditorPageState {
     assets: IAsset[];
     mode: EditorMode;
     selectedAsset?: IAssetMetadata;
+    canvasAsset?: IAssetMetadata;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -144,7 +146,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 selectedAsset={this.state.selectedAsset}
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.mode}
-                                project={this.props.project} />
+                                project={this.props.project}>
+                                <AssetPreview
+                                    autoPlay={true}
+                                    onChildAssetSelected={this.onChildAssetSelected}
+                                    asset={this.state.selectedAsset.asset} />
+                            </Canvas>
                         }
                     </div>
                     <div>
@@ -210,6 +217,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             tag = { name: tags[key - 1].name };
         }
         this.onTagClicked(tag);
+    }
+
+    private onChildAssetSelected = async (asset: IAsset) => {
+        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
     }
 
     private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
