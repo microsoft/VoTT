@@ -104,10 +104,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
-<<<<<<< HEAD
         const parentAssets = assets.filter((asset) => !asset.parent);
-=======
->>>>>>> Wired up editor page for basic experience
 
         if (!project) {
             return (<div>Loading...</div>);
