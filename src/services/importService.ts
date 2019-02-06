@@ -117,9 +117,10 @@ export default class ImportService {
         let originalProject: IV1Project;
         let assets: { [index: string] : IAsset };
         // let AssetMetadata: IAssetMetadata;
-        let generatedMetadata: IAssetMetadata;
+        let generatedAssetMetadata: IAssetMetadata;
         let generatedRegion: IRegion;
         let shape: RegionType;
+        let assetState: AssetState;
         let tagMetadata: ITagMetadata;
         // For regions in assets:
         // generate separate AssetMetadata objects:
@@ -136,15 +137,17 @@ export default class ImportService {
 
         for (let frameName in originalProject.frames){
             let v1Frames = originalProject.frames[frameName];
-            console.log(frameName);
-            console.log(v1Frames);
+            console.log("Frame: " + frameName);
+            console.log("v1 frames to loop through and get: " + v1Frames);
+            assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && v1Frames.length > 0
+                         ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1 
+                         ? AssetState.Visited : AssetState.NotVisited);
 
-            generatedMetadata = {
+            generatedAssetMetadata = {
                 asset: {
                     id: shortid.generate(),
                     type: AssetType.Image,
-                    // have to check visited asset array in project.content
-                    state: AssetState.Visited,
+                    state: assetState,
                     name: frameName,
                     // this may or may not be right--check on Windows too
                     path: `${project.file.path.replace(/[^\/]*$/,"")}${frameName}`,
@@ -159,8 +162,6 @@ export default class ImportService {
                 regions: []
             }
 
-            console.log("METADATA: " + generatedMetadata);
-            // v1Frames = list of regions...why not length?
             for(let i=0;i<v1Frames.length;i++){
                 switch(v1Frames[i].type){
                     case "rect":
@@ -171,7 +172,6 @@ export default class ImportService {
                 generatedRegion = {
                     id: v1Frames[i].UID,
                     type: shape,
-                    // do I need to fill this in? one or the other?
                     tags: v1Frames[i].tags.map((tag) => {
                         let newTag = {
                             name: tag,
@@ -179,9 +179,7 @@ export default class ImportService {
                         }
                         return newTag;
                     }),
-                    // points = 1:1 mapping
                     points: v1Frames[i].points,
-                    // bounding box: height, width, left, top
                     boundingBox: {
                         height: v1Frames[i].height,
                         width: v1Frames[i].width,
@@ -189,9 +187,7 @@ export default class ImportService {
                         top: v1Frames[i].y1,
                     }
                 }
-
-                console.log("REGION: " + generatedRegion);
-                generatedMetadata.regions.push(generatedRegion);
+                generatedAssetMetadata.regions.push(generatedRegion);
             }
             // assets.push(generatedMetadata);
         }
