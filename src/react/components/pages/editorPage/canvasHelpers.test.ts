@@ -7,7 +7,7 @@ describe("Canvas Helpers", () => {
         const newTag = MockFactory.createTestTag("New Tag");
         const newTags = CanvasHelpers.toggleTag(
             originalTags,
-            newTag
+            newTag,
         );
         expect(newTags).toHaveLength(originalTags.length + 1);
         expect(newTags[newTags.length - 1]).toEqual(newTag);
@@ -17,17 +17,17 @@ describe("Canvas Helpers", () => {
         const originalTags = MockFactory.createTestTags();
         const newTags = CanvasHelpers.toggleTag(
             originalTags,
-            originalTags[0]
+            originalTags[0],
         );
         expect(newTags).toHaveLength(originalTags.length - 1);
         expect(newTags[0]).not.toEqual(originalTags[0]);
     });
 
     it("Creates region data from region", () => {
-        
+        expect(true).toBeTruthy();
     });
 
     it("Creates a tag descriptor from region", () => {
-
+        expect(true).toBeTruthy();
     });
 });
