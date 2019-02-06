@@ -11,6 +11,7 @@ export interface IAssetProps {
     onLoaded?: (ContentSource: ContentSource) => void;
     onActivated?: (contentSource: ContentSource) => void;
     onDeactivated?: (contentSource: ContentSource) => void;
+    onChildAssetSelected?: (asset: IAsset) => void;
 }
 
 /**
@@ -64,6 +65,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     <VideoAsset asset={asset}
                         autoPlay={autoPlay}
                         onLoaded={this.onAssetLoad}
+                        onChildAssetSelected={this.props.onChildAssetSelected}
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated} />
                 }
