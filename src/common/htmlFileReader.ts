@@ -33,7 +33,6 @@ export default class HtmlFileReader {
             };
 
             try {
-                console.log("FILE: " + file);
                 reader.readAsText(file);
             } catch (err) {
                 reject(err);
