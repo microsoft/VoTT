@@ -5,6 +5,7 @@ import {
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
 import { IAsset } from "../../../../models/applicationState";
+import { AssetService } from "../../../../services/assetService";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -13,6 +14,13 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
 
 export interface IVideoAssetState {
     loaded: boolean;
+}
+
+export interface IVideoPlayerState {
+    readyState: number;
+    paused: boolean;
+    seeking: boolean;
+    currentTime: number;
 }
 
 export class VideoAsset extends React.Component<IVideoAssetProps> {
@@ -64,14 +72,14 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    private onVideoStateChange = (state, prev) => {
+    private onVideoStateChange = (state: Readonly<IVideoPlayerState>, prev: Readonly<IVideoPlayerState>) => {
         if (!this.state.loaded && state.readyState === 4 && state.readyState !== prev.readyState) {
             // Video initial load complete
             this.raiseLoaded();
             this.raiseActivated();
         } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
             // Video is paused
-            this.raiseChildAssetSelected();
+            this.raiseChildAssetSelected(state);
             this.raiseDeactivated();
         } else if (!state.paused && state.paused !== prev.paused) {
             // Video has resumed playing
@@ -89,8 +97,16 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         });
     }
 
-    private raiseChildAssetSelected = () => {
+    private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
+        if (this.props.onChildAssetSelected) {
+            const childPath = `${this.props.asset.path}#t=${state.currentTime}`;
+            const childAsset = AssetService.createAssetFromFilePath(childPath);
+            childAsset.parent = this.props.asset.parent || this.props.asset.id;
+            childAsset.timestamp = state.currentTime;
+            childAsset.size = { ...this.props.asset.size };
 
+            this.props.onChildAssetSelected(childAsset);
+        }
     }
 
     private raiseActivated = () => {
