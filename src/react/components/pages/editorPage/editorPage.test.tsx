@@ -122,7 +122,7 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        videoPlayerPausedMock = Player as jest.Mocked<typeof Player>;
+        videoPlayerPausedMock = Player;
         videoPlayerPausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
             // Set up some state that is unpaused
             const state = {
@@ -134,7 +134,7 @@ describe("Editor Page Component", () => {
         });
 
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0);
 
         const partialProject = {
             id: testProject.id,
@@ -160,7 +160,7 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        videoPlayerUnpausedMock = Player as jest.Mocked<typeof Player>;
+        videoPlayerUnpausedMock = Player;
         videoPlayerUnpausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
             // Set up some state that is unpaused
             const state = {
@@ -213,7 +213,7 @@ describe("Editor Page Component", () => {
             await MockFactory.waitForCondition(() => {
                 const editorPage = wrapper
                     .find(EditorPage)
-                    .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+                    .childAt(0);
 
                 return !!editorPage.state().selectedAsset;
             });
