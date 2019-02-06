@@ -56,7 +56,7 @@ function getMockAssetMetadata(testAssets, assetIndex= 0): IAssetMetadata {
                 tags: [
                     {
                         ...mockRegion.tags[0],
-                        color: expect.stringMatching(/^#(?:[0-9a-f]{3}){1,2}$/i),
+                        color: expect.stringMatching(/^#[0-9a-f]{3,6}$/i),
                     },
                 ],
             },
