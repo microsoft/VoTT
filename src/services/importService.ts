@@ -2,7 +2,7 @@ import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { AssetProviderFactory } from "../providers/storage/assetProviderFactory";
 import { IProject, ISecurityToken, IAsset, ITag, IConnection,
-         IV1Project, IAssetMetadata, IRegion, RegionType, AssetType, AssetState } from "../models/applicationState";
+         IV1Project, IAssetMetadata, IRegion, RegionType, AssetType, AssetState, ITagMetadata } from "../models/applicationState";
 // import Guard from "../common/guard";
 // import { constants } from "../common/constants";
 // import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
@@ -43,7 +43,7 @@ export default class ImportService {
             connections = this.generateConnections(originalProject);
             tags = this.parseTags(originalProject);
 
-            assets = this.generateAssets(originalProject);
+            assets = this.generateAssets(project);
 
             // map v1 values to v2 values
             convertedProject = {
@@ -60,7 +60,7 @@ export default class ImportService {
                 },
                 autoSave: true,
                 // TODO: fill this array? (kind of):
-                assets: { "index":  dummyAsset},
+                assets: assets,
             };
 
             // call some create project method like from projectsettingspage
@@ -114,19 +114,16 @@ export default class ImportService {
     }
 
     private generateAssets(project: any): { [index: string] : IAsset } {
+        let originalProject: IV1Project;
         let assets: { [index: string] : IAsset };
         // let AssetMetadata: IAssetMetadata;
         let generatedMetadata: IAssetMetadata;
         let generatedRegion: IRegion;
         let shape: RegionType;
+        let tagMetadata: ITagMetadata;
         // For regions in assets:
         // generate separate AssetMetadata objects:
         // SHAPE: frames: {[frameName: string] : IV1Frame[]};
-        // export interface IAssetMetadata {
-        //     asset: IAsset;
-        //     regions: IRegion[];
-        //     timestamp?: string;
-        // }
         // export interface IRegion {
         //     id: string;
         //     type: RegionType;
@@ -134,59 +131,11 @@ export default class ImportService {
         //     points?: IPoint[];
         //     boundingBox?: IBoundingBox;
         // }
-        // export interface IAsset {
-        //     id: string;
-        //     type: AssetType;
-        //     state: AssetState;
-        //     name: string;
-        //     path: string;
-        //     size: ISize;
-        //     format?: string;
-        // }
+        // CAN I GET RID OF ID AND NAME IN V1? (don't address here)
+        originalProject = JSON.parse(project.content);
 
-        // "LOTR1.jpg":[  
-        //     {  
-        //        "x1":1575.5540166204985,
-        //        "y1":489.75761772853184,
-        //        "x2":1752.4930747922435,
-        //        "y2":822.6038781163435,
-        //        "width":1920,
-        //        "height":1080,
-        //        "box":{  
-        //           "x1":1575.5540166204985,
-        //           "y1":489.75761772853184,
-        //           "x2":1752.4930747922435,
-        //           "y2":822.6038781163435
-        //        },
-        //        "points":[  
-        //           {  
-        //              "x":1575.5540166204985,
-        //              "y":489.90840517241384
-        //           },
-        //           {  
-        //              "x":1752.4930747922438,
-        //              "y":489.90840517241384
-        //           },
-        //           {  
-        //              "x":1752.4930747922438,
-        //              "y":822.8571428571429
-        //           },
-        //           {  
-        //              "x":1575.5540166204985,
-        //              "y":822.8571428571429
-        //           }
-        //        ],
-        //        "UID":"c52b022e",
-        //        "id":0,
-        //        "type":"rect",
-        //        "tags":[  
-        //           "gandalf"
-        //        ],
-        //        "name":1
-        //     },
-
-        for (let frameName in project.frames){
-            let v1Frames = project.frames[frameName];
+        for (let frameName in originalProject.frames){
+            let v1Frames = originalProject.frames[frameName];
             console.log(frameName);
             console.log(v1Frames);
 
@@ -198,17 +147,19 @@ export default class ImportService {
                     state: AssetState.Visited,
                     name: frameName,
                     // this may or may not be right--check on Windows too
-                    path: `${project.file.path}/${frameName}`,
+                    path: `${project.file.path.replace(/[^\/]*$/,"")}${frameName}`,
                     // how th am I suppoed to find this out?
                     size: {
                         width: 1500,
                         height: 1500,
                     },
-                    //regex for file extension
-                    format: frameName,
+                    // regex for file extension
+                    format: frameName.split(".").pop(),
                 },
                 regions: []
             }
+
+            console.log("METADATA: " + generatedMetadata);
             // v1Frames = list of regions...why not length?
             for(let i=0;i<v1Frames.length;i++){
                 switch(v1Frames[i].type){
@@ -221,7 +172,13 @@ export default class ImportService {
                     id: v1Frames[i].UID,
                     type: shape,
                     // do I need to fill this in? one or the other?
-                    tags: v1Frames[i].tags,
+                    tags: v1Frames[i].tags.map((tag) => {
+                        let newTag = {
+                            name: tag,
+                            properties: {},
+                        }
+                        return newTag;
+                    }),
                     // points = 1:1 mapping
                     points: v1Frames[i].points,
                     // bounding box: height, width, left, top
@@ -232,11 +189,11 @@ export default class ImportService {
                         top: v1Frames[i].y1,
                     }
                 }
+
+                console.log("REGION: " + generatedRegion);
                 generatedMetadata.regions.push(generatedRegion);
             }
-            
-            
-            
+            // assets.push(generatedMetadata);
         }
         
         // and call AssetService.save

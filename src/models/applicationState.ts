@@ -148,18 +148,18 @@ export interface IV1Project {
  * @member name - TODO: Add description
  */
 export interface IV1Frame {
-    x1: {[frameName: string] : IV1Frame};
-    y1: string;
-    x2: string;
-    y2: string;
-    width: ITag[];
-    height: IConnection;
-    box: IConnection;
-    points: IExportFormat;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    width: number;
+    height: number;
+    box: { IPoint };
+    points: IPoint[];
     UID: string;
     id: string;
     type: string;
-    tags: string;
+    tags: string[];
     name: string;
 }
 
