@@ -67,7 +67,7 @@ export class TFRecordsReader {
     /**
      * @recordPos - Record Position
      * @key - Feature Key
-     * @type - Feature Typeq
+     * @type - Feature Type
      * @description - Get a Int64 | Float | String | Binary value
      */
     public getFeature(recordPos: number, key: string, type: FeatureType): string | number | Uint8Array {
