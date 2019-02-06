@@ -133,6 +133,17 @@ export function textEncode(str: string): Uint8Array {
 }
 
 /**
+ * @arr - Input Uint8Array byte array
+ * @description - Get a UTF8 string value
+ */
+export function textDecode(arr: Uint8Array): string {
+    Guard.null(arr);
+
+    const utf8 = Array.from(arr).map((item) => String.fromCharCode(item)).join("");
+    return decodeURIComponent(escape(utf8));
+}
+
+/**
  * @buffer - Input buffer
  * @description - Read an Int64 value from buffer
  */
@@ -143,4 +154,4 @@ export function readInt64(buffer: Buffer): number {
     buffer = reverse(buffer.slice(0, 8));
     const int64 = new Int64(buffer, 0);
     return int64.toNumber(true);
-  }
+}
