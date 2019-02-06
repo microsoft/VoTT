@@ -4,7 +4,18 @@ import Guard from "../../../../common/guard";
  * A map of keyboard event registrations
  */
 export interface IKeyboardRegistrations {
-    [key: string]: KeyboardEventHandler[];
+    [eventKey: string]: {
+        [key: string]: KeyboardEventHandler[]
+    }
+}
+
+/**
+ * Types of Key events supported by registration manager
+ */
+export enum KeyEventType {
+    KeyDown = "keydown",
+    KeyUp = "keyup",
+    KeyPress = "keypress",
 }
 
 /**
@@ -23,14 +34,20 @@ export class KeyboardRegistrationManager {
      * @param keyCode The key code combination, ex) Ctrl+1
      * @param handler The keyboard event handler
      */
-    public addHandler(keyCode: string, handler: KeyboardEventHandler): () => void {
+    public addHandler(keyEventType: KeyEventType, keyCode: string, handler: KeyboardEventHandler): () => void {
         Guard.null(keyCode);
         Guard.null(handler);
 
-        let keyRegistrations: KeyboardEventHandler[] = this.registrations[keyCode];
+        let eventTypeRegistrations = this.registrations[keyEventType];
+        if (!eventTypeRegistrations) {
+            eventTypeRegistrations = {};
+            this.registrations[keyEventType] = eventTypeRegistrations;
+        }
+
+        let keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
         if (!keyRegistrations) {
             keyRegistrations = [];
-            this.registrations[keyCode] = keyRegistrations;
+            this.registrations[keyEventType][keyCode] = keyRegistrations;
         }
 
         keyRegistrations.push(handler);
@@ -45,10 +62,10 @@ export class KeyboardRegistrationManager {
      * Gets a list of registered event handlers for the specified key code
      * @param keyCode The key code combination, ex) Ctrl+1
      */
-    public getHandlers(keyCode: string) {
+    public getHandlers(keyEventType: KeyEventType, keyCode: string) {
         Guard.null(keyCode);
 
-        const registrations = this.registrations[keyCode];
+        const registrations = this.registrations[keyEventType][keyCode];
         return registrations ? [...registrations] : [];
     }
 
@@ -57,11 +74,11 @@ export class KeyboardRegistrationManager {
      * @param keyCode The key code combination, ex) Ctrl+1
      * @param evt The keyboard event that was raised
      */
-    public invokeHandlers(keyCode: string, evt: KeyboardEvent) {
+    public invokeHandlers(keyEventType: KeyEventType, keyCode: string, evt: KeyboardEvent) {
         Guard.null(keyCode);
         Guard.null(evt);
 
-        const handlers = this.getHandlers(keyCode);
+        const handlers = this.getHandlers(keyEventType, keyCode);
         handlers.forEach((handler) => handler(evt));
     }
 }

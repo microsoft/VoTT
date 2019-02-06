@@ -1,5 +1,5 @@
 import React from "react";
-import { KeyboardRegistrationManager } from "./keyboardRegistrationManager";
+import { KeyboardRegistrationManager, KeyEventType } from "./keyboardRegistrationManager";
 
 export const KeyboardContext = React.createContext<IKeyboardContext>(null);
 
@@ -16,10 +16,14 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
 
     public componentDidMount() {
         window.addEventListener("keydown", this.onKeyDown);
+        window.addEventListener("keyup", this.onKeyUp);
+        window.addEventListener("keypress", this.onKeyPress);
     }
 
     public componentWillUnmount() {
         window.removeEventListener("keydown", this.onKeyDown);
+        window.removeEventListener("keyup", this.onKeyUp);
+        window.removeEventListener("keypress", this.onKeyPress);
     }
 
     public render() {
@@ -44,6 +48,14 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
         }
         keyParts.push(evt.key);
 
-        this.state.keyboard.invokeHandlers(keyParts.join(""), evt);
+        this.state.keyboard.invokeHandlers(KeyEventType.KeyDown, keyParts.join(""), evt);
+    }
+
+    private onKeyUp = (evt: KeyboardEvent) => {
+        this.state.keyboard.invokeHandlers(KeyEventType.KeyUp, evt.key, evt);
+    }
+
+    private onKeyPress = (evt: KeyboardEvent) => {
+        this.state.keyboard.invokeHandlers(KeyEventType.KeyPress, evt.key, evt);
     }
 }
