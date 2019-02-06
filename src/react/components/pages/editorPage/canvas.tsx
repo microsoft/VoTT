@@ -1,20 +1,17 @@
 import React from "react";
 import * as shortid from "shortid";
+import { BigPlayButton, ControlBar, CurrentTimeDisplay,
+    PlaybackRateMenuButton, Player, TimeDivider, VolumeMenuButton } from "video-react";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
+import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { strings } from "../../../../common/strings";
-import {
-    IAssetMetadata, IRegion, RegionType, AppError, ErrorCode,
-    AssetState, EditorMode, IProject, AssetType, ITag,
-} from "../../../../models/applicationState";
-import {
-    Player, ControlBar, CurrentTimeDisplay, TimeDivider,
-    BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton,
-} from "video-react";
+import { AppError, AssetState, AssetType, EditorMode,
+    ErrorCode, IAssetMetadata, IProject, IRegion, ITag, RegionType } from "../../../../models/applicationState";
+import CanvasHelpers from "./canvasHelpers";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -204,45 +201,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param tag Tag to add or remove from region
      */
     private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
-        region.tags = this.toggleTag(region.tags, tag);
-        this.editor.RM.updateTagsById(region.id, this.getTagsDescriptor(region));
-    }
-
-    /**
-     * Add tag if not contained in list, Remove if contained
-     */
-    private toggleTag = (tags: ITag[], tag: ITag) => {
-        const tagIndex = tags.findIndex((existingTag) => existingTag.name === tag.name);
-        if (tagIndex === -1) {
-            // Tag isn't found within region tags, add it
-            tags.push(tag);
-        } else {
-            // Tag is within region tags, remove it
-            tags.splice(tagIndex, 1);
-        }
-        return tags;
-    }
-
-    private getRegionData(region: IRegion): RegionData {
-        return new RegionData(region.boundingBox.left,
-            region.boundingBox.top,
-            region.boundingBox.width,
-            region.boundingBox.height,
-            region.points.map((point) =>
-                new Point2D(point.x, point.y)),
-            this.regionTypeToType(region.type));
-    }
-
-    private getTagsDescriptor(region: IRegion): TagsDescriptor {
-        return new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name, tag.color)));
+        region.tags = CanvasHelpers.toggleTag(region.tags, tag);
+        this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
     }
 
     private addRegions = (regions: IRegion[]) => {
         for (const region of regions) {
             this.editor.RM.addRegion(
                 region.id,
-                this.getRegionData(region),
-                this.getTagsDescriptor(region));
+                CanvasHelpers.getRegionData(region),
+                CanvasHelpers.getTagsDescriptor(region));
         }
     }
 
@@ -318,11 +286,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private updateRegions = () => {
         if (this.props.selectedAsset.regions.length) {
             this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                const loadedRegionData = this.getRegionData(region);
+                const loadedRegionData = CanvasHelpers.getRegionData(region);
                 this.editor.RM.addRegion(
                     region.id,
                     this.editor.scaleRegionToFrameSize(loadedRegionData),
-                    this.getTagsDescriptor(region));
+                    CanvasHelpers.getTagsDescriptor(region));
 
                 if (this.state.selectedRegions) {
                     this.setState({
@@ -349,27 +317,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             default:
                 return "unknown";
         }
-    }
-
-    private regionTypeToType = (regionType: RegionType) => {
-        let type;
-        switch (regionType) {
-            case RegionType.Rectangle:
-                type = RegionDataType.Rect;
-                break;
-            case RegionType.Polygon:
-                type = RegionDataType.Polygon;
-                break;
-            case RegionType.Point:
-                type = RegionDataType.Point;
-                break;
-            case RegionType.Polyline:
-                type = RegionDataType.Polyline;
-                break;
-            default:
-                break;
-        }
-        return type;
     }
 
     private editorModeToType = (editorMode: EditorMode) => {
