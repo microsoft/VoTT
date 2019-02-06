@@ -245,14 +245,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
             // If we're paused, make sure we're behind the canvas so we can tag
             this.editor.RM.deleteAllRegions();
-            this.props.onVideoPaused(Math.round(state.currentTime));
+            this.props.onVideoPaused(Math.floor(state.currentTime));
             this.updateRegions();
             const video = this.videoPlayer.current.video.video as HTMLVideoElement;
             if (video.videoHeight > 0 && video.videoWidth > 0) {
                 await this.editor.addContentSource(video);
             }
             this.setState({ canvasEnabled: true });
-            this.updateRegions();
             console.log(state);
         } else if (!state.paused && state.paused !== prev.paused) {
             // We need to make sure we're on top if we are playing

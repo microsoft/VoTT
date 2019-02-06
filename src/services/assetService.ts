@@ -17,17 +17,18 @@ export class AssetService {
      * @param filePath - filepath of asset
      * @param fileName - name of asset
      */
-    public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
+    public static createAssetFromFilePath(filePath: string, fileName?: string, timestamp?: number): IAsset {
         Guard.emtpy(filePath);
 
-        const md5Hash = new MD5().update(filePath).digest("hex");
+        const hashPath = (timestamp || timestamp === 0) ? filePath + "?timestamp=" + timestamp.toString() : filePath;
+        const md5Hash = new MD5().update(hashPath).digest("hex");
         const pathParts = filePath.indexOf("\\") > -1 ? filePath.split("\\") : filePath.split("/");
         fileName = fileName || pathParts[pathParts.length - 1];
         const fileNameParts = fileName.split(".");
         const assetFormat = fileNameParts[fileNameParts.length - 1];
-        const assetType = this.getAssetType(assetFormat);
+        const assetType = (timestamp || timestamp === 0) ? AssetType.VideoFrame : this.getAssetType(assetFormat);
 
-        return {
+        const createdAsset = {
             id: md5Hash,
             format: assetFormat,
             state: AssetState.NotVisited,
@@ -35,7 +36,14 @@ export class AssetService {
             name: fileName,
             path: filePath,
             size: null,
-        };
+        } as any;
+
+        if (timestamp || timestamp === 0) {
+            createdAsset.timestamp = timestamp;
+            createdAsset.name = createdAsset.name + "?timestamp=" + timestamp.toString();
+        }
+
+        return createdAsset;
     }
 
     /**

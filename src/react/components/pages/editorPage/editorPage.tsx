@@ -243,7 +243,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const currentIndex = this.state.assets
             .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
 
-        const setSelectionMode = this.canvas.current.editor.AS.setSelectionMode;
         switch (toolbarItem.props.name) {
             case "drawRectangle":
                 selectionMode = SelectionMode.RECT;
@@ -271,14 +270,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
             case "stepFwd":
                 if (assetType === AssetType.Video) {
-                    playerRef.seek(playerSate.currentTime + 1);
+                    playerRef.seek(playerSate.currentTime + (1 / this.state.project.videoSettings.frameExtractionRate));
                 } else {
                     console.log("next");
                 }
                 break;
             case "stepBwd":
                 if (assetType === AssetType.Video) {
-                    playerRef.seek(playerSate.currentTime - 1);
+                    playerRef.seek(playerSate.currentTime - (1 / this.state.project.videoSettings.frameExtractionRate));
                 } else {
                     console.log("prev");
                 }
@@ -320,18 +319,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         if (this.hasChildAssets(canvasAsset)) {
             this.onAssetMetadataChanged(assetMetadata);
-            const childAsset = AssetService.createAssetFromFilePath(`${canvasAsset.path}?timestamp=0`);
-            childAsset.timestamp = 0;
+            const childAsset = AssetService.createAssetFromFilePath(canvasAsset.path, null, 0);
             childAsset.parent = canvasAsset.id;
-            childAsset.type = 3;
-            childAsset.path = canvasAsset.path;
             childAsset.size = canvasAsset.size;
             canvasAsset = childAsset;
         }
 
         const canvasAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, canvasAsset);
-
-        // canvasAssetMetadata.asset.size = canvasAsset.size;
 
         this.onAssetMetadataChanged(canvasAssetMetadata);
 
@@ -350,11 +344,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onVideoPaused(timestamp: number) {
         const selectedAsset = this.state.selectedAsset.asset;
-        const childAsset = AssetService.createAssetFromFilePath(`${selectedAsset.path}?timestamp=${timestamp}`);
-        childAsset.timestamp = timestamp;
+        const childAsset = AssetService.createAssetFromFilePath(selectedAsset.path, null, timestamp);
+        // childAsset.timestamp = timestamp;
         childAsset.parent = selectedAsset.id;
-        childAsset.type = 3;
-        childAsset.path = selectedAsset.path;
+        // childAsset.type = 3;
+        // childAsset.path = selectedAsset.path;
         childAsset.size = selectedAsset.size;
         this.selectAsset(childAsset);
     }
