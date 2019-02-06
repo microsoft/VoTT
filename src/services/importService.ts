@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { AssetProviderFactory } from "../providers/storage/assetProviderFactory";
-import { IProject, ISecurityToken, IAsset, ITag, IConnection, IV1Project } from "../models/applicationState";
+import { IProject, ISecurityToken, IAsset, ITag, IConnection, IV1Project, IAssetMetadata } from "../models/applicationState";
 // import Guard from "../common/guard";
 // import { constants } from "../common/constants";
 // import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
@@ -33,12 +33,14 @@ export default class ImportService {
             let connections: IConnection[];
             let dummyAsset: IAsset;
             let tags: ITag[];
-
-            connections = this.generateConnections(originalProject);
+            let assets: { [index: string] : IAsset };
 
             originalProject = JSON.parse(project.content);
 
+            connections = this.generateConnections(originalProject);
             tags = this.parseTags(originalProject);
+
+            assets = this.generateAssets(originalProject);
 
             // map v1 values to v2 values
             convertedProject = {
@@ -61,7 +63,7 @@ export default class ImportService {
             // call some create project method like from projectsettingspage
             // create security token (next line won't work)
 
-            console.log("CONVERTED PROJECT:" + convertedProject);
+            console.log(convertedProject);
             return convertedProject;
         });
     }
@@ -92,7 +94,6 @@ export default class ImportService {
         return(connections); 
     }
 
-    // CHECK THIS TO MAKE SURE IT WORKS!
     private parseTags(project: any): ITag[] {
         let finalTags: ITag[] = [];
         const tagStrings = project.inputTags.split(",");
@@ -107,5 +108,27 @@ export default class ImportService {
             finalTags.push(newTag);
         }
         return finalTags;
+    }
+
+    private generateAssets(project: any): { [index: string] : IAsset } {
+        let assets: { [index: string] : IAsset };
+        let AssetMetadata: IAssetMetadata;
+        // For regions in assets:
+        // generate separate AssetMetadata objects:
+        // SHAPE: frames: {[frameName: string] : IV1Frame[]};
+        // const sizeByColor = {
+        //     red: 100,
+        //     green: 500,
+        //   };
+          
+          for (const [frameName, v1Frame] of Object.entries(project.frames)) {
+            console.log(frameName);
+            console.log(v1Frame);
+          }
+        
+        // and call AssetService.save
+        // to generate the JSON files in the target storage provider.
+
+        return assets;
     }
 }
