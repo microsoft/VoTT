@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, ReactElement } from "react";
 import * as shortid from "shortid";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
@@ -10,11 +10,12 @@ import {
 import CanvasHelpers from "./canvasHelpers";
 import AssetPreview, { ContentSource } from "./assetPreview";
 
-export interface ICanvasProps {
+export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
     onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
     project: IProject;
+    children: ReactElement<AssetPreview>;
 }
 
 interface ICanvasState {
@@ -73,11 +74,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                         <div id="editor-zone" className="full-size" />
                     </div>
                 </div>
-                <AssetPreview autoPlay={false}
-                    asset={this.props.selectedAsset.asset}
-                    onLoaded={this.onAssetLoaded}
-                    onActivated={this.onAssetActivated}
-                    onDeactivated={this.onAssetDeactivated} />
+                {this.renderChildren()}
             </Fragment>
         );
     }
@@ -187,6 +184,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 this.props.selectedAsset.regions.find((region) => region.id === id)];
         }
         this.updateSelected(selectedRegions);
+    }
+
+    private renderChildren = () => {
+        return React.cloneElement(this.props.children, {
+            onLoaded: this.onAssetLoaded,
+            onActivated: this.onAssetActivated,
+            onDeactivated: this.onAssetDeactivated,
+        });
     }
 
     /**
