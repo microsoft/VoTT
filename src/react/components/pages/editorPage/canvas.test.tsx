@@ -18,11 +18,11 @@ describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, ICanvasState, Canvas> = null;
     const onAssetMetadataChanged = jest.fn();
 
-    function createTestRegionData() {
-        const testRegionData = new RegionData(0, 0, 100, 100,
-            [new Point2D(0, 0), new Point2D(1, 0), new Point2D(0, 1), new Point2D(1, 1)], RegionDataType.Rect);
-        return testRegionData;
-    }
+    // function createTestRegionData() {
+    //     const testRegionData = new RegionData(0, 0, 100, 100,
+    //         [new Point2D(0, 0), new Point2D(1, 0), new Point2D(0, 1), new Point2D(1, 1)], RegionDataType.Rect);
+    //     return testRegionData;
+    // }
 
     function createComponent(canvasProps: ICanvasProps, assetPreviewProps: IAssetPreviewProps)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {

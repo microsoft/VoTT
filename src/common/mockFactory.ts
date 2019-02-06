@@ -572,7 +572,10 @@ export default class MockFactory {
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
+<<<<<<< HEAD
             selectionMode: SelectionMode.RECT,
+=======
+>>>>>>> WIP: Updated canvas to support single child element
             children: null,
         };
         return new Canvas(canvasProps);
