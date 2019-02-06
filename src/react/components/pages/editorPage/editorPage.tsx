@@ -21,6 +21,7 @@ import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import AssetPreview from "./assetPreview";
+import { AssetService } from "../../../../services/assetService";
 
 /**
  * Properties for Editor Page
@@ -219,8 +220,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.onTagClicked(tag);
     }
 
-    private onChildAssetSelected = async (asset: IAsset) => {
-        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+    private onChildAssetSelected = async (childAsset: IAsset) => {
+        await this.selectAsset(childAsset);
     }
 
     private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
@@ -238,7 +239,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
     }
 
-    private onToolbarItemSelected(toolbarItem: ToolbarItem) {
+    private async onToolbarItemSelected(toolbarItem: ToolbarItem) {
         let selectionMode: SelectionMode = null;
         let editorMode: EditorMode = null;
         const currentIndex = this.state.assets
@@ -265,10 +266,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 selectionMode = SelectionMode.NONE;
                 break;
             case "navigatePreviousAsset":
-                this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+                await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
                 break;
             case "navigateNextAsset":
-                this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
+                await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
                 break;
         }
 

@@ -1,6 +1,5 @@
 import MD5 from "md5.js";
 import Guard from "../common/guard";
-import path from "path";
 import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
@@ -21,10 +20,14 @@ export class AssetService {
         Guard.emtpy(filePath);
 
         const md5Hash = new MD5().update(filePath).digest("hex");
-        const pathParts = filePath.indexOf("\\") > -1 ? filePath.split("\\") : filePath.split("/");
-        fileName = fileName || pathParts[pathParts.length - 1];
-        const fileNameParts = fileName.split(".");
-        const assetFormat = fileNameParts[fileNameParts.length - 1];
+        const pathParts = filePath.split(/[\\\/]/);
+        // Example filename: video.mp4#t=5
+        // fileNameParts[0] = "video"
+        // fileNameParts[1] = "mp4"
+        // fileNameParts[2] = "t=5"
+        const fileNameParts = pathParts[pathParts.length - 1].split(/[\.\?#]/);
+        fileName = fileName || fileNameParts[0];
+        const assetFormat = fileNameParts.length >= 2 ? fileNameParts[1] : "";
         const assetType = this.getAssetType(assetFormat);
 
         return {
