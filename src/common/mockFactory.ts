@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode, ITagMetadata,
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
     IPoint, IRegion, RegionType, IBoundingBox,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -101,10 +101,7 @@ export default class MockFactory {
      * Creates a mock region
      */
     public static createMockRegion(): IRegion {
-        const mockTag: ITagMetadata = {
-            name: "Tag 1",
-            properties: null,
-        };
+        const mockTag: ITag = MockFactory.createTestTag();
 
         const mockStartPoint: IPoint = {
             x: 1,

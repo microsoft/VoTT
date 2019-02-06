@@ -8,7 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITagMetadata, IAssetVideoSettings,
+    IAssetMetadata, IProject, IAssetVideoSettings, ITag,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -165,7 +165,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Called when a tag from footer is clicked
      * @param tag Tag clicked
      */
-    public onTagClicked(tag: ITagMetadata) {
+    public onTagClicked(tag: ITag) {
         const selectedAsset = this.state.selectedAsset;
         if (this.canvas.current.state.selectedRegions && this.canvas.current.state.selectedRegions.length) {
             const selectedRegions = this.canvas.current.state.selectedRegions;
@@ -202,14 +202,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (isNaN(key)) {
             return;
         }
-        let tag: ITagMetadata;
+        let tag: ITag;
         const tags = this.props.project.tags;
         if (key === 0) {
             if (tags.length >= 10) {
-                tag = { name: tags[9].name };
+                tag = tags[9];
             }
         } else if (tags.length >= key) {
-            tag = { name: tags[key - 1].name };
+            tag = tags[key - 1];
         }
         this.onTagClicked(tag);
     }
