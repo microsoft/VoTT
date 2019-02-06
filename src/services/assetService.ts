@@ -27,7 +27,11 @@ export class AssetService {
         // fileNameParts[1] = "mp4"
         // fileNameParts[2] = "t=5"
         const fileNameParts = pathParts[pathParts.length - 1].split(/[\.\?#]/);
+<<<<<<< HEAD
         fileName = fileName || `${fileNameParts[0]}.${fileNameParts[1]}`;
+=======
+        fileName = fileName || fileNameParts[0];
+>>>>>>> Making progress
         const assetFormat = fileNameParts.length >= 2 ? fileNameParts[1] : "";
         const assetType = this.getAssetType(assetFormat);
 
