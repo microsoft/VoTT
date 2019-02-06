@@ -1,7 +1,8 @@
 import Guard from "../../../common/guard";
 import { TFRecordsImageMessage, Features, Feature, FeatureList,
     BytesList, Int64List, FloatList } from "./tensorFlowRecordsProtoBuf_pb";
-import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer, textEncode, readInt64 } from "./tensorFlowHelpers";
+import { crc32c, maskCrc, textDecode, readInt64 } from "./tensorFlowHelpers";
+import { FeatureType } from "./tensorFlowBuilder";
 
 /**
  * @name - TFRecords Read Class
@@ -61,5 +62,29 @@ export class TFRecordsReader {
      */
     public toArray(): object[] {
         return this.imageMessages.map((imageMessage) => imageMessage.toObject());
+    }
+
+    /**
+     * @recordPos - Record Position
+     * @key - Feature Key
+     * @type - Feature Type
+     * @description - Get a Int64 | Float | String | Binary value
+     */
+    public getFeature(recordPos: number, key: string, type: FeatureType): string | number | Uint8Array {
+        // Guard.expression(recordPos, (num) => num >= 0 && num < this.imageMessages.length);
+        const message = this.imageMessages[recordPos];
+        const feature = message.getContext().getFeatureMap().get(key);
+
+        switch (type) {
+            case FeatureType.String:
+                return textDecode(feature.getBytesList().array[0][0]);
+            case FeatureType.Binary:
+                return feature.getBytesList().array[0][0];
+            case FeatureType.Int64:
+                return feature.getInt64List().array[0][0];
+            case FeatureType.Float:
+            default:
+                return feature.getFloatList().array[0][0];
+        }
     }
 }
