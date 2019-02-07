@@ -40,12 +40,14 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
         }
     }
 
-    public async componentWillMount() {
+    public async componentDidMount() {
         await this.updateImage();
     }
 
-    public async componentWillUpdate() {
-        await this.updateImage();
+    public async componentDidUpdate(prevProps: Readonly<ITFRecordProps>) {
+        if (this.props.asset !== prevProps.asset) {
+            await this.updateImage();
+        }
     }
 
     private async updateImage() {
