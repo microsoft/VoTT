@@ -47,8 +47,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         window.addEventListener("resize", this.onWindowResize);
 
-        // Upload background image for selection
-        await this.updateEditor();
+        await this.clearAllRegions();
     }
 
     public componentWillUnmount() {
@@ -57,7 +56,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public componentDidUpdate = async (prevProps) => {
         if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
-            await this.updateEditor();
             if (this.props.selectedAsset.regions.length) {
                 this.updateSelected([]);
             }
@@ -199,13 +197,18 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onAssetLoaded = async (contentSource: ContentSource) => {
         this.positionCanvas(contentSource);
-        await this.setContentSource(contentSource);
+        try {
+            await this.setContentSource(contentSource);
+        } catch (e) {
+            console.warn(e);
+        }
     }
 
     /**
      * Raised when the asset is taking control over the rendering
      */
     private onAssetActivated = (contentSource: ContentSource) => {
+        this.clearAllRegions();
         this.setState({
             canvasEnabled: false,
         });
@@ -273,7 +276,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     /**
      * Updates the background of the canvas and draws the asset's regions
      */
-    private updateEditor = async () => {
+    private clearAllRegions = async () => {
         this.editor.RM.deleteAllRegions();
     }
 
