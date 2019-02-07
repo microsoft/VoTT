@@ -165,6 +165,7 @@ export class AssetService {
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
         }
 
+
         return metadata;
     }
 
