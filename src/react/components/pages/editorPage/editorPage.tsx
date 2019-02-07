@@ -315,6 +315,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedAsset: assetMetadata,
             assets: _.values(this.props.project.assets),
         });
+
+        if (!asset.parent) {
+            const assetService = new AssetService(this.props.project);
+            const childAssets = assetService.getChildAssets(asset);
+
+            this.setState({
+                childAssets,
+            });
+
+            if (childAssets.length > 0) {
+                this.selectAsset(childAssets[0]);
+                return;
+            }
+        }
     }
 
     private async loadProjectAssets() {
