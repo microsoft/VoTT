@@ -4,7 +4,7 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset } from "../../../../models/applicationState";
+import { IAsset, AssetType } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
@@ -99,9 +99,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
         if (this.props.onChildAssetSelected) {
-            const childPath = `${this.props.asset.path}#t=${state.currentTime}`;
+            const parentAsset = this.props.asset.parent || this.props.asset;
+            const childPath = `${parentAsset.path}#t=${state.currentTime}`;
             const childAsset = AssetService.createAssetFromFilePath(childPath);
-            childAsset.parent = this.props.asset.parent || this.props.asset.id;
+            childAsset.type = AssetType.VideoFrame;
+            childAsset.parent = parentAsset;
             childAsset.timestamp = state.currentTime;
             childAsset.size = { ...this.props.asset.size };
 

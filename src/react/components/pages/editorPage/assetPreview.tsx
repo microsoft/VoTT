@@ -47,6 +47,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
     public render() {
         const { loaded } = this.state;
         const { asset, autoPlay } = this.props;
+        const parentAsset = asset.parent || asset;
 
         return (
             <div className="asset-preview">
@@ -56,13 +57,13 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <ImageAsset asset={asset}
+                    <ImageAsset asset={parentAsset}
                         onLoaded={this.onAssetLoad}
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated} />
                 }
-                {asset.type === AssetType.Video &&
-                    <VideoAsset asset={asset}
+                {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
+                    <VideoAsset asset={parentAsset}
                         autoPlay={autoPlay}
                         onLoaded={this.onAssetLoad}
                         onChildAssetSelected={this.props.onChildAssetSelected}

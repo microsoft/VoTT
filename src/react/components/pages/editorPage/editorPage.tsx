@@ -225,6 +225,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
+        assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+
         await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.actions.saveProject(this.props.project);
     }
