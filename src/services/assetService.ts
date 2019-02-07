@@ -1,4 +1,5 @@
 import MD5 from "md5.js";
+import _ from "lodash";
 import Guard from "../common/guard";
 import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
@@ -122,6 +123,23 @@ export class AssetService {
 
             return asset;
         });
+    }
+
+    /**
+     * Get a list of child assets associated with the current asset
+     * @param parentAsset The parent asset to search
+     */
+    public getChildAssets(parentAsset: IAsset): IAsset[] {
+        Guard.null(parentAsset);
+
+        if (parentAsset.type !== AssetType.Video) {
+            return [];
+        }
+
+        return _
+            .values(this.project.assets)
+            .filter((asset) => asset.parent && asset.parent.id === parentAsset.id)
+            .sort((a, b) => a.timestamp - b.timestamp);
     }
 
     /**

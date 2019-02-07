@@ -8,7 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, IAssetVideoSettings, ITag,
+    IAssetMetadata, IProject, ITag,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -46,7 +46,7 @@ export interface IEditorPageState {
     assets: IAsset[];
     mode: EditorMode;
     selectedAsset?: IAssetMetadata;
-    canvasAsset?: IAssetMetadata;
+    childAssets?: IAsset[];
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -78,6 +78,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.state = {
             project: this.props.project,
             assets: [],
+            childAssets: [],
             mode: EditorMode.Rectangle,
         };
 
@@ -152,7 +153,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 <AssetPreview
                                     autoPlay={true}
                                     onChildAssetSelected={this.onChildAssetSelected}
-                                    asset={this.state.selectedAsset.asset} />
+                                    asset={this.state.selectedAsset.asset}
+                                    childAssets={this.state.childAssets} />
                             </Canvas>
                         }
                     </div>
@@ -222,7 +224,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onChildAssetSelected = async (childAsset: IAsset) => {
-        await this.selectAsset(childAsset);
+        if (this.state.selectedAsset && this.state.selectedAsset.asset.id !== childAsset.id) {
+            await this.selectAsset(childAsset);
+        }
     }
 
     private async onAssetMetadataChanged(assetMetadata: IAssetMetadata) {
@@ -306,6 +310,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedAsset: assetMetadata,
             assets: _.values(this.props.project.assets),
         });
+
+        if (!asset.parent) {
+            const assetService = new AssetService(this.props.project);
+            const childAssets = assetService.getChildAssets(asset);
+
+            this.setState({
+                childAssets,
+            });
+
+            if (childAssets.length > 0) {
+                this.selectAsset(childAssets[0]);
+                return;
+            }
+        }
     }
 
     private async loadProjectAssets() {
