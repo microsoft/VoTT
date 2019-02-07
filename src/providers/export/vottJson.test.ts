@@ -56,7 +56,6 @@ describe("VoTT Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [],
-                    timestamp: null,
                 };
 
                 return Promise.resolve(assetMetadata);

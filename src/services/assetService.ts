@@ -26,7 +26,7 @@ export class AssetService {
         // fileNameParts[1] = "mp4"
         // fileNameParts[2] = "t=5"
         const fileNameParts = pathParts[pathParts.length - 1].split(/[\.\?#]/);
-        fileName = fileName || fileNameParts[0];
+        fileName = fileName || `${fileNameParts[0]}.${fileNameParts[1]}`;
         const assetFormat = fileNameParts.length >= 2 ? fileNameParts[1] : "";
         const assetType = this.getAssetType(assetFormat);
 
@@ -152,7 +152,6 @@ export class AssetService {
             return {
                 asset: { ...asset },
                 regions: [],
-                timestamp: null,
             };
         }
     }
