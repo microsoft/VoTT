@@ -37,7 +37,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
 
-    public componentDidMount = async () => {
+    public componentDidMount = () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
         this.editor = new CanvasTools.Editor(sz);
         this.editor.onSelectionEnd = this.onSelectionEnd;
@@ -47,15 +47,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         window.addEventListener("resize", this.onWindowResize);
 
-        await this.clearAllRegions();
+        this.clearAllRegions();
     }
 
     public componentWillUnmount() {
         window.removeEventListener("resize", this.onWindowResize);
     }
 
-    public componentDidUpdate = async (prevProps) => {
+    public componentDidUpdate = (prevProps) => {
         if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
+            this.clearAllRegions();
             if (this.props.selectedAsset.regions.length) {
                 this.updateSelected([]);
             }
@@ -197,11 +198,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onAssetLoaded = async (contentSource: ContentSource) => {
         this.positionCanvas(contentSource);
-        try {
-            await this.setContentSource(contentSource);
-        } catch (e) {
-            console.warn(e);
-        }
+        await this.setContentSource(contentSource);
     }
 
     /**
@@ -218,7 +215,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Raise when the asset is handing off control of rendering
      */
     private onAssetDeactivated = async (contentSource: ContentSource) => {
-        this.positionCanvas(contentSource);
         await this.setContentSource(contentSource);
         this.updateRegions();
 
@@ -231,10 +227,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Set the loaded asset content source into the canvas tools canvas
      */
     private setContentSource = async (contentSource: ContentSource) => {
-        this.setState({
-            contentSource,
-        });
-
+        this.setState({ contentSource });
         await this.editor.addContentSource(contentSource);
     }
 
@@ -276,7 +269,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     /**
      * Updates the background of the canvas and draws the asset's regions
      */
-    private clearAllRegions = async () => {
+    private clearAllRegions = () => {
         this.editor.RM.deleteAllRegions();
     }
 

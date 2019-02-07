@@ -115,6 +115,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
+        const parentAssets = assets.filter((asset) => !asset.parent);
 
         if (!project) {
             return (<div>Loading...</div>);
@@ -130,7 +131,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
-                        assets={assets}
+                        assets={parentAssets}
                         selectedAsset={selectedAsset ? selectedAsset.asset : null}
                         onAssetSelected={this.selectAsset}
                     />
@@ -234,6 +235,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.actions.saveProject(this.props.project);
+
+        const assetService = new AssetService(this.props.project);
+        const childAssets = assetService.getChildAssets(assetMetadata.asset.parent || assetMetadata.asset);
+
+        this.setState({ childAssets });
     }
 
     private onFooterChange(footerState) {
@@ -310,20 +316,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedAsset: assetMetadata,
             assets: _.values(this.props.project.assets),
         });
-
-        if (!asset.parent) {
-            const assetService = new AssetService(this.props.project);
-            const childAssets = assetService.getChildAssets(asset);
-
-            this.setState({
-                childAssets,
-            });
-
-            if (childAssets.length > 0) {
-                this.selectAsset(childAssets[0]);
-                return;
-            }
-        }
     }
 
     private async loadProjectAssets() {
