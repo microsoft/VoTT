@@ -8,6 +8,7 @@ export type ContentSource = HTMLImageElement | HTMLVideoElement;
 
 export interface IAssetProps {
     asset: IAsset;
+    childAssets?: IAsset[];
     onLoaded?: (ContentSource: ContentSource) => void;
     onActivated?: (contentSource: ContentSource) => void;
     onDeactivated?: (contentSource: ContentSource) => void;
@@ -37,6 +38,7 @@ interface IAssetPreviewState {
 export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     public static defaultProps: IAssetPreviewProps = {
         asset: null,
+        childAssets: [],
         autoPlay: false,
     };
 
@@ -46,7 +48,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
 
     public render() {
         const { loaded } = this.state;
-        const { asset, autoPlay } = this.props;
+        const { asset, childAssets, autoPlay } = this.props;
         const parentAsset = asset.parent || asset;
 
         return (
@@ -64,6 +66,8 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                 }
                 {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
                     <VideoAsset asset={parentAsset}
+                        childAssets={childAssets}
+                        timestamp={asset.timestamp}
                         autoPlay={autoPlay}
                         onLoaded={this.onAssetLoad}
                         onChildAssetSelected={this.props.onChildAssetSelected}
