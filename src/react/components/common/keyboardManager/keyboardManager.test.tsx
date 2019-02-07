@@ -1,6 +1,7 @@
 import React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import { KeyboardManager, IKeyboardContext } from "./keyboardManager";
+import { KeyEventType } from "./keyboardManager";
 
 jest.mock("./keyboardRegistrationManager");
 import { KeyboardRegistrationManager } from "./keyboardRegistrationManager";
@@ -42,7 +43,8 @@ describe("Keyboard Manager Component", () => {
     });
 
     it("listens for Ctrl+ keydown events and invokes handlers", () => {
-        const keyboardEvent = new KeyboardEvent("keydown", {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyDown, {
             ctrlKey: true,
             key: "1",
         });
@@ -50,11 +52,41 @@ describe("Keyboard Manager Component", () => {
         window.dispatchEvent(keyboardEvent);
 
         const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
-        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith("Ctrl+1", keyboardEvent);
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyDown, "Ctrl+1", keyboardEvent);
+    });
+
+    it("listens for Ctrl+ keyup events and invokes handlers", () => {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyUp, {
+            ctrlKey: true,
+            key: "1",
+        });
+
+        window.dispatchEvent(keyboardEvent);
+
+        const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyUp, "Ctrl+1", keyboardEvent);
+    });
+
+    it("listens for Ctrl+ keypress events and invokes handlers", () => {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyPress, {
+            ctrlKey: true,
+            key: "1",
+        });
+
+        window.dispatchEvent(keyboardEvent);
+
+        const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyPress, "Ctrl+1", keyboardEvent);
     });
 
     it("listens for Alt+ keydown events and invokes handlers", () => {
-        const keyboardEvent = new KeyboardEvent("keydown", {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyDown, {
             ctrlKey: false,
             altKey: true,
             key: "1",
@@ -63,11 +95,43 @@ describe("Keyboard Manager Component", () => {
         window.dispatchEvent(keyboardEvent);
 
         const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
-        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith("Alt+1", keyboardEvent);
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyDown, "Alt+1", keyboardEvent);
+    });
+
+    it("listens for Alt+ keyup events and invokes handlers", () => {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyUp, {
+            ctrlKey: false,
+            altKey: true,
+            key: "1",
+        });
+
+        window.dispatchEvent(keyboardEvent);
+
+        const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyUp, "Alt+1", keyboardEvent);
+    });
+
+    it("listens for Alt+ keypress events and invokes handlers", () => {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyPress, {
+            ctrlKey: false,
+            altKey: true,
+            key: "1",
+        });
+
+        window.dispatchEvent(keyboardEvent);
+
+        const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyPress, "Alt+1", keyboardEvent);
     });
 
     it("listens for keydown events and invokes handlers", () => {
-        const keyboardEvent = new KeyboardEvent("keydown", {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyDown, {
             ctrlKey: false,
             altKey: false,
             key: "F1",
@@ -76,6 +140,37 @@ describe("Keyboard Manager Component", () => {
         window.dispatchEvent(keyboardEvent);
 
         const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
-        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith("F1", keyboardEvent);
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyDown, "F1", keyboardEvent);
+    });
+
+    it("listens for keyup events and invokes handlers", () => {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyUp, {
+            ctrlKey: false,
+            altKey: false,
+            key: "F1",
+        });
+
+        window.dispatchEvent(keyboardEvent);
+
+        const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyUp, "F1", keyboardEvent);
+    });
+
+    it("listens for keypress events and invokes handlers", () => {
+        const keyboardEvent = new KeyboardEvent(
+            KeyEventType.KeyPress, {
+            ctrlKey: false,
+            altKey: false,
+            key: "F1",
+        });
+
+        window.dispatchEvent(keyboardEvent);
+
+        const registrationManagerMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+        expect(registrationManagerMock.prototype.invokeHandlers).toBeCalledWith(
+            KeyEventType.KeyPress, "F1", keyboardEvent);
     });
 });

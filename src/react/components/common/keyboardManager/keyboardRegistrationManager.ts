@@ -1,4 +1,5 @@
 import Guard from "../../../../common/guard";
+import { KeyEventType } from "./keyboardManager";
 
 /**
  * A map of keyboard event registrations
@@ -7,15 +8,6 @@ export interface IKeyboardRegistrations {
     [keyEventType: string]: {
         [key: string]: KeyboardEventHandler[],
     };
-}
-
-/**
- * Types of Key events supported by registration manager
- */
-export enum KeyEventType {
-    KeyDown = "keydown",
-    KeyUp = "keyup",
-    KeyPress = "keypress",
 }
 
 /**
