@@ -98,6 +98,7 @@ export interface IAppSettings {
 export interface IProject {
     id: string;
     name: string;
+    version?: string;
     securityToken: string;
     description?: string;
     tags: ITag[];
@@ -111,18 +112,18 @@ export interface IProject {
 
 /**
  * @name - V1 Project
- * @description - Defines the structure of a V1 Project
- * @member frames - TODO: Add description
+ * @description - Defines the structure of a version 1 Project
+ * @member frames - Dictionary of all frame objects in the project (filename: list of regions in that file)
  * @member framerate - TODO: Add description
- * @member inputTags - TODO: Add description
+ * @member inputTags - Comma delimited list of all tags in the project
  * @member suggestiontype - TODO: Add description
- * @member tags - TODO: Add description
+ * @member tags - List of all tags in the project
  * @member scd - TODO: Add description
- * @member visitedFrames - TODO: Add description
- * @member tagColors - TODO: Add description
+ * @member visitedFrames - List of names of the frames in the project that have been visited
+ * @member tagColors - List of all tag colors corresponding to the tags in "tags"
  */
 export interface IV1Project {
-    frames: {[frameName: string] : IV1Frame[]};
+    frames: {[frameName: string] : IV1Region[]};
     framerate: string;
     inputTags: string;
     suggestiontype: string;
@@ -134,7 +135,7 @@ export interface IV1Project {
 
 /**
  * @name - V1 Frame Object
- * @description - Defines the structure of a V1 Frame
+ * @description - Defines the structure of a version 1 Region
  * @member x1 - TODO: Add description
  * @member y1 - TODO: Add description
  * @member x2 - TODO: Add description
@@ -148,7 +149,7 @@ export interface IV1Project {
  * @member tags - TODO: Add description
  * @member name - TODO: Add description
  */
-export interface IV1Frame {
+export interface IV1Region {
     x1: number;
     y1: number;
     x2: number;

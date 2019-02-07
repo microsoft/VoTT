@@ -77,6 +77,7 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      * @param error The error to handle
      */
     private handleError(error: string | Error | AppError) {
+        console.log(error);
         let appError: IAppError = null;
 
         // Promise rejection with reason

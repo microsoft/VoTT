@@ -7,10 +7,13 @@ import { IProject, ISecurityToken, IAsset, ITag, IConnection,
 // import { constants } from "../common/constants";
 // import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 // import { decryptProject, encryptProject } from "../common/utils";
+import IProjectActions, * as projectActions from "../redux/actions/projectActions"
 import ConnectionService from "./connectionService";
 import { generateKey } from "../../src/common/crypto";
-import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
-import { Region } from "vott-ct/lib/js/CanvasTools/Region/Region";
+import { AssetService } from "./assetService";
+import MD5 from "md5.js";
+import { randomIntInRange } from "../common/utils"
+const TagColors = require("../react/components/common/tagsInput/tagColors.json");
 
 /**
  * Functions required for an import service
@@ -34,21 +37,20 @@ export default class ImportService {
             let originalProject: IV1Project;
             let convertedProject: IProject
             let connections: IConnection[];
-            let dummyAsset: IAsset;
             let tags: ITag[];
-            let assets: { [index: string] : IAsset };
+            let generatedAssetMetadata: IAssetMetadata[];
 
             originalProject = JSON.parse(project.content);
-
-            connections = this.generateConnections(originalProject);
             tags = this.parseTags(originalProject);
 
-            assets = this.generateAssets(project);
+            connections = this.generateConnections(project);
+            generatedAssetMetadata = this.generateAssets(project);
 
             // map v1 values to v2 values
             convertedProject = {
                 id: shortid.generate(),
-                name: project.file.name,
+                name: project.file.name.split(".")[0],
+                version: "v1-to-v2",
                 securityToken: generateKey(),
                 description: "Converted V1 Project",
                 tags: tags,
@@ -59,27 +61,37 @@ export default class ImportService {
                     frameExtractionRate: 15,
                 },
                 autoSave: true,
-                // TODO: fill this array? (kind of):
-                assets: assets,
+                assets: {},
             };
 
-            // call some create project method like from projectsettingspage
-            // create security token (next line won't work)
+            const assetService = new AssetService(convertedProject);
+            // call AssetService.save to generate the JSON files in the target storage provider.
+            // does this automatically define assets array this as assets in project?
 
-            console.log(convertedProject);
+            const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
+                return assetService.save(assetMetadata);
+            });
+            try {
+                const retval = Promise.all(saveAssets);
+            } catch (e) {
+                console.log(e);
+            }
+            
             return convertedProject;
         });
     }
 
+    /**
+     * Generate connections from v1 project file location
+     * @param project - V1 Project Content and File Information
+     */
     private generateConnections(project: any): IConnection[] {
-        const connectionService = new ConnectionService();
-
         const sourceConnection: IConnection = {
             id: shortid.generate(),
             name: "Source Default Name",
             providerType: "localFileSystemProxy",
             providerOptions: {
-                encrypted: generateKey(),
+                folderPath: project.file.path.replace(/[^\/]*$/,""),
             }
         };
 
@@ -88,7 +100,7 @@ export default class ImportService {
             name: "Target Default Name",
             providerType: "localFileSystemProxy",
             providerOptions: {
-                encrypted: generateKey(),
+                folderPath: project.file.path.replace(/[^\/]*$/,""),
             },
         };
 
@@ -97,11 +109,14 @@ export default class ImportService {
         return(connections); 
     }
 
+    /**
+     * Parse v1 project's tag string and return array of ITags
+     * @param project - V1 Project Content and File Information
+     */
     private parseTags(project: any): ITag[] {
         let finalTags: ITag[] = [];
         const tagStrings = project.inputTags.split(",");
         const tagColors = project.tag_colors;
-        console.log(tagStrings);
 
         for(let i=0;i<tagColors.length;i++){
             let newTag = {
@@ -113,88 +128,67 @@ export default class ImportService {
         return finalTags;
     }
 
-    private generateAssets(project: any): { [index: string] : IAsset } {
+    /**
+     * Generate assets based on V1 Project frames and regions
+     * @param project - V1 Project Content and File Information
+     */
+    private generateAssets(project: any): IAssetMetadata[] {
         let originalProject: IV1Project;
-        let assets: { [index: string] : IAsset };
-        // let AssetMetadata: IAssetMetadata;
-        let generatedAssetMetadata: IAssetMetadata;
+        let assetMetadata: IAssetMetadata;
+        let generatedAssetMetadata: IAssetMetadata[] = [];
         let generatedRegion: IRegion;
-        let shape: RegionType;
         let assetState: AssetState;
-        let tagMetadata: ITagMetadata;
-        // For regions in assets:
-        // generate separate AssetMetadata objects:
-        // SHAPE: frames: {[frameName: string] : IV1Frame[]};
-        // export interface IRegion {
-        //     id: string;
-        //     type: RegionType;
-        //     tags: ITagMetadata[];
-        //     points?: IPoint[];
-        //     boundingBox?: IBoundingBox;
-        // }
-        // CAN I GET RID OF ID AND NAME IN V1? (don't address here)
+        let currentTagColorIndex = randomIntInRange(0, TagColors.length);
+
+        // For each region in assets, generate separate AssetMetadata objects:
         originalProject = JSON.parse(project.content);
 
         for (let frameName in originalProject.frames){
             let v1Frames = originalProject.frames[frameName];
-            console.log("Frame: " + frameName);
-            console.log("v1 frames to loop through and get: " + v1Frames);
             assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && v1Frames.length > 0
                          ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1 
                          ? AssetState.Visited : AssetState.NotVisited);
 
-            generatedAssetMetadata = {
+            assetMetadata = {
                 asset: {
-                    id: shortid.generate(),
+                    id: new MD5().update(frameName).digest("hex"),
                     type: AssetType.Image,
                     state: assetState,
                     name: frameName,
-                    // this may or may not be right--check on Windows too
-                    path: `${project.file.path.replace(/[^\/]*$/,"")}${frameName}`,
-                    // how th am I suppoed to find this out?
+                    // check on Windows too
+                    path: `file:${project.file.path.replace(/[^\/]*$/,"")}${frameName}`,
                     size: {
-                        width: 1500,
-                        height: 1500,
+                        width: v1Frames.length > 0 ? v1Frames[0].width : null,
+                        height: v1Frames.length > 0 ? v1Frames[0].height : null,
                     },
-                    // regex for file extension
                     format: frameName.split(".").pop(),
                 },
                 regions: []
             }
 
             for(let i=0;i<v1Frames.length;i++){
-                switch(v1Frames[i].type){
-                    case "rect":
-                        shape = RegionType.Rectangle;
-                    default:
-                        shape = RegionType.Rectangle;
-                }
                 generatedRegion = {
                     id: v1Frames[i].UID,
-                    type: shape,
+                    type: RegionType.Rectangle,
                     tags: v1Frames[i].tags.map((tag) => {
                         let newTag = {
                             name: tag,
-                            properties: {},
+                            color: (currentTagColorIndex + 1) % TagColors.length,
                         }
                         return newTag;
                     }),
                     points: v1Frames[i].points,
                     boundingBox: {
-                        height: v1Frames[i].height,
-                        width: v1Frames[i].width,
+                        height: (v1Frames[i].x2 - v1Frames[i].x1),
+                        width: (v1Frames[i].y2 - v1Frames[i].y1),
                         left: v1Frames[i].x1,
                         top: v1Frames[i].y1,
                     }
                 }
-                generatedAssetMetadata.regions.push(generatedRegion);
+                assetMetadata.regions.push(generatedRegion);
             }
-            // assets.push(generatedMetadata);
+            generatedAssetMetadata.push(assetMetadata);
         }
-        
-        // and call AssetService.save
-        // to generate the JSON files in the target storage provider.
-
-        return assets;
+        return generatedAssetMetadata;
     }
 }
