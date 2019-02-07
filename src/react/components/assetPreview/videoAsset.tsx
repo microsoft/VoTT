@@ -103,7 +103,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         });
     }
 
-<<<<<<< HEAD
     private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
         if (this.props.onChildAssetSelected) {
             const childPath = `${this.props.asset.path}#t=${state.currentTime}`;
@@ -120,10 +119,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
             this.props.onChildAssetSelected(childAsset);
         }
-=======
-    private raiseChildAssetSelected = () => {
-        // TODO
->>>>>>> Update TFRecords functions
     }
 
     private raiseActivated = () => {

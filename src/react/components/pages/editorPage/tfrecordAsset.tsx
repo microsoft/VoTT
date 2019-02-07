@@ -13,6 +13,8 @@ export interface ITFRecordState {
 }
 
 export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordState> {
+    private image: React.RefObject<HTMLImageElement> = React.createRef();
+
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -28,7 +30,7 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
         }
 
         return (
-            <div className="tfrecord-image" id={this.props.asset.id}>
+            <div ref={this.image} className="tfrecord-image" id={this.props.asset.id}>
                 <img className={className} src={this.state.tfRecordImage64} onLoad={this.onLoad} />
             </div>
         );
@@ -55,11 +57,11 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
 
     private onLoad = () => {
         if (this.props.onLoaded) {
-            // this.props.onLoaded(this.image.current);
+            this.props.onLoaded(this.image.current);
         }
 
         if (this.props.onActivated) {
-            // this.props.onActivated(this.image.current);
+            this.props.onActivated(this.image.current);
         }
     }
 
