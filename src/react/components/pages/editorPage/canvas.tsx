@@ -228,7 +228,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Raise when the asset is handing off control of rendering
      */
     private onAssetDeactivated = async (contentSource: ContentSource) => {
-        this.positionCanvas(contentSource);
         await this.setContentSource(contentSource);
         this.updateRegions();
 
