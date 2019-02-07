@@ -13,6 +13,7 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
     timestamp?: number;
     onChildAssetSelected?: (asset: IAsset) => void;
+    frameRate: number;
 }
 
 export interface IVideoAssetState {
@@ -22,6 +23,7 @@ export interface IVideoAssetState {
 export interface IVideoPlayerState {
     readyState: number;
     paused: boolean;
+    autoPaused: boolean;
     seeking: boolean;
     currentTime: number;
 }
@@ -32,6 +34,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         timestamp: 0,
         asset: null,
         childAssets: [],
+        frameRate: 15,
     };
 
     public state: IVideoAssetState = {
@@ -131,7 +134,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             this.raiseLoaded();
             this.raiseActivated();
             this.seekToTimestamp();
-        } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
+        } else if (state.paused && !state.autoPaused &&
+            (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
             // Video is paused
             this.raiseChildAssetSelected(state);
             this.raiseDeactivated();
@@ -176,5 +180,35 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.onDeactivated) {
             this.props.onDeactivated(this.videoPlayer.current.video.video);
         }
+    }
+
+    private seekToNextExpectedFrame() {
+        // Seek forward from the current time to the next logical frame based on project settings
+        const frameSkipTime: number = (1 / this.props.frameRate);
+        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime + frameSkipTime);
+        this.seekToTime(seekTime);
+    }
+
+    private seekToPreviousExpectedFrame() {
+        // Seek backwards from the current time to the next logical frame based on project settings
+        const frameSkipTime: number = (1 / this.props.frameRate);
+        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime - frameSkipTime);
+        this.seekToTime(seekTime);
+    }
+
+    private seekToNextTaggedFrame() {
+        // Find the next frame that is tagged and seek to it
+    }
+
+    private seekToPreviousTaggedFrame() {
+        // Find the next frame that is tagged and seek to it
+    }
+
+    private seekToTime(seekTime: number) {
+        // Before seeking, pause the video
+        if (!this.videoPlayer.current.getState().player.paused) {
+            this.videoPlayer.current.pause();
+        }
+        this.videoPlayer.current.seek(seekTime);
     }
 }

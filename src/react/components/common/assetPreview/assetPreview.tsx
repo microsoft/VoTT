@@ -72,7 +72,8 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                         onLoaded={this.onAssetLoad}
                         onChildAssetSelected={this.props.onChildAssetSelected}
                         onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
+                        onDeactivated={this.props.onDeactivated}
+                        frameRate={15} />
                 }
                 {asset.type === AssetType.Unknown &&
                     <div className="asset-error">{strings.editorPage.assetError}</div>

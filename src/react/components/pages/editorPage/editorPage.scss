@@ -156,6 +156,20 @@
     }
 }
 
+.videoTimelineParent {
+    position: relative;
+    width: 0;
+    height: 100%;
+    overflow: visible;
+}
+
+.videoTimeline {
+    position: absolute;
+    border: 1px solid yellow;   
+    width: 2px;
+    height: 100%;
+}
+
 #ct-zone {
     position: absolute;
 
