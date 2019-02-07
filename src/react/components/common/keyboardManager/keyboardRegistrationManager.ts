@@ -55,10 +55,11 @@ export class KeyboardRegistrationManager {
      * @param keyCode The key code combination, ex) Ctrl+1
      */
     public getHandlers(keyEventType: KeyEventType, keyCode: string) {
+        Guard.null(keyEventType);
         Guard.null(keyCode);
 
-        const registrations = this.registrations[keyEventType][keyCode];
-        return registrations ? [...registrations] : [];
+        const keyEventTypeRegs = this.registrations[keyEventType];
+        return (keyEventTypeRegs && keyEventTypeRegs[keyCode]) ? [...keyEventTypeRegs[keyCode]] : [];
     }
 
     /**
