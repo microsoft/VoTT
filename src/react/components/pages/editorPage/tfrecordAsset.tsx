@@ -17,9 +17,6 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
 
     constructor(props, context) {
         super(props, context);
-        // this.setState({
-        //     tfRecordImage64: "",
-        // });
         this.state = {
             tfRecordImage64: "",
          };
@@ -39,11 +36,19 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
         );
     }
 
-    public async componentDidMount() {
+    public async componentWillMount() {
+        await this.updateImage();
+    }
+
+    public async componentWillUpdate() {
+        await this.updateImage();
+    }
+
+    private async updateImage() {
         const tfRecordImage64 = await this.getTFRecordBase64Image(this.props.asset);
         const tfRecordDiv = document.getElementById(this.props.asset.id) as HTMLDivElement;
         const tfRecordImage = tfRecordDiv.getElementsByTagName("img")[0];
-        tfRecordImage.src = tfRecordImage64;
+        // tfRecordImage.src = tfRecordImage64;
 
         this.setState({
             tfRecordImage64,
