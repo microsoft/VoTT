@@ -145,8 +145,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUpload = async (e, project) => {
-        // new args object, not just text
-        // project is now an object with content (project text) and file
+        // project is an object with content (project text) and file information
         let projectJson: IProject; 
 
         try {
@@ -156,7 +155,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
 
         // need a better check to tell if its v1
-<<<<<<< HEAD
         if (projectJson.name == null) {
             try {
                 await this.importConfirm.current.open(project);
@@ -166,26 +164,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
         } else {
             await this.loadSelectedProject(projectJson);
         }
-=======
-        if (projectJson.name == null){
-            try {
-                await this.importConfirm.current.open(project);
-            } catch (error) {
-                console.log(error);
-            }
-            
-        }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-        // await this.loadSelectedProject(projectJson);
->>>>>>> add file data to homepage and create new project
-=======
-        await this.loadSelectedProject(projectJson);
->>>>>>> tags not verified
-=======
-        // await this.loadSelectedProject(projectJson);
->>>>>>> tags added to converted project
     }
 
     private onProjectFileUploadError = (e, error: any) => {
@@ -197,15 +175,12 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private loadSelectedProject = async (project: IProject) => {
-        console.log(project);
+        await this.props.actions.loadProject(project);
         if (project.version === "v1-to-v2") {
-            console.log("loadingSelectedV1Project!!");
-            await this.settingsConfirm.current.open();
-            await this.props.actions.loadProject(project);
+            // add confimation box (should this go to settings? Can they change connections?)
             this.props.history.push(`/projects/${project.id}/settings`);
         } else {
-            await this.props.actions.loadProject(project);
-            this.props.history.push(`/projects/${project.id}/edit`);
+        this.props.history.push(`/projects/${project.id}/edit`);
         }
     }
 
@@ -217,7 +192,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
     }
 
-<<<<<<< HEAD
     private convertProject = async (project: IFileInfo) => {
         const importService = new ImportService();
         let projectJson;
@@ -228,15 +202,5 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
         this.props.applicationActions.ensureSecurityToken(projectJson);
         await this.loadSelectedProject(projectJson);
-=======
-    private convertProject = async (project: any) => {
-        const importService = new ImportService(); 
-<<<<<<< HEAD
-        const retvalue = await importService.convertV1(project);
-        console.log("RETURNED: " + retvalue);
->>>>>>> add file data to homepage and create new project
-=======
-        await importService.convertV1(project).then((content) => console.log("RETURNED:" + content))
->>>>>>> tags not verified
     }
 }
