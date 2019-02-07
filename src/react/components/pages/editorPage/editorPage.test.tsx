@@ -63,7 +63,6 @@ describe("Editor Page Component", () => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
                 regions: [MockFactory.createMockRegion()],
-                timestamp: null,
             };
             return Promise.resolve(assetMetadata);
         });
@@ -125,7 +124,6 @@ describe("Editor Page Component", () => {
                 state: AssetState.Visited,
             },
             regions: [MockFactory.createMockRegion()],
-            timestamp: null,
         };
 
         setImmediate(() => {
@@ -174,7 +172,6 @@ describe("Editor Page Component", () => {
                 state: AssetState.Visited,
             },
             regions: [MockFactory.createMockRegion()],
-            timestamp: null,
         };
 
         setImmediate(() => {
@@ -236,7 +233,6 @@ describe("Editor Page Component", () => {
                     state: AssetState.Visited,
                 },
                 regions: [MockFactory.createMockRegion()],
-                timestamp: null,
             };
 
             expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);
@@ -255,7 +251,6 @@ describe("Editor Page Component", () => {
                     state: AssetState.Visited,
                 },
                 regions: [MockFactory.createMockRegion()],
-                timestamp: null,
             };
 
             expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);

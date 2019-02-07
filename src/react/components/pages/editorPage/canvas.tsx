@@ -58,7 +58,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public componentDidUpdate = async (prevProps) => {
-        if (this.props.selectedAsset.asset.path !== prevProps.selectedAsset.asset.path) {
+        if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
             await this.updateEditor();
             if (this.props.selectedAsset.regions.length) {
                 this.updateSelected([]);
@@ -207,6 +207,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onAssetDeactivated = async (contentSource: ContentSource) => {
         this.positionCanvas(contentSource);
         await this.setContentSource(contentSource);
+        this.updateRegions();
 
         this.setState({
             canvasEnabled: true,
@@ -220,6 +221,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({
             contentSource,
         });
+
         await this.editor.addContentSource(contentSource);
     }
 
