@@ -129,8 +129,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUpload = async (e, project) => {
-        // new args object, not just text
-        // project is now an object with content (project text) and file
+        // project is an object with content (project text) and file information
         let projectJson: IProject; 
 
         try {
@@ -147,9 +146,9 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 console.log(error);
             }
             
+        } else {
+            await this.loadSelectedProject(projectJson);
         }
-
-        // await this.loadSelectedProject(projectJson);
     }
 
     private onProjectFileUploadError = (e, error: any) => {
@@ -162,7 +161,12 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private loadSelectedProject = async (project: IProject) => {
         await this.props.actions.loadProject(project);
+        if (project.version === "v1-to-v2") {
+            // add confimation box (should this go to settings? Can they change connections?)
+            this.props.history.push(`/projects/${project.id}/settings`);
+        } else {
         this.props.history.push(`/projects/${project.id}/edit`);
+        }
     }
 
     private deleteProject = async (project: IProject) => {
@@ -170,7 +174,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private convertProject = async (project: any) => {
-        const importService = new ImportService(); 
-        await importService.convertV1(project).then((content) => console.log("RETURNED:" + content))
+        const importService = new ImportService();
+        console.log("calling Convertv1");
+        let projectJson = await importService.convertV1(project);
+        console.log("called Convertv1");
+        await this.loadSelectedProject(projectJson);
     }
 }

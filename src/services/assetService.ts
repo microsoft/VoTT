@@ -129,7 +129,12 @@ export class AssetService {
         Guard.null(metadata);
 
         const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
+        console.log("IN ASSET SERVICE SAVE FILENAME");
+        console.log(fileName);
+        console.log(fileName, JSON.stringify(metadata, null, 4));
         await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
+        console.log("IN ASSET SERVICE SAVE METADATA");
+        console.log(metadata);
 
         return metadata;
     }
