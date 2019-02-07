@@ -21,9 +21,5 @@ export class ImageAsset extends React.Component<IImageProps> {
         if (this.props.onLoaded) {
             this.props.onLoaded(this.image.current);
         }
-
-        if (this.props.onActivated) {
-            this.props.onActivated(this.image.current);
-        }
     }
 }

@@ -199,6 +199,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onAssetLoaded = async (contentSource: ContentSource) => {
         this.positionCanvas(contentSource);
         await this.setContentSource(contentSource);
+        this.updateRegions();
     }
 
     /**
