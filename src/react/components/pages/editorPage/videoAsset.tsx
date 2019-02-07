@@ -4,7 +4,7 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType } from "../../../../models/applicationState";
+import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
@@ -64,7 +64,10 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                     </ControlBar>
                 </Player>
                 <div style={{ position: "absolute", top: 0, left: 0, width: "100%", zIndex: 2 }}>
-                    {this.props.childAssets.map((asset, i) => {
+                    <div>
+                        TimeStamp: {this.props.timestamp}
+                    </div>
+                    {this.props.childAssets.filter((asset) => asset.state === AssetState.Tagged).map((asset, i) => {
                         return (
                             <button key={asset.id} onClick={() => this.goToChildAsset(asset)}>{asset.timestamp}</button>
                         );
