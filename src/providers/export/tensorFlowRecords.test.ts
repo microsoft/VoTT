@@ -5,7 +5,7 @@ import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import { IProject, IAssetMetadata, AssetState, IRegion, RegionType,
-         ITagMetadata, IPoint } from "../../models/applicationState";
+         ITag, IPoint } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 import axios, { AxiosResponse } from "axios";
 
@@ -59,10 +59,7 @@ describe("TFRecords Json Export Provider", () => {
         beforeEach(() => {
             const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
             assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
-                const mockTag: ITagMetadata = {
-                    name: "Tag 1",
-                    properties: null,
-                };
+                const mockTag = MockFactory.createTestTag();
 
                 const mockStartPoint: IPoint = {
                     x: 1,

@@ -1,20 +1,17 @@
 import React from "react";
 import * as shortid from "shortid";
+import { BigPlayButton, ControlBar, CurrentTimeDisplay,
+    PlaybackRateMenuButton, Player, TimeDivider, VolumeMenuButton } from "video-react";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
+import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { strings } from "../../../../common/strings";
-import {
-    IAssetMetadata, IRegion, RegionType, AppError, ErrorCode,
-    AssetState, EditorMode, IProject, AssetType,
-} from "../../../../models/applicationState";
-import {
-    Player, ControlBar, CurrentTimeDisplay, TimeDivider,
-    BigPlayButton, PlaybackRateMenuButton, VolumeMenuButton,
-} from "video-react";
+import { AppError, AssetState, AssetType, EditorMode,
+    ErrorCode, IAssetMetadata, IProject, IRegion, ITag, RegionType } from "../../../../models/applicationState";
+import CanvasHelpers from "./canvasHelpers";
 
 export interface ICanvasProps {
     selectedAsset: IAssetMetadata;
@@ -125,6 +122,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     /**
+     * Add tag to or remove tag from selected regions
+     * @param tag Tag to apply to or remove from selected regions
+     */
+    public onTagClicked = (tag: ITag) => {
+        for (const region of this.state.selectedRegions) {
+            this.toggleTagOnRegion(region, tag);
+        }
+    }
+
+    /**
      * Method called when moving a region already in the editor
      * @param {string} id the id of the region that was moved
      * @param {RegionData} regionData the RegionData of moved region
@@ -152,7 +159,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     public onRegionDelete = (id: string) => {
+        // Remove from Canvas Tools
         this.editor.RM.deleteRegionById(id);
+
+        // Remove from project
         const currentAssetMetadata = this.props.selectedAsset;
         const deletedRegionIndex = this.props.selectedAsset.regions.findIndex((region) => region.id === id);
         currentAssetMetadata.regions.splice(deletedRegionIndex, 1);
@@ -181,8 +191,27 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             selectedRegions = [
                 this.props.selectedAsset.regions.find((region) => region.id === id)];
         }
-
         this.updateSelected(selectedRegions);
+    }
+
+    /**
+     * Add tag to region if not there already, remove tag from region
+     * if already contained in tags. Update tags in CanvasTools editor
+     * @param region Region to add or remove tag
+     * @param tag Tag to add or remove from region
+     */
+    private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
+        CanvasHelpers.toggleTag(region.tags, tag);
+        this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+    }
+
+    private addRegions = (regions: IRegion[]) => {
+        for (const region of regions) {
+            this.editor.RM.addRegion(
+                region.id,
+                CanvasHelpers.getRegionData(region),
+                CanvasHelpers.getTagsDescriptor(region));
+        }
     }
 
     /**
@@ -257,21 +286,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private updateRegions = () => {
         if (this.props.selectedAsset.regions.length) {
             this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                const loadedRegionData = new RegionData(region.boundingBox.left,
-                    region.boundingBox.top,
-                    region.boundingBox.width,
-                    region.boundingBox.height,
-                    region.points.map((point) =>
-                        new Point2D(point.x, point.y)),
-                    this.regionTypeToType(region.type));
-                if (region.tags.length) {
-                    this.editor.RM.addRegion(region.id, this.editor.scaleRegionToFrameSize(loadedRegionData),
-                        new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name,
-                            this.props.project.tags.find((t) => t.name === tag.name).color))));
-                } else {
-                    this.editor.RM.addRegion(region.id, this.editor.scaleRegionToFrameSize(loadedRegionData),
-                        new TagsDescriptor());
-                }
+                const loadedRegionData = CanvasHelpers.getRegionData(region);
+                this.editor.RM.addRegion(
+                    region.id,
+                    this.editor.scaleRegionToFrameSize(loadedRegionData),
+                    CanvasHelpers.getTagsDescriptor(region));
+
                 if (this.state.selectedRegions) {
                     this.setState({
                         selectedRegions: [this.props.selectedAsset.regions[
@@ -297,27 +317,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             default:
                 return "unknown";
         }
-    }
-
-    private regionTypeToType = (regionType: RegionType) => {
-        let type;
-        switch (regionType) {
-            case RegionType.Rectangle:
-                type = RegionDataType.Rect;
-                break;
-            case RegionType.Polygon:
-                type = RegionDataType.Polygon;
-                break;
-            case RegionType.Point:
-                type = RegionDataType.Point;
-                break;
-            case RegionType.Polyline:
-                type = RegionDataType.Polyline;
-                break;
-            default:
-                break;
-        }
-        return type;
     }
 
     private editorModeToType = (editorMode: EditorMode) => {

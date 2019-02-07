@@ -6,7 +6,7 @@ import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState,
+    EditorMode, IAsset, AssetState, IRegion,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -41,6 +41,28 @@ function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPa
 
 function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
+}
+
+function getMockAssetMetadata(testAssets, assetIndex= 0): IAssetMetadata {
+    const mockRegion = MockFactory.createMockRegion();
+    return {
+        asset: {
+            ...testAssets[assetIndex],
+            state: AssetState.Visited,
+        },
+        regions: [
+            {
+                ...mockRegion,
+                tags: [
+                    {
+                        ...mockRegion.tags[0],
+                        color: expect.stringMatching(/^#[0-9a-f]{3,6}$/i),
+                    },
+                ],
+            },
+        ],
+        timestamp: null,
+    };
 }
 
 describe("Editor Page Component", () => {
@@ -100,7 +122,7 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        videoPlayerPausedMock = Player as jest.Mocked<typeof Player>;
+        videoPlayerPausedMock = Player;
         videoPlayerPausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
             // Set up some state that is unpaused
             const state = {
@@ -112,26 +134,19 @@ describe("Editor Page Component", () => {
         });
 
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorPage).childAt(0);
 
         const partialProject = {
             id: testProject.id,
             name: testProject.name,
         };
 
-        const expectedAssetMetadtata: IAssetMetadata = {
-            asset: {
-                ...testAssets[0],
-                state: AssetState.Visited,
-            },
-            regions: [MockFactory.createMockRegion()],
-            timestamp: null,
-        };
+        const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets);
 
         setImmediate(() => {
             expect(editorPage.props().project).toEqual(expect.objectContaining(partialProject));
             expect(editorPage.state().assets.length).toEqual(testAssets.length);
-            expect(editorPage.state().selectedAsset).toEqual(expectedAssetMetadtata);
+            expect(editorPage.state().selectedAsset).toMatchObject(expectedAssetMetadtata);
             done();
         });
     });
@@ -145,7 +160,7 @@ describe("Editor Page Component", () => {
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
-        videoPlayerUnpausedMock = Player as jest.Mocked<typeof Player>;
+        videoPlayerUnpausedMock = Player;
         videoPlayerUnpausedMock.prototype.subscribeToStateChange = jest.fn((callback) => {
             // Set up some state that is unpaused
             const state = {
@@ -168,14 +183,7 @@ describe("Editor Page Component", () => {
             name: testProject.name,
         };
 
-        const expectedAssetMetadtata: IAssetMetadata = {
-            asset: {
-                ...testAssets[0],
-                state: AssetState.Visited,
-            },
-            regions: [MockFactory.createMockRegion()],
-            timestamp: null,
-        };
+        const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets);
 
         setImmediate(() => {
             expect(loadAssetMetadataSpy).toBeCalledWith(expect.objectContaining(partialProject), defaultAsset);
@@ -205,7 +213,7 @@ describe("Editor Page Component", () => {
             await MockFactory.waitForCondition(() => {
                 const editorPage = wrapper
                     .find(EditorPage)
-                    .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+                    .childAt(0);
 
                 return !!editorPage.state().selectedAsset;
             });
@@ -230,16 +238,9 @@ describe("Editor Page Component", () => {
 
             wrapper.update();
 
-            const expectedAssetMetadtata: IAssetMetadata = {
-                asset: {
-                    ...testAssets[1],
-                    state: AssetState.Visited,
-                },
-                regions: [MockFactory.createMockRegion()],
-                timestamp: null,
-            };
+            const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets, 1);
 
-            expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);
+            expect(getState(wrapper).selectedAsset).toMatchObject(expectedAssetMetadtata);
         });
 
         it("selects the previous asset when clicking the 'Previous Asset' button in the toolbar", async () => {
@@ -249,16 +250,9 @@ describe("Editor Page Component", () => {
 
             wrapper.update();
 
-            const expectedAssetMetadtata: IAssetMetadata = {
-                asset: {
-                    ...testAssets[1],
-                    state: AssetState.Visited,
-                },
-                regions: [MockFactory.createMockRegion()],
-                timestamp: null,
-            };
+            const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets, 1);
 
-            expect(getState(wrapper).selectedAsset).toEqual(expectedAssetMetadtata);
+            expect(getState(wrapper).selectedAsset).toMatchObject(expectedAssetMetadtata);
         });
     });
 
@@ -329,7 +323,7 @@ describe("Editor Page Component", () => {
             setImmediate(() => {
                 (editorPage.instance() as EditorPage)
                     .handleTagHotKey({ ctrlKey: true, key: keyPressed.toString() } as KeyboardEvent);
-                expect(spy).toBeCalledWith({ name: testProject.tags[keyPressed - 1].name });
+                expect(spy).toBeCalledWith(testProject.tags[keyPressed - 1]);
             });
         });
     });
