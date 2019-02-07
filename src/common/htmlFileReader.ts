@@ -121,15 +121,13 @@ export default class HtmlFileReader {
         });
     }
 
-    private static readTFRecordAttributes(asset: IAsset): Promise<{ width: number, height: number }> {
+    private static async readTFRecordAttributes(asset: IAsset): Promise<{ width: number, height: number }> {
         // Get from TFRecord Reader
-        return new Promise(async (resolve, reject) => {
-            const tfrecords = new Buffer(await this.getAssetArray(asset));
-            const reader = new TFRecordsReader(tfrecords);
-            const width = reader.getFeature(0, "image/width", FeatureType.Int64) as number;
-            const height = reader.getFeature(0, "image/height", FeatureType.Int64) as number;
+        const tfrecords = new Buffer(await this.getAssetArray(asset));
+        const reader = new TFRecordsReader(tfrecords);
+        const width = reader.getFeature(0, "image/width", FeatureType.Int64) as number;
+        const height = reader.getFeature(0, "image/height", FeatureType.Int64) as number;
 
-            return resolve({ width, height });
-        });
+        return { width, height };
     }
 }
