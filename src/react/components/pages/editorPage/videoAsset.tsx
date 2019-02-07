@@ -151,7 +151,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         });
     }
 
-<<<<<<< HEAD
     private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
         if (this.props.onChildAssetSelected) {
             const parentAsset = this.props.asset.parent || this.props.asset;
@@ -164,10 +163,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
             this.props.onChildAssetSelected(childAsset);
         }
-=======
-    private raiseChildAssetSelected = () => {
-        // TODO
->>>>>>> Update TFRecords functions
     }
 
     private raiseActivated = () => {
