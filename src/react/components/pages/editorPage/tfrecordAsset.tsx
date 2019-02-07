@@ -29,11 +29,15 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
             className = size.width > size.height ? "landscape" : "portrait";
         }
 
-        return (
-            <div ref={this.image} className="tfrecord-image" id={this.props.asset.id}>
-                <img className={className} src={this.state.tfRecordImage64} onLoad={this.onLoad} />
-            </div>
-        );
+        if (this.state.tfRecordImage64 !== "") {
+            return (
+                <img ref={this.image} className={className} src={this.state.tfRecordImage64} onLoad={this.onLoad} />
+            );
+        } else {
+            return (
+                <img ref={this.image} className={className} />
+            );
+        }
     }
 
     public async componentWillMount() {
@@ -45,13 +49,8 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
     }
 
     private async updateImage() {
-        const tfRecordImage64 = await this.getTFRecordBase64Image(this.props.asset);
-        const tfRecordDiv = document.getElementById(this.props.asset.id) as HTMLDivElement;
-        const tfRecordImage = tfRecordDiv.getElementsByTagName("img")[0];
-        // tfRecordImage.src = tfRecordImage64;
-
         this.setState({
-            tfRecordImage64,
+            tfRecordImage64: await this.getTFRecordBase64Image(this.props.asset),
         });
     }
 
