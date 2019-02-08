@@ -1,14 +1,6 @@
 import shortid from "shortid";
-import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { AssetProviderFactory } from "../providers/storage/assetProviderFactory";
-import { IProject, ISecurityToken, IAsset, ITag, IConnection,
+import { IProject, ISecurityToken, IAppSettings, ITag, IConnection,
          IV1Project, IAssetMetadata, IRegion, RegionType, AssetType, AssetState, ITagMetadata } from "../models/applicationState";
-// import Guard from "../common/guard";
-// import { constants } from "../common/constants";
-// import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
-// import { decryptProject, encryptProject } from "../common/utils";
-import IProjectActions, * as projectActions from "../redux/actions/projectActions"
-import ConnectionService from "./connectionService";
 import { generateKey } from "../../src/common/crypto";
 import { AssetService } from "./assetService";
 import MD5 from "md5.js";
@@ -23,7 +15,7 @@ const TagColors = require("../react/components/common/tagsInput/tagColors.json")
  */
 export interface IImportService {
     convertV1(project: IProject): Promise<IProject>;
-    generateConnections(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
+    generateConnections(project: IProject): Promise<IProject>;
 }
 
 /**
@@ -51,7 +43,7 @@ export default class ImportService {
                 id: shortid.generate(),
                 name: project.file.name.split(".")[0],
                 version: "v1-to-v2",
-                securityToken: generateKey(),
+                securityToken: `${project.file.name.split(".")[0]} Token`,
                 description: "Converted V1 Project",
                 tags: tags,
                 sourceConnection: connections[0],
@@ -65,19 +57,18 @@ export default class ImportService {
             };
 
             const assetService = new AssetService(convertedProject);
-            // call AssetService.save to generate the JSON files in the target storage provider.
-            // does this automatically define assets array this as assets in project?
 
             const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
                 return assetService.save(assetMetadata);
             });
+            
             try {
-                const retval = Promise.all(saveAssets);
+                Promise.all(saveAssets);
             } catch (e) {
-                console.log(e);
+                reject(e);
             }
             
-            return convertedProject;
+            resolve(convertedProject);
         });
     }
 
@@ -140,7 +131,6 @@ export default class ImportService {
         let assetState: AssetState;
         let currentTagColorIndex = randomIntInRange(0, TagColors.length);
 
-        // For each region in assets, generate separate AssetMetadata objects:
         originalProject = JSON.parse(project.content);
 
         for (let frameName in originalProject.frames){
