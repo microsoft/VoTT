@@ -146,7 +146,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const newRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
-            tags: [],
+            tags: this.state.lockedTags || [],
             boundingBox: {
                 height: scaledRegionData.height,
                 width: scaledRegionData.width,
@@ -155,17 +155,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             },
             points: scaledRegionData.points,
         };
-        // Apply locked tags if there are some
-        if (this.state.lockedTags) {
-            for (const tag of this.state.lockedTags) {
-                this.toggleTagOnRegion(newRegion, tag);
-            }
+        if (newRegion.tags) {
+            this.editor.RM.updateTagsById(newRegion.id, CanvasHelpers.getTagsDescriptor(newRegion));
         }
         const currentAssetMetadata = this.addRegionToAsset(newRegion);
         this.props.onAssetMetadataChanged(currentAssetMetadata);
         this.setState({
             selectedRegions: [ newRegion ]
-        })
+        });
     }
 
     /**
@@ -174,7 +171,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     public onTagClicked = (tag: ITag) => {
         for (const region of this.state.selectedRegions) {
-            this.toggleTagOnRegion(region, tag);
+            CanvasHelpers.toggleTag(region.tags, tag);
+            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
         }
     }
 
@@ -241,9 +239,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     public onRegionSelected = (id: string) => {
-        let selectedRegions = this.state.selectedRegions;
 
         const selectedRegion = this.props.selectedAsset.regions.find((region) => region.id === id);
+
+        let selectedRegions = this.state.selectedRegions;
 
         if (this.state.multiSelect) {
             selectedRegions.push(selectedRegion);
@@ -259,19 +258,19 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
 
-    /**
-     * Add tag to region if not there already, remove tag from region
-     * if already contained in tags. Update tags in CanvasTools editor
-     * @param region Region to add or remove tag
-     * @param tag Tag to add or remove from region
-     */
-    private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
-        if (!region || !tag) {
-            return;
-        }
-        CanvasHelpers.toggleTag(region.tags, tag);
-        this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
-    }
+    // /**
+    //  * Add tag to region if not there already, remove tag from region
+    //  * if already contained in tags. Update tags in CanvasTools editor
+    //  * @param region Region to add or remove tag
+    //  * @param tag Tag to add or remove from region
+    //  */
+    // private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
+    //     if (!region || !tag) {
+    //         return;
+    //     }
+    //     CanvasHelpers.toggleTag(region.tags, tag);
+    //     this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+    // }
 
     private copyRegions = () => {
         if (this.state.selectedRegions) {
