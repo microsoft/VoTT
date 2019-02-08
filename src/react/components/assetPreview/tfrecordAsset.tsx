@@ -1,9 +1,9 @@
 import React from "react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType } from "../../../../models/applicationState";
-import HtmlFileReader from "../../../../common/htmlFileReader";
-import { TFRecordsReader } from "../../../../providers/export/tensorFlowRecords/tensorFlowReader";
-import { FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
+import { IAsset, AssetType } from "../../../models/applicationState";
+import HtmlFileReader from "../../../common/htmlFileReader";
+import { TFRecordsReader } from "../../../providers/export/tensorFlowRecords/tensorFlowReader";
+import { FeatureType } from "../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
 export interface ITFRecordProps extends IAssetProps, React.ClassAttributes<TFRecordAsset> {
 }
