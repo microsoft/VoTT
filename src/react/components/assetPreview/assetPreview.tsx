@@ -1,6 +1,6 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../../models/applicationState";
-import { strings } from "../../../../common/strings";
+import { IAsset, AssetType } from "../../../models/applicationState";
+import { strings } from "../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
 
