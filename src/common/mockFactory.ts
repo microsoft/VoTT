@@ -23,6 +23,7 @@ import {
 import IApplicationActions, * as applicationActions from "../redux/actions/applicationActions";
 import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSystemProxy";
 import { generateKey } from "./crypto";
+import { AssetService } from "../services/assetService";
 
 export default class MockFactory {
 
@@ -95,6 +96,34 @@ export default class MockFactory {
                 height: 600,
             },
         };
+    }
+
+    /**
+     * Creates a child videoFrame asset from a parent video asset
+     * @param parentAsset The parent video asset
+     * @param timestamp The timestamp to generate child asset
+     */
+    public static createChildVideoAsset(parentAsset: IAsset, timestamp: number): IAsset {
+        const childPath = `${parentAsset.path}#t=${timestamp}`;
+        const childAsset = AssetService.createAssetFromFilePath(childPath);
+        childAsset.type = AssetType.VideoFrame;
+        childAsset.state = AssetState.Tagged;
+        childAsset.parent = parentAsset;
+        childAsset.timestamp = timestamp;
+        childAsset.size = { ...parentAsset.size };
+
+        return childAsset;
+    }
+
+    /**
+     * Creates an array of child video frame assets from a parent video asset
+     * @param parentAsset The parent video asset
+     * @param count The number of child assets to create (default 10)
+     */
+    public static createChildVideoAssets(parentAsset: IAsset, count: number = 10): IAsset[] {
+        return [...Array(count).keys()].map((index) => {
+            return this.createChildVideoAsset(parentAsset, index);
+        });
     }
 
     /**

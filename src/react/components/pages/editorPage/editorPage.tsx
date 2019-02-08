@@ -21,7 +21,7 @@ import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
-import AssetPreview from "./assetPreview";
+import AssetPreview from "../../assetPreview/assetPreview";
 import { AssetService } from "../../../../services/assetService";
 
 /**
