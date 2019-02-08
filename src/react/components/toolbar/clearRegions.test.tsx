@@ -3,25 +3,25 @@ import { IToolbarItemProps, ToolbarItemType } from "./toolbarItem";
 import { mount, ReactWrapper } from "enzyme";
 import IProjectActions, * as projectActions from "../../../redux/actions/projectActions";
 import MockFactory from "../../../common/mockFactory";
-import { CopyRectangle } from "./copyRectangle";
+import { ClearRegions } from "./clearRegions";
 
-describe("Copy Rectangle Toolbar Item", () => {
+describe("Clear Regions Toolbar Item", () => {
     const testProject = MockFactory.createTestProject("TestProject");
     const clickHandler = jest.fn();
     const actions = (projectActions as any) as IProjectActions;
-    let wrapper: ReactWrapper<IToolbarItemProps> = null;
+    const wrapper: ReactWrapper<IToolbarItemProps> = null;
 
     function createComponent(props: IToolbarItemProps) {
-        return mount(<CopyRectangle {...props} />);
+        return mount(<ClearRegions {...props} />);
     }
 
     function createProps(): IToolbarItemProps {
         return {
-            name: "copyRectangle",
-            tooltip: "Copy Rectangle",
-            icon: "fa-clone",
-            group: "canvas",
-            type: ToolbarItemType.State,
+            name: "clearRegions",
+            tooltip: "Clear Regions",
+            icon: "fa-ban",
+            group: "regions",
+            type: ToolbarItemType.Action,
             actions,
             active: true,
             project: testProject,
@@ -29,13 +29,7 @@ describe("Copy Rectangle Toolbar Item", () => {
         };
     }
 
-    it("Sets the editor mode to CopyRectangle on click", async () => {
-        actions.saveProject = jest.fn(() => Promise.resolve());
-        const props = createProps();
-        wrapper = createComponent(props);
-
-        await MockFactory.flushUi(() => wrapper.simulate("click"));
-
-        expect(props.onClick).toBeCalledWith(wrapper.instance());
+    it("Stub test", async () => {
+        expect(true).toBeTruthy();
     });
 });
