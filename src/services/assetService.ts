@@ -11,6 +11,14 @@ import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
+interface TFRecordObjectArray {
+    xminArray: number[];
+    yminArray: number[];
+    xmaxArray: number[];
+    ymaxArray: number[];
+    textArray: string[];
+}
+
 /**
  * @name - Asset Service
  * @description - Functions for dealing with project assets
@@ -192,22 +200,22 @@ export class AssetService {
                         id: shortid.generate(),
                         type: RegionType.Rectangle,
                         tags: [{
-                            name: objectArray[4][index], // TODO: Add to tag collection
+                            name: objectArray.textArray[index], // TODO: Add to tag collection
                             color: "#FF0000", // TODO: Manage same color
                         }],
                         boundingBox: {
-                            height: objectArray[3][index],
-                            width: objectArray[2][index],
-                            left: objectArray[0][index],
-                            top: objectArray[1][index],
+                            height: objectArray.ymaxArray[index],
+                            width: objectArray.xmaxArray[index],
+                            left: objectArray.xminArray[index],
+                            top: objectArray.yminArray[index],
                         },
                         points: [{
-                                    x: objectArray[0][index],
-                                    y: objectArray[1][index],
+                                    x: objectArray.xminArray[index],
+                                    y: objectArray.yminArray[index],
                                 },
                                 {
-                                     x: objectArray[0][index] + objectArray[2][index],
-                                     y: objectArray[1][index] + objectArray[3][index],
+                                     x: objectArray.xminArray[index] + objectArray.xmaxArray[index],
+                                     y: objectArray.yminArray[index] + objectArray.ymaxArray[index],
                                 }],
                     });
                 }
@@ -225,7 +233,7 @@ export class AssetService {
         }
     }
 
-    private async getTFRecordObjectArrays(asset: IAsset): Promise<[number[], number[], number[], number[], string[]]> {
+    private async getTFRecordObjectArrays(asset: IAsset): Promise<TFRecordObjectArray> {
         const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
         const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
@@ -236,6 +244,6 @@ export class AssetService {
         const ymaxArray = reader.getArrayFeature(0, "image/object/bbox/ymax", FeatureType.Float) as number[];
         const textArray = reader.getArrayFeature(0, "image/object/class/text", FeatureType.String) as string[];
 
-        return [xminArray, yminArray, xmaxArray, ymaxArray, textArray];
+        return {xminArray, yminArray, xmaxArray, ymaxArray, textArray};
     }
 }
