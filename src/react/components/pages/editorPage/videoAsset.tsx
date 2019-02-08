@@ -1,4 +1,5 @@
-import React, { Fragment } from "react";
+import React from "react";
+import _ from "lodash";
 import {
     Player, BigPlayButton, ControlBar, CurrentTimeDisplay,
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
@@ -6,6 +7,7 @@ import {
 import { IAssetProps } from "./assetPreview";
 import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
+import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -46,34 +48,34 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
 
         return (
-            <Fragment>
-                <Player ref={this.videoPlayer}
-                    fluid={false}
-                    width="100%"
-                    height="100%"
-                    autoPlay={autoPlay}
-                    poster={""}
-                    src={videoPath}
-                >
-                    <BigPlayButton position="center" />
-                    <ControlBar autoHide={false}>
-                        <CurrentTimeDisplay order={1.1} />
-                        <TimeDivider order={1.2} />
-                        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
-                        <VolumeMenuButton enabled order={7.2} />
-                    </ControlBar>
-                </Player>
-                <div style={{ position: "absolute", top: 0, left: 0, width: "100%", zIndex: 2 }}>
-                    <div>
-                        TimeStamp: {this.props.timestamp}
-                    </div>
-                    {this.props.childAssets.filter((asset) => asset.state === AssetState.Tagged).map((asset, i) => {
-                        return (
-                            <button key={asset.id} onClick={() => this.goToChildAsset(asset)}>{asset.timestamp}</button>
-                        );
-                    })}
-                </div>
-            </Fragment >
+            <Player ref={this.videoPlayer}
+                fluid={false}
+                width="100%"
+                height="100%"
+                autoPlay={autoPlay}
+                poster={""}
+                src={videoPath}
+            >
+                <BigPlayButton position="center" />
+                <ControlBar autoHide={false}>
+                    <CurrentTimeDisplay order={1.1} />
+                    <TimeDivider order={1.2} />
+                    <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
+                    <VolumeMenuButton enabled order={7.2} />
+                    <CustomVideoPlayerButton order={8.1}
+                        accelerator="ArrowLeft"
+                        tooltip="Previous Tagged Frame"
+                        onClick={this.movePreviousTaggedFrame}>
+                        <i className="fas fa-caret-left fa-lg" />
+                    </CustomVideoPlayerButton>
+                    <CustomVideoPlayerButton order={8.2}
+                        accelerator="ArrowRight"
+                        tooltip="Next Tagged Frame"
+                        onClick={this.moveNextTaggedFrame}>
+                        <i className="fas fa-caret-right fa-lg" />
+                    </CustomVideoPlayerButton>
+                </ControlBar>
+            </Player>
         );
     }
 
@@ -87,6 +89,27 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
         if (this.props.timestamp !== prevProps.timestamp) {
             this.seekToTimestamp();
+        }
+    }
+
+    private movePreviousTaggedFrame = () => {
+        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        const previousFrame = _
+            .reverse(this.props.childAssets)
+            .find((asset) => asset.state === AssetState.Tagged && asset.timestamp < timestamp);
+
+        if (previousFrame) {
+            this.goToChildAsset(previousFrame);
+        }
+    }
+
+    private moveNextTaggedFrame = () => {
+        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        const nextFrame = this.props.childAssets
+            .find((asset) => asset.state === AssetState.Tagged && asset.timestamp > timestamp);
+
+        if (nextFrame) {
+            this.goToChildAsset(nextFrame);
         }
     }
 
