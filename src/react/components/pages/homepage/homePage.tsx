@@ -13,7 +13,7 @@ import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
     IApplicationState, IConnection, IProject,
-    ErrorCode, AppError, IAppError, IV1Project,
+    ErrorCode, AppError, IAppError, IV1Project, IAppSettings,
 } from "../../../../models/applicationState";
 import ImportService from "../../../../services/importService";
 
@@ -115,16 +115,15 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 }
                 <Confirm title="Delete Project"
                     ref={this.deleteConfirm}
-                    message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} '${project.name}'?`}
+                    message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} ${project.name}?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
                 <Confirm title="Import Project"
                     ref={this.importConfirm}
-                    message={(project: any) => `${strings.homePage.importProject.confirmation} '${project.file.name}'
+                    message={(project: any) => `${strings.homePage.importProject.confirmation} ${project.file.name}
                         ${strings.homePage.importProject.recommendation}`}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
-                    {/*Above will change to (project) => this.convertProject(project)*/}
             </div>
         );
     }
@@ -139,7 +138,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUpload = async (e, project) => {
-        // project is an object with content (project text) and file information
         let projectJson: IProject; 
 
         try {
@@ -170,12 +168,15 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private loadSelectedProject = async (project: IProject) => {
-        await this.props.actions.loadProject(project);
+        console.log(project);
+        // either do this or the uncommented part below...or both somehow?
         if (project.version === "v1-to-v2") {
-            // add confimation box (should this go to settings? Can they change connections?)
+            console.log("loadingSelectedV1Project!!");
+            // add confimation box
+            await this.props.actions.loadProject(project);
             this.props.history.push(`/projects/${project.id}/settings`);
         } else {
-        this.props.history.push(`/projects/${project.id}/edit`);
+            this.props.history.push(`/projects/${project.id}/edit`);
         }
     }
 
@@ -189,9 +190,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private convertProject = async (project: any) => {
         const importService = new ImportService();
-        console.log("calling Convertv1");
-        let projectJson = await importService.convertV1(project);
-        console.log("called Convertv1");
+        const projectJson = await importService.convertV1(project);
+        this.props.actions.ensureSecurityToken(projectJson);
+
+        // this.props.history.push(`/projects/${project.id}/settings`);
         await this.loadSelectedProject(projectJson);
     }
 }
