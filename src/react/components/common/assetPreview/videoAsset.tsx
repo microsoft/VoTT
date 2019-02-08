@@ -8,6 +8,8 @@ import { IAssetProps } from "./assetPreview";
 import { IAsset, AssetType, AssetState, IProject } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
+import VideoTimelineAssets from "./videoAssetTimelineControl";
+import { number } from "prop-types";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -17,6 +19,7 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
 
 export interface IVideoAssetState {
     loaded: boolean;
+    videoDuration: number;
 }
 
 export interface IVideoPlayerState {
@@ -38,9 +41,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     public state: IVideoAssetState = {
         loaded: false,
+        videoDuration: 0,
     };
 
     private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
+    private controlBar: React.RefObject<ControlBar> = React.createRef<ControlBar>();
 
     public render() {
         const { autoPlay, asset } = this.props;
@@ -59,7 +64,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 src={videoPath}
             >
                 <BigPlayButton position="center" />
-                <ControlBar autoHide={false}>
+                <ControlBar autoHide={false} ref={this.controlBar} >
+                    <VideoTimelineAssets
+                        childAssets={this.props.childAssets}
+                        videoDuration={this.state.videoDuration}
+                        controlBar={this.controlBar} />
                     <CurrentTimeDisplay order={1.1} />
                     <TimeDivider order={1.2} />
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
@@ -115,16 +124,36 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
+    private seekToNextExpectedFrame = () => {
+        // Seek forward from the current time to the next logical frame based on project settings
+        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
+        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime + frameSkipTime);
+        this.seekToTime(seekTime);
+    }
+
+    private seekToPreviousExpectedFrame = () => {
+        // Seek backwards from the current time to the next logical frame based on project settings
+        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
+        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime - frameSkipTime);
+        this.seekToTime(seekTime);
+    }
+
     private seekToTimestamp = () => {
         if (this.props.timestamp > 0) {
-            this.videoPlayer.current.pause();
-            this.videoPlayer.current.seek(this.props.timestamp);
+            this.seekToTime(this.props.timestamp);
         }
     }
 
     private goToChildAsset(asset: IAsset) {
-        this.videoPlayer.current.pause();
-        this.videoPlayer.current.seek(asset.timestamp);
+        this.seekToTime(asset.timestamp);
+    }
+
+    private seekToTime(seekTime: number) {
+        // Before seeking, pause the video
+        if (!this.videoPlayer.current.getState().player.paused) {
+            this.videoPlayer.current.pause();
+        }
+        this.videoPlayer.current.seek(seekTime);
     }
 
     private onVideoStateChange = (state: Readonly<IVideoPlayerState>, prev: Readonly<IVideoPlayerState>) => {
@@ -133,7 +162,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             this.raiseLoaded();
             this.raiseActivated();
             this.seekToTimestamp();
-        } else if (state.paused && !state.autoPaused &&
+        } else if (state.paused &&
             (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
             // Video is paused
             this.raiseChildAssetSelected(state);
@@ -147,6 +176,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private raiseLoaded = () => {
         this.setState({
             loaded: true,
+            videoDuration: this.videoPlayer.current.getState().player.duration,
         }, () => {
             if (this.props.onLoaded) {
                 this.props.onLoaded(this.videoPlayer.current.video.video);
@@ -179,35 +209,5 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.onDeactivated) {
             this.props.onDeactivated(this.videoPlayer.current.video.video);
         }
-    }
-
-    private seekToNextExpectedFrame() {
-        // Seek forward from the current time to the next logical frame based on project settings
-        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
-        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime + frameSkipTime);
-        this.seekToTime(seekTime);
-    }
-
-    private seekToPreviousExpectedFrame() {
-        // Seek backwards from the current time to the next logical frame based on project settings
-        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
-        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime - frameSkipTime);
-        this.seekToTime(seekTime);
-    }
-
-    private seekToNextTaggedFrame() {
-        // Find the next frame that is tagged and seek to it
-    }
-
-    private seekToPreviousTaggedFrame() {
-        // Find the next frame that is tagged and seek to it
-    }
-
-    private seekToTime(seekTime: number) {
-        // Before seeking, pause the video
-        if (!this.videoPlayer.current.getState().player.paused) {
-            this.videoPlayer.current.pause();
-        }
-        this.videoPlayer.current.seek(seekTime);
     }
 }
