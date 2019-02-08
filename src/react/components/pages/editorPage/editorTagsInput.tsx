@@ -13,7 +13,7 @@ export default class EditorTagsInput extends TagsInput {
      * @param name Name of tag
      */
     protected getTagSpan(name: string) {
-        const index = this.indexOfTag(name);
+        const index = this.indexOfTag(name); // get index from function below
         const showIndex = index <= 9;
         const className = `tag-span${(showIndex) ? " tag-span-index" : ""}`;
         return (
@@ -25,18 +25,18 @@ export default class EditorTagsInput extends TagsInput {
 
     private indexOfTag(id: string): number {
         let index = -1;
-        if (this.state) {
-            index = this.state.tags.findIndex((tag) => tag.id === id);
-            if (index < 0) {
-                index = this.state.tags.length + 1;
+        if (this.state) { // if stat exists
+            index = this.state.tags.findIndex((tag) => tag.id === id); // return index based on tag.id or -1
+            if (index < 0) { // if not found, i.e. -1
+                index = this.state.tags.length + 1; // create new final array index and assign to index, i.e. 2 or 3
             }
-        } else {
-            index = this.props.tags.findIndex((tag) => tag.name === id);
+        } else { // if there is no state
+            index = this.props.tags.findIndex((tag) => tag.name === id); // check tags in props and return index or -1
         }
-        if (index < 0) {
+        if (index < 0) { // if neither of the above were triggered, throw error
             throw new Error(`No tag by id: ${id}`);
         }
-        index += 1;
-        return (index === 10) ? 0 : index;
+        index += 1; // whatever the index, increment by one to avoid zero-base in display
+        return (index === 10) ? 0 : index; // return index or 0, because max hotkeys are 10?
     }
 }
