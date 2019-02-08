@@ -54,8 +54,9 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
-                // automate this eventually
-                project.version = "2.0.0-preview.1";
+                if (project.version !== "v2"){
+                    project.version = "v2";
+                }
 
                 const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
                 await this.saveExportSettings(project);
