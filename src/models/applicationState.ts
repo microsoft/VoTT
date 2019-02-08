@@ -40,6 +40,7 @@ export enum ErrorCode {
     GenericRenderError = "genericRenderError",
     ProjectInvalidJson = "projectInvalidJson",
     ProjectInvalidSecurityToken = "projectInvalidSecurityToken",
+    ProjectDuplicateName = "projectDuplicateName",
     ProjectUploadError = "projectUploadError",
     ProjectDeleteError = "projectDeleteError",
     SecurityTokenNotFound = "securityTokenNotFound",

@@ -53,6 +53,10 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
+                if (project.version !== "v2"){
+                    project.version = "v2";
+                }
+
                 const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
                 await this.saveExportSettings(project);
                 project = encryptProject(project, securityToken);
