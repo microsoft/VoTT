@@ -1,10 +1,10 @@
 import React from "react";
 import { ReactWrapper, mount } from "enzyme";
-import AssetPreview, { IAssetPreviewProps, IAssetPreviewState } from "./assetPreview";
-import MockFactory from "../../../common/mockFactory";
+import { AssetPreview, IAssetPreviewProps, IAssetPreviewState } from "./assetPreview";
+import MockFactory from "../../../../common/mockFactory";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
-import { AssetType } from "../../../models/applicationState";
+import { AssetType } from "../../../../models/applicationState";
 
 describe("Asset Preview Component", () => {
     let wrapper: ReactWrapper<IAssetPreviewProps, IAssetPreviewState> = null;

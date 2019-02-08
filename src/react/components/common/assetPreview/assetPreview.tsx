@@ -1,6 +1,6 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../models/applicationState";
-import { strings } from "../../../common/strings";
+import { IAsset, AssetType } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
 
@@ -35,7 +35,7 @@ export interface IAssetPreviewState {
  * @name - Asset Preview
  * @description - Small preview of assets for selection in editor page
  */
-export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
+export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     public static defaultProps: IAssetPreviewProps = {
         asset: null,
         childAssets: [],

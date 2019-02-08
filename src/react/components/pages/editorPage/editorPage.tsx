@@ -20,8 +20,8 @@ import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
-import AssetPreview from "../../assetPreview/assetPreview";
 import { AssetService } from "../../../../services/assetService";
+import { AssetPreview } from "../../common/assetPreview/assetPreview";
 
 /**
  * Properties for Editor Page

@@ -1,11 +1,10 @@
 import React from "react";
 import { ReactWrapper, mount } from "enzyme";
-import { IVideoAssetProps, VideoAsset, IVideoPlayerState, IVideoAssetState } from "./videoAsset";
-import MockFactory from "../../../common/mockFactory";
-import { CustomVideoPlayerButton } from "../common/videoPlayer/customVideoPlayerButton";
-
 import { Player } from "video-react";
-import { AssetType, AssetState } from "../../../models/applicationState";
+import { IVideoAssetProps, VideoAsset, IVideoPlayerState, IVideoAssetState } from "./videoAsset";
+import MockFactory from "../../../../common/mockFactory";
+import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
+import { AssetType, AssetState } from "../../../../models/applicationState";
 
 describe("Video Asset Component", () => {
     let wrapper: ReactWrapper<IVideoAssetProps, IVideoAssetState> = null;

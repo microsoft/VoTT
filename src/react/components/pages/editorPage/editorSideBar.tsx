@@ -1,7 +1,7 @@
 import React from "react";
 import { AutoSizer, List } from "react-virtualized";
 import { IAsset, AssetState } from "../../../../models/applicationState";
-import AssetPreview from "../../assetPreview/assetPreview";
+import { AssetPreview } from "../../common/assetPreview/assetPreview";
 
 /**
  * Properties for Editor Side Bar

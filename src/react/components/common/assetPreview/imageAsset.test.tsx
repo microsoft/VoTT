@@ -2,7 +2,7 @@ import React from "react";
 import { IAssetProps } from "./assetPreview";
 import { ReactWrapper, mount } from "enzyme";
 import { ImageAsset } from "./imageAsset";
-import MockFactory from "../../../common/mockFactory";
+import MockFactory from "../../../../common/mockFactory";
 
 describe("Image Asset Component", () => {
     // tslint:disable-next-line:max-line-length
