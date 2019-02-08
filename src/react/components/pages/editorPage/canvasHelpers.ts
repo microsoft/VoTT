@@ -6,13 +6,14 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { IBoundingBox, IPoint, IRegion, ITag, RegionType } from "../../../../models/applicationState";
 
 /**
- * Margin to leave between pasted element and previously pasted element or edge of screen
- */
-const pasteMargin = 10;
-/**
  * Static functions to assist in operations within Canvas component
  */
 export default class CanvasHelpers {
+
+    /**
+     * Margin to leave between pasted element and previously pasted element or edge of screen
+     */
+    public static pasteMargin = 10;
 
     /**
      * Adds tag to array if it does not contain the tag,
@@ -81,49 +82,49 @@ export default class CanvasHelpers {
     public static duplicateAndTransformRegion = (region: IRegion, otherRegions: IRegion[]): IRegion => {
         return CanvasHelpers.transformRegion(
             CanvasHelpers.duplicateRegion(region),
-            otherRegions
+            otherRegions,
         );
     }
-    
+
     public static duplicateRegion = (region: IRegion): IRegion => {
         return {
             ...region,
-            id: shortid.generate()
+            id: shortid.generate(),
         };
     }
 
     private static getTransformDiff = (region: IRegion, otherRegions: IRegion[]): IPoint => {
-        let targetX = 0 + pasteMargin;
-        let targetY = 0 + pasteMargin;
+        let targetX = 0 + CanvasHelpers.pasteMargin;
+        let targetY = 0 + CanvasHelpers.pasteMargin;
 
         let foundRegionAtTarget = false;
 
         while (!foundRegionAtTarget) {
-            for(const region of otherRegions) {
+            for (const region of otherRegions) {
                 if (region.boundingBox.left === targetX && region.boundingBox.top === targetY) {
                     foundRegionAtTarget = true;
                     break;
                 }
             }
             if (foundRegionAtTarget) {
-                targetX += pasteMargin;
-                targetY += pasteMargin;
+                targetX += CanvasHelpers.pasteMargin;
+                targetY += CanvasHelpers.pasteMargin;
                 foundRegionAtTarget = false;
             } else {
                 return {
                     x: region.boundingBox.left - targetX,
-                    y: region.boundingBox.top - targetY
-                }
+                    y: region.boundingBox.top - targetY,
+                };
             }
-        }        
+        }
     }
 
     private static transformPoints = (points: IPoint[], transformDiff: IPoint): IPoint[] => {
         return points.map((point) => {
             return {
                 x: point.x - transformDiff.x,
-                y: point.y - transformDiff.y
-            }
+                y: point.y - transformDiff.y,
+            };
         });
     }
 
@@ -131,8 +132,8 @@ export default class CanvasHelpers {
         return {
             ...boundingBox,
             left: boundingBox.left - transformDiff.x,
-            top: boundingBox.top - transformDiff.y
-        }
+            top: boundingBox.top - transformDiff.y,
+        };
     }
 
     private static transformRegion = (region: IRegion, otherRegions: IRegion[]): IRegion => {
@@ -140,7 +141,7 @@ export default class CanvasHelpers {
         return {
             ...region,
             points: CanvasHelpers.transformPoints(region.points, tranformDiff),
-            boundingBox: CanvasHelpers.transformBoundingBox(region.boundingBox, tranformDiff)
-        }
+            boundingBox: CanvasHelpers.transformBoundingBox(region.boundingBox, tranformDiff),
+        };
     }
 }

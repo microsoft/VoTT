@@ -9,4 +9,4 @@ export class ClearRegions extends ToolbarItem {
         console.log("Clear Regions");
         this.props.onClick(this);
     }
-} 
+}

@@ -32,4 +32,4 @@ describe("Cut Regions Toolbar Item", () => {
     it("Stub test", async () => {
         expect(true).toBeTruthy();
     });
-}); 
+});

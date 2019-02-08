@@ -9,4 +9,4 @@ export class CutRegions extends ToolbarItem {
         console.log("Cut Rectangle");
         this.props.onClick(this);
     }
-} 
+}

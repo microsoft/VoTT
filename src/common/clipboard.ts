@@ -17,4 +17,4 @@ export class ClipBoard<T> {
     public pop = () => {
         this.payload = null;
     }
-} 
+}

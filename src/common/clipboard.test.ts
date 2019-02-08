@@ -32,4 +32,4 @@ describe("Test ClipBoard", () => {
         c.pop();
         expect(c.get()).toBeNull();
     });
-}); 
+});
