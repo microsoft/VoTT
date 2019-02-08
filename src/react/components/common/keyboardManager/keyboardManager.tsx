@@ -3,6 +3,15 @@ import { KeyboardRegistrationManager } from "./keyboardRegistrationManager";
 
 export const KeyboardContext = React.createContext<IKeyboardContext>(null);
 
+/**
+ * Types of Key events supported by registration manager
+ */
+export enum KeyEventType {
+    KeyDown = "keydown",
+    KeyUp = "keyup",
+    KeyPress = "keypress",
+}
+
 export interface IKeyboardContext {
     keyboard: KeyboardRegistrationManager;
 }
@@ -14,12 +23,18 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
         keyboard: new KeyboardRegistrationManager(),
     };
 
+    private nonSupportedKeys = new Set(["Ctrl", " Control", "Alt"]);
+
     public componentDidMount() {
-        window.addEventListener("keydown", this.onKeyDown);
+        window.addEventListener(KeyEventType.KeyDown, this.onKeyDown);
+        window.addEventListener(KeyEventType.KeyUp, this.onKeyUp);
+        window.addEventListener(KeyEventType.KeyPress, this.onKeyPress);
     }
 
     public componentWillUnmount() {
-        window.removeEventListener("keydown", this.onKeyDown);
+        window.removeEventListener(KeyEventType.KeyDown, this.onKeyDown);
+        window.removeEventListener(KeyEventType.KeyUp, this.onKeyUp);
+        window.removeEventListener(KeyEventType.KeyPress, this.onKeyPress);
     }
 
     public render() {
@@ -30,11 +45,7 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
         );
     }
 
-    private onKeyDown = (evt: KeyboardEvent) => {
-        if (evt.key === "Ctrl" || evt.key === "Control" || evt.key === "Alt") {
-            return;
-        }
-
+    private getKeyParts(evt: KeyboardEvent) {
         const keyParts = [];
         if (evt.ctrlKey) {
             keyParts.push("Ctrl+");
@@ -43,7 +54,27 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
             keyParts.push("Alt+");
         }
         keyParts.push(evt.key);
+        return keyParts.join("");
+    }
 
-        this.state.keyboard.invokeHandlers(keyParts.join(""), evt);
+    private onKeyDown = (evt: KeyboardEvent) => {
+        if (this.nonSupportedKeys.has(evt.key)) {
+            return;
+        }
+        this.state.keyboard.invokeHandlers(KeyEventType.KeyDown, this.getKeyParts(evt), evt);
+    }
+
+    private onKeyUp = (evt: KeyboardEvent) => {
+        if (this.nonSupportedKeys.has(evt.key)) {
+            return;
+        }
+        this.state.keyboard.invokeHandlers(KeyEventType.KeyUp, this.getKeyParts(evt), evt);
+    }
+
+    private onKeyPress = (evt: KeyboardEvent) => {
+        if (this.nonSupportedKeys.has(evt.key)) {
+            return;
+        }
+        this.state.keyboard.invokeHandlers(KeyEventType.KeyPress, this.getKeyParts(evt), evt);
     }
 }

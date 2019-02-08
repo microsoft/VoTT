@@ -1,9 +1,10 @@
-import { KeyboardContext, IKeyboardContext } from "../keyboardManager/keyboardManager";
+import { KeyboardContext, IKeyboardContext, KeyEventType } from "../keyboardManager/keyboardManager";
 import React from "react";
 
 export interface IKeyboardBindingProps {
     accelerator: string;
-    onKeyDown: (evt?: KeyboardEvent) => void;
+    onKeyEvent: (evt?: KeyboardEvent) => void;
+    keyEventType?: KeyEventType;
 }
 
 export class KeyboardBinding extends React.Component<IKeyboardBindingProps> {
@@ -12,7 +13,10 @@ export class KeyboardBinding extends React.Component<IKeyboardBindingProps> {
     private deregisterBinding: () => void;
 
     public componentDidMount() {
-        this.deregisterBinding = this.context.keyboard.addHandler(this.props.accelerator, this.props.onKeyDown);
+        this.deregisterBinding = this.context.keyboard.addHandler(
+            this.props.keyEventType || KeyEventType.KeyDown,
+            this.props.accelerator,
+            this.props.onKeyEvent);
     }
 
     public componentWillUnmount() {
