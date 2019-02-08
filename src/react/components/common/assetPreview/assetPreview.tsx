@@ -20,7 +20,7 @@ export interface IAssetProps {
  * @member asset - Asset for preview
  */
 export interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
-    autoPlay: boolean;
+    autoPlay?: boolean;
 }
 
 /**
