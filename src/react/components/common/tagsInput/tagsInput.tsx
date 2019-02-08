@@ -90,6 +90,7 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
                 <ReactTags tags={tags}
                     placeholder={strings.tags.placeholder}
                     autofocus={false}
+                    allowAdditionFromPaste={false}
                     handleDelete={this.handleDelete}
                     handleAddition={this.handleAddition}
                     handleDrag={this.handleDrag}

@@ -1,8 +1,8 @@
-import CanvasHelpers from "./canvasHelpers";
-import MockFactory from "../../../../common/mockFactory";
-import { RegionType, IRegion } from "../../../../models/applicationState";
-import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
+import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import MockFactory from "../../../../common/mockFactory";
+import { IRegion, RegionType } from "../../../../models/applicationState";
+import CanvasHelpers from "./canvasHelpers";
 
 describe("Canvas Helpers", () => {
     it("Adds a tag to list", () => {

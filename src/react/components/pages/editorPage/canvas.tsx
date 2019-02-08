@@ -1,16 +1,14 @@
 import React from "react";
 import * as shortid from "shortid";
-import { BigPlayButton, ControlBar, CurrentTimeDisplay,
-    PlaybackRateMenuButton, Player, TimeDivider, VolumeMenuButton } from "video-react";
+import { BigPlayButton, ControlBar, CurrentTimeDisplay, PlaybackRateMenuButton, Player, TimeDivider, VolumeMenuButton } from "video-react";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
-import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
+import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import { ClipBoard } from "../../../../common/clipboard";
 import { strings } from "../../../../common/strings";
-import { AppError, AssetState, AssetType, EditorMode,
-    ErrorCode, IAssetMetadata, IProject, IRegion, ITag, RegionType } from "../../../../models/applicationState";
+import { AppError, AssetState, AssetType, EditorMode, ErrorCode, IAssetMetadata, IProject, IRegion, ITag, RegionType } from "../../../../models/applicationState";
+import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
+import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import CanvasHelpers from "./canvasHelpers";
 
 export interface ICanvasProps {
@@ -18,12 +16,15 @@ export interface ICanvasProps {
     onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
     project: IProject;
+    onTagLocked?: (tag: ITag) => void;
 }
 
 interface ICanvasState {
     loaded: boolean;
     selectedRegions?: IRegion[];
     canvasEnabled: boolean;
+    lockedTags: ITag[];
+    multiSelect: boolean;
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
@@ -33,7 +34,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         loaded: false,
         selectedRegions: [],
         canvasEnabled: true,
+        lockedTags: [],
+        multiSelect: false,
     };
+
+    private clipBoard: ClipBoard<IRegion[]> = new ClipBoard<IRegion[]>();
 
     private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
 
@@ -63,6 +68,42 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         return (
             <div id="ct-zone" className={this.state.canvasEnabled ? "canvas-enabled" : "canvas-disabled"}>
+                <KeyboardBinding
+                    keyEventType={KeyEventType.KeyDown}
+                    accelerator={"Shift"}
+                    onKeyEvent={() => this.setMultiSelect(true)}
+                />
+                <KeyboardBinding
+                    keyEventType={KeyEventType.KeyUp}
+                    accelerator={"Shift"}
+                    onKeyEvent={() => this.setMultiSelect(false)}
+                />
+                <KeyboardBinding
+                    keyEventType={KeyEventType.KeyDown}
+                    accelerator={"Ctrl+c"}
+                    onKeyEvent={this.copyRegions}
+                />
+                <KeyboardBinding
+                    keyEventType={KeyEventType.KeyDown}
+                    accelerator={"Ctrl+x"}
+                    onKeyEvent={this.cutRegions}
+                />
+                <KeyboardBinding
+                    keyEventType={KeyEventType.KeyDown}
+                    accelerator={"Ctrl+v"}
+                    onKeyEvent={this.pasteRegions}
+                />
+                <KeyboardBinding
+                    keyEventType={KeyEventType.KeyDown}
+                    accelerator={"Ctrl+a"}
+                    onKeyEvent={this.selectAllRegions}
+                />
+                <KeyboardBinding
+                    keyEventType={KeyEventType.KeyDown}
+                    accelerator={"Ctrl+d"}
+                    onKeyEvent={this.clearRegions}
+                />
+                
                 {selectedAsset.asset.type === AssetType.Video &&
                     <Player ref={this.videoPlayer}
                         fluid={false} width={"100%"} height={"100%"}
@@ -110,15 +151,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             },
             points: scaledRegionData.points,
         };
-        const currentAssetMetadata = this.props.selectedAsset;
-        currentAssetMetadata.regions.push(newRegion);
-        this.updateSelected([newRegion]);
-
-        if (currentAssetMetadata.regions.length) {
-            currentAssetMetadata.asset.state = AssetState.Tagged;
+        // Apply locked tags if there are some
+        if (this.state.lockedTags) {
+            for(const tag of this.state.lockedTags) {
+                this.toggleTagOnRegion(newRegion, tag);
+            }
         }
-
+        const currentAssetMetadata = this.addRegionToAsset(newRegion);
         this.props.onAssetMetadataChanged(currentAssetMetadata);
+        this.updateSelected([newRegion]);
     }
 
     /**
@@ -129,6 +170,22 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         for (const region of this.state.selectedRegions) {
             this.toggleTagOnRegion(region, tag);
         }
+    }
+
+    public onTagShiftClicked = (tag: ITag) => {
+        this.setState((prevState) => {
+            return {
+                lockedTags: CanvasHelpers.toggleTag(prevState.lockedTags, tag),
+            };
+        }, () => {
+            if (this.props.onTagLocked) {
+                this.props.onTagLocked(tag);
+            }
+        });
+    }
+
+    public onTagCtrlShiftClicked = (tag: ITag) => {
+        
     }
 
     /**
@@ -153,6 +210,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 
+
     /**
      * Method called when deleting a region from the editor
      * @param {string} id the id of the deleted region
@@ -161,15 +219,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public onRegionDelete = (id: string) => {
         // Remove from Canvas Tools
         this.editor.RM.deleteRegionById(id);
-
-        // Remove from project
-        const currentAssetMetadata = this.props.selectedAsset;
-        const deletedRegionIndex = this.props.selectedAsset.regions.findIndex((region) => region.id === id);
-        currentAssetMetadata.regions.splice(deletedRegionIndex, 1);
-
-        if (!currentAssetMetadata.regions.length) {
-            currentAssetMetadata.asset.state = AssetState.Visited;
-        }
+        const currentAssetMetadata = this.deleteRegionFromAsset(id);       
 
         this.props.onAssetMetadataChanged(currentAssetMetadata);
         this.updateSelected([]);
@@ -181,17 +231,24 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {boolean} multiselection boolean whether multiselect is active
      * @returns {void}
      */
-    public onRegionSelected = (id: string, multiselect: boolean) => {
+    public onRegionSelected = (id: string) => {
         let selectedRegions = this.state.selectedRegions;
 
-        if (multiselect) {
+        if (this.state.multiSelect) {
             selectedRegions.push(
                 this.props.selectedAsset.regions.find((region) => region.id === id));
         } else {
             selectedRegions = [
-                this.props.selectedAsset.regions.find((region) => region.id === id)];
+                this.props.selectedAsset.regions.find((region) => region.id === id)
+            ];
         }
         this.updateSelected(selectedRegions);
+    }
+
+    private setMultiSelect = (multiSelect: boolean) => {
+        if (multiSelect !== this.state.multiSelect) {
+            this.setState({ multiSelect });
+        }
     }
 
     /**
@@ -205,13 +262,74 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
     }
 
+    private copyRegions = () => {
+        if (this.state.selectedRegions) {
+            this.clipBoard.set(this.state.selectedRegions);
+        }
+    }
+
+    private cutRegions = () => {
+        this.copyRegions();
+        for (const region of this.state.selectedRegions) {
+            this.onRegionDelete(region.id);
+        }
+    }
+
+    private pasteRegions = () => {
+        const regions = this.clipBoard.get();
+        if (regions) {
+            const newRegions = regions.map(
+                (region) => CanvasHelpers.duplicateAndTransformRegion(region, this.props.selectedAsset.regions));
+            this.addRegions(newRegions);
+        }
+    }
+
+    private clearRegions = () => {
+        const regions = this.props.selectedAsset.regions;
+        if (regions && regions.length) {
+            let currentAssetMetadata: IAssetMetadata
+            for (const region of regions) {
+                console.log(`Deleting region ${region.id}`);
+                this.editor.RM.deleteRegionById(region.id);
+                currentAssetMetadata = this.deleteRegionFromAsset(region.id);
+            }
+            this.props.onAssetMetadataChanged(currentAssetMetadata);
+        }
+    }
+
+    private addRegionToAsset = (region: IRegion): IAssetMetadata => {
+        const currentAssetMetadata = this.props.selectedAsset;
+        currentAssetMetadata.regions.push(region);
+
+        if (currentAssetMetadata.regions.length) {
+            currentAssetMetadata.asset.state = AssetState.Tagged;
+        }
+
+        return currentAssetMetadata
+    }
+
+    private deleteRegionFromAsset = (id: string): IAssetMetadata => {
+        // Remove from project
+        const currentAssetMetadata = this.props.selectedAsset;
+        const deletedRegionIndex = this.props.selectedAsset.regions.findIndex((region) => region.id === id);
+        currentAssetMetadata.regions.splice(deletedRegionIndex, 1);
+
+        if (!currentAssetMetadata.regions.length) {
+            currentAssetMetadata.asset.state = AssetState.Visited;
+        }
+        return currentAssetMetadata;
+    }
+
     private addRegions = (regions: IRegion[]) => {
+        let currentAssetMetadata: IAssetMetadata;
         for (const region of regions) {
             this.editor.RM.addRegion(
                 region.id,
                 CanvasHelpers.getRegionData(region),
                 CanvasHelpers.getTagsDescriptor(region));
+            currentAssetMetadata = this.addRegionToAsset(region);
         }
+        this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 
     /**
@@ -303,9 +421,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private updateSelected = (selectedRegions: IRegion[]) => {
-        this.setState({
-            selectedRegions,
-        });
+        this.setState({ selectedRegions });
+    }
+
+    private selectAllRegions = () => {
+        this.updateSelected(this.props.selectedAsset.regions);
     }
 
     private getAssetType = () => {

@@ -84,11 +84,11 @@ describe("Editor Canvas", () => {
         wrapper.prop("selectedAsset").regions.push(testRegion1);
         wrapper.prop("selectedAsset").regions.push(testRegion2);
         expect(wrapper.prop("selectedAsset").regions.length).toEqual(2);
-        canvas.onRegionSelected("test1", false);
+        canvas.onRegionSelected("test1");
         expect(wrapper.instance().state.selectedRegions.length).toEqual(1);
         expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([MockFactory.createTestRegion("test1")]);
-        canvas.onRegionSelected("test2", true);
+        canvas.onRegionSelected("test2");
         expect(wrapper.instance().state.selectedRegions.length).toEqual(2);
         expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
@@ -100,8 +100,8 @@ describe("Editor Canvas", () => {
         const testRegion2 = MockFactory.createTestRegion("test2");
         wrapper.prop("selectedAsset").regions.push(testRegion1);
         wrapper.prop("selectedAsset").regions.push(testRegion2);
-        canvas.onRegionSelected("test1", false);
-        canvas.onRegionSelected("test2", true);
+        canvas.onRegionSelected("test1");
+        canvas.onRegionSelected("test2");
 
         const newTag = MockFactory.createTestTag();
         canvas.onTagClicked(newTag);

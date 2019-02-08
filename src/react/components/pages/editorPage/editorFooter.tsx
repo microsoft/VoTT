@@ -14,6 +14,8 @@ export interface IEditorFooterProps {
     displayHotKeys: boolean;
     onTagsChanged?: (value) => void;
     onTagClicked?: (value) => void;
+    onTagShiftClicked?: (value) => void;
+    onTagCtrlShiftClicked?: (value) => void;
 }
 
 /**
@@ -45,6 +47,8 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
                     tags={this.state.tags}
                     onChange={this.onTagsChanged}
                     onTagClick={this.props.onTagClicked}
+                    onTagShiftClick={this.props.onTagShiftClicked}
+                    onTagCtrlShiftClicked={this.props.onTagCtrlShiftClicked}
                 />
             </div>
         );

@@ -8,7 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, IAssetVideoSettings, ITag,
+    IAssetMetadata, IProject, IAssetVideoSettings, ITag, IRegion
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -158,7 +158,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             displayHotKeys={true}
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked} />
+                            onTagClicked={this.onTagClicked}
+                            onTagShiftClicked={this.onTagShiftClicked}
+                            onTagCtrlShiftClicked={this.onTagCtrlShiftClicked}
+                        />
                     </div>
                 </div>
             </div>
@@ -169,32 +172,23 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Called when a tag from footer is clicked
      * @param tag Tag clicked
      */
-    public onTagClicked(tag: ITag) {
-        const selectedAsset = this.state.selectedAsset;
-        if (this.canvas.current.state.selectedRegions && this.canvas.current.state.selectedRegions.length) {
-            const selectedRegions = this.canvas.current.state.selectedRegions;
-            selectedRegions.map((region) => {
-                const selectedIndex = selectedAsset.regions.findIndex((r) => r.id === region.id);
-                const selectedRegion = selectedAsset.regions[selectedIndex];
-                const tagIndex = selectedRegion.tags.findIndex(
-                    (existingTag) => existingTag.name === tag.name);
-                if (tagIndex === -1) {
-                    selectedRegion.tags.push(tag);
-                } else {
-                    selectedRegion.tags.splice(tagIndex, 1);
-                }
-                if (selectedRegion.tags.length) {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id,
-                        new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag.name,
-                            this.props.project.tags.find((t) => t.name === tempTag.name).color))));
-                } else {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id, null);
-                }
+    public onTagClicked = (tag: ITag) => {
+        this.canvas.current.onTagClicked(tag);
+        this.onAssetMetadataChanged(this.state.selectedAsset);
+    }
 
-                return region;
-            });
-        }
-        this.onAssetMetadataChanged(selectedAsset);
+    /**
+     * Called when a tag from footer is clicked while holding shift key
+     */
+    public onTagShiftClicked = (tag: ITag) => {
+        this.canvas.current.onTagShiftClicked(tag);
+    }
+
+    /**
+     * Called when a tag from footer is clicked while holding both shift key and ctrl key
+     */
+    public onTagCtrlShiftClicked = (tag: ITag) => {
+        this.canvas.current.onTagCtrlShiftClicked(tag);
     }
 
     /**

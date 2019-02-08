@@ -12,6 +12,7 @@ export interface IEditorTagsInputProps extends ITagsInputProps {
     displayHotKeys: boolean;
     onTagClick?: (tag: ITag) => void;
     onTagShiftClick?: (tag: ITag) => void;
+    onTagCtrlShiftClicked?: (value) => void;
 }
 
 /**
@@ -43,13 +44,15 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
     protected handleTagClick(event) {
         const text = this.getTagIdFromClick(event);
         const tag = this.getTag(text);
-        if (event.ctrlKey) {
+        const ctrl: boolean = event.ctrlKey;
+        const shift: boolean = event.shiftKey;
+        if (ctrl && shift && this.props.onTagCtrlShiftClicked) {
+            this.props.onTagCtrlShiftClicked(this.toItag(tag));
+        } else if (event.ctrlKey) {
             this.openEditModal(tag);
         } else if (event.shiftKey && this.props.onTagShiftClick) {
-            // Calls provided onTagShiftClick
             this.props.onTagShiftClick(this.toItag(tag));
         } else if (this.props.onTagClick) {
-            // Calls provided onTagClick function
             this.props.onTagClick(this.toItag(tag));
         }
     }
