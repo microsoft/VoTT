@@ -18,14 +18,12 @@ export interface ICanvasProps {
     onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
     project: IProject;
-    onTagLocked?: (tag: ITag) => void;
 }
 
 interface ICanvasState {
     loaded: boolean;
     selectedRegions?: IRegion[];
     canvasEnabled: boolean;
-    lockedTags: ITag[];
     multiSelect: boolean;
 }
 
@@ -36,7 +34,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         loaded: false,
         selectedRegions: [],
         canvasEnabled: true,
-        lockedTags: [],
         multiSelect: false,
     };
 
@@ -146,7 +143,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const newRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
-            tags: this.state.lockedTags || [],
+            tags: [],
             boundingBox: {
                 height: scaledRegionData.height,
                 width: scaledRegionData.width,
@@ -177,19 +174,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public onTagShiftClicked = (tag: ITag) => {
-        this.setState((prevState) => {
-            return {
-                lockedTags: CanvasHelpers.toggleTag(prevState.lockedTags, tag),
-            };
-        }, () => {
-            if (this.props.onTagLocked) {
-                this.props.onTagLocked(tag);
-            }
-        });
+        console.log(`Shift clicked "${tag.name}" tag`)
     }
 
     public onTagCtrlShiftClicked = (tag: ITag) => {
-        console.log("Ctrl shift clicked");
+        console.log(`Ctrl shift clicked "${tag.name}" tag`);
     }
 
     /**
@@ -249,7 +238,20 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         } else {
             selectedRegions = [selectedRegion];
         }
+
         this.setState({ selectedRegions });     
+    }
+
+    private updateRegionInAsset = (region: IRegion): void => {
+        const asset = this.props.selectedAsset;
+        asset.regions = asset.regions.map((r) => {
+            if (r.id === region.id) {
+                return region;
+            } else{
+                return r;
+            }
+        });
+        this.props.onAssetMetadataChanged(asset);
     }
 
     private setMultiSelect = (multiSelect: boolean) => {
@@ -333,9 +335,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private addRegions = (regions: IRegion[]) => {
         let currentAssetMetadata: IAssetMetadata;
         for (const region of regions) {
+            const regionData = CanvasHelpers.getRegionData(region);
+            const scaledRegionData = this.editor.scaleRegionToFrameSize(regionData);
+
             this.editor.RM.addRegion(
                 region.id,
-                CanvasHelpers.getRegionData(region),
+                scaledRegionData,
                 CanvasHelpers.getTagsDescriptor(region));
             currentAssetMetadata = this.addRegionToAsset(region);
         }

@@ -93,9 +93,14 @@ export default class CanvasHelpers {
         };
     }
 
-    private static getTransformDiff = (region: IRegion, otherRegions: IRegion[]): IPoint => {
+    private static getTransformDiff = (region: IRegion, otherRegions: IRegion[], firstRegion?: IRegion): IPoint => {
         let targetX = 0 + CanvasHelpers.pasteMargin;
         let targetY = 0 + CanvasHelpers.pasteMargin;
+
+        if (firstRegion) {
+            targetX += firstRegion.boundingBox.left;
+            targetY += firstRegion.boundingBox.top;
+        }
 
         let foundRegionAtTarget = false;
 
