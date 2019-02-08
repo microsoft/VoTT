@@ -5,6 +5,9 @@ import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../mode
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
+import HtmlFileReader from "../common/htmlFileReader";
+import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
+import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
 /**
  * @name - Asset Service
@@ -177,10 +180,35 @@ export class AssetService {
             const json = await this.storageProvider.readText(fileName);
             return JSON.parse(json) as IAssetMetadata;
         } catch (err) {
-            return {
-                asset: { ...asset },
-                regions: [],
-            };
+            if (asset.type === AssetType.TFRecord) {
+                const objectArray = await this.getTFRecordObjectArrays(asset);
+
+                // TODO: Regions objectArray from TFRecord in Regions
+
+                return {
+                    asset: { ...asset },
+                    regions: [],
+                };
+            } else {
+                return {
+                    asset: { ...asset },
+                    regions: [],
+                };
+            }
         }
+    }
+
+    private async getTFRecordObjectArrays(asset: IAsset): Promise<[number[], number[], number[], number[], string[]]> {
+        const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
+        const reader = new TFRecordsReader(tfrecords);
+        const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
+
+        const xminArray = reader.getArrayFeature(0, "image/object/bbox/xmin", FeatureType.Float);
+        const yminArray = reader.getArrayFeature(0, "image/object/bbox/ymin", FeatureType.Float);
+        const xmaxArray = reader.getArrayFeature(0, "image/object/bbox/xmax", FeatureType.Float);
+        const ymaxArray = reader.getArrayFeature(0, "image/object/bbox/ymax", FeatureType.Float);
+        const textArray = reader.getArrayFeature(0, "image/object/class/text", FeatureType.String);
+
+        return [xminArray, yminArray, xmaxArray, ymaxArray, textArray];
     }
 }
