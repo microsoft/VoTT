@@ -19,7 +19,7 @@ export interface IAssetProps {
  * Properties for Asset Preview
  * @member asset - Asset for preview
  */
-interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
+export interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
     autoPlay: boolean;
 }
 
@@ -27,7 +27,7 @@ interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
  * State for Asset Preview
  * @member loaded - Asset is loaded
  */
-interface IAssetPreviewState {
+export interface IAssetPreviewState {
     loaded: boolean;
 }
 
@@ -75,7 +75,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                         onDeactivated={this.props.onDeactivated} />
                 }
                 {asset.type === AssetType.Unknown &&
-                    <div>{strings.editorPage.assetError}</div>
+                    <div className="asset-error">{strings.editorPage.assetError}</div>
                 }
             </div>
         );

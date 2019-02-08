@@ -81,7 +81,7 @@ describe("Video Asset Component", () => {
 
         const props: IVideoAssetProps = {
             ...defaultProps,
-            childAssets: childAssets,
+            childAssets,
             timestamp: currentAsset.timestamp,
         };
 
@@ -113,7 +113,7 @@ describe("Video Asset Component", () => {
 
         const props: IVideoAssetProps = {
             ...defaultProps,
-            childAssets: childAssets,
+            childAssets,
             timestamp: currentAsset.timestamp,
         };
 
