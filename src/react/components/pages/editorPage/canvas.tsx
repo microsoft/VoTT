@@ -8,7 +8,7 @@ import {
     IProject, IRegion, ITag, RegionType,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
-import AssetPreview, { ContentSource } from "./assetPreview";
+import AssetPreview, { ContentSource } from "../../assetPreview/assetPreview";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
