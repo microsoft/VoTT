@@ -61,7 +61,6 @@ function getMockAssetMetadata(testAssets, assetIndex= 0): IAssetMetadata {
                 ],
             },
         ],
-        timestamp: null,
     };
 }
 

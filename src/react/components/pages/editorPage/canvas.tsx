@@ -4,7 +4,7 @@ import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
-    AssetState, AssetType, EditorMode, IAssetMetadata,
+    AssetState, EditorMode, IAssetMetadata,
     IProject, IRegion, ITag, RegionType,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
@@ -302,8 +302,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({
             selectedRegions,
         });
-    }
-
     }
 
     private editorModeToType = (editorMode: EditorMode) => {
