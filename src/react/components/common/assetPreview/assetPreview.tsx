@@ -23,6 +23,7 @@ export interface IAssetProps {
     onDeactivated?: (contentSource: ContentSource) => void;
     /** Event handler that fires when a child asset is selected (ex. Paused on a video frame) */
     onChildAssetSelected?: (asset: IAsset) => void;
+    framerate?: number;
 }
 
 /**
@@ -84,7 +85,8 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                         onLoaded={this.onAssetLoad}
                         onChildAssetSelected={this.props.onChildAssetSelected}
                         onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
+                        onDeactivated={this.props.onDeactivated}
+                        framerate={this.props.framerate} />
                 }
                 {asset.type === AssetType.TFRecord &&
                     <TFRecordAsset asset={asset}

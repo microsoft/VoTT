@@ -20,6 +20,7 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     timestamp?: number;
     /** The event handler that is fired when a child video frame is selected (ex. paused, seeked) */
     onChildAssetSelected?: (asset: IAsset) => void;
+    framerate?: number;
 }
 
 /** VideoAsset internal component state */
@@ -74,19 +75,31 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             >
                 <BigPlayButton position="center" />
                 <ControlBar autoHide={false}>
-                    <CurrentTimeDisplay order={1.1} />
-                    <TimeDivider order={1.2} />
+                    <CustomVideoPlayerButton order={0.1}
+                        accelerator="ArrowLeft"
+                        tooltip="Previous Frame"
+                        onClick={this.movePreviousFrame}>
+                        <i className="fas fa-step-backward" />
+                    </CustomVideoPlayerButton>
+                    <CustomVideoPlayerButton order={1.1}
+                        accelerator="ArrowRight"
+                        tooltip="Next Frame"
+                        onClick={this.moveNextFrame}>
+                        <i className="fas fa-step-forward" />
+                    </CustomVideoPlayerButton>
+                    <CurrentTimeDisplay order={1.2} />
+                    <TimeDivider order={1.3} />
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
                     <VolumeMenuButton enabled order={7.2} />
                     <CustomVideoPlayerButton order={8.1}
-                        accelerator="ArrowLeft"
                         tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
+                        accelerator="ArrowLeft + Ctrl"
                         onClick={this.movePreviousTaggedFrame}>
                         <i className="fas fa-caret-left fa-lg" />
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={8.2}
-                        accelerator="ArrowRight"
                         tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
+                        accelerator="ArrowRight + Ctrl"
                         onClick={this.moveNextTaggedFrame}>
                         <i className="fas fa-caret-right fa-lg" />
                     </CustomVideoPlayerButton>
@@ -135,6 +148,16 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (nextFrame) {
             this.goToChildAsset(nextFrame);
         }
+    }
+
+    private movePreviousFrame = () => {
+        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        this.videoPlayer.current.seek(timestamp - (1 / this.props.framerate));
+    }
+
+    private moveNextFrame = () => {
+        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        this.videoPlayer.current.seek(timestamp + (1 / this.props.framerate));
     }
 
     /**

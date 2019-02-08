@@ -146,7 +146,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     autoPlay={true}
                                     onChildAssetSelected={this.onChildAssetSelected}
                                     asset={this.state.selectedAsset.asset}
-                                    childAssets={this.state.childAssets} />
+                                    childAssets={this.state.childAssets}
+                                    framerate={this.state.project.videoSettings.frameExtractionRate} />
                             </Canvas>
                         }
                     </div>
