@@ -244,11 +244,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         let selectedRegions = this.state.selectedRegions;
 
         const selectedRegion = this.props.selectedAsset.regions.find((region) => region.id === id);
-        if (this.state.lockedTags) {
-            for (const tag of this.state.lockedTags) {
-                this.toggleTagOnRegion(selectedRegion, tag);
-            }
-        }
+
         if (this.state.multiSelect) {
             selectedRegions.push(selectedRegion);
         } else {
