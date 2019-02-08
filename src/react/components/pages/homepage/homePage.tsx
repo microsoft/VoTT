@@ -15,6 +15,7 @@ import {
     IApplicationState, IConnection, IProject,
     ErrorCode, AppError, IAppError, IV1Project, IAppSettings,
 } from "../../../../models/applicationState";
+import IMessageBox from "../../common/messageBox/messageBox"
 import ImportService from "../../../../services/importService";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
@@ -42,6 +43,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
     private deleteConfirm: React.RefObject<Confirm>;
     private cloudFilePicker: React.RefObject<CloudFilePicker>;
     private importConfirm: React.RefObject<Confirm>;
+    private settingsConfirm: React.RefObject<Confirm>;
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
@@ -54,6 +56,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.deleteConfirm = React.createRef<Confirm>();
         this.cloudFilePicker = React.createRef<CloudFilePicker>();
         this.importConfirm = React.createRef<Confirm>();
+        this.settingsConfirm = React.createRef<Confirm>();
 
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
@@ -119,6 +122,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
                         ${strings.homePage.importProject.recommendation}`}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
+                <Confirm title="Confirm Settings"
+                    ref={this.settingsConfirm}
+                    message={"Please confirm your new v2 project settings."}
+                    onConfirm={this.deleteProject} />
             </div>
         );
     }
@@ -159,10 +166,9 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private loadSelectedProject = async (project: IProject) => {
         console.log(project);
-        // either do this or the uncommented part below...or both somehow?
         if (project.version === "v1-to-v2") {
             console.log("loadingSelectedV1Project!!");
-            // add confimation box
+            await this.settingsConfirm.current.open(project);
             await this.props.actions.loadProject(project);
             this.props.history.push(`/projects/${project.id}/settings`);
         } else {
@@ -176,10 +182,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private convertProject = async (project: any) => {
         const importService = new ImportService();
-        const projectJson = await importService.convertV1(project);
-        this.props.actions.ensureSecurityToken(projectJson);
+        try {
+            const projectJson = await importService.convertV1(project);
+            this.props.actions.ensureSecurityToken(projectJson);
+            await this.loadSelectedProject(projectJson);
+        } catch (e) {
+            throw new AppError(ErrorCode.ProjectUploadError, "Error uploading v1 project file");
+        }
 
-        // this.props.history.push(`/projects/${project.id}/settings`);
-        await this.loadSelectedProject(projectJson);
     }
 }

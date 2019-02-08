@@ -62,7 +62,7 @@ export function saveProject(project: IProject):
         const projectService = new ProjectService();
 
         if (projectService.isDuplicate(project, appState.recentProjects)) {
-            throw new Error(`Project with name '${project.name}
+            throw new AppError(ErrorCode.ProjectDuplicateName, `Project with name '${project.name}
                 already exists with the same target connection '${project.targetConnection.name}'`);
         }
 
