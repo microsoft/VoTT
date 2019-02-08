@@ -160,7 +160,10 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
         if (event.target.lastChild) {
             return event.target.lastChild.data;
         }
-        return (event.target.innerText || event.currentTarget.innerText).trim();
+        return (event.target.innerText || event.currentTarget.innerText)
+            .trim()
+            // Remove index from tag if box is clicked
+            .replace(/\[\d+\] /, "");
     }
 
     /**
