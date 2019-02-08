@@ -18,7 +18,6 @@ export interface ICanvasProps extends React.Props<Canvas> {
 }
 
 export interface ICanvasState {
-    loaded: boolean;
     contentSource: ContentSource;
     selectedRegions?: IRegion[];
     canvasEnabled: boolean;
@@ -28,7 +27,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public editor: Editor;
 
     public state: ICanvasState = {
-        loaded: false,
         contentSource: null,
         selectedRegions: [],
         canvasEnabled: true,
@@ -215,6 +213,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Raise when the asset is handing off control of rendering
      */
     private onAssetDeactivated = async (contentSource: ContentSource) => {
+        this.positionCanvas(contentSource);
         await this.setContentSource(contentSource);
         this.updateRegions();
 

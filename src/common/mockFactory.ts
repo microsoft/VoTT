@@ -150,7 +150,7 @@ export default class MockFactory {
         };
 
         const mockRegion: IRegion = {
-            id: "id",
+            id: shortid.generate(),
             type: RegionType.Rectangle,
             tags: [mockTag],
             points: [mockStartPoint, mockEndPoint],
