@@ -75,19 +75,19 @@ export default function registerToolbar() {
     ToolbarItemFactory.register(PreviousAsset, {
         name: "navigatePreviousAsset",
         tooltip: "Previous Asset",
-        icon: "fas fa-arrow-circle-left",
+        icon: "fas fa-arrow-circle-up",
         group: "navigation",
         type: ToolbarItemType.Action,
-        accelerator: "ArrowUp",
+        accelerators: ["ArrowUp", "w", "W"],
     });
 
     ToolbarItemFactory.register(NextAsset, {
         name: "navigateNextAsset",
         tooltip: "Next Asset",
-        icon: "fas fa-arrow-circle-right",
+        icon: "fas fa-arrow-circle-down",
         group: "navigation",
         type: ToolbarItemType.Action,
-        accelerator: "ArrowDown",
+        accelerators: ["ArrowDown", "s", "S"],
     });
 
     ToolbarItemFactory.register(SaveProject, {
