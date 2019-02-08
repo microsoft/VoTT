@@ -1,7 +1,9 @@
 import MD5 from "md5.js";
 import _ from "lodash";
+import * as shortid from "shortid";
 import Guard from "../common/guard";
-import { IAsset, AssetType, IProject, IAssetMetadata, AssetState } from "../models/applicationState";
+import { IAsset, AssetType, IProject, IAssetMetadata,
+         AssetState, IRegion, RegionType } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
@@ -182,12 +184,37 @@ export class AssetService {
         } catch (err) {
             if (asset.type === AssetType.TFRecord) {
                 const objectArray = await this.getTFRecordObjectArrays(asset);
+                const regions: IRegion[] = [];
 
-                // TODO: Regions objectArray from TFRecord in Regions
+                // Add Regions from TFRecord in Regions
+                for (let index = 0; index < objectArray[0].length; index++) {
+                    regions.push({
+                        id: shortid.generate(),
+                        type: RegionType.Rectangle,
+                        tags: [{
+                            name: objectArray[4][index], // TODO: Add to tag collection
+                            color: "#FF0000", // TODO: Manage same color
+                        }],
+                        boundingBox: {
+                            height: objectArray[3][index],
+                            width: objectArray[2][index],
+                            left: objectArray[0][index],
+                            top: objectArray[1][index],
+                        },
+                        points: [{
+                                    x: objectArray[0][index],
+                                    y: objectArray[1][index],
+                                },
+                                {
+                                     x: objectArray[0][index] + objectArray[2][index],
+                                     y: objectArray[1][index] + objectArray[3][index],
+                                }],
+                    });
+                }
 
                 return {
                     asset: { ...asset },
-                    regions: [],
+                    regions,
                 };
             } else {
                 return {
