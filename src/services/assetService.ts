@@ -203,11 +203,11 @@ export class AssetService {
         const reader = new TFRecordsReader(tfrecords);
         const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
 
-        const xminArray = reader.getArrayFeature(0, "image/object/bbox/xmin", FeatureType.Float);
-        const yminArray = reader.getArrayFeature(0, "image/object/bbox/ymin", FeatureType.Float);
-        const xmaxArray = reader.getArrayFeature(0, "image/object/bbox/xmax", FeatureType.Float);
-        const ymaxArray = reader.getArrayFeature(0, "image/object/bbox/ymax", FeatureType.Float);
-        const textArray = reader.getArrayFeature(0, "image/object/class/text", FeatureType.String);
+        const xminArray = reader.getArrayFeature(0, "image/object/bbox/xmin", FeatureType.Float) as number[];
+        const yminArray = reader.getArrayFeature(0, "image/object/bbox/ymin", FeatureType.Float) as number[];
+        const xmaxArray = reader.getArrayFeature(0, "image/object/bbox/xmax", FeatureType.Float) as number[];
+        const ymaxArray = reader.getArrayFeature(0, "image/object/bbox/ymax", FeatureType.Float) as number[];
+        const textArray = reader.getArrayFeature(0, "image/object/class/text", FeatureType.String) as string[];
 
         return [xminArray, yminArray, xmaxArray, ymaxArray, textArray];
     }
