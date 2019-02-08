@@ -44,7 +44,7 @@
                 height: calc(100% - 3em) !important;
             }
 
-            &-control-bar, * {
+            &-control-bar {
                 display: static !important;
             }
         }
@@ -189,7 +189,11 @@ canvas {
 .video-react {
     font-family: inherit;
 
-    * {
-        font-family: inherit;
+    .video-react-fullscreen-control {
+        display: none;
+    }
+
+    .video-react-button:hover {
+        text-shadow: 0 0 18px #fff, 0 0 18px #fff, 0 0 18px #fff
     }
 }
