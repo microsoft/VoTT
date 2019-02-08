@@ -1,5 +1,5 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../../models/applicationState";
+import { IAsset, AssetType, IProject } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
@@ -7,6 +7,7 @@ import { VideoAsset } from "./videoAsset";
 export type ContentSource = HTMLImageElement | HTMLVideoElement;
 
 export interface IAssetProps {
+    project: IProject;
     asset: IAsset;
     childAssets?: IAsset[];
     onLoaded?: (ContentSource: ContentSource) => void;
@@ -37,6 +38,7 @@ export interface IAssetPreviewState {
  */
 export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     public static defaultProps: IAssetPreviewProps = {
+        project: null,
         asset: null,
         childAssets: [],
         autoPlay: false,
@@ -59,21 +61,22 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <ImageAsset asset={parentAsset}
+                    <ImageAsset project={this.props.project}
+                        asset={parentAsset}
                         onLoaded={this.onAssetLoad}
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated} />
                 }
                 {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
-                    <VideoAsset asset={parentAsset}
+                    <VideoAsset project={this.props.project}
+                        asset={parentAsset}
                         childAssets={childAssets}
                         timestamp={asset.timestamp}
                         autoPlay={autoPlay}
                         onLoaded={this.onAssetLoad}
                         onChildAssetSelected={this.props.onChildAssetSelected}
                         onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated}
-                        frameRate={15} />
+                        onDeactivated={this.props.onDeactivated} />
                 }
                 {asset.type === AssetType.Unknown &&
                     <div className="asset-error">{strings.editorPage.assetError}</div>

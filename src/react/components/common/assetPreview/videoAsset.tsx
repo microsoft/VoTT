@@ -5,7 +5,7 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
+import { IAsset, AssetType, AssetState, IProject } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 
@@ -13,7 +13,6 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
     timestamp?: number;
     onChildAssetSelected?: (asset: IAsset) => void;
-    frameRate: number;
 }
 
 export interface IVideoAssetState {
@@ -34,7 +33,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         timestamp: 0,
         asset: null,
         childAssets: [],
-        frameRate: 15,
+        project: null,
     };
 
     public state: IVideoAssetState = {
@@ -184,14 +183,14 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     private seekToNextExpectedFrame() {
         // Seek forward from the current time to the next logical frame based on project settings
-        const frameSkipTime: number = (1 / this.props.frameRate);
+        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
         const seekTime: number = (this.videoPlayer.current.getState().player.currentTime + frameSkipTime);
         this.seekToTime(seekTime);
     }
 
     private seekToPreviousExpectedFrame() {
         // Seek backwards from the current time to the next logical frame based on project settings
-        const frameSkipTime: number = (1 / this.props.frameRate);
+        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
         const seekTime: number = (this.videoPlayer.current.getState().player.currentTime - frameSkipTime);
         this.seekToTime(seekTime);
     }
