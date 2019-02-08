@@ -79,28 +79,44 @@ export default class CanvasHelpers {
         return type;
     }
 
-    public static duplicateAndTransformRegion = (region: IRegion, otherRegions: IRegion[]): IRegion => {
-        return CanvasHelpers.transformRegion(
-            CanvasHelpers.duplicateRegion(region),
+    public static duplicateAndTransformRegions = (regions: IRegion[], otherRegions: IRegion[]): IRegion[] => {
+        return CanvasHelpers.transformRegions(
+            CanvasHelpers.duplicateRegions(regions),
             otherRegions,
         );
     }
 
-    public static duplicateRegion = (region: IRegion): IRegion => {
-        return {
-            ...region,
-            id: shortid.generate(),
-        };
+    public static duplicateRegions = (regions: IRegion[]): IRegion[] => {
+        return regions.map((region) => {
+            return {
+                ...region,
+                id: shortid.generate(),
+            };
+        })
     }
 
-    private static getTransformDiff = (region: IRegion, otherRegions: IRegion[], firstRegion?: IRegion): IPoint => {
-        let targetX = 0 + CanvasHelpers.pasteMargin;
-        let targetY = 0 + CanvasHelpers.pasteMargin;
-
-        if (firstRegion) {
-            targetX += firstRegion.boundingBox.left;
-            targetY += firstRegion.boundingBox.top;
+    
+    public static topLeftRegion = (regions: IRegion[]) => {
+        if (!regions) {
+            throw new Error("Empty regions");
         }
+        let minProduct = Number.MAX_SAFE_INTEGER;
+        let topLeft = regions[0];
+        for (let i = 1; i < regions.length; i++) {
+            const r = regions[i];
+            const bb = r.boundingBox;
+            const product = bb.left * bb.top;
+            if (product < minProduct) {
+                minProduct = product;
+                topLeft = r;
+            }
+        }
+        return topLeft;
+    }
+
+    private static getTransformDiff = (region: IRegion, otherRegions: IRegion[]): IPoint => {
+        let targetX = region.boundingBox.left + CanvasHelpers.pasteMargin
+        let targetY = region.boundingBox.top + CanvasHelpers.pasteMargin;
 
         let foundRegionAtTarget = false;
 
@@ -141,12 +157,14 @@ export default class CanvasHelpers {
         };
     }
 
-    private static transformRegion = (region: IRegion, otherRegions: IRegion[]): IRegion => {
-        const tranformDiff = CanvasHelpers.getTransformDiff(region, otherRegions);
-        return {
-            ...region,
-            points: CanvasHelpers.transformPoints(region.points, tranformDiff),
-            boundingBox: CanvasHelpers.transformBoundingBox(region.boundingBox, tranformDiff),
-        };
+    private static transformRegions = (regions: IRegion[], otherRegions: IRegion[]): IRegion[] => {
+        return regions.map((region) => {
+            const tranformDiff = CanvasHelpers.getTransformDiff(region, otherRegions);
+            return {
+                ...region,
+                points: CanvasHelpers.transformPoints(region.points, tranformDiff),
+                boundingBox: CanvasHelpers.transformBoundingBox(region.boundingBox, tranformDiff),
+            };
+        })
     }
 }

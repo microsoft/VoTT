@@ -290,8 +290,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private pasteRegions = () => {
         const regions = this.clipBoard.get();
         if (regions) {
-            const newRegions = regions.map(
-                (region) => CanvasHelpers.duplicateAndTransformRegion(region, this.props.selectedAsset.regions));
+            const newRegions = CanvasHelpers.duplicateAndTransformRegions(regions, this.props.selectedAsset.regions);
             this.addRegions(newRegions);
         }
     }
@@ -337,7 +336,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         for (const region of regions) {
             const regionData = CanvasHelpers.getRegionData(region);
             const scaledRegionData = this.editor.scaleRegionToFrameSize(regionData);
-
             this.editor.RM.addRegion(
                 region.id,
                 scaledRegionData,
