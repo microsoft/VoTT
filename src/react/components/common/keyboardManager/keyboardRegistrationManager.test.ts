@@ -19,7 +19,7 @@ describe("Keyboard Registration Manager", () => {
         const keyCode2 = "Ctrl+S";
         const handler2 = (evt: KeyboardEvent) => null;
 
-        keyboardManager.addHandler(KeyEventType.KeyDown , keyCode1, handler1);
+        keyboardManager.addHandler(KeyEventType.KeyDown, keyCode1, handler1);
         keyboardManager.addHandler(KeyEventType.KeyDown, keyCode2, handler2);
 
         const handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
