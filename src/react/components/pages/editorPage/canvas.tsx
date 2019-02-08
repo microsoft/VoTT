@@ -234,24 +234,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         let selectedRegions = this.state.selectedRegions;
 
         if (this.state.multiSelect) {
-            selectedRegions.push(selectedRegion);
+            if(!selectedRegions.find((r) => r.id === selectedRegion.id)) {
+                selectedRegions.push(selectedRegion);
+            }
         } else {
             selectedRegions = [selectedRegion];
         }
-
         this.setState({ selectedRegions });     
-    }
-
-    private updateRegionInAsset = (region: IRegion): void => {
-        const asset = this.props.selectedAsset;
-        asset.regions = asset.regions.map((r) => {
-            if (r.id === region.id) {
-                return region;
-            } else{
-                return r;
-            }
-        });
-        this.props.onAssetMetadataChanged(asset);
     }
 
     private setMultiSelect = (multiSelect: boolean) => {
@@ -259,20 +248,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.setState({ multiSelect });
         }
     }
-
-    // /**
-    //  * Add tag to region if not there already, remove tag from region
-    //  * if already contained in tags. Update tags in CanvasTools editor
-    //  * @param region Region to add or remove tag
-    //  * @param tag Tag to add or remove from region
-    //  */
-    // private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
-    //     if (!region || !tag) {
-    //         return;
-    //     }
-    //     CanvasHelpers.toggleTag(region.tags, tag);
-    //     this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
-    // }
 
     private copyRegions = () => {
         if (this.state.selectedRegions) {
