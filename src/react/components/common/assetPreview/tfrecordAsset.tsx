@@ -5,29 +5,22 @@ import HtmlFileReader from "../../../../common/htmlFileReader";
 import { TFRecordsReader } from "../../../../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
-/**
- * Properties for TFRecord Asset Image component
- */
 export interface ITFRecordProps extends IAssetProps, React.ClassAttributes<TFRecordAsset> {
 }
 
-/**
- * State for TFRecord Asset Image component
- * @member tfRecordImage64 - base64 representation of the image data
- */
 export interface ITFRecordState {
     tfRecordImage64: string;
 }
 
-/**
- * React component that displays an image from a TFRecord asset file
- */
 export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordState> {
-    public state: ITFRecordState = {
-        tfRecordImage64: "",
-    };
-
     private image: React.RefObject<HTMLImageElement> = React.createRef();
+
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            tfRecordImage64: "",
+        };
+    }
 
     public render() {
         const size = this.props.asset.size;
