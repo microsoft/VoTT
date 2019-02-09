@@ -58,8 +58,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             await this.updateEditor();
             if (this.props.selectedAsset.regions.length) {
                 this.setState({
-                    selectedRegions: []
-                })
+                    selectedRegions: [],
+                });
             }
         }
     }
@@ -158,7 +158,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const currentAssetMetadata = this.addRegionToAsset(newRegion);
         this.props.onAssetMetadataChanged(currentAssetMetadata);
         this.setState({
-            selectedRegions: [ newRegion ]
+            selectedRegions: [ newRegion ],
         });
     }
 
@@ -174,7 +174,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public onTagShiftClicked = (tag: ITag) => {
-        console.log(`Shift clicked "${tag.name}" tag`)
+        console.log(`Shift clicked "${tag.name}" tag`);
     }
 
     public onTagCtrlShiftClicked = (tag: ITag) => {
@@ -200,8 +200,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         currentAssetMetadata.regions[movedRegionIndex] = movedRegion;
         this.setState({
-            selectedRegions: [ movedRegion ]
-        })
+            selectedRegions: [ movedRegion ],
+        });
         this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 
@@ -217,8 +217,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         this.props.onAssetMetadataChanged(currentAssetMetadata);
         this.setState({
-            selectedRegions: []
-        })
+            selectedRegions: [],
+        });
     }
 
     /**
@@ -234,13 +234,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         let selectedRegions = this.state.selectedRegions;
 
         if (this.state.multiSelect) {
-            if(!selectedRegions.find((r) => r.id === selectedRegion.id)) {
+            if (!selectedRegions.find((r) => r.id === selectedRegion.id)) {
                 selectedRegions.push(selectedRegion);
             }
         } else {
             selectedRegions = [selectedRegion];
         }
-        this.setState({ selectedRegions });     
+        this.setState({ selectedRegions });
     }
 
     private setMultiSelect = (multiSelect: boolean) => {

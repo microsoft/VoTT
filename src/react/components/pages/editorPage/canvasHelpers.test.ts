@@ -78,47 +78,50 @@ describe("Canvas Helpers", () => {
     });
 
     it("Duplicates region with new id", () => {
-        const initialId = shortid.generate();
-        const region = MockFactory.createTestRegion(initialId);
-        const duplicate = CanvasHelpers.duplicateRegion(region);
-        expect(duplicate).toMatchObject({
-            ...region,
-            id: expect.any(String),
-        });
-        expect(duplicate.id).not.toEqual(initialId);
+        const regions = MockFactory.createTestRegions();
+        const duplicates = CanvasHelpers.duplicateRegions(regions);
+        expect(duplicates).toHaveLength(regions.length);
+        for (let i = 0; i < regions.length; i++) {
+            const duplicate = duplicates[i];
+            const region = regions[i];
+            expect(duplicate).toMatchObject({
+                ...region,
+                id: expect.any(String),
+            });
+            expect(duplicate.id).not.toEqual(region.id);
+        }
     });
 
-    it("Duplicates and transforms region correctly", () => {
-        const initialRegion = MockFactory.createRandomRectangleRegion();
-        const otherRegions = [];
-        for (let i = 0; i < 5; i++) {
-            otherRegions.push(MockFactory.createRandomRectangleRegion());
-        }
+    it("Duplicates and transforms regions correctly", () => {
+        const regions = MockFactory.createTestRegions();
+        const others = MockFactory.createTestRegions();
+        
+        const duplicates = CanvasHelpers.duplicateAndTransformRegions(regions, others);
 
-        const regionsToDuplicateAndTransform = 5;
 
-        for(let i = 0; i < regionsToDuplicateAndTransform; i++) {
-            const duplicatedAndTransformed = CanvasHelpers.duplicateAndTransformRegion(initialRegion, otherRegions);
+        expect(duplicates).toHaveLength(regions.length);
+        
+        for (let i = 0; i < regions.length; i++) {
+            const duplicate = duplicates[i];
+            const region = regions[i];
 
-            expect(duplicatedAndTransformed.id).not.toEqual(initialRegion.id);
-    
-            const x1 = CanvasHelpers.pasteMargin * (i + 1);
-            const y1 = CanvasHelpers.pasteMargin * (i + 1);
-    
-            const height = initialRegion.boundingBox.height;
-            const width = initialRegion.boundingBox.width;
-    
-            expect(duplicatedAndTransformed.boundingBox).toEqual({
+            const x1 = region.boundingBox.left + (CanvasHelpers.pasteMargin);
+            const y1 = region.boundingBox.top + (CanvasHelpers.pasteMargin);
+
+            const width = region.boundingBox.width;
+            const height = region.boundingBox.height;
+
+            expect(duplicate.boundingBox).toEqual({
                 left: x1,
                 top: y1,
-                height,           
-                width,
+                height: region.boundingBox.height,
+                width: region.boundingBox.width,
             });
-    
+
             const x2 = x1 + width;
             const y2 = y1 + height;
-    
-            expect(duplicatedAndTransformed.points).toEqual([
+
+            expect(duplicate.points).toEqual([
                 {
                     x: x1,
                     y: y1,
@@ -134,9 +137,59 @@ describe("Canvas Helpers", () => {
                 {
                     x: x2,
                     y: y2,
-                }
+                },
             ]);
-            otherRegions.push(duplicatedAndTransformed);
-        }       
+            others.push(duplicate);
+        }
+
     });
+
+    // it("Duplicates and transforms region correctly", () => {
+    //     const initialRegion = MockFactory.createRandomRectangleRegion();
+    //     const otherRegions = [];
+
+    //     const regionsToDuplicateAndTransform = 5;
+
+    //     for(let i = 0; i < regionsToDuplicateAndTransform; i++) {
+    //         const duplicatedAndTransformed = CanvasHelpers.duplicateAndTransformRegion(initialRegion, otherRegions);
+
+    //         expect(duplicatedAndTransformed.id).not.toEqual(initialRegion.id);
+
+    //         const x1 = CanvasHelpers.pasteMargin * (i + 1);
+    //         const y1 = CanvasHelpers.pasteMargin * (i + 1);
+
+    //         const height = initialRegion.boundingBox.height;
+    //         const width = initialRegion.boundingBox.width;
+
+    //         expect(duplicatedAndTransformed.boundingBox).toEqual({
+    //             left: x1,
+    //             top: y1,
+    //             height,
+    //             width,
+    //         });
+
+    //         const x2 = x1 + width;
+    //         const y2 = y1 + height;
+
+    //         expect(duplicatedAndTransformed.points).toEqual([
+    //             {
+    //                 x: x1,
+    //                 y: y1,
+    //             },
+    //             {
+    //                 x: x2,
+    //                 y: y1,
+    //             },
+    //             {
+    //                 x: x1,
+    //                 y: y2,
+    //             },
+    //             {
+    //                 x: x2,
+    //                 y: y2,
+    //             }
+    //         ]);
+    //         otherRegions.push(duplicatedAndTransformed);
+    //     }
+    // });
 });

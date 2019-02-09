@@ -92,10 +92,9 @@ export default class CanvasHelpers {
                 ...region,
                 id: shortid.generate(),
             };
-        })
+        });
     }
 
-    
     public static topLeftRegion = (regions: IRegion[]) => {
         if (!regions) {
             throw new Error("Empty regions");
@@ -115,8 +114,8 @@ export default class CanvasHelpers {
     }
 
     private static getTransformDiff = (region: IRegion, otherRegions: IRegion[]): IPoint => {
-        let targetX = region.boundingBox.left + CanvasHelpers.pasteMargin
-        let targetY = region.boundingBox.top + CanvasHelpers.pasteMargin;
+        let targetX = region.boundingBox.left;
+        let targetY = region.boundingBox.top;
 
         let foundRegionAtTarget = false;
 
@@ -159,12 +158,12 @@ export default class CanvasHelpers {
 
     private static transformRegions = (regions: IRegion[], otherRegions: IRegion[]): IRegion[] => {
         return regions.map((region) => {
-            const tranformDiff = CanvasHelpers.getTransformDiff(region, otherRegions);
+            const tranformDiff = CanvasHelpers.getTransformDiff(region, otherRegions.concat(regions));
             return {
                 ...region,
                 points: CanvasHelpers.transformPoints(region.points, tranformDiff),
                 boundingBox: CanvasHelpers.transformBoundingBox(region.boundingBox, tranformDiff),
             };
-        })
+        });
     }
 }

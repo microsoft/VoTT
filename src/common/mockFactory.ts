@@ -548,6 +548,14 @@ export default class MockFactory {
         return new Canvas(canvasProps);
     }
 
+    public static createTestRegions(count: number = 5): IRegion[] {
+        const regions = [];
+        for (let i = 0; i < count; i++) {
+            regions.push(this.createRandomRectangleRegion());
+        }
+        return regions;
+    }
+
     public static createRandomRectangleRegion(): IRegion {
         return MockFactory.createTestRegion(
             shortid.generate(),
