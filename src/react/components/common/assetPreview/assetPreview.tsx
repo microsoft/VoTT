@@ -1,5 +1,5 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../../models/applicationState";
+import { IAsset, AssetType, IProjectVideoSettings } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
@@ -23,7 +23,11 @@ export interface IAssetProps {
     onDeactivated?: (contentSource: ContentSource) => void;
     /** Event handler that fires when a child asset is selected (ex. Paused on a video frame) */
     onChildAssetSelected?: (asset: IAsset) => void;
-    framerate?: number;
+    additionalSettings?: IAssetPreviewSettings;
+}
+
+export interface IAssetPreviewSettings {
+    videoSettings: IProjectVideoSettings;
 }
 
 /**
@@ -86,7 +90,8 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                         onChildAssetSelected={this.props.onChildAssetSelected}
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated}
-                        framerate={this.props.framerate} />
+                        videoSettings={(this.props.additionalSettings) ?
+                            this.props.additionalSettings.videoSettings : null} />
                 }
                 {asset.type === AssetType.TFRecord &&
                     <TFRecordAsset asset={asset}

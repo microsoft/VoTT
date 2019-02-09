@@ -58,7 +58,7 @@ describe("Editor Canvas", () => {
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
-        editorMock.prototype.RM = new RegionsManager(null, null, null);
+        editorMock.prototype.RM = new RegionsManager(null, null);
     });
 
     beforeEach(() => {

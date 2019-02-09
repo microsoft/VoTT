@@ -51,7 +51,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.onRegionMove = this.onRegionMove;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
-        this.editor.setSelectionMode(this.props.selectionMode, null);
+        this.editor.AS.setSelectionMode(this.props.selectionMode, null);
 
         window.addEventListener("resize", this.onWindowResize);
 
@@ -71,7 +71,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         if (this.props.selectionMode !== prevProps.selectionMode) {
-            this.editor.setSelectionMode(this.props.selectionMode, null);
+            this.editor.AS.setSelectionMode(this.props.selectionMode, null);
         }
     }
 

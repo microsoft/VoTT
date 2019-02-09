@@ -21,7 +21,7 @@ describe("Video Asset Component", () => {
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
         onChildAssetSelected: onChildSelectedHandler,
-        framerate: 1,
+        videoSettings: {frameExtractionRate: 1},
     };
 
     beforeEach(() => {
@@ -197,7 +197,7 @@ describe("Video Asset Component", () => {
 
         expect(videoPlayerMock.prototype.seek)
             // @ts-ignore
-            .toBeCalledWith(currentAsset.timestamp - (1 / wrapper.instance().props.framerate));
+            .toBeCalledWith(currentAsset.timestamp - (1 / wrapper.instance().props.videoSettings.frameExtractionRate));
         expect(onChildSelectedHandler).toBeCalledWith(expectedAsset);
     });
 
@@ -232,7 +232,7 @@ describe("Video Asset Component", () => {
 
         expect(videoPlayerMock.prototype.seek)
             // @ts-ignore
-            .toBeCalledWith(currentAsset.timestamp + (1 / wrapper.instance().props.framerate));
+            .toBeCalledWith(currentAsset.timestamp + (1 / wrapper.instance().props.videoSettings.frameExtractionRate));
         expect(onChildSelectedHandler).toBeCalledWith(expectedAsset);
     });
 

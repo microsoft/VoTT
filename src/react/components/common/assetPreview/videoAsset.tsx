@@ -5,7 +5,7 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
+import { IAsset, AssetType, AssetState, IProjectVideoSettings } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 import { strings } from "../../../../common/strings";
@@ -20,7 +20,7 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     timestamp?: number;
     /** The event handler that is fired when a child video frame is selected (ex. paused, seeked) */
     onChildAssetSelected?: (asset: IAsset) => void;
-    framerate?: number;
+    videoSettings?: IProjectVideoSettings;
 }
 
 /** VideoAsset internal component state */
@@ -152,12 +152,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     private movePreviousFrame = () => {
         const timestamp = this.videoPlayer.current.getState().player.currentTime;
-        this.videoPlayer.current.seek(timestamp - (1 / this.props.framerate));
+        this.videoPlayer.current.seek(timestamp - (1 / this.props.videoSettings.frameExtractionRate));
     }
 
     private moveNextFrame = () => {
         const timestamp = this.videoPlayer.current.getState().player.currentTime;
-        this.videoPlayer.current.seek(timestamp + (1 / this.props.framerate));
+        this.videoPlayer.current.seek(timestamp + (1 / this.props.videoSettings.frameExtractionRate));
     }
 
     /**

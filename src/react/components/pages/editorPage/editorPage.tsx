@@ -22,7 +22,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
-import { AssetPreview } from "../../common/assetPreview/assetPreview";
+import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
 
 /**
  * Properties for Editor Page
@@ -52,6 +52,7 @@ export interface IEditorPageState {
     selectedAsset?: IAssetMetadata;
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
+    additionalSettings?: IAssetPreviewSettings;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -75,6 +76,7 @@ function mapDispatchToProps(dispatch) {
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         project: this.props.project,
+        additionalSettings: {videoSettings: (this.props.project) ? this.props.project.videoSettings : null},
         selectionMode: SelectionMode.RECT,
         assets: [],
         childAssets: [],
@@ -84,11 +86,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
+    // private additionalSettings: IAssetPreviewSettings = {videoSettings: this.state.project.videoSettings};
 
     public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
         if (this.props.project) {
             await this.loadProjectAssets();
+            // this.additionalSettings = {videoSettings: this.state.project.videoSettings};
         } else if (projectId) {
             const project = this.props.recentProjects.find((project) => project.id === projectId);
             await this.props.actions.loadProject(project);
@@ -98,6 +102,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public async componentDidUpdate() {
         if (this.props.project && this.state.assets.length === 0) {
             await this.loadProjectAssets();
+            // this.additionalSettings = {videoSettings: this.state.project.videoSettings};
         }
     }
 
@@ -147,7 +152,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     onChildAssetSelected={this.onChildAssetSelected}
                                     asset={this.state.selectedAsset.asset}
                                     childAssets={this.state.childAssets}
-                                    framerate={this.state.project.videoSettings.frameExtractionRate} />
+                                    additionalSettings={this.state.additionalSettings} />
                             </Canvas>
                         }
                     </div>
