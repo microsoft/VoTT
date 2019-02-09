@@ -38,7 +38,6 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
  */
 export interface IProjectFormState {
     classNames: string[];
-    tags: ITag[];
     formData: IProject;
     formSchema: any;
     uiSchema: any;
@@ -62,7 +61,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             formData: {
                 ...this.props.project,
             },
-            tags: (this.props.project) ? this.props.project.tags : [],
         };
         this.tagsInput = React.createRef<TagsInput>();
         this.tagEditorModal = React.createRef<TagEditorModal>();
@@ -181,7 +179,6 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     private onFormSubmit(args: ISubmitEvent<IProject>) {
         const project: IProject = {
             ...args.formData,
-            tags: this.state.tags,
         };
         this.props.onSubmit(project);
     }
