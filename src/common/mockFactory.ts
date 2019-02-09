@@ -129,7 +129,7 @@ export default class MockFactory {
     /**
      * Creates a mock region
      */
-    public static createMockRegion(): IRegion {
+    public static createMockRegion(id?: string): IRegion {
         const mockTag: ITag = MockFactory.createTestTag();
 
         const mockStartPoint: IPoint = {
@@ -150,7 +150,7 @@ export default class MockFactory {
         };
 
         const mockRegion: IRegion = {
-            id: shortid.generate(),
+            id: id || "id",
             type: RegionType.Rectangle,
             tags: [mockTag],
             points: [mockStartPoint, mockEndPoint],
@@ -344,7 +344,7 @@ export default class MockFactory {
      * Create fake ITag with random color
      * @param name Name of tag
      */
-    public static createTestTag(name: string = "Test Tag"): ITag {
+    public static createTestTag(name: string = "1"): ITag {
         return {
             name: `Tag ${name}`,
             color: MockFactory.randomColor(),
@@ -659,6 +659,7 @@ export default class MockFactory {
             securityTokens: [
                 ...securityTokens,
                 MockFactory.createSecurityToken("TestProject"),
+                MockFactory.createSecurityToken("test"),
             ],
         };
     }

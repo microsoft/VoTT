@@ -8,13 +8,15 @@ import {
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
-    onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
+    selectionMode: SelectionMode;
     project: IProject;
     children?: ReactElement<AssetPreview>;
+    onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
 }
 
 export interface ICanvasState {
@@ -24,6 +26,13 @@ export interface ICanvasState {
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
+    public static defaultProps: ICanvasProps = {
+        selectionMode: SelectionMode.NONE,
+        editorMode: EditorMode.Select,
+        selectedAsset: null,
+        project: null,
+    };
+
     public editor: Editor;
 
     public state: ICanvasState = {
@@ -41,6 +50,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.onRegionMove = this.onRegionMove;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
+        this.editor.setSelectionMode(this.props.selectionMode, null);
 
         window.addEventListener("resize", this.onWindowResize);
 
@@ -51,12 +61,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         window.removeEventListener("resize", this.onWindowResize);
     }
 
-    public componentDidUpdate = (prevProps) => {
+    public componentDidUpdate = (prevProps: Readonly<ICanvasProps>) => {
         if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
             this.clearAllRegions();
             if (this.props.selectedAsset.regions.length) {
                 this.updateSelected([]);
             }
+        }
+
+        if (this.props.selectionMode !== prevProps.selectionMode) {
+            this.editor.setSelectionMode(this.props.selectionMode, null);
         }
     }
 
@@ -268,22 +282,23 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private updateRegions = () => {
-        if (this.props.selectedAsset.regions.length) {
-            this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                const loadedRegionData = CanvasHelpers.getRegionData(region);
-                this.editor.RM.addRegion(
-                    region.id,
-                    this.editor.scaleRegionToFrameSize(loadedRegionData),
-                    CanvasHelpers.getTagsDescriptor(region));
-
-                if (this.state.selectedRegions) {
-                    this.setState({
-                        selectedRegions: [this.props.selectedAsset.regions[
-                            this.props.selectedAsset.regions.length - 1]],
-                    });
-                }
-            });
+        if (!this.props.selectedAsset.regions || this.props.selectedAsset.regions.length === 0) {
+            return;
         }
+
+        // Add regions to the canvas
+        this.props.selectedAsset.regions.forEach((region: IRegion) => {
+            const loadedRegionData = CanvasHelpers.getRegionData(region);
+            this.editor.RM.addRegion(
+                region.id,
+                this.editor.scaleRegionToFrameSize(loadedRegionData),
+                CanvasHelpers.getTagsDescriptor(region));
+        });
+
+        // Set selected region to the last region
+        this.setState({
+            selectedRegions: [this.props.selectedAsset.regions[this.props.selectedAsset.regions.length - 1]],
+        });
     }
 
     private updateSelected = (selectedRegions: IRegion[]) => {
