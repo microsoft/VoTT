@@ -5,9 +5,9 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType, AssetState } from "../../../models/applicationState";
-import { AssetService } from "../../../services/assetService";
-import { CustomVideoPlayerButton } from "../common/videoPlayer/customVideoPlayerButton";
+import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
+import { AssetService } from "../../../../services/assetService";
+import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;

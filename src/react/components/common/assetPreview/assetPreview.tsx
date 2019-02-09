@@ -1,6 +1,6 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../models/applicationState";
-import { strings } from "../../../common/strings";
+import { IAsset, AssetType } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
 
@@ -19,15 +19,15 @@ export interface IAssetProps {
  * Properties for Asset Preview
  * @member asset - Asset for preview
  */
-interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
-    autoPlay: boolean;
+export interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
+    autoPlay?: boolean;
 }
 
 /**
  * State for Asset Preview
  * @member loaded - Asset is loaded
  */
-interface IAssetPreviewState {
+export interface IAssetPreviewState {
     loaded: boolean;
 }
 
@@ -35,7 +35,7 @@ interface IAssetPreviewState {
  * @name - Asset Preview
  * @description - Small preview of assets for selection in editor page
  */
-export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
+export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     public static defaultProps: IAssetPreviewProps = {
         asset: null,
         childAssets: [],
@@ -75,7 +75,7 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                         onDeactivated={this.props.onDeactivated} />
                 }
                 {asset.type === AssetType.Unknown &&
-                    <div>{strings.editorPage.assetError}</div>
+                    <div className="asset-error">{strings.editorPage.assetError}</div>
                 }
             </div>
         );
