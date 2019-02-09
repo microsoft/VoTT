@@ -1,17 +1,26 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../models/applicationState";
-import { strings } from "../../../common/strings";
+import { IAsset, AssetType } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
 
 export type ContentSource = HTMLImageElement | HTMLVideoElement;
 
+/**
+ * AssetPreview component properties
+ */
 export interface IAssetProps {
+    /** The Asset to preview */
     asset: IAsset;
+    /** The child assets (ex. video frames) of the parent asset */
     childAssets?: IAsset[];
+    /** Event handler that fires when the asset has been loaded */
     onLoaded?: (ContentSource: ContentSource) => void;
+    /** Event handler that fires when the asset has been activated (ex. Video resumes playing) */
     onActivated?: (contentSource: ContentSource) => void;
+    /** Event handler that fires when the asset has been deactivated (ex. Canvas tools takes over) */
     onDeactivated?: (contentSource: ContentSource) => void;
+    /** Event handler that fires when a child asset is selected (ex. Paused on a video frame) */
     onChildAssetSelected?: (asset: IAsset) => void;
 }
 
@@ -19,15 +28,15 @@ export interface IAssetProps {
  * Properties for Asset Preview
  * @member asset - Asset for preview
  */
-interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
-    autoPlay: boolean;
+export interface IAssetPreviewProps extends IAssetProps, React.Props<AssetPreview> {
+    autoPlay?: boolean;
 }
 
 /**
  * State for Asset Preview
  * @member loaded - Asset is loaded
  */
-interface IAssetPreviewState {
+export interface IAssetPreviewState {
     loaded: boolean;
 }
 
@@ -35,13 +44,15 @@ interface IAssetPreviewState {
  * @name - Asset Preview
  * @description - Small preview of assets for selection in editor page
  */
-export default class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
+export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
+    /** Default properties for component if not defined */
     public static defaultProps: IAssetPreviewProps = {
         asset: null,
         childAssets: [],
         autoPlay: false,
     };
 
+    /** The internal state for the component */
     public state: IAssetPreviewState = {
         loaded: false,
     };
@@ -75,12 +86,16 @@ export default class AssetPreview extends React.Component<IAssetPreviewProps, IA
                         onDeactivated={this.props.onDeactivated} />
                 }
                 {asset.type === AssetType.Unknown &&
-                    <div>{strings.editorPage.assetError}</div>
+                    <div className="asset-error">{strings.editorPage.assetError}</div>
                 }
             </div>
         );
     }
 
+    /**
+     * Internal event handler for when the referenced asset has been loaded
+     * @param contentSource The visual HTML element of the asset (img/video tag)
+     */
     private onAssetLoad = (contentSource: ContentSource) => {
         this.setState({
             loaded: true,

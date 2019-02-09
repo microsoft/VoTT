@@ -8,28 +8,17 @@ import { IAssetProps } from "./assetPreview";
 import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
-import { strings } from "../../../../common/strings";
 
-/**
- * VideoAsset component properties
- */
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
-    /** Whether or not the video asset should start playing automatically */
     autoPlay?: boolean;
-    /** The timestamp that the video should seek to upon loading */
     timestamp?: number;
-    /** The event handler that is fired when a child video frame is selected (ex. paused, seeked) */
     onChildAssetSelected?: (asset: IAsset) => void;
 }
 
-/** VideoAsset internal component state */
 export interface IVideoAssetState {
     loaded: boolean;
 }
 
-/**
- * VideoPlayer internal video state
- */
 export interface IVideoPlayerState {
     readyState: number;
     paused: boolean;
@@ -37,11 +26,7 @@ export interface IVideoPlayerState {
     currentTime: number;
 }
 
-/**
- * VideoAsset component used to display video based assets
- */
 export class VideoAsset extends React.Component<IVideoAssetProps> {
-    /** Default properties for the VideoAsset if not defined */
     public static defaultProps: IVideoAssetProps = {
         autoPlay: true,
         timestamp: 0,
@@ -107,10 +92,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    /**
-     * Bound to the "Next Tagged Frame" button
-     * Seeks the user to the next tagged video frame
-     */
     private movePreviousTaggedFrame = () => {
         const timestamp = this.videoPlayer.current.getState().player.currentTime;
         const previousFrame = _
@@ -122,10 +103,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    /**
-     * Bound to the "Previous Tagged Frame" button
-     * Seeks the user to the previous tagged video frame
-     */
     private moveNextTaggedFrame = () => {
         const timestamp = this.videoPlayer.current.getState().player.currentTime;
         const nextFrame = this.props.childAssets
@@ -136,9 +113,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    /**
-     * Seeks the video to the timestamp specified in the component properties
-     */
     private seekToTimestamp = () => {
         if (this.props.timestamp > 0) {
             this.videoPlayer.current.pause();
@@ -146,20 +120,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    /**
-     * Seeks the video to the timestamp set by the specified asset
-     * @param asset The child asset to seek to
-     */
     private goToChildAsset(asset: IAsset) {
         this.videoPlayer.current.pause();
         this.videoPlayer.current.seek(asset.timestamp);
     }
 
-    /**
-     * Wired up to the underlying video "Player" component and receive notifications for all video state changes
-     * @param state The current state of the video player component
-     * @param state The previous state of the video player component
-     */
     private onVideoStateChange = (state: Readonly<IVideoPlayerState>, prev: Readonly<IVideoPlayerState>) => {
         if (!this.state.loaded && state.readyState === 4 && state.readyState !== prev.readyState) {
             // Video initial load complete
@@ -176,9 +141,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    /**
-     * Raises the "loaded" event if available
-     */
     private raiseLoaded = () => {
         this.setState({
             loaded: true,
@@ -189,9 +151,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         });
     }
 
-    /**
-     * Raises the "childAssetSelected" event if available
-     */
     private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
         if (this.props.onChildAssetSelected) {
             const parentAsset = this.props.asset.parent || this.props.asset;
@@ -207,18 +166,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    /**
-     * Raises the "activated" event if available
-     */
     private raiseActivated = () => {
         if (this.props.onActivated) {
             this.props.onActivated(this.videoPlayer.current.video.video);
         }
     }
 
-    /**
-     * Raises the "deactivated event if available"
-     */
     private raiseDeactivated = () => {
         if (this.props.onDeactivated) {
             this.props.onDeactivated(this.videoPlayer.current.video.video);

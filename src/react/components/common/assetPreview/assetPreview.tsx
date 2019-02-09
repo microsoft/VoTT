@@ -7,21 +7,12 @@ import { TFRecordAsset } from "./tfrecordAsset";
 
 export type ContentSource = HTMLImageElement | HTMLVideoElement;
 
-/**
- * AssetPreview component properties
- */
 export interface IAssetProps {
-    /** The Asset to preview */
     asset: IAsset;
-    /** The child assets (ex. video frames) of the parent asset */
     childAssets?: IAsset[];
-    /** Event handler that fires when the asset has been loaded */
     onLoaded?: (ContentSource: ContentSource) => void;
-    /** Event handler that fires when the asset has been activated (ex. Video resumes playing) */
     onActivated?: (contentSource: ContentSource) => void;
-    /** Event handler that fires when the asset has been deactivated (ex. Canvas tools takes over) */
     onDeactivated?: (contentSource: ContentSource) => void;
-    /** Event handler that fires when a child asset is selected (ex. Paused on a video frame) */
     onChildAssetSelected?: (asset: IAsset) => void;
 }
 
@@ -46,14 +37,12 @@ export interface IAssetPreviewState {
  * @description - Small preview of assets for selection in editor page
  */
 export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
-    /** Default properties for component if not defined */
     public static defaultProps: IAssetPreviewProps = {
         asset: null,
         childAssets: [],
         autoPlay: false,
     };
 
-    /** The internal state for the component */
     public state: IAssetPreviewState = {
         loaded: false,
     };
