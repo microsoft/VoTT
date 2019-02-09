@@ -194,56 +194,5 @@ describe("Canvas Helpers", () => {
             }
             others = others.concat(duplicates);
         }
-        
-
     });
-
-    // it("Duplicates and transforms region correctly", () => {
-    //     const initialRegion = MockFactory.createRandomRectangleRegion();
-    //     const otherRegions = [];
-
-    //     const regionsToDuplicateAndTransform = 5;
-
-    //     for(let i = 0; i < regionsToDuplicateAndTransform; i++) {
-    //         const duplicatedAndTransformed = CanvasHelpers.duplicateAndTransformRegion(initialRegion, otherRegions);
-
-    //         expect(duplicatedAndTransformed.id).not.toEqual(initialRegion.id);
-
-    //         const x1 = CanvasHelpers.pasteMargin * (i + 1);
-    //         const y1 = CanvasHelpers.pasteMargin * (i + 1);
-
-    //         const height = initialRegion.boundingBox.height;
-    //         const width = initialRegion.boundingBox.width;
-
-    //         expect(duplicatedAndTransformed.boundingBox).toEqual({
-    //             left: x1,
-    //             top: y1,
-    //             height,
-    //             width,
-    //         });
-
-    //         const x2 = x1 + width;
-    //         const y2 = y1 + height;
-
-    //         expect(duplicatedAndTransformed.points).toEqual([
-    //             {
-    //                 x: x1,
-    //                 y: y1,
-    //             },
-    //             {
-    //                 x: x2,
-    //                 y: y1,
-    //             },
-    //             {
-    //                 x: x1,
-    //                 y: y2,
-    //             },
-    //             {
-    //                 x: x2,
-    //                 y: y2,
-    //             }
-    //         ]);
-    //         otherRegions.push(duplicatedAndTransformed);
-    //     }
-    // });
 });
