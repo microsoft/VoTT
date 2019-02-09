@@ -24,6 +24,7 @@ import IApplicationActions, * as applicationActions from "../redux/actions/appli
 import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSystemProxy";
 import { generateKey } from "./crypto";
 import { AssetService } from "../services/assetService";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 export default class MockFactory {
 
@@ -571,6 +572,7 @@ export default class MockFactory {
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
+            selectionMode: SelectionMode.RECT,
             children: null,
         };
         return new Canvas(canvasProps);

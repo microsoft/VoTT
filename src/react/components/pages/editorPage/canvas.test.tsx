@@ -12,6 +12,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, ICanvasState, Canvas> = null;
@@ -39,6 +40,7 @@ describe("Editor Canvas", () => {
             selectedAsset: assetMetadata,
             onAssetMetadataChanged,
             editorMode: EditorMode.Rectangle,
+            selectionMode: SelectionMode.RECT,
             project: MockFactory.createTestProject(),
         };
 

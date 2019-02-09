@@ -2,7 +2,7 @@ import React from "react";
 import { CustomVideoPlayerButton, ICustomVideoPlayerButtonProps } from "./customVideoPlayerButton";
 import { mount, ReactWrapper } from "enzyme";
 import { KeyboardBinding } from "../keyboardBinding/keyboardBinding";
-import { KeyboardManager } from "../keyboardManager/keyboardManager";
+import { KeyboardManager, KeyEventType } from "../keyboardManager/keyboardManager";
 
 describe("Custom Video Player Button Component", () => {
     let wrapper: ReactWrapper<ICustomVideoPlayerButtonProps> = null;
@@ -48,8 +48,9 @@ describe("Custom Video Player Button Component", () => {
 
         expect(keyboardBinding.exists()).toBe(true);
         expect(keyboardBinding.props()).toEqual({
+            keyEventType: KeyEventType.KeyDown,
             accelerator: props.accelerator,
-            onKeyDown: props.onClick,
+            onKeyEvent: props.onClick,
         });
     });
 
