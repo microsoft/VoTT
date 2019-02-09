@@ -187,38 +187,9 @@ export class AssetService {
             return JSON.parse(json) as IAssetMetadata;
         } catch (err) {
             if (asset.type === AssetType.TFRecord) {
-                const objectArray = await this.getTFRecordObjectArrays(asset);
-                const regions: IRegion[] = [];
-
-                // Add Regions from TFRecord in Regions
-                for (let index = 0; index < objectArray.textArray.length; index++) {
-                    regions.push({
-                        id: shortid.generate(),
-                        type: RegionType.Rectangle,
-                        tags: [{
-                            name: objectArray.textArray[index], // TODO: Add to tag collection
-                            color: "#FF0000", // TODO: Manage same color
-                        }],
-                        boundingBox: {
-                            height: objectArray.ymaxArray[index],
-                            width: objectArray.xmaxArray[index],
-                            left: objectArray.xminArray[index],
-                            top: objectArray.yminArray[index],
-                        },
-                        points: [{
-                                    x: objectArray.xminArray[index],
-                                    y: objectArray.yminArray[index],
-                                },
-                                {
-                                     x: objectArray.xminArray[index] + objectArray.xmaxArray[index],
-                                     y: objectArray.yminArray[index] + objectArray.ymaxArray[index],
-                                }],
-                    });
-                }
-
                 return {
                     asset: { ...asset },
-                    regions,
+                    regions: await this.getRegionsFromTFRecord(asset),
                 };
             } else {
                 return {
@@ -227,6 +198,39 @@ export class AssetService {
                 };
             }
         }
+    }
+
+    private async getRegionsFromTFRecord(asset: IAsset): Promise<IRegion[]> {
+        const objectArray = await this.getTFRecordObjectArrays(asset);
+        const regions: IRegion[] = [];
+
+        // Add Regions from TFRecord in Regions
+        for (let index = 0; index < objectArray.textArray.length; index++) {
+            regions.push({
+                id: shortid.generate(),
+                type: RegionType.Rectangle,
+                tags: [{
+                    name: objectArray.textArray[index], // TODO: Add to tag collection
+                    color: "#FF0000", // TODO: Manage same color
+                }],
+                boundingBox: {
+                    height: objectArray.ymaxArray[index],
+                    width: objectArray.xmaxArray[index],
+                    left: objectArray.xminArray[index],
+                    top: objectArray.yminArray[index],
+                },
+                points: [{
+                            x: objectArray.xminArray[index],
+                            y: objectArray.yminArray[index],
+                        },
+                        {
+                             x: objectArray.xminArray[index] + objectArray.xmaxArray[index],
+                             y: objectArray.yminArray[index] + objectArray.ymaxArray[index],
+                        }],
+            });
+        }
+
+        return regions;
     }
 
     private async getTFRecordObjectArrays(asset: IAsset): Promise<ITFRecordObjectArray> {
