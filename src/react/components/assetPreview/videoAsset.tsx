@@ -4,14 +4,8 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-<<<<<<< HEAD:src/react/components/pages/editorPage/videoAsset.tsx
-import { IAsset } from "../../../../models/applicationState";
-import { AssetService } from "../../../../services/assetService";
-=======
-import { IAsset, AssetType, AssetState } from "../../../models/applicationState";
+import { IAsset } from "../../../models/applicationState";
 import { AssetService } from "../../../services/assetService";
-import { CustomVideoPlayerButton } from "../common/videoPlayer/customVideoPlayerButton";
->>>>>>> Wabrez/video test coverage (#549):src/react/components/assetPreview/videoAsset.tsx
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -107,13 +101,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.onChildAssetSelected) {
             const childPath = `${this.props.asset.path}#t=${state.currentTime}`;
             const childAsset = AssetService.createAssetFromFilePath(childPath);
-<<<<<<< HEAD:src/react/components/pages/editorPage/videoAsset.tsx
             childAsset.parent = this.props.asset.parent || this.props.asset.id;
-=======
-            childAsset.state = AssetState.Visited;
-            childAsset.type = AssetType.VideoFrame;
-            childAsset.parent = parentAsset;
->>>>>>> Wabrez/video test coverage (#549):src/react/components/assetPreview/videoAsset.tsx
             childAsset.timestamp = state.currentTime;
             childAsset.size = { ...this.props.asset.size };
 
