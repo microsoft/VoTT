@@ -21,6 +21,7 @@ describe("Video Asset Component", () => {
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
         onChildAssetSelected: onChildSelectedHandler,
+        framerate: 1,
     };
 
     beforeEach(() => {
@@ -87,7 +88,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent(props);
         mockLoaded();
 
-        wrapper.find(CustomVideoPlayerButton).at(1).simulate("click");
+        wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
@@ -119,7 +120,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent(props);
         mockLoaded();
 
-        wrapper.find(CustomVideoPlayerButton).at(0).simulate("click");
+        wrapper.find(CustomVideoPlayerButton).at(2).simulate("click");
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
@@ -163,6 +164,76 @@ describe("Video Asset Component", () => {
         expect(onLoadedHandler).not.toBeCalled();
         expect(onDeactivatedHandler).not.toBeCalled();
         expect(onActivatedHandler).toBeCalledWith(expect.any(HTMLVideoElement));
+    });
+
+    it("moves to the previous frame when clicking the prev button", () => {
+        const childAssets = MockFactory.createChildVideoAssets(defaultProps.asset);
+        const currentAsset = childAssets[4];
+        const expectedAsset = {
+            ...childAssets[3],
+            state: AssetState.Visited,
+        };
+
+        videoPlayerMock.prototype.getState = jest.fn(() => {
+            return {
+                player: {
+                    currentTime: currentAsset.timestamp,
+                },
+            };
+        });
+
+        const props: IVideoAssetProps = {
+            ...defaultProps,
+            childAssets,
+            timestamp: currentAsset.timestamp,
+        };
+
+        wrapper = createComponent(props);
+        mockLoaded();
+        mockPaused(currentAsset.timestamp);
+
+        const temps = wrapper.find(CustomVideoPlayerButton);
+        temps.at(0).simulate("click");
+
+        expect(videoPlayerMock.prototype.seek)
+            // @ts-ignore
+            .toBeCalledWith(currentAsset.timestamp - (1 / wrapper.instance().props.framerate));
+        expect(onChildSelectedHandler).toBeCalledWith(expectedAsset);
+    });
+
+    it("moves to the next frame when clicking the next button", () => {
+        const childAssets = MockFactory.createChildVideoAssets(defaultProps.asset);
+        const currentAsset = childAssets[3];
+        const expectedAsset = {
+            ...childAssets[4],
+            state: AssetState.Visited,
+        };
+
+        videoPlayerMock.prototype.getState = jest.fn(() => {
+            return {
+                player: {
+                    currentTime: currentAsset.timestamp,
+                },
+            };
+        });
+
+        const props: IVideoAssetProps = {
+            ...defaultProps,
+            childAssets,
+            timestamp: currentAsset.timestamp,
+        };
+
+        wrapper = createComponent(props);
+        mockLoaded();
+        mockPaused(currentAsset.timestamp);
+
+        const temps = wrapper.find(CustomVideoPlayerButton);
+        temps.at(1).simulate("click");
+
+        expect(videoPlayerMock.prototype.seek)
+            // @ts-ignore
+            .toBeCalledWith(currentAsset.timestamp + (1 / wrapper.instance().props.framerate));
+        expect(onChildSelectedHandler).toBeCalledWith(expectedAsset);
     });
 
     function mockLoaded() {
