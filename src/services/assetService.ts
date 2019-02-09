@@ -11,7 +11,7 @@ import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
-interface TFRecordObjectArray {
+interface ITFRecordObjectArray {
     xminArray: number[];
     yminArray: number[];
     xmaxArray: number[];
@@ -40,11 +40,7 @@ export class AssetService {
         // fileNameParts[1] = "mp4"
         // fileNameParts[2] = "t=5"
         const fileNameParts = pathParts[pathParts.length - 1].split(/[\.\?#]/);
-<<<<<<< HEAD
         fileName = fileName || `${fileNameParts[0]}.${fileNameParts[1]}`;
-=======
-        fileName = fileName || fileNameParts[0];
->>>>>>> Making progress
         const assetFormat = fileNameParts.length >= 2 ? fileNameParts[1] : "";
         const assetType = this.getAssetType(assetFormat);
 
@@ -195,7 +191,7 @@ export class AssetService {
                 const regions: IRegion[] = [];
 
                 // Add Regions from TFRecord in Regions
-                for (let index = 0; index < objectArray[0].length; index++) {
+                for (let index = 0; index < objectArray.textArray.length; index++) {
                     regions.push({
                         id: shortid.generate(),
                         type: RegionType.Rectangle,
@@ -233,7 +229,7 @@ export class AssetService {
         }
     }
 
-    private async getTFRecordObjectArrays(asset: IAsset): Promise<TFRecordObjectArray> {
+    private async getTFRecordObjectArrays(asset: IAsset): Promise<ITFRecordObjectArray> {
         const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
         const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
