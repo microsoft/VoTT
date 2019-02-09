@@ -3,7 +3,6 @@ import { IAsset, AssetType } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
-import { TFRecordAsset } from "./tfrecordAsset";
 
 export type ContentSource = HTMLImageElement | HTMLVideoElement;
 
@@ -83,12 +82,6 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                         autoPlay={autoPlay}
                         onLoaded={this.onAssetLoad}
                         onChildAssetSelected={this.props.onChildAssetSelected}
-                        onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
-                }
-                {asset.type === AssetType.TFRecord &&
-                    <TFRecordAsset asset={asset}
-                        onLoaded={this.onAssetLoad}
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated} />
                 }
