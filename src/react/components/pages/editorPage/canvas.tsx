@@ -1,6 +1,6 @@
 import React, { Fragment, ReactElement } from "react";
 import * as shortid from "shortid";
-import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
+import { CanvasTools } from "vott-ct";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
     AssetState, EditorMode, IAssetMetadata,
@@ -9,6 +9,7 @@ import {
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -45,7 +46,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public componentDidMount = () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
-        this.editor = new Editor(sz);
+        this.editor = new CanvasTools.Editor(sz);
         this.editor.onSelectionEnd = this.onSelectionEnd;
         this.editor.onRegionMove = this.onRegionMove;
         this.editor.onRegionDelete = this.onRegionDelete;
