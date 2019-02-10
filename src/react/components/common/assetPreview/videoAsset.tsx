@@ -211,10 +211,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         for (const childAsset of childAssets) {
             // Calcualte the left position
             const childPosition: number = (childAsset.timestamp / videoDuration);
-            tagTimeLines.push(<div key={childAsset.timestamp} className="videoTimeline"
+            tagTimeLines.push(<div key={childAsset.timestamp}
+                className = {childAsset.state === AssetState.Tagged ?
+                    "video-timeline-tagged" : "video-timeline-untagged"}
                 style={{
                     left: (childPosition * 100) + "%",
-                    border: childAsset.state === AssetState.Tagged ? "1px solid green" : "1px solid yellow",
                  }} />);
         }
 
@@ -239,7 +240,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             const taggedAssetDiv = <div>{tagTimeLines}</div>;
             const renderedAssetDivs = ReactDOMServer.renderToStaticMarkup(taggedAssetDiv);
             const holderElement = document.createElement("div");
-            holderElement.className = "videoTimelineParent";
+            holderElement.className = "video-timeline-parent";
             holderElement.innerHTML = renderedAssetDivs;
             progressHolderElement.appendChild(holderElement);
         }

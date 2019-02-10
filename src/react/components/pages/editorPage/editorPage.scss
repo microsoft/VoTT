@@ -156,19 +156,26 @@
     }
 }
 
-.videoTimelineParent {
+.video-timeline-parent {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: visible;
 }
 
-.videoTimeline {
-    position: absolute;
+.video-timeline {
     width: 2px;
-    height: 100%;
+    &-tagged {
+        position: absolute;
+        height: 100%;
+        border: 1px solid green;
+    }
+    &-untagged {
+        position: absolute;
+        height: 100%;
+        border: 1px solid yellow;
+    }
 }
 
 #ct-zone {
