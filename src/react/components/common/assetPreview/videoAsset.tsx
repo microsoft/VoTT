@@ -9,6 +9,7 @@ import { IAssetProps } from "./assetPreview";
 import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
+import { number } from "prop-types";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -42,6 +43,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     };
 
     private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
+    private timelineElement: Element = null;
 
     public render() {
         const { autoPlay, asset } = this.props;
@@ -89,6 +91,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     public componentDidUpdate(prevProps: Readonly<IVideoAssetProps>) {
         if (this.props.asset !== prevProps.asset) {
             this.setState({ loaded: false });
+        } else {
+            this.addAssetTimelineTags(this.props.childAssets, this.videoPlayer.current.getState().player.duration);
         }
         if (this.props.timestamp !== prevProps.timestamp) {
             this.seekToTimestamp();
@@ -116,36 +120,85 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
-    private seekToNextExpectedFrame = () => {
+    /**
+     * @name - Move to the next expected frame
+     * @description - Moves the videos current position forward one frame based on the current
+     * project settings for frame rate extraction
+     */
+    private moveNextExpectedFrame = () => {
         // Seek forward from the current time to the next logical frame based on project settings
         const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
         const seekTime: number = (this.videoPlayer.current.getState().player.currentTime + frameSkipTime);
         this.seekToTime(seekTime);
     }
 
-    private seekToPreviousExpectedFrame = () => {
+    /**
+     * @name - Move to the previous expected frame
+     * @description - Moves the videos current position backward one frame based on the current
+     * project settings for frame rate extraction
+     */
+    private movePreviousExpectedFrame = () => {
         // Seek backwards from the current time to the next logical frame based on project settings
         const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
         const seekTime: number = (this.videoPlayer.current.getState().player.currentTime - frameSkipTime);
         this.seekToTime(seekTime);
     }
 
-    private seekToTimestamp = () => {
-        if (this.props.timestamp > 0) {
-            this.seekToTime(this.props.timestamp);
+    /**
+     * @name - Move to nearest child frame
+     * @description - Move to the nearest tagged or visited frame from where the video's current
+     * position is, within a certain threshold
+     * @returns true if it moved position; false otherwise
+     */
+    private moveToNearestChildFrame(): boolean {
+        const maximumThreshold = 1; // one second threhsold
+        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        let seekTime: number = timestamp;
+        let nearestDifference = 2;
+        for (const child of this.props.childAssets) {
+            const childTimeDifference = Math.abs(child.timestamp - timestamp);
+            if (childTimeDifference < maximumThreshold && childTimeDifference < nearestDifference) {
+                nearestDifference = childTimeDifference;
+                seekTime = child.timestamp;
+            }
         }
+        if (seekTime !== timestamp) {
+            this.seekToTime(seekTime);
+        }
+
+        return seekTime !== timestamp;
     }
 
+    /**
+     * @name - Seek to timestamp
+     * @description - Moves the videos current position to the position passed in via the props
+     */
+    private seekToTimestamp = () => {
+        this.seekToTime(this.props.timestamp);
+    }
+
+    /**
+     * @name - Go to child asset
+     * @description - Moves the videos current position to a child asset
+     * @member asset - the asset to move the position to
+     */
     private goToChildAsset(asset: IAsset) {
         this.seekToTime(asset.timestamp);
     }
 
+    /**
+     * @name - Seek to time
+     * @description - Seeks the current video to the passed in time stamp, pausing the video before hand
+     * @member seekTime - Time (in seconds) in the video to seek to
+     */
     private seekToTime(seekTime: number) {
-        // Before seeking, pause the video
-        if (!this.videoPlayer.current.getState().player.paused) {
-            this.videoPlayer.current.pause();
+        if (seekTime > 0) {
+            // Before seeking, pause the video
+            if (!this.videoPlayer.current.getState().player.paused) {
+                this.videoPlayer.current.pause();
+            }
+            this.videoPlayer.current.seek(seekTime);
         }
-        this.videoPlayer.current.seek(seekTime);
     }
 
     private onVideoStateChange = (state: Readonly<IVideoPlayerState>, prev: Readonly<IVideoPlayerState>) => {
@@ -155,8 +208,10 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             this.raiseActivated();
             this.seekToTimestamp();
         } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
-            // Video is paused
-            this.raiseChildAssetSelected(state);
+            // Video is paused, first try to move to a nearby frame if one exists
+            if (!this.moveToNearestChildFrame()) {
+                this.raiseChildAssetSelected(state);
+            }
             this.raiseDeactivated();
         } else if (!state.paused && state.paused !== prev.paused) {
             // Video has resumed playing
@@ -204,7 +259,50 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
+    /**
+     * @name - Add Asset Timeline Tags
+     * @description - Draws small lines to show where visited and tagged frames are on
+     * the video line
+     * @member childAssets - Array of child assets in the video
+     * @member videoDuration - Length (in seconds) of the video
+     */
     private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
+        if (!this.timelineElement) {
+            // Find the progress holder so we can add the markers to that
+            const progressControls = document.getElementsByClassName("video-react-progress-control");
+            let progressHolderElement: Element = null;
+
+            // Find any that have an editor page content body type, this will be the one we use
+            Array.from(progressControls).forEach( (element) => {
+                let testingElement: Element = element;
+                while (testingElement) {
+                    if (testingElement.className === "editor-page-content-body") {
+                        progressHolderElement = element;
+                    }
+
+                    testingElement = testingElement.parentElement;
+                }
+            });
+
+            // If we found an element to hold the tags, add them to it
+            if (progressHolderElement) {
+                this.timelineElement = document.createElement("div");
+                this.timelineElement.className = "video-timeline-parent";
+                this.timelineElement.innerHTML = this.getRenderedAssetTagLinesText(childAssets, videoDuration);
+                progressHolderElement.appendChild(this.timelineElement);
+            }
+        } else {
+            this.timelineElement.innerHTML = this.getRenderedAssetTagLinesText(childAssets, videoDuration);
+        }
+    }
+
+    /**
+     * @name - Get Rendered Asset Tag Lines Text
+     * @description - Gets the HTML text for the rendered asset tag lines
+     * @member childAssets - Array of child assets in the video
+     * @member videoDuration - Length (in seconds) of the video
+     */
+    private getRenderedAssetTagLinesText(childAssets: any[], videoDuration: number): string {
         const tagTimeLines: any = [];
 
         // Add some markers for frames that have been visited with yellow and tagged with green
@@ -218,31 +316,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                     left: (childPosition * 100) + "%",
                  }} />);
         }
-
-        // Find the progress holder so we can add the markers to that
-        const progressControls = document.getElementsByClassName("video-react-progress-control");
-        let progressHolderElement: Element = null;
-
-        // Find any that have an editor page content body type, this will be the one we use
-        Array.from(progressControls).forEach( (element) => {
-            let testingElement: Element = element;
-            while (testingElement) {
-                if (testingElement.className === "editor-page-content-body") {
-                    progressHolderElement = element;
-                }
-
-                testingElement = testingElement.parentElement;
-            }
-        });
-
-        // If we found an element to hold the tags, add them to it
-        if (progressHolderElement) {
-            const taggedAssetDiv = <div>{tagTimeLines}</div>;
-            const renderedAssetDivs = ReactDOMServer.renderToStaticMarkup(taggedAssetDiv);
-            const holderElement = document.createElement("div");
-            holderElement.className = "video-timeline-parent";
-            holderElement.innerHTML = renderedAssetDivs;
-            progressHolderElement.appendChild(holderElement);
-        }
+        const taggedAssetDiv = <div>{tagTimeLines}</div>;
+        return ReactDOMServer.renderToStaticMarkup(taggedAssetDiv);
     }
 }
