@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOMServer from "react-dom/server";
 import _ from "lodash";
 import {
     Player, BigPlayButton, ControlBar, CurrentTimeDisplay,
@@ -9,7 +9,6 @@ import { IAssetProps } from "./assetPreview";
 import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
-import { array } from "prop-types";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -61,7 +60,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 src={videoPath}
             >
                 <BigPlayButton position="center" />
-                <ControlBar autoHide={false} >
+                <ControlBar autoHide={false}>
                     <CurrentTimeDisplay order={1.1} />
                     <TimeDivider order={1.2} />
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
@@ -155,8 +154,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             this.raiseLoaded();
             this.raiseActivated();
             this.seekToTimestamp();
-        } else if (state.paused &&
-            (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
+        } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
             // Video is paused
             this.raiseChildAssetSelected(state);
             this.raiseDeactivated();
@@ -169,13 +167,13 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private raiseLoaded = () => {
         this.setState({
             loaded: true,
-            videoDuration: this.videoPlayer.current.getState().player.duration,
         }, () => {
             if (this.props.onLoaded) {
                 this.props.onLoaded(this.videoPlayer.current.video.video);
             }
         });
 
+        // Once the video is loaded, add any asset timeline tags
         this.addAssetTimelineTags(this.props.childAssets, this.videoPlayer.current.getState().player.duration);
     }
 
@@ -221,27 +219,29 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
 
         // Find the progress holder so we can add the markers to that
-        const progressControls: HTMLCollectionOf<Element> =
-            document.getElementsByClassName("video-react-progress-control");
-        let progressHolderControl: Element = null;
+        const progressControls = document.getElementsByClassName("video-react-progress-control");
+        let progressHolderElement: Element = null;
 
         // Find any that have an editor page content body type, this will be the one we use
         Array.from(progressControls).forEach( (element) => {
             let testingElement: Element = element;
             while (testingElement) {
                 if (testingElement.className === "editor-page-content-body") {
-                    progressHolderControl = element;
+                    progressHolderElement = element;
                 }
 
                 testingElement = testingElement.parentElement;
             }
         });
-        console.log("found dom node, ", progressHolderControl);
 
-        if (progressHolderControl) {
-            const taggedAssetDiv: any = <div className="videoTimelineParent">{tagTimeLines}</div>;
-            const renderedAssetDivs = ReactDOM.render(taggedAssetDiv, progressHolderControl);
-            progressHolderControl.appendChild(renderedAssetDivs);
+        // If we found an element to hold the tags, add them to it
+        if (progressHolderElement) {
+            const taggedAssetDiv = <div>{tagTimeLines}</div>;
+            const renderedAssetDivs = ReactDOMServer.renderToStaticMarkup(taggedAssetDiv);
+            const holderElement = document.createElement("div");
+            holderElement.className = "videoTimelineParent";
+            holderElement.innerHTML = renderedAssetDivs;
+            progressHolderElement.appendChild(holderElement);
         }
     }
 }
