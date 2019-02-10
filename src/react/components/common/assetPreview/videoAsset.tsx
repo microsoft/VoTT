@@ -1,15 +1,15 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import _ from "lodash";
 import {
     Player, BigPlayButton, ControlBar, CurrentTimeDisplay,
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType, AssetState, IProject } from "../../../../models/applicationState";
+import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
-import VideoTimelineAssets from "./videoAssetTimelineControl";
-import { number } from "prop-types";
+import { array } from "prop-types";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -19,7 +19,6 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
 
 export interface IVideoAssetState {
     loaded: boolean;
-    videoDuration: number;
 }
 
 export interface IVideoPlayerState {
@@ -41,11 +40,9 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     public state: IVideoAssetState = {
         loaded: false,
-        videoDuration: 0,
     };
 
     private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
-    private controlBar: React.RefObject<ControlBar> = React.createRef<ControlBar>();
 
     public render() {
         const { autoPlay, asset } = this.props;
@@ -64,11 +61,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 src={videoPath}
             >
                 <BigPlayButton position="center" />
-                <ControlBar autoHide={false} ref={this.controlBar} >
-                    <VideoTimelineAssets
-                        childAssets={this.props.childAssets}
-                        videoDuration={this.state.videoDuration}
-                        controlBar={this.controlBar} />
+                <ControlBar autoHide={false} >
                     <CurrentTimeDisplay order={1.1} />
                     <TimeDivider order={1.2} />
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
@@ -182,6 +175,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 this.props.onLoaded(this.videoPlayer.current.video.video);
             }
         });
+
+        this.addAssetTimelineTags(this.props.childAssets, this.videoPlayer.current.getState().player.duration);
     }
 
     private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
@@ -208,6 +203,45 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private raiseDeactivated = () => {
         if (this.props.onDeactivated) {
             this.props.onDeactivated(this.videoPlayer.current.video.video);
+        }
+    }
+
+    private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
+        const tagTimeLines: any = [];
+
+        // Add some markers for frames that have been visited with yellow and tagged with green
+        for (const childAsset of childAssets) {
+            // Calcualte the left position
+            const childPosition: number = (childAsset.timestamp / videoDuration);
+            tagTimeLines.push(<div key={childAsset.timestamp} className="videoTimeline"
+                style={{
+                    left: (childPosition * 100) + "%",
+                    border: childAsset.state === AssetState.Tagged ? "1px solid green" : "1px solid yellow",
+                 }} />);
+        }
+
+        // Find the progress holder so we can add the markers to that
+        const progressControls: HTMLCollectionOf<Element> =
+            document.getElementsByClassName("video-react-progress-control");
+        let progressHolderControl: Element = null;
+
+        // Find any that have an editor page content body type, this will be the one we use
+        Array.from(progressControls).forEach( (element) => {
+            let testingElement: Element = element;
+            while (testingElement) {
+                if (testingElement.className === "editor-page-content-body") {
+                    progressHolderControl = element;
+                }
+
+                testingElement = testingElement.parentElement;
+            }
+        });
+        console.log("found dom node, ", progressHolderControl);
+
+        if (progressHolderControl) {
+            const taggedAssetDiv: any = <div className="videoTimelineParent">{tagTimeLines}</div>;
+            const renderedAssetDivs = ReactDOM.render(taggedAssetDiv, progressHolderControl);
+            progressHolderControl.appendChild(renderedAssetDivs);
         }
     }
 }
