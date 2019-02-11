@@ -10,6 +10,8 @@ import { constants } from "../common/constants";
 import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
+// tslint:disable-next-line:no-var-requires
+const TagColors = require("../react/components/common/tagsInput/tagColors.json");
 
 interface ITFRecordObjectArray {
     xminArray: number[];
@@ -203,15 +205,23 @@ export class AssetService {
     private async getRegionsFromTFRecord(asset: IAsset): Promise<IRegion[]> {
         const objectArray = await this.getTFRecordObjectArrays(asset);
         const regions: IRegion[] = [];
+        const tags: string[] = [];
+        let tagPos = 0;
 
         // Add Regions from TFRecord in Regions
         for (let index = 0; index < objectArray.textArray.length; index++) {
+            tagPos = tags.findIndex((tag) => tag === objectArray.textArray[index]);
+            if (tagPos < 0 ) {
+                tagPos = tags.length;
+                tags.push(objectArray.textArray[index]);
+            }
+
             regions.push({
                 id: shortid.generate(),
                 type: RegionType.Rectangle,
                 tags: [{
-                    name: objectArray.textArray[index], // TODO: Add to tag collection
-                    color: "#FF0000", // TODO: Manage same color
+                    name: objectArray.textArray[index],
+                    color: TagColors[tagPos],
                 }],
                 boundingBox: {
                     height: objectArray.ymaxArray[index],
