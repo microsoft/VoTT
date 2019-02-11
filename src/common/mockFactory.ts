@@ -597,7 +597,7 @@ export default class MockFactory {
         );
     }
 
-    public static createTestRegion(id = null, left = 0, top = 0, height = 100, width = 100): IRegion {
+    public static createTestRegion(id = null, left = 0, top = 0, height = 100, width = 100, points = null): IRegion {
         const testRegion: any = {
             boundingBox: {
                 height,
@@ -605,12 +605,7 @@ export default class MockFactory {
                 left,
                 top,
             },
-            points: [
-                { x: left, y: top },
-                { x: left + width, y: top },
-                { x: left, y: top + height },
-                { x: left + width, y: top + height },
-            ],
+            points: points || [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }],
             tags: [],
             type: "RECTANGLE",
         };

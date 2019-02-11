@@ -13,6 +13,8 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { KeyCodes } from "../../../../common/utils";
+import { KeyEventType, KeyboardManager } from "../../common/keyboardManager/keyboardManager";
 
 describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, ICanvasState, Canvas> = null;
@@ -24,13 +26,25 @@ describe("Editor Canvas", () => {
         return testRegionData;
     }
 
-    function createComponent(canvasProps: ICanvasProps, assetPreviewProps: IAssetPreviewProps)
+    function createComponent(canvasProps: ICanvasProps, assetPreviewProps: IAssetPreviewProps, includeKeyboardManager = false)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
-        return mount(
-            <Canvas {...canvasProps}>
-                <AssetPreview {...assetPreviewProps} />
-            </Canvas>,
-        );
+            if (includeKeyboardManager) {
+                return mount(
+                    <KeyboardManager>
+                        <Canvas {...canvasProps}>
+                            <AssetPreview {...assetPreviewProps} />
+                        </Canvas>
+                    </KeyboardManager>,
+                );
+            }
+            else {
+                return mount(
+                        <Canvas {...canvasProps}>
+                            <AssetPreview {...assetPreviewProps} />
+                        </Canvas>,
+                );
+            }
+        
     }
 
     function createProps() {
@@ -110,7 +124,7 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().canvasEnabled).toEqual(false);
     });
 
-    fit("onSelectionEnd adds region to asset and selects it", () => {
+    it("onSelectionEnd adds region to asset and selects it", () => {
         const testCommit = createTestRegionData();
         const canvas = wrapper.instance();
         const testRegion = MockFactory.createTestRegion(expect.any(String));
@@ -175,11 +189,7 @@ describe("Editor Canvas", () => {
         canvas.onRegionSelected("test1");
         expect(wrapper.instance().state.selectedRegions.length).toEqual(1);
         expect(wrapper.instance().state.selectedRegions)
-            .toMatchObject([MockFactory.createTestRegion("test1")]);
-        canvas.onRegionSelected("test2");
-        expect(wrapper.instance().state.selectedRegions.length).toEqual(2);
-        expect(wrapper.instance().state.selectedRegions)
-            .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
+            .toMatchObject([testRegion1]);
     });
 
     it("Adds tag to selected region by clicking tag", () => {
@@ -197,5 +207,26 @@ describe("Editor Canvas", () => {
         for (const region of wrapper.instance().state.selectedRegions) {
             expect(region.tags.findIndex((tag) => tag === newTag)).toBeGreaterThanOrEqual(0);
         }
+    });
+
+    fit("Shift key sets and unsets multi-select", () => {
+        const props = createProps();
+        const newWrapper = createComponent(props.canvas, props.assetPreview, true);
+
+        expect(newWrapper.find(Canvas).state().multiSelect).toBe(false);
+
+        window.dispatchEvent(new KeyboardEvent(
+            KeyEventType.KeyDown, {
+            key: "Shift",
+        }));
+
+        expect(newWrapper.find(Canvas).state().multiSelect).toBe(true);
+
+        window.dispatchEvent(new KeyboardEvent(
+            KeyEventType.KeyUp, {
+            key: "Shift",
+        }));
+        
+        expect(newWrapper.find(Canvas).state().multiSelect).toBe(false);
     });
 });
