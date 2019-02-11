@@ -2,8 +2,8 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType, IBoundingBox,
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode, ITagMetadata,
+    IPoint, IRegion, RegionType, IBoundingBox, IV1Project, IV1Region
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -232,6 +232,53 @@ export default class MockFactory {
             tags: MockFactory.createTestTags(),
             videoSettings: MockFactory.createVideoSettings(),
             autoSave: true,
+        };
+    }
+
+    /**
+     * Creates fake IV1Project
+     * @param name TODO: fixName of project. project.id = `project-${name}` and project.name = `Project ${name}`
+     */
+    public static createTestV1Project(name: string = "test"): IV1Project {
+        const regions = MockFactory.createTestV1Frame(name);
+
+        return {
+            frames: {},
+            framerate: `Project ${name}`,
+            inputTags: `Security-Token-${name}`,
+            suggestiontype: "suggestiontype",
+            tags: MockFactory.createTestTags(),
+            scd: true,
+            visitedFrames: [],
+            tagColors: [MockFactory.randomColor()],
+        };
+    }
+
+    /**
+     * Creates fake IV1Region (NECESSARY??)
+     * @param name TODO: fix Name of project. project.id = `project-${name}` and project.name = `Project ${name}`
+     */
+    public static createTestV1Frame(name: string = "test"): IV1Region {
+        // const connection = MockFactory.createTestConnection(name);
+
+        return {
+            x1: 1,
+            y1: 1,
+            x2: 2,
+            y2: 2,
+            width: 1,
+            height: 1,
+            box: {
+                x1: 1,
+                y1: 1,
+                x2: 2,
+                y2: 2 },
+            points: [],
+            UID: "123",
+            id: 2,
+            type: "rect",
+            tags: [],
+            name: 1,
         };
     }
 

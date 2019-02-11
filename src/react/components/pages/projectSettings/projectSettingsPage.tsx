@@ -86,7 +86,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     private onFormSubmit = async (project: IProject) => {
         const isNew = !(!!project.id);
 
-        await this.props.projectActions.ensureSecurityToken(project);
+        await this.props.applicationActions.ensureSecurityToken(this.props.appSettings, project);
         await this.props.projectActions.saveProject(project);
 
         toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }));

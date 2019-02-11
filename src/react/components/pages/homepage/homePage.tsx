@@ -4,6 +4,7 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions"
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
 import Confirm from "../../common/confirm/confirm";
@@ -15,13 +16,15 @@ import {
     IApplicationState, IConnection, IProject,
     ErrorCode, AppError, IAppError, IV1Project, IAppSettings,
 } from "../../../../models/applicationState";
-import IMessageBox from "../../common/messageBox/messageBox"
+import IMessageBox from "../../common/messageBox/messageBox";
 import ImportService from "../../../../services/importService";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
+    applicationActions: IApplicationActions;
+    appSettings: IAppSettings;
 }
 
 export interface IHomepageState {
@@ -32,12 +35,14 @@ function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
         connections: state.connections,
+        appSettings: state.appSettings,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        applicationActions: bindActionCreators(applicationActions, dispatch),
     };
 }
 
@@ -66,6 +71,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
         this.deleteProject = this.deleteProject.bind(this);
         this.handleOpenCloudProjectClick = this.handleOpenCloudProjectClick.bind(this);
+        this.convertProject = this.convertProject.bind(this);
 
     private filePicker: React.RefObject<FilePicker> = React.createRef();
     private deleteConfirm: React.RefObject<Confirm> = React.createRef();
@@ -196,13 +202,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
     private convertProject = async (project: any) => {
         const importService = new ImportService();
+        let projectJson;
         try {
-            const projectJson = await importService.convertV1(project);
-            this.props.actions.ensureSecurityToken(projectJson);
-            await this.loadSelectedProject(projectJson);
+            projectJson = await importService.convertV1(project);
         } catch (e) {
             throw new AppError(ErrorCode.ProjectUploadError, "Error uploading v1 project file");
         }
-
+        this.props.applicationActions.ensureSecurityToken(this.props.appSettings, projectJson);
+        await this.loadSelectedProject(projectJson);
     }
 }

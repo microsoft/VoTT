@@ -4,8 +4,9 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState, IProject, AppError, ErrorCode } from "../../../../models/applicationState";
+import { IApplicationState, IProject, AppError, ErrorCode, IAppSettings } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
@@ -178,6 +179,11 @@ describe("Homepage Component", () => {
                 state: null,
             },
             actions: (projectActions as any) as IProjectActions,
+            applicationActions: (applicationActions as any) as IApplicationActions,
+            appSettings: {
+                devToolsEnabled: false,
+                securityTokens: []
+            },
             match: {
                 params: {},
                 isExact: true,
