@@ -9,7 +9,6 @@ import { IAssetProps } from "./assetPreview";
 import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
-import { number } from "prop-types";
 
 export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
     autoPlay?: boolean;
@@ -24,7 +23,6 @@ export interface IVideoAssetState {
 export interface IVideoPlayerState {
     readyState: number;
     paused: boolean;
-    autoPaused: boolean;
     seeking: boolean;
     currentTime: number;
 }
@@ -63,8 +61,18 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             >
                 <BigPlayButton position="center" />
                 <ControlBar autoHide={false}>
-                    <CurrentTimeDisplay order={1.1} />
-                    <TimeDivider order={1.2} />
+                    <CustomVideoPlayerButton order={1.1}
+                        tooltip="Previous Frame"
+                        onClick={this.movePreviousExpectedFrame}>
+                        <i className="fas fa-caret-left fa-lg" />
+                    </CustomVideoPlayerButton>
+                    <CustomVideoPlayerButton order={1.2}
+                        tooltip="Next Frame"
+                        onClick={this.moveNextExpectedFrame}>
+                        <i className="fas fa-caret-right fa-lg" />
+                    </CustomVideoPlayerButton>
+                    <CurrentTimeDisplay order={1.3} />
+                    <TimeDivider order={1.4} />
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
                     <VolumeMenuButton enabled order={7.2} />
                     <CustomVideoPlayerButton order={8.1}

@@ -15,6 +15,7 @@ describe("Video Asset Component", () => {
     const onDeactivatedHandler = jest.fn();
     const onChildSelectedHandler = jest.fn();
     const defaultProps: IVideoAssetProps = {
+        project: MockFactory.createTestProject("test-project"),
         asset: MockFactory.createVideoTestAsset("test-video"),
         autoPlay: false,
         onLoaded: onLoadedHandler,
@@ -41,7 +42,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent();
 
         expect(wrapper.find(Player).exists()).toBe(true);
-        expect(wrapper.find(CustomVideoPlayerButton).length).toEqual(2);
+        expect(wrapper.find(CustomVideoPlayerButton).length).toEqual(4);
     });
 
     it("resets loaded state when asset changes", () => {
@@ -87,7 +88,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent(props);
         mockLoaded();
 
-        wrapper.find(CustomVideoPlayerButton).at(1).simulate("click");
+        wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
@@ -119,11 +120,67 @@ describe("Video Asset Component", () => {
         wrapper = createComponent(props);
         mockLoaded();
 
-        wrapper.find(CustomVideoPlayerButton).at(0).simulate("click");
+        wrapper.find(CustomVideoPlayerButton).at(2).simulate("click");
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
         expect(onChildSelectedHandler).toBeCalledWith(expectedAsset);
+    });
+
+    it("moves to the next expected frame when clicking the next button", () => {
+        const childAssets = MockFactory.createChildVideoAssets(defaultProps.asset);
+        const currentAsset = childAssets[0];
+
+        videoPlayerMock.prototype.getState = jest.fn(() => {
+            return {
+                player: {
+                    currentTime: currentAsset.timestamp,
+                },
+            };
+        });
+
+        const props: IVideoAssetProps = {
+            ...defaultProps,
+            childAssets,
+            timestamp: currentAsset.timestamp,
+        };
+
+        wrapper = createComponent(props);
+        mockLoaded();
+
+        wrapper.find(CustomVideoPlayerButton).at(1).simulate("click");
+
+        expect(videoPlayerMock.prototype.pause).toBeCalled();
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(
+           currentAsset.timestamp + (1 / defaultProps.project.videoSettings.frameExtractionRate));
+    });
+
+    it("moves to the previous expected frame when clicking the back button", () => {
+        const childAssets = MockFactory.createChildVideoAssets(defaultProps.asset);
+        const currentAsset = childAssets[4];
+
+        videoPlayerMock.prototype.getState = jest.fn(() => {
+            return {
+                player: {
+                    currentTime: currentAsset.timestamp,
+                },
+            };
+        });
+
+        const props: IVideoAssetProps = {
+            ...defaultProps,
+            childAssets,
+            timestamp: currentAsset.timestamp,
+        };
+
+        wrapper = createComponent(props);
+        mockLoaded();
+
+        wrapper.find(CustomVideoPlayerButton).at(0).simulate("click");
+
+        expect(videoPlayerMock.prototype.pause).toBeCalled();
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(
+            currentAsset.timestamp - (1 / defaultProps.project.videoSettings.frameExtractionRate));
     });
 
     it("raises the onLoad and activated handlers when the video has been loaded", () => {

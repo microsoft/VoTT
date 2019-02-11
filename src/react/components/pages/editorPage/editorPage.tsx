@@ -138,6 +138,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 selectionMode={this.state.selectionMode}
                                 project={this.props.project}>
                                 <AssetPreview
+                                    project={this.props.project}
                                     autoPlay={true}
                                     onChildAssetSelected={this.onChildAssetSelected}
                                     asset={this.state.selectedAsset.asset}
