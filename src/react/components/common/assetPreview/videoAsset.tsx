@@ -311,6 +311,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @member videoDuration - Length (in seconds) of the video
      */
     private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
+        const innerHtml: string = this.getRenderedAssetTagLinesText(childAssets, videoDuration);
         if (!this.timelineElement) {
             // Find the progress holder so we can add the markers to that
             const progressControls = document.getElementsByClassName("video-react-progress-control");
@@ -332,11 +333,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             if (progressHolderElement) {
                 this.timelineElement = document.createElement("div");
                 this.timelineElement.className = "video-timeline-parent";
-                this.timelineElement.innerHTML = this.getRenderedAssetTagLinesText(childAssets, videoDuration);
+                this.timelineElement.innerHTML = innerHtml;
                 progressHolderElement.appendChild(this.timelineElement);
             }
         } else {
-            this.timelineElement.innerHTML = this.getRenderedAssetTagLinesText(childAssets, videoDuration);
+            this.timelineElement.innerHTML = innerHtml;
         }
     }
 
