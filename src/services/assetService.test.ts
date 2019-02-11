@@ -4,6 +4,8 @@ import MockFactory from "../common/mockFactory";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
+import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
+import HtmlFileReader from "../common/htmlFileReader";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
@@ -53,6 +55,12 @@ describe("Asset Service", () => {
             const path = "C:\\dir1\\dir2\\asset1.mp4";
             const asset = AssetService.createAssetFromFilePath(path);
             expect(asset.type).toEqual(AssetType.Video);
+        });
+
+        it("detects a tfrecord asset by common file extension", () => {
+            const path = "C:\\dir1\\dir2\\asset1.tfrecord";
+            const asset = AssetService.createAssetFromFilePath(path);
+            expect(asset.type).toEqual(AssetType.TFRecord);
         });
 
         it("detects an asset as unkonwn if it doesn't match well known file extensions", () => {
@@ -196,6 +204,58 @@ describe("Asset Service", () => {
             expect(assets[0].path).toEqual("file:C:/Desktop/asset0.jpg");
             expect(assets[1].path).toEqual("https://image.com/asset1.jpg");
         });
+    });
 
+    describe("TFRecords Methods", () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const testAsset = MockFactory.createTestAsset("tfrecord",
+                                                      AssetState.NotVisited,
+                                                      "C:\\Desktop\\asset.tfrecord",
+                                                      AssetType.TFRecord);
+        let assetService: AssetService = null;
+        let assetProviderMock: IAssetProvider = null;
+        let storageProviderMock: any = null;
+        let tfrecords: Buffer;
+
+        beforeEach(() => {
+            assetProviderMock = {
+                getAssets: () => Promise.resolve([testAsset]),
+            };
+
+            storageProviderMock = {
+                readText: jest.fn((filePath) => {
+                    return new Error("File not found");
+                }),
+                writeText: jest.fn((filePath, contents) => true),
+            };
+
+            AssetProviderFactory.create = jest.fn(() => assetProviderMock);
+            StorageProviderFactory.create = jest.fn(() => storageProviderMock);
+
+            assetService = new AssetService(testProject);
+
+            let builder: TFRecordsBuilder;
+            builder = new TFRecordsBuilder();
+
+            builder.addArrayFeature("image/object/bbox/xmin", FeatureType.Float, [1.0, 1.0]);
+            builder.addArrayFeature("image/object/bbox/ymin", FeatureType.Float, [2.0, 2.0]);
+            builder.addArrayFeature("image/object/bbox/xmax", FeatureType.Float, [3.0, 3.0]);
+            builder.addArrayFeature("image/object/bbox/ymax", FeatureType.Float, [4.0, 4.0]);
+            builder.addArrayFeature("image/object/class/text", FeatureType.String, ["a", "b"]);
+
+            const buffer = builder.build();
+            tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
+        });
+
+        HtmlFileReader.getAssetArray = jest.fn((asset) => {
+            return Promise.resolve<Uint8Array>(new Uint8Array(tfrecords));
+        });
+
+        it("Loads the asset metadata from the tfrecord file", async () => {
+            const result = await assetService.getAssetMetadata(testAsset);
+
+            expect(result).not.toBeNull();
+            expect(result.asset).toEqual(testAsset);
+        });
     });
 });

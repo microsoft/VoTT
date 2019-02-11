@@ -246,7 +246,6 @@ export class AssetService {
     private async getTFRecordObjectArrays(asset: IAsset): Promise<ITFRecordObjectArray> {
         const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
-        const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
 
         const xminArray = reader.getArrayFeature(0, "image/object/bbox/xmin", FeatureType.Float) as number[];
         const yminArray = reader.getArrayFeature(0, "image/object/bbox/ymin", FeatureType.Float) as number[];
