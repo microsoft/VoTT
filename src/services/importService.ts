@@ -15,9 +15,6 @@ const TagColors = require("../react/components/common/tagsInput/tagColors.json")
  */
 export interface IImportService {
     convertV1(project: any): Promise<IProject>;
-    // private generateConnections(project: any): IConnection[];
-    // parseTags(project: any): ITag[];
-    // generateAssets(project: any): IAssetMetadata[];
 }
 
 /**

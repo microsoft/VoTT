@@ -141,7 +141,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private onProjectFileUpload = async (e, project) => {
-        let projectJson: IProject; 
+        let projectJson: IProject;
 
         try {
             projectJson = JSON.parse(project.content);
