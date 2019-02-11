@@ -87,7 +87,6 @@ describe("TFPascalVOC Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion],
-                    timestamp: null,
                 };
 
                 return Promise.resolve(assetMetadata);

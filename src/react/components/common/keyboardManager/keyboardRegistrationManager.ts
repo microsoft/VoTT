@@ -28,6 +28,7 @@ export class KeyboardRegistrationManager {
      * @param handler The keyboard event handler
      */
     public addHandler(keyEventType: KeyEventType, keyCode: string, handler: KeyboardEventHandler): () => void {
+        Guard.null(keyEventType);
         Guard.null(keyCode);
         Guard.null(handler);
 

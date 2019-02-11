@@ -153,6 +153,14 @@ export interface IAppStrings {
             saveProject: string;
             exportProject: string;
         }
+        videoPlayer: {
+            nextTaggedFrame: {
+                tooltip: string,
+            },
+            previousTaggedFrame: {
+                tooltip: string,
+            },
+        }
         assetError: string;
     };
     export: {

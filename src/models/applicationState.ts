@@ -204,6 +204,8 @@ export interface IAsset {
     path: string;
     size: ISize;
     format?: string;
+    timestamp?: number;
+    parent?: IAsset;
 }
 
 /**
@@ -211,13 +213,10 @@ export interface IAsset {
  * @description - Format to store asset metadata for each asset within a project
  * @member asset - References an asset within the project
  * @member regions - The list of regions drawn on the asset
- * @member selectedRegion - The currently selected regions
- * @member timestamp - The timestamp of the asset typically used for video durations / frames
  */
 export interface IAssetMetadata {
     asset: IAsset;
     regions: IRegion[];
-    timestamp?: string;
 }
 
 /**
@@ -283,6 +282,7 @@ export enum AssetType {
     Unknown = 0,
     Image = 1,
     Video = 2,
+    VideoFrame = 3,
 }
 
 /**

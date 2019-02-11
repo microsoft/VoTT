@@ -151,6 +151,14 @@ export const spanish: IAppStrings = {
             saveProject: "Guardar Proyecto",
             exportProject: "Exprtar Proyecto",
         },
+        videoPlayer: {
+            previousTaggedFrame: {
+                tooltip: "Fotograma etiquetado anterior",
+            },
+            nextTaggedFrame: {
+                tooltip: "Siguiente marco etiquetado",
+            },
+        },
         assetError: "No se puede mostrar el activo",
     },
     export: {
