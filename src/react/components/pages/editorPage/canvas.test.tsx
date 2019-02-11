@@ -225,7 +225,7 @@ describe("Editor Canvas", () => {
         expect(newWrapper.find(Canvas).state().multiSelect).toBe(false);
     });
 
-    it("Multiple regions can be selected when shift key is pressed", () => {
+    function getPopulatedWrapper() {
         const props = createProps();
         const newWrapper = createComponent(props.canvas, props.assetPreview, true);
 
@@ -235,11 +235,19 @@ describe("Editor Canvas", () => {
         newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion1);
         newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion2);
 
+        return newWrapper;
+    }
+
+    function dispatchKeyEvent(key, eventType= KeyEventType.KeyDown) {
+        window.dispatchEvent(new KeyboardEvent(eventType, {key}));
+    }
+
+    it("Multiple regions can be selected when shift key is pressed", () => {
+
+        const newWrapper = getPopulatedWrapper();
+
         // Enable multi-select
-        window.dispatchEvent(new KeyboardEvent(
-            KeyEventType.KeyDown, {
-            key: "Shift",
-        }));
+        dispatchKeyEvent("Shift");
 
         const canvas = newWrapper.find(Canvas).instance() as Canvas;
 
@@ -249,10 +257,7 @@ describe("Editor Canvas", () => {
         expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(2);
 
         // Disable multi-select
-        window.dispatchEvent(new KeyboardEvent(
-            KeyEventType.KeyUp, {
-            key: "Shift",
-        }));
+        dispatchKeyEvent("Shift", KeyEventType.KeyUp);
 
         canvas.onRegionSelected("test1");
         canvas.onRegionSelected("test2");
@@ -261,27 +266,15 @@ describe("Editor Canvas", () => {
     });
 
     it("Regions are removed from asset and pasted into asset with paste command", () => {
-        const props = createProps();
-        const newWrapper = createComponent(props.canvas, props.assetPreview, true);
-
-        const testRegion1 = MockFactory.createTestRegion("test1");
-        const testRegion2 = MockFactory.createTestRegion("test2");
-
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion1);
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion2);
+        const newWrapper = getPopulatedWrapper();
 
         // Enable multi-select
-        window.dispatchEvent(new KeyboardEvent(
-            KeyEventType.KeyDown, {
-            key: "Shift",
-        }));
+        dispatchKeyEvent("Shift");
 
         const canvas = newWrapper.find(Canvas).instance() as Canvas;
 
         canvas.onRegionSelected("test1");
         canvas.onRegionSelected("test2");
-
-        expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(2);
 
         window.dispatchEvent(new KeyboardEvent(
             KeyEventType.KeyDown, {
@@ -299,20 +292,10 @@ describe("Editor Canvas", () => {
     });
 
     it("Regions are copied and pasted into same asset with paste command", () => {
-        const props = createProps();
-        const newWrapper = createComponent(props.canvas, props.assetPreview, true);
-
-        const testRegion1 = MockFactory.createTestRegion("test1");
-        const testRegion2 = MockFactory.createTestRegion("test2");
-
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion1);
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion2);
+        const newWrapper = getPopulatedWrapper();
 
         // Enable multi-select
-        window.dispatchEvent(new KeyboardEvent(
-            KeyEventType.KeyDown, {
-            key: "Shift",
-        }));
+        dispatchKeyEvent("Shift");
 
         const canvas = newWrapper.find(Canvas).instance() as Canvas;
 
@@ -337,44 +320,31 @@ describe("Editor Canvas", () => {
     });
 
     it("All regions are selected with select all command", () => {
-        const props = createProps();
-        const newWrapper = createComponent(props.canvas, props.assetPreview, true);
-
-        const testRegion1 = MockFactory.createTestRegion("test1");
-        const testRegion2 = MockFactory.createTestRegion("test2");
-        const testRegion3 = MockFactory.createTestRegion("test3");
-
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion1);
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion2);
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion3);
+        const newWrapper = getPopulatedWrapper();
 
         window.dispatchEvent(new KeyboardEvent(
             KeyEventType.KeyDown, {
             key: "Ctrl+a",
         }));
 
-        expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(3);
+        expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(2);
     });
 
     it("All regions are deleted with clear command", () => {
-        const props = createProps();
-        const newWrapper = createComponent(props.canvas, props.assetPreview, true);
+        const newWrapper = getPopulatedWrapper();
 
-        const testRegion1 = MockFactory.createTestRegion("test1");
-        const testRegion2 = MockFactory.createTestRegion("test2");
-        const testRegion3 = MockFactory.createTestRegion("test3");
+        window.dispatchEvent(new KeyboardEvent(
+            KeyEventType.KeyDown, {
+            key: "Ctrl+a",
+        }));
 
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion1);
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion2);
-        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion3);
-
-        expect(newWrapper.find(Canvas).prop("selectedAsset").regions).toHaveLength(3);
+        expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(2);
 
         window.dispatchEvent(new KeyboardEvent(
             KeyEventType.KeyDown, {
             key: "Ctrl+d",
         }));
-        expect(newWrapper.find(Canvas).prop("selectedAsset").regions).toHaveLength(0);
 
+        expect(newWrapper.find(Canvas).prop("selectedAsset").regions).toHaveLength(0);
     });
 });
