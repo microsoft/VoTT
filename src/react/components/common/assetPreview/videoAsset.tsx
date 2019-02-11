@@ -93,13 +93,13 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                     <VolumeMenuButton enabled order={7.2} />
                     <CustomVideoPlayerButton order={8.1}
                         tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
-                        accelerator="ArrowLeft + Ctrl"
+                        accelerator="Ctrl + ArrowLeft"
                         onClick={this.movePreviousTaggedFrame}>
                         <i className="fas fa-caret-left fa-lg" />
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={8.2}
                         tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
-                        accelerator="ArrowRight + Ctrl"
+                        accelerator="Ctrl + ArrowRight"
                         onClick={this.moveNextTaggedFrame}>
                         <i className="fas fa-caret-right fa-lg" />
                     </CustomVideoPlayerButton>

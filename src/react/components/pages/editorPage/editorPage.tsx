@@ -86,13 +86,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
-    // private additionalSettings: IAssetPreviewSettings = {videoSettings: this.state.project.videoSettings};
 
     public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
         if (this.props.project) {
             await this.loadProjectAssets();
-            // this.additionalSettings = {videoSettings: this.state.project.videoSettings};
         } else if (projectId) {
             const project = this.props.recentProjects.find((project) => project.id === projectId);
             await this.props.actions.loadProject(project);
@@ -102,7 +100,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public async componentDidUpdate() {
         if (this.props.project && this.state.assets.length === 0) {
             await this.loadProjectAssets();
-            // this.additionalSettings = {videoSettings: this.state.project.videoSettings};
         }
     }
 
