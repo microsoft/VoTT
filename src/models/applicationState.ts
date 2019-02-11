@@ -283,6 +283,7 @@ export enum AssetType {
     Image = 1,
     Video = 2,
     VideoFrame = 3,
+    TFRecord = 4,
 }
 
 /**
