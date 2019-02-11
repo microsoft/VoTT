@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "title": "${strings.export.providers.azureCV.displayName}",
+    "title": "${strings.export.providers.tfPascalVoc.displayName}",
     "properties": {
         "assetState": {
             "type": "string",

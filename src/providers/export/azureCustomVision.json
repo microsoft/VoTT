@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "title": "${strings.export.providers.tfPascalVoc.displayName}",
+    "title": "${strings.export.providers.azureCV.displayName}",
     "required": [
         "assetState",
         "apiKey"
