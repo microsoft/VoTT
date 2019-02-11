@@ -1,89 +1,103 @@
-import React from "react";
+import React, { Fragment, ReactElement } from "react";
 import * as shortid from "shortid";
-import { BigPlayButton, ControlBar, CurrentTimeDisplay,
-    PlaybackRateMenuButton, Player, TimeDivider, VolumeMenuButton } from "video-react";
 import { CanvasTools } from "vott-ct";
-import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
-import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
-import { strings } from "../../../../common/strings";
-import { AppError, AssetState, AssetType, EditorMode,
-    ErrorCode, IAssetMetadata, IProject, IRegion, ITag, RegionType } from "../../../../models/applicationState";
+import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import {
+    AssetState, EditorMode, IAssetMetadata,
+    IProject, IRegion, ITag, RegionType,
+} from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
+import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
-export interface ICanvasProps {
+export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
-    onAssetMetadataChanged: (assetMetadata: IAssetMetadata) => void;
     editorMode: EditorMode;
+    selectionMode: SelectionMode;
     project: IProject;
+    children?: ReactElement<AssetPreview>;
+    onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
 }
 
-interface ICanvasState {
-    loaded: boolean;
+export interface ICanvasState {
+    contentSource: ContentSource;
     selectedRegions?: IRegion[];
     canvasEnabled: boolean;
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
+    public static defaultProps: ICanvasProps = {
+        selectionMode: SelectionMode.NONE,
+        editorMode: EditorMode.Select,
+        selectedAsset: null,
+        project: null,
+    };
+
     public editor: Editor;
 
     public state: ICanvasState = {
-        loaded: false,
+        contentSource: null,
         selectedRegions: [],
         canvasEnabled: true,
     };
 
-    private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
+    private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
 
-    public componentDidMount = async () => {
+    public componentDidMount = () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
         this.editor = new CanvasTools.Editor(sz);
         this.editor.onSelectionEnd = this.onSelectionEnd;
         this.editor.onRegionMove = this.onRegionMove;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
+        this.editor.setSelectionMode(this.props.selectionMode, null);
 
-        // Upload background image for selection
-        await this.updateEditor();
+        window.addEventListener("resize", this.onWindowResize);
+
+        this.clearAllRegions();
     }
 
-    public componentDidUpdate = async (prevProps) => {
-        if (this.props.selectedAsset.asset.path !== prevProps.selectedAsset.asset.path) {
-            await this.updateEditor();
+    public componentWillUnmount() {
+        window.removeEventListener("resize", this.onWindowResize);
+    }
+
+    public componentDidUpdate = (prevProps: Readonly<ICanvasProps>) => {
+        if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
+            this.clearAllRegions();
             if (this.props.selectedAsset.regions.length) {
                 this.updateSelected([]);
             }
         }
+
+        if (this.props.selectionMode !== prevProps.selectionMode) {
+            this.editor.setSelectionMode(this.props.selectionMode, null);
+        }
     }
 
     public render = () => {
-        const { selectedAsset } = this.props;
-
         return (
-            <div id="ct-zone" className={this.state.canvasEnabled ? "canvas-enabled" : "canvas-disabled"}>
-                {selectedAsset.asset.type === AssetType.Video &&
-                    <Player ref={this.videoPlayer}
-                        fluid={false} width={"100%"} height={"100%"}
-                        autoPlay={true}
-                        poster={""}
-                        src={`${selectedAsset.asset.path}`}
-                    >
-                        <BigPlayButton position="center" />
-                        <ControlBar>
-                            <CurrentTimeDisplay order={1.1} />
-                            <TimeDivider order={1.2} />
-                            <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
-                            <VolumeMenuButton enabled order={7.2} />
-                        </ControlBar>
-                    </Player>
-                }
-                <div id="selection-zone" className={`asset-${this.getAssetType()}`}>
-                    <div id="editor-zone" className="full-size" />
+            <Fragment>
+                <div id="ct-zone"
+                    ref={this.canvasZone}
+                    className={this.state.canvasEnabled ? "canvas-enabled" : "canvas-disabled"}>
+                    <div id="selection-zone">
+                        <div id="editor-zone" className="full-size" />
+                    </div>
                 </div>
-            </div>
+                {this.renderChildren()}
+            </Fragment>
         );
+    }
+
+    /**
+     * Add tag to or remove tag from selected regions
+     * @param tag Tag to apply to or remove from selected regions
+     */
+    public onTagClicked = (tag: ITag) => {
+        for (const region of this.state.selectedRegions) {
+            this.toggleTagOnRegion(region, tag);
+        }
     }
 
     /**
@@ -91,7 +105,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {RegionData} commit the RegionData of created region
      * @returns {void}
      */
-    public onSelectionEnd = (commit: RegionData) => {
+    private onSelectionEnd = (commit: RegionData) => {
         const id = shortid.generate();
 
         this.editor.RM.addRegion(id, commit, null);
@@ -122,23 +136,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     /**
-     * Add tag to or remove tag from selected regions
-     * @param tag Tag to apply to or remove from selected regions
-     */
-    public onTagClicked = (tag: ITag) => {
-        for (const region of this.state.selectedRegions) {
-            this.toggleTagOnRegion(region, tag);
-        }
-    }
-
-    /**
      * Method called when moving a region already in the editor
      * @param {string} id the id of the region that was moved
      * @param {RegionData} regionData the RegionData of moved region
      * @returns {void}
      */
-    public onRegionMove = (id: string, regionData: RegionData) => {
-        const ct = CanvasTools;
+    private onRegionMove = (id: string, regionData: RegionData) => {
         const currentAssetMetadata = this.props.selectedAsset;
         const movedRegionIndex = currentAssetMetadata.regions.findIndex((region) => region.id === id);
         const movedRegion = currentAssetMetadata.regions[movedRegionIndex];
@@ -158,7 +161,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {string} id the id of the deleted region
      * @returns {void}
      */
-    public onRegionDelete = (id: string) => {
+    private onRegionDelete = (id: string) => {
         // Remove from Canvas Tools
         this.editor.RM.deleteRegionById(id);
 
@@ -181,7 +184,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {boolean} multiselection boolean whether multiselect is active
      * @returns {void}
      */
-    public onRegionSelected = (id: string, multiselect: boolean) => {
+    private onRegionSelected = (id: string, multiselect: boolean) => {
         let selectedRegions = this.state.selectedRegions;
 
         if (multiselect) {
@@ -192,6 +195,73 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 this.props.selectedAsset.regions.find((region) => region.id === id)];
         }
         this.updateSelected(selectedRegions);
+    }
+
+    private renderChildren = () => {
+        return React.cloneElement(this.props.children, {
+            onLoaded: this.onAssetLoaded,
+            onActivated: this.onAssetActivated,
+            onDeactivated: this.onAssetDeactivated,
+        });
+    }
+
+    /**
+     * Raised when the underlying asset has completed loading
+     */
+    private onAssetLoaded = async (contentSource: ContentSource) => {
+        this.positionCanvas(contentSource);
+        await this.setContentSource(contentSource);
+        this.updateRegions();
+    }
+
+    /**
+     * Raised when the asset is taking control over the rendering
+     */
+    private onAssetActivated = (contentSource: ContentSource) => {
+        this.clearAllRegions();
+        this.setState({
+            canvasEnabled: false,
+        });
+    }
+
+    /**
+     * Raise when the asset is handing off control of rendering
+     */
+    private onAssetDeactivated = async (contentSource: ContentSource) => {
+        this.positionCanvas(contentSource);
+        await this.setContentSource(contentSource);
+        this.updateRegions();
+
+        this.setState({
+            canvasEnabled: true,
+        });
+    }
+
+    /**
+     * Set the loaded asset content source into the canvas tools canvas
+     */
+    private setContentSource = async (contentSource: ContentSource) => {
+        this.setState({ contentSource });
+        try {
+            await this.editor.addContentSource(contentSource);
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    /**
+     * Positions the canvas tools drawing surface to be exactly over the asset content
+     */
+    private positionCanvas = (contentSource: ContentSource) => {
+        const canvas = this.canvasZone.current;
+        canvas.style.top = `${contentSource.offsetTop}px`;
+        canvas.style.left = `${contentSource.offsetLeft}px`;
+        canvas.style.width = `${contentSource.offsetWidth}px`;
+        canvas.style.height = `${contentSource.offsetHeight}px`;
+    }
+
+    private onWindowResize = () => {
+        this.positionCanvas(this.state.contentSource);
     }
 
     /**
@@ -205,118 +275,37 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
     }
 
-    private addRegions = (regions: IRegion[]) => {
-        for (const region of regions) {
-            this.editor.RM.addRegion(
-                region.id,
-                CanvasHelpers.getRegionData(region),
-                CanvasHelpers.getTagsDescriptor(region));
-        }
-    }
-
     /**
      * Updates the background of the canvas and draws the asset's regions
      */
-    private updateEditor = async () => {
+    private clearAllRegions = () => {
         this.editor.RM.deleteAllRegions();
-        await this.loadAsset();
-    }
-
-    /**
-     * Loads the asset into the canvas editor
-     */
-    private loadAsset = async () => {
-        // We need to check if we're looking for a video or image
-        if (this.props.selectedAsset.asset.type === AssetType.Image) {
-            await this.loadImage();
-        } else if (this.props.selectedAsset.asset.type === AssetType.Video) {
-            await this.loadVideo();
-        } else {
-            // We don't know what type of asset this is?
-            throw new AppError(ErrorCode.CanvasError, strings.editorPage.assetError);
-        }
-    }
-
-    /**
-     *  loads a video into the canvas
-     */
-    private loadVideo = () => {
-        this.setState({ canvasEnabled: false });
-        this.videoPlayer.current.subscribeToStateChange(this.onVideoStateChange);
-
-        return Promise.resolve();
-    }
-
-    /**
-     * loads an image into the canvas
-     */
-    private loadImage = () => {
-        return new Promise((resolve) => {
-            const image = new Image();
-            image.addEventListener("load", async (e) => {
-                await this.editor.addContentSource(e.target as HTMLImageElement);
-                this.updateRegions();
-                resolve();
-            });
-            image.src = this.props.selectedAsset.asset.path;
-        });
-    }
-
-    /**
-     * Reacts to changes in the video player state
-     * @param state The current state of the video player
-     * @param prev The previous state of the video player
-     */
-    private onVideoStateChange = async (state, prev) => {
-        // If the video is paused, add this frame to the editor content
-        if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
-            // If we're paused, make sure we're behind the canvas so we can tag
-            const video = this.videoPlayer.current.video.video as HTMLVideoElement;
-            if (video.videoHeight > 0 && video.videoWidth > 0) {
-                await this.editor.addContentSource(video);
-            }
-            this.setState({ canvasEnabled: true });
-            this.updateRegions();
-        } else if (!state.paused && state.paused !== prev.paused) {
-            // We need to make sure we're on top if we are playing
-            this.setState({ canvasEnabled: false });
-        }
     }
 
     private updateRegions = () => {
-        if (this.props.selectedAsset.regions.length) {
-            this.props.selectedAsset.regions.forEach((region: IRegion) => {
-                const loadedRegionData = CanvasHelpers.getRegionData(region);
-                this.editor.RM.addRegion(
-                    region.id,
-                    this.editor.scaleRegionToFrameSize(loadedRegionData),
-                    CanvasHelpers.getTagsDescriptor(region));
-
-                if (this.state.selectedRegions) {
-                    this.setState({
-                        selectedRegions: [this.props.selectedAsset.regions[
-                            this.props.selectedAsset.regions.length - 1]],
-                    });
-                }
-            });
+        if (!this.props.selectedAsset.regions || this.props.selectedAsset.regions.length === 0) {
+            return;
         }
+
+        // Add regions to the canvas
+        this.props.selectedAsset.regions.forEach((region: IRegion) => {
+            const loadedRegionData = CanvasHelpers.getRegionData(region);
+            this.editor.RM.addRegion(
+                region.id,
+                this.editor.scaleRegionToFrameSize(loadedRegionData),
+                CanvasHelpers.getTagsDescriptor(region));
+        });
+
+        // Set selected region to the last region
+        this.setState({
+            selectedRegions: [this.props.selectedAsset.regions[this.props.selectedAsset.regions.length - 1]],
+        });
     }
 
     private updateSelected = (selectedRegions: IRegion[]) => {
         this.setState({
             selectedRegions,
         });
-    }
-
-    private getAssetType = () => {
-        switch (this.props.selectedAsset.asset.type) {
-            case AssetType.Image:
-                return "image";
-            case AssetType.Video:
-                return "video";
-            default:
-                return "unknown";
-        }
     }
 
     private editorModeToType = (editorMode: EditorMode) => {
