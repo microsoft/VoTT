@@ -78,7 +78,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                         appSettings={this.props.appSettings}
                         onSubmit={this.onFormSubmit}
                         onCancel={this.onFormCancel} />
-                </div>a
+                </div>
             </div>
         );
     }
