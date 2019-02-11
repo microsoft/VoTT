@@ -8,11 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-<<<<<<< HEAD
     IAssetMetadata, IProject, IAssetVideoSettings, ITag, IRegion,
-=======
-    IAssetMetadata, IProject, ITag,
->>>>>>> 42bda7247d2ab927eb647797f4e09a4f186831c9
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -173,7 +169,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Called when a tag from footer is clicked
      * @param tag Tag clicked
      */
-<<<<<<< HEAD
     public onTagClicked = (tag: ITag) => {
         this.canvas.current.onTagClicked(tag);
         this.onAssetMetadataChanged(this.state.selectedAsset);
@@ -191,34 +186,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     public onTagCtrlShiftClicked = (tag: ITag) => {
         this.canvas.current.onTagCtrlShiftClicked(tag);
-=======
-    public onTagClicked = (tag: ITag): void => {
-        const selectedAsset = this.state.selectedAsset;
-        if (this.canvas.current.state.selectedRegions && this.canvas.current.state.selectedRegions.length) {
-            const selectedRegions = this.canvas.current.state.selectedRegions;
-            selectedRegions.map((region) => {
-                const selectedIndex = selectedAsset.regions.findIndex((r) => r.id === region.id);
-                const selectedRegion = selectedAsset.regions[selectedIndex];
-                const tagIndex = selectedRegion.tags.findIndex(
-                    (existingTag) => existingTag.name === tag.name);
-                if (tagIndex === -1) {
-                    selectedRegion.tags.push(tag);
-                } else {
-                    selectedRegion.tags.splice(tagIndex, 1);
-                }
-                if (selectedRegion.tags.length) {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id,
-                        new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag.name,
-                            this.props.project.tags.find((t) => t.name === tempTag.name).color))));
-                } else {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id, null);
-                }
-
-                return region;
-            });
-        }
-        this.onAssetMetadataChanged(selectedAsset);
->>>>>>> 42bda7247d2ab927eb647797f4e09a4f186831c9
     }
 
     /**
