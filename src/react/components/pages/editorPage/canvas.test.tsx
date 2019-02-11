@@ -20,12 +20,6 @@ describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, ICanvasState, Canvas> = null;
     const onAssetMetadataChanged = jest.fn();
 
-    function createTestRegionData() {
-        const testRegionData = new RegionData(0, 0, 100, 100,
-            [new Point2D(0, 0), new Point2D(1, 0), new Point2D(0, 1), new Point2D(1, 1)], RegionDataType.Rect);
-        return testRegionData;
-    }
-
     function createComponent(canvasProps: ICanvasProps, assetPreviewProps: IAssetPreviewProps,
                              includeKeyboardManager = false)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
@@ -97,8 +91,8 @@ describe("Editor Canvas", () => {
         rmMock.prototype.deleteAllRegions.mockClear();
 
         const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
-        assetMetadata.regions.push(MockFactory.createMockRegion());
-        assetMetadata.regions.push(MockFactory.createMockRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
 
         wrapper.setProps({ selectedAsset: assetMetadata });
         expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
@@ -125,7 +119,7 @@ describe("Editor Canvas", () => {
     });
 
     it("onSelectionEnd adds region to asset and selects it", () => {
-        const testCommit = createTestRegionData();
+        const testCommit = MockFactory.createTestRegionData();
         const canvas = wrapper.instance();
         const testRegion = MockFactory.createTestRegion(expect.any(String));
         canvas.editor.onSelectionEnd(testCommit);
@@ -137,8 +131,8 @@ describe("Editor Canvas", () => {
 
     it("canvas updates regions when a new asset is loaded", async () => {
         const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
-        assetMetadata.regions.push(MockFactory.createMockRegion());
-        assetMetadata.regions.push(MockFactory.createMockRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
 
         // Clear out mock counts
         (wrapper.instance().editor.RM.addRegion as any).mockClear();
@@ -158,7 +152,7 @@ describe("Editor Canvas", () => {
 
         testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
         wrapper.prop("selectedAsset").regions.push(testRegion);
-        canvas.editor.onRegionMove("test-region", createTestRegionData());
+        canvas.editor.onRegionMove("test-region", MockFactory.createTestRegionData());
 
         expect(onAssetMetadataChanged).toBeCalled();
         expect(wrapper.prop("selectedAsset").regions).toMatchObject([MockFactory.createTestRegion("test-region")]);
@@ -199,6 +193,7 @@ describe("Editor Canvas", () => {
 
         wrapper.prop("selectedAsset").regions.push(testRegion1);
         wrapper.prop("selectedAsset").regions.push(testRegion2);
+
         canvas.onRegionSelected("test1");
         canvas.onRegionSelected("test2");
 
@@ -209,7 +204,7 @@ describe("Editor Canvas", () => {
         }
     });
 
-    fit("Shift key sets and unsets multi-select", () => {
+    it("Shift key sets and unsets multi-select", () => {
         const props = createProps();
         const newWrapper = createComponent(props.canvas, props.assetPreview, true);
 
@@ -228,5 +223,38 @@ describe("Editor Canvas", () => {
         }));
 
         expect(newWrapper.find(Canvas).state().multiSelect).toBe(false);
+    });
+
+    it("Multiple regions can be selected when shift key is pressed", () => {
+        const props = createProps();
+        const newWrapper = createComponent(props.canvas, props.assetPreview, true);
+
+        const testRegion1 = MockFactory.createTestRegion("test1");
+        const testRegion2 = MockFactory.createTestRegion("test2");
+
+        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion1);
+        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion2);
+
+        window.dispatchEvent(new KeyboardEvent(
+            KeyEventType.KeyDown, {
+            key: "Shift",
+        }));
+
+        const canvas = newWrapper.find(Canvas).instance() as Canvas;
+
+        canvas.onRegionSelected("test1");
+        canvas.onRegionSelected("test2");
+
+        expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(2);        
+
+        window.dispatchEvent(new KeyboardEvent(
+            KeyEventType.KeyUp, {
+            key: "Shift",
+        }));
+
+        canvas.onRegionSelected("test1");
+        canvas.onRegionSelected("test2");
+
+        expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(1);        
     });
 });

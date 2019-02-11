@@ -99,7 +99,7 @@ describe("Canvas Helpers", () => {
         const duplicates = CanvasHelpers.duplicateAndTransformRegions(regions, others);
 
         expect(duplicates).toHaveLength(regions.length);
-        
+
         const m = CanvasHelpers.pasteMargin;
 
         for (let i = 0; i < regions.length; i++) {
@@ -152,13 +152,12 @@ describe("Canvas Helpers", () => {
 
             const duplicates = CanvasHelpers.duplicateAndTransformRegions(regions, others);
             expect(duplicates).toHaveLength(regions.length);
-            
+
             const m = CanvasHelpers.pasteMargin * (i + 1);
 
             for (let j = 0; j < regions.length; j++) {
                 const duplicate = duplicates[j];
                 const region = regions[j];
-
 
                 const x1 = region.boundingBox.left + m;
                 const y1 = region.boundingBox.top + m;

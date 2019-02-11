@@ -26,6 +26,8 @@ import { generateKey } from "./crypto";
 import { randomIntInRange } from "./utils";
 import { AssetService } from "../services/assetService";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 
 export default class MockFactory {
 
@@ -620,8 +622,8 @@ export default class MockFactory {
                 },
                 {
                     x: left + width,
-                    y: top + height
-                }
+                    y: top + height,
+                },
             ],
             tags: [],
             type: "RECTANGLE",
@@ -630,6 +632,11 @@ export default class MockFactory {
             testRegion.id = id;
         }
         return testRegion;
+    }
+
+    public static createTestRegionData(): RegionData {
+        return new RegionData(0, 0, 100, 100,
+            [new Point2D(0, 0), new Point2D(100, 0), new Point2D(0, 100), new Point2D(100, 100)], RegionDataType.Rect);
     }
 
     /**
