@@ -172,6 +172,7 @@ export interface IAppStrings {
                 properties: {
                     assetState: {
                         title: string,
+                        description: string,
                         options: {
                             all: string,
                             visited: string,

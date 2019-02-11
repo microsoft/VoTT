@@ -5,6 +5,7 @@
         "assetState": {
             "type": "string",
             "title": "${strings.export.providers.common.properties.assetState.title}",
+            "description": "${strings.export.providers.common.properties.assetState.description}",
             "enum": [
                 "all",
                 "visited",

@@ -169,6 +169,7 @@ export const english: IAppStrings = {
                 properties: {
                     assetState: {
                         title: "Asset State",
+                        description: "Which assets to include in the export",
                         options: {
                             all: "All Assets",
                             visited: "Only Visited Assets",

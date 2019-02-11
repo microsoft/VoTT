@@ -170,6 +170,7 @@ export const spanish: IAppStrings = {
                 properties: {
                     assetState: {
                         title: "Estado del activo",
+                        description: "Qué activos incluir en la exportación",
                         options: {
                             all: "Todos los activos",
                             visited: "Solo activos visitados",
