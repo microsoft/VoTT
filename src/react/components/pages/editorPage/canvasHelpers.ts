@@ -79,6 +79,9 @@ export default class CanvasHelpers {
         return type;
     }
 
+    /**
+     * Duplicates array of regions and transforms them +10 on both x and y coordinates
+     */
     public static duplicateAndTransformRegions = (regions: IRegion[], otherRegions: IRegion[]): IRegion[] => {
         return CanvasHelpers.transformRegions(
             CanvasHelpers.duplicateRegions(regions),
@@ -86,6 +89,9 @@ export default class CanvasHelpers {
         );
     }
 
+    /**
+     * Duplicate array of regions, with new IDs
+     */
     public static duplicateRegions = (regions: IRegion[]): IRegion[] => {
         return regions.map((region) => {
             return {
@@ -93,24 +99,6 @@ export default class CanvasHelpers {
                 id: shortid.generate(),
             };
         });
-    }
-
-    public static topLeftRegion = (regions: IRegion[]) => {
-        if (!regions) {
-            throw new Error("Empty regions");
-        }
-        let minProduct = Number.MAX_SAFE_INTEGER;
-        let topLeft = regions[0];
-        for (let i = 1; i < regions.length; i++) {
-            const r = regions[i];
-            const bb = r.boundingBox;
-            const product = bb.left * bb.top;
-            if (product < minProduct) {
-                minProduct = product;
-                topLeft = r;
-            }
-        }
-        return topLeft;
     }
 
     private static getTransformDiff = (region: IRegion, otherRegions: IRegion[]): IPoint => {
