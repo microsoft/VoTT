@@ -47,7 +47,8 @@ export interface IAssetPreviewState {
  * @description - Small preview of assets for selection in editor page
  */
 export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
-    public static defaultProps: IAssetPreviewProps = {
+     /** Default properties for component if not defined */
+     public static defaultProps: IAssetPreviewProps = {
         project: null,
         asset: null,
         childAssets: [],

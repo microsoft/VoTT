@@ -16,6 +16,7 @@ describe("Asset Preview Component", () => {
     const onChildAssetSelectedHandler = jest.fn();
 
     const defaultProps: IAssetPreviewProps = {
+        project: MockFactory.createTestProject("test-project"),
         asset: {
             ...MockFactory.createTestAsset("test-image-asset"),
             path: dataUri,
