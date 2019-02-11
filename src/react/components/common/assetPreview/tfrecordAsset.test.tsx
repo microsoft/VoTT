@@ -12,7 +12,7 @@ describe("Image Asset Component", () => {
     const dataImage = new Uint8Array(Buffer.from(dataImage64, "base64"));
 
     // tslint:disable-next-line:max-line-length
-    const dataUri = "data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
+    const dataUri = "data:image;base64," + dataImage64;
 
     let tfrecords: Buffer;
     beforeEach(() => {
@@ -44,42 +44,27 @@ describe("Image Asset Component", () => {
         return mount(<TFRecordAsset {...props} />);
     }
 
-    it("renders landscape image correctly", () => {
+    function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    it("load image correctly", async () => {
         const props = { ...defaultProps };
-        props.asset.size = {
-            width: 800,
-            height: 600,
-        };
 
         wrapper = createComponent(props);
-        const img = wrapper.find("img");
+        await sleep(1);
 
+        const img = wrapper.find("img");
         expect(img.exists()).toBe(true);
-        expect(img.props()).toEqual(expect.objectContaining({
-            className: "landscape",
-            src: dataUri,
+
+        expect(wrapper.state()).toEqual(expect.objectContaining({
+            tfRecordImage64: dataUri,
         }));
     });
 
-    it("renders portrait image correctly", () => {
-        const props = { ...defaultProps };
-        props.asset.size = {
-            width: 600,
-            height: 800,
-        };
-
-        wrapper = createComponent(props);
-        const img = wrapper.find("img");
-
-        expect(img.exists()).toBe(true);
-        expect(img.props()).toEqual(expect.objectContaining({
-            className: "portrait",
-            src: dataUri,
-        }));
-    });
-
-    it("raises onLoad handler when image has completed loading", () => {
+    it("raises onLoad handler when image has completed loading", async () => {
         wrapper = createComponent();
+        await sleep(1);
 
         const img = wrapper.find("img").getDOMNode() as HTMLImageElement;
         img.dispatchEvent(new Event("load"));
