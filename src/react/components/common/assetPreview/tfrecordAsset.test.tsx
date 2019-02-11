@@ -44,15 +44,15 @@ describe("Image Asset Component", () => {
         return mount(<TFRecordAsset {...props} />);
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+    function wait() {
+        return new Promise((resolve) => setImmediate(resolve));
     }
 
     it("load image correctly", async () => {
         const props = { ...defaultProps };
 
         wrapper = createComponent(props);
-        await sleep(1);
+        await wait();
 
         const img = wrapper.find("img");
         expect(img.exists()).toBe(true);
@@ -64,7 +64,7 @@ describe("Image Asset Component", () => {
 
     it("raises onLoad handler when image has completed loading", async () => {
         wrapper = createComponent();
-        await sleep(1);
+        await wait();
 
         const img = wrapper.find("img").getDOMNode() as HTMLImageElement;
         img.dispatchEvent(new Event("load"));
