@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
-import { IKeyboardContext, KeyboardContext } from "../common/keyboardManager/keyboardManager";
+import { IKeyboardContext, KeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
 import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
 
 /**
@@ -76,7 +76,11 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
         return (
             <Fragment>
                 {this.props.accelerator &&
-                    <KeyboardBinding accelerator={this.props.accelerator} onKeyDown={this.onClick} />
+                    <KeyboardBinding
+                        keyEventType={KeyEventType.KeyDown}
+                        accelerator={this.props.accelerator}
+                        onKeyEvent={this.onClick}
+                    />
                 }
                 <button type="button"
                     className={className.join(" ")}

@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode, ITagMetadata,
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
     IPoint, IRegion, RegionType, IBoundingBox, IV1Project, IV1Region
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -23,6 +23,8 @@ import {
 import IApplicationActions, * as applicationActions from "../redux/actions/applicationActions";
 import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSystemProxy";
 import { generateKey } from "./crypto";
+import { AssetService } from "../services/assetService";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 export default class MockFactory {
 
@@ -98,13 +100,38 @@ export default class MockFactory {
     }
 
     /**
+     * Creates a child videoFrame asset from a parent video asset
+     * @param parentAsset The parent video asset
+     * @param timestamp The timestamp to generate child asset
+     */
+    public static createChildVideoAsset(parentAsset: IAsset, timestamp: number): IAsset {
+        const childPath = `${parentAsset.path}#t=${timestamp}`;
+        const childAsset = AssetService.createAssetFromFilePath(childPath);
+        childAsset.type = AssetType.VideoFrame;
+        childAsset.state = AssetState.Tagged;
+        childAsset.parent = parentAsset;
+        childAsset.timestamp = timestamp;
+        childAsset.size = { ...parentAsset.size };
+
+        return childAsset;
+    }
+
+    /**
+     * Creates an array of child video frame assets from a parent video asset
+     * @param parentAsset The parent video asset
+     * @param count The number of child assets to create (default 10)
+     */
+    public static createChildVideoAssets(parentAsset: IAsset, count: number = 10): IAsset[] {
+        return [...Array(count).keys()].map((index) => {
+            return this.createChildVideoAsset(parentAsset, index);
+        });
+    }
+
+    /**
      * Creates a mock region
      */
-    public static createMockRegion(): IRegion {
-        const mockTag: ITagMetadata = {
-            name: "Tag 1",
-            properties: null,
-        };
+    public static createMockRegion(id?: string): IRegion {
+        const mockTag: ITag = MockFactory.createTestTag();
 
         const mockStartPoint: IPoint = {
             x: 1,
@@ -124,7 +151,7 @@ export default class MockFactory {
         };
 
         const mockRegion: IRegion = {
-            id: "id",
+            id: id || "id",
             type: RegionType.Rectangle,
             tags: [mockTag],
             points: [mockStartPoint, mockEndPoint],
@@ -172,7 +199,6 @@ export default class MockFactory {
         return {
             asset,
             regions: [],
-            timestamp: null,
         };
     }
 
@@ -366,7 +392,7 @@ export default class MockFactory {
      * Create fake ITag with random color
      * @param name Name of tag
      */
-    public static createTestTag(name: string = "Test Tag"): ITag {
+    public static createTestTag(name: string = "1"): ITag {
         return {
             name: `Tag ${name}`,
             color: MockFactory.randomColor(),
@@ -593,6 +619,8 @@ export default class MockFactory {
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,
+            selectionMode: SelectionMode.RECT,
+            children: null,
         };
         return new Canvas(canvasProps);
     }
@@ -681,6 +709,7 @@ export default class MockFactory {
             securityTokens: [
                 ...securityTokens,
                 MockFactory.createSecurityToken("TestProject"),
+                MockFactory.createSecurityToken("test"),
             ],
         };
     }
