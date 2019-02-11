@@ -23,14 +23,11 @@ export interface ITFRecordState {
  * React component that displays an image from a TFRecord asset file
  */
 export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordState> {
-    private image: React.RefObject<HTMLImageElement> = React.createRef();
+    public state: ITFRecordState = {
+        tfRecordImage64: "",
+    };
 
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            tfRecordImage64: "",
-        };
-    }
+    private image: React.RefObject<HTMLImageElement> = React.createRef();
 
     public render() {
         const size = this.props.asset.size;
