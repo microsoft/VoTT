@@ -111,7 +111,7 @@ describe("Keyboard Registration Manager", () => {
         expect(handlers1.length).toEqual(0);
 
         handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
-        expect(handlers1.length).toEqual(0);
+        expect(handlers2.length).toEqual(0);
     });
 
     it("get handlers for unregistered key code returns emtpy array", () => {
@@ -137,23 +137,5 @@ describe("Keyboard Registration Manager", () => {
 
         expect(handler1).toBeCalledWith(keyboardEvent);
         expect(handler2).toBeCalledWith(keyboardEvent);
-    });
-
-    it("can register handler for multiple keyCode of the same eventType", () => {
-        const keyCode1 = "Ctrl+1";
-        const keyCode2 = "Ctrl+S";
-        const keyCodes = [keyCode1, keyCode2];
-        const handler = (evt: KeyboardEvent) => null;
-
-        keyboardManager.addHandler(KeyEventType.KeyDown, keyCodes, handler);
-
-        const handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
-        const handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
-
-        expect(handlers1.length).toEqual(1);
-        expect(handlers2.length).toEqual(1);
-
-        expect(handlers1[0]).toBe(handler);
-        expect(handlers2[0]).toBe(handler);
     });
 });

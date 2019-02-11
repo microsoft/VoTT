@@ -40,7 +40,7 @@ export class KeyboardRegistrationManager {
             this.registrations[keyEventType] = eventTypeRegistrations;
         }
 
-        keyCodes.map((keyCode) => {
+        keyCodes.forEach((keyCode) => {
             let keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
             if (!keyRegistrations) {
                 keyRegistrations = [];
@@ -51,7 +51,7 @@ export class KeyboardRegistrationManager {
         });
 
         return () => {
-            keyCodes.map((keyCode) => {
+            keyCodes.forEach((keyCode) => {
                 const keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
                 const index = keyRegistrations.findIndex((h) => h === handler);
 
