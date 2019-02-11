@@ -110,7 +110,7 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().canvasEnabled).toEqual(false);
     });
 
-    it("onSelectionEnd adds region to asset and selects it", () => {
+    fit("onSelectionEnd adds region to asset and selects it", () => {
         const testCommit = createTestRegionData();
         const canvas = wrapper.instance();
         const testRegion = MockFactory.createTestRegion(expect.any(String));

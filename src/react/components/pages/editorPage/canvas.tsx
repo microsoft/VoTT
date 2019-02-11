@@ -200,14 +200,17 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             },
             points: scaledRegionData.points,
         };
-        if (newRegion.tags) {
-            this.editor.RM.updateTagsById(newRegion.id, CanvasHelpers.getTagsDescriptor(newRegion));
-        }
-        const currentAssetMetadata = this.addRegionToAsset(newRegion);
-        this.props.onAssetMetadataChanged(currentAssetMetadata);
+        const currentAssetMetadata = this.props.selectedAsset;
+        currentAssetMetadata.regions.push(newRegion);
         this.setState({
-            selectedRegions: [ newRegion ],
+            selectedRegions: [newRegion],
         });
+
+        if (currentAssetMetadata.regions.length) {
+            currentAssetMetadata.asset.state = AssetState.Tagged;
+        }
+
+        this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 
     /**
