@@ -72,6 +72,7 @@ describe("Editor Canvas", () => {
             contentSource: null,
             selectedRegions: [],
             canvasEnabled: true,
+            multiSelect: false,
         });
 
         expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
@@ -112,7 +113,7 @@ describe("Editor Canvas", () => {
     it("onSelectionEnd adds region to asset and selects it", () => {
         const testCommit = createTestRegionData();
         const canvas = wrapper.instance();
-        const testRegion = MockFactory.createTestRegion();
+        const testRegion = MockFactory.createTestRegion(expect.any(String));
         canvas.editor.onSelectionEnd(testCommit);
 
         expect(onAssetMetadataChanged).toBeCalled();

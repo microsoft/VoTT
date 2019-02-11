@@ -136,6 +136,47 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     /**
+     * Add tag to or remove tag from selected regions
+     * @param tag Tag to apply to or remove from selected regions
+     */
+    public onTagClicked = (tag: ITag) => {
+        for (const region of this.state.selectedRegions) {
+            CanvasHelpers.toggleTag(region.tags, tag);
+            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+        }
+    }
+
+    public onTagShiftClicked = (tag: ITag) => {
+        console.log(`Shift clicked "${tag.name}" tag`);
+    }
+
+    public onTagCtrlShiftClicked = (tag: ITag) => {
+        console.log(`Ctrl shift clicked "${tag.name}" tag`);
+    }
+
+    /**
+     * Method called when deleting a region from the editor
+     * @param {string} id the id of the deleted region
+     * @param {boolean} multiselection boolean whether multiselect is active
+     * @returns {void}
+     */
+    public onRegionSelected = (id: string) => {
+
+        const selectedRegion = this.props.selectedAsset.regions.find((region) => region.id === id);
+
+        let selectedRegions = this.state.selectedRegions;
+
+        if (this.state.multiSelect) {
+            if (!selectedRegions.find((r) => r.id === selectedRegion.id)) {
+                selectedRegions.push(selectedRegion);
+            }
+        } else {
+            selectedRegions = [selectedRegion];
+        }
+        this.setState({ selectedRegions });
+    }
+
+    /**
      * Method that gets called when a new region is drawn
      * @param {RegionData} commit the RegionData of created region
      * @returns {void}
@@ -167,25 +208,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({
             selectedRegions: [ newRegion ],
         });
-    }
-
-    /**
-     * Add tag to or remove tag from selected regions
-     * @param tag Tag to apply to or remove from selected regions
-     */
-    public onTagClicked = (tag: ITag) => {
-        for (const region of this.state.selectedRegions) {
-            CanvasHelpers.toggleTag(region.tags, tag);
-            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
-        }
-    }
-
-    public onTagShiftClicked = (tag: ITag) => {
-        console.log(`Shift clicked "${tag.name}" tag`);
-    }
-
-    public onTagCtrlShiftClicked = (tag: ITag) => {
-        console.log(`Ctrl shift clicked "${tag.name}" tag`);
     }
 
     /**
@@ -225,28 +247,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({
             selectedRegions: [],
         });
-    }
-
-    /**
-     * Method called when deleting a region from the editor
-     * @param {string} id the id of the deleted region
-     * @param {boolean} multiselection boolean whether multiselect is active
-     * @returns {void}
-     */
-    public onRegionSelected = (id: string) => {
-
-        const selectedRegion = this.props.selectedAsset.regions.find((region) => region.id === id);
-
-        let selectedRegions = this.state.selectedRegions;
-
-        if (this.state.multiSelect) {
-            if (!selectedRegions.find((r) => r.id === selectedRegion.id)) {
-                selectedRegions.push(selectedRegion);
-            }
-        } else {
-            selectedRegions = [selectedRegion];
-        }
-        this.setState({ selectedRegions });
     }
 
     private setMultiSelect = (multiSelect: boolean) => {
