@@ -1,5 +1,5 @@
 import React from "react";
-import { IAsset, AssetType } from "../../../../models/applicationState";
+import { IAsset, AssetType, IProject } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
@@ -10,6 +10,8 @@ export type ContentSource = HTMLImageElement | HTMLVideoElement;
  * AssetPreview component properties
  */
 export interface IAssetProps {
+    /** The current project */
+    project: IProject;
     /** The Asset to preview */
     asset: IAsset;
     /** The child assets (ex. video frames) of the parent asset */
@@ -45,8 +47,8 @@ export interface IAssetPreviewState {
  * @description - Small preview of assets for selection in editor page
  */
 export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
-    /** Default properties for component if not defined */
     public static defaultProps: IAssetPreviewProps = {
+        project: null,
         asset: null,
         childAssets: [],
         autoPlay: false,
@@ -70,13 +72,15 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <ImageAsset asset={parentAsset}
+                    <ImageAsset project={this.props.project}
+                        asset={parentAsset}
                         onLoaded={this.onAssetLoad}
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated} />
                 }
                 {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
-                    <VideoAsset asset={parentAsset}
+                    <VideoAsset project={this.props.project}
+                        asset={parentAsset}
                         childAssets={childAssets}
                         timestamp={asset.timestamp}
                         autoPlay={autoPlay}

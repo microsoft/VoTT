@@ -156,6 +156,28 @@
     }
 }
 
+.video-timeline-parent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-timeline {
+    width: 2px;
+    &-tagged {
+        position: absolute;
+        height: 100%;
+        border: 1px solid green;
+    }
+    &-untagged {
+        position: absolute;
+        height: 100%;
+        border: 1px solid yellow;
+    }
+}
+
 #ct-zone {
     position: absolute;
 
