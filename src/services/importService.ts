@@ -14,8 +14,10 @@ const TagColors = require("../react/components/common/tagsInput/tagColors.json")
  * @member generateConnections - Generates v2 connections based on location of v1 project file
  */
 export interface IImportService {
-    convertV1(project: IProject): Promise<IProject>;
-    generateConnections(project: IProject): Promise<IProject>;
+    convertV1(project: any): Promise<IProject>;
+    // private generateConnections(project: any): IConnection[];
+    // parseTags(project: any): ITag[];
+    // generateAssets(project: any): IAssetMetadata[];
 }
 
 /**
@@ -23,7 +25,7 @@ export interface IImportService {
  * @description - Functions for importing v1 projects to v2 application
  */
 // change any to { content, file } object eventually
-export default class ImportService {
+export default class ImportService implements IImportService {
     public convertV1(project: any): Promise<IProject> {
         return new Promise<IProject>((resolve, reject) => {
             let originalProject: IV1Project;

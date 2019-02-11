@@ -7,9 +7,9 @@ import {
     IProject, IAsset, IAssetMetadata, IApplicationState,
     ErrorCode, AppError, IAppSettings,
 } from "../../models/applicationState";
+import IApplicationActions, * as applicationActions from "../actions/applicationActions";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
-import { generateKey } from "../../common/crypto";
 
 /**
  * Actions to be performed in relation to projects
@@ -184,39 +184,6 @@ export function exportProject(project: IProject): (dispatch: Dispatch) => Promis
 }
 
 /**
- * Ensures that a valid security token is associated with the project, otherwise creates one
- * @param project The project to validate
- */
-export function ensureSecurityToken(project: IProject):
-    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<void> | Promise<IProject> {
-    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
-        const appState = getState();
-        let securityToken = appState.appSettings.securityTokens
-            .find((st) => st.name === project.securityToken);
-
-        if (securityToken) {
-            return project;
-        }
-
-        securityToken = {
-            name: `${project.name} Token`,
-            key: generateKey(),
-        };
-
-        const updatedAppSettings: IAppSettings = {
-            devToolsEnabled: appState.appSettings.devToolsEnabled,
-            securityTokens: [...appState.appSettings.securityTokens, securityToken],
-        };
-
-        await this.props.applicationActions.saveAppSettings(updatedAppSettings);
-
-        project.securityToken = securityToken.name;
-        dispatch(ensureSecurityTokenAction(project));
-        return project;
-    }
-}
-
-/**
  * Load project action type
  */
 export interface ILoadProjectAction extends IPayloadAction<string, IProject> {
@@ -271,13 +238,6 @@ export interface ISaveAssetMetadataAction extends IPayloadAction<string, IAssetM
 export interface IExportProjectAction extends IPayloadAction<string, IProject> {
     type: ActionTypes.EXPORT_PROJECT_SUCCESS;
 }
-
-/**
- * Ensure project security token action type
- */
-export interface IEnsureSecurityTokenAction extends IPayloadAction<string, IProject> {
-    type: ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS;
-}
 /**
  * Instance of Load Project action
  */
@@ -314,8 +274,3 @@ export const saveAssetMetadataAction =
  */
 export const exportProjectAction =
     createPayloadAction<IExportProjectAction>(ActionTypes.EXPORT_PROJECT_SUCCESS);
-/**
- * Instance of Export Project action
- */
-export const ensureSecurityTokenAction =
-    createPayloadAction<IEnsureSecurityTokenAction>(ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS);
