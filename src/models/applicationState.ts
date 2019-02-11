@@ -136,17 +136,18 @@ export interface IV1Project {
 /**
  * @name - V1 Frame Object
  * @description - Defines the structure of a version 1 Region
- * @member x1 - TODO: Add description
- * @member y1 - TODO: Add description
- * @member x2 - TODO: Add description
- * @member y2 - TODO: Add description
- * @member width - TODO: Add description
- * @member box - TODO: Add description
- * @member points - TODO: Add description
- * @member UID - TODO: Add description
+ * @member x1 - Left-most x-value of the region
+ * @member y1 - Top-most y-value of the region
+ * @member x2 - Right-most x-value of the region
+ * @member y2 - Bottom-most y-value of the region
+ * @member width - Width of the frame that the region is in
+ * @member height - Height of the frame that the region is in
+ * @member box - Object holding x1, y1, x2, y2
+ * @member points - List of IPoints describing the 4 corners of the region
+ * @member UID - Unique, auto-generated ID
  * @member id - TODO: Add description
- * @member types - TODO: Add description
- * @member tags - TODO: Add description
+ * @member type - shape of the region, "rect" is the only option in V1
+ * @member tags - List of strings that are the tags associated with the region
  * @member name - TODO: Add description
  */
 export interface IV1Region {
@@ -156,13 +157,13 @@ export interface IV1Region {
     y2: number;
     width: number;
     height: number;
-    box: { IPoint };
+    box: { [point: string]: number };
     points: IPoint[];
     UID: string;
-    id: string;
+    id: number;
     type: string;
     tags: string[];
-    name: string;
+    name: number;
 }
 
 /**
