@@ -78,12 +78,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 <BigPlayButton position="center" />
                 <ControlBar autoHide={false}>
                     <CustomVideoPlayerButton order={1.1}
-                        tooltip="Previous Frame"
+                        tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
                         onClick={this.movePreviousExpectedFrame}>
                         <i className="fas fa-caret-left fa-lg" />
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={1.2}
-                        tooltip="Next Frame"
+                        tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
                         onClick={this.moveNextExpectedFrame}>
                         <i className="fas fa-caret-right fa-lg" />
                     </CustomVideoPlayerButton>
@@ -124,8 +124,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     }
 
     /**
-     * Bound to the "Next Tagged Frame" button
-     * Seeks the user to the next tagged video frame
+     * Bound to the "Previous Tagged Frame" button
+     * Seeks the user to the previous tagged video frame
      */
     private movePreviousTaggedFrame = () => {
         const timestamp = this.videoPlayer.current.getState().player.currentTime;
@@ -139,8 +139,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     }
 
     /**
-     * Bound to the "Previous Tagged Frame" button
-     * Seeks the user to the previous tagged video frame
+     * Bound to the "Next Tagged Frame" button
+     * Seeks the user to the next tagged video frame
      */
     private moveNextTaggedFrame = () => {
         const timestamp = this.videoPlayer.current.getState().player.currentTime;

@@ -158,6 +158,12 @@ export const spanish: IAppStrings = {
             nextTaggedFrame: {
                 tooltip: "Siguiente marco etiquetado",
             },
+            previousExpectedFrame: {
+                tooltip: "Marco esperado anterior",
+            },
+            nextExpectedFrame: {
+                tooltip: "Siguiente fotograma esperado",
+            },
         },
         assetError: "No se puede mostrar el activo",
     },
