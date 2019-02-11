@@ -280,15 +280,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private clearRegions = () => {
-        const regions = this.props.selectedAsset.regions;
-        if (regions && regions.length) {
-            let currentAssetMetadata: IAssetMetadata;
-            for (const region of regions) {
-                console.log(`Deleting region ${region.id}`);
-                this.editor.RM.deleteRegionById(region.id);
-                currentAssetMetadata = this.deleteRegionFromAsset(region.id);
-            }
-            this.props.onAssetMetadataChanged(currentAssetMetadata);
+        const ids = this.props.selectedAsset.regions.map((r) => r.id);
+        for (const id of ids) {
+            this.onRegionDelete(id);
         }
     }
 

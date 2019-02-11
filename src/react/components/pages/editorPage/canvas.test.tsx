@@ -355,4 +355,26 @@ describe("Editor Canvas", () => {
 
         expect(newWrapper.find(Canvas).state().selectedRegions).toHaveLength(3);
     });
+
+    it("All regions are deleted with clear command", () => {
+        const props = createProps();
+        const newWrapper = createComponent(props.canvas, props.assetPreview, true);
+
+        const testRegion1 = MockFactory.createTestRegion("test1");
+        const testRegion2 = MockFactory.createTestRegion("test2");
+        const testRegion3 = MockFactory.createTestRegion("test3");
+
+        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion1);
+        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion2);
+        newWrapper.find(Canvas).prop("selectedAsset").regions.push(testRegion3);
+
+        expect(newWrapper.find(Canvas).prop("selectedAsset").regions).toHaveLength(3);
+
+        window.dispatchEvent(new KeyboardEvent(
+            KeyEventType.KeyDown, {
+            key: "Ctrl+d",
+        }));
+        expect(newWrapper.find(Canvas).prop("selectedAsset").regions).toHaveLength(0);
+
+    });
 });
