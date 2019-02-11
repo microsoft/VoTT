@@ -44,7 +44,7 @@ describe("Custom Video Player Button Component", () => {
             accelerators: ["ArrowLeft"],
         };
         wrapper = createComponent(props);
-        const keyboardBinding = wrapper.find(KeyboardBinding) as ReactWrapper<ICustomVideoPlayerButtonProps>;
+        const keyboardBinding = wrapper.find(KeyboardBinding);
 
         expect(keyboardBinding.exists()).toBe(true);
         expect(keyboardBinding.props()).toEqual({
