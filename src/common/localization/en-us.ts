@@ -150,6 +150,14 @@ export const english: IAppStrings = {
             saveProject: "Save Project",
             exportProject: "Export Project",
         },
+        videoPlayer: {
+            previousTaggedFrame: {
+                tooltip: "Previous Tagged Frame",
+            },
+            nextTaggedFrame: {
+                tooltip: "Next Tagged Frame",
+            },
+        },
         assetError: "Unable to display asset",
     },
     export: {

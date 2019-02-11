@@ -38,15 +38,19 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
 
 /**
  * State for Editor Page
- * @member project - Project being edited
- * @member assets - Array of assets in project
  */
 export interface IEditorPageState {
+    /** Project being editor */
     project: IProject;
+    /** Array of assets in project */
     assets: IAsset[];
+    /** The editdor mode to set for canvas tools */
     editorMode: EditorMode;
+    /** The selection mode to set for canvas tools */
     selectionMode: SelectionMode;
+    /** The selected asset for the primary editing experience */
     selectedAsset?: IAssetMetadata;
+    /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
 }
 
@@ -110,6 +114,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
                     return (<KeyboardBinding
+                        key={index}
                         keyEventType={KeyEventType.KeyDown}
                         accelerator={`Ctrl+${index}`}
                         onKeyEvent={this.handleTagHotKey} />);
@@ -210,12 +215,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.onTagClicked(tag);
     }
 
+    /**
+     * Raised when a child asset is selected on the Asset Prview
+     * ex) When a video is paused/seeked to on a video
+     */
     private onChildAssetSelected = async (childAsset: IAsset) => {
         if (this.state.selectedAsset && this.state.selectedAsset.asset.id !== childAsset.id) {
             await this.selectAsset(childAsset);
         }
     }
 
+    /**
+     * Raised when the selected asset has been changed.
+     * This can either be a parent or child asset
+     */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
         assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
 
