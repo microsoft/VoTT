@@ -605,7 +605,24 @@ export default class MockFactory {
                 left,
                 top,
             },
-            points: points || [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }],
+            points: [
+                {
+                    x: left,
+                    y: top,
+                },
+                {
+                    x: left + width,
+                    y: top,
+                },
+                {
+                    x: left,
+                    y: top + height,
+                },
+                {
+                    x: left + width,
+                    y: top + height
+                }
+            ],
             tags: [],
             type: "RECTANGLE",
         };

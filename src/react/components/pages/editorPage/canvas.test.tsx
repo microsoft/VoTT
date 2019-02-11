@@ -26,7 +26,8 @@ describe("Editor Canvas", () => {
         return testRegionData;
     }
 
-    function createComponent(canvasProps: ICanvasProps, assetPreviewProps: IAssetPreviewProps, includeKeyboardManager = false)
+    function createComponent(canvasProps: ICanvasProps, assetPreviewProps: IAssetPreviewProps,
+                             includeKeyboardManager = false)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
             if (includeKeyboardManager) {
                 return mount(
@@ -36,15 +37,14 @@ describe("Editor Canvas", () => {
                         </Canvas>
                     </KeyboardManager>,
                 );
-            }
-            else {
+            } else {
                 return mount(
                         <Canvas {...canvasProps}>
                             <AssetPreview {...assetPreviewProps} />
                         </Canvas>,
                 );
             }
-        
+
     }
 
     function createProps() {
@@ -226,7 +226,7 @@ describe("Editor Canvas", () => {
             KeyEventType.KeyUp, {
             key: "Shift",
         }));
-        
+
         expect(newWrapper.find(Canvas).state().multiSelect).toBe(false);
     });
 });

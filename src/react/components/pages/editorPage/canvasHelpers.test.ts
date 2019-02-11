@@ -99,22 +99,23 @@ describe("Canvas Helpers", () => {
         const duplicates = CanvasHelpers.duplicateAndTransformRegions(regions, others);
 
         expect(duplicates).toHaveLength(regions.length);
+        
+        const m = CanvasHelpers.pasteMargin;
 
         for (let i = 0; i < regions.length; i++) {
             const duplicate = duplicates[i];
             const region = regions[i];
 
-            const x1 = region.boundingBox.left + (CanvasHelpers.pasteMargin);
-            const y1 = region.boundingBox.top + (CanvasHelpers.pasteMargin);
+            const x1 = region.boundingBox.left + m;
+            const y1 = region.boundingBox.top + m;
 
             const width = region.boundingBox.width;
             const height = region.boundingBox.height;
 
             expect(duplicate.boundingBox).toEqual({
+                ...region.boundingBox,
                 left: x1,
                 top: y1,
-                height: region.boundingBox.height,
-                width: region.boundingBox.width,
             });
 
             const x2 = x1 + width;
@@ -151,22 +152,24 @@ describe("Canvas Helpers", () => {
 
             const duplicates = CanvasHelpers.duplicateAndTransformRegions(regions, others);
             expect(duplicates).toHaveLength(regions.length);
+            
+            const m = CanvasHelpers.pasteMargin * (i + 1);
 
             for (let j = 0; j < regions.length; j++) {
                 const duplicate = duplicates[j];
                 const region = regions[j];
 
-                const x1 = region.boundingBox.left + (CanvasHelpers.pasteMargin * (i + 1));
-                const y1 = region.boundingBox.top + (CanvasHelpers.pasteMargin * (i + 1));
+
+                const x1 = region.boundingBox.left + m;
+                const y1 = region.boundingBox.top + m;
 
                 const width = region.boundingBox.width;
                 const height = region.boundingBox.height;
 
                 expect(duplicate.boundingBox).toEqual({
+                    ...region.boundingBox,
                     left: x1,
                     top: y1,
-                    height: region.boundingBox.height,
-                    width: region.boundingBox.width,
                 });
 
                 const x2 = x1 + width;
