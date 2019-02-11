@@ -2,9 +2,9 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
-    IPoint, IRegion, RegionType, IBoundingBox } from "../models/applicationState";
-import { IV1Project, IV1Region } from "../models/v1Models";
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode, ITagMetadata,
+    IPoint, IRegion, RegionType, IBoundingBox, IV1Project, IV1Region
+} from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -238,29 +238,31 @@ export default class MockFactory {
 
     /**
      * Creates fake IV1Project
-     * @param name Name of project.
+     * @param name TODO: fixName of project. project.id = `project-${name}` and project.name = `Project ${name}`
      */
-    public static createTestV1Project(): IV1Project {
-        const regions = MockFactory.createTestV1Region();
+    public static createTestV1Project(name: string = "test"): IV1Project {
+        const regions = MockFactory.createTestV1Frame(name);
 
         return {
-            frames: {"testFrame.jpg": regions},
-            framerate: "1",
-            inputTags: "testTag1,testTag2",
+            frames: {},
+            framerate: `Project ${name}`,
+            inputTags: `Security-Token-${name}`,
             suggestiontype: "suggestiontype",
+            tags: MockFactory.createTestTags(),
             scd: true,
-            visitedFrames: ["testFrame.jpg"],
-            tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
+            visitedFrames: [],
+            tagColors: [MockFactory.randomColor()],
         };
     }
 
     /**
-     * Creates fake IV1Region
+     * Creates fake IV1Region (NECESSARY??)
+     * @param name TODO: fix Name of project. project.id = `project-${name}` and project.name = `Project ${name}`
      */
-    public static createTestV1Region(): IV1Region[] {
-        const regions: IV1Region[] = [];
+    public static createTestV1Frame(name: string = "test"): IV1Region {
+        // const connection = MockFactory.createTestConnection(name);
 
-        const testRegion = {
+        return {
             x1: 1,
             y1: 1,
             x2: 2,
@@ -279,9 +281,6 @@ export default class MockFactory {
             tags: [],
             name: 1,
         };
-
-        regions.push(testRegion);
-        return regions;
     }
 
     /**
