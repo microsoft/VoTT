@@ -94,7 +94,7 @@ describe("Editor Canvas", () => {
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
     });
 
-    it("onTagClicked", () => {
+    it("Adds tag to selected region by clicking tag", () => {
         const canvas = wrapper.instance();
         const testRegion1 = MockFactory.createTestRegion("test1");
         const testRegion2 = MockFactory.createTestRegion("test2");

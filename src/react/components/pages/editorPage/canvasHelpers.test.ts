@@ -95,11 +95,11 @@ describe("Canvas Helpers", () => {
     it("Duplicates and transforms regions correctly one time", () => {
         const regions = MockFactory.createTestRegions();
         const others = MockFactory.createTestRegions();
-        
+
         const duplicates = CanvasHelpers.duplicateAndTransformRegions(regions, others);
 
         expect(duplicates).toHaveLength(regions.length);
-        
+
         for (let i = 0; i < regions.length; i++) {
             const duplicate = duplicates[i];
             const region = regions[i];
@@ -155,13 +155,12 @@ describe("Canvas Helpers", () => {
             for (let j = 0; j < regions.length; j++) {
                 const duplicate = duplicates[j];
                 const region = regions[j];
-    
+
                 const x1 = region.boundingBox.left + (CanvasHelpers.pasteMargin * (i + 1));
                 const y1 = region.boundingBox.top + (CanvasHelpers.pasteMargin * (i + 1));
-    
+
                 const width = region.boundingBox.width;
                 const height = region.boundingBox.height;
-    
 
                 expect(duplicate.boundingBox).toEqual({
                     left: x1,
@@ -169,10 +168,10 @@ describe("Canvas Helpers", () => {
                     height: region.boundingBox.height,
                     width: region.boundingBox.width,
                 });
-    
+
                 const x2 = x1 + width;
                 const y2 = y1 + height;
-    
+
                 expect(duplicate.points).toEqual([
                     {
                         x: x1,
