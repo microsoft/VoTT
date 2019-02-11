@@ -1,10 +1,10 @@
 {
     "type": "object",
-    "title": "VoTT JSON Settings",
+    "title": "${strings.export.providers.vottJson.displayName}",
     "properties": {
         "assetState": {
             "type": "string",
-            "title": "Asset State",
+            "title": "${strings.export.providers.common.properties.assetState.title}",
             "enum": [
                 "all",
                 "visited",
@@ -12,9 +12,9 @@
             ],
             "default": "all",
             "enumNames": [
-                "All Assets",
-                "Only Visisted Assets",
-                "Only Tagged Assets"
+                "${strings.export.providers.common.properties.assetState.options.all}",
+                "${strings.export.providers.common.properties.assetState.options.visited}",
+                "${strings.export.providers.common.properties.assetState.options.tagged}"
             ]
         }
     }

@@ -36,8 +36,8 @@ export interface ITagList {
 }
 
 export enum NewOrExisting {
-    New = "New Project",
-    Existing = "Existing Project",
+    New = "new",
+    Existing = "existing",
 }
 
 /**

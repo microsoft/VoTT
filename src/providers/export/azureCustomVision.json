@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "title": "Azure Custom Vision",
+    "title": "${strings.export.providers.tfPascalVoc.displayName}",
     "required": [
         "assetState",
         "apiKey"
@@ -8,8 +8,7 @@
     "properties": {
         "assetState": {
             "type": "string",
-            "title": "Asset State",
-            "description": "Which assets to include in the export",
+            "title": "${strings.export.providers.common.properties.assetState.title}",
             "enum": [
                 "all",
                 "visited",
@@ -17,23 +16,27 @@
             ],
             "default": "all",
             "enumNames": [
-                "All Assets",
-                "Only Visisted Assets",
-                "Only Tagged Assets"
+                "${strings.export.providers.common.properties.assetState.options.all}",
+                "${strings.export.providers.common.properties.assetState.options.visited}",
+                "${strings.export.providers.common.properties.assetState.options.tagged}"
             ]
         },
         "apiKey": {
             "type": "string",
-            "title": "API Key"
+            "title": "${strings.export.providers.azureCV.properties.apiKey.title}"
         },
         "newOrExisting": {
             "type": "string",
-            "title": "New or existing project",
+            "title": "${strings.export.providers.azureCV.properties.newOrExisting.title}",
             "enum": [
-                "New Project",
-                "Existing Project"
+                "new",
+                "existing"
             ],
-            "default": "Existing Project"
+            "enumNames": [
+                "${strings.export.providers.azureCV.properties.newOrExisting.options.new}",
+                "${strings.export.providers.azureCV.properties.newOrExisting.options.existing}"
+            ],
+            "default": "existing"
         }
     },
     "dependencies": {
@@ -43,46 +46,46 @@
                     "properties": {
                         "newOrExisting": {
                             "enum": [
-                                "New Project"
+                                "new"
                             ]
                         },
                         "name": {
                             "type": "string",
-                            "title": "Project Name"
+                            "title": "${strings.export.providers.azureCV.properties.name.title}"
                         },
                         "description": {
                             "type": "string",
-                            "title": "Project Description"
+                            "title": "${strings.export.providers.azureCV.properties.description.title}"
                         },
                         "projectType": {
                             "type": "string",
-                            "title": "Project Type",
+                            "title": "${strings.export.providers.azureCV.properties.projectType.title}",
                             "enum": [
                                 "Classification",
                                 "Object Detection"
                             ],
                             "enumNames": [
-                                "Classification",
-                                "Object Detection"
+                                "${strings.export.providers.azureCV.properties.projectType.options.classification}",
+                                "${strings.export.providers.azureCV.properties.projectType.options.objectDetection}"
                             ],
                             "default": "Classification"
                         },
                         "classificationType": {
                             "type": "string",
-                            "title": "Classification Type",
+                            "title": "${strings.export.providers.azureCV.properties.classificationType.title}",
                             "enum": [
                                 "Multilabel",
                                 "Multiclass"
                             ],
                             "enumNames": [
-                                "Multiple tags per image",
-                                "Single tag per image"
+                                "${strings.export.providers.azureCV.properties.classificationType.options.multiLabel}",
+                                "${strings.export.providers.azureCV.properties.classificationType.options.multiClass}"
                             ],
                             "default": "Multilabel"
                         },
                         "domainId": {
                             "type": "string",
-                            "title": "Domain"
+                            "title": "${strings.export.providers.azureCV.properties.domainId.title}"
                         }
                     },
                     "required": [
@@ -94,12 +97,12 @@
                     "properties": {
                         "newOrExisting": {
                             "enum": [
-                                "Existing Project"
+                                "existing"
                             ]
                         },
                         "projectId": {
                             "type": "string",
-                            "title": "Project Name"
+                            "title": "${strings.export.providers.azureCV.properties.projectId.title}"
                         }
                     },
                     "required": [
