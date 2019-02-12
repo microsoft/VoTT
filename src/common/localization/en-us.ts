@@ -203,6 +203,11 @@ export const english: IAppStrings = {
             title: "Error parsing project file",
             message: "The selected project files does not contain valid JSON. Please check the file any try again.",
         },
+        projectDeleteError: {
+            title: "Error deleting project",
+            message: `An error occured while deleting the project.
+                Validate the project file and security token exist and try again`,
+        },
         securityTokenNotFound: {
             title: "Error loading project file",
             message: `The security token referenced by the project cannot be found in your current application settings.
