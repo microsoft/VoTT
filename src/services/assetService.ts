@@ -14,6 +14,8 @@ import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBui
 const TagColors = require("../react/components/common/tagsInput/tagColors.json");
 
 interface ITFRecordObjectArray {
+    width: number;
+    height: number;
     xminArray: number[];
     yminArray: number[];
     xmaxArray: number[];
@@ -224,18 +226,18 @@ export class AssetService {
                     color: TagColors[tagPos],
                 }],
                 boundingBox: {
-                    height: objectArray.ymaxArray[index],
-                    width: objectArray.xmaxArray[index],
-                    left: objectArray.xminArray[index],
-                    top: objectArray.yminArray[index],
+                    left: objectArray.xminArray[index] * objectArray.width,
+                    top: objectArray.yminArray[index] * objectArray.height,
+                    width: (objectArray.xmaxArray[index] - objectArray.xminArray[index]) * objectArray.width,
+                    height: (objectArray.ymaxArray[index] - objectArray.yminArray[index]) * objectArray.height,
                 },
                 points: [{
-                            x: objectArray.xminArray[index],
-                            y: objectArray.yminArray[index],
+                            x: objectArray.xminArray[index] * objectArray.width,
+                            y: objectArray.yminArray[index] * objectArray.height,
                         },
                         {
-                             x: objectArray.xminArray[index] + objectArray.xmaxArray[index],
-                             y: objectArray.yminArray[index] + objectArray.ymaxArray[index],
+                             x: objectArray.xmaxArray[index] * objectArray.width,
+                             y: objectArray.ymaxArray[index] * objectArray.height,
                         }],
             });
         }
@@ -247,12 +249,15 @@ export class AssetService {
         const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
 
+        const width = reader.getFeature(0, "image/width", FeatureType.Int64) as number;
+        const height = reader.getFeature(0, "image/height", FeatureType.Int64) as number;
+
         const xminArray = reader.getArrayFeature(0, "image/object/bbox/xmin", FeatureType.Float) as number[];
         const yminArray = reader.getArrayFeature(0, "image/object/bbox/ymin", FeatureType.Float) as number[];
         const xmaxArray = reader.getArrayFeature(0, "image/object/bbox/xmax", FeatureType.Float) as number[];
         const ymaxArray = reader.getArrayFeature(0, "image/object/bbox/ymax", FeatureType.Float) as number[];
         const textArray = reader.getArrayFeature(0, "image/object/class/text", FeatureType.String) as string[];
 
-        return {xminArray, yminArray, xmaxArray, ymaxArray, textArray};
+        return {width, height, xminArray, yminArray, xmaxArray, ymaxArray, textArray};
     }
 }
