@@ -1,5 +1,5 @@
 import { AssetService } from "./assetService";
-import { AssetType, IAssetMetadata } from "../models/applicationState";
+import { AssetType, IAssetMetadata, AssetState } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
@@ -118,7 +118,10 @@ describe("Asset Service", () => {
 
         it("Saves asset JSON to underlying storage provider", async () => {
             const assetMetadata: IAssetMetadata = {
-                asset: testAssets[0],
+                asset: {
+                    ...testAssets[0],
+                    state: AssetState.Tagged,
+                },
                 regions: [],
             };
 
@@ -128,6 +131,21 @@ describe("Asset Service", () => {
                 `${assetMetadata.asset.id}${constants.assetMetadataFileExtension}`,
                 JSON.stringify(assetMetadata, null, 4),
             );
+            expect(result).toBe(assetMetadata);
+        });
+
+        it("Does not save asset JSON to the storage provider if asset has not been tagged", async () => {
+            const assetMetadata: IAssetMetadata = {
+                asset: {
+                    ...testAssets[0],
+                    state: AssetState.Visited,
+                },
+                regions: [],
+            };
+
+            const result = await assetService.save(assetMetadata);
+
+            expect(storageProviderMock.writeText).not.toBeCalled();
             expect(result).toBe(assetMetadata);
         });
 

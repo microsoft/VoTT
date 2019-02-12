@@ -11,6 +11,7 @@ import {
     saveAssetMetadataAction,
 } from "../actions/projectActions";
 import { anyOtherAction } from "../actions/actionCreators";
+import { saveConnectionAction } from "../actions/connectionActions";
 
 describe("Current Project Reducer", () => {
     it("Load project sets current project state", () => {
@@ -39,14 +40,35 @@ describe("Current Project Reducer", () => {
         expect(result).toBeNull();
     });
 
-    it("Load Project Assets merges assets into current asset set", () => {
+    it("Updating connection not in use by current project performs noop", () => {
+        const currentProject = MockFactory.createTestProject("1");
+        const state: IProject = currentProject;
+        const unrelatedConnection = MockFactory.createTestConnection("Unrelated Connection");
+        const action = saveConnectionAction(unrelatedConnection);
+        const result = reducer(state, action);
+        expect(result).toEqual(currentProject);
+    });
+
+    it("Updating connection used by current project is updated in curren project", () => {
+        const currentProject = MockFactory.createTestProject("1");
+        const state: IProject = currentProject;
+
+        const sourceConnection = {...currentProject.sourceConnection};
+        sourceConnection.description += "updated";
+
+        const action = saveConnectionAction(sourceConnection);
+        const result = reducer(state, action);
+
+        expect(result.sourceConnection).toEqual(action.payload);
+    });
+
+    it("Load Project Assets does not merges assets into current asset set", () => {
         const state: IProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets();
 
         const action = loadProjectAssetsAction(testAssets);
         const result = reducer(state, action);
-        expect(result).not.toBe(state);
-        expect(Object.keys(result.assets).length).toEqual(testAssets.length);
+        expect(result).toBe(state);
     });
 
     it("Save Asset Metadata updates project asset state", () => {
