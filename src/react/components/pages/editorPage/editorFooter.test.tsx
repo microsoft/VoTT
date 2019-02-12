@@ -65,34 +65,34 @@ describe("Footer Component", () => {
         expect(tags[0].color).toEqual(originalTags[0].color);
     });
 
-    // it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
-    //     const onChangeHandler = jest.fn();
-    //     const wrapper = createComponent({
-    //         tags: originalTags,
-    //         displayHotKeys: true,
-    //         onTagsChanged: onChangeHandler,
-    //     });
-    //     wrapper.find("div.tag")
-    //         .first()
-    //         .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
-    //     wrapper.find("button.btn.btn-success").simulate("click");
-    //     expect(onChangeHandler).toBeCalled();
-    // });
+    it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagsChanged: onChangeHandler,
+        });
+        wrapper.find("div.tag")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
+        wrapper.find("button.btn.btn-success").simulate("click");
+        expect(onChangeHandler).toBeCalled();
+    });
 
-    // it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
-    //     const onChangeHandler = jest.fn();
-    //     const wrapper = createComponent({
-    //         tags: originalTags,
-    //         displayHotKeys: true,
-    //         onTagsChanged: onChangeHandler,
-    //     });
-    //     wrapper.find("div.tag")
-    //         .first()
-    //         .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
-    //     wrapper.find("button.btn.btn-secondary").simulate("click");
+    it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagsChanged: onChangeHandler,
+        });
+        wrapper.find("div.tag")
+            .first()
+            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
+        wrapper.find("button.btn.btn-secondary").simulate("click");
 
-    //     expect(onChangeHandler).not.toBeCalled();
-    // });
+        expect(onChangeHandler).not.toBeCalled();
+    });
 
     it("clicking tag calls onTagClickHandler ", () => {
         const onChangeHandler = jest.fn();

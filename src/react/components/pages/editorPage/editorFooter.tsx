@@ -1,7 +1,7 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
 import EditorTagsInput from "./editorTagsInput";
-import { TagEditorModal } from "vott-react";
+import { TagsInput, TagEditorModal } from "vott-react";
 import { strings } from "../../../../common/strings";
 
 /**
@@ -55,6 +55,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
             <div>
                 <EditorTagsInput
                     tags={this.state.tags}
+                    ref={this.editorTagsInput}
                     onChange={this.onTagsChanged}
                     onTagClick={this.props.onTagClicked}
                     onCtrlTagClick={this.onCtrlTagClicked}
@@ -80,6 +81,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     }
 
     private onTagModalOk(oldTag: ITag, newTag: ITag) {
+        console.log("called onTagModalOk");
         this.editorTagsInput.current.updateTag(oldTag, newTag);
         this.tagEditorModal.current.close();
     }

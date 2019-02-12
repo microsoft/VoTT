@@ -25,7 +25,7 @@ export default class EditorTagsInput extends TagsInput {
 
     private indexOfTag(id: string): number {
         let index = -1;
-        if (this.state) { // if stat exists
+        if (this.state) { // if state exists
             index = this.state.tags.findIndex((tag) => tag.id === id); // return index based on tag.id or -1
             if (index < 0) { // if not found, i.e. -1
                 index = this.state.tags.length + 1; // create new final array index and assign to index, i.e. 2 or 3
@@ -37,6 +37,6 @@ export default class EditorTagsInput extends TagsInput {
             throw new Error(`No tag by id: ${id}`);
         }
         index += 1; // whatever the index, increment by one to avoid zero-base in display
-        return (index === 10) ? 0 : index; // return index or 0, because max hotkeys are 10?
+        return (index === 10) ? 0 : index; // return index or 0, because max hotkeys are 10
     }
 }
