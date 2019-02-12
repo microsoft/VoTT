@@ -26,9 +26,9 @@ export default class EditorTagsInput extends TagsInput {
     private indexOfTag(id: string): number {
         let index = -1;
         if (this.state) { // if state exists
-            index = this.state.tags.findIndex((tag) => tag.id === id); // return index based on tag.id or -1
+            index = this.state.tags.findIndex((tag) => tag.id === id); // return index or -1
             if (index < 0) { // if not found, i.e. -1
-                index = this.state.tags.length + 1; // create new final array index and assign to index, i.e. 2 or 3
+                index = this.state.tags.length + 1; // create new final index and assign to index, i.e. 2 or 3
             }
         } else { // if there is no state
             index = this.props.tags.findIndex((tag) => tag.name === id); // check tags in props and return index or -1

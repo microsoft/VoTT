@@ -54,6 +54,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         return (
             <div>
                 <EditorTagsInput
+                    // displayHotKeys={true}
                     tags={this.state.tags}
                     ref={this.editorTagsInput}
                     onChange={this.onTagsChanged}
@@ -81,7 +82,6 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     }
 
     private onTagModalOk(oldTag: ITag, newTag: ITag) {
-        console.log("called onTagModalOk");
         this.editorTagsInput.current.updateTag(oldTag, newTag);
         this.tagEditorModal.current.close();
     }
