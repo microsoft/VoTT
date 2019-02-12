@@ -1,6 +1,7 @@
 import shortid from "shortid";
 import { IProject, IAppSettings, ITag, IConnection, AppError, ErrorCode,
-         IV1Project, IAssetMetadata, IRegion, RegionType, AssetType, AssetState } from "../models/applicationState";
+        IAssetMetadata, IRegion, RegionType, AssetType, AssetState } from "../models/applicationState";
+import { IV1Project } from "../models/v1Models";
 import { AssetService } from "./assetService";
 import MD5 from "md5.js";
 import { randomIntInRange } from "../common/utils";

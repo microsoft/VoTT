@@ -4,15 +4,22 @@ import * as applicationActions from "./applicationActions";
 import { ActionTypes } from "./actionTypes";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IAppSettings } from "../../models/applicationState";
+import { IApplicationState } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
+import initialState from "../store/initialState";
 
 describe("Application Redux Actions", () => {
-    let store: MockStoreEnhanced;
+    let store: MockStoreEnhanced<IApplicationState>;
+    const appSettings = MockFactory.appSettings();
 
     beforeEach(() => {
         IpcRendererProxy.send = jest.fn(() => Promise.resolve());
         const middleware = [thunk];
-        store = createMockStore(middleware)();
+        const mockState: IApplicationState = {
+            ...initialState,
+            appSettings,
+        };
+        store = createMockStore<IApplicationState>(middleware)(mockState);
     });
 
     it("Toggle Dev Tools action forwards call to IpcRenderer proxy and dispatches redux action", async () => {
@@ -75,7 +82,7 @@ describe("Application Redux Actions", () => {
 
         const testProject = MockFactory.createTestProject("TestProject");
 
-        const result = await applicationActions.ensureSecurityToken(appSettings, testProject)(store.dispatch);
+        const result = await applicationActions.ensureSecurityToken(testProject)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
