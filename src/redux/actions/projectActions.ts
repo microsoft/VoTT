@@ -52,8 +52,8 @@ export function loadProject(project: IProject):
  * Dispatches Save Project action and resolves with IProject
  * @param project - Project to save
  */
-export function saveProject(project: IProject):
-    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
+export function saveProject(project: IProject)
+    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         const projectService = new ProjectService();
@@ -84,11 +84,24 @@ export function saveProject(project: IProject):
  * Dispatches Delete Project action and resolves with project
  * @param project - Project to delete
  */
-export function deleteProject(project: IProject): (dispatch: Dispatch) => Promise<void> {
-    return async (dispatch: Dispatch) => {
+export function deleteProject(project: IProject)
+    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<void> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        const appState = getState();
         const projectService = new ProjectService();
-        await projectService.delete(project);
-        dispatch(deleteProjectAction(project));
+
+        // Lookup security token used to decrypt project settings
+        const securityToken = appState.appSettings.securityTokens
+            .find((st) => st.name === project.securityToken);
+
+        if (!securityToken) {
+            throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
+        }
+
+        const decryptedProject = await projectService.load(project, securityToken);
+
+        await projectService.delete(decryptedProject);
+        dispatch(deleteProjectAction(decryptedProject));
     };
 }
 

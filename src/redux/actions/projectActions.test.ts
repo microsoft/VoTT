@@ -13,6 +13,7 @@ import { ExportProviderFactory } from "../../providers/export/exportProviderFact
 import { IExportProvider } from "../../providers/export/exportProvider";
 import { IApplicationState } from "../../models/applicationState";
 import initialState from "../store/initialState";
+import { encryptProject } from "../../common/utils";
 
 describe("Project Redux Actions", () => {
     let store: MockStoreEnhanced<IApplicationState>;
@@ -71,7 +72,7 @@ describe("Project Redux Actions", () => {
         projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
 
         const project = MockFactory.createTestProject("TestProject");
-        await projectActions.deleteProject(project)(store.dispatch);
+        await projectActions.deleteProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
@@ -80,6 +81,14 @@ describe("Project Redux Actions", () => {
             payload: project,
         });
         expect(projectServiceMock.prototype.delete).toBeCalledWith(project);
+    });
+
+    it("Delete project with missing security token throws error", async () => {
+        const project = MockFactory.createTestProject("ProjectWithoutToken");
+        await expect(projectActions.deleteProject(project)(store.dispatch, store.getState)).rejects.not.toBeNull();
+
+        const actions = store.getActions();
+        expect(actions.length).toEqual(0);
     });
 
     it("Close project dispatches redux action", () => {
