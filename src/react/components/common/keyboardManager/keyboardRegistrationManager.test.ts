@@ -89,8 +89,7 @@ describe("Keyboard Registration Manager", () => {
 
     it("can remove keyboard event handlers", () => {
         const keyCode1 = "Ctrl+1";
-        const keyCode2 = "Ctrl+S";
-        const keyCodes = [keyCode1, keyCode2];
+        const keyCodes = [keyCode1];
         const handler = (evt: KeyboardEvent) => null;
 
         // Register keyboard handler
@@ -100,18 +99,12 @@ describe("Keyboard Registration Manager", () => {
         let handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
         expect(handlers1.length).toEqual(1);
 
-        let handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
-        expect(handlers2.length).toEqual(1);
-
         // Invode deregister functions
         deregister();
 
         // Get registered handlers after deregistered
         handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
         expect(handlers1.length).toEqual(0);
-
-        handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
-        expect(handlers2.length).toEqual(0);
     });
 
     it("get handlers for unregistered key code returns emtpy array", () => {
@@ -137,5 +130,75 @@ describe("Keyboard Registration Manager", () => {
 
         expect(handler1).toBeCalledWith(keyboardEvent);
         expect(handler2).toBeCalledWith(keyboardEvent);
+    });
+
+    describe("array with mulitple keyCodes", () => {
+        it("register all keycodes with the same eventType and handler", () => {
+            const keyCode1 = "Ctrl+1";
+            const keyCode2 = "Ctrl+S";
+            const keyCodes = [keyCode1, keyCode2];
+            const handler = jest.fn();
+
+            keyboardManager.addHandler(KeyEventType.KeyDown, keyCodes, handler);
+
+            const handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
+            expect(handlers1.length).toEqual(1);
+            expect(handlers1[0]).toEqual(handler);
+
+            const handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
+            expect(handlers2.length).toEqual(1);
+            expect(handlers2[0]).toEqual(handler);
+        });
+
+        it("invoke the registered keyboard handlers", () => {
+            const keyCode1 = "Ctrl+1";
+            const keyCode2 = "ArrowUp";
+            const keyCodes = [keyCode1, keyCode2];
+            const handler = jest.fn();
+
+            keyboardManager.addHandler(KeyEventType.KeyDown, keyCodes, handler);
+
+            const keyboardEvent1 = new KeyboardEvent("keydown", {
+                ctrlKey: true,
+                code: "1",
+            });
+
+            keyboardManager.invokeHandlers(KeyEventType.KeyDown, keyCode1, keyboardEvent1);
+            expect(handler).toBeCalledWith(keyboardEvent1);
+
+            const keyboardEvent2 = new KeyboardEvent("keydown", {
+                code: "ArrowUp",
+            });
+
+            keyboardManager.invokeHandlers(KeyEventType.KeyDown, keyCode1, keyboardEvent2);
+            expect(handler).toBeCalledWith(keyboardEvent2);
+        });
+
+        it("correctly remove all associated handlers", () => {
+            const keyCode1 = "Ctrl+1";
+            const keyCode2 = "Ctrl+S";
+            const keyCodes = [keyCode1, keyCode2];
+            const handler = (evt: KeyboardEvent) => null;
+
+            // Register keyboard handler
+            const deregister = keyboardManager.addHandler(KeyEventType.KeyDown, keyCodes, handler);
+
+            // Get registered handlers
+            let handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
+            expect(handlers1.length).toEqual(1);
+
+            let handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
+            expect(handlers2.length).toEqual(1);
+
+            // Invode deregister functions
+            deregister();
+
+            // Get registered handlers after deregistered
+            handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
+            expect(handlers1.length).toEqual(0);
+
+            handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
+            expect(handlers2.length).toEqual(0);
+        });
     });
 });

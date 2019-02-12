@@ -31,7 +31,7 @@ export class KeyboardRegistrationManager {
      */
     public addHandler(keyEventType: KeyEventType, keyCodes: string[], handler: KeyboardEventHandler): () => void {
         Guard.null(keyEventType);
-        Guard.null(keyCodes);
+        Guard.expression(keyCodes, (keyCodes) => keyCodes.length > 0);
         Guard.null(handler);
 
         let eventTypeRegistrations = this.registrations[keyEventType];
