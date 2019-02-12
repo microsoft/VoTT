@@ -122,6 +122,7 @@ export interface ITag {
     color: string;
 }
 
+
 /**
  * @enum LOCAL - Local storage type
  * @enum CLOUD - Cloud storage type
