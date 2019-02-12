@@ -54,7 +54,7 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
-                if (project.version !== "v2"){
+                if (project.version !== "v2") {
                     project.version = "v2";
                 }
 

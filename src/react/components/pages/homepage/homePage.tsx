@@ -4,7 +4,7 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions"
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
 import Confirm from "../../common/confirm/confirm";
