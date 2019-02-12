@@ -271,9 +271,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 editorMode = EditorMode.CopyRect;
                 break;
             case "selectCanvas":
-                selectionMode = SelectionMode.NONE;
-                editorMode = EditorMode.Select;
-                break;
             case "panCanvas":
                 selectionMode = SelectionMode.NONE;
                 editorMode = EditorMode.Select;
