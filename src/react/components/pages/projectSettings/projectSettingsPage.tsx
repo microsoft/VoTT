@@ -106,26 +106,26 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
      * @param project The project to validate
      */
     private async ensureSecurityToken(project: IProject): Promise<IProject> {
-        let securityToken = this.props.appSettings.securityTokens
-            .find((st) => st.name === project.securityToken);
+        let projectToken = this.props.appSettings.securityTokens
+            .find((securityToken) => securityToken.name === project.securityToken);
 
-        if (securityToken) {
+        if (projectToken) {
             return project;
         }
 
-        securityToken = {
+        projectToken = {
             name: `${project.name} Token`,
             key: generateKey(),
         };
 
         const updatedAppSettings: IAppSettings = {
             devToolsEnabled: this.props.appSettings.devToolsEnabled,
-            securityTokens: [...this.props.appSettings.securityTokens, securityToken],
+            securityTokens: [...this.props.appSettings.securityTokens, projectToken],
         };
 
         await this.props.applicationActions.saveAppSettings(updatedAppSettings);
 
-        project.securityToken = securityToken.name;
+        project.securityToken = projectToken.name;
         return project;
     }
 }

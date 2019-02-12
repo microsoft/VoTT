@@ -35,13 +35,13 @@ export function loadProject(project: IProject):
         const projectService = new ProjectService();
 
         // Lookup security token used to decrypt project settings
-        const securityToken = appState.appSettings.securityTokens
-            .find((st) => st.name === project.securityToken);
+        const projectToken = appState.appSettings.securityTokens
+            .find((securityToken) => securityToken.name === project.securityToken);
 
-        if (!securityToken) {
+        if (!projectToken) {
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
-        const loadedProject = await projectService.load(project, securityToken);
+        const loadedProject = await projectService.load(project, projectToken);
 
         dispatch(loadProjectAction(loadedProject));
         return loadedProject;
@@ -63,14 +63,14 @@ export function saveProject(project: IProject)
                 already exists with the same target connection '${project.targetConnection.name}'`);
         }
 
-        const securityToken = appState.appSettings.securityTokens
-            .find((st) => st.name === project.securityToken);
+        const projectToken = appState.appSettings.securityTokens
+            .find((securityToken) => securityToken.name === project.securityToken);
 
-        if (!securityToken) {
+        if (!projectToken) {
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const savedProject = await projectService.save(project, securityToken);
+        const savedProject = await projectService.save(project, projectToken);
         dispatch(saveProjectAction(savedProject));
 
         // Reload project after save actions
@@ -91,14 +91,14 @@ export function deleteProject(project: IProject)
         const projectService = new ProjectService();
 
         // Lookup security token used to decrypt project settings
-        const securityToken = appState.appSettings.securityTokens
-            .find((st) => st.name === project.securityToken);
+        const projectToken = appState.appSettings.securityTokens
+            .find((securityToken) => securityToken.name === project.securityToken);
 
-        if (!securityToken) {
+        if (!projectToken) {
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const decryptedProject = await projectService.load(project, securityToken);
+        const decryptedProject = await projectService.load(project, projectToken);
 
         await projectService.delete(decryptedProject);
         dispatch(deleteProjectAction(decryptedProject));
