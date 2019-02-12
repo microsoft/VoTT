@@ -4,7 +4,9 @@ import * as applicationActions from "./applicationActions";
 import { ActionTypes } from "./actionTypes";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IAppSettings } from "../../models/applicationState";
+import { IApplicationState } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
+import initialState from "../store/initialState";
 
 describe("Application Redux Actions", () => {
     let store: MockStoreEnhanced<IApplicationState>;
@@ -80,7 +82,7 @@ describe("Application Redux Actions", () => {
 
         const testProject = MockFactory.createTestProject("TestProject");
 
-        const result = await applicationActions.ensureSecurityToken(appSettings, testProject)(store.dispatch);
+        const result = await applicationActions.ensureSecurityToken(testProject)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);

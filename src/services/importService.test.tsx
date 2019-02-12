@@ -1,5 +1,5 @@
 import MockFactory from "../common/mockFactory";
-import { IProject, IV1Project /*IExportFormat, ISecurityToken*/ } from "../models/applicationState";
+import { IV1Project } from "../models/v1Models";
 import ImportService from "./importService";
 
 describe("Import Service", () => {
