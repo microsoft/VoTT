@@ -31,7 +31,8 @@ export const english: IAppStrings = {
         importProject: {
             title: "Import Project",
             confirmation: "Are you sure you want to convert project",
-            recommendation: "to v2 format? We recommend you backup the project file first, then confirm project settings",
+            recommendation: "to v2 format? We recommend you backup the " +
+                "project file first, then confirm project settings",
         },
     },
     appSettings: {

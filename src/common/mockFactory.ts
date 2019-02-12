@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode, ITagMetadata,
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
     IPoint, IRegion, RegionType, IBoundingBox, IV1Project, IV1Region
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -244,17 +244,17 @@ export default class MockFactory {
      * @param name TODO: fixName of project. project.id = `project-${name}` and project.name = `Project ${name}`
      */
     public static createTestV1Project(name: string = "test"): IV1Project {
-        const regions = MockFactory.createTestV1Frame(name);
+        const regions = MockFactory.createTestV1Region(name);
 
         return {
-            frames: {},
+            frames: {"testFrame.jpg": regions},
             framerate: `Project ${name}`,
-            inputTags: `Security-Token-${name}`,
+            inputTags: "testTag1,testTag2",
             suggestiontype: "suggestiontype",
             tags: MockFactory.createTestTags(),
             scd: true,
             visitedFrames: [],
-            tagColors: [MockFactory.randomColor()],
+            tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
         };
     }
 
@@ -262,10 +262,11 @@ export default class MockFactory {
      * Creates fake IV1Region (NECESSARY??)
      * @param name TODO: fix Name of project. project.id = `project-${name}` and project.name = `Project ${name}`
      */
-    public static createTestV1Frame(name: string = "test"): IV1Region {
+    public static createTestV1Region(name: string = "test"): IV1Region[] {
         // const connection = MockFactory.createTestConnection(name);
+        const regions: IV1Region[] = [];
 
-        return {
+        const testRegion = {
             x1: 1,
             y1: 1,
             x2: 2,
@@ -284,6 +285,9 @@ export default class MockFactory {
             tags: [],
             name: 1,
         };
+
+        regions.push(testRegion);
+        return regions;
     }
 
     /**
@@ -686,7 +690,6 @@ export default class MockFactory {
             exportProject: jest.fn((project: IProject) => Promise.resolve()),
             loadAssetMetadata: jest.fn((project: IProject, asset: IAsset) => Promise.resolve()),
             saveAssetMetadata: jest.fn((project: IProject, assetMetadata: IAssetMetadata) => Promise.resolve()),
-            ensureSecurityToken: jest.fn((project: IProject) => Promise.resolve())
         };
     }
 

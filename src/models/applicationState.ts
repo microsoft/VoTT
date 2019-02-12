@@ -115,7 +115,7 @@ export interface IProject {
  * @name - V1 Project
  * @description - Defines the structure of a version 1 Project
  * @member frames - Dictionary of all frame objects in the project (filename: list of regions in that file)
- * @member framerate - TODO: Add description
+ * @member framerate - Rate at which a video is stepped through
  * @member inputTags - Comma delimited list of all tags in the project
  * @member suggestiontype - TODO: Add description
  * @member tags - List of all tags in the project
@@ -124,18 +124,18 @@ export interface IProject {
  * @member tagColors - List of all tag colors corresponding to the tags in "tags"
  */
 export interface IV1Project {
-    frames: {[frameName: string] : IV1Region[]};
+    frames: {[frameName: string]: IV1Region[]};
     framerate: string;
     inputTags: string;
     suggestiontype: string;
     tags: ITag[];
     scd: boolean;
     visitedFrames: string[];
-    tagColors: string[];
+    tag_colors: string[];
 }
 
 /**
- * @name - V1 Frame Object
+ * @name - V1 Region Object
  * @description - Defines the structure of a version 1 Region
  * @member x1 - Left-most x-value of the region
  * @member y1 - Top-most y-value of the region
@@ -149,7 +149,7 @@ export interface IV1Project {
  * @member id - TODO: Add description
  * @member type - shape of the region, "rect" is the only option in V1
  * @member tags - List of strings that are the tags associated with the region
- * @member name - TODO: Add description
+ * @member name - Index of the region in the frame (starts at 1)
  */
 export interface IV1Region {
     x1: number;
