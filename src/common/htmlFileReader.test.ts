@@ -10,7 +10,7 @@ describe("Html File Reader", () => {
         const file = new File([blob], "test.txt");
 
         const actualText = await HtmlFileReader.readAsText(file);
-        expect(actualText).toEqual(expectedText);
+        expect(actualText.content).toEqual(expectedText);
     });
 
     it("Throws error with null file value", () => {
