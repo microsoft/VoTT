@@ -1,5 +1,5 @@
 import shortid from "shortid";
-import { IProject, IAppSettings, ITag, IConnection,
+import { IProject, IAppSettings, ITag, IConnection, AppError, ErrorCode,
          IV1Project, IAssetMetadata, IRegion, RegionType, AssetType, AssetState } from "../models/applicationState";
 import { AssetService } from "./assetService";
 import MD5 from "md5.js";
@@ -31,7 +31,12 @@ export default class ImportService implements IImportService {
             let parsedTags: ITag[];
             let generatedAssetMetadata: IAssetMetadata[];
 
-            originalProject = JSON.parse(project.content);
+            try {
+                originalProject = JSON.parse(project.content);
+            } catch (e) {
+                throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
+            }
+            
             parsedTags = this.parseTags(originalProject);
 
             connections = this.generateConnections(project);
