@@ -50,6 +50,7 @@ describe("Editor Canvas", () => {
             editorMode: EditorMode.Rectangle,
             selectionMode: SelectionMode.RECT,
             project: MockFactory.createTestProject(),
+            selectedTags: [],
         };
 
         const assetPreviewProps: IAssetPreviewProps = {
@@ -184,24 +185,6 @@ describe("Editor Canvas", () => {
         expect(wrapper.instance().state.selectedRegions.length).toEqual(1);
         expect(wrapper.instance().state.selectedRegions)
             .toMatchObject([testRegion1]);
-    });
-
-    it("Adds tag to selected region by clicking tag", () => {
-        const canvas = wrapper.instance();
-        const testRegion1 = MockFactory.createTestRegion("test1");
-        const testRegion2 = MockFactory.createTestRegion("test2");
-
-        wrapper.prop("selectedAsset").regions.push(testRegion1);
-        wrapper.prop("selectedAsset").regions.push(testRegion2);
-
-        canvas.onRegionSelected("test1");
-        canvas.onRegionSelected("test2");
-
-        const newTag = MockFactory.createTestTag();
-        canvas.onTagClicked(newTag);
-        for (const region of wrapper.instance().state.selectedRegions) {
-            expect(region.tags.findIndex((tag) => tag === newTag)).toBeGreaterThanOrEqual(0);
-        }
     });
 
     it("Shift key sets and unsets multi-select", () => {

@@ -3,7 +3,7 @@ import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
-import { IBoundingBox, IPoint, IRegion, ITag, RegionType } from "../../../../models/applicationState";
+import { IBoundingBox, IPoint, IRegion, ITag, RegionType, EditorMode } from "../../../../models/applicationState";
 
 /**
  * Static functions to assist in operations within Canvas component
@@ -17,20 +17,16 @@ export default class CanvasHelpers {
 
     /**
      * Adds tag to array if it does not contain the tag,
-     * removes tag if already contained. Performs operations in place
+     * removes tag if already contained.
      * @param tags Array of tags
      * @param tag Tag to toggle
      */
     public static toggleTag(tags: ITag[], tag: ITag): ITag[] {
-        const tagIndex = tags.findIndex((existingTag) => existingTag.name === tag.name);
-        if (tagIndex === -1) {
-            // Tag isn't found within region tags, add it
-            tags.push(tag);
+        if (tags.find((existingTag) => existingTag.name === tag.name)) {
+            return tags.filter((t) => t.name !== tag.name);
         } else {
-            // Tag is within region tags, remove it
-            tags.splice(tagIndex, 1);
+            return [...tags, tag];
         }
-        return tags;
     }
 
     /**
@@ -45,6 +41,42 @@ export default class CanvasHelpers {
             region.points.map((point) =>
                 new Point2D(point.x, point.y)),
             this.regionTypeToType(region.type));
+    }
+
+    public static getRegion(regionData: RegionData, editorMode: EditorMode, id?: string): IRegion {
+        return {
+            id: (id) ? id : shortid.generate(),
+            type: this.editorModeToType(editorMode),
+            tags: [],
+            boundingBox: {
+                height: regionData.height,
+                width: regionData.width,
+                left: regionData.x,
+                top: regionData.y,
+            },
+            points: regionData.points,
+        };
+    }
+
+    public static editorModeToType(editorMode: EditorMode) {
+        let type;
+        switch (editorMode) {
+            case EditorMode.Rectangle:
+                type = RegionType.Rectangle;
+                break;
+            case EditorMode.Polygon:
+                type = RegionType.Polygon;
+                break;
+            case EditorMode.Point:
+                type = RegionType.Point;
+                break;
+            case EditorMode.Polyline:
+                type = RegionType.Polyline;
+                break;
+            default:
+                break;
+        }
+        return type;
     }
 
     /**

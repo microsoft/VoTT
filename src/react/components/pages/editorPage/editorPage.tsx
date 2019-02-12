@@ -23,6 +23,7 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
+import CanvasHelpers from "./canvasHelpers";
 
 /**
  * Properties for Editor Page
@@ -52,6 +53,8 @@ export interface IEditorPageState {
     selectedAsset?: IAssetMetadata;
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
+    /** Tags selected for labeling of regions */
+    selectedTags?: ITag[];
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -141,7 +144,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.editorMode}
                                 selectionMode={this.state.selectionMode}
-                                project={this.props.project}>
+                                project={this.props.project}
+                                selectedTags={this.state.selectedTags}>
                                 <AssetPreview
                                     autoPlay={true}
                                     onChildAssetSelected={this.onChildAssetSelected}
@@ -156,6 +160,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange}
                             onTagClicked={this.onTagClicked}
+                            onTagShiftClicked={this.onTagShiftClicked}
                         />
                     </div>
                 </div>
@@ -168,8 +173,39 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * @param tag Tag clicked
      */
     public onTagClicked = (tag: ITag) => {
-        this.canvas.current.onTagClicked(tag);
-        this.onAssetMetadataChanged(this.state.selectedAsset);
+        this.setState((prevState) => {
+            const tags = prevState.selectedTags;
+            if (tags && tags.find((t) => t.name === tag.name) && tags.length === 1) {
+                return {
+                    selectedTags: [],
+                };
+            } else {
+                return {
+                    selectedTags: [ tag ],
+                };
+            }
+        }, () => {
+            this.canvas.current.applyTags();
+            // TODO Call for tags input component to update the selected tag's display
+        });
+    }
+
+    public onTagShiftClicked = (tag: ITag) => {
+
+        this.setState((prevState) => {
+            if (prevState.selectedTags) {
+                return {
+                    selectedTags: CanvasHelpers.toggleTag(this.state.selectedTags, tag),
+                };
+            } else {
+                return {
+                    selectedTags: [ tag ],
+                };
+            }
+        }, () => {
+            this.canvas.current.applyTags();
+            // TODO Call for tags input component to update the selected tag's display
+        });
     }
 
     /**

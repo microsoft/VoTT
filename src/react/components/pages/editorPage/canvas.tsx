@@ -17,6 +17,7 @@ export interface ICanvasProps extends React.Props<Canvas> {
     editorMode: EditorMode;
     selectionMode: SelectionMode;
     project: IProject;
+    selectedTags: ITag[];
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
 }
@@ -29,12 +30,6 @@ export interface ICanvasState {
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
-    public static defaultProps: ICanvasProps = {
-        selectionMode: SelectionMode.NONE,
-        editorMode: EditorMode.Select,
-        selectedAsset: null,
-        project: null,
-    };
 
     public editor: Editor;
 
@@ -133,21 +128,23 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         );
     }
 
-    /**
-     * Add tag to or remove tag from selected regions
-     * @param tag Tag to apply to or remove from selected regions
-     */
-    public onTagClicked = (tag: ITag) => {
+    public applyTags = () => {
         for (const region of this.state.selectedRegions) {
-            CanvasHelpers.toggleTag(region.tags, tag);
+            if (!this.props.selectedTags || !this.props.selectedTags.length) {
+                region.tags = [];
+            } else {
+                for (const tag of this.props.selectedTags) {
+                    region.tags = CanvasHelpers.toggleTag(region.tags, tag);
+                }
+            }
             this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
         }
+        this.props.onAssetMetadataChanged(this.props.selectedAsset);
     }
 
     /**
-     * Method called when deleting a region from the editor
+     * Method called when selecting a region from the editor
      * @param {string} id the id of the deleted region
-     * @param {boolean} multiselection boolean whether multiselect is active
      * @returns {void}
      */
     public onRegionSelected = (id: string) => {
@@ -178,23 +175,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.editor.scaleRegionToSourceSize(commit);
-        const newRegion = {
-            id,
-            type: this.editorModeToType(this.props.editorMode),
-            tags: [],
-            boundingBox: {
-                height: scaledRegionData.height,
-                width: scaledRegionData.width,
-                left: scaledRegionData.x,
-                top: scaledRegionData.y,
-            },
-            points: scaledRegionData.points,
-        };
+        const newRegion = CanvasHelpers.getRegion(scaledRegionData, this.props.editorMode, id);
         const currentAssetMetadata = this.props.selectedAsset;
         currentAssetMetadata.regions.push(newRegion);
         this.setState({
             selectedRegions: [newRegion],
-        });
+        }, () => this.applyTags());
 
         if (currentAssetMetadata.regions.length) {
             currentAssetMetadata.asset.state = AssetState.Tagged;
@@ -381,17 +367,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     /**
-     * Add tag to region if not there already, remove tag from region
-     * if already contained in tags. Update tags in CanvasTools editor
-     * @param region Region to add or remove tag
-     * @param tag Tag to add or remove from region
-     */
-    private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
-        CanvasHelpers.toggleTag(region.tags, tag);
-        this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
-    }
-
-    /**
      * Updates the background of the canvas and draws the asset's regions
      */
     private clearAllRegions = () => {
@@ -419,27 +394,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private selectAllRegions = () => {
-        this.setState({ selectedRegions: this.props.selectedAsset.regions });
+        this.setState({ selectedRegions: this.props.selectedAsset.regions }, () => this.applyTags());
     }
 
-    private editorModeToType = (editorMode: EditorMode) => {
-        let type;
-        switch (editorMode) {
-            case EditorMode.Rectangle:
-                type = RegionType.Rectangle;
-                break;
-            case EditorMode.Polygon:
-                type = RegionType.Polygon;
-                break;
-            case EditorMode.Point:
-                type = RegionType.Point;
-                break;
-            case EditorMode.Polyline:
-                type = RegionType.Polyline;
-                break;
-            default:
-                break;
-        }
-        return type;
-    }
 }
