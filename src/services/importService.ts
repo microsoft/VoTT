@@ -6,7 +6,6 @@ import { AssetService } from "./assetService";
 import MD5 from "md5.js";
 import { randomIntInRange } from "../common/utils";
 import TagColors from "../react/components/common/tagsInput/tagColors.json";
-// const TagColors = require("../react/components/common/tagsInput/tagColors.json");
 
 /**
  * Functions required for an import service
@@ -84,7 +83,7 @@ export default class ImportService implements IImportService {
     private generateConnections(project: any): IConnection[] {
         const sourceConnection: IConnection = {
             id: shortid.generate(),
-            name: "Source Default Name",
+            name: `${project.file.name.split(".")[0]} Source Connection`,
             providerType: "localFileSystemProxy",
             providerOptions: {
                 folderPath: project.file.path.replace(/[^\/]*$/, ""),
@@ -93,7 +92,7 @@ export default class ImportService implements IImportService {
 
         const targetConnection: IConnection = {
             id: shortid.generate(),
-            name: "Target Default Name",
+            name: `${project.file.name.split(".")[0]} Target Connection`,
             providerType: "localFileSystemProxy",
             providerOptions: {
                 folderPath: project.file.path.replace(/[^\/]*$/, ""),
