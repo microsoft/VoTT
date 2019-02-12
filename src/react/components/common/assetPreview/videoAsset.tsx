@@ -186,31 +186,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     }
 
     /**
-     * @name - Move to nearest child frame
-     * @description - Move to the nearest tagged or visited frame from where the video's current
-     * position is, within a certain threshold
-     * @returns true if it moved position; false otherwise
-     */
-    private moveToNearestChildFrame(): boolean {
-        const maximumThreshold = 1; // one second threhsold
-        const timestamp = this.getCurrentVideoPlayerState().currentTime;
-        let seekTime: number = timestamp;
-        let nearestDifference = 2;
-        for (const child of this.props.childAssets) {
-            const childTimeDifference = Math.abs(child.timestamp - timestamp);
-            if (childTimeDifference < maximumThreshold && childTimeDifference < nearestDifference) {
-                nearestDifference = childTimeDifference;
-                seekTime = child.timestamp;
-            }
-        }
-        if (seekTime !== timestamp) {
-            this.seekToTime(seekTime);
-        }
-
-        return seekTime !== timestamp;
-    }
-
-    /**
      * @name - Seek to timestamp
      * @description - Moves the videos current position to the position passed in via the props
      */
@@ -320,6 +295,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
         let progressHolderElement: Element = null;
+        const assetTimelineTagLines = this.getRenderedAssetTagLinesElements(childAssets, videoDuration);
         if (!this.timelineElement) {
             const editorElement = document.querySelector("div.editor-page-content-body");
             if (editorElement) {
@@ -334,8 +310,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
         // Render the child asset elmements to the dom
         if (this.timelineElement) {
-            ReactDOM.render(this.getRenderedAssetTagLinesElements(childAssets, videoDuration),
-                this.timelineElement);
+            ReactDOM.render(assetTimelineTagLines, this.timelineElement);
         }
     }
 
