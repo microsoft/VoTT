@@ -82,6 +82,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
+        selectedTags: [],
     };
 
     private loadingProjectAssets: boolean = false;
@@ -184,27 +185,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     selectedTags: [ tag ],
                 };
             }
-        }, () => {
-            this.canvas.current.applyTags();
-            // TODO Call for tags input component to update the selected tag's display
         });
     }
 
     public onTagShiftClicked = (tag: ITag) => {
-
-        this.setState((prevState) => {
-            if (prevState.selectedTags) {
-                return {
-                    selectedTags: CanvasHelpers.toggleTag(this.state.selectedTags, tag),
-                };
-            } else {
-                return {
-                    selectedTags: [ tag ],
-                };
-            }
-        }, () => {
-            this.canvas.current.applyTags();
-            // TODO Call for tags input component to update the selected tag's display
+        this.setState({
+            selectedTags: CanvasHelpers.toggleTag(this.state.selectedTags, tag),
         });
     }
 

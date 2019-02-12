@@ -75,6 +75,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (this.props.selectionMode !== prevProps.selectionMode) {
             this.editor.setSelectionMode(this.props.selectionMode, null);
         }
+
+        if(this.props.selectedTags !== prevProps.selectedTags) {
+            this.applyTags();
+        }
     }
 
     public render = () => {
@@ -128,7 +132,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         );
     }
 
-    public applyTags = () => {
+    private applyTags = () => {
         for (const region of this.state.selectedRegions) {
             if (!this.props.selectedTags || !this.props.selectedTags.length) {
                 region.tags = [];
