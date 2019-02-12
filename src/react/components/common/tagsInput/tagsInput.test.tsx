@@ -12,7 +12,7 @@ describe("Tags Input Component", () => {
 
     function createComponent(props: ITagsInputProps) {
         return mount(
-            <TagsInput {...props}/>,
+            <TagsInput {...props} />,
         );
     }
 
@@ -23,11 +23,16 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
         });
         const stateTags = wrapper.find(TagsInput).state().tags;
+        const tagElements = wrapper.find(".tag");
+
         expect(stateTags).toHaveLength(originalTags.length);
+        expect(tagElements).toHaveLength(originalTags.length);
+
         for (let i = 0; i < stateTags.length; i++) {
             expect(stateTags[i].id).toEqual(originalTags[i].name);
             expect(stateTags[i].color).toEqual(originalTags[i].color);
             expect(stateTags[i].text).not.toBeNull();
+            expect(tagElements.at(i).getDOMNode().getAttribute("data-tag-name")).toEqual(originalTags[i].name);
         }
     });
 
@@ -56,8 +61,8 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
         });
         const newTagName = "My new tag";
-        wrapper.find("input").simulate("change", {target: {value: newTagName}});
-        wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.enter});
+        wrapper.find("input").simulate("change", { target: { value: newTagName } });
+        wrapper.find("input").simulate("keyDown", { keyCode: KeyCodes.enter });
         expect(onChangeHandler).toBeCalled();
         expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
@@ -72,8 +77,8 @@ describe("Tags Input Component", () => {
             onChange: onChangeHandler,
         });
         const newTagName = "My new tag";
-        wrapper.find("input").simulate("change", {target: {value: newTagName}});
-        wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.comma});
+        wrapper.find("input").simulate("change", { target: { value: newTagName } });
+        wrapper.find("input").simulate("keyDown", { keyCode: KeyCodes.comma });
         expect(onChangeHandler).toBeCalled();
         expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
@@ -104,7 +109,7 @@ describe("Tags Input Component", () => {
         });
         // Root component calls handleDelete when backspace is pressed
         // Component should handle backspace and return, not deleting and not calling onChange
-        wrapper.find("input").simulate("keyDown", {keyCode: KeyCodes.backspace}); // backspace
+        wrapper.find("input").simulate("keyDown", { keyCode: KeyCodes.backspace }); // backspace
         expect(onChangeHandler).not.toBeCalled();
         expect(wrapper.find(TagsInput).state().tags).toHaveLength(originalTags.length);
     });
@@ -118,7 +123,7 @@ describe("Tags Input Component", () => {
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         wrapper.find("div.tag")
             .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
+            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true });
         expect(wrapper.find(TagsInput).state().showModal).toBe(true);
     });
 
@@ -130,7 +135,7 @@ describe("Tags Input Component", () => {
         });
         wrapper.find("div.tag")
             .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
+            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true });
         expect(wrapper.find(TagsInput).state().selectedTag.id).toEqual(originalTags[0].name);
         expect(wrapper.find(TagsInput).state().selectedTag.color).toEqual(originalTags[0].color);
     });
@@ -143,7 +148,7 @@ describe("Tags Input Component", () => {
         });
         wrapper.find("div.tag")
             .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
+            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true });
         wrapper.find("button.btn.btn-success").simulate("click");
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).toBeCalled();
@@ -157,7 +162,7 @@ describe("Tags Input Component", () => {
         });
         wrapper.find("div.tag")
             .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
+            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true });
         wrapper.find("button.btn.btn-secondary").simulate("click");
         expect(wrapper.find(TagsInput).state().showModal).toBe(false);
         expect(onChangeHandler).not.toBeCalled();
