@@ -1,6 +1,5 @@
 import React, { Fragment, ReactElement } from "react";
 import * as shortid from "shortid";
-import { Player } from "video-react";
 import { CanvasTools } from "vott-ct";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
@@ -48,7 +47,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     private clipBoard: ClipBoard<IRegion[]> = new ClipBoard<IRegion[]>();
 
-    private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
 
     public componentDidMount = () => {
@@ -144,14 +142,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             CanvasHelpers.toggleTag(region.tags, tag);
             this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
         }
-    }
-
-    public onTagShiftClicked = (tag: ITag) => {
-        console.log(`Shift clicked "${tag.name}" tag`);
-    }
-
-    public onTagCtrlShiftClicked = (tag: ITag) => {
-        console.log(`Ctrl shift clicked "${tag.name}" tag`);
     }
 
     /**

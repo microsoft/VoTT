@@ -156,8 +156,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange}
                             onTagClicked={this.onTagClicked}
-                            onTagShiftClicked={this.onTagShiftClicked}
-                            onTagCtrlShiftClicked={this.onTagCtrlShiftClicked}
                         />
                     </div>
                 </div>
@@ -172,20 +170,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public onTagClicked = (tag: ITag) => {
         this.canvas.current.onTagClicked(tag);
         this.onAssetMetadataChanged(this.state.selectedAsset);
-    }
-
-    /**
-     * Called when a tag from footer is clicked while holding shift key
-     */
-    public onTagShiftClicked = (tag: ITag) => {
-        this.canvas.current.onTagShiftClicked(tag);
-    }
-
-    /**
-     * Called when a tag from footer is clicked while holding both shift key and ctrl key
-     */
-    public onTagCtrlShiftClicked = (tag: ITag) => {
-        this.canvas.current.onTagCtrlShiftClicked(tag);
     }
 
     /**
