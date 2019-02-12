@@ -151,22 +151,6 @@ describe("Editor Page Component", () => {
         expect(editorPage.state().selectedAsset).toMatchObject(expectedAssetMetadtata);
     });
 
-    it("Merges assets from project with new assets found in source connection", async () => {
-        const projectAssets = MockFactory.createTestAssets(10, 10);
-        const testProject = MockFactory.createTestProject("TestProject");
-        testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
-
-        const store = createStore(testProject, true);
-        const props = MockFactory.editorPageProps(testProject.id);
-
-        const wrapper = createComponent(store, props);
-
-        await MockFactory.flushUi();
-
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
-        expect(editorPage.state().assets.length).toEqual(projectAssets.length + testAssets.length);
-    });
-
     it("Raises onAssetSelected handler when an asset is selected from the sidebar", async () => {
         // create test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
