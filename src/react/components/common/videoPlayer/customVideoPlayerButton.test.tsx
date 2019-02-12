@@ -41,15 +41,15 @@ describe("Custom Video Player Button Component", () => {
     it("renders a keyboard binding when accelerator is defined", () => {
         const props: ICustomVideoPlayerButtonProps = {
             ...defaultProps,
-            accelerator: "ArrowLeft",
+            accelerators: ["ArrowLeft"],
         };
         wrapper = createComponent(props);
-        const keyboardBinding = wrapper.find(KeyboardBinding) as ReactWrapper<ICustomVideoPlayerButtonProps>;
+        const keyboardBinding = wrapper.find(KeyboardBinding);
 
         expect(keyboardBinding.exists()).toBe(true);
         expect(keyboardBinding.props()).toEqual({
             keyEventType: KeyEventType.KeyDown,
-            accelerator: props.accelerator,
+            accelerators: props.accelerators,
             onKeyEvent: props.onClick,
         });
     });

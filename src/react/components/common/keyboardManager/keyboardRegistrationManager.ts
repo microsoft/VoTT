@@ -24,12 +24,14 @@ export class KeyboardRegistrationManager {
     /**
      * Registers a keyboard event handler for the specified key code
      * @param keyEventType Type of key event (keydown, keyup, keypress)
-     * @param keyCode The key code combination, ex) Ctrl+1
+     * @param keyCodes a list of key code and key code combinations, ex) Ctrl+1
      * @param handler The keyboard event handler
+     *
+     * @returns a function for deregistering the handler
      */
-    public addHandler(keyEventType: KeyEventType, keyCode: string, handler: KeyboardEventHandler): () => void {
+    public addHandler(keyEventType: KeyEventType, keyCodes: string[], handler: KeyboardEventHandler): () => void {
         Guard.null(keyEventType);
-        Guard.null(keyCode);
+        Guard.expression(keyCodes, (keyCodes) => keyCodes.length > 0);
         Guard.null(handler);
 
         let eventTypeRegistrations = this.registrations[keyEventType];
@@ -38,17 +40,23 @@ export class KeyboardRegistrationManager {
             this.registrations[keyEventType] = eventTypeRegistrations;
         }
 
-        let keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
-        if (!keyRegistrations) {
-            keyRegistrations = [];
-            this.registrations[keyEventType][keyCode] = keyRegistrations;
-        }
+        keyCodes.forEach((keyCode) => {
+            let keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
+            if (!keyRegistrations) {
+                keyRegistrations = [];
+                this.registrations[keyEventType][keyCode] = keyRegistrations;
+            }
 
-        keyRegistrations.push(handler);
+            keyRegistrations.push(handler);
+        });
 
         return () => {
-            const index = keyRegistrations.findIndex((h) => h === handler);
-            keyRegistrations.splice(index, 1);
+            keyCodes.forEach((keyCode) => {
+                const keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
+                const index = keyRegistrations.findIndex((h) => h === handler);
+
+                keyRegistrations.splice(index, 1);
+            });
         };
     }
 
