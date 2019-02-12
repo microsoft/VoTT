@@ -3,7 +3,7 @@ import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { ActionTypes } from "./actionTypes";
 import { createPayloadAction, createAction, IPayloadAction } from "./actionCreators";
 import { IAppSettings } from "../../models/applicationState";
-import { IProject } from "../../models/applicationState"
+import { IProject } from "../../models/applicationState";
 import { generateKey } from "../../common/crypto";
 
 /**
@@ -57,7 +57,8 @@ export function saveAppSettings(appSettings: IAppSettings): (dispath: Dispatch) 
  * Ensures that a valid security token is associated with the project, otherwise creates one
  * @param project The project to validate
  */
-export function ensureSecurityToken(appSettings: IAppSettings, project: IProject): (dispatch: Dispatch) => Promise<IAppSettings> {
+export function ensureSecurityToken(appSettings: IAppSettings, project: IProject):
+    (dispatch: Dispatch) => Promise<IAppSettings> {
     return async (dispatch: Dispatch) => {
         let securityToken = appSettings.securityTokens
             .find((st) => st.name === project.securityToken);
@@ -81,7 +82,7 @@ export function ensureSecurityToken(appSettings: IAppSettings, project: IProject
         project.securityToken = securityToken.name;
         dispatch(ensureSecurityTokenAction(appSettings));
         return Promise.resolve(appSettings);
-    }
+    };
 }
 
 /**
