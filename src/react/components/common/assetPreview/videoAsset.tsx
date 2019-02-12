@@ -59,7 +59,13 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
     private timelineElement: Element = null;
-    private currentVideoPlayerState: IVideoPlayerState = null;
+    private currentVideoPlayerState: IVideoPlayerState = {
+        readyState: 0,
+        paused: true,
+        seeking: false,
+        currentTime: 0,
+        duration: 0,
+    };
 
     public render() {
         const { autoPlay, asset } = this.props;
