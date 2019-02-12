@@ -160,6 +160,12 @@ export interface IAppStrings {
             previousTaggedFrame: {
                 tooltip: string,
             },
+            nextFrame: {
+                tooltip: string,
+            },
+            previousFrame: {
+                tooltip: string,
+            },
         }
         assetError: string;
     };

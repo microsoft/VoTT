@@ -192,8 +192,8 @@ describe("Video Asset Component", () => {
         mockLoaded();
         mockPaused(currentAsset.timestamp);
 
-        const temps = wrapper.find(CustomVideoPlayerButton);
-        temps.at(0).simulate("click");
+        const videoPlayerButtons = wrapper.find(CustomVideoPlayerButton);
+        videoPlayerButtons.at(0).simulate("click");
 
         expect(videoPlayerMock.prototype.seek)
             // @ts-ignore

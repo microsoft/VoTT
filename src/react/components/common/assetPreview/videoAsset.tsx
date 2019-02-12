@@ -92,14 +92,14 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
                     <VolumeMenuButton enabled order={7.2} />
                     <CustomVideoPlayerButton order={8.1}
-                        tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
-                        accelerator="Ctrl + ArrowLeft"
+                        tooltip={strings.editorPage.videoPlayer.previousFrame.tooltip}
+                        accelerator="Ctrl+ArrowLeft"
                         onClick={this.movePreviousTaggedFrame}>
                         <i className="fas fa-caret-left fa-lg" />
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={8.2}
-                        tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
-                        accelerator="Ctrl + ArrowRight"
+                        tooltip={strings.editorPage.videoPlayer.nextFrame.tooltip}
+                        accelerator="Ctrl+ArrowRight"
                         onClick={this.moveNextTaggedFrame}>
                         <i className="fas fa-caret-right fa-lg" />
                     </CustomVideoPlayerButton>

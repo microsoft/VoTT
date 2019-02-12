@@ -157,6 +157,12 @@ export const english: IAppStrings = {
             nextTaggedFrame: {
                 tooltip: "Next Tagged Frame",
             },
+            previousFrame: {
+                tooltip: "Previous Frame",
+            },
+            nextFrame: {
+                tooltip: "Next Frame",
+            },
         },
         assetError: "Unable to display asset",
     },
