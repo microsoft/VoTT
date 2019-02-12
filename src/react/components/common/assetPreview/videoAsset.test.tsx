@@ -228,6 +228,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         const prev: IVideoPlayerState = {
@@ -235,6 +236,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         onVideoStateChangeHandler(state, prev);
@@ -246,6 +248,7 @@ describe("Video Asset Component", () => {
             paused: true,
             currentTime,
             seeking: false,
+            duration: 10,
         };
 
         const prev: IVideoPlayerState = {
@@ -253,6 +256,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 2.0,
             seeking: true,
+            duration: 10,
         };
 
         onVideoStateChangeHandler(state, prev);
@@ -264,6 +268,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         const prev: IVideoPlayerState = {
@@ -271,6 +276,7 @@ describe("Video Asset Component", () => {
             paused: true,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         onVideoStateChangeHandler(state, prev);

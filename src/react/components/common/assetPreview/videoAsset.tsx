@@ -37,6 +37,7 @@ export interface IVideoPlayerState {
     paused: boolean;
     seeking: boolean;
     currentTime: number;
+    duration: number;
 }
 
 /**
@@ -58,6 +59,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
     private videoPlayer: React.RefObject<Player> = React.createRef<Player>();
     private timelineElement: Element = null;
+    private currentVideoPlayerState: IVideoPlayerState = null;
 
     public render() {
         const { autoPlay, asset } = this.props;
@@ -116,7 +118,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.asset !== prevProps.asset) {
             this.setState({ loaded: false });
         } else if (this.props.childAssets !== prevProps.childAssets) {
-            this.addAssetTimelineTags(this.props.childAssets, this.videoPlayer.current.getState().player.duration);
+            this.addAssetTimelineTags(this.props.childAssets, this.getCurrentVideoPlayerState().duration);
         }
         if (this.props.timestamp !== prevProps.timestamp) {
             this.seekToTimestamp();
@@ -128,7 +130,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * Seeks the user to the previous tagged video frame
      */
     private movePreviousTaggedFrame = () => {
-        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        const timestamp = this.getCurrentVideoPlayerState().currentTime;
         const previousFrame = _
             .reverse(this.props.childAssets)
             .find((asset) => asset.state === AssetState.Tagged && asset.timestamp < timestamp);
@@ -143,7 +145,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * Seeks the user to the next tagged video frame
      */
     private moveNextTaggedFrame = () => {
-        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        const timestamp = this.getCurrentVideoPlayerState().currentTime;
         const nextFrame = this.props.childAssets
             .find((asset) => asset.state === AssetState.Tagged && asset.timestamp > timestamp);
 
@@ -160,7 +162,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private moveNextExpectedFrame = () => {
         // Seek forward from the current time to the next logical frame based on project settings
         const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
-        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime + frameSkipTime);
+        const seekTime: number = (this.getCurrentVideoPlayerState().currentTime + frameSkipTime);
         this.seekToTime(seekTime);
     }
 
@@ -172,7 +174,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private movePreviousExpectedFrame = () => {
         // Seek backwards from the current time to the next logical frame based on project settings
         const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
-        const seekTime: number = (this.videoPlayer.current.getState().player.currentTime - frameSkipTime);
+        const seekTime: number = (this.getCurrentVideoPlayerState().currentTime - frameSkipTime);
         this.seekToTime(seekTime);
     }
 
@@ -184,7 +186,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private moveToNearestChildFrame(): boolean {
         const maximumThreshold = 1; // one second threhsold
-        const timestamp = this.videoPlayer.current.getState().player.currentTime;
+        const timestamp = this.getCurrentVideoPlayerState().currentTime;
         let seekTime: number = timestamp;
         let nearestDifference = 2;
         for (const child of this.props.childAssets) {
@@ -226,7 +228,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private seekToTime(seekTime: number) {
         if (seekTime > 0) {
             // Before seeking, pause the video
-            if (!this.videoPlayer.current.getState().player.paused) {
+            if (!this.getCurrentVideoPlayerState().paused) {
                 this.videoPlayer.current.pause();
             }
             this.videoPlayer.current.seek(seekTime);
@@ -234,6 +236,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     }
 
     private onVideoStateChange = (state: Readonly<IVideoPlayerState>, prev: Readonly<IVideoPlayerState>) => {
+        // Store state for ease of retrieving later
+        this.currentVideoPlayerState = state;
         if (!this.state.loaded && state.readyState === 4 && state.readyState !== prev.readyState) {
             // Video initial load complete
             this.raiseLoaded();
@@ -264,7 +268,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         });
 
         // Once the video is loaded, add any asset timeline tags
-        this.addAssetTimelineTags(this.props.childAssets, this.videoPlayer.current.getState().player.duration);
+        this.addAssetTimelineTags(this.props.childAssets, this.getCurrentVideoPlayerState().duration);
     }
 
     /**
@@ -352,5 +356,9 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
         const taggedAssetDiv = <div>{tagTimeLines}</div>;
         return ReactDOMServer.renderToStaticMarkup(taggedAssetDiv);
+    }
+
+    private getCurrentVideoPlayerState(): Readonly<IVideoPlayerState> {
+        return this.currentVideoPlayerState;
     }
 }
