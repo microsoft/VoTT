@@ -271,9 +271,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 editorMode = EditorMode.CopyRect;
                 break;
             case "selectCanvas":
-                selectionMode = SelectionMode.NONE;
-                editorMode = EditorMode.Select;
-                break;
             case "panCanvas":
                 selectionMode = SelectionMode.NONE;
                 editorMode = EditorMode.Select;
@@ -311,7 +308,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.setState({
             selectedAsset: assetMetadata,
-            assets: _.values(this.props.project.assets),
         });
     }
 
@@ -322,14 +318,18 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.loadingProjectAssets = true;
 
-        await this.props.actions.loadAssets(this.props.project);
-        const assets = _.values(this.props.project.assets);
+        const projectAssets = _.values(this.props.project.assets);
+        const sourceAssets = await this.props.actions.loadAssets(this.props.project);
+        const allAssets = _(projectAssets)
+            .concat(sourceAssets)
+            .uniqBy((asset) => asset.id)
+            .value();
 
         this.setState({
-            assets,
+            assets: allAssets,
         }, async () => {
-            if (assets.length > 0) {
-                await this.selectAsset(assets[0]);
+            if (allAssets.length > 0) {
+                await this.selectAsset(allAssets[0]);
             }
             this.loadingProjectAssets = false;
         });
