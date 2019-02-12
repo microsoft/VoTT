@@ -1,11 +1,7 @@
 import importService, { IImportService } from "./importService";
 import MockFactory from "../common/mockFactory";
-import { IProject, IV1Project /*IExportFormat, ISecurityToken*/ } from "../models/applicationState";
+import { IV1Project } from "../models/v1Models";
 import ImportService from "./importService";
-// import { constants } from "../common/constants";
-// import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
-// import { generateKey } from "../common/crypto";
-// import { encryptProject } from "../common/utils";
 
 describe("Import Service", () => {
     let importService: IImportService = null;

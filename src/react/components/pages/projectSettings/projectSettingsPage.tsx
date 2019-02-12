@@ -53,8 +53,6 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
             const project = this.props.recentProjects.find((project) => project.id === projectId);
-            console.log(project);
-            this.props.applicationActions.ensureSecurityToken(this.props.appSettings, project);
             this.props.projectActions.loadProject(project);
         }
 
@@ -86,7 +84,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     private onFormSubmit = async (project: IProject) => {
         const isNew = !(!!project.id);
 
-        await this.props.applicationActions.ensureSecurityToken(this.props.appSettings, project);
+        await this.props.applicationActions.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
 
         toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }));

@@ -291,5 +291,9 @@ export const spanish: IAppStrings = {
             message: `Se produjo un error al cargar el lienzo, verifique los activos del
                 proyecto y vuelva a intentarlo.`,
         },
+        importError: {
+            title: "Error al importar el proyecto V1",
+            message: "Hubo un error al importar el proyecto V1. Revisa el archivo del proyecto y vuelve a intentarlo",
+        },
     },
 };

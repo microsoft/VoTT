@@ -289,5 +289,9 @@ export const english: IAppStrings = {
             title: "Error loading canvas",
             message: "There was an error loading the canvas, check the project's assets and try again.",
         },
+        importError: {
+            title: "Error importing V1 project",
+            message: "There was an error importing the V1 project. Check the project file and try again",
+        },
     },
 };
