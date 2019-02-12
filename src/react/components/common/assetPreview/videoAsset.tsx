@@ -24,6 +24,7 @@ export interface IVideoAssetProps extends IAssetProps, React.Props<VideoAsset> {
 
 /** VideoAsset internal component state */
 export interface IVideoAssetState {
+    /** Whether or not the component has completed loading */
     loaded: boolean;
 }
 
