@@ -87,30 +87,30 @@ describe("Connection Picker Component", () => {
         });
     });
 
-    // it("should call open project action after successful file upload", async () => {
-    //     const openProjectSpy = jest.spyOn(props.actions, "loadProject");
+    it("should call open project action after successful file upload", async () => {
+        const openProjectSpy = jest.spyOn(props.actions, "loadProject");
 
-    //     const testProject = recentProjects[0];
-    //     const testProjectJson = JSON.stringify(testProject);
-    //     const testBlob = new Blob([testProjectJson], { type: "application/json" });
+        const testProject = recentProjects[0];
+        const testProjectJson = JSON.stringify(testProject);
+        const testBlob = new Blob([testProjectJson], { type: "application/json" });
 
-    //     const wrapper = createComponent(store, props);
+        const wrapper = createComponent(store, props);
 
-    //     const fileUpload = wrapper.find("a.file-upload").first();
-    //     const fileInput = wrapper.find(`input[type="file"]`);
-    //     const filePicker = wrapper.find(FilePicker);
-    //     const uploadSpy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
+        const fileUpload = wrapper.find("a.file-upload").first();
+        const fileInput = wrapper.find(`input[type="file"]`);
+        const filePicker = wrapper.find(FilePicker);
+        const uploadSpy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
 
-    //     fileUpload.simulate("click");
-    //     await MockFactory.flushUi(() => {
-    //         fileInput.simulate("change", ({ target: { files: [testBlob] } }));
-    //     });
+        fileUpload.simulate("click");
+        await MockFactory.flushUi(() => {
+            fileInput.simulate("change", ({ target: { files: [testBlob] } }));
+        });
 
-    //     await MockFactory.flushUi();
+        await MockFactory.flushUi();
 
-    //     expect(uploadSpy).toBeCalled();
-    //     expect(openProjectSpy).toBeCalledWith(testProject);
-    // });
+        expect(uploadSpy).toBeCalled();
+        expect(openProjectSpy).toBeCalledWith(testProject);
+    });
 
     function createProps(): IHomepageProps {
         return {
@@ -139,7 +139,7 @@ describe("Connection Picker Component", () => {
             applicationActions: (applicationActions as any) as IApplicationActions,
             appSettings: {
                 devToolsEnabled: false,
-                securityTokens: []
+                securityTokens: [],
             },
             match: {
                 params: {},
