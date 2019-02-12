@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOMServer from "react-dom/server";
+import ReactDOM from "react-dom";
 import _ from "lodash";
 import {
     Player, BigPlayButton, ControlBar, CurrentTimeDisplay,
@@ -251,10 +251,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             this.raiseActivated();
             this.seekToTimestamp();
         } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
-            // Video is paused, first try to move to a nearby frame if one exists
-            if (!this.moveToNearestChildFrame()) {
-                this.raiseChildAssetSelected(state);
-            }
+            this.raiseChildAssetSelected(state);
             this.raiseDeactivated();
         } else if (!state.paused && state.paused !== prev.paused) {
             // Video has resumed playing
@@ -322,7 +319,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @member videoDuration - Length (in seconds) of the video
      */
     private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
-        const innerHtml: string = this.getRenderedAssetTagLinesText(childAssets, videoDuration);
         let progressHolderElement: Element = null;
         if (!this.timelineElement) {
             const editorElement = document.querySelector("div.editor-page-content-body");
@@ -332,22 +328,24 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             // If we found an element to hold the tags, add them to it
             if (progressHolderElement) {
                 this.timelineElement = document.createElement("div");
-                this.timelineElement.className = "video-timeline-parent";
-                this.timelineElement.innerHTML = innerHtml;
                 progressHolderElement.appendChild(this.timelineElement);
             }
-        } else {
-            this.timelineElement.innerHTML = innerHtml;
+        }
+
+        // Render the child asset elmements to the dom
+        if (this.timelineElement) {
+            ReactDOM.render(this.getRenderedAssetTagLinesElements(childAssets, videoDuration),
+                this.timelineElement);
         }
     }
 
     /**
-     * @name - Get Rendered Asset Tag Lines Text
-     * @description - Gets the HTML text for the rendered asset tag lines
+     * @name - Get Rendered Asset Tag Lines Elements
+     * @description - Gets the elements for the rendered asset tag lines
      * @member childAssets - Array of child assets in the video
      * @member videoDuration - Length (in seconds) of the video
      */
-    private getRenderedAssetTagLinesText(childAssets: any[], videoDuration: number): string {
+    private getRenderedAssetTagLinesElements(childAssets: any[], videoDuration: number) {
         const tagTimeLines: any = [];
 
         // Add some markers for frames that have been visited with yellow and tagged with green
@@ -355,14 +353,20 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             // Calcualte the left position
             const childPosition: number = (childAsset.timestamp / videoDuration);
             tagTimeLines.push(<div key={childAsset.timestamp}
+                onClick = {this.handleAssetTimelineClick}
+                data-videotimestamp = {childAsset.timestamp}
                 className = {childAsset.state === AssetState.Tagged ?
                     "video-timeline-tagged" : "video-timeline-untagged"}
                 style={{
                     left: (childPosition * 100) + "%",
                  }} />);
         }
-        const taggedAssetDiv = <div>{tagTimeLines}</div>;
-        return ReactDOMServer.renderToStaticMarkup(taggedAssetDiv);
+        return <div className={"video-timeline-parent"}>{tagTimeLines}</div>;
+    }
+
+    private handleAssetTimelineClick = (divElement: React.MouseEvent<HTMLDivElement>) => {
+        const videoDuration: number = parseFloat(divElement.currentTarget.dataset["videotimestamp"]);
+        this.seekToTime(videoDuration);
     }
 
     private getCurrentVideoPlayerState(): Readonly<IVideoPlayerState> {
