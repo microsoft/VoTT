@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
+    EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
     IPoint, IRegion, RegionType, IBoundingBox,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -163,8 +163,8 @@ export default class MockFactory {
 
     /**
      * Creates array of fake IAsset
-     * @param count Number of assets to create
-     * @param videoFirst true if the first asset should be video; false otherwise
+     * @param count Number of assets to create (default: 10)
+     * @param startIndex The index that the assets should start at (default: 1)
      */
     public static createTestAssets(count: number = 10, startIndex: number = 1): IAsset[] {
         const assets: IAsset[] = [];

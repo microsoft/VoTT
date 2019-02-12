@@ -53,13 +53,17 @@ describe("Current Project Reducer", () => {
         const currentProject = MockFactory.createTestProject("1");
         const state: IProject = currentProject;
 
-        const sourceConnection = {...currentProject.sourceConnection};
-        sourceConnection.description += "updated";
+        const updatedConnection = { ...currentProject.sourceConnection };
+        updatedConnection.description += "updated";
 
-        const action = saveConnectionAction(sourceConnection);
+        const action = saveConnectionAction(updatedConnection);
         const result = reducer(state, action);
 
-        expect(result.sourceConnection).toEqual(action.payload);
+        expect(result).toEqual({
+            ...currentProject,
+            sourceConnection: updatedConnection,
+            targetConnection: updatedConnection,
+        });
     });
 
     it("Load Project Assets does not merges assets into current asset set", () => {
