@@ -182,25 +182,13 @@ describe("Html File Reader", () => {
         });
     });
 
-    describe("Test non valid asset type", () => {
-        it("Test non valid asset type", async () => {
-            axios.get = jest.fn((url, config) => {
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 200,
-                    statusText: "OK",
-                    data: [1, 2, 3],
-                });
-            });
-
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported");
-            try {
-                const result = await HtmlFileReader.readAssetAttributes(imageAsset);
-            } catch (error) {
-                expect(error).toEqual(new Error("Asset not supported"));
-            }
-        });
+    it("Test non valid asset type", async () => {
+        const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported");
+        try {
+            const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+        } catch (error) {
+            expect(error).toEqual(new Error("Asset not supported"));
+        }
     });
 
     describe("Test TFRecords", () => {
