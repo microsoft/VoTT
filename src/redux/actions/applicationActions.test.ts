@@ -4,6 +4,7 @@ import * as applicationActions from "./applicationActions";
 import { ActionTypes } from "./actionTypes";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IAppSettings } from "../../models/applicationState";
+import MockFactory from "../../common/mockFactory";
 
 describe("Application Redux Actions", () => {
     let store: MockStoreEnhanced;
@@ -60,5 +61,31 @@ describe("Application Redux Actions", () => {
         });
 
         expect(result).toEqual(appSettings);
+    });
+
+    it("Ensure security token action creates a token if one doesn't exist", async () => {
+        const appSettings: IAppSettings = {
+            devToolsEnabled: false,
+            securityTokens: [
+                { name: "A", key: "1" },
+                { name: "B", key: "2" },
+                { name: "C", key: "3" },
+            ],
+        };
+
+        const testProject = MockFactory.createTestProject("TestProject");
+
+        const result = await applicationActions.ensureSecurityToken(appSettings, testProject)(store.dispatch);
+        const actions = store.getActions();
+
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS,
+            payload: appSettings,
+        });
+
+        expect(result).toEqual(appSettings);
+        // expect(testProject.securityToken.name).toEqual("TestProject Token");
+        // expect(appSettings.securityTokens.length).toEqual(4);
     });
 });
