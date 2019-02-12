@@ -16,7 +16,7 @@ import {
     IApplicationState, IConnection, IProject,
     ErrorCode, AppError, IAppError, IAppSettings,
 } from "../../../../models/applicationState";
-import { IV1Project, IV1Region} from "../../../../models/v1Models";
+import { IV1Project, IV1Region, IFileInfo } from "../../../../models/v1Models";
 import IMessageBox from "../../common/messageBox/messageBox";
 import ImportService from "../../../../services/importService";
 
@@ -200,7 +200,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
     }
 
-    private convertProject = async (project: any) => {
+    private convertProject = async (project: IFileInfo) => {
         const importService = new ImportService();
         let projectJson;
         try {
