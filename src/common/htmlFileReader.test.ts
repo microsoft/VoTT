@@ -123,16 +123,6 @@ describe("Html File Reader", () => {
 
         it("Downloads a byte array from the asset path", async () => {
             const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
-            axios.get = jest.fn((url, config) => {
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 200,
-                    statusText: "OK",
-                    data: [1, 2, 3],
-                });
-            });
-
             const result = await HtmlFileReader.getAssetArray(asset);
             expect(result).not.toBeNull();
             expect(result).toBeInstanceOf(Uint8Array);
