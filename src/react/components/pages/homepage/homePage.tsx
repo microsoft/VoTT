@@ -14,8 +14,9 @@ import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
     IApplicationState, IConnection, IProject,
-    ErrorCode, AppError, IAppError, IV1Project, IAppSettings,
+    ErrorCode, AppError, IAppError, IAppSettings,
 } from "../../../../models/applicationState";
+import { IV1Project, IV1Region} from "../../../../models/v1Models";
 import IMessageBox from "../../common/messageBox/messageBox";
 import ImportService from "../../../../services/importService";
 
@@ -193,7 +194,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         } catch (e) {
             throw new AppError(ErrorCode.ProjectUploadError, "Error converting v1 project file");
         }
-        this.props.applicationActions.ensureSecurityToken(this.props.appSettings, projectJson);
+        this.props.applicationActions.ensureSecurityToken(projectJson);
         await this.loadSelectedProject(projectJson);
     }
 }

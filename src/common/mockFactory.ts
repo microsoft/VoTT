@@ -3,8 +3,8 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
-    IPoint, IRegion, RegionType, IBoundingBox, IV1Project, IV1Region,
-} from "../models/applicationState";
+    IPoint, IRegion, RegionType, IBoundingBox } from "../models/applicationState";
+import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -248,7 +248,6 @@ export default class MockFactory {
             framerate: `Project ${name}`,
             inputTags: "testTag1,testTag2",
             suggestiontype: "suggestiontype",
-            tags: MockFactory.createTestTags(),
             scd: true,
             visitedFrames: [],
             tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],

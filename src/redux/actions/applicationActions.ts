@@ -3,7 +3,7 @@ import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { ActionTypes } from "./actionTypes";
 import { createPayloadAction, createAction, IPayloadAction } from "./actionCreators";
 import { IAppSettings } from "../../models/applicationState";
-import { IProject } from "../../models/applicationState";
+import { IProject, IApplicationState } from "../../models/applicationState";
 import { generateKey } from "../../common/crypto";
 
 /**
@@ -15,7 +15,7 @@ export default interface IApplicationActions {
     toggleDevTools(show: boolean): Promise<void>;
     reloadApplication(): Promise<void>;
     saveAppSettings(appSettings: IAppSettings): IAppSettings;
-    ensureSecurityToken(appSettings: IAppSettings, project: IProject): IAppSettings;
+    ensureSecurityToken(project: IProject): IAppSettings;
 }
 
 /**
@@ -57,14 +57,15 @@ export function saveAppSettings(appSettings: IAppSettings): (dispath: Dispatch) 
  * Ensures that a valid security token is associated with the project, otherwise creates one
  * @param project The project to validate
  */
-export function ensureSecurityToken(appSettings: IAppSettings, project: IProject):
-    (dispatch: Dispatch) => Promise<IAppSettings> {
-    return async (dispatch: Dispatch) => {
-        let securityToken = appSettings.securityTokens
+export function ensureSecurityToken(project: IProject):
+    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAppSettings> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        let appState = getState();
+        let securityToken = appState.appSettings.securityTokens
             .find((st) => st.name === project.securityToken);
 
         if (securityToken) {
-            return Promise.resolve(appSettings);
+            return Promise.resolve(appState.appSettings);
         }
 
         securityToken = {
@@ -73,15 +74,15 @@ export function ensureSecurityToken(appSettings: IAppSettings, project: IProject
         };
 
         const updatedAppSettings: IAppSettings = {
-            devToolsEnabled: appSettings.devToolsEnabled,
-            securityTokens: [...appSettings.securityTokens, securityToken],
+            devToolsEnabled: appState.appSettings.devToolsEnabled,
+            securityTokens: [...appState.appSettings.securityTokens, securityToken],
         };
 
         await this.saveAppSettings(updatedAppSettings);
 
         project.securityToken = securityToken.name;
-        dispatch(ensureSecurityTokenAction(appSettings));
-        return Promise.resolve(appSettings);
+        dispatch(ensureSecurityTokenAction(appState.appSettings));
+        return Promise.resolve(appState.appSettings);
     };
 }
 

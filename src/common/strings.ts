@@ -196,6 +196,7 @@ export interface IAppStrings {
         genericRenderError: IErrorMetadata,
         securityTokenNotFound: IErrorMetadata,
         canvasError: IErrorMetadata,
+        importError: IErrorMetadata,
     };
 }
 
