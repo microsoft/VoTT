@@ -115,7 +115,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     public componentDidUpdate(prevProps: Readonly<IVideoAssetProps>) {
         if (this.props.asset !== prevProps.asset) {
             this.setState({ loaded: false });
-        } else {
+        } else if (this.props.childAssets !== prevProps.childAssets) {
             this.addAssetTimelineTags(this.props.childAssets, this.videoPlayer.current.getState().player.duration);
         }
         if (this.props.timestamp !== prevProps.timestamp) {
@@ -312,23 +312,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
         const innerHtml: string = this.getRenderedAssetTagLinesText(childAssets, videoDuration);
+        let progressHolderElement: Element = null;
         if (!this.timelineElement) {
-            // Find the progress holder so we can add the markers to that
-            const progressControls = document.getElementsByClassName("video-react-progress-control");
-            let progressHolderElement: Element = null;
-
-            // Find any that have an editor page content body type, this will be the one we use
-            Array.from(progressControls).forEach( (element) => {
-                let testingElement: Element = element;
-                while (testingElement) {
-                    if (testingElement.className === "editor-page-content-body") {
-                        progressHolderElement = element;
-                    }
-
-                    testingElement = testingElement.parentElement;
-                }
-            });
-
+            const editorElement = document.querySelector("div.editor-page-content-body");
+            if (editorElement) {
+                progressHolderElement = editorElement.getElementsByClassName("video-react-progress-control")[0];
+            }
             // If we found an element to hold the tags, add them to it
             if (progressHolderElement) {
                 this.timelineElement = document.createElement("div");
