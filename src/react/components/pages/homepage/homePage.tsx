@@ -48,7 +48,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
     private deleteConfirm: React.RefObject<Confirm>;
     private cloudFilePicker: React.RefObject<CloudFilePicker>;
     private importConfirm: React.RefObject<Confirm>;
-    private settingsConfirm: React.RefObject<Confirm>;
+    private settingsConfirm: React.RefObject<IMessageBox>;
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
@@ -61,7 +61,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.deleteConfirm = React.createRef<Confirm>();
         this.cloudFilePicker = React.createRef<CloudFilePicker>();
         this.importConfirm = React.createRef<Confirm>();
-        this.settingsConfirm = React.createRef<Confirm>();
+        this.settingsConfirm = React.createRef<IMessageBox>();
 
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
@@ -128,10 +128,9 @@ export default class HomePage extends React.Component<IHomepageProps> {
                         ${strings.homePage.importProject.recommendation}`}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
-                <Confirm title="Confirm Settings"
+                <IMessageBox title="Confirm Settings"
                     ref={this.settingsConfirm}
-                    message={"Please confirm your new v2 project settings."}
-                    onConfirm={this.deleteProject} />
+                    message={"Please confirm your new v2 project settings."} />
             </div>
         );
     }
@@ -173,7 +172,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         console.log(project);
         if (project.version === "v1-to-v2") {
             console.log("loadingSelectedV1Project!!");
-            await this.settingsConfirm.current.open(project);
+            await this.settingsConfirm.current.open();
             await this.props.actions.loadProject(project);
             this.props.history.push(`/projects/${project.id}/settings`);
         } else {
@@ -192,7 +191,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
         try {
             projectJson = await importService.convertV1(project);
         } catch (e) {
-            throw new AppError(ErrorCode.ProjectUploadError, "Error uploading v1 project file");
+            throw new AppError(ErrorCode.ProjectUploadError, "Error converting v1 project file");
         }
         this.props.applicationActions.ensureSecurityToken(this.props.appSettings, projectJson);
         await this.loadSelectedProject(projectJson);
