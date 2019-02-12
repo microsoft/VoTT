@@ -177,6 +177,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
             await this.props.actions.loadProject(project);
             this.props.history.push(`/projects/${project.id}/settings`);
         } else {
+            await this.props.actions.loadProject(project);
             this.props.history.push(`/projects/${project.id}/edit`);
         }
     }
