@@ -24,7 +24,7 @@ export default class HtmlFileReader {
                 if (reader.result) {
                     fileInfo = {
                         content: reader.result,
-                        file: { file },
+                        file,
                     };
                     resolve(fileInfo);
                 } else {
