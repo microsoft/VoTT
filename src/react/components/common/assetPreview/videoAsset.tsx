@@ -224,7 +224,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             childAsset.state = AssetState.Visited;
             childAsset.type = AssetType.VideoFrame;
             childAsset.parent = parentAsset;
-            childAsset.timestamp = state.currentTime;
+            childAsset.timestamp = 1 / this.props.videoSettings.frameExtractionRate * Math.floor(
+                this.props.videoSettings.frameExtractionRate * state.currentTime);
             childAsset.size = { ...this.props.asset.size };
 
             this.props.onChildAssetSelected(childAsset);
