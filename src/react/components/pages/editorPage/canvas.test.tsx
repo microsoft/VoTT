@@ -12,7 +12,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { SelectionMode, AreaSelector } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 describe("Editor Canvas", () => {
     let wrapper: ReactWrapper<ICanvasProps, ICanvasState, Canvas> = null;
@@ -58,7 +58,8 @@ describe("Editor Canvas", () => {
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
-        editorMock.prototype.RM = new RegionsManager(null, null, null);
+        editorMock.prototype.RM = new RegionsManager(null, null);
+        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
     });
 
     beforeEach(() => {
@@ -143,7 +144,7 @@ describe("Editor Canvas", () => {
 
         testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
         wrapper.prop("selectedAsset").regions.push(testRegion);
-        canvas.editor.onRegionMove("test-region", createTestRegionData());
+        canvas.editor.onRegionMoveEnd("test-region", createTestRegionData());
 
         expect(onAssetMetadataChanged).toBeCalled();
         expect(wrapper.prop("selectedAsset").regions).toMatchObject([MockFactory.createTestRegion("test-region")]);
