@@ -166,10 +166,69 @@ export const spanish: IAppStrings = {
         settings: "Configuración de Exportación",
         saveSettings: "Guardar Configuración de Exportación",
         providers: {
-            vottJson: "VoTT JSON",
-            azureCV: "Servicio de Visión Personalizada Azure",
-            tfRecords: "Registros de Tensorflow",
-            tfPascalVoc: "Tensorflow Pascal VOC",
+            common: {
+                properties: {
+                    assetState: {
+                        title: "Estado del activo",
+                        description: "Qué activos incluir en la exportación",
+                        options: {
+                            all: "Todos los activos",
+                            visited: "Solo activos visitados",
+                            tagged: "Solo activos etiquetados",
+                        },
+                    },
+                },
+            },
+            vottJson: {
+                displayName: "VoTT JSON",
+            },
+            azureCV: {
+                displayName: "Servicio de Visión Personalizada Azure",
+                properties: {
+                    apiKey: {
+                        title: "Clave de API",
+                    },
+                    classificationType: {
+                        title: "Tipo de clasificación",
+                        options: {
+                            multiLabel: "Varias etiquetas por imagen",
+                            multiClass: "Una sola etiqueta por imagen",
+                        },
+                    },
+                    name: {
+                        title: "Nombre del proyecto",
+                    },
+                    description: {
+                        title: "Descripción del proyecto",
+                    },
+                    domainId: {
+                        title: "Dominio",
+                    },
+                    newOrExisting: {
+                        title: "Proyecto nuevo o existente",
+                        options: {
+                            new: "Nuevo proyecto",
+                            existing: "Proyecto existente",
+                        },
+                    },
+                    projectId: {
+                        title: "Nombre del proyecto",
+                    },
+                    projectType: {
+                        title: "Tipo de proyecto",
+                        options: {
+                            classification: "Clasificación",
+                            objectDetection: "Detección de objetos",
+                        },
+                    },
+                },
+            },
+            tfRecords: {
+                displayName: "Registros de Tensorflow",
+            },
+            tfPascalVoc: {
+                displayName: "Tensorflow Pascal VOC",
+            },
         },
         messages: {
             saveSuccess: "Configuración de exportación guardada correctamente",

@@ -165,10 +165,69 @@ export const english: IAppStrings = {
         settings: "Export Settings",
         saveSettings: "Save Export Settings",
         providers: {
-            vottJson: "VoTT JSON",
-            azureCV: "Azure Custom Vision Service",
-            tfRecords: "Tensorflow Records",
-            tfPascalVoc: "Tensorflow Pascal VOC",
+            common: {
+                properties: {
+                    assetState: {
+                        title: "Asset State",
+                        description: "Which assets to include in the export",
+                        options: {
+                            all: "All Assets",
+                            visited: "Only Visited Assets",
+                            tagged: "Only tagged Assets",
+                        },
+                    },
+                },
+            },
+            vottJson: {
+                displayName: "VoTT JSON",
+            },
+            azureCV: {
+                displayName: "Azure Custom Vision Service",
+                properties: {
+                    apiKey: {
+                        title: "API Key",
+                    },
+                    classificationType: {
+                        title: "Classification Type",
+                        options: {
+                            multiLabel: "Multiple tags per image",
+                            multiClass: "Single tag per image",
+                        },
+                    },
+                    name: {
+                        title: "Project Name",
+                    },
+                    description: {
+                        title: "Project Description",
+                    },
+                    domainId: {
+                        title: "Domain",
+                    },
+                    newOrExisting: {
+                        title: "New or Existing Project",
+                        options: {
+                            new: "New Project",
+                            existing: "Existing Project",
+                        },
+                    },
+                    projectId: {
+                        title: "Project Name",
+                    },
+                    projectType: {
+                        title: "Project Type",
+                        options: {
+                            classification: "Classification",
+                            objectDetection: "Object Detection",
+                        },
+                    },
+                },
+            },
+            tfRecords: {
+                displayName: "Tensorflow Records",
+            },
+            tfPascalVoc: {
+                displayName: "Tensorflow Pascal VOC",
+            },
         },
         messages: {
             saveSuccess: "Successfully saved export settings",
