@@ -129,7 +129,7 @@ export default class ImportService implements IImportService {
      */
     private generateAssets(project: any, assetService: AssetService): IAssetMetadata[] {
         let originalProject: IV1Project;
-        let assetMetadata: Promise<IAssetMetadata>;
+        let assetMetadata: IAssetMetadata;
         const generatedAssetMetadata: IAssetMetadata[] = [];
         let generatedRegion: IRegion;
         let assetState: AssetState;
@@ -140,12 +140,12 @@ export default class ImportService implements IImportService {
         for (const frameName in originalProject.frames) {
             if (originalProject.frames.hasOwnProperty(frameName)) {
                 const frameRegions = originalProject.frames[frameName];
-                const asset = AssetService.createAssetFromFilePath(project.file.path);
-                assetMetadata = assetService.getAssetMetadata(asset);
+                const asset = AssetService.createAssetFromFilePath(`file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
+                assetService.getAssetMetadata(asset).then((asset) => assetMetadata = asset);
                 assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                              ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
                              ? AssetState.Visited : AssetState.NotVisited);
-                assetMetadata.then((assetMetadata) => assetMetadata.asset.state = assetState);
+                assetMetadata.asset.state = assetState;
 
                 // assetMetadata = {
                 //     asset: {
@@ -184,9 +184,9 @@ export default class ImportService implements IImportService {
                             top: region.y1,
                         },
                     };
-                    assetMetadata.then((assetMetadata) => assetMetadata.regions.push(generatedRegion));
+                    assetMetadata.regions.push(generatedRegion);
                 }
-                assetMetadata.then((assetMetadata) => generatedAssetMetadata.push(assetMetadata));
+                generatedAssetMetadata.push(assetMetadata);
             }
         }
         return generatedAssetMetadata;
