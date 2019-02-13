@@ -237,10 +237,13 @@ describe("Asset Service", () => {
             let builder: TFRecordsBuilder;
             builder = new TFRecordsBuilder();
 
-            builder.addArrayFeature("image/object/bbox/xmin", FeatureType.Float, [1.0, 5.0]);
-            builder.addArrayFeature("image/object/bbox/ymin", FeatureType.Float, [2.0, 6.0]);
-            builder.addArrayFeature("image/object/bbox/xmax", FeatureType.Float, [3.0, 7.0]);
-            builder.addArrayFeature("image/object/bbox/ymax", FeatureType.Float, [4.0, 8.0]);
+            builder.addFeature("image/width", FeatureType.Int64, 600);
+            builder.addFeature("image/height", FeatureType.Int64, 800);
+
+            builder.addArrayFeature("image/object/bbox/xmin", FeatureType.Float, [0.0, 0.1]);
+            builder.addArrayFeature("image/object/bbox/ymin", FeatureType.Float, [0.0, 0.1]);
+            builder.addArrayFeature("image/object/bbox/xmax", FeatureType.Float, [0.5, 1.0]);
+            builder.addArrayFeature("image/object/bbox/ymax", FeatureType.Float, [0.5, 1.0]);
             builder.addArrayFeature("image/object/class/text", FeatureType.String, ["a", "b"]);
 
             const buffer = builder.build();
@@ -261,17 +264,17 @@ describe("Asset Service", () => {
             expect(result.regions[0].tags.length).toEqual(1);
             expect(result.regions[0].tags[0].name).toEqual("a");
             expect(result.regions[0].points.length).toEqual(2);
-            expect(result.regions[0].points[0].x).toEqual(1);
-            expect(result.regions[0].points[0].y).toEqual(2);
-            expect(result.regions[0].points[1].x).toEqual(4);
-            expect(result.regions[0].points[1].y).toEqual(6);
+            expect(result.regions[0].points[0].x).toEqual(0);
+            expect(result.regions[0].points[0].y).toEqual(0);
+            expect(result.regions[0].points[1].x).toEqual(300);
+            expect(result.regions[0].points[1].y).toEqual(400);
             expect(result.regions[1].tags.length).toEqual(1);
             expect(result.regions[1].tags[0].name).toEqual("b");
             expect(result.regions[1].points.length).toEqual(2);
-            expect(result.regions[1].points[0].x).toEqual(5);
-            expect(result.regions[1].points[0].y).toEqual(6);
-            expect(result.regions[1].points[1].x).toEqual(12);
-            expect(result.regions[1].points[1].y).toEqual(14);
+            expect(Math.floor(result.regions[1].points[0].x)).toEqual(60);
+            expect(Math.floor(result.regions[1].points[0].y)).toEqual(80);
+            expect(Math.floor(result.regions[1].points[1].x)).toEqual(600);
+            expect(Math.floor(result.regions[1].points[1].y)).toEqual(800);
         });
     });
 });
