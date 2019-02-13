@@ -1,8 +1,9 @@
-import { app, ipcMain, BrowserWindow, dialog, BrowserWindowConstructorOptions } from "electron";
+import { app, ipcMain, BrowserWindow, dialog, BrowserWindowConstructorOptions, Menu } from "electron";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
+import { register } from "../serviceWorker";
 
-// Keep a global reference of the window object, if you don't, the window will
+// Keep a global reference of the window object, if you don"t, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow;
 let ipcMainProxy: IpcMainProxy;
@@ -38,6 +39,8 @@ function createWindow() {
         mainWindow = null;
     });
 
+    registerContextMenu(mainWindow);
+
     ipcMainProxy = new IpcMainProxy(ipcMain, mainWindow);
     ipcMainProxy.register("RELOAD_APP", onReloadApp);
     ipcMainProxy.register("TOGGLE_DEV_TOOLS", onToggleDevTools);
@@ -59,6 +62,42 @@ function onToggleDevTools(sender: any, show: boolean) {
     }
 }
 
+/**
+ * Adds standard cut/copy/paste/etc context menu comments when right clicking input elements
+ * @param browserWindow The browser window to apply the context-menu items
+ */
+function registerContextMenu(browserWindow: BrowserWindow): void {
+    const selectionMenu = Menu.buildFromTemplate([
+        { role: "copy", accelerator: "CmdOrCtrl+C" },
+        { type: "separator" },
+        { role: "selectall", accelerator: "CmdOrCtrl+A" },
+    ]);
+
+    const inputMenu = Menu.buildFromTemplate([
+        { role: "undo", accelerator: "CmdOrCtrl+Z" },
+        { role: "redo", accelerator: "CmdOrCtrl+Shift+Z" },
+        { type: "separator" },
+        { role: "cut", accelerator: "CmdOrCtrl+X" },
+        { role: "copy", accelerator: "CmdOrCtrl+C" },
+        { role: "paste", accelerator: "CmdOrCtrl+V" },
+        { type: "separator" },
+        { role: "selectall", accelerator: "CmdOrCtrl+A" },
+    ]);
+
+    browserWindow.webContents.on("context-menu", (e, props) => {
+        const { selectionText, isEditable } = props;
+        if (isEditable) {
+            inputMenu.popup({
+                window: browserWindow,
+            });
+        } else if (selectionText && selectionText.trim() !== "") {
+            selectionMenu.popup({
+                window: browserWindow,
+            });
+        }
+    });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -74,12 +113,12 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-    // On OS X it's common to re-create a window in the app when the
+    // On OS X it"s common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
         createWindow();
     }
 });
 
-// In this file you can include the rest of your app's specific main process
+// In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
