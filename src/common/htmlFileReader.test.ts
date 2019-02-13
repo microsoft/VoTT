@@ -111,13 +111,15 @@ describe("Html File Reader", () => {
     });
 
     describe("Download asset binaries array", () => {
-        axios.get = jest.fn((url, config) => {
-            return Promise.resolve<AxiosResponse>({
-                config,
-                headers: null,
-                status: 200,
-                statusText: "OK",
-                data: [1, 2, 3],
+        beforeEach(() => {
+            axios.get = jest.fn((url, config) => {
+                return Promise.resolve<AxiosResponse>({
+                    config,
+                    headers: null,
+                    status: 200,
+                    statusText: "OK",
+                    data: [1, 2, 3],
+                });
             });
         });
 
