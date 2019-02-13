@@ -17,10 +17,12 @@ describe("Video Asset Component", () => {
     const defaultProps: IVideoAssetProps = {
         asset: MockFactory.createVideoTestAsset("test-video"),
         autoPlay: false,
+        timestamp: 0,
         onLoaded: onLoadedHandler,
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
         onChildAssetSelected: onChildSelectedHandler,
+        additionalSettings: { videoSettings: { frameExtractionRate: 1} },
     };
 
     beforeEach(() => {
@@ -41,7 +43,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent();
 
         expect(wrapper.find(Player).exists()).toBe(true);
-        expect(wrapper.find(CustomVideoPlayerButton).length).toEqual(2);
+        expect(wrapper.find(CustomVideoPlayerButton).length).toEqual(4);
     });
 
     it("resets loaded state when asset changes", () => {
@@ -59,6 +61,26 @@ describe("Video Asset Component", () => {
         mockLoaded();
 
         wrapper.setProps({ timestamp: expectedTime });
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
+    });
+
+    it("seeks the video player locked to the keyframe rate", () => {
+        const invalidTime = 10.2;
+        const expectedTime = 10;
+        wrapper = createComponent();
+        mockLoaded();
+
+        wrapper.setProps({ timestamp: invalidTime });
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
+    });
+
+    it("checks to see video player rounds correctly when locked to the keyframe rate", () => {
+        const invalidTime = 6.765;
+        const expectedTime = 7;
+        wrapper = createComponent();
+        mockLoaded();
+
+        wrapper.setProps({ timestamp: invalidTime });
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
     });
 
@@ -87,7 +109,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent(props);
         mockLoaded();
 
-        wrapper.find(CustomVideoPlayerButton).at(1).simulate("click");
+        wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
@@ -119,11 +141,67 @@ describe("Video Asset Component", () => {
         wrapper = createComponent(props);
         mockLoaded();
 
-        wrapper.find(CustomVideoPlayerButton).at(0).simulate("click");
+        wrapper.find(CustomVideoPlayerButton).at(2).simulate("click");
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
         expect(onChildSelectedHandler).toBeCalledWith(expectedAsset);
+    });
+
+    it("moves to the next expected frame when clicking the next button", () => {
+        const childAssets = MockFactory.createChildVideoAssets(defaultProps.asset);
+        const currentAsset = childAssets[0];
+
+        videoPlayerMock.prototype.getState = jest.fn(() => {
+            return {
+                player: {
+                    currentTime: currentAsset.timestamp,
+                },
+            };
+        });
+
+        const props: IVideoAssetProps = {
+            ...defaultProps,
+            childAssets,
+            timestamp: currentAsset.timestamp,
+        };
+
+        wrapper = createComponent(props);
+        mockLoaded();
+
+        wrapper.find(CustomVideoPlayerButton).at(1).simulate("click");
+
+        expect(videoPlayerMock.prototype.pause).toBeCalled();
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(
+           currentAsset.timestamp + (1 / defaultProps.additionalSettings.videoSettings.frameExtractionRate));
+    });
+
+    it("moves to the previous expected frame when clicking the back button", () => {
+        const childAssets = MockFactory.createChildVideoAssets(defaultProps.asset);
+        const currentAsset = childAssets[4];
+
+        videoPlayerMock.prototype.getState = jest.fn(() => {
+            return {
+                player: {
+                    currentTime: currentAsset.timestamp,
+                },
+            };
+        });
+
+        const props: IVideoAssetProps = {
+            ...defaultProps,
+            childAssets,
+            timestamp: currentAsset.timestamp,
+        };
+
+        wrapper = createComponent(props);
+        mockLoaded();
+
+        wrapper.find(CustomVideoPlayerButton).at(0).simulate("click");
+
+        expect(videoPlayerMock.prototype.pause).toBeCalled();
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(
+            currentAsset.timestamp - (1 / defaultProps.additionalSettings.videoSettings.frameExtractionRate));
     });
 
     it("raises the onLoad and activated handlers when the video has been loaded", () => {
@@ -136,7 +214,7 @@ describe("Video Asset Component", () => {
     });
 
     it("raises the child asset selected and deactivated handlers when the video is paused", () => {
-        const expectedTime = 10.5;
+        const expectedTime = 6;
         wrapper = createComponent();
         mockLoaded();
         mockPaused(expectedTime);
@@ -171,6 +249,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         const prev: IVideoPlayerState = {
@@ -178,6 +257,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         onVideoStateChangeHandler(state, prev);
@@ -189,6 +269,7 @@ describe("Video Asset Component", () => {
             paused: true,
             currentTime,
             seeking: false,
+            duration: 10,
         };
 
         const prev: IVideoPlayerState = {
@@ -196,6 +277,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 2.0,
             seeking: true,
+            duration: 10,
         };
 
         onVideoStateChangeHandler(state, prev);
@@ -207,6 +289,7 @@ describe("Video Asset Component", () => {
             paused: false,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         const prev: IVideoPlayerState = {
@@ -214,6 +297,7 @@ describe("Video Asset Component", () => {
             paused: true,
             currentTime: 0,
             seeking: false,
+            duration: 10,
         };
 
         onVideoStateChangeHandler(state, prev);

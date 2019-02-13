@@ -22,7 +22,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
-import { AssetPreview } from "../../common/assetPreview/assetPreview";
+import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
 
 /**
  * Properties for Editor Page
@@ -52,6 +52,8 @@ export interface IEditorPageState {
     selectedAsset?: IAssetMetadata;
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
+    /** Additional settings for asset previews */
+    additionalSettings?: IAssetPreviewSettings;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -79,6 +81,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
+        additionalSettings: {videoSettings: (this.props.project) ? this.props.project.videoSettings : null},
     };
 
     private loadingProjectAssets: boolean = false;
@@ -143,6 +146,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 selectionMode={this.state.selectionMode}
                                 project={this.props.project}>
                                 <AssetPreview
+                                    additionalSettings={this.state.additionalSettings}
                                     autoPlay={true}
                                     onChildAssetSelected={this.onChildAssetSelected}
                                     asset={this.state.selectedAsset.asset}
