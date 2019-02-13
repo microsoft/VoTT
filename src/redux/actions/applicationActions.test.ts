@@ -79,6 +79,13 @@ describe("Application Redux Actions", () => {
                 { name: "C", key: "3" },
             ],
         };
+        const middleware = [thunk];
+        const mockState: IApplicationState = {
+            ...initialState,
+            appSettings,
+        };
+
+        store = createMockStore<IApplicationState>(middleware)(mockState);
 
         const testProject = MockFactory.createTestProject("TestProject");
 
@@ -88,11 +95,10 @@ describe("Application Redux Actions", () => {
         expect(actions.length).toEqual(1);
         expect(actions[0]).toEqual({
             type: ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS,
-            payload: appSettings,
+            payload: testProject,
         });
 
         expect(result).toEqual(appSettings);
-        // expect(testProject.securityToken.name).toEqual("TestProject Token");
-        // expect(appSettings.securityTokens.length).toEqual(4);
+        expect(testProject.securityToken).toEqual("Project TestProject Token");
     });
 });

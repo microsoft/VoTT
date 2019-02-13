@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { IAsset, AssetType } from "../models/applicationState";
-import { IFileInfo } from "../models/v1Models";
+import { IAsset, AssetType, IFileInfo } from "../models/applicationState";
 import Guard from "./guard";
 
 /**
