@@ -3,6 +3,7 @@ import { IAsset, AssetType } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
+import { TFRecordAsset } from "./tfrecordAsset";
 
 export type ContentSource = HTMLImageElement | HTMLVideoElement;
 
@@ -85,13 +86,18 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated} />
                 }
+                {asset.type === AssetType.TFRecord &&
+                    <TFRecordAsset asset={asset}
+                        onLoaded={this.onAssetLoad}
+                        onActivated={this.props.onActivated}
+                        onDeactivated={this.props.onDeactivated} />
+                }
                 {asset.type === AssetType.Unknown &&
                     <div className="asset-error">{strings.editorPage.assetError}</div>
                 }
             </div>
         );
     }
-
     /**
      * Internal event handler for when the referenced asset has been loaded
      * @param contentSource The visual HTML element of the asset (img/video tag)

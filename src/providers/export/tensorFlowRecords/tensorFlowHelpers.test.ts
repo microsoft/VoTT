@@ -1,4 +1,4 @@
-import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer, textEncode } from "./tensorFlowHelpers";
+import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer, textEncode, textDecode } from "./tensorFlowHelpers";
 
 describe("TFRecords Helper Functions", () => {
     describe("Run getInt64Buffer method test", () => {
@@ -35,6 +35,12 @@ describe("TFRecords Helper Functions", () => {
     describe("Run textEncode method test", () => {
         it("Check textEncode for string 'ABC123'", async () => {
             expect(textEncode("ABC123")).toEqual(new Uint8Array([65, 66, 67, 49, 50, 51]));
+        });
+    });
+
+    describe("Run textDecode method test", () => {
+        it("Check textDecode for array [65, 66, 67, 49, 50, 51]", async () => {
+            expect(textDecode(new Uint8Array([65, 66, 67, 49, 50, 51]))).toEqual("ABC123");
         });
     });
 });

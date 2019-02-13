@@ -63,6 +63,8 @@ export class AssetService {
             case "mpg":
             case "wmv":
                 return AssetType.Video;
+            case "tfrecord":
+                return AssetType.TFRecord;
             default:
                 return AssetType.Unknown;
         }
