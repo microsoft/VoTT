@@ -158,10 +158,10 @@ export const english: IAppStrings = {
                 tooltip: "Next Tagged Frame",
             },
             previousExpectedFrame: {
-                tooltip: "Previous Expected Frame",
+                tooltip: "Previous Frame",
             },
             nextExpectedFrame: {
-                tooltip: "Next Expected Frame",
+                tooltip: "Next Frame",
             },
         },
         assetError: "Unable to display asset",

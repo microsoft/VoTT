@@ -1,5 +1,5 @@
 import React from "react";
-import { IAsset, AssetType, IProject } from "../../../../models/applicationState";
+import { IAsset, AssetType, IProjectVideoSettings } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
@@ -10,12 +10,12 @@ export type ContentSource = HTMLImageElement | HTMLVideoElement;
  * AssetPreview component properties
  */
 export interface IAssetProps {
-    /** The current project */
-    project: IProject;
     /** The Asset to preview */
     asset: IAsset;
     /** The child assets (ex. video frames) of the parent asset */
     childAssets?: IAsset[];
+    /** Additional settings for this asset */
+    additionalSettings?: IAssetPreviewSettings;
     /** Event handler that fires when the asset has been loaded */
     onLoaded?: (ContentSource: ContentSource) => void;
     /** Event handler that fires when the asset has been activated (ex. Video resumes playing) */
@@ -43,13 +43,20 @@ export interface IAssetPreviewState {
 }
 
 /**
+ * Settings used by the various asset previews
+ * @member videoSettings - Video settings for this asset
+ */
+export interface IAssetPreviewSettings {
+    videoSettings: IProjectVideoSettings;
+}
+
+/**
  * @name - Asset Preview
  * @description - Small preview of assets for selection in editor page
  */
 export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     /** Default properties for component if not defined */
     public static defaultProps: IAssetPreviewProps = {
-        project: null,
         asset: null,
         childAssets: [],
         autoPlay: false,
@@ -73,15 +80,15 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                     </div>
                 }
                 {asset.type === AssetType.Image &&
-                    <ImageAsset project={this.props.project}
-                        asset={parentAsset}
+                    <ImageAsset asset={parentAsset}
+                        additionalSettings={this.props.additionalSettings}
                         onLoaded={this.onAssetLoad}
                         onActivated={this.props.onActivated}
                         onDeactivated={this.props.onDeactivated} />
                 }
                 {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
-                    <VideoAsset project={this.props.project}
-                        asset={parentAsset}
+                    <VideoAsset asset={parentAsset}
+                        additionalSettings={this.props.additionalSettings}
                         childAssets={childAssets}
                         timestamp={asset.timestamp}
                         autoPlay={autoPlay}

@@ -50,7 +50,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         timestamp: 0,
         asset: null,
         childAssets: [],
-        project: null,
     };
 
     public state: IVideoAssetState = {
@@ -168,7 +167,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private moveNextExpectedFrame = () => {
         // Seek forward from the current time to the next logical frame based on project settings
-        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
+        const frameSkipTime: number = (1 / this.props.additionalSettings.videoSettings.frameExtractionRate);
         const seekTime: number = (this.getCurrentVideoPlayerState().currentTime + frameSkipTime);
         this.seekToTime(seekTime);
     }
@@ -180,7 +179,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private movePreviousExpectedFrame = () => {
         // Seek backwards from the current time to the next logical frame based on project settings
-        const frameSkipTime: number = (1 / this.props.project.videoSettings.frameExtractionRate);
+        const frameSkipTime: number = (1 / this.props.additionalSettings.videoSettings.frameExtractionRate);
         const seekTime: number = (this.getCurrentVideoPlayerState().currentTime - frameSkipTime);
         this.seekToTime(seekTime);
     }
@@ -295,10 +294,10 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @returns true if moved to a new position; false otherwise
      */
     private ensureSeekIsOnValidKeyframe(): boolean {
-        if (!this.props.project) {
+        if (!this.props.additionalSettings) {
             return false;
         }
-        const keyFrameTime = (1 / this.props.project.videoSettings.frameExtractionRate);
+        const keyFrameTime = (1 / this.props.additionalSettings.videoSettings.frameExtractionRate);
         const timestamp = this.getCurrentVideoPlayerState().currentTime;
 
         // Calculate the nearest key frame

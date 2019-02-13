@@ -15,7 +15,6 @@ describe("Video Asset Component", () => {
     const onDeactivatedHandler = jest.fn();
     const onChildSelectedHandler = jest.fn();
     const defaultProps: IVideoAssetProps = {
-        project: MockFactory.createTestProject("test-project"),
         asset: MockFactory.createVideoTestAsset("test-video"),
         autoPlay: false,
         timestamp: 0,
@@ -23,6 +22,7 @@ describe("Video Asset Component", () => {
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
         onChildAssetSelected: onChildSelectedHandler,
+        additionalSettings: { videoSettings: { frameExtractionRate: 1} },
     };
 
     beforeEach(() => {
@@ -74,7 +74,7 @@ describe("Video Asset Component", () => {
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
     });
 
-    it("seeks the video player locked to the keyframe rate and rounds correctly", () => {
+    it("checks to see video player rounds correctly when locked to the keyframe rate", () => {
         const invalidTime = 6.765;
         const expectedTime = 7;
         wrapper = createComponent();
@@ -173,7 +173,7 @@ describe("Video Asset Component", () => {
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(
-           currentAsset.timestamp + (1 / defaultProps.project.videoSettings.frameExtractionRate));
+           currentAsset.timestamp + (1 / defaultProps.additionalSettings.videoSettings.frameExtractionRate));
     });
 
     it("moves to the previous expected frame when clicking the back button", () => {
@@ -201,7 +201,7 @@ describe("Video Asset Component", () => {
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(
-            currentAsset.timestamp - (1 / defaultProps.project.videoSettings.frameExtractionRate));
+            currentAsset.timestamp - (1 / defaultProps.additionalSettings.videoSettings.frameExtractionRate));
     });
 
     it("raises the onLoad and activated handlers when the video has been loaded", () => {

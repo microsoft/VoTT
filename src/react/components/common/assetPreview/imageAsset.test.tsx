@@ -11,7 +11,6 @@ describe("Image Asset Component", () => {
     const onLoadHandler = jest.fn();
     MockFactory.createTestAsset("test");
     const defaultProps: IAssetProps = {
-        project: MockFactory.createTestProject("test-project"),
         asset: {
             ...MockFactory.createTestAsset("test"),
             path: dataUri,

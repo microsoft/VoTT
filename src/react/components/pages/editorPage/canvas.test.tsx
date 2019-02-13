@@ -46,7 +46,6 @@ describe("Editor Canvas", () => {
 
         const assetPreviewProps: IAssetPreviewProps = {
             asset: assetMetadata.asset,
-            project: MockFactory.createTestProject("test-project"),
         };
 
         return {

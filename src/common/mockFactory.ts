@@ -240,7 +240,7 @@ export default class MockFactory {
      * Creates fake IProjectVideoSettings with default values
      */
     public static createVideoSettings(): IProjectVideoSettings {
-        return { frameExtractionRate: 1 };
+        return { frameExtractionRate: 15 };
     }
 
     /**
