@@ -225,6 +225,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             this.raiseActivated();
             this.seekToTimestamp();
         } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
+            // Video is paused, make sure we are on a key frame, and if we are not, seek to that
+            // before raising the child selected event
             if (!this.ensureSeekIsOnValidKeyframe()) {
                 this.raiseChildAssetSelected(state);
             }
