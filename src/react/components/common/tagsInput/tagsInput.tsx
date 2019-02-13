@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { WithContext as ReactTags } from "react-tag-input";
 import { strings } from "../../../../common/strings";
 import { randomIntInRange } from "../../../../common/utils";
@@ -155,11 +155,9 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
      * Gets tag ID (name) from a click event
      * @param event Click event
      */
-    protected getTagIdFromClick(event): string {
-        if (event.target.lastChild) {
-            return event.target.lastChild.data;
-        }
-        return (event.target.innerText || event.currentTarget.innerText).trim();
+    protected getTagIdFromClick(event: SyntheticEvent): string {
+        const attrValue = event.currentTarget.getAttribute("data-tag-name");
+        return attrValue ? attrValue.trim() : null;
     }
 
     /**
@@ -169,7 +167,7 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
      */
     protected ReactTagHtml(name: string, color: string) {
         return (
-            <div className="tag inline-block" onClick={(event) => this.handleTagClick(event)}>
+            <div className="tag inline-block" data-tag-name={name} onClick={(event) => this.handleTagClick(event)}>
                 <div className="tag-contents">
                     <div className="tag-color-box" style={{ backgroundColor: color }}></div>
                     {this.getTagSpan(name)}
