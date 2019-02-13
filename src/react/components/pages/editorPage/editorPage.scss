@@ -170,11 +170,13 @@
         position: absolute;
         height: 100%;
         border: 1px solid green;
+        cursor: pointer;
     }
     &-untagged {
         position: absolute;
         height: 100%;
         border: 1px solid yellow;
+        cursor: pointer;
     }
 }
 
@@ -211,11 +213,25 @@ canvas {
 .video-react {
     font-family: inherit;
 
-    .video-react-fullscreen-control {
+    &-progress-control * {
+        font-family: inherit;
+    }
+
+    &-fullscreen-control {
         display: none;
     }
 
-    .video-react-button:hover {
+    &-button:hover {
         text-shadow: 0 0 18px #fff, 0 0 18px #fff, 0 0 18px #fff
+    }
+
+    &-progress-holder, &-load-progress, &-play-progress {
+        height: 0.5em !important;
+    }
+
+    &-play-progress {
+        &::before {
+            font-size: 1.2em !important;
+        }
     }
 }

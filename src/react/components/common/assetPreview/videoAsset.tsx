@@ -229,8 +229,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             // before raising the child selected event
             if (!this.ensureSeekIsOnValidKeyframe()) {
                 this.raiseChildAssetSelected(state);
+                this.raiseDeactivated();
             }
-            this.raiseDeactivated();
         } else if (!state.paused && state.paused !== prev.paused) {
             // Video has resumed playing
             this.raiseActivated();
@@ -304,7 +304,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
 
         // Calculate the nearest key frame
         const numberKeyFrames = Math.round(timestamp / keyFrameTime);
-        const seekTime = (numberKeyFrames * keyFrameTime);
+        const seekTime = +(numberKeyFrames * keyFrameTime).toFixed(6);
         if (seekTime !== timestamp) {
             this.seekToTime(seekTime);
         }
@@ -354,13 +354,13 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             // Calcualte the left position
             const childPosition: number = (childAsset.timestamp / videoDuration);
             tagTimeLines.push(<div key={childAsset.timestamp}
-                onClick = {this.handleAssetTimelineClick}
-                data-videotimestamp = {childAsset.timestamp}
-                className = {childAsset.state === AssetState.Tagged ?
+                onClick={this.handleAssetTimelineClick}
+                data-videotimestamp={childAsset.timestamp}
+                className={childAsset.state === AssetState.Tagged ?
                     "video-timeline-tagged" : "video-timeline-untagged"}
                 style={{
                     left: (childPosition * 100) + "%",
-                 }} />);
+                }} />);
         }
         return <div className={"video-timeline-parent"}>{tagTimeLines}</div>;
     }
