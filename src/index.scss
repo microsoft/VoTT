@@ -13,7 +13,7 @@ input[type=file] {
 ::-webkit-scrollbar {
     width: 6px;
 }
- 
+
 /* Track */
 ::-webkit-scrollbar-track {
     box-shadow: inset 0 0 6px $darker-3;
@@ -21,19 +21,25 @@ input[type=file] {
     border-radius: 10px;
     border-radius: 10px;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
     border-radius: 10px;
-	background: $lighter-4; 
-    box-shadow:  0 0 6px $darker-3; 
+	background: $lighter-4;
+    box-shadow:  0 0 6px $darker-3;
 }
 ::-webkit-scrollbar-thumb:window-inactive {
-	background: $lighter-4; 
+	background: $lighter-4;
 }
 
-.form-group {
+.form-group, .object-wrapper {
+    margin-bottom: 1rem;
+
+    .field-description {
+        margin-bottom: 0.25rem;
+    }
+
     &.is-invalid {
         .invalid-feedback {
             display: block;
