@@ -54,7 +54,9 @@ export interface IEditorPageState {
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
     /** Tags selected for labeling of regions */
-    selectedTags?: ITag[];
+    lockedTags?: ITag[];
+    /** Selected tag */
+    selectedTag?: ITag;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -82,7 +84,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
-        selectedTags: [],
+        lockedTags: [],
     };
 
     private loadingProjectAssets: boolean = false;
@@ -146,7 +148,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 editorMode={this.state.editorMode}
                                 selectionMode={this.state.selectionMode}
                                 project={this.props.project}
-                                selectedTags={this.state.selectedTags}>
+                                lockedTags={this.state.lockedTags}
+                                selectedTag={this.state.selectedTag}>
                                 <AssetPreview
                                     autoPlay={true}
                                     onChildAssetSelected={this.onChildAssetSelected}
@@ -174,23 +177,17 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * @param tag Tag clicked
      */
     public onTagClicked = (tag: ITag) => {
-        this.setState((prevState) => {
-            const tags = prevState.selectedTags;
-            if (tags && tags.find((t) => t.name === tag.name) && tags.length === 1) {
-                return {
-                    selectedTags: [],
-                };
-            } else {
-                return {
-                    selectedTags: [ tag ],
-                };
-            }
+        const previouslySelected = this.state.lockedTags.find((t) => t.name === tag.name);
+        this.setState({
+            selectedTag: tag,
+            lockedTags: [],
         });
     }
 
     public onTagShiftClicked = (tag: ITag) => {
         this.setState({
-            selectedTags: CanvasHelpers.toggleTag(this.state.selectedTags, tag),
+            selectedTag: tag,
+            lockedTags: CanvasHelpers.toggleTag(this.state.lockedTags, tag),
         });
     }
 

@@ -572,7 +572,8 @@ export default class MockFactory {
     public static createTestCanvas(project: IProject = null) {
         const canvasProps: ICanvasProps = {
             project,
-            selectedTags: [],
+            lockedTags: [],
+            selectedTag: null,
             selectedAsset: this.createTestAssetMetadata(this.createTestAsset("test-asset")),
             onAssetMetadataChanged: jest.fn(),
             editorMode: EditorMode.Rectangle,

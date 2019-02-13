@@ -17,7 +17,8 @@ export interface ICanvasProps extends React.Props<Canvas> {
     editorMode: EditorMode;
     selectionMode: SelectionMode;
     project: IProject;
-    selectedTags: ITag[];
+    lockedTags: ITag[];
+    selectedTag: ITag;
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
 }
@@ -76,8 +77,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.setSelectionMode(this.props.selectionMode, null);
         }
 
-        if(this.props.selectedTags !== prevProps.selectedTags) {
-            this.applyTags();
+        if(this.props.lockedTags !== prevProps.lockedTags || this.props.selectedTag !== prevProps.selectedTag) {
+            this.applyTags(false);
         }
     }
 
@@ -132,14 +133,28 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         );
     }
 
-    private applyTags = () => {
+    private applyTags = (fromSelect: boolean) => {
+        const selected = this.props.selectedTag;
+        const locked = this.props.lockedTags;
+
+        const lockedTagsEmpty = !locked || !locked.length;
+        const selectedTagContainedInLocked = locked.find((t) => t.name === selected.name);
+
+        if (fromSelect && lockedTagsEmpty) {
+            return;
+        }
         for (const region of this.state.selectedRegions) {
-            if (!this.props.selectedTags || !this.props.selectedTags.length) {
-                region.tags = [];
-            } else {
-                for (const tag of this.props.selectedTags) {
+            if (fromSelect && !lockedTagsEmpty) {
+                for (const tag of locked) {
+                    debugger;
                     region.tags = CanvasHelpers.toggleTag(region.tags, tag);
                 }
+            } else if (lockedTagsEmpty) {
+                region.tags = CanvasHelpers.toggleTag(region.tags, selected);
+            } else if (selectedTagContainedInLocked) {
+                region.tags = CanvasHelpers.addIfMissing(region.tags, selected);
+            } else {
+                region.tags = CanvasHelpers.removeIfContained(region.tags, selected);
             }
             this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
         }
@@ -153,18 +168,25 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     public onRegionSelected = (id: string) => {
 
-        const selectedRegion = this.props.selectedAsset.regions.find((region) => region.id === id);
+        const selectedRegion = this.getRegion(this.props.selectedAsset.regions, id);
 
         let selectedRegions = this.state.selectedRegions;
 
-        if (this.state.multiSelect) {
-            if (!selectedRegions.find((r) => r.id === selectedRegion.id)) {
+        if (this.state.multiSelect && selectedRegions && selectedRegions.length) {
+            if (this.getRegion(selectedRegions, id)) {
                 selectedRegions.push(selectedRegion);
             }
         } else {
             selectedRegions = [selectedRegion];
         }
-        this.setState({ selectedRegions });
+        this.setState({ selectedRegions }, () => this.applyTags(true));
+    }
+
+    private getRegion(regions: IRegion[], id: string) {
+        if (!regions || !id || regions.length === 0) {
+            return null;
+        }
+        return regions.find((r) => r.id === id);
     }
 
     /**
@@ -184,7 +206,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         currentAssetMetadata.regions.push(newRegion);
         this.setState({
             selectedRegions: [newRegion],
-        }, () => this.applyTags());
+        }, () => this.applyTags(true));
 
         if (currentAssetMetadata.regions.length) {
             currentAssetMetadata.asset.state = AssetState.Tagged;
@@ -398,7 +420,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private selectAllRegions = () => {
-        this.setState({ selectedRegions: this.props.selectedAsset.regions }, () => this.applyTags());
+        this.setState({ selectedRegions: this.props.selectedAsset.regions }, () => this.applyTags(true));
     }
 
 }

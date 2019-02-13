@@ -50,7 +50,8 @@ describe("Editor Canvas", () => {
             editorMode: EditorMode.Rectangle,
             selectionMode: SelectionMode.RECT,
             project: MockFactory.createTestProject(),
-            selectedTags: [],
+            lockedTags: [],
+            selectedTag: null,
         };
 
         const assetPreviewProps: IAssetPreviewProps = {

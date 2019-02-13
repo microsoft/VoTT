@@ -22,11 +22,46 @@ export default class CanvasHelpers {
      * @param tag Tag to toggle
      */
     public static toggleTag(tags: ITag[], tag: ITag): ITag[] {
-        if (tags.find((existingTag) => existingTag.name === tag.name)) {
+        if (!tag) {
+            return tags;
+        }
+        if (!tags) {
+            return [ tag ];
+        }
+        if (this.getTag(tags, tag.name)) {
             return tags.filter((t) => t.name !== tag.name);
         } else {
             return [...tags, tag];
         }
+    }
+
+    public static addIfMissing(tags: ITag[], tag: ITag): ITag[] {
+        if (!tag) {
+            return tags;
+        }
+        if (!tags) {
+            return [ tag ];
+        }
+        if (!this.getTag(tags, tag.name)) {
+            return [...tags, tag];
+        } else {
+            return tags;
+        }
+    }
+
+    public static removeIfContained(tags: ITag[], tag: ITag): ITag[] {
+        if (!tags || !tag) {
+            return tags;
+        }
+        if (this.getTag(tags, tag.name)) {
+            return tags.filter((t) => t.name !== tag.name);
+        } else {
+            return tags;
+        }
+    }
+
+    public static getTag(tags: ITag[], name: string): ITag {
+        return tags.find((t) => t.name === name);
     }
 
     /**
