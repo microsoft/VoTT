@@ -1,7 +1,7 @@
 import React, { SyntheticEvent } from "react";
 import shortid from "shortid";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { IFileInfo } from "../../../../models/v1Models";
+import { IFileInfo } from "../../../../models/applicationState";
 
 /**
  * Properties for File Picker

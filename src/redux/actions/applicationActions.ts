@@ -60,7 +60,7 @@ export function saveAppSettings(appSettings: IAppSettings): (dispath: Dispatch) 
 export function ensureSecurityToken(project: IProject):
     (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAppSettings> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
-        let appState = getState();
+        const appState = getState();
         let securityToken = appState.appSettings.securityTokens
             .find((st) => st.name === project.securityToken);
 
@@ -81,7 +81,7 @@ export function ensureSecurityToken(project: IProject):
         await this.saveAppSettings(updatedAppSettings);
 
         project.securityToken = securityToken.name;
-        dispatch(ensureSecurityTokenAction(appState.appSettings));
+        dispatch(ensureSecurityTokenAction(project));
         return Promise.resolve(appState.appSettings);
     };
 }
@@ -110,7 +110,7 @@ export interface ISaveAppSettingsAction extends IPayloadAction<string, IAppSetti
 /**
  * Ensure project security token action type
  */
-export interface IEnsureSecurityTokenAction extends IPayloadAction<string, IAppSettings> {
+export interface IEnsureSecurityTokenAction extends IPayloadAction<string, IProject> {
     type: ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS;
 }
 
