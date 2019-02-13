@@ -247,6 +247,7 @@ export interface IAppStrings {
         projectInvalidJson: IErrorMetadata,
         projectInvalidSecurityToken: IErrorMetadata,
         projectUploadError: IErrorMetadata,
+        projectDeleteError: IErrorMetadata,
         genericRenderError: IErrorMetadata,
         securityTokenNotFound: IErrorMetadata,
         canvasError: IErrorMetadata,

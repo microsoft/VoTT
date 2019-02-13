@@ -262,6 +262,11 @@ export const spanish: IAppStrings = {
             title: "Error al analizar el archivo de proyecto",
             message: "El archivo de proyecto no es válido JSON",
         },
+        projectDeleteError: {
+            title: "Error al eliminar el proyecto",
+            message: `Se ha producido un error al eliminar el proyecto.
+                Validar el archivo de proyecto y el token de seguridad existen e inténtelo de nuevo`,
+        },
         securityTokenNotFound: {
             title: "Error loading project file",
             message: `El token de seguridad al que hace referencia el proyecto no se encuentra en la
