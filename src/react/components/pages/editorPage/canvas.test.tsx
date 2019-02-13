@@ -5,7 +5,7 @@ import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/Regi
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { AssetPreview, IAssetPreviewProps } from "../../common/assetPreview/assetPreview";
 import MockFactory from "../../../../common/mockFactory";
-import { EditorMode, ITag } from "../../../../models/applicationState";
+import { EditorMode, ITag, IAssetMetadata, IRegion } from "../../../../models/applicationState";
 
 jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
@@ -393,7 +393,7 @@ describe("Editor Canvas", () => {
     const tag2 = MockFactory.createTestTag("tag2");
     const tag3 = MockFactory.createTestTag("tag3");
 
-    function getWrapperWithTaggedRegions() {
+    function getTaggedRegions(): IRegion[] {
         const region1 = MockFactory.createTestRegion("region1");
         const region2 = MockFactory.createTestRegion("region2");
         const region3 = MockFactory.createTestRegion("region3");
@@ -403,11 +403,16 @@ describe("Editor Canvas", () => {
         region2.tags = [ tag2 ];
         region3.tags = [ tag2, tag3 ];
 
+        return [region1, region2, region3, region4]
+    }
+
+    function getWrapperWithTaggedRegions() {
+        const regions = getTaggedRegions();
+
         const wrapper = createComponent();
-        wrapper.prop("selectedAsset").regions.push(region1);
-        wrapper.prop("selectedAsset").regions.push(region2);
-        wrapper.prop("selectedAsset").regions.push(region3);
-        wrapper.prop("selectedAsset").regions.push(region4);
+        for (const region of regions) {
+            wrapper.prop("selectedAsset").regions.push(region);
+        }
         return wrapper;
     }
 
@@ -517,7 +522,7 @@ describe("Editor Canvas", () => {
         checkRegionTags(wrapper, [tag3, tag1, tag2], [tag3, tag1], [tag3]);
     });
 
-    fit("Toggles locked tags on selection of single region", () => {
+    it("Toggles locked tags on selection of single region", () => {
         const wrapper = getWrapperWithTaggedRegions();
         const canvas = wrapper.instance();
         expect(wrapper.state().selectedRegions).toHaveLength(0);
@@ -533,11 +538,17 @@ describe("Editor Canvas", () => {
         canvas.onRegionSelected("region1");
         checkRegionTags(wrapper, [tag1, tag2]);
 
+        canvas.onRegionSelected("region1");
+        checkRegionTags(wrapper, []);
+
         canvas.onRegionSelected("region2");
         checkRegionTags(wrapper, [ tag1 ]);
 
         canvas.onRegionSelected("region2");
         checkRegionTags(wrapper, [ tag2 ]);
+
+        canvas.onRegionSelected("region2");
+        checkRegionTags(wrapper, [ tag1 ]);
 
         canvas.onRegionSelected("region3");
         checkRegionTags(wrapper, [ tag3, tag1 ]);
@@ -545,12 +556,76 @@ describe("Editor Canvas", () => {
         canvas.onRegionSelected("region3");
         checkRegionTags(wrapper, [ tag3, tag2 ]);
 
+        canvas.onRegionSelected("region3");
+        checkRegionTags(wrapper, [ tag3, tag1 ]);
+
         canvas.onRegionSelected("region4");
         checkRegionTags(wrapper, [ tag1, tag2 ]);
 
         canvas.onRegionSelected("region4");
         checkRegionTags(wrapper, []);
+
+        canvas.onRegionSelected("region4");
+        checkRegionTags(wrapper, [ tag1, tag2 ]);
     });
+
+    function getExpectedAssetMetadata(newAssetMetadata: IAssetMetadata, region: IRegion, expectedTags: ITag[]) {
+            const expectedMetadata: IAssetMetadata = {
+                ...newAssetMetadata,
+                regions: newAssetMetadata.regions.map((r) => {
+                    if (r.id === region.id){
+                        return {
+                            ...r,
+                            tags: expectedTags
+                        }
+                    } else {
+                        return r;
+                    }
+                }),               
+            }
+            return expectedMetadata;
+        }
+
+    it("Calls onAssetChanged handler after applying a tag", () => {
+        const wrapper = getWrapperWithTaggedRegions();
+        const canvas = wrapper.instance();
+        const assetChangeHandler = jest.fn();
+        wrapper.setProps({
+            onAssetMetadataChanged: assetChangeHandler
+        });
+        expect(wrapper.state().selectedRegions).toHaveLength(0);
+
+        const originalMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("test"));
+        const originalRegions = getTaggedRegions();
+        const newAssetMetadata = {
+            ...originalMetadata,
+            regions: originalRegions
+        }
+
+        const expected1 = getExpectedAssetMetadata(newAssetMetadata, originalRegions[0], []);
+        
+        wrapper.setProps({
+            selectedTag: tag1,
+            lockedTags: [ tag1, tag2 ]
+        });
+
+        canvas.onRegionSelected("region1");
+        expect(assetChangeHandler).toBeCalledWith(expected1);
+
+        const expected2 = getExpectedAssetMetadata(expected1, originalRegions[1], [tag1]);
+        canvas.onRegionSelected("region2");
+        expect(assetChangeHandler).toBeCalledWith(expected2);
+
+        const expected3 = getExpectedAssetMetadata(expected2, originalRegions[2], [tag3, tag1]);
+
+        canvas.onRegionSelected("region3");
+        expect(assetChangeHandler).toBeCalledWith(expected3);
+
+        const expected4 = getExpectedAssetMetadata(expected3, originalRegions[3], [tag1, tag2]);
+
+        canvas.onRegionSelected("region4");
+        expect(assetChangeHandler).toBeCalledWith(expected4);
+    })
 
     it("Toggles locked tags on selection for multiple regions", () => {
 
