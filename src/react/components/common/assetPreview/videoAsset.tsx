@@ -124,7 +124,6 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.asset !== prevProps.asset) {
             this.setState({ loaded: false });
         } else if (this.props.childAssets !== prevProps.childAssets) {
-            console.log("componentDidUpdate");
             this.addAssetTimelineTags(this.props.childAssets, this.getCurrentVideoPlayerState().duration);
         }
         if (this.props.timestamp !== prevProps.timestamp) {
