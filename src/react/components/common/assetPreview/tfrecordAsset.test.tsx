@@ -6,7 +6,7 @@ import MockFactory from "../../../../common/mockFactory";
 import { TFRecordsBuilder, FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 
-describe("Image Asset Component", () => {
+describe("TFRecord Asset Component", () => {
     // tslint:disable-next-line:max-line-length
     const dataImage64 = "R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
     const dataImage = new Uint8Array(Buffer.from(dataImage64, "base64"));
