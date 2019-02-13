@@ -67,11 +67,10 @@ export class TFRecordsReader {
     /**
      * @recordPos - Record Position
      * @key - Feature Key
-     * @type - Feature Type
+     * @type - Feature Typeq
      * @description - Get a Int64 | Float | String | Binary value
      */
     public getFeature(recordPos: number, key: string, type: FeatureType): string | number | Uint8Array {
-        // Guard.expression(recordPos, (num) => num >= 0 && num < this.imageMessages.length);
         const message = this.imageMessages[recordPos];
         const feature = message.getContext().getFeatureMap().get(key);
 
