@@ -156,30 +156,31 @@
     }
 }
 
-.video-timeline-parent {
+.video-timeline-container {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-}
 
-.video-timeline {
-    width: 2px;
+    .video-timeline {
+        &-tagged, &-untagged {
+            width: 2px;
+            position: absolute;
+            height: 100%;
+            cursor: pointer;
+            opacity: 0.75;
+        }
 
-    &-tagged, &-untagged {
-        position: absolute;
-        height: 100%;
-        cursor: pointer;
-    }
+        &-tagged {
+            background-color: green;
+            z-index: 2
+        }
 
-    &-tagged {
-        border: 1px solid green;
-        z-index: 2
-    }
-    &-untagged {
-        border: 1px solid yellow;
-        z-index: 1;
+        &-untagged {
+            background-color: yellow;
+            z-index: 1;
+        }
     }
 }
 

@@ -124,6 +124,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.asset !== prevProps.asset) {
             this.setState({ loaded: false });
         } else if (this.props.childAssets !== prevProps.childAssets) {
+            console.log("componentDidUpdate");
             this.addAssetTimelineTags(this.props.childAssets, this.getCurrentVideoPlayerState().duration);
         }
         if (this.props.timestamp !== prevProps.timestamp) {
@@ -247,10 +248,10 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             if (this.props.onLoaded) {
                 this.props.onLoaded(this.videoPlayer.current.video.video);
             }
-        });
 
-        // Once the video is loaded, add any asset timeline tags
-        this.addAssetTimelineTags(this.props.childAssets, this.getCurrentVideoPlayerState().duration);
+            // Once the video is loaded, add any asset timeline tags
+            this.addAssetTimelineTags(this.props.childAssets, this.getCurrentVideoPlayerState().duration);
+        });
     }
 
     /**
@@ -320,22 +321,28 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @member videoDuration - Length (in seconds) of the video
      */
     private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
-        let progressHolderElement: Element = null;
+        if (!this.props.autoPlay) {
+            return;
+        }
+
         const assetTimelineTagLines = this.getRenderedAssetTagLinesElements(childAssets, videoDuration);
+        const timelineSelector = ".editor-page-content-body .video-react-progress-control .video-timeline-root";
+        this.timelineElement = document.querySelector(timelineSelector);
+
         if (!this.timelineElement) {
-            const editorElement = document.querySelector("div.editor-page-content-body");
-            if (editorElement) {
-                progressHolderElement = editorElement.getElementsByClassName("video-react-progress-control")[0];
-            }
+            const progressControlSelector = ".editor-page-content-body .video-react-progress-control";
+            const progressHolderElement = document.querySelector(progressControlSelector);
+
             // If we found an element to hold the tags, add them to it
             if (progressHolderElement) {
                 this.timelineElement = document.createElement("div");
+                this.timelineElement.className = "video-timeline-root";
                 progressHolderElement.appendChild(this.timelineElement);
             }
         }
 
-        // Render the child asset elmements to the dom
         if (this.timelineElement) {
+            // Render the child asset elmements to the dom
             ReactDOM.render(assetTimelineTagLines, this.timelineElement);
         }
     }
@@ -362,7 +369,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                     left: (childPosition * 100) + "%",
                 }} />);
         }
-        return <div className={"video-timeline-parent"}>{tagTimeLines}</div>;
+        return <div className={"video-timeline-container"}>{tagTimeLines}</div>;
     }
 
     private handleAssetTimelineClick = (divElement: React.MouseEvent<HTMLDivElement>) => {
