@@ -113,12 +113,12 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-    // On OS X it"s common to re-create a window in the app when the
+    // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
         createWindow();
     }
 });
 
-// In this file you can include the rest of your app"s specific main process
+// In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
