@@ -308,7 +308,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.setState({
             selectedAsset: assetMetadata,
-            assets: _.values(this.props.project.assets),
         });
     }
 
