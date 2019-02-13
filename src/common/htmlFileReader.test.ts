@@ -172,15 +172,6 @@ describe("Html File Reader", () => {
         });
     });
 
-    it("Test non valid asset type", async () => {
-        const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported");
-        try {
-            const result = await HtmlFileReader.readAssetAttributes(imageAsset);
-        } catch (error) {
-            expect(error).toEqual(new Error("Asset not supported"));
-        }
-    });
-
     describe("Test TFRecords", () => {
         it("Loads attributes for an tfrecord asset", async () => {
             const expected = {
