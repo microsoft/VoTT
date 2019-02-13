@@ -58,7 +58,7 @@ describe("Editor Canvas", () => {
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
-        // JACOPO: editorMock.prototype.RM = new RegionsManager(null, null);
+        editorMock.prototype.RM = new RegionsManager(null, null);
         editorMock.prototype.AS = {setSelectionMode: jest.fn()};
     });
 
@@ -144,7 +144,7 @@ describe("Editor Canvas", () => {
 
         testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
         wrapper.prop("selectedAsset").regions.push(testRegion);
-        // JACOPO: canvas.editor.onRegionMoveEnd("test-region", createTestRegionData());
+        canvas.editor.onRegionMoveEnd("test-region", createTestRegionData());
 
         expect(onAssetMetadataChanged).toBeCalled();
         expect(wrapper.prop("selectedAsset").regions).toMatchObject([MockFactory.createTestRegion("test-region")]);
