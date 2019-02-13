@@ -18,6 +18,7 @@ describe("Video Asset Component", () => {
         project: MockFactory.createTestProject("test-project"),
         asset: MockFactory.createVideoTestAsset("test-video"),
         autoPlay: false,
+        timestamp: 0,
         onLoaded: onLoadedHandler,
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
@@ -60,6 +61,26 @@ describe("Video Asset Component", () => {
         mockLoaded();
 
         wrapper.setProps({ timestamp: expectedTime });
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
+    });
+
+    it("seeks the video player locked to the keyframe rate", () => {
+        const invalidTime = 10.2;
+        const expectedTime = 10;
+        wrapper = createComponent();
+        mockLoaded();
+
+        wrapper.setProps({ timestamp: invalidTime });
+        expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
+    });
+
+    it("seeks the video player locked to the keyframe rate and rounds correctly", () => {
+        const invalidTime = 6.765;
+        const expectedTime = 7;
+        wrapper = createComponent();
+        mockLoaded();
+
+        wrapper.setProps({ timestamp: invalidTime });
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
     });
 
@@ -193,7 +214,7 @@ describe("Video Asset Component", () => {
     });
 
     it("raises the child asset selected and deactivated handlers when the video is paused", () => {
-        const expectedTime = 10.5;
+        const expectedTime = 6;
         wrapper = createComponent();
         mockLoaded();
         mockPaused(expectedTime);

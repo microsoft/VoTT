@@ -208,7 +208,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @member seekTime - Time (in seconds) in the video to seek to
      */
     private seekToTime(seekTime: number) {
-        if (seekTime > 0) {
+        if (seekTime >= 0) {
             // Before seeking, pause the video
             if (!this.getCurrentVideoPlayerState().paused) {
                 this.videoPlayer.current.pause();
@@ -226,7 +226,9 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             this.raiseActivated();
             this.seekToTimestamp();
         } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
-            this.raiseChildAssetSelected(state);
+            if (!this.ensureSeekIsOnValidKeyframe()) {
+                this.raiseChildAssetSelected(state);
+            }
             this.raiseDeactivated();
         } else if (!state.paused && state.paused !== prev.paused) {
             // Video has resumed playing
@@ -284,6 +286,29 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.onDeactivated) {
             this.props.onDeactivated(this.videoPlayer.current.video.video);
         }
+    }
+
+    /**
+     * @name - Ensure seek is on valid keyframe
+     * @description - Move to the nearest key frame from where the video's current
+     * position is
+     * @returns true if moved to a new position; false otherwise
+     */
+    private ensureSeekIsOnValidKeyframe(): boolean {
+        if (!this.props.project) {
+            return false;
+        }
+        const keyFrameTime = (1 / this.props.project.videoSettings.frameExtractionRate);
+        const timestamp = this.getCurrentVideoPlayerState().currentTime;
+
+        // Calculate the nearest key frame
+        const numberKeyFrames = Math.round(timestamp / keyFrameTime);
+        const seekTime = (numberKeyFrames * keyFrameTime);
+        if (seekTime !== timestamp) {
+            this.seekToTime(seekTime);
+        }
+
+        return seekTime !== timestamp;
     }
 
     /**
