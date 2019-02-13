@@ -1,6 +1,6 @@
 import shortid from "shortid";
 import { IProject, IAppSettings, ITag, IConnection, AppError, ErrorCode,
-        IAssetMetadata, IRegion, RegionType, AssetType, AssetState } from "../models/applicationState";
+        IAssetMetadata, IRegion, RegionType, AssetType, AssetState, IFileInfo } from "../models/applicationState";
 import { IV1Project } from "../models/v1Models";
 import { AssetService } from "./assetService";
 import MD5 from "md5.js";
@@ -14,7 +14,7 @@ import TagColors from "../react/components/common/tagsInput/tagColors.json";
  * @member generateConnections - Generates v2 connections based on location of v1 project file
  */
 export interface IImportService {
-    convertV1(project: any): Promise<IProject>;
+    convertV1(project: IFileInfo): Promise<IProject>;
 }
 
 /**
@@ -23,7 +23,7 @@ export interface IImportService {
  */
 // change any to { content, file } object eventually
 export default class ImportService implements IImportService {
-    public convertV1(project: any): Promise<IProject> {
+    public convertV1(project: IFileInfo): Promise<IProject> {
         return new Promise<IProject>((resolve, reject) => {
             let originalProject: IV1Project;
             let convertedProject: IProject;
@@ -32,15 +32,14 @@ export default class ImportService implements IImportService {
             let generatedAssetMetadata: IAssetMetadata[];
 
             try {
-                originalProject = JSON.parse(project.content);
+                originalProject = JSON.parse(project.content as string);
             } catch (e) {
                 throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
             }
-            
+
             parsedTags = this.parseTags(originalProject);
 
             connections = this.generateConnections(project);
-            generatedAssetMetadata = this.generateAssets(project);
 
             // map v1 values to v2 values
             convertedProject = {
@@ -61,6 +60,7 @@ export default class ImportService implements IImportService {
             };
 
             const assetService = new AssetService(convertedProject);
+            generatedAssetMetadata = this.generateAssets(project, assetService);
 
             const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
                 return assetService.save(assetMetadata);
@@ -127,9 +127,9 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    private generateAssets(project: any): IAssetMetadata[] {
+    private generateAssets(project: any, assetService: AssetService): IAssetMetadata[] {
         let originalProject: IV1Project;
-        let assetMetadata: IAssetMetadata;
+        let assetMetadata: Promise<IAssetMetadata>;
         const generatedAssetMetadata: IAssetMetadata[] = [];
         let generatedRegion: IRegion;
         let assetState: AssetState;
@@ -140,26 +140,29 @@ export default class ImportService implements IImportService {
         for (const frameName in originalProject.frames) {
             if (originalProject.frames.hasOwnProperty(frameName)) {
                 const frameRegions = originalProject.frames[frameName];
+                const asset = AssetService.createAssetFromFilePath(project.file.path);
+                assetMetadata = assetService.getAssetMetadata(asset);
                 assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                              ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
                              ? AssetState.Visited : AssetState.NotVisited);
+                assetMetadata.then((assetMetadata) => assetMetadata.asset.state = assetState);
 
-                assetMetadata = {
-                    asset: {
-                        id: new MD5().update(frameName).digest("hex"),
-                        type: AssetType.Image,
-                        state: assetState,
-                        name: frameName,
-                        // check on Windows too
-                        path: `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`,
-                        size: {
-                            width: frameRegions.length > 0 ? frameRegions[0].width : null,
-                            height: frameRegions.length > 0 ? frameRegions[0].height : null,
-                        },
-                        format: frameName.split(".").pop(),
-                    },
-                    regions: [],
-                };
+                // assetMetadata = {
+                //     asset: {
+                //         id: new MD5().update(frameName).digest("hex"),
+                //         type: AssetType.Image,
+                //         state: assetState,
+                //         name: frameName,
+                //         // check on Windows too
+                //         path: `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`,
+                //         size: {
+                //             width: frameRegions.length > 0 ? frameRegions[0].width : null,
+                //             height: frameRegions.length > 0 ? frameRegions[0].height : null,
+                //         },
+                //         format: frameName.split(".").pop(),
+                //     },
+                //     regions: [],
+                // };
 
                 for (const region of frameRegions) {
                     generatedRegion = {
@@ -181,9 +184,9 @@ export default class ImportService implements IImportService {
                             top: region.y1,
                         },
                     };
-                    assetMetadata.regions.push(generatedRegion);
+                    assetMetadata.then((assetMetadata) => assetMetadata.regions.push(generatedRegion));
                 }
-                generatedAssetMetadata.push(assetMetadata);
+                assetMetadata.then((assetMetadata) => generatedAssetMetadata.push(assetMetadata));
             }
         }
         return generatedAssetMetadata;

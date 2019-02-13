@@ -113,6 +113,17 @@ export interface IProject {
 }
 
 /**
+ * @name - FileInfo
+ * @description - Defines the file information and content for V1 projects
+ * @member content - The content of a file (JSON string)
+ * @member file - The File object point to the V1 project file
+ */
+export interface IFileInfo {
+    content: string | ArrayBuffer;
+    file: File;
+}
+
+/**
  * @name - Tag
  * @description - Defines the structure of a VoTT tag
  * @member name - User defined name
@@ -122,7 +133,6 @@ export interface ITag {
     name: string;
     color: string;
 }
-
 
 /**
  * @enum LOCAL - Local storage type
