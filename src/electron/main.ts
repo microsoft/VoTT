@@ -1,9 +1,8 @@
 import { app, ipcMain, BrowserWindow, dialog, BrowserWindowConstructorOptions, Menu } from "electron";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
-import { register } from "../serviceWorker";
 
-// Keep a global reference of the window object, if you don"t, the window will
+// Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow;
 let ipcMainProxy: IpcMainProxy;
