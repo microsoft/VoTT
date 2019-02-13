@@ -2,8 +2,8 @@ import MD5 from "md5.js";
 import _ from "lodash";
 import * as shortid from "shortid";
 import Guard from "../common/guard";
-import { IAsset, AssetType, IProject, IAssetMetadata,
-         AssetState, IRegion, RegionType } from "../models/applicationState";
+import { IAsset, AssetType, IProject, IAssetMetadata, AssetState,
+         IRegion, RegionType, ITFRecordMetadata } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
@@ -12,16 +12,6 @@ import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlo
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 // tslint:disable-next-line:no-var-requires
 const TagColors = require("../react/components/common/tagsInput/tagColors.json");
-
-interface ITFRecordObjectArray {
-    width: number;
-    height: number;
-    xminArray: number[];
-    yminArray: number[];
-    xmaxArray: number[];
-    ymaxArray: number[];
-    textArray: string[];
-}
 
 /**
  * @name - Asset Service
@@ -245,7 +235,7 @@ export class AssetService {
         return regions;
     }
 
-    private async getTFRecordObjectArrays(asset: IAsset): Promise<ITFRecordObjectArray> {
+    private async getTFRecordObjectArrays(asset: IAsset): Promise<ITFRecordMetadata> {
         const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
 
