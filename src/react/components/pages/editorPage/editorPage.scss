@@ -166,17 +166,20 @@
 
 .video-timeline {
     width: 2px;
-    &-tagged {
+
+    &-tagged, &-untagged {
         position: absolute;
         height: 100%;
-        border: 1px solid green;
         cursor: pointer;
     }
+
+    &-tagged {
+        border: 1px solid green;
+        z-index: 2
+    }
     &-untagged {
-        position: absolute;
-        height: 100%;
         border: 1px solid yellow;
-        cursor: pointer;
+        z-index: 1;
     }
 }
 
