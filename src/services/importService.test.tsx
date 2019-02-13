@@ -11,8 +11,8 @@ describe("Import Service", () => {
 
     it("ConvertV1 takes a V1 Project and produces a valid V2 project JSON string", async () => {
         const arrayOfBlob = new Array<Blob>();
-        const file = new File(arrayOfBlob, "Mock.zip", { type: "application/json" });
-        file.path = "/Users/user/path/to/file.jpg";
+        const file = new File(arrayOfBlob, "TestV1Project.jpg", { type: "application/json" });
+        file.path = "/Users/user/path/to/TestV1Project.jpg";
         const project = MockFactory.createTestV1Project("TestV1Project");
         const content = JSON.stringify(project);
         const result = await importService.convertV1({file, content});
@@ -24,8 +24,8 @@ describe("Import Service", () => {
         expect(result.description).toEqual("Converted V1 Project");
         expect(result.tags).toHaveLength(2);
         // more tests on connection creation?
-        expect(result.sourceConnection.name).toEqual("Source Default Name");
-        expect(result.targetConnection.name).toEqual("Target Default Name");
+        expect(result.sourceConnection.name).toEqual("TestV1Project Source Connection");
+        expect(result.targetConnection.name).toEqual("TestV1Project Target Connection");
         expect(result.exportFormat).toBeNull();
         expect(result.videoSettings.frameExtractionRate).toBe(15);
         expect(result.autoSave).toBeTruthy();
