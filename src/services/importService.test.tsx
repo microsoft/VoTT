@@ -10,11 +10,9 @@ describe("Import Service", () => {
     });
 
     it("ConvertV1 takes a V1 Project and produces a valid V2 project JSON string", async () => {
-        const file = {
-            name: "TestV1Project.json",
-            path: "/Users/user/file/path/TestV1Project.json",
-            type: "application/json",
-        };
+        const arrayOfBlob = new Array<Blob>();
+        const file = new File(arrayOfBlob, "Mock.zip", { type: "application/json" });
+        file.path = "/Users/user/path/to/file.jpg";
         const project = MockFactory.createTestV1Project("TestV1Project");
         const content = JSON.stringify(project);
         const result = await importService.convertV1({file, content});

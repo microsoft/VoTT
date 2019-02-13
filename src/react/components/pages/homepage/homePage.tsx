@@ -13,10 +13,10 @@ import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
-    IApplicationState, IConnection, IProject,
+    IApplicationState, IConnection, IProject, IFileInfo,
     ErrorCode, AppError, IAppError, IAppSettings,
 } from "../../../../models/applicationState";
-import { IV1Project, IV1Region, IFileInfo } from "../../../../models/v1Models";
+import { IV1Project, IV1Region } from "../../../../models/v1Models";
 import IMessageBox from "../../common/messageBox/messageBox";
 import ImportService from "../../../../services/importService";
 
@@ -126,8 +126,8 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     onConfirm={this.deleteProject} />
                 <Confirm title="Import Project"
                     ref={this.importConfirm}
-                    message={(project: any) => `${strings.homePage.importProject.confirmation} ${project.file.name}
-                        ${strings.homePage.importProject.recommendation}`}
+                    message={(project: IFileInfo) => `${strings.homePage.importProject.confirmation}
+                        ${project.file.name} ${strings.homePage.importProject.recommendation}`}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
                 <IMessageBox title="Confirm Settings"

@@ -53,14 +53,3 @@ export interface IV1Region {
     tags: string[];
     name: number;
 }
-
-/**
- * @name - FileInfo
- * @description - Defines the file information and content for V1 projects
- * @member content - The content of a file (JSON string)
- * @member file - The File object point to the V1 project file
- */
-export interface IFileInfo {
-    content: string | ArrayBuffer;
-    file: File;
-}
