@@ -4,7 +4,7 @@
 [![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/v2/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=alert_status)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=ncloc)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
 
-[Current Complexity Analysis Report](https://microsoft.github.io/VoTT/)
+[Current Complexity Analysis Report](https://vottv2.z5.web.core.windows.net/)
 
 ## **NOTE:** this is a Preview release of VoTT. Features may be incomplete or behave incorrectly (bugs! 🐞). [Feedback is appreciated!](https://github.com/Microsoft/VoTT/issues)
 ----------
@@ -28,21 +28,20 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
 <!-- command: `markdown-toc -i README.md`-->
 
 <!-- toc -->
-
 - [Getting Started](#getting-started)
-  * [Running VoTT](#running-vott)
-    + [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
-    + [Build and run from source](#build-and-run-from-source)
+  - [Running VoTT](#running-vott)
+    - [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
+    - [Build and run from source](#build-and-run-from-source)
 - [V1 & V2](#v1--v2)
-  * [Where is V1?](#where-is-v1)
+  - [Where is V1?](#where-is-v1)
 - [Using VoTT](#using-vott)
-  * [Creating Connections](#creating-connections)
-  * [Creating a New Project](#creating-a-new-project)
-    + [Project Settings](#project-settings)
+  - [Creating Connections](#creating-connections)
+  - [Creating a New Project](#creating-a-new-project)
+    - [Project Settings](#project-settings)
       - [Security Tokens](#security-tokens)
-  * [Labeling an Image](#labeling-an-image)
-  * [Labeling a Video](#labeling-a-video)
-  * [Exporting Labels](#exporting-labels)
+  - [Labeling an Image](#labeling-an-image)
+  - [Labeling a Video](#labeling-a-video)
+  - [Exporting Labels](#exporting-labels)
 - [Collaborators](#collaborators)
 - [Contributing to VoTT](#contributing-to-vott)
 
@@ -80,7 +79,7 @@ A number of code quality practices have been adopted, including:
 * Code Linting
 * Unit tests & mocks (Jest, Enzyme)
 * [Code coverage](https://codecov.io/gh/Microsoft/VoTT) ([CodeCov.io](https://codecov.io/))
-* [Complexity analysis](https://microsoft.github.io/VoTT/) ([Plato](docs/PLATO.md))
+* [Complexity analysis](https://vottv2.z5.web.core.windows.net/) ([Plato](docs/PLATO.md))
 
 All V2 efforts are on the [v2](https://github.com/Microsoft/VoTT/tree/v2) branch. The git history for V1 and V2 have significantly diverged; when V2 is complete, master will be updated to reflect V2.
 
