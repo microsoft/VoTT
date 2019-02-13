@@ -105,7 +105,6 @@ export class TFRecordsReader {
             case FeatureType.Int64:
                 return feature.getInt64List().array[0];
             case FeatureType.Float:
-            default:
                 return feature.getFloatList().array[0];
         }
     }
