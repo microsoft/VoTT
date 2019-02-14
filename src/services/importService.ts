@@ -137,12 +137,25 @@ export default class ImportService implements IImportService {
                 const frameRegions = originalProject.frames[frameName];
                 const asset = AssetService.createAssetFromFilePath(
                     `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                let assetMetadata = assetService.getAssetMetadata(asset).then((asset) => {
-                    assetMetadata = asset
+                let assetMetadata = assetService.getAssetMetadata(asset).then((metadata) => {
+                    assetMetadata = metadata;
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                                 ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
                                 ? AssetState.Visited : AssetState.NotVisited);
                     assetMetadata.asset.state = assetState;
+
+                    /*
+                    for (const region of frameRegions) {
+                        generatedRegion = canvasHelpers.getRegion(region, "rect", region.UID)
+                        generatedRegion.tags = region.tags.map((tag) => {
+                                let newTag: ITag;
+                                newTag = {
+                                    name: tag,
+                                    color: TagColors[(currentTagColorIndex + 1) % TagColors.length],
+                                };
+                                return newTag;
+                            });
+                    */
 
                     for (const region of frameRegions) {
                         generatedRegion = {

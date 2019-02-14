@@ -53,6 +53,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
             const project = this.props.recentProjects.find((project) => project.id === projectId);
+            this.props.applicationActions.ensureSecurityToken(project);
             this.props.projectActions.loadProject(project);
         }
 
