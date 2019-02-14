@@ -99,7 +99,7 @@ export interface IAppSettings {
 export interface IProject {
     id: string;
     name: string;
-    version?: string;
+    version: string;
     securityToken: string;
     description?: string;
     tags: ITag[];
