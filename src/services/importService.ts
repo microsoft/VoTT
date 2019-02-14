@@ -1,9 +1,8 @@
 import shortid from "shortid";
-import { IProject, IAppSettings, ITag, IConnection, AppError, ErrorCode,
-        IAssetMetadata, IRegion, RegionType, AssetType, AssetState, IFileInfo } from "../models/applicationState";
+import { IProject, ITag, IConnection, AppError, ErrorCode,
+        IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo } from "../models/applicationState";
 import { IV1Project } from "../models/v1Models";
 import { AssetService } from "./assetService";
-import MD5 from "md5.js";
 import { randomIntInRange } from "../common/utils";
 import TagColors from "../react/components/common/tagsInput/tagColors.json";
 
@@ -21,59 +20,56 @@ export interface IImportService {
  * @name - Import Service
  * @description - Functions for importing v1 projects to v2 application
  */
-// change any to { content, file } object eventually
 export default class ImportService implements IImportService {
-    public convertV1(project: IFileInfo): Promise<IProject> {
-        return new Promise<IProject>((resolve, reject) => {
-            let originalProject: IV1Project;
-            let convertedProject: IProject;
-            let connections: IConnection[];
-            let parsedTags: ITag[];
-            let generatedAssetMetadata: IAssetMetadata[];
+    public async convertV1(project: IFileInfo): Promise<IProject> {
+        let originalProject: IV1Project;
+        let convertedProject: IProject;
+        let connections: IConnection[];
+        let parsedTags: ITag[];
+        let generatedAssetMetadata: IAssetMetadata[];
 
-            try {
-                originalProject = JSON.parse(project.content as string);
-            } catch (e) {
-                throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
-            }
+        try {
+            originalProject = JSON.parse(project.content as string);
+        } catch (e) {
+            throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
+        }
 
-            parsedTags = this.parseTags(originalProject);
+        parsedTags = this.parseTags(originalProject);
 
-            connections = this.generateConnections(project);
+        connections = this.generateConnections(project);
 
-            // map v1 values to v2 values
-            convertedProject = {
-                id: shortid.generate(),
-                name: project.file.name.split(".")[0],
-                version: "v1-to-v2",
-                securityToken: `${project.file.name.split(".")[0]} Token`,
-                description: "Converted V1 Project",
-                tags: parsedTags,
-                sourceConnection: connections[0],
-                targetConnection: connections[1],
-                exportFormat: null,
-                videoSettings: {
-                    frameExtractionRate: 15,
-                },
-                autoSave: true,
-                assets: {},
-            };
+        // map v1 values to v2 values
+        convertedProject = {
+            id: shortid.generate(),
+            name: project.file.name.split(".")[0],
+            version: "v1-to-v2",
+            securityToken: `${project.file.name.split(".")[0]} Token`,
+            description: "Converted V1 Project",
+            tags: parsedTags,
+            sourceConnection: connections[0],
+            targetConnection: connections[1],
+            exportFormat: null,
+            videoSettings: {
+                frameExtractionRate: 15,
+            },
+            autoSave: true,
+            assets: {},
+        };
 
-            const assetService = new AssetService(convertedProject);
-            generatedAssetMetadata = this.generateAssets(project, assetService);
+        const assetService = new AssetService(convertedProject);
+        generatedAssetMetadata = this.generateAssets(project, assetService);
 
-            const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
-                return assetService.save(assetMetadata);
-            });
-
-            try {
-                Promise.all(saveAssets);
-            } catch (e) {
-                reject(e);
-            }
-
-            resolve(convertedProject);
+        const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
+            return assetService.save(assetMetadata);
         });
+
+        try {
+            Promise.all(saveAssets);
+        } catch (e) {
+            throw e;
+        }
+
+        return convertedProject;
     }
 
     /**
@@ -129,7 +125,6 @@ export default class ImportService implements IImportService {
      */
     private generateAssets(project: any, assetService: AssetService): IAssetMetadata[] {
         let originalProject: IV1Project;
-        let assetMetadata: IAssetMetadata;
         const generatedAssetMetadata: IAssetMetadata[] = [];
         let generatedRegion: IRegion;
         let assetState: AssetState;
@@ -140,52 +135,39 @@ export default class ImportService implements IImportService {
         for (const frameName in originalProject.frames) {
             if (originalProject.frames.hasOwnProperty(frameName)) {
                 const frameRegions = originalProject.frames[frameName];
-                const asset = AssetService.createAssetFromFilePath(`file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                assetService.getAssetMetadata(asset).then((asset) => assetMetadata = asset);
-                assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
-                             ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
-                             ? AssetState.Visited : AssetState.NotVisited);
-                assetMetadata.asset.state = assetState;
+                const asset = AssetService.createAssetFromFilePath(
+                    `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
+                let assetMetadata = assetService.getAssetMetadata(asset).then((asset) => {
+                    assetMetadata = asset
+                    assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
+                                ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
+                                ? AssetState.Visited : AssetState.NotVisited);
+                    assetMetadata.asset.state = assetState;
 
-                // assetMetadata = {
-                //     asset: {
-                //         id: new MD5().update(frameName).digest("hex"),
-                //         type: AssetType.Image,
-                //         state: assetState,
-                //         name: frameName,
-                //         // check on Windows too
-                //         path: `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`,
-                //         size: {
-                //             width: frameRegions.length > 0 ? frameRegions[0].width : null,
-                //             height: frameRegions.length > 0 ? frameRegions[0].height : null,
-                //         },
-                //         format: frameName.split(".").pop(),
-                //     },
-                //     regions: [],
-                // };
-
-                for (const region of frameRegions) {
-                    generatedRegion = {
-                        id: region.UID,
-                        type: RegionType.Rectangle,
-                        tags: region.tags.map((tag) => {
-                            let newTag: ITag;
-                            newTag = {
-                                name: tag,
-                                color: TagColors[(currentTagColorIndex + 1) % TagColors.length],
-                            };
-                            return newTag;
-                        }),
-                        points: region.points,
-                        boundingBox: {
-                            height: (region.x2 - region.x1),
-                            width: (region.y2 - region.y1),
-                            left: region.x1,
-                            top: region.y1,
-                        },
-                    };
-                    assetMetadata.regions.push(generatedRegion);
-                }
+                    for (const region of frameRegions) {
+                        generatedRegion = {
+                            id: region.UID,
+                            type: RegionType.Rectangle,
+                            tags: region.tags.map((tag) => {
+                                let newTag: ITag;
+                                newTag = {
+                                    name: tag,
+                                    color: TagColors[(currentTagColorIndex + 1) % TagColors.length],
+                                };
+                                return newTag;
+                            }),
+                            points: region.points,
+                            boundingBox: {
+                                height: (region.x2 - region.x1),
+                                width: (region.y2 - region.y1),
+                                left: region.x1,
+                                top: region.y1,
+                            },
+                        };
+                        assetMetadata.regions.push(generatedRegion);
+                    }
+                    return assetMetadata;
+                });
                 generatedAssetMetadata.push(assetMetadata);
             }
         }

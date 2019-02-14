@@ -5,9 +5,7 @@ import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import {
     IProject, IAsset, IAssetMetadata, IApplicationState,
-    ErrorCode, AppError, IAppSettings,
-} from "../../models/applicationState";
-import IApplicationActions, * as applicationActions from "../actions/applicationActions";
+    ErrorCode, AppError } from "../../models/applicationState";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
 
