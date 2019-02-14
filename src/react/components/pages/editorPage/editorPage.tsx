@@ -102,6 +102,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (this.props.project && this.state.assets.length === 0) {
             await this.loadProjectAssets();
         }
+
+        // Navigating directly to the page via URL (ie, http://vott/projects/a1b2c3dEf/edit) sets the default state
+        // before props has been set, this updates the project and additional settings to be valid once props are
+        // retrieved.
+        if (!this.state.project && this.props.project) {
+            this.setState({
+                project: this.props.project,
+                additionalSettings: {videoSettings: (this.props.project) ? this.props.project.videoSettings : null},
+            });
+        }
     }
 
     public render() {
