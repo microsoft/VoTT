@@ -602,26 +602,27 @@ describe("Editor Canvas", () => {
             regions: originalRegions,
         };
 
-        const expected1 = getExpectedAssetMetadata(newAssetMetadata, originalRegions[0], []);
 
         wrapper.setProps({
-            selectedTag: tag1,
-            lockedTags: [ tag1, tag2 ],
+            selectedTag: tag2,
+            lockedTags: [ tag2 ],
         });
+
+        const expected1 = getExpectedAssetMetadata(newAssetMetadata, originalRegions[0], [tag1, tag2]);
 
         canvas.onRegionSelected("region1");
         expect(assetChangeHandler).toBeCalledWith(expected1);
 
-        const expected2 = getExpectedAssetMetadata(expected1, originalRegions[1], [tag1]);
+        const expected2 = getExpectedAssetMetadata(expected1, originalRegions[1], [tag2]);
         canvas.onRegionSelected("region2");
         expect(assetChangeHandler).toBeCalledWith(expected2);
 
-        const expected3 = getExpectedAssetMetadata(expected2, originalRegions[2], [tag3, tag1]);
+        const expected3 = getExpectedAssetMetadata(expected2, originalRegions[2], [tag2, tag3]);
 
         canvas.onRegionSelected("region3");
         expect(assetChangeHandler).toBeCalledWith(expected3);
 
-        const expected4 = getExpectedAssetMetadata(expected3, originalRegions[3], [tag1, tag2]);
+        const expected4 = getExpectedAssetMetadata(expected3, originalRegions[3], [tag2]);
 
         canvas.onRegionSelected("region4");
         expect(assetChangeHandler).toBeCalledWith(expected4);

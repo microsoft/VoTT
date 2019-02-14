@@ -230,7 +230,7 @@ describe("Canvas Helpers", () => {
                 [tag1, tag2, tag3],
                 [tag1, tag3],
             ];
-            
+
             expect(transformedTags).toEqual(expectedTags);
             // Make sure regions is not modified
             const regionTags = regions.map((r) => r.tags);
