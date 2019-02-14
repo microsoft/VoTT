@@ -43,6 +43,7 @@ export default class ProjectService implements IProjectService {
     /**
      * Save a project
      * @param project - Project to save
+     * @param securityToken - Security Token to encrypt
      */
     public save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);

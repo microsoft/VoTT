@@ -161,7 +161,6 @@ export class AssetService {
         Guard.null(metadata);
 
         const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
-        console.log(fileName);
         await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
 
         return metadata;
