@@ -50,18 +50,21 @@ export default class MockFactory {
      * Creates fake IAsset
      * @param name Name of asset
      * @param assetState State of asset
+     * @param path Path of asset
+     * @param assetType Type of asset
      */
     public static createTestAsset(
         name: string,
         assetState: AssetState = AssetState.NotVisited,
-        path: string = `C:\\Desktop\\asset${name}.jpg`): IAsset {
+        path: string = `C:\\Desktop\\asset${name}.jpg`,
+        assetType: AssetType = AssetType.Image): IAsset {
         return {
             id: `asset-${name}`,
             format: "jpg",
             name: `Asset ${name}.jpg`,
             path: `${path}`,
             state: assetState,
-            type: AssetType.Image,
+            type: assetType,
             size: {
                 width: 800,
                 height: 600,

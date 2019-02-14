@@ -67,7 +67,7 @@ export class TFRecordsReader {
     /**
      * @recordPos - Record Position
      * @key - Feature Key
-     * @type - Feature Typeq
+     * @type - Feature Type
      * @description - Get a Int64 | Float | String | Binary value
      */
     public getFeature(recordPos: number, key: string, type: FeatureType): string | number | Uint8Array {
@@ -83,6 +83,28 @@ export class TFRecordsReader {
                 return feature.getInt64List().array[0][0];
             case FeatureType.Float:
                 return feature.getFloatList().array[0][0];
+        }
+    }
+
+    /**
+     * @recordPos - Record Position
+     * @key - Feature Key
+     * @type - Feature Type
+     * @description - Get an array of Int64 | Float | String | Binary value
+     */
+    public getArrayFeature(recordPos: number, key: string, type: FeatureType): string[] | number[] | Uint8Array[] {
+        const message = this.imageMessages[recordPos];
+        const feature = message.getContext().getFeatureMap().get(key);
+
+        switch (type) {
+            case FeatureType.String:
+                return feature.getBytesList().array[0].map((buffer) => textDecode(buffer));
+            case FeatureType.Binary:
+                return feature.getBytesList().array[0];
+            case FeatureType.Int64:
+                return feature.getInt64List().array[0];
+            case FeatureType.Float:
+                return feature.getFloatList().array[0];
         }
     }
 }

@@ -6,12 +6,6 @@ import { TFRecordsReader } from "../../../../providers/export/tensorFlowRecords/
 import { FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
 
 /**
- * Properties for TFRecord Asset Image component
- */
-export interface ITFRecordProps extends IAssetProps, React.ClassAttributes<TFRecordAsset> {
-}
-
-/**
  * State for TFRecord Asset Image component
  * @member tfRecordImage64 - base64 representation of the image data
  */
@@ -22,7 +16,7 @@ export interface ITFRecordState {
 /**
  * React component that displays an image from a TFRecord asset file
  */
-export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordState> {
+export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> {
     public state: ITFRecordState = {
         tfRecordImage64: "",
     };
@@ -51,7 +45,7 @@ export class TFRecordAsset extends React.Component<ITFRecordProps, ITFRecordStat
         await this.updateImage();
     }
 
-    public async componentDidUpdate(prevProps: Readonly<ITFRecordProps>) {
+    public async componentDidUpdate(prevProps: Readonly<IAssetProps>) {
         if (this.props.asset !== prevProps.asset) {
             await this.updateImage();
         }

@@ -333,3 +333,13 @@ export interface ISecurityToken {
     name: string;
     key: string;
 }
+
+export interface ITFRecordMetadata {
+    width: number;
+    height: number;
+    xminArray: number[];
+    yminArray: number[];
+    xmaxArray: number[];
+    ymaxArray: number[];
+    textArray: string[];
+}

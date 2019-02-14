@@ -6,10 +6,11 @@ import MockFactory from "../../../../common/mockFactory";
 import { TFRecordsBuilder, FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 
-describe("Image Asset Component", () => {
+describe("TFRecord Asset Component", () => {
     // tslint:disable-next-line:max-line-length
     const dataImage64 = "R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
     const dataImage = new Uint8Array(Buffer.from(dataImage64, "base64"));
+
     const dataUri = "data:image;base64," + dataImage64;
 
     let tfrecords: Buffer;
@@ -42,15 +43,15 @@ describe("Image Asset Component", () => {
         return mount(<TFRecordAsset {...props} />);
     }
 
-    function sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+    function wait() {
+        return new Promise((resolve) => setImmediate(resolve));
     }
 
     it("load image correctly", async () => {
         const props = { ...defaultProps };
 
         wrapper = createComponent(props);
-        await sleep(1);
+        await wait();
 
         const img = wrapper.find("img");
         expect(img.exists()).toBe(true);
@@ -62,7 +63,7 @@ describe("Image Asset Component", () => {
 
     it("raises onLoad handler when image has completed loading", async () => {
         wrapper = createComponent();
-        await sleep(1);
+        await wait();
 
         const img = wrapper.find("img").getDOMNode() as HTMLImageElement;
         img.dispatchEvent(new Event("load"));
