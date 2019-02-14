@@ -73,13 +73,44 @@ export default class HtmlFileReader {
             responseType: "blob",
         };
 
+        let response = null;
+        if (asset.type === AssetType.VideoFrame) {
+            response = this.getAssetFrameImage(asset, (img, secs, event) => {
+                console.log(img);
+                console.log(secs);
+                console.log(event);
+                return (img);
+            });
+        }
         // Download the asset binary from the storage provider
-        const response = await axios.get<Blob>(asset.path, config);
+        response = await axios.get<Blob>(asset.path, config);
         if (response.status !== 200) {
             throw new Error("Error downloading asset binary");
         }
 
         return response.data;
+    }
+
+    public static getAssetFrameImage(asset: IAsset, callback) {
+        const video = document.createElement("video");
+        const secs = asset.timestamp;
+        video.onloadedmetadata = function() {
+            this.currentTime = Math.min(Math.max(0, (secs < 0 ? this.duration : 0) + secs), this.duration);
+        }.bind(video);
+        video.onseeked = function(e) {
+            const canvas = document.createElement("canvas");
+            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const img = new Image();
+            img.src = canvas.toDataURL();
+            callback.call(this, img, this.currentTime, e);
+        }.bind(video);
+        video.onerror = (e) => {
+            callback.call(this, undefined, undefined, e);
+        };
+        video.src = asset.path;
     }
 
     /**
