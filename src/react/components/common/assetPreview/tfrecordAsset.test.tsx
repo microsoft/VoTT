@@ -11,7 +11,6 @@ describe("TFRecord Asset Component", () => {
     const dataImage64 = "R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
     const dataImage = new Uint8Array(Buffer.from(dataImage64, "base64"));
 
-    // tslint:disable-next-line:max-line-length
     const dataUri = "data:image;base64," + dataImage64;
 
     let tfrecords: Buffer;
