@@ -201,16 +201,4 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.props.applicationActions.ensureSecurityToken(projectJson);
         await this.loadSelectedProject(projectJson);
     }
-
-    private convertProject = async (project: IFileInfo) => {
-        const importService = new ImportService();
-        let projectJson;
-        try {
-            projectJson = await importService.convertV1(project);
-        } catch (e) {
-            throw new AppError(ErrorCode.ProjectUploadError, "Error converting v1 project file");
-        }
-        this.props.applicationActions.ensureSecurityToken(projectJson);
-        await this.loadSelectedProject(projectJson);
-    }
 }
