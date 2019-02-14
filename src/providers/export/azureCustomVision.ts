@@ -46,7 +46,6 @@ export enum NewOrExisting {
  */
 export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVisionExportOptions> {
     private customVisionService: AzureCustomVisionService;
-    private assetService: AssetService;
 
     constructor(project: IProject, options: IAzureCustomVisionExportOptions) {
         super(project, options);
@@ -57,7 +56,6 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
             baseUrl: "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training",
         };
         this.customVisionService = new AzureCustomVisionService(cusomVisionServiceOptions);
-        this.assetService = new AssetService(this.project);
     }
 
     /**
@@ -122,32 +120,6 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
             projectId: customVisionProject.id,
             newOrExisting: NewOrExisting.Existing,
         };
-    }
-
-    /**
-     * Gets the assets that are configured to be exported based on the configured asset state
-     */
-    private async getAssetsForExport(): Promise<IAssetMetadata[]> {
-        let predicate: (asset: IAsset) => boolean = null;
-
-        switch (this.options.assetState) {
-            case ExportAssetState.Visited:
-                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.All:
-            default:
-                predicate = () => true;
-                break;
-        }
-
-        const loadAssetTasks = _.values(this.project.assets)
-            .filter(predicate)
-            .map((asset) => this.assetService.getAssetMetadata(asset));
-
-        return await Promise.all(loadAssetTasks);
     }
 
     /**
