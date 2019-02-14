@@ -13,7 +13,7 @@ describe("Import Service", () => {
         const arrayOfBlob = new Array<Blob>();
         const file = new File(arrayOfBlob, "TestV1Project.jpg", { type: "application/json" });
         file.path = "/Users/user/path/to/TestV1Project.jpg";
-        const project = MockFactory.createTestV1Project("TestV1Project");
+        const project = MockFactory.createTestV1Project();
         const content = JSON.stringify(project);
         const result = await importService.convertV1({file, content});
 
