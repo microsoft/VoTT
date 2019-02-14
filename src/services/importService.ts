@@ -26,7 +26,7 @@ export default class ImportService implements IImportService {
         let convertedProject: IProject;
         let connections: IConnection[];
         let parsedTags: ITag[];
-        let generatedAssetMetadata: IAssetMetadata[];
+        let generatedAssetMetadata: any;
 
         try {
             originalProject = JSON.parse(project.content as string);
@@ -60,6 +60,9 @@ export default class ImportService implements IImportService {
         generatedAssetMetadata = this.generateAssets(project, assetService);
 
         const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
+            // assetMetadata.then((metadata) => {
+            //     return assetService.save(metadata);
+            // });
             return assetService.save(assetMetadata);
         });
 
@@ -123,9 +126,9 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    private generateAssets(project: any, assetService: AssetService): IAssetMetadata[] {
+    private generateAssets(project: any, assetService: AssetService): Promise<IAssetMetadata>[] {
         let originalProject: IV1Project;
-        const generatedAssetMetadata: IAssetMetadata[] = [];
+        const generatedAssetMetadata: Promise<IAssetMetadata>[] = [];
         let generatedRegion: IRegion;
         let assetState: AssetState;
         const currentTagColorIndex = randomIntInRange(0, TagColors.length);
@@ -177,7 +180,7 @@ export default class ImportService implements IImportService {
                                 top: region.y1,
                             },
                         };
-                        assetMetadata.regions.push(generatedRegion);
+                        metadata.regions.push(generatedRegion);
                     }
                     return assetMetadata;
                 });

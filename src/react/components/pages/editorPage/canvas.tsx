@@ -51,7 +51,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor = new CanvasTools.Editor(sz);
         this.editor.autoResize = false;
         this.editor.onSelectionEnd = this.onSelectionEnd;
-        this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
+        // this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
         this.editor.AS.setSelectionMode(this.props.selectionMode, null);

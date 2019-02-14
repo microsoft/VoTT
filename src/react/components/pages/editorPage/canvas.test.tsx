@@ -62,8 +62,18 @@ describe("Editor Canvas", () => {
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
+<<<<<<< HEAD
         editorMock.prototype.RM = new RegionsManager(null, null);
         editorMock.prototype.AS = { setSelectionMode: jest.fn() };
+=======
+        // editorMock.prototype.RM = new RegionsManager(null, null);
+        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
+    });
+
+    beforeEach(() => {
+        const props = createProps();
+        wrapper = createComponent(props.canvas, props.assetPreview);
+>>>>>>> fixed assetgeneration
     });
 
     it("renders correctly from default state", () => {
@@ -160,7 +170,9 @@ describe("Editor Canvas", () => {
         const onAssetMetadataChanged = jest.fn();
         wrapper.setProps({ onAssetMetadataChanged });
 
-        const canvas = wrapper.instance();
+        testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
+        wrapper.prop("selectedAsset").regions.push(testRegion);
+        // canvas.editor.onRegionMoveEnd("test-region", createTestRegionData());
 
         const regionData = createTestRegionData();
         canvas.editor.onRegionMoveEnd("test1", regionData);
