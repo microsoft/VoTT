@@ -62,7 +62,7 @@ export default class ImportService implements IImportService {
         const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
             assetMetadata.then((metadata) => {
                 return assetService.save(metadata);
-            })
+            });
         });
 
         try {
@@ -125,9 +125,9 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    private generateAssets(project: any, assetService: AssetService): Promise<IAssetMetadata>[] {
+    private generateAssets(project: any, assetService: AssetService): Array<Promise<IAssetMetadata>> {
         let originalProject: IV1Project;
-        const generatedAssetMetadata: Promise<IAssetMetadata>[] = [];
+        const generatedAssetMetadata: Array<Promise<IAssetMetadata>> = [];
         let generatedRegion: IRegion;
         let assetState: AssetState;
         const currentTagColorIndex = randomIntInRange(0, TagColors.length);
@@ -139,7 +139,7 @@ export default class ImportService implements IImportService {
                 const frameRegions = originalProject.frames[frameName];
                 const asset = AssetService.createAssetFromFilePath(
                     `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                let assetMetadata = assetService.getAssetMetadata(asset).then((metadata) => {
+                const assetMetadata = assetService.getAssetMetadata(asset).then((metadata) => {
                     // assetMetadata = metadata;
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                                 ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
