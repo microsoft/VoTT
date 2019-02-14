@@ -3,7 +3,8 @@ import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
-import { IBoundingBox, IPoint, IRegion, ITag, RegionType, EditorMode } from "../../../../models/applicationState";
+import { IBoundingBox, IPoint, IRegion, ITag,
+    RegionType, EditorMode, IAssetMetadata } from "../../../../models/applicationState";
 
 /**
  * Static functions to assist in operations within Canvas component
@@ -43,6 +44,16 @@ export default class CanvasHelpers {
         return newTags;
     }
 
+    public static addAllIfMissing(tags: ITag[], newTags: ITag[]) {
+        const result = [...tags];
+        for (const tag of newTags) {
+            if (!CanvasHelpers.getTag(result, tag.name)) {
+                result.push(tag);
+            }
+        }
+        return result;
+    }
+
     public static addIfMissing(tags: ITag[], tag: ITag): ITag[] {
         if (!tag) {
             return tags;
@@ -72,6 +83,20 @@ export default class CanvasHelpers {
         return tags.find((t) => t.name === name);
     }
 
+    public static getRegion(regions: IRegion[], id: string): IRegion {
+        return regions.find((r) => r.id === id);
+    }
+
+    /**
+     * @param regions Regions with tags to transform
+     * @param lockedTags Tags currently locked within the editor page
+     * @param selectedTag Tag most recently selected. Not included if called from region selection
+     * @returns Copy of regions with appropriate tag operations applied. Expected behavior:
+     * If called by region selection, add all missing tags
+     * If lockedTags is empty, toggle selected tag on region tags
+     * If selectedTag is within lockedTags, add selectedTag to region tags
+     * If selectedTag is not within lockedTags, remove selectedTag from region tags
+     */
     public static applyTagsToRegions = (regions: IRegion[], lockedTags: ITag[], selectedTag?: ITag): IRegion[] => {
 
         const lockedTagsEmpty = !lockedTags || !lockedTags.length;
@@ -81,13 +106,17 @@ export default class CanvasHelpers {
         let transformer: (tags: ITag[], target: ITag|ITag[]) => ITag[];
         let target: ITag|ITag[] = selectedTag;
         if (!selectedTag && !lockedTagsEmpty) {
-            transformer = CanvasHelpers.toggleAllTags;
+            // Region selection while exist locked tags
+            transformer = CanvasHelpers.addAllIfMissing;
             target = lockedTags;
         } else if (lockedTagsEmpty) {
+            // Tag selected while region(s) selected
             transformer = CanvasHelpers.toggleTag;
         } else if (CanvasHelpers.getTag(lockedTags, selectedTag.name)) {
+            // Tag added to locked tags while region(s) selected
             transformer = CanvasHelpers.addIfMissing;
         } else {
+            // Tag removed from locked tags while region(s) selected
             transformer = CanvasHelpers.removeIfContained;
         }
         return CanvasHelpers.transformRegionTags(regions, target, transformer);
@@ -97,7 +126,7 @@ export default class CanvasHelpers {
      * Get RegionData (CanvasTools) from IRegion
      * @param region IRegion from Canvas component
      */
-    public static getRegionData(region: IRegion): RegionData {
+    public static getRegionDataFromRegion(region: IRegion): RegionData {
         return new RegionData(region.boundingBox.left,
             region.boundingBox.top,
             region.boundingBox.width,
@@ -107,7 +136,7 @@ export default class CanvasHelpers {
             this.regionTypeToType(region.type));
     }
 
-    public static getRegion(regionData: RegionData, editorMode: EditorMode, id?: string): IRegion {
+    public static getRegionFromRegionData(regionData: RegionData, editorMode: EditorMode, id?: string): IRegion {
         return {
             id: (id) ? id : shortid.generate(),
             type: this.editorModeToType(editorMode),
@@ -120,6 +149,14 @@ export default class CanvasHelpers {
             },
             points: regionData.points,
         };
+    }
+
+    public static cloneAndUpdateRegions(asset: IAssetMetadata, regions: IRegion[]): IAssetMetadata {
+        const clone = {...asset};
+        for (const region of regions) {
+            clone.regions = clone.regions.map((r) => (r.id === region.id) ? region : r);
+        }
+        return clone;
     }
 
     public static editorModeToType(editorMode: EditorMode) {

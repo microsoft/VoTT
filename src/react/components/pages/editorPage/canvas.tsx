@@ -80,6 +80,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (this.props.lockedTags !== prevProps.lockedTags || this.props.selectedTag !== prevProps.selectedTag) {
             const regions = CanvasHelpers.applyTagsToRegions(
                 this.state.selectedRegions, this.props.lockedTags, this.props.selectedTag);
+            this.updateAssetRegions(regions);
         }
     }
 
@@ -134,6 +135,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         );
     }
 
+    public updateAssetRegions = (regions: IRegion[]) => {
+        const newAsset = CanvasHelpers.cloneAndUpdateRegions(this.props.selectedAsset, regions);
+        this.props.onAssetMetadataChanged(newAsset);
+        for (const region of newAsset.regions) {
+            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+        }
+    }
+
     /**
      * Method called when selecting a region from the editor
      * @param {string} id the id of the deleted region
@@ -155,6 +164,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             selectedRegions = [selectedRegion];
         }
         const newRegions = CanvasHelpers.applyTagsToRegions(selectedRegions, this.props.lockedTags);
+        this.updateAssetRegions(newRegions);
         this.setState({ selectedRegions: newRegions });
     }
 
@@ -177,13 +187,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.editor.scaleRegionToSourceSize(commit);
-        const newRegion = CanvasHelpers.getRegion(scaledRegionData, this.props.editorMode, id);
+        const newRegion = CanvasHelpers.getRegionFromRegionData(scaledRegionData, this.props.editorMode, id);
         const currentAssetMetadata = this.props.selectedAsset;
         currentAssetMetadata.regions.push(newRegion);
         const selectedRegions = [ newRegion ];
-        this.setState({selectedRegions}, () => {
-            const regions = CanvasHelpers.applyTagsToRegions(selectedRegions, this.props.lockedTags);
-        });
+        const regions = CanvasHelpers.applyTagsToRegions(selectedRegions, this.props.lockedTags);
+        this.updateAssetRegions(regions);
+        this.setState({selectedRegions});
 
         if (currentAssetMetadata.regions.length) {
             currentAssetMetadata.asset.state = AssetState.Tagged;
@@ -292,7 +302,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private addRegions = (regions: IRegion[]) => {
         let currentAssetMetadata: IAssetMetadata;
         for (const region of regions) {
-            const regionData = CanvasHelpers.getRegionData(region);
+            const regionData = CanvasHelpers.getRegionDataFromRegion(region);
             const scaledRegionData = this.editor.scaleRegionToFrameSize(regionData);
             this.editor.RM.addRegion(
                 region.id,
@@ -384,7 +394,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         // Add regions to the canvas
         this.props.selectedAsset.regions.forEach((region: IRegion) => {
-            const loadedRegionData = CanvasHelpers.getRegionData(region);
+            const loadedRegionData = CanvasHelpers.getRegionDataFromRegion(region);
             this.editor.RM.addRegion(
                 region.id,
                 this.editor.scaleRegionToFrameSize(loadedRegionData),
@@ -399,9 +409,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     private selectAllRegions = () => {
         const selectedRegions = this.props.selectedAsset.regions;
-        this.setState({ selectedRegions }, () => {
-            const regions = CanvasHelpers.applyTagsToRegions(selectedRegions, this.props.lockedTags);
-        });
+        const regions = CanvasHelpers.applyTagsToRegions(selectedRegions, this.props.lockedTags);
+        this.updateAssetRegions(regions);
+        this.setState({ selectedRegions });
     }
 
 }

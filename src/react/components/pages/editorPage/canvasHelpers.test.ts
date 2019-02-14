@@ -67,7 +67,7 @@ describe("Canvas Helpers", () => {
             type: RegionType.Polygon,
             tags: [],
         };
-        expect(CanvasHelpers.getRegionData(region)).toEqual(expected);
+        expect(CanvasHelpers.getRegionDataFromRegion(region)).toEqual(expected);
     });
 
     it("Gets correct region data type", () => {
@@ -223,13 +223,15 @@ describe("Canvas Helpers", () => {
 
         it("No selected tag, toggle all locked tags", () => {
             const transformedTags = getRegionTags(CanvasHelpers.applyTagsToRegions(regions, [ tag1, tag3 ]));
-            expect(transformedTags).toEqual([
-                [tag2, tag3],
+            const expectedTags = [
+                [tag1, tag2, tag3],
                 [tag2, tag1, tag3],
-                [tag2, tag1],
-                [tag2],
+                [tag2, tag3, tag1],
+                [tag1, tag2, tag3],
                 [tag1, tag3],
-            ]);
+            ];
+            
+            expect(transformedTags).toEqual(expectedTags);
             // Make sure regions is not modified
             const regionTags = regions.map((r) => r.tags);
             expect(regions.map((r) => r.tags)).toEqual(originalTags);
