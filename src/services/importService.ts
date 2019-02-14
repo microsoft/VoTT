@@ -60,10 +60,9 @@ export default class ImportService implements IImportService {
         generatedAssetMetadata = this.generateAssets(project, assetService);
 
         const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
-            // assetMetadata.then((metadata) => {
-            //     return assetService.save(metadata);
-            // });
-            return assetService.save(assetMetadata);
+            assetMetadata.then((metadata) => {
+                return assetService.save(metadata);
+            })
         });
 
         try {
@@ -141,11 +140,11 @@ export default class ImportService implements IImportService {
                 const asset = AssetService.createAssetFromFilePath(
                     `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
                 let assetMetadata = assetService.getAssetMetadata(asset).then((metadata) => {
-                    assetMetadata = metadata;
+                    // assetMetadata = metadata;
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                                 ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
                                 ? AssetState.Visited : AssetState.NotVisited);
-                    assetMetadata.asset.state = assetState;
+                    metadata.asset.state = assetState;
 
                     /*
                     for (const region of frameRegions) {
@@ -182,7 +181,7 @@ export default class ImportService implements IImportService {
                         };
                         metadata.regions.push(generatedRegion);
                     }
-                    return assetMetadata;
+                    return metadata;
                 });
                 generatedAssetMetadata.push(assetMetadata);
             }
