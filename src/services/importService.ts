@@ -60,9 +60,6 @@ export default class ImportService implements IImportService {
         generatedAssetMetadata = this.generateAssets(project, assetService);
 
         const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
-            // assetMetadata.then((metadata) => {
-            //     return assetService.save(metadata);
-            // });
             return assetService.save(assetMetadata);
         });
 
