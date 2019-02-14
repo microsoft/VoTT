@@ -160,9 +160,7 @@ describe("Editor Canvas", () => {
         const onAssetMetadataChanged = jest.fn();
         wrapper.setProps({ onAssetMetadataChanged });
 
-        testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
-        wrapper.prop("selectedAsset").regions.push(testRegion);
-        // canvas.editor.onRegionMoveEnd("test-region", createTestRegionData());
+        const canvas = wrapper.instance();
 
         const regionData = createTestRegionData();
         canvas.editor.onRegionMoveEnd("test1", regionData);
