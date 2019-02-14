@@ -33,7 +33,7 @@ export class AssetService {
         // fileNameParts[0] = "video"
         // fileNameParts[1] = "mp4"
         // fileNameParts[2] = "t=5"
-        fileName = pathParts[pathParts.length - 1];
+        fileName = fileName || pathParts[pathParts.length - 1];
         const fileNameParts = fileName.split(/[\.\?#]/);
         let assetFormat = fileNameParts[fileNameParts.length - 1];
         if (fileNameParts.length >= 2 && this.getAssetType(fileNameParts[1]) === AssetType.Video) {
