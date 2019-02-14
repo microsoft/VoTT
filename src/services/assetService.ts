@@ -201,7 +201,6 @@ export class AssetService {
         const objectArray = await this.getTFRecordObjectArrays(asset);
         const regions: IRegion[] = [];
         const tags: string[] = [];
-        let tagPos = 0;
 
         // Add Regions from TFRecord in Regions
         for (let index = 0; index < objectArray.textArray.length; index++) {

@@ -358,6 +358,30 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
     }
 
+    private async updateProjectTagsFromAsset(asset: IAssetMetadata) {
+        const assetTags = new Set();
+        asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag.name)));
+
+        const newTags: ITag[] = this.state.project.tags ? this.state.project.tags.slice() : [];
+        let updateTags = false;
+
+        assetTags.forEach((tag) => {
+            if (!this.state.project.tags || this.state.project.tags.length === 0 ||
+                this.state.project.tags.filter((projectTag) => tag === projectTag.name).length === 0 ) {
+                newTags.push({
+                    name: tag,
+                    color: "",
+                });
+                updateTags = true;
+            }
+        });
+
+        if (updateTags) {
+            const newProject = {...this.state.project, tags: newTags};
+            await this.props.actions.saveProject(newProject);
+        }
+    }
+
     private loadProjectAssets = async (): Promise<void> => {
         if (this.loadingProjectAssets || this.state.assets.length > 0) {
             return;
