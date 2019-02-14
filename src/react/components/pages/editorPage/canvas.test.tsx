@@ -416,12 +416,11 @@ describe("Editor Canvas", () => {
         return wrapper;
     }
 
-    function checkRegionTags(wrapper, ...tagArrays: ITag[][]) {
-        expect(wrapper.state().selectedRegions).toHaveLength(tagArrays.length);
-        for (let i = 0; i < tagArrays.length; i++) {
-            expect(wrapper.state().selectedRegions[i].tags).toEqual(tagArrays[i]);
-        }
-    }
+    // function checkRegionTags(regions: IRegion[], ...tagArrays: ITag[][]) {
+    //     for (let i = 0; i < tagArrays.length; i++) {
+    //         expect(regions[i].tags).toEqual(tagArrays[i]);
+    //     }
+    // }
 
     it("Toggles single tag for single region", () => {
 
@@ -430,44 +429,42 @@ describe("Editor Canvas", () => {
         canvas.onRegionSelected("region1");
         expect(wrapper.state().selectedRegions).toHaveLength(1);
 
-        checkRegionTags(wrapper, [tag1, tag2]);
+        checkRegionTags(wrapper.prop("selectedAsset").regions, [tag1, tag2]);
 
         wrapper.setProps({
             selectedTag: tag1,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper, [tag2]);
+        checkRegionTags(wrapper.prop("selectedAsset").regions, [tag2]);
 
         wrapper.setProps({
             selectedTag: tag2,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper, []);
-
-        expect(wrapper.state().selectedRegions[0].tags).toEqual([]);
+        checkRegionTags(wrapper.prop("selectedAsset").regions, []);
 
         wrapper.setProps({
             selectedTag: tag3,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper, [tag3]);
+        checkRegionTags(wrapper.prop("selectedAsset").regions, [tag3]);
 
         wrapper.setProps({
             selectedTag: tag1,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper, [tag3, tag1]);
+        checkRegionTags(wrapper.prop("selectedAsset").regions, [tag3, tag1]);
 
         wrapper.setProps({
             selectedTag: tag2,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper, [tag3, tag1, tag2]);
+        checkRegionTags(wrapper.prop("selectedAsset").regions, [tag3, tag1, tag2]);
     });
 
     it("Toggles single tag for multiple regions", () => {
@@ -601,7 +598,6 @@ describe("Editor Canvas", () => {
             ...originalMetadata,
             regions: originalRegions,
         };
-
 
         wrapper.setProps({
             selectedTag: tag2,

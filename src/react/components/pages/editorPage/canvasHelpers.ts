@@ -151,12 +151,19 @@ export default class CanvasHelpers {
         };
     }
 
-    public static cloneAndUpdateRegions(asset: IAssetMetadata, regions: IRegion[]): IAssetMetadata {
-        const clone = {...asset};
-        for (const region of regions) {
-            clone.regions = clone.regions.map((r) => (r.id === region.id) ? region : r);
+    public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[]{
+        let result: IRegion[]
+        for (const update of updates) {
+            result = regions.map((r) => (r.id === update.id) ? update : r);
         }
-        return clone;
+        return result;
+    }
+
+    public static cloneAndUpdateRegions(asset: IAssetMetadata, updates: IRegion[]): IAssetMetadata {
+        return {
+            ...asset,
+            regions: CanvasHelpers.updateRegions(asset.regions, updates)
+        };
     }
 
     public static editorModeToType(editorMode: EditorMode) {
