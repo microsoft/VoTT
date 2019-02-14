@@ -160,10 +160,12 @@ export class AssetService {
     public async save(metadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(metadata);
 
-        const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
-        await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
-
-
+        // Only save asset metadata if asset is in a tagged state
+        // Otherwise primary asset information is already persisted in the project file.
+        if (metadata.asset.state === AssetState.Tagged) {
+            const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
+            await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
+        }
         return metadata;
     }
 

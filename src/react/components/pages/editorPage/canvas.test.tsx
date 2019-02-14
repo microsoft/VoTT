@@ -62,18 +62,8 @@ describe("Editor Canvas", () => {
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
-<<<<<<< HEAD
         editorMock.prototype.RM = new RegionsManager(null, null);
         editorMock.prototype.AS = { setSelectionMode: jest.fn() };
-=======
-        // editorMock.prototype.RM = new RegionsManager(null, null);
-        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
-    });
-
-    beforeEach(() => {
-        const props = createProps();
-        wrapper = createComponent(props.canvas, props.assetPreview);
->>>>>>> fixed assetgeneration
     });
 
     it("renders correctly from default state", () => {
