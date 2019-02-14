@@ -127,6 +127,24 @@ describe("Editor Page Component", () => {
         expect(editorPage.prop("project")).toEqual(testProject);
     });
 
+    it("Updates state from props changes if project is null at creation", async () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, false);
+        const props = MockFactory.editorPageProps(testProject.id);
+
+        // Simulate navigation directly via a null project
+        props.project = null;
+
+        const wrapper = createComponent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0);
+        expect(getState(wrapper).project).toBeNull();
+
+        editorPage.props().project = testProject;
+        await MockFactory.flushUi();
+        expect(editorPage.props().project).toEqual(testProject);
+        expect(getState(wrapper).project).toEqual(testProject);
+    });
+
     it("Loads and merges project assets with asset provider assets when state changes", async () => {
         const projectAssets = MockFactory.createTestAssets(10, 10);
         const testProject = MockFactory.createTestProject("TestProject");
