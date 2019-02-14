@@ -362,12 +362,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const assetTags = new Set();
         asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag.name)));
 
-        const newTags: ITag[] = this.state.project.tags ? this.state.project.tags.slice() : [];
+        const newTags: ITag[] = this.props.project.tags ? this.props.project.tags.slice() : [];
         let updateTags = false;
 
         assetTags.forEach((tag) => {
-            if (!this.state.project.tags || this.state.project.tags.length === 0 ||
-                this.state.project.tags.filter((projectTag) => tag === projectTag.name).length === 0 ) {
+            if (!this.props.project.tags || this.props.project.tags.length === 0 ||
+                this.props.project.tags.filter((projectTag) => tag === projectTag.name).length === 0 ) {
                 newTags.push({
                     name: tag,
                     color: "",
@@ -377,7 +377,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
 
         if (updateTags) {
-            const newProject = {...this.state.project, tags: newTags};
+            const newProject = {...this.props.project, tags: newTags};
             await this.props.actions.saveProject(newProject);
         }
     }
