@@ -35,6 +35,14 @@ export default class CanvasHelpers {
         }
     }
 
+    public static toggleAllTags(tags: ITag[], toggle: ITag[]) {
+        let newTags = [...tags];
+        for (const tag of toggle) {
+            newTags = CanvasHelpers.toggleTag(newTags, tag);
+        }
+        return newTags;
+    }
+
     public static addIfMissing(tags: ITag[], tag: ITag): ITag[] {
         if (!tag) {
             return tags;
@@ -70,18 +78,11 @@ export default class CanvasHelpers {
         if (!selectedTag && lockedTagsEmpty) {
             return regions;
         }
-        let transformer: (tags: ITag[], selectedTag: ITag) => ITag[];
+        let transformer: (tags: ITag[], target: ITag|ITag[]) => ITag[];
+        let target: ITag|ITag[] = selectedTag;
         if (!selectedTag && !lockedTagsEmpty) {
-            return regions.map((r) => {
-                let tags = [...r.tags]
-                for (const tag of lockedTags) {
-                    tags = CanvasHelpers.toggleTag(tags, tag);
-                }
-                return {
-                    ...r,
-                    tags
-                }
-            });
+            transformer = CanvasHelpers.toggleAllTags;
+            target = lockedTags;
         } else if (lockedTagsEmpty) {
             transformer = CanvasHelpers.toggleTag;
         } else if (CanvasHelpers.getTag(lockedTags, selectedTag.name)) {
@@ -89,7 +90,7 @@ export default class CanvasHelpers {
         } else {
             transformer = CanvasHelpers.removeIfContained;
         }
-        return CanvasHelpers.transformRegionTags(regions, selectedTag, transformer);
+        return CanvasHelpers.transformRegionTags(regions, target, transformer);
     }
 
     /**
@@ -197,11 +198,11 @@ export default class CanvasHelpers {
     }
 
     private static transformRegionTags(
-        regions: IRegion[], selectedTag: ITag, transformer: (tags: ITag[], selectedTag: ITag) => ITag[]) {
+        regions: IRegion[], target: ITag|ITag[], transformer: (tags: ITag[], target: ITag|ITag[]) => ITag[]) {
         return regions.map((r) => {
             return {
                 ...r,
-                tags: transformer(r.tags, selectedTag),
+                tags: transformer(r.tags, target),
             };
         });
     }
