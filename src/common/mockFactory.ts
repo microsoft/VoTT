@@ -224,6 +224,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
+            version: "v2",
             securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),
@@ -237,28 +238,26 @@ export default class MockFactory {
 
     /**
      * Creates fake IV1Project
-     * @param name TODO: fixName of project. project.id = `project-${name}` and project.name = `Project ${name}`
+     * @param name Name of project.
      */
-    public static createTestV1Project(name: string = "test"): IV1Project {
-        const regions = MockFactory.createTestV1Region(name);
+    public static createTestV1Project(): IV1Project {
+        const regions = MockFactory.createTestV1Region();
 
         return {
             frames: {"testFrame.jpg": regions},
-            framerate: `Project ${name}`,
+            framerate: "1",
             inputTags: "testTag1,testTag2",
             suggestiontype: "suggestiontype",
             scd: true,
-            visitedFrames: [],
+            visitedFrames: ["testFrame.jpg"],
             tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
         };
     }
 
     /**
-     * Creates fake IV1Region (NECESSARY??)
-     * @param name TODO: fix Name of project. project.id = `project-${name}` and project.name = `Project ${name}`
+     * Creates fake IV1Region
      */
-    public static createTestV1Region(name: string = "test"): IV1Region[] {
-        // const connection = MockFactory.createTestConnection(name);
+    public static createTestV1Region(): IV1Region[] {
         const regions: IV1Region[] = [];
 
         const testRegion = {
