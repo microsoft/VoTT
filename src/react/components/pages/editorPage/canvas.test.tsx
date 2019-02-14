@@ -403,7 +403,7 @@ describe("Editor Canvas", () => {
         region2.tags = [ tag2 ];
         region3.tags = [ tag2, tag3 ];
 
-        return [region1, region2, region3, region4]
+        return [region1, region2, region3, region4];
     }
 
     function getWrapperWithTaggedRegions() {
@@ -529,7 +529,7 @@ describe("Editor Canvas", () => {
 
         wrapper.setProps({
             selectedTag: tag1,
-            lockedTags: [ tag1, tag2 ]
+            lockedTags: [ tag1, tag2 ],
         });
 
         canvas.onRegionSelected("region1");
@@ -573,16 +573,16 @@ describe("Editor Canvas", () => {
             const expectedMetadata: IAssetMetadata = {
                 ...newAssetMetadata,
                 regions: newAssetMetadata.regions.map((r) => {
-                    if (r.id === region.id){
+                    if (r.id === region.id) {
                         return {
                             ...r,
-                            tags: expectedTags
-                        }
+                            tags: expectedTags,
+                        };
                     } else {
                         return r;
                     }
-                }),               
-            }
+                }),
+            };
             return expectedMetadata;
         }
 
@@ -591,7 +591,7 @@ describe("Editor Canvas", () => {
         const canvas = wrapper.instance();
         const assetChangeHandler = jest.fn();
         wrapper.setProps({
-            onAssetMetadataChanged: assetChangeHandler
+            onAssetMetadataChanged: assetChangeHandler,
         });
         expect(wrapper.state().selectedRegions).toHaveLength(0);
 
@@ -599,14 +599,14 @@ describe("Editor Canvas", () => {
         const originalRegions = getTaggedRegions();
         const newAssetMetadata = {
             ...originalMetadata,
-            regions: originalRegions
-        }
+            regions: originalRegions,
+        };
 
         const expected1 = getExpectedAssetMetadata(newAssetMetadata, originalRegions[0], []);
-        
+
         wrapper.setProps({
             selectedTag: tag1,
-            lockedTags: [ tag1, tag2 ]
+            lockedTags: [ tag1, tag2 ],
         });
 
         canvas.onRegionSelected("region1");
@@ -625,11 +625,11 @@ describe("Editor Canvas", () => {
 
         canvas.onRegionSelected("region4");
         expect(assetChangeHandler).toBeCalledWith(expected4);
-    })
+    });
 
-    it("Toggles locked tags on selection for multiple regions", () => {
+    // it("Toggles locked tags on selection for multiple regions", () => {
 
-    })
+    // });
 
     // it("Toggles multiple tags for single region", () => {
 

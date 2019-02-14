@@ -197,4 +197,72 @@ describe("Canvas Helpers", () => {
             others = others.concat(duplicates);
         }
     });
+
+    function getRegionTags(regions: IRegion[]) {
+        return regions.map((r) => r.tags);
+    }
+
+    describe("Applies tags to regions appropriately", () => {
+        const regions = MockFactory.createTestRegions(5);
+
+        const tag1 = MockFactory.createTestTag("tag1");
+        const tag2 = MockFactory.createTestTag("tag2");
+        const tag3 = MockFactory.createTestTag("tag3");
+
+        const originalTags = [
+            [tag1, tag2],
+            [tag2],
+            [tag2, tag3],
+            [tag1, tag2, tag3],
+            [],
+        ];
+
+        for (let i = 0; i < 5; i++) {
+            regions[i].tags = originalTags[i];
+        }
+
+        it("No selected tag, toggle all locked tags", () => {
+            const transformedTags = getRegionTags(CanvasHelpers.applyTagsToRegions(regions, [ tag1, tag3 ]));
+            expect(transformedTags).toEqual([
+                [tag2, tag3],
+                [tag2, tag1, tag3],
+                [tag2, tag1],
+                [tag2],
+                [tag1, tag3],
+            ]);
+            // Make sure regions is not modified
+            const regionTags = regions.map((r) => r.tags);
+            expect(regions.map((r) => r.tags)).toEqual(originalTags);
+        });
+
+        it("Selected tag within locked tags, add to region if missing", () => {
+            expect(getRegionTags(CanvasHelpers.applyTagsToRegions(regions, [ tag1, tag3 ], tag1))).toEqual([
+                [tag1, tag2],
+                [tag2, tag1],
+                [tag2, tag3, tag1],
+                [tag1, tag2, tag3],
+                [tag1],
+            ]);
+        });
+
+        it("Selected tag not within locked tags, remove from region if contained", () => {
+            expect(getRegionTags(CanvasHelpers.applyTagsToRegions(regions, [ tag3 ], tag1))).toEqual([
+                [tag2],
+                [tag2],
+                [tag2, tag3],
+                [tag2, tag3],
+                [],
+            ]);
+        });
+
+        it("Locked tags empty, toggle selected tag", () => {
+            expect(getRegionTags(CanvasHelpers.applyTagsToRegions(regions, [], tag1))).toEqual([
+                [tag2],
+                [tag2, tag1],
+                [tag2, tag3, tag1],
+                [tag2, tag3],
+                [tag1],
+            ]);
+        });
+    });
 });

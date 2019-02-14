@@ -28,7 +28,7 @@ export default class CanvasHelpers {
         if (!tags) {
             return [ tag ];
         }
-        if (this.getTag(tags, tag.name)) {
+        if (CanvasHelpers.getTag(tags, tag.name)) {
             return tags.filter((t) => t.name !== tag.name);
         } else {
             return [...tags, tag];
@@ -42,7 +42,7 @@ export default class CanvasHelpers {
         if (!tags) {
             return [ tag ];
         }
-        if (!this.getTag(tags, tag.name)) {
+        if (!CanvasHelpers.getTag(tags, tag.name)) {
             return [...tags, tag];
         } else {
             return tags;
@@ -53,7 +53,7 @@ export default class CanvasHelpers {
         if (!tags || !tag) {
             return tags;
         }
-        if (this.getTag(tags, tag.name)) {
+        if (CanvasHelpers.getTag(tags, tag.name)) {
             return tags.filter((t) => t.name !== tag.name);
         } else {
             return tags;
@@ -62,6 +62,34 @@ export default class CanvasHelpers {
 
     public static getTag(tags: ITag[], name: string): ITag {
         return tags.find((t) => t.name === name);
+    }
+
+    public static applyTagsToRegions = (regions: IRegion[], lockedTags: ITag[], selectedTag?: ITag): IRegion[] => {
+
+        const lockedTagsEmpty = !lockedTags || !lockedTags.length;
+        if (!selectedTag && lockedTagsEmpty) {
+            return regions;
+        }
+        let transformer: (tags: ITag[], selectedTag: ITag) => ITag[];
+        if (!selectedTag && !lockedTagsEmpty) {
+            return regions.map((r) => {
+                let tags = [...r.tags]
+                for (const tag of lockedTags) {
+                    tags = CanvasHelpers.toggleTag(tags, tag);
+                }
+                return {
+                    ...r,
+                    tags
+                }
+            });
+        } else if (lockedTagsEmpty) {
+            transformer = CanvasHelpers.toggleTag;
+        } else if (CanvasHelpers.getTag(lockedTags, selectedTag.name)) {
+            transformer = CanvasHelpers.addIfMissing;
+        } else {
+            transformer = CanvasHelpers.removeIfContained;
+        }
+        return CanvasHelpers.transformRegionTags(regions, selectedTag, transformer);
     }
 
     /**
@@ -164,6 +192,16 @@ export default class CanvasHelpers {
             return {
                 ...region,
                 id: shortid.generate(),
+            };
+        });
+    }
+
+    private static transformRegionTags(
+        regions: IRegion[], selectedTag: ITag, transformer: (tags: ITag[], selectedTag: ITag) => ITag[]) {
+        return regions.map((r) => {
+            return {
+                ...r,
+                tags: transformer(r.tags, selectedTag),
             };
         });
     }
