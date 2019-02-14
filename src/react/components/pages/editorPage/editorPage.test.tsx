@@ -8,7 +8,7 @@ import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState, IRegion,
+    EditorMode, IAsset, AssetState,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -50,12 +50,13 @@ function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
-function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
+function getMockAssetMetadata(testAssets: IAsset[], assetIndex = 0): IAssetMetadata {
     const mockRegion = MockFactory.createMockRegion();
+    const asset = testAssets[assetIndex];
     const assetMetadata = {
         asset: {
-            ...testAssets[assetIndex],
-            state: AssetState.Visited,
+            ...asset,
+            state: AssetState.Tagged,
         },
         regions: [
             {
@@ -69,9 +70,6 @@ function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
             },
         ],
     };
-    if (assetMetadata.regions.length > 0) {
-        assetMetadata.asset.state = AssetState.Tagged;
-    }
 
     return assetMetadata;
 }
@@ -87,7 +85,7 @@ describe("Editor Page Component", () => {
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
-        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
+        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
     });
 
     beforeEach(() => {
@@ -97,6 +95,7 @@ describe("Editor Page Component", () => {
                 asset: { ...asset },
                 regions: [MockFactory.createMockRegion()],
             };
+
             return Promise.resolve(assetMetadata);
         });
         assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
@@ -201,6 +200,30 @@ describe("Editor Page Component", () => {
             expectedAssetMetadtata,
         );
         expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+    });
+
+    describe("Editing Video Assets", () => {
+        it("Child assets are not included within editor page state", async () => {
+            const testProject = MockFactory.createTestProject("TestProject");
+            const videoAsset = MockFactory.createVideoTestAsset("TestVideo");
+            const videoFrames = MockFactory.createChildVideoAssets(videoAsset);
+            const projectAssets = [videoAsset].concat(videoFrames);
+            testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
+
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+
+            const wrapper = createComponent(store, props);
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+            await MockFactory.flushUi();
+
+            expect(editorPage.state().assets.length).toEqual(testAssets.length + 1);
+            expect(editorPage.state().selectedAsset.asset).toEqual({
+                ...videoAsset,
+                state: AssetState.Visited,
+            });
+        });
     });
 
     describe("Basic toolbar test", () => {

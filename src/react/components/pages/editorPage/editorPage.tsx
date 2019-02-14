@@ -8,7 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag,
+    IAssetMetadata, IProject, ITag, AssetType,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -81,7 +81,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
-        additionalSettings: {videoSettings: (this.props.project) ? this.props.project.videoSettings : null},
+        additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
     };
 
     private loadingProjectAssets: boolean = false;
@@ -239,20 +239,51 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
+    private isChildAssetType = (asset: IAsset): boolean => {
+        return asset.type === AssetType.Image || asset.type === AssetType.VideoFrame;
+    }
+
     /**
      * Raised when the selected asset has been changed.
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
-        assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+        const parentAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
+
+        if (this.isChildAssetType(assetMetadata.asset)) {
+            assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+        } else if (assetMetadata.asset.state === AssetState.NotVisited) {
+            assetMetadata.asset.state = AssetState.Visited;
+        }
+
+        // Update parent asset if not already in the "Tagged" state
+        if (parentAsset.id !== assetMetadata.asset.id) {
+            const parentAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, parentAsset);
+
+            if (parentAssetMetadata.asset.state !== AssetState.Tagged) {
+                parentAssetMetadata.asset.state = assetMetadata.asset.state;
+                await this.props.actions.saveAssetMetadata(this.props.project, parentAssetMetadata);
+            }
+
+            parentAsset.state = parentAssetMetadata.asset.state;
+        }
 
         await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.actions.saveProject(this.props.project);
 
         const assetService = new AssetService(this.props.project);
-        const childAssets = assetService.getChildAssets(assetMetadata.asset.parent || assetMetadata.asset);
+        const childAssets = assetService.getChildAssets(parentAsset);
 
-        this.setState({ childAssets });
+        // Find and update the parent asset in the internal state
+        const assets = [...this.state.assets];
+        const assetIndex = assets.findIndex((asset) => asset.id === parentAsset.id);
+        if (assetIndex > -1) {
+            assets[assetIndex] = {
+                ...parentAsset,
+            };
+        }
+
+        this.setState({ childAssets, assets });
     }
 
     private onFooterChange = (footerState) => {
@@ -266,48 +297,55 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
-        let selectionMode: SelectionMode = null;
-        let editorMode: EditorMode = null;
-        const currentIndex = this.state.assets
-            .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
-
         switch (toolbarItem.props.name) {
             case "drawRectangle":
-                selectionMode = SelectionMode.RECT;
-                editorMode = EditorMode.Rectangle;
+                this.setState({
+                    selectionMode: SelectionMode.RECT,
+                    editorMode: EditorMode.Rectangle,
+                });
                 break;
             case "drawPolygon":
-                selectionMode = SelectionMode.POLYGON;
-                editorMode = EditorMode.Polygon;
+                this.setState({
+                    selectionMode: SelectionMode.POLYGON,
+                    editorMode: EditorMode.Polygon,
+                });
                 break;
             case "copyRectangle":
-                selectionMode = SelectionMode.COPYRECT;
-                editorMode = EditorMode.CopyRect;
+                this.setState({
+                    selectionMode: SelectionMode.COPYRECT,
+                    editorMode: EditorMode.CopyRect,
+                });
                 break;
             case "selectCanvas":
             case "panCanvas":
-                selectionMode = SelectionMode.NONE;
-                editorMode = EditorMode.Select;
+                this.setState({
+                    selectionMode: SelectionMode.NONE,
+                    editorMode: EditorMode.Select,
+                });
                 break;
             case "navigatePreviousAsset":
-                await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+                await this.goToParentAsset(-1);
                 break;
             case "navigateNextAsset":
-                await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
+                await this.goToParentAsset(1);
                 break;
         }
+    }
 
-        this.setState({
-            selectionMode,
-            editorMode,
-        });
+    private goToParentAsset = async (index: number) => {
+        const selectedParentAsset = this.state.selectedAsset.asset.parent || this.state.selectedAsset.asset;
+        const currentIndex = this.state.assets
+            .findIndex((asset) => asset.id === selectedParentAsset.id);
+
+        if (index > 0) {
+            await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
+        } else {
+            await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+        }
     }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
-        if (assetMetadata.asset.state === AssetState.NotVisited) {
-            assetMetadata.asset.state = AssetState.Visited;
-        }
 
         try {
             if (!assetMetadata.asset.size) {
@@ -315,7 +353,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 assetMetadata.asset.size = { width: assetProps.width, height: assetProps.height };
             }
         } catch (err) {
-            console.error(err);
+            console.warn("Error computing asset size");
         }
 
         this.onAssetMetadataChanged(assetMetadata);
@@ -332,8 +370,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.loadingProjectAssets = true;
 
-        const projectAssets = _.values(this.props.project.assets);
+        // Get all parent assets
+        const projectAssets = _.values(this.props.project.assets)
+            .filter((asset) => !asset.parent);
+
+        // Get all assets from source asset provider
         const sourceAssets = await this.props.actions.loadAssets(this.props.project);
+
+        // Merge and uniquify
         const allAssets = _(projectAssets)
             .concat(sourceAssets)
             .uniqBy((asset) => asset.id)

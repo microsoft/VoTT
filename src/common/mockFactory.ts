@@ -172,11 +172,7 @@ export default class MockFactory {
     public static createTestAssets(count: number = 10, startIndex: number = 1): IAsset[] {
         const assets: IAsset[] = [];
         for (let i = startIndex; i < (count + startIndex); i++) {
-            const newAsset = (i % 2 === 1)
-                ? MockFactory.createVideoTestAsset(i.toString())
-                : MockFactory.createTestAsset(i.toString());
-
-            assets.push(newAsset);
+            assets.push(MockFactory.createTestAsset(i.toString()));
         }
 
         return assets;
