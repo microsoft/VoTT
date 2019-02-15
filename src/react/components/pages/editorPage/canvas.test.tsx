@@ -216,17 +216,22 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().multiSelect).toBe(false);
     });
 
-    function getPopulatedWrapper(numRegions = 5) {
+    function getRegions(numRegions= 5): IRegion[] {
         const regions = [];
         for (let i = 0; i < numRegions; i++) {
             regions.push(MockFactory.createTestRegion(`test${i + 1}`));
         }
+        return regions;
+    }
+
+    function getPopulatedWrapper(regions?: IRegion[]) {
+
         const originalProps = createProps();
         const props: ICanvasProps = {
             ...originalProps.canvas,
             selectedAsset: {
                 ...originalProps.canvas.selectedAsset,
-                regions,
+                regions: (regions) ? regions : getRegions(),
             },
         };
         const wrapper = createComponent(true, props).find(Canvas);
@@ -303,7 +308,8 @@ describe("Editor Canvas", () => {
 
     it("Regions are removed from asset with cut command and pasted into asset with paste command", () => {
         const numRegions = 5;
-        const wrapper = getPopulatedWrapper(numRegions);
+        const regions = getRegions(5);
+        const wrapper = getPopulatedWrapper(regions);
 
         // Enable multi-select
         dispatchKeyEvent("Shift");
@@ -330,7 +336,8 @@ describe("Editor Canvas", () => {
 
     it("Regions are copied and pasted into same asset with paste command", () => {
         const numRegions = 5;
-        const wrapper = getPopulatedWrapper(numRegions);
+        const regions = getRegions(numRegions);
+        const wrapper = getPopulatedWrapper(regions);
 
         // Enable multi-select
         dispatchKeyEvent("Shift");
@@ -359,7 +366,8 @@ describe("Editor Canvas", () => {
 
     it("All regions are selected with select all command", () => {
         const numRegions = 5;
-        const wrapper = getPopulatedWrapper(numRegions);
+        const regions = getRegions(numRegions);
+        const wrapper = getPopulatedWrapper(regions);
 
         window.dispatchEvent(new KeyboardEvent(
             KeyEventType.KeyDown, {
@@ -367,11 +375,39 @@ describe("Editor Canvas", () => {
         }));
 
         expect(wrapper.state().selectedRegions).toHaveLength(numRegions);
+        expect(wrapper.state().selectedRegions).toEqual(wrapper.state().currentAsset.regions);
+    });
+
+    it("Tags are applied to all regions after select all", () => {
+        const wrapper = getWrapperWithRegions();
+        (wrapper.instance() as Canvas).selectAllRegions();
+        expect(wrapper.state().selectedRegions).toEqual(wrapper.state().currentAsset.regions);
+        wrapper.setProps({
+            selectedTag: tag1,
+            lockedTags: [],
+        });
+        for (const region of wrapper.state().currentAsset.regions) {
+            expect(region.tags).toEqual([tag1]);
+        }
+    });
+
+    it("Locked tags are applied to all regions after select all", () => {
+        const wrapper = getWrapperWithRegions();
+        wrapper.setProps({
+            selectedTag: tag1,
+            lockedTags: [tag1],
+        });
+        (wrapper.instance() as Canvas).selectAllRegions();
+        expect(wrapper.state().selectedRegions).toEqual(wrapper.state().currentAsset.regions);
+        for (const region of wrapper.state().currentAsset.regions) {
+            expect(region.tags).toEqual([tag1]);
+        }
     });
 
     it("All regions are deleted with clear command", () => {
         const numRegions = 5;
-        const wrapper = getPopulatedWrapper(numRegions);
+        const regions = getRegions(numRegions);
+        const wrapper = getPopulatedWrapper(regions);
 
         window.dispatchEvent(new KeyboardEvent(
             KeyEventType.KeyDown, {
@@ -403,6 +439,20 @@ describe("Editor Canvas", () => {
         region3.tags = [ tag2, tag3 ];
 
         return [region1, region2, region3, region4];
+    }
+
+    function getWrapperWithRegions() {
+        const regions = getRegions();
+        const originalProps = createProps();
+        const props: ICanvasProps = {
+            ...originalProps.canvas,
+            selectedAsset: {
+                ...originalProps.canvas.selectedAsset,
+                regions,
+            },
+        };
+        const wrapper = createComponent(false, props);
+        return wrapper;
     }
 
     function getWrapperWithTaggedRegions() {

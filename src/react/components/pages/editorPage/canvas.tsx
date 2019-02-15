@@ -165,6 +165,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({ selectedRegions: taggedRegions });
     }
 
+    public selectAllRegions = () => {
+        const regions = CanvasHelpers.applyTagsToRegions(this.state.currentAsset.regions, this.props.lockedTags);
+        this.updateAssetRegions(regions);
+        this.setState({ selectedRegions: regions });
+    }
+
     private setAssetRegions = (regions: IRegion[], selectedRegions?: IRegion[]) => {
         if (!regions) {
             return;
@@ -409,12 +415,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({
             selectedRegions: [regions[regions.length - 1]],
         });
-    }
-
-    private selectAllRegions = () => {
-        const regions = CanvasHelpers.applyTagsToRegions(this.state.currentAsset.regions, this.props.lockedTags);
-        this.updateAssetRegions(regions);
-        this.setState({ selectedRegions: regions });
     }
 
 }
