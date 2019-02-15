@@ -16,8 +16,8 @@ export interface ICanvasProps extends React.Props<Canvas> {
     editorMode: EditorMode;
     selectionMode: SelectionMode;
     project: IProject;
-    lockedTags: ITag[];
-    selectedTag: ITag;
+    lockedTags: string[];
+    selectedTag: string;
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
 }
@@ -94,37 +94,37 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             <Fragment>
                 <KeyboardBinding
                     keyEventType={KeyEventType.KeyDown}
-                    accelerator={"Shift"}
+                    accelerators={["Shift"]}
                     onKeyEvent={() => this.setMultiSelect(true)}
                 />
                 <KeyboardBinding
                     keyEventType={KeyEventType.KeyUp}
-                    accelerator={"Shift"}
+                    accelerators={["Shift"]}
                     onKeyEvent={() => this.setMultiSelect(false)}
                 />
                 <KeyboardBinding
                     keyEventType={KeyEventType.KeyDown}
-                    accelerator={"Ctrl+c"}
+                    accelerators={["Ctrl+c"]}
                     onKeyEvent={this.copyRegions}
                 />
                 <KeyboardBinding
                     keyEventType={KeyEventType.KeyDown}
-                    accelerator={"Ctrl+x"}
+                    accelerators={["Ctrl+x"]}
                     onKeyEvent={this.cutRegions}
                 />
                 <KeyboardBinding
                     keyEventType={KeyEventType.KeyDown}
-                    accelerator={"Ctrl+v"}
+                    accelerators={["Ctrl+v"]}
                     onKeyEvent={this.pasteRegions}
                 />
                 <KeyboardBinding
                     keyEventType={KeyEventType.KeyDown}
-                    accelerator={"Ctrl+a"}
+                    accelerators={["Ctrl+a"]}
                     onKeyEvent={this.selectAllRegions}
                 />
                 <KeyboardBinding
                     keyEventType={KeyEventType.KeyDown}
-                    accelerator={"Ctrl+d"}
+                    accelerators={["Ctrl+d"]}
                     onKeyEvent={this.clearRegions}
                 />
                 <div id="ct-zone"
@@ -184,7 +184,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             currentAsset: asset,
         };
         for (const region of asset.regions) {
-            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         }
         this.setState(state, () => this.props.onAssetMetadataChanged(asset));
         
@@ -235,15 +235,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {RegionData} regionData the RegionData of moved region
      * @returns {void}
      */
-<<<<<<< HEAD
-    private onRegionMove = (id: string, regionData: RegionData) => {
-        const movedRegion = CanvasHelpers.getRegion(this.state.currentAsset.regions, id);
-=======
     private onRegionMoveEnd = (id: string, regionData: RegionData) => {
-        const currentAssetMetadata = this.props.selectedAsset;
-        const movedRegionIndex = currentAssetMetadata.regions.findIndex((region) => region.id === id);
-        const movedRegion = currentAssetMetadata.regions[movedRegionIndex];
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
+        const movedRegion = CanvasHelpers.getRegion(this.state.currentAsset.regions, id);
         const scaledRegionData = this.editor.scaleRegionToSourceSize(regionData);
         if (movedRegion) {
             movedRegion.points = scaledRegionData.points;
@@ -311,7 +304,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.RM.addRegion(
                 region.id,
                 scaledRegionData,
-                CanvasHelpers.getTagsDescriptor(region));
+                CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         }
         const newRegions = [
             ...this.state.currentAsset.regions,
@@ -388,20 +381,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     /**
-<<<<<<< HEAD
-=======
-     * Add tag to region if not there already, remove tag from region
-     * if already contained in tags. Update tags in CanvasTools editor
-     * @param region Region to add or remove tag
-     * @param tag Tag to add or remove from region
-     */
-    private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
-        CanvasHelpers.toggleTag(region.tags, tag.name);
-        this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
-    }
-
-    /**
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
      * Updates the background of the canvas and draws the asset's regions
      */
     private clearAllRegions = () => {
@@ -413,7 +392,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             return;
         }
         for (const region of regions) {
-            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         }
     }
 
