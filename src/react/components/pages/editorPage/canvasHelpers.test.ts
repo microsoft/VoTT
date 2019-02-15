@@ -9,7 +9,7 @@ describe("Canvas Helpers", () => {
     it("Adds a tag to list", () => {
         const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
-        const newTag = "New Tag"
+        const newTag = "New Tag";
 
         const newTags = CanvasHelpers.toggleTag(
             tags,
