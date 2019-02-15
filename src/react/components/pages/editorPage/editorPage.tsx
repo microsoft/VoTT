@@ -257,7 +257,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         // Update parent asset if not already in the "Tagged" state
-        if (parentAsset.id !== assetMetadata.asset.id) {
+        if (parentAsset.id === assetMetadata.asset.id) {
+            parentAsset.state = assetMetadata.asset.state;
+        } else {
             const parentAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, parentAsset);
 
             if (parentAssetMetadata.asset.state !== AssetState.Tagged) {
