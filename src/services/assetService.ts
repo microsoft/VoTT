@@ -204,11 +204,6 @@ export class AssetService {
 
         // Add Regions from TFRecord in Regions
         for (let index = 0; index < objectArray.textArray.length; index++) {
-            tagPos = tags.findIndex((tag) => tag === objectArray.textArray[index]);
-            if (tagPos < 0) {
-                tags.push(objectArray.textArray[index]);
-            }
-
             regions.push({
                 id: shortid.generate(),
                 type: RegionType.Rectangle,

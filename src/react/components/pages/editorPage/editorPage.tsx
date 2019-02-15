@@ -360,14 +360,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private async updateProjectTagsFromAsset(asset: IAssetMetadata) {
         const assetTags = new Set();
-        asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag.name)));
+        asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
 
-        const newTags: ITag[] = this.props.project.tags ? this.props.project.tags.slice() : [];
+        const newTags: ITag[] = this.props.project.tags ? [...this.props.project.tags] : [];
         let updateTags = false;
 
         assetTags.forEach((tag) => {
             if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                this.props.project.tags.filter((projectTag) => tag === projectTag.name).length === 0 ) {
+                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
                 newTags.push({
                     name: tag,
                     color: "",
