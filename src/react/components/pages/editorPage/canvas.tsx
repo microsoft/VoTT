@@ -235,9 +235,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onRegionDelete = (id: string) => {
         // Remove from Canvas Tools
         this.deleteRegion(id);
-        this.setState({
-            selectedRegions: [],
-        });
     }
 
     private setMultiSelect = (multiSelect: boolean) => {
@@ -304,7 +301,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private deleteRegionFromAsset = (id: string): void => {
-        this.setAssetRegions(this.state.currentAsset.regions.filter((r) => r.id !== id));
+        this.setAssetRegions(this.state.currentAsset.regions.filter((r) => r.id !== id), []);
     }
 
     private clearRegions = () => {
@@ -406,25 +403,4 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         }
     }
-
-    // private addCanvasToolsRegions = (regions: IRegion[]) => {
-    //     if (CanvasHelpers.nullOrEmpty(regions)) {
-    //         return;
-    //     }
-
-    //     // Add regions to the canvas
-    //     regions.forEach((region: IRegion) => {
-    //         const loadedRegionData = CanvasHelpers.getRegionDataFromRegion(region);
-    //         this.editor.RM.addRegion(
-    //             region.id,
-    //             this.editor.scaleRegionToFrameSize(loadedRegionData),
-    //             CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
-    //     });
-
-    //     // Set selected region to the last region
-    //     this.setState({
-    //         selectedRegions: [regions[regions.length - 1]],
-    //     });
-    // }
-
 }
