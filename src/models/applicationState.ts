@@ -242,7 +242,7 @@ export interface ISize {
 export interface IRegion {
     id: string;
     type: RegionType;
-    tags: ITag[];
+    tags: string[];
     points?: IPoint[];
     boundingBox?: IBoundingBox;
 }

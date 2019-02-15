@@ -6,19 +6,19 @@ import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 
 describe("Canvas Helpers", () => {
     it("Adds a tag to list", () => {
-        const tags = MockFactory.createTestTags();
+        const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const newTag = MockFactory.createTestTag("New Tag");
         CanvasHelpers.toggleTag(
             tags,
-            newTag,
+            newTag.name,
         );
         expect(tags).toHaveLength(originalLength + 1);
-        expect(tags[tags.length - 1]).toEqual(newTag);
+        expect(tags[tags.length - 1]).toEqual(newTag.name);
     });
 
     it("Removes a tag from list", () => {
-        const tags = MockFactory.createTestTags();
+        const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const originalFirstTag = tags[0];
         CanvasHelpers.toggleTag(

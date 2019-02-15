@@ -60,12 +60,7 @@ function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
         regions: [
             {
                 ...mockRegion,
-                tags: [
-                    {
-                        ...mockRegion.tags[0],
-                        color: expect.stringMatching(/^#[0-9a-f]{3,6}$/i),
-                    },
-                ],
+                tags: [mockRegion.tags[0]],
             },
         ],
     };
@@ -87,7 +82,7 @@ describe("Editor Page Component", () => {
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
-        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
+        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
     });
 
     beforeEach(() => {

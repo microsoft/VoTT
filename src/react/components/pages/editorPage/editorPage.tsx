@@ -81,7 +81,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
-        additionalSettings: {videoSettings: (this.props.project) ? this.props.project.videoSettings : null},
+        additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
     };
 
     private loadingProjectAssets: boolean = false;
@@ -109,7 +109,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (!this.state.project && this.props.project) {
             this.setState({
                 project: this.props.project,
-                additionalSettings: {videoSettings: (this.props.project) ? this.props.project.videoSettings : null},
+                additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
             });
         }
     }
@@ -187,17 +187,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedRegions.map((region) => {
                 const selectedIndex = selectedAsset.regions.findIndex((r) => r.id === region.id);
                 const selectedRegion = selectedAsset.regions[selectedIndex];
-                const tagIndex = selectedRegion.tags.findIndex(
-                    (existingTag) => existingTag.name === tag.name);
+                const tagIndex = selectedRegion.tags.findIndex((existingTag) => existingTag === tag.name);
                 if (tagIndex === -1) {
-                    selectedRegion.tags.push(tag);
+                    selectedRegion.tags.push(tag.name);
                 } else {
                     selectedRegion.tags.splice(tagIndex, 1);
                 }
                 if (selectedRegion.tags.length) {
                     this.canvas.current.editor.RM.updateTagsById(selectedRegion.id,
-                        new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag.name,
-                            this.props.project.tags.find((t) => t.name === tempTag.name).color))));
+                        new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag,
+                            this.props.project.tags.find((t) => t.name === tempTag).color))));
                 } else {
                     this.canvas.current.editor.RM.updateTagsById(selectedRegion.id, null);
                 }
