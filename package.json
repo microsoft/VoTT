@@ -29,7 +29,7 @@
         "rimraf": "^2.6.2",
         "shortid": "^2.2.14",
         "video-react": "^0.13.2",
-        "vott-ct": "^2.1.11"
+        "vott-ct": "^2.1.17"
     },
     "scripts": {
         "start": "nf start -p 3000",
@@ -50,7 +50,7 @@
         "test": "react-scripts test --env=jsdom --silent",
         "test:ci": "cross-env CI=true npm run test",
         "test:coverage": "npm run test -- --coverage",
-        "plato": "tsc --noEmit false --outDir js-src && plato -r -d plato-report js-src",
+        "plato": "scripts/generate-report.sh -o report -v $(node -pe \"require('./package.json').version\") -c $(git rev-parse --short HEAD)",
         "postinstall": "electron-builder install-app-deps",
         "predebug": "npm run build && npm run webpack:dev"
     },
@@ -88,7 +88,6 @@
         "jest-enzyme": "^7.0.1",
         "jquery": "^3.3.1",
         "node-sass": "^4.10.0",
-        "plato": "^1.7.0",
         "popper.js": "^1.14.6",
         "react-jsonschema-form": "^1.0.6",
         "react-modal": "^3.6.1",

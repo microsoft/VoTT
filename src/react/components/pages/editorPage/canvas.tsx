@@ -50,10 +50,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
         this.editor = new CanvasTools.Editor(sz);
         this.editor.onSelectionEnd = this.onSelectionEnd;
-        this.editor.onRegionMove = this.onRegionMove;
+        this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
-        this.editor.setSelectionMode(this.props.selectionMode, null);
+        this.editor.AS.setSelectionMode(this.props.selectionMode, null);
 
         window.addEventListener("resize", this.onWindowResize);
 
@@ -76,7 +76,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         if (this.props.selectionMode !== prevProps.selectionMode) {
-            this.editor.setSelectionMode(this.props.selectionMode, null);
+            this.editor.AS.setSelectionMode(this.props.selectionMode, null);
         }
 
         if (this.props.lockedTags !== prevProps.lockedTags || this.props.selectedTag !== prevProps.selectedTag) {
@@ -235,8 +235,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {RegionData} regionData the RegionData of moved region
      * @returns {void}
      */
+<<<<<<< HEAD
     private onRegionMove = (id: string, regionData: RegionData) => {
         const movedRegion = CanvasHelpers.getRegion(this.state.currentAsset.regions, id);
+=======
+    private onRegionMoveEnd = (id: string, regionData: RegionData) => {
+        const currentAssetMetadata = this.props.selectedAsset;
+        const movedRegionIndex = currentAssetMetadata.regions.findIndex((region) => region.id === id);
+        const movedRegion = currentAssetMetadata.regions[movedRegionIndex];
+>>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
         const scaledRegionData = this.editor.scaleRegionToSourceSize(regionData);
         if (movedRegion) {
             movedRegion.points = scaledRegionData.points;
@@ -381,6 +388,20 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Add tag to region if not there already, remove tag from region
+     * if already contained in tags. Update tags in CanvasTools editor
+     * @param region Region to add or remove tag
+     * @param tag Tag to add or remove from region
+     */
+    private toggleTagOnRegion = (region: IRegion, tag: ITag) => {
+        CanvasHelpers.toggleTag(region.tags, tag.name);
+        this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
+    }
+
+    /**
+>>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
      * Updates the background of the canvas and draws the asset's regions
      */
     private clearAllRegions = () => {
@@ -407,7 +428,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.RM.addRegion(
                 region.id,
                 this.editor.scaleRegionToFrameSize(loadedRegionData),
-                CanvasHelpers.getTagsDescriptor(region));
+                CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         });
 
         // Set selected region to the last region

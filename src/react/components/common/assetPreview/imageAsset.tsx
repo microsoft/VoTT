@@ -2,15 +2,9 @@ import React from "react";
 import { IAssetProps } from "./assetPreview";
 
 /**
- * ImageAsset component properites
- */
-export interface IImageProps extends IAssetProps, React.ClassAttributes<ImageAsset> {
-}
-
-/**
  * ImageAsset component used to render all image assets
  */
-export class ImageAsset extends React.Component<IImageProps> {
+export class ImageAsset extends React.Component<IAssetProps> {
     private image: React.RefObject<HTMLImageElement> = React.createRef();
 
     public render() {

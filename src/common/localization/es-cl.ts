@@ -158,6 +158,12 @@ export const spanish: IAppStrings = {
             nextTaggedFrame: {
                 tooltip: "Siguiente marco etiquetado",
             },
+            previousExpectedFrame: {
+                tooltip: "Fotograma anterior",
+            },
+            nextExpectedFrame: {
+                tooltip: "Siguiente marco",
+            },
         },
         assetError: "No se puede mostrar el activo",
     },
@@ -166,10 +172,69 @@ export const spanish: IAppStrings = {
         settings: "Configuración de Exportación",
         saveSettings: "Guardar Configuración de Exportación",
         providers: {
-            vottJson: "VoTT JSON",
-            azureCV: "Servicio de Visión Personalizada Azure",
-            tfRecords: "Registros de Tensorflow",
-            tfPascalVoc: "Tensorflow Pascal VOC",
+            common: {
+                properties: {
+                    assetState: {
+                        title: "Estado del activo",
+                        description: "Qué activos incluir en la exportación",
+                        options: {
+                            all: "Todos los activos",
+                            visited: "Solo activos visitados",
+                            tagged: "Solo activos etiquetados",
+                        },
+                    },
+                },
+            },
+            vottJson: {
+                displayName: "VoTT JSON",
+            },
+            azureCV: {
+                displayName: "Servicio de Visión Personalizada Azure",
+                properties: {
+                    apiKey: {
+                        title: "Clave de API",
+                    },
+                    classificationType: {
+                        title: "Tipo de clasificación",
+                        options: {
+                            multiLabel: "Varias etiquetas por imagen",
+                            multiClass: "Una sola etiqueta por imagen",
+                        },
+                    },
+                    name: {
+                        title: "Nombre del proyecto",
+                    },
+                    description: {
+                        title: "Descripción del proyecto",
+                    },
+                    domainId: {
+                        title: "Dominio",
+                    },
+                    newOrExisting: {
+                        title: "Proyecto nuevo o existente",
+                        options: {
+                            new: "Nuevo proyecto",
+                            existing: "Proyecto existente",
+                        },
+                    },
+                    projectId: {
+                        title: "Nombre del proyecto",
+                    },
+                    projectType: {
+                        title: "Tipo de proyecto",
+                        options: {
+                            classification: "Clasificación",
+                            objectDetection: "Detección de objetos",
+                        },
+                    },
+                },
+            },
+            tfRecords: {
+                displayName: "Registros de Tensorflow",
+            },
+            tfPascalVoc: {
+                displayName: "Tensorflow Pascal VOC",
+            },
         },
         messages: {
             saveSuccess: "Configuración de exportación guardada correctamente",
@@ -202,6 +267,11 @@ export const spanish: IAppStrings = {
         projectInvalidJson: {
             title: "Error al analizar el archivo de proyecto",
             message: "El archivo de proyecto no es válido JSON",
+        },
+        projectDeleteError: {
+            title: "Error al eliminar el proyecto",
+            message: `Se ha producido un error al eliminar el proyecto.
+                Validar el archivo de proyecto y el token de seguridad existen e inténtelo de nuevo`,
         },
         securityTokenNotFound: {
             title: "Error loading project file",

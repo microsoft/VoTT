@@ -2,7 +2,7 @@ import { KeyboardContext, IKeyboardContext, KeyEventType } from "../keyboardMana
 import React from "react";
 
 export interface IKeyboardBindingProps {
-    accelerator: string;
+    accelerators: string[];
     onKeyEvent: (evt?: KeyboardEvent) => void;
     keyEventType?: KeyEventType;
 }
@@ -16,7 +16,7 @@ export class KeyboardBinding extends React.Component<IKeyboardBindingProps> {
         if (this.context && this.context.keyboard) {
             this.deregisterBinding = this.context.keyboard.addHandler(
                 this.props.keyEventType || KeyEventType.KeyDown,
-                this.props.accelerator,
+                this.props.accelerators,
                 this.props.onKeyEvent,
             );
         } else {

@@ -5,7 +5,7 @@ import { AutoSizer, List } from "react-virtualized";
 import MockFactory from "../../../../common/mockFactory";
 
 describe("Editor SideBar", () => {
-    const onSelectAssetHanlder = jest.fn();
+    const onSelectAssetHandler = jest.fn();
     const testAssets = MockFactory.createTestAssets();
 
     function createComponent(props: IEditorSideBarProps): ReactWrapper<IEditorSideBarProps, IEditorSideBarState> {
@@ -15,7 +15,7 @@ describe("Editor SideBar", () => {
     it("Component renders correctly", () => {
         const props: IEditorSideBarProps = {
             assets: testAssets,
-            onAssetSelected: onSelectAssetHanlder,
+            onAssetSelected: onSelectAssetHandler,
         };
 
         const wrapper = createComponent(props);
@@ -27,89 +27,82 @@ describe("Editor SideBar", () => {
     it("Initializes state without asset selected", () => {
         const props: IEditorSideBarProps = {
             assets: testAssets,
-            onAssetSelected: onSelectAssetHanlder,
+            onAssetSelected: onSelectAssetHandler,
         };
 
         const wrapper = createComponent(props);
         expect(wrapper.state().selectedAsset).not.toBeDefined();
+        expect(wrapper.state().scrollToIndex).toBe(0);
     });
 
     it("Initializes state with asset selected", () => {
+        const selectedAssetIndex = 3;
+
         const props: IEditorSideBarProps = {
             assets: testAssets,
-            selectedAsset: testAssets[0],
-            onAssetSelected: onSelectAssetHanlder,
+            selectedAsset: testAssets[selectedAssetIndex],
+            onAssetSelected: onSelectAssetHandler,
         };
 
         const wrapper = createComponent(props);
         expect(wrapper.state().selectedAsset).toEqual(props.selectedAsset);
+        expect(wrapper.state().scrollToIndex).toBe(selectedAssetIndex);
     });
 
     it("Updates states after props have changed", (done) => {
         const props: IEditorSideBarProps = {
             assets: testAssets,
             selectedAsset: null,
-            onAssetSelected: onSelectAssetHanlder,
+            onAssetSelected: onSelectAssetHandler,
         };
 
         const wrapper = createComponent(props);
+
+        const selectedAssetIndex = 3;
         wrapper.setProps({
-            selectedAsset: testAssets[0],
+            selectedAsset: testAssets[selectedAssetIndex],
         });
 
         setImmediate(() => {
-            expect(wrapper.state().selectedAsset).toEqual(testAssets[0]);
+            const state = wrapper.state();
+            expect(state.selectedAsset).toEqual(testAssets[selectedAssetIndex]);
+            expect(state.scrollToIndex).toEqual(selectedAssetIndex);
+
             done();
         });
     });
 
-    it("Calls onAssetSelected handler when an asset is selected", (done) => {
+    it("Correctly switches between assets", async () => {
         const props: IEditorSideBarProps = {
             assets: testAssets,
             selectedAsset: testAssets[0],
-            onAssetSelected: onSelectAssetHanlder,
+            onAssetSelected: onSelectAssetHandler,
         };
 
-        const nextAsset = testAssets[1];
         const wrapper = createComponent(props);
+
+        // first props update
+        const firstUpdate = testAssets[6];
         wrapper.setProps({
-            selectedAsset: nextAsset,
+            selectedAsset: firstUpdate,
         });
 
-        setImmediate(() => {
-            expect(wrapper.state().selectedAsset).toEqual(nextAsset);
-            done();
-        });
-    });
+        await MockFactory.flushUi();
 
-    it("Correctly switches from image to video and back", (done) => {
-        const testAssets = MockFactory.createTestAssets();
-        const props: IEditorSideBarProps = {
-            assets: testAssets,
-            selectedAsset: testAssets[0],
-            onAssetSelected: onSelectAssetHanlder,
-        };
+        let state = wrapper.state();
+        expect(state.selectedAsset).toEqual(firstUpdate);
+        expect(state.scrollToIndex).toEqual(6);
 
-        const nextAsset = testAssets[6];
-        const wrapper = createComponent(props);
+        // second props update
+        const secondUpdate = testAssets[3];
         wrapper.setProps({
-            selectedAsset: nextAsset,
+            selectedAsset: secondUpdate,
         });
 
-        setImmediate(() => {
-            expect(wrapper.state().selectedAsset).toEqual(nextAsset);
-            done();
-        });
+        await MockFactory.flushUi();
 
-        const originalAsset = testAssets[0];
-        const backToOriginalwrapper = createComponent(props);
-        backToOriginalwrapper.setProps({
-            selectedAsset: originalAsset,
-        });
-
-        setImmediate(() => {
-            expect(backToOriginalwrapper.state().selectedAsset).toEqual(originalAsset);
-            done();
-        });
+        state = wrapper.state();
+        expect(state.selectedAsset).toEqual(secondUpdate);
+        expect(state.scrollToIndex).toEqual(3);
     });
 });

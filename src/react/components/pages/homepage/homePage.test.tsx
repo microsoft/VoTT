@@ -14,14 +14,14 @@ import HomePage, { IHomepageProps } from "./homePage";
 
 jest.mock("../../../../services/projectService");
 
-describe("Connection Picker Component", () => {
+describe("Homepage Component", () => {
     let store: Store<IApplicationState> = null;
     let props: IHomepageProps = null;
-    let wrapper: ReactWrapper<IHomepageProps> = null;
+    let wrapper: ReactWrapper = null;
     let deleteProjectSpy: jest.SpyInstance = null;
     const recentProjects = MockFactory.createTestProjects(2);
 
-    function createComponent(store, props: IHomepageProps): ReactWrapper<IHomepageProps> {
+    function createComponent(store, props: IHomepageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -33,6 +33,7 @@ describe("Connection Picker Component", () => {
 
     beforeEach(() => {
         const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve(project));
         projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
 
         store = createStore(recentProjects);
@@ -61,12 +62,13 @@ describe("Connection Picker Component", () => {
 
     it("should render a list of recent projects", () => {
         expect(wrapper).not.toBeNull();
-        if (wrapper.props().recentProjects && wrapper.props().recentProjects.length > 0) {
+        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps>;
+        if (homePage.props().recentProjects && homePage.props().recentProjects.length > 0) {
             expect(wrapper.find(CondensedList).exists()).toBeTruthy();
         }
     });
 
-    it("should delete a project when clicking trash icon", (done) => {
+    it("should delete a project when clicking trash icon", async () => {
         const store = createStore(recentProjects);
         const props = createProps();
         const wrapper = createComponent(store, props);
@@ -77,13 +79,13 @@ describe("Connection Picker Component", () => {
         // Accept the modal delete warning
         wrapper.find(".modal-footer button").first().simulate("click");
 
-        setImmediate(() => {
-            expect(deleteProjectSpy).toBeCalledWith(recentProjects[0]);
-            const updatedStore = store.getState();
-            expect(updatedStore.recentProjects.length).toEqual(recentProjects.length - 1);
+        await MockFactory.flushUi();
+        wrapper.update();
 
-            done();
-        });
+        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps>;
+
+        expect(deleteProjectSpy).toBeCalledWith(recentProjects[0]);
+        expect(homePage.props().recentProjects.length).toEqual(recentProjects.length - 1);
     });
 
     it("should call open project action after successful file upload", async () => {

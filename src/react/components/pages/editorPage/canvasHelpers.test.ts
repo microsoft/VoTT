@@ -7,20 +7,25 @@ import * as shortid from "shortid";
 
 describe("Canvas Helpers", () => {
     it("Adds a tag to list", () => {
-        const tags = MockFactory.createTestTags();
+        const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const newTag = MockFactory.createTestTag("New Tag");
 
         const newTags = CanvasHelpers.toggleTag(
             tags,
-            newTag,
+            newTag.name,
         );
+<<<<<<< HEAD
         expect(newTags).toHaveLength(originalLength + 1);
         expect(newTags[newTags.length - 1]).toEqual(newTag);
+=======
+        expect(tags).toHaveLength(originalLength + 1);
+        expect(tags[tags.length - 1]).toEqual(newTag.name);
+>>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
     });
 
     it("Removes a tag from list", () => {
-        const tags = MockFactory.createTestTags();
+        const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const originalFirstTag = tags[0];
         const newTags = CanvasHelpers.toggleTag(

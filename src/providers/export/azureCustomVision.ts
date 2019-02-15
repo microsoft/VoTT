@@ -36,8 +36,8 @@ export interface ITagList {
 }
 
 export enum NewOrExisting {
-    New = "New Project",
-    Existing = "Existing Project",
+    New = "new",
+    Existing = "existing",
 }
 
 /**
@@ -193,8 +193,8 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
         // Generate the regions for Azure Custom Vision
         assetMetadata.regions.forEach((region) => {
             if (region.boundingBox) {
-                region.tags.forEach((tag) => {
-                    const customVisionTag = tags[tag.name];
+                region.tags.forEach((tagName) => {
+                    const customVisionTag = tags[tagName];
                     if (customVisionTag) {
                         const boundingBox = this.getBoundingBoxValue(assetMetadata.asset.size, region.boundingBox);
                         const newRegion: IAzureCustomVisionRegion = {

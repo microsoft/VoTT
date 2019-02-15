@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
+    EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
     IPoint, IRegion, RegionType, IBoundingBox,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -53,18 +53,21 @@ export default class MockFactory {
      * Creates fake IAsset
      * @param name Name of asset
      * @param assetState State of asset
+     * @param path Path of asset
+     * @param assetType Type of asset
      */
     public static createTestAsset(
         name: string,
         assetState: AssetState = AssetState.NotVisited,
-        path: string = `C:\\Desktop\\asset${name}.jpg`): IAsset {
+        path: string = `C:\\Desktop\\asset${name}.jpg`,
+        assetType: AssetType = AssetType.Image): IAsset {
         return {
             id: `asset-${name}`,
             format: "jpg",
             name: `Asset ${name}.jpg`,
             path: `${path}`,
             state: assetState,
-            type: AssetType.Image,
+            type: assetType,
             size: {
                 width: 800,
                 height: 600,
@@ -156,7 +159,7 @@ export default class MockFactory {
         const mockRegion: IRegion = {
             id: id || "id",
             type: RegionType.Rectangle,
-            tags: [mockTag],
+            tags: [mockTag.name],
             points: [mockStartPoint, mockEndPoint],
             boundingBox: mockBoundingBox,
         };
@@ -166,17 +169,17 @@ export default class MockFactory {
 
     /**
      * Creates array of fake IAsset
-     * @param count Number of assets to create
-     * @param videoFirst true if the first asset should be video; false otherwise
+     * @param count Number of assets to create (default: 10)
+     * @param startIndex The index that the assets should start at (default: 1)
      */
-    public static createTestAssets(count: number = 10, videoFirst: boolean = true): IAsset[] {
+    public static createTestAssets(count: number = 10, startIndex: number = 1): IAsset[] {
         const assets: IAsset[] = [];
-        for (let i = 1; i <= count; i++) {
-            assets.push((i % 2 === 1) ?
-                videoFirst ? MockFactory.createVideoTestAsset(i.toString()) :
-                    MockFactory.createTestAsset(i.toString()) :
-                !videoFirst ? MockFactory.createVideoTestAsset(i.toString()) :
-                    MockFactory.createTestAsset(i.toString()));
+        for (let i = startIndex; i < (count + startIndex); i++) {
+            const newAsset = (i % 2 === 1)
+                ? MockFactory.createVideoTestAsset(i.toString())
+                : MockFactory.createTestAsset(i.toString());
+
+            assets.push(newAsset);
         }
 
         return assets;

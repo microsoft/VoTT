@@ -1,5 +1,6 @@
-import { mount, ReactWrapper } from "enzyme";
 import React from "react";
+import { mount, ReactWrapper } from "enzyme";
+import _ from "lodash";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
@@ -59,12 +60,7 @@ function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
         regions: [
             {
                 ...mockRegion,
-                tags: [
-                    {
-                        ...mockRegion.tags[0],
-                        color: expect.stringMatching(/^#[0-9a-f]{3,6}$/i),
-                    },
-                ],
+                tags: [mockRegion.tags[0]],
             },
         ],
     };
@@ -85,7 +81,8 @@ describe("Editor Page Component", () => {
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
-        editorMock.prototype.RM = new RegionsManager(null, null, null);
+        editorMock.prototype.RM = new RegionsManager(null, null);
+        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
     });
 
     beforeEach(() => {
@@ -125,8 +122,29 @@ describe("Editor Page Component", () => {
         expect(editorPage.prop("project")).toEqual(testProject);
     });
 
-    it("Loads project assets when state changes", async () => {
+    it("Updates state from props changes if project is null at creation", async () => {
         const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, false);
+        const props = MockFactory.editorPageProps(testProject.id);
+
+        // Simulate navigation directly via a null project
+        props.project = null;
+
+        const wrapper = createComponent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0);
+        expect(getState(wrapper).project).toBeNull();
+
+        editorPage.props().project = testProject;
+        await MockFactory.flushUi();
+        expect(editorPage.props().project).toEqual(testProject);
+        expect(getState(wrapper).project).toEqual(testProject);
+    });
+
+    it("Loads and merges project assets with asset provider assets when state changes", async () => {
+        const projectAssets = MockFactory.createTestAssets(10, 10);
+        const testProject = MockFactory.createTestProject("TestProject");
+        testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
+
         const store = createStore(testProject, true);
         const props = MockFactory.editorPageProps(testProject.id);
 
@@ -138,12 +156,12 @@ describe("Editor Page Component", () => {
             name: testProject.name,
         };
 
-        const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets);
-
         await MockFactory.flushUi();
 
+        const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(projectAssets);
+
         expect(editorPage.props().project).toEqual(expect.objectContaining(partialProject));
-        expect(editorPage.state().assets.length).toEqual(testAssets.length);
+        expect(editorPage.state().assets.length).toEqual(projectAssets.length + testAssets.length);
         expect(editorPage.state().selectedAsset).toMatchObject(expectedAssetMetadtata);
     });
 
@@ -193,14 +211,7 @@ describe("Editor Page Component", () => {
             const props = MockFactory.editorPageProps(testProject.id);
 
             wrapper = createComponent(store, props);
-
-            await MockFactory.waitForCondition(() => {
-                const editorPage = wrapper
-                    .find(EditorPage)
-                    .childAt(0);
-
-                return !!editorPage.state().selectedAsset;
-            });
+            await waitForSelectedAsset(wrapper);
         });
 
         it("editor mode is changed correctly", async () => {
@@ -292,14 +303,7 @@ describe("Editor Page Component", () => {
             });
 
             const wrapper = createComponent(store, MockFactory.editorPageProps());
-
-            await MockFactory.waitForCondition(() => {
-                const editorPage = wrapper
-                    .find(EditorPage)
-                    .childAt(0);
-
-                return !!editorPage.state().selectedAsset;
-            });
+            await waitForSelectedAsset(wrapper);
 
             wrapper.update();
 
@@ -327,4 +331,14 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
     };
 
     return createReduxStore(initialState);
+}
+
+async function waitForSelectedAsset(wrapper: ReactWrapper) {
+    await MockFactory.waitForCondition(() => {
+        const editorPage = wrapper
+            .find(EditorPage)
+            .childAt(0);
+
+        return !!editorPage.state().selectedAsset;
+    });
 }

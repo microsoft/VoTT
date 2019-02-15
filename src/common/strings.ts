@@ -160,6 +160,12 @@ export interface IAppStrings {
             previousTaggedFrame: {
                 tooltip: string,
             },
+            nextExpectedFrame: {
+                tooltip: string,
+            },
+            previousExpectedFrame: {
+                tooltip: string,
+            },
         }
         assetError: string;
     };
@@ -168,10 +174,69 @@ export interface IAppStrings {
         settings: string;
         saveSettings: string;
         providers: {
-            vottJson: string;
-            azureCV: string;
-            tfRecords: string;
-            tfPascalVoc: string;
+            common: {
+                properties: {
+                    assetState: {
+                        title: string,
+                        description: string,
+                        options: {
+                            all: string,
+                            visited: string,
+                            tagged: string,
+                        },
+                    },
+                },
+            },
+            vottJson: {
+                displayName: string,
+            },
+            azureCV: {
+                displayName: string,
+                properties: {
+                    apiKey: {
+                        title: string,
+                    },
+                    newOrExisting: {
+                        title: string,
+                        options: {
+                            new: string,
+                            existing: string,
+                        },
+                    },
+                    name: {
+                        title: string,
+                    },
+                    description: {
+                        title: string,
+                    },
+                    projectType: {
+                        title: string,
+                        options: {
+                            classification: string,
+                            objectDetection: string,
+                        },
+                    },
+                    classificationType: {
+                        title: string,
+                        options: {
+                            multiLabel: string,
+                            multiClass: string,
+                        },
+                    },
+                    domainId: {
+                        title: string,
+                    },
+                    projectId: {
+                        title: string,
+                    },
+                },
+            },
+            tfRecords: {
+                displayName: string,
+            },
+            tfPascalVoc: {
+                displayName: string,
+            },
         },
         messages: {
             saveSuccess: string;
@@ -188,6 +253,7 @@ export interface IAppStrings {
         projectInvalidJson: IErrorMetadata,
         projectInvalidSecurityToken: IErrorMetadata,
         projectUploadError: IErrorMetadata,
+        projectDeleteError: IErrorMetadata,
         genericRenderError: IErrorMetadata,
         securityTokenNotFound: IErrorMetadata,
         canvasError: IErrorMetadata,

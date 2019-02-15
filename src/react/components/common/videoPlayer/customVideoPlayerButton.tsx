@@ -5,7 +5,7 @@ import { KeyEventType } from "../keyboardManager/keyboardManager";
 
 export interface ICustomVideoPlayerButtonProps {
     order: number;
-    accelerator?: string;
+    accelerators?: string[];
     tooltip?: string;
     player?: Player;
     onClick: () => void;
@@ -15,9 +15,9 @@ export class CustomVideoPlayerButton extends React.Component<ICustomVideoPlayerB
     public render() {
         return (
             <Fragment>
-                {this.props.accelerator &&
+                {this.props.accelerators &&
                     <KeyboardBinding keyEventType={KeyEventType.KeyDown}
-                        accelerator={this.props.accelerator}
+                        accelerators={this.props.accelerators}
                         onKeyEvent={this.props.onClick} />
                 }
                 <button

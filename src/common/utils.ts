@@ -74,6 +74,10 @@ export function encryptProject(project: IProject, securityToken: ISecurityToken)
     return encrypted;
 }
 
+export function contains<T>(items: T[], item: T) {
+    return items.indexOf(item) > -1;
+}
+
 /**
  * Decrypts sensitive settings for the specified project and return the result
  * @param project The project to decrypt

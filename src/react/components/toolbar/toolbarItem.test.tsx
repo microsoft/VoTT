@@ -58,7 +58,7 @@ describe("Toolbar Item", () => {
 
     it("Renders a keyboard binding when an accelerator is configured", () => {
         const props = createProps();
-        props.accelerator = "Ctrl+1";
+        props.accelerators = ["Ctrl+1"];
 
         const wrapper = createComponent(props);
         expect(wrapper.find(KeyboardBinding).exists()).toBe(true);

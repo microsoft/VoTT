@@ -11,6 +11,7 @@ import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
  * @member tooltip - Tooltip to apply upon selection
  * @member group - Name of item group in which to include item
  * @member type - Type of toolbar item (Action or State)
+ * @member accelerators - collection of accelerator that map to same action
  */
 export interface IToolbarItemMetadata {
     name: string;
@@ -18,7 +19,7 @@ export interface IToolbarItemMetadata {
     tooltip: string;
     group: string;
     type: ToolbarItemType;
-    accelerator?: string;
+    accelerators?: string[];
 }
 
 /**
@@ -73,13 +74,16 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
             className.push("active");
         }
 
+        const accelerators = this.props.accelerators;
+
         return (
             <Fragment>
-                {this.props.accelerator &&
+                {
+                    accelerators &&
                     <KeyboardBinding
-                        keyEventType={KeyEventType.KeyDown}
-                        accelerator={this.props.accelerator}
+                        accelerators={accelerators}
                         onKeyEvent={this.onClick}
+                        keyEventType={KeyEventType.KeyDown}
                     />
                 }
                 <button type="button"

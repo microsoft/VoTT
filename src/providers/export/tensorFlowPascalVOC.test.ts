@@ -80,7 +80,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 const mockRegion: IRegion = {
                     id: "id",
                     type: RegionType.Rectangle,
-                    tags: [mockTag],
+                    tags: [mockTag.name],
                     points: [mockStartPoint, mockEndPoint],
                 };
 

@@ -13,6 +13,7 @@ import { ExportProviderFactory } from "../../providers/export/exportProviderFact
 import { IExportProvider } from "../../providers/export/exportProvider";
 import { IApplicationState } from "../../models/applicationState";
 import initialState from "../store/initialState";
+import { encryptProject } from "../../common/utils";
 
 describe("Project Redux Actions", () => {
     let store: MockStoreEnhanced<IApplicationState>;
@@ -32,7 +33,9 @@ describe("Project Redux Actions", () => {
 
     it("Load Project action resolves a promise and dispatches redux action", async () => {
         const project = MockFactory.createTestProject("TestProject");
-        const securityToken = appSettings.securityTokens.find((st) => st.name === project.securityToken);
+        const projectToken = appSettings.securityTokens
+            .find((securityToken) => securityToken.name === project.securityToken);
+
         const result = await projectActions.loadProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
@@ -42,14 +45,16 @@ describe("Project Redux Actions", () => {
             payload: project,
         });
         expect(result).toEqual(project);
-        expect(projectServiceMock.prototype.load).toBeCalledWith(project, securityToken);
+        expect(projectServiceMock.prototype.load).toBeCalledWith(project, projectToken);
     });
 
     it("Save Project action calls project service and dispatches redux action", async () => {
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 
         const project = MockFactory.createTestProject("TestProject");
-        const securityToken = appSettings.securityTokens.find((st) => st.name === project.securityToken);
+        const projectToken = appSettings.securityTokens
+            .find((securityToken) => securityToken.name === project.securityToken);
+
         const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
@@ -63,15 +68,15 @@ describe("Project Redux Actions", () => {
             payload: project,
         });
         expect(result).toEqual(project);
-        expect(projectServiceMock.prototype.save).toBeCalledWith(project, securityToken);
-        expect(projectServiceMock.prototype.load).toBeCalledWith(project, securityToken);
+        expect(projectServiceMock.prototype.save).toBeCalledWith(project, projectToken);
+        expect(projectServiceMock.prototype.load).toBeCalledWith(project, projectToken);
     });
 
     it("Delete Project action calls project service and dispatches redux action", async () => {
         projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
 
         const project = MockFactory.createTestProject("TestProject");
-        await projectActions.deleteProject(project)(store.dispatch);
+        await projectActions.deleteProject(project)(store.dispatch, store.getState);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
@@ -80,6 +85,14 @@ describe("Project Redux Actions", () => {
             payload: project,
         });
         expect(projectServiceMock.prototype.delete).toBeCalledWith(project);
+    });
+
+    it("Delete project with missing security token throws error", async () => {
+        const project = MockFactory.createTestProject("ProjectWithoutToken");
+        await expect(projectActions.deleteProject(project)(store.dispatch, store.getState)).rejects.not.toBeNull();
+
+        const actions = store.getActions();
+        expect(actions.length).toEqual(0);
     });
 
     it("Close project dispatches redux action", () => {

@@ -41,6 +41,7 @@ export enum ErrorCode {
     ProjectInvalidJson = "projectInvalidJson",
     ProjectInvalidSecurityToken = "projectInvalidSecurityToken",
     ProjectUploadError = "projectUploadError",
+    ProjectDeleteError = "projectDeleteError",
     SecurityTokenNotFound = "securityTokenNotFound",
     CanvasError = "canvasError",
 }
@@ -241,7 +242,7 @@ export interface ISize {
 export interface IRegion {
     id: string;
     type: RegionType;
-    tags: ITag[];
+    tags: string[];
     points?: IPoint[];
     boundingBox?: IBoundingBox;
 }
@@ -283,6 +284,7 @@ export enum AssetType {
     Image = 1,
     Video = 2,
     VideoFrame = 3,
+    TFRecord = 4,
 }
 
 /**
@@ -330,4 +332,14 @@ export interface ISecureString {
 export interface ISecurityToken {
     name: string;
     key: string;
+}
+
+export interface ITFRecordMetadata {
+    width: number;
+    height: number;
+    xminArray: number[];
+    yminArray: number[];
+    xmaxArray: number[];
+    ymaxArray: number[];
+    textArray: string[];
 }

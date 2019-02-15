@@ -5,6 +5,8 @@ import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { IBoundingBox, IPoint, IRegion, ITag,
     RegionType, EditorMode, IAssetMetadata } from "../../../../models/applicationState";
+import Guard from "../../../../common/guard";
+import { contains } from "../../../../common/utils";
 
 /**
  * Static functions to assist in operations within Canvas component
@@ -22,25 +24,25 @@ export default class CanvasHelpers {
      * @param tags Array of tags
      * @param tag Tag to toggle
      */
-    public static toggleTag(tags: ITag[], tag: ITag): ITag[] {
+    public static toggleTag(tags: string[], tag: string): string[] {
         if (!tag) {
             return tags;
         }
         if (!tags) {
             return [ tag ];
         }
-        if (CanvasHelpers.getTag(tags, tag.name)) {
+        if (contains(tags, tag)) {
             return CanvasHelpers.removeTag(tags, tag);
         } else {
             return [...tags, tag];
         }
     }
 
-    private static removeTag(tags: ITag[], tag: ITag) {
-        return tags.filter((t) => t && t.name !== tag.name);
+    private static removeTag(tags: string[], tag: string) {
+        return tags.filter((t) => t && t !== tag);
     }
 
-    public static toggleAllTags(tags: ITag[], toggle: ITag[]) {
+    public static toggleAllTags(tags: string[], toggle: string[]) {
         let newTags = [...tags];
         for (const tag of toggle) {
             newTags = CanvasHelpers.toggleTag(newTags, tag);
@@ -48,43 +50,39 @@ export default class CanvasHelpers {
         return newTags;
     }
 
-    public static addAllIfMissing(tags: ITag[], newTags: ITag[]) {
+    public static addAllIfMissing(tags: string[], newTags: string[]) {
         const result = [...tags];
         for (const tag of newTags) {
-            if (!CanvasHelpers.getTag(result, tag.name)) {
+            if (!contains(result, tag)) {
                 result.push(tag);
             }
         }
         return result;
     }
 
-    public static addIfMissing(tags: ITag[], tag: ITag): ITag[] {
+    public static addIfMissing(tags: string[], tag: string): string[] {
         if (!tag) {
             return tags;
         }
         if (!tags) {
             return [ tag ];
         }
-        if (!CanvasHelpers.getTag(tags, tag.name)) {
+        if (!contains(tags, tag)) {
             return [...tags, tag];
         } else {
             return tags;
         }
     }
 
-    public static removeIfContained(tags: ITag[], tag: ITag): ITag[] {
+    public static removeIfContained(tags: string[], tag: string): string[] {
         if (!tags || !tag) {
             return tags;
         }
-        if (CanvasHelpers.getTag(tags, tag.name)) {
+        if (contains(tags, tag)) {
             return CanvasHelpers.removeTag(tags, tag);
         } else {
             return tags;
         }
-    }
-
-    public static getTag(tags: ITag[], name: string): ITag {
-        return tags.find((t) => (t && t.name === name));
     }
 
     public static getRegion(regions: IRegion[], id: string): IRegion {
@@ -101,13 +99,13 @@ export default class CanvasHelpers {
      * If selectedTag is within lockedTags, add selectedTag to region tags
      * If selectedTag is not within lockedTags, remove selectedTag from region tags
      */
-    public static applyTagsToRegions = (regions: IRegion[], lockedTags: ITag[], selectedTag?: ITag): IRegion[] => {
+    public static applyTagsToRegions = (regions: IRegion[], lockedTags: string[], selectedTag?: string): IRegion[] => {
         const lockedTagsEmpty = !lockedTags || !lockedTags.length;
         if (!selectedTag && lockedTagsEmpty) {
             return regions;
         }
-        let transformer: (tags: ITag[], target: ITag|ITag[]) => ITag[];
-        let target: ITag|ITag[] = selectedTag;
+        let transformer: (tags: string[], target: string|string[]) => string[];
+        let target: string|string[] = selectedTag;
         if (!selectedTag && !lockedTagsEmpty) {
             // Region selection while exist locked tags
             transformer = CanvasHelpers.addAllIfMissing;
@@ -115,7 +113,7 @@ export default class CanvasHelpers {
         } else if (lockedTagsEmpty) {
             // Tag selected while region(s) selected
             transformer = CanvasHelpers.toggleTag;
-        } else if (CanvasHelpers.getTag(lockedTags, selectedTag.name)) {
+        } else if (contains(lockedTags, selectedTag)) {
             // Tag added to locked tags while region(s) selected
             transformer = CanvasHelpers.addIfMissing;
         } else {
@@ -201,13 +199,17 @@ export default class CanvasHelpers {
      * Create TagsDescriptor (CanvasTools) from IRegion
      * @param region IRegion from Canvas
      */
-    public static getTagsDescriptor(region: IRegion): TagsDescriptor {
-        const tags: Tag[] = [];
-        for (const tag of region.tags) {
-            if (tag) {
-                tags.push(new Tag(tag.name, tag.color));
-            }
-        }
+    public static getTagsDescriptor(projectTags: ITag[], region: IRegion): TagsDescriptor {
+        Guard.null(projectTags);
+        Guard.null(region);
+
+        const tags = region.tags
+            .map((tagName) => {
+                const projectTag = projectTags.find((projectTag) => projectTag.name === tagName);
+                return projectTag ? new Tag(projectTag.name, projectTag.color) : null;
+            })
+            .filter((tag) => tag !== null);
+
         return new TagsDescriptor(tags);
     }
 
@@ -258,7 +260,7 @@ export default class CanvasHelpers {
     }
 
     private static transformRegionTags(
-        regions: IRegion[], target: ITag|ITag[], transformer: (tags: ITag[], target: ITag|ITag[]) => ITag[]) {
+        regions: IRegion[], target: string|string[], transformer: (tags: string[], target: string|string[]) => string[]): IRegion[] {
         return regions.map((r) => {
             if (!r) {
                 return r;
