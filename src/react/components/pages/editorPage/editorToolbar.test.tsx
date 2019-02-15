@@ -6,9 +6,9 @@ import { ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFac
 import registerToolbar from "../../../../registerToolbar";
 import { ReactWrapper, mount } from "enzyme";
 import { Select } from "../../toolbar/select";
-import { ZoomIn } from "../../toolbar/zoomIn";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
+import { DrawPolygon } from "../../toolbar/drawPolygon";
 
 describe("Editor Toolbar", () => {
     let wrapper: ReactWrapper = null;
@@ -59,11 +59,11 @@ describe("Editor Toolbar", () => {
     });
 
     it("Sets the selected toolbar item", async () => {
-        const zoom = wrapper.find(ZoomIn).first();
-        expect(zoom.exists()).toBe(true);
-        zoom.find("button").simulate("click");
+        const drawPolygon = wrapper.find(DrawPolygon).first();
+        expect(drawPolygon.exists()).toBe(true);
+        drawPolygon.find("button").simulate("click");
 
         const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
-        expect(toolbar.state().selectedItem).toEqual(ZoomIn.prototype);
+        expect(toolbar.state().selectedItem).toEqual(DrawPolygon.prototype);
     });
 });
