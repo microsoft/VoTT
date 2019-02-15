@@ -5,8 +5,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { ClipBoard } from "../../../../common/clipboard";
-import { AssetState, EditorMode, IAssetMetadata, IProject,
-    IRegion, ITag, RegionType, IAsset } from "../../../../models/applicationState";
+import { EditorMode, IAssetMetadata, IProject, IRegion, ITag } from "../../../../models/applicationState";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
@@ -146,7 +145,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     public onRegionSelected = (id: string) => {
-
         const selectedRegion = this.getRegion(this.state.currentAsset.regions, id);
 
         let selectedRegions = this.state.selectedRegions;
@@ -185,10 +183,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         } : {
             currentAsset: asset,
         };
-        this.setState(state, () => this.props.onAssetMetadataChanged(asset));
         for (const region of asset.regions) {
             this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
         }
+        this.setState(state, () => this.props.onAssetMetadataChanged(asset));
+        
     }
 
     private updateAssetRegions = (updates: IRegion[]) => {

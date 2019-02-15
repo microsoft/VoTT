@@ -30,10 +30,14 @@ export default class CanvasHelpers {
             return [ tag ];
         }
         if (CanvasHelpers.getTag(tags, tag.name)) {
-            return tags.filter((t) => t.name !== tag.name);
+            return CanvasHelpers.removeTag(tags, tag);
         } else {
             return [...tags, tag];
         }
+    }
+
+    private static removeTag(tags: ITag[], tag: ITag) {
+        return tags.filter((t) => t && t.name !== tag.name);
     }
 
     public static toggleAllTags(tags: ITag[], toggle: ITag[]) {
@@ -73,18 +77,18 @@ export default class CanvasHelpers {
             return tags;
         }
         if (CanvasHelpers.getTag(tags, tag.name)) {
-            return tags.filter((t) => t.name !== tag.name);
+            return CanvasHelpers.removeTag(tags, tag);
         } else {
             return tags;
         }
     }
 
     public static getTag(tags: ITag[], name: string): ITag {
-        return tags.find((t) => t.name === name);
+        return tags.find((t) => (t && t.name === name));
     }
 
     public static getRegion(regions: IRegion[], id: string): IRegion {
-        return regions.find((r) => r.id === id);
+        return regions.find((r) => (r && r.id === id));
     }
 
     /**
@@ -153,8 +157,10 @@ export default class CanvasHelpers {
     public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[] {
         const result: IRegion[] = [];
         for (const region of regions) {
-            const update = CanvasHelpers.getRegion(updates, region.id);
-            result.push((update) ? update : region);
+            if (region) {
+                const update = CanvasHelpers.getRegion(updates, region.id);
+                result.push((update) ? update : region);
+            }
         }
         return result;
     }
@@ -196,7 +202,13 @@ export default class CanvasHelpers {
      * @param region IRegion from Canvas
      */
     public static getTagsDescriptor(region: IRegion): TagsDescriptor {
-        return new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name, tag.color)));
+        const tags: Tag[] = [];
+        for (const tag of region.tags) {
+            if (tag) {
+                tags.push(new Tag(tag.name, tag.color));
+            }
+        }
+        return new TagsDescriptor(tags);
     }
 
     /**
@@ -248,6 +260,9 @@ export default class CanvasHelpers {
     private static transformRegionTags(
         regions: IRegion[], target: ITag|ITag[], transformer: (tags: ITag[], target: ITag|ITag[]) => ITag[]) {
         return regions.map((r) => {
+            if (!r) {
+                return r;
+            }
             return {
                 ...r,
                 tags: transformer(r.tags, target),

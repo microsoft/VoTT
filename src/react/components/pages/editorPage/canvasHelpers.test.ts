@@ -239,7 +239,7 @@ describe("Canvas Helpers", () => {
             regions[i].tags = originalTags[i];
         }
 
-        it("No selected tag, toggle all locked tags", () => {
+        it("No selected tag, add all locked tags", () => {
             const transformedTags = getRegionTags(CanvasHelpers.applyTagsToRegions(regions, [ tag1, tag3 ]));
             const expectedTags = [
                 [tag1, tag2, tag3],
