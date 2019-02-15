@@ -132,7 +132,7 @@ describe("Azure Custom Vision Export Provider", () => {
                         id: shortid.generate(),
                         type: RegionType.Rectangle,
                         tags: [
-                            testProject.tags[0],
+                            testProject.tags[0].name,
                         ],
                         boundingBox: {
                             left: 10,

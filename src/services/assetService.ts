@@ -2,8 +2,10 @@ import MD5 from "md5.js";
 import _ from "lodash";
 import * as shortid from "shortid";
 import Guard from "../common/guard";
-import { IAsset, AssetType, IProject, IAssetMetadata, AssetState,
-         IRegion, RegionType, ITFRecordMetadata } from "../models/applicationState";
+import {
+    IAsset, AssetType, IProject, IAssetMetadata, AssetState,
+    IRegion, RegionType, ITFRecordMetadata,
+} from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
@@ -203,7 +205,7 @@ export class AssetService {
         // Add Regions from TFRecord in Regions
         for (let index = 0; index < objectArray.textArray.length; index++) {
             tagPos = tags.findIndex((tag) => tag === objectArray.textArray[index]);
-            if (tagPos < 0 ) {
+            if (tagPos < 0) {
                 tagPos = tags.length;
                 tags.push(objectArray.textArray[index]);
             }
@@ -211,10 +213,7 @@ export class AssetService {
             regions.push({
                 id: shortid.generate(),
                 type: RegionType.Rectangle,
-                tags: [{
-                    name: objectArray.textArray[index],
-                    color: TagColors[tagPos],
-                }],
+                tags: [objectArray.textArray[index]],
                 boundingBox: {
                     left: objectArray.xminArray[index] * objectArray.width,
                     top: objectArray.yminArray[index] * objectArray.height,
@@ -222,13 +221,13 @@ export class AssetService {
                     height: (objectArray.ymaxArray[index] - objectArray.yminArray[index]) * objectArray.height,
                 },
                 points: [{
-                            x: objectArray.xminArray[index] * objectArray.width,
-                            y: objectArray.yminArray[index] * objectArray.height,
-                        },
-                        {
-                             x: objectArray.xmaxArray[index] * objectArray.width,
-                             y: objectArray.ymaxArray[index] * objectArray.height,
-                        }],
+                    x: objectArray.xminArray[index] * objectArray.width,
+                    y: objectArray.yminArray[index] * objectArray.height,
+                },
+                {
+                    x: objectArray.xmaxArray[index] * objectArray.width,
+                    y: objectArray.ymaxArray[index] * objectArray.height,
+                }],
             });
         }
 
@@ -248,6 +247,6 @@ export class AssetService {
         const ymaxArray = reader.getArrayFeature(0, "image/object/bbox/ymax", FeatureType.Float) as number[];
         const textArray = reader.getArrayFeature(0, "image/object/class/text", FeatureType.String) as string[];
 
-        return {width, height, xminArray, yminArray, xmaxArray, ymaxArray, textArray};
+        return { width, height, xminArray, yminArray, xmaxArray, ymaxArray, textArray };
     }
 }

@@ -262,14 +262,14 @@ describe("Asset Service", () => {
 
             expect(result.regions.length).toEqual(2);
             expect(result.regions[0].tags.length).toEqual(1);
-            expect(result.regions[0].tags[0].name).toEqual("a");
+            expect(result.regions[0].tags[0]).toEqual("a");
             expect(result.regions[0].points.length).toEqual(2);
             expect(result.regions[0].points[0].x).toEqual(0);
             expect(result.regions[0].points[0].y).toEqual(0);
             expect(result.regions[0].points[1].x).toEqual(300);
             expect(result.regions[0].points[1].y).toEqual(400);
             expect(result.regions[1].tags.length).toEqual(1);
-            expect(result.regions[1].tags[0].name).toEqual("b");
+            expect(result.regions[1].tags[0]).toEqual("b");
             expect(result.regions[1].points.length).toEqual(2);
             expect(Math.floor(result.regions[1].points[0].x)).toEqual(60);
             expect(Math.floor(result.regions[1].points[0].y)).toEqual(80);
