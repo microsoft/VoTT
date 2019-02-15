@@ -12,13 +12,10 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
-<<<<<<< HEAD
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { KeyCodes } from "../../../../common/utils";
 import { KeyEventType, KeyboardManager } from "../../common/keyboardManager/keyboardManager";
-=======
-import { SelectionMode, AreaSelector } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
+import { AreaSelector } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 describe("Editor Canvas", () => {
     const onAssetMetadataChanged = jest.fn();
@@ -171,11 +168,7 @@ describe("Editor Canvas", () => {
 
         testRegion.points = [new Point2D(0, 1), new Point2D(1, 1), new Point2D(0, 2), new Point2D(1, 2)];
         wrapper.prop("selectedAsset").regions.push(testRegion);
-<<<<<<< HEAD
-        canvas.editor.onRegionMove("test-region", MockFactory.createTestRegionData());
-=======
-        canvas.editor.onRegionMoveEnd("test-region", createTestRegionData());
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
+        canvas.editor.onRegionMoveEnd("test-region", MockFactory.createTestRegionData());
 
         expect(onAssetMetadataChanged).toBeCalled();
         expect(wrapper.prop("selectedAsset").regions).toMatchObject([MockFactory.createTestRegion("test-region")]);
@@ -433,9 +426,9 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().currentAsset.regions).toHaveLength(0);
     });
 
-    const tag1 = MockFactory.createTestTag("tag1");
-    const tag2 = MockFactory.createTestTag("tag2");
-    const tag3 = MockFactory.createTestTag("tag3");
+    const tag1 = "tag1";
+    const tag2 = "tag2";
+    const tag3 = "tag3";
 
     function getTaggedRegions(): IRegion[] {
         const region1 = MockFactory.createTestRegion("region1");
@@ -478,7 +471,7 @@ describe("Editor Canvas", () => {
         return wrapper;
     }
 
-    function checkRegionTags(regions: IRegion[], ...tagArrays: ITag[][]) {
+    function checkRegionTags(regions: IRegion[], ...tagArrays: string[][]) {
         for (let i = 0; i < tagArrays.length; i++) {
             expect(regions[i].tags).toEqual(tagArrays[i]);
         }
@@ -538,7 +531,6 @@ describe("Editor Canvas", () => {
     it("Toggles single tag for multiple regions", () => {
         const wrapper = getWrapperWithTaggedRegions();
         const canvas = wrapper.instance();
-<<<<<<< HEAD
         wrapper.setState({
             contentSource: null,
             selectedRegions: [],
@@ -604,11 +596,6 @@ describe("Editor Canvas", () => {
             lockedTags: [ tag1, tag2 ],
         });
 
-        // region1.tags = [ tag1, tag2 ];
-        // region2.tags = [ tag2 ];
-        // region3.tags = [ tag2, tag3 ];
-        // region4.tags = []
-
         canvas.onRegionSelected("region1");
         checkRegionTags(wrapper.state().selectedRegions, [tag1, tag2]);
 
@@ -634,7 +621,7 @@ describe("Editor Canvas", () => {
         checkRegionTags(wrapper.state().selectedRegions, [ tag1, tag2 ]);
     });
 
-    function getExpectedAssetMetadata(newAssetMetadata: IAssetMetadata, region: IRegion, expectedTags: ITag[]) {
+    function getExpectedAssetMetadata(newAssetMetadata: IAssetMetadata, region: IRegion, expectedTags: string[]) {
             const expectedMetadata: IAssetMetadata = {
                 ...newAssetMetadata,
                 regions: newAssetMetadata.regions.map((r) => {
@@ -649,20 +636,6 @@ describe("Editor Canvas", () => {
                 }),
             };
             return expectedMetadata;
-=======
-        const testRegion1 = MockFactory.createTestRegion("test1");
-        const testRegion2 = MockFactory.createTestRegion("test2");
-
-        wrapper.prop("selectedAsset").regions.push(testRegion1);
-        wrapper.prop("selectedAsset").regions.push(testRegion2);
-        canvas.editor.onRegionSelected("test1", false);
-        canvas.editor.onRegionSelected("test2", true);
-
-        const newTag = MockFactory.createTestTag();
-        canvas.onTagClicked(newTag);
-        for (const region of wrapper.instance().state.selectedRegions) {
-            expect(region.tags.findIndex((tag) => tag === newTag.name)).toBeGreaterThanOrEqual(0);
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
         }
 
     it("Calls onAssetChanged handler after applying a tag", () => {

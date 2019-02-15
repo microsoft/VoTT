@@ -156,20 +156,9 @@ export default class TagsInput<T extends ITagsInputProps> extends React.Componen
      * Gets tag ID (name) from a click event
      * @param event Click event
      */
-<<<<<<< HEAD
-    protected getTagIdFromClick(event): string {
-        if (event.target.lastChild) {
-            return event.target.lastChild.data;
-        }
-        return (event.target.innerText || event.currentTarget.innerText)
-            .trim()
-            // Remove index from tag if box is clicked
-            .replace(/\[\d+\] /, "");
-=======
     protected getTagIdFromClick(event: SyntheticEvent): string {
         const attrValue = event.currentTarget.getAttribute("data-tag-name");
         return attrValue ? attrValue.trim() : null;
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
     }
 
     /**

@@ -22,12 +22,8 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
-<<<<<<< HEAD
-import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import CanvasHelpers from "./canvasHelpers";
-=======
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
 
 /**
  * Properties for Editor Page
@@ -57,15 +53,12 @@ export interface IEditorPageState {
     selectedAsset?: IAssetMetadata;
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
-<<<<<<< HEAD
     /** Tags selected for labeling of regions */
-    lockedTags?: ITag[];
+    lockedTags?: string[];
     /** Selected tag */
-    selectedTag?: ITag;
-=======
+    selectedTag?: string;
     /** Additional settings for asset previews */
     additionalSettings?: IAssetPreviewSettings;
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -93,11 +86,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
-<<<<<<< HEAD
         lockedTags: [],
-=======
         additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
     };
 
     private loadingProjectAssets: boolean = false;
@@ -200,41 +190,17 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Called when a tag from footer is clicked
      * @param tag Tag clicked
      */
-<<<<<<< HEAD
     public onTagClicked = (tag: ITag) => {
-        const previouslySelected = this.state.lockedTags.find((t) => t.name === tag.name);
         this.setState({
-            selectedTag: tag,
+            selectedTag: tag.name,
             lockedTags: [],
         });
     }
-=======
-    public onTagClicked = (tag: ITag): void => {
-        const selectedAsset = this.state.selectedAsset;
-        if (this.canvas.current.state.selectedRegions && this.canvas.current.state.selectedRegions.length) {
-            const selectedRegions = this.canvas.current.state.selectedRegions;
-            selectedRegions.map((region) => {
-                const selectedIndex = selectedAsset.regions.findIndex((r) => r.id === region.id);
-                const selectedRegion = selectedAsset.regions[selectedIndex];
-                const tagIndex = selectedRegion.tags.findIndex((existingTag) => existingTag === tag.name);
-                if (tagIndex === -1) {
-                    selectedRegion.tags.push(tag.name);
-                } else {
-                    selectedRegion.tags.splice(tagIndex, 1);
-                }
-                if (selectedRegion.tags.length) {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id,
-                        new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag,
-                            this.props.project.tags.find((t) => t.name === tempTag).color))));
-                } else {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id, null);
-                }
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
 
     public onTagShiftClicked = (tag: ITag) => {
         this.setState({
-            selectedTag: tag,
-            lockedTags: CanvasHelpers.toggleTag(this.state.lockedTags, tag),
+            selectedTag: tag.name,
+            lockedTags: CanvasHelpers.toggleTag(this.state.lockedTags, tag.name),
         });
     }
 

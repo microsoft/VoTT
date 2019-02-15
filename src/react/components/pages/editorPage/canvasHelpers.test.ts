@@ -9,19 +9,14 @@ describe("Canvas Helpers", () => {
     it("Adds a tag to list", () => {
         const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
-        const newTag = MockFactory.createTestTag("New Tag");
+        const newTag = "New Tag"
 
         const newTags = CanvasHelpers.toggleTag(
             tags,
-            newTag.name,
+            newTag,
         );
-<<<<<<< HEAD
         expect(newTags).toHaveLength(originalLength + 1);
         expect(newTags[newTags.length - 1]).toEqual(newTag);
-=======
-        expect(tags).toHaveLength(originalLength + 1);
-        expect(tags[tags.length - 1]).toEqual(newTag.name);
->>>>>>> 9579d83c48a0d8c0cc83e4b0ba89c3bc998edab0
     });
 
     it("Removes a tag from list", () => {
@@ -205,9 +200,7 @@ describe("Canvas Helpers", () => {
 
     it("Updates regions correctly", () => {
         const regions = MockFactory.createTestRegions();
-        const tags = [
-            MockFactory.createTestTag("My tag"),
-        ];
+        const tags = ["My tag"];
         const replacementRegion: IRegion = {
             ...regions[0],
             tags,
@@ -228,9 +221,9 @@ describe("Canvas Helpers", () => {
     describe("Applies tags to regions appropriately", () => {
         const regions = MockFactory.createTestRegions(5);
 
-        const tag1 = MockFactory.createTestTag("tag1");
-        const tag2 = MockFactory.createTestTag("tag2");
-        const tag3 = MockFactory.createTestTag("tag3");
+        const tag1 = "tag1";
+        const tag2 = "tag2";
+        const tag3 = "tag3";
 
         const originalTags = [
             [tag1, tag2],

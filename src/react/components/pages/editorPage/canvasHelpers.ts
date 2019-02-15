@@ -38,10 +38,6 @@ export default class CanvasHelpers {
         }
     }
 
-    private static removeTag(tags: string[], tag: string) {
-        return tags.filter((t) => t && t !== tag);
-    }
-
     public static toggleAllTags(tags: string[], toggle: string[]) {
         let newTags = [...tags];
         for (const tag of toggle) {
@@ -259,8 +255,13 @@ export default class CanvasHelpers {
         });
     }
 
+    private static removeTag(tags: string[], tag: string) {
+        return tags.filter((t) => t && t !== tag);
+    }
+
     private static transformRegionTags(
-        regions: IRegion[], target: string|string[], transformer: (tags: string[], target: string|string[]) => string[]): IRegion[] {
+        regions: IRegion[], target: string|string[],
+        transformer: (tags: string[], target: string|string[]) => string[]): IRegion[] {
         return regions.map((r) => {
             if (!r) {
                 return r;

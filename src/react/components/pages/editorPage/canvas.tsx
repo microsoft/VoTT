@@ -187,7 +187,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         }
         this.setState(state, () => this.props.onAssetMetadataChanged(asset));
-        
+
     }
 
     private updateAssetRegions = (updates: IRegion[]) => {
