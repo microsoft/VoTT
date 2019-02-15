@@ -55,6 +55,18 @@ describe("Video Asset Component", () => {
         expect(wrapper.state().loaded).toBe(false);
     });
 
+    it("does not subscribe to state change callback when autoPlay is false", () => {
+        const testProps: IVideoAssetProps = { ...defaultProps,
+            autoPlay: false,
+        };
+        wrapper = createComponent(testProps);
+        mockLoaded();
+
+        const newAsset = MockFactory.createVideoTestAsset("new-video-asset");
+        wrapper.setProps({ asset: newAsset });
+        expect(videoPlayerMock.prototype.subscribeToStateChange).not.toBeCalled();
+    });
+
     it("seeks the video player to the spcified timestamp when timestamp changes", () => {
         const expectedTime = 10.2;
         wrapper = createComponent();
