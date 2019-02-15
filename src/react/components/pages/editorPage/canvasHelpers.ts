@@ -98,7 +98,6 @@ export default class CanvasHelpers {
      * If selectedTag is not within lockedTags, remove selectedTag from region tags
      */
     public static applyTagsToRegions = (regions: IRegion[], lockedTags: ITag[], selectedTag?: ITag): IRegion[] => {
-
         const lockedTagsEmpty = !lockedTags || !lockedTags.length;
         if (!selectedTag && lockedTagsEmpty) {
             return regions;
@@ -151,8 +150,8 @@ export default class CanvasHelpers {
         };
     }
 
-    public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[]{
-        let result: IRegion[]
+    public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[] {
+        let result: IRegion[];
         for (const update of updates) {
             result = regions.map((r) => (r.id === update.id) ? update : r);
         }
@@ -162,12 +161,12 @@ export default class CanvasHelpers {
     public static cloneAndUpdateRegions(asset: IAssetMetadata, updates: IRegion[]): IAssetMetadata {
         return {
             ...asset,
-            regions: CanvasHelpers.updateRegions(asset.regions, updates)
+            regions: CanvasHelpers.updateRegions(asset.regions, updates),
         };
     }
 
     public static nullOrEmpty(item: any[]) {
-        return !item || !item.length
+        return !item || !item.length;
     }
 
     public static editorModeToType(editorMode: EditorMode) {

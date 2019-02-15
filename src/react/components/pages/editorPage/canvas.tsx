@@ -81,9 +81,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         if (this.props.lockedTags !== prevProps.lockedTags || this.props.selectedTag !== prevProps.selectedTag) {
-            const regions = CanvasHelpers.applyTagsToRegions(
-                this.state.selectedRegions, this.props.lockedTags, this.props.selectedTag);
-            this.updateAssetRegions(regions);
+            if(!(CanvasHelpers.nullOrEmpty(this.props.lockedTags) && !this.props.selectedTag)) {
+                const regions = CanvasHelpers.applyTagsToRegions(
+                    this.state.selectedRegions, this.props.lockedTags, this.props.selectedTag);
+                this.updateAssetRegions(regions);
+            }
         }
     }
 
@@ -138,32 +140,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         );
     }
 
-    private setAssetRegions = (regions: IRegion[]) => {
-        const asset: IAssetMetadata = {
-            ...this.state.currentAsset,
-            regions,
-            asset: {
-                ...this.state.currentAsset.asset,
-                state: (regions.length) ? AssetState.Tagged : AssetState.Visited
-            }
-        }
-        this.setState({
-            currentAsset: asset
-        }, () => this.props.onAssetMetadataChanged(asset));
-        for (const region of asset.regions) {
-            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
-        }
-    }
-
-    private updateAssetRegions = (updates: IRegion[]) => {
-        const updatedRegions = CanvasHelpers.updateRegions(this.state.currentAsset.regions, updates);
-        this.setAssetRegions(updatedRegions);
-    }
-
-    private addRegionsToAsset = (regions: IRegion[]): void => {
-        this.setAssetRegions(this.state.currentAsset.regions.concat(regions));
-    }
-
     /**
      * Method called when selecting a region from the editor
      * @param {string} id the id of the deleted region
@@ -189,6 +165,37 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({ selectedRegions: taggedRegions });
     }
 
+    private setAssetRegions = (regions: IRegion[], selectedRegions?: IRegion[]) => {
+        if (!regions) {
+            return;
+        }
+        const asset: IAssetMetadata = {
+            ...this.state.currentAsset,
+            regions
+        };
+        const state = (selectedRegions) ? {
+            currentAsset: asset,
+            selectedRegions,
+        } : {
+            currentAsset: asset,
+        };
+        this.setState(state, () => this.props.onAssetMetadataChanged(asset));
+        for (const region of asset.regions) {
+            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+        }
+    }
+
+    private updateAssetRegions = (updates: IRegion[]) => {
+        const updatedRegions = CanvasHelpers.updateRegions(this.state.currentAsset.regions, updates);
+        const updatedSelectedRegions = CanvasHelpers.updateRegions(this.state.selectedRegions, updates);
+        this.updateCanvasToolsRegions(updatedRegions);
+        this.setAssetRegions(updatedRegions, updatedSelectedRegions);
+    }
+
+    private addRegionsToAsset = (regions: IRegion[]): void => {
+        this.setAssetRegions(this.state.currentAsset.regions.concat(regions));
+    }
+
     private getRegion(regions: IRegion[], id: string) {
         if (!regions || !id || regions.length === 0) {
             return null;
@@ -210,25 +217,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const scaledRegionData = this.editor.scaleRegionToSourceSize(commit);
         const newRegion = CanvasHelpers.getRegionFromRegionData(scaledRegionData, this.props.editorMode, id);
         const taggedRegion = CanvasHelpers.applyTagsToRegions([newRegion], this.props.lockedTags)[0];
-
-        const currentAsset: IAssetMetadata = {
-            ...this.state.currentAsset,
-            regions: [
-                ...this.state.currentAsset.regions,
-                taggedRegion
-            ],
-            asset: {
-                ...this.state.currentAsset.asset,
-                state: AssetState.Tagged
-            }
-        }
-
-        this.setState({
-            currentAsset,
-            selectedRegions: [ taggedRegion ]
-        }, () => {
-            this.props.onAssetMetadataChanged(currentAsset);
-        })
+        this.addRegionsToAsset([taggedRegion]);
+        this.updateCanvasToolsRegions([taggedRegion]);
     }
 
     /**
@@ -295,8 +285,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
 
-
-
     private deleteRegionFromAsset = (id: string): void => {
         this.setAssetRegions(this.state.currentAsset.regions.filter((r) => r.id !== id));
     }
@@ -312,9 +300,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
         const newRegions = [
             ...this.state.currentAsset.regions,
-            ...regions
-        ]
-        this.addRegionsToAsset(regions)
+            ...regions,
+        ];
+        this.addRegionsToAsset(regions);
     }
 
     private renderChildren = () => {
@@ -331,7 +319,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onAssetLoaded = async (contentSource: ContentSource) => {
         this.positionCanvas(contentSource);
         await this.setContentSource(contentSource);
-        this.updateRegions(this.state.currentAsset.regions);
+        this.addCanvasToolsRegions(this.state.currentAsset.regions);
     }
 
     /**
@@ -350,7 +338,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onAssetDeactivated = async (contentSource: ContentSource) => {
         this.positionCanvas(contentSource);
         await this.setContentSource(contentSource);
-        this.updateRegions(this.state.currentAsset.regions);
+        this.addCanvasToolsRegions(this.state.currentAsset.regions);
 
         this.setState({
             canvasEnabled: true,
@@ -391,7 +379,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.RM.deleteAllRegions();
     }
 
-    private updateRegions = (regions: IRegion[]) => {
+    private updateCanvasToolsRegions = (regions: IRegion[]) => {
+        if (CanvasHelpers.nullOrEmpty(regions)) {
+            return;
+        }
+        for (const region of regions) {
+            this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(region));
+        }
+    }
+
+    private addCanvasToolsRegions = (regions: IRegion[]) => {
         if (CanvasHelpers.nullOrEmpty(regions)) {
             return;
         }
