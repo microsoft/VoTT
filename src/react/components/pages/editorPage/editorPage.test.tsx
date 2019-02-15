@@ -87,7 +87,7 @@ describe("Editor Page Component", () => {
         assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
-                regions: [MockFactory.createMockRegion()],
+                regions: [MockFactory.createMockRegion(null, "NEWTAG")],
             };
 
             return Promise.resolve(assetMetadata);

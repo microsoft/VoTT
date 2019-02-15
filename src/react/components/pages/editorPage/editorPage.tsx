@@ -372,7 +372,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
                 newTags.push({
                     name: tag,
-                    color: TagColors[newTags.length],
+                    color: TagColors[newTags.length % TagColors.length],
                 });
                 updateTags = true;
             }

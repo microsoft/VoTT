@@ -198,7 +198,7 @@ export class AssetService {
     }
 
     private async getRegionsFromTFRecord(asset: IAsset): Promise<IRegion[]> {
-        const objectArray = await this.getTFRecordObjectArrays(asset);
+        const objectArray = await this.getTFRecordMetadata(asset);
         const regions: IRegion[] = [];
         const tags: string[] = [];
 
@@ -228,7 +228,7 @@ export class AssetService {
         return regions;
     }
 
-    private async getTFRecordObjectArrays(asset: IAsset): Promise<ITFRecordMetadata> {
+    private async getTFRecordMetadata(asset: IAsset): Promise<ITFRecordMetadata> {
         const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
 
