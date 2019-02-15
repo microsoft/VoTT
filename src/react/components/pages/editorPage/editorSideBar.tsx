@@ -21,7 +21,6 @@ export interface IEditorSideBarProps {
  */
 export interface IEditorSideBarState {
     selectedAsset: IAsset;
-    scrollToIndex: number;
 }
 
 /**
@@ -36,9 +35,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
         this.state = {
             selectedAsset: this.props.selectedAsset,
-            scrollToIndex: this.props.selectedAsset
-                ? this.props.assets.findIndex((asset) => asset.id === this.props.selectedAsset.id)
-                : 0,
         };
 
         this.rowRenderer = this.rowRenderer.bind(this);
@@ -59,7 +55,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                             rowCount={this.props.assets.length}
                             rowHeight={233}
                             rowRenderer={this.rowRenderer}
-                            scrollToIndex={this.state.scrollToIndex}
                             overscanRowCount={2}
                         />
                     )}
@@ -82,7 +77,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     private selectAsset(asset: IAsset) {
         this.setState({
             selectedAsset: asset,
-            scrollToIndex: this.props.assets.findIndex((asset) => asset.id === this.props.selectedAsset.id),
         }, () => {
             this.listRef.current.forceUpdateGrid();
         });
