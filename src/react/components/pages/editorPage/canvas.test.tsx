@@ -1,4 +1,4 @@
-import React from "react";
+src/react/components/pages/editorPage/canvas.test.tsximport React from "react";
 import { ReactWrapper, mount } from "enzyme";
 import Canvas, { ICanvasProps, ICanvasState } from "./canvas";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
