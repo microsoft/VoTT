@@ -5,7 +5,6 @@ import { Select } from "./react/components/toolbar/select";
 import { DrawRectangle } from "./react/components/toolbar/drawRectangle";
 import { DrawPolygon } from "./react/components/toolbar/drawPolygon";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
-import { CopyRectangle } from "./react/components/toolbar/copyRectangle";
 import { NextAsset } from "./react/components/toolbar/nextAsset";
 import { PreviousAsset } from "./react/components/toolbar/previousAsset";
 
