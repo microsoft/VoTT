@@ -29,15 +29,6 @@ export default function registerToolbar() {
         type: ToolbarItemType.State,
     });
 
-    // This is buggy and doesn't fully work yet
-    // ToolbarItemFactory.register(CopyRectangle, {
-    //     name: "copyRectangle",
-    //     tooltip: "Copy Rectangle",
-    //     icon: "fa-clone",
-    //     group: "canvas",
-    //     type: ToolbarItemType.State,
-    // });
-
     ToolbarItemFactory.register(DrawPolygon, {
         name: "drawPolygon",
         tooltip: "Draw Polygon",
