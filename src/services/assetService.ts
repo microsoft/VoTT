@@ -12,8 +12,6 @@ import { constants } from "../common/constants";
 import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
-// tslint:disable-next-line:no-var-requires
-const TagColors = require("../react/components/common/tagsInput/tagColors.json");
 
 /**
  * @name - Asset Service
@@ -206,7 +204,6 @@ export class AssetService {
         for (let index = 0; index < objectArray.textArray.length; index++) {
             tagPos = tags.findIndex((tag) => tag === objectArray.textArray[index]);
             if (tagPos < 0) {
-                tagPos = tags.length;
                 tags.push(objectArray.textArray[index]);
             }
 
