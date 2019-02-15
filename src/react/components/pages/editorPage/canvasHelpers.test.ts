@@ -198,21 +198,20 @@ describe("Canvas Helpers", () => {
         }
     });
 
-    
     it("Updates regions correctly", () => {
         const regions = MockFactory.createTestRegions();
         const tags = [
-            MockFactory.createTestTag("My tag")
+            MockFactory.createTestTag("My tag"),
         ];
         const replacementRegion: IRegion = {
             ...regions[0],
-            tags
-        }
+            tags,
+        };
         const updated = CanvasHelpers.updateRegions(regions, [replacementRegion]);
         expect(updated[0]).toEqual(replacementRegion);
         expect(regions[0]).not.toEqual(replacementRegion);
         expect(updated).toHaveLength(regions.length);
-        for (let i = 1; i < regions.length; i++){
+        for (let i = 1; i < regions.length; i++) {
             expect(regions[i]).toEqual(updated[i]);
         }
     });

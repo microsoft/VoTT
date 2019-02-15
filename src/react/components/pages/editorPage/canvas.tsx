@@ -81,7 +81,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         if (this.props.lockedTags !== prevProps.lockedTags || this.props.selectedTag !== prevProps.selectedTag) {
-            if(!(CanvasHelpers.nullOrEmpty(this.props.lockedTags) && !this.props.selectedTag)) {
+            if (!(CanvasHelpers.nullOrEmpty(this.props.lockedTags) && !this.props.selectedTag)) {
                 const regions = CanvasHelpers.applyTagsToRegions(
                     this.state.selectedRegions, this.props.lockedTags, this.props.selectedTag);
                 this.updateAssetRegions(regions);
@@ -171,7 +171,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
         const asset: IAssetMetadata = {
             ...this.state.currentAsset,
-            regions
+            regions,
         };
         const state = (selectedRegions) ? {
             currentAsset: asset,

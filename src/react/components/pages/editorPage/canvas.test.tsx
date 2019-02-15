@@ -371,7 +371,7 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().selectedRegions).toHaveLength(numRegions);
     });
 
-    fit("All regions are deleted with clear command", () => {
+    it("All regions are deleted with clear command", () => {
         const numRegions = 5;
         const wrapper = getPopulatedWrapper(numRegions);
 
@@ -414,9 +414,9 @@ describe("Editor Canvas", () => {
             ...originalProps.canvas,
             selectedAsset: {
                 ...originalProps.canvas.selectedAsset,
-                regions
-            }
-        }
+                regions,
+            },
+        };
         const wrapper = createComponent(false, props);
         return wrapper;
     }
@@ -427,7 +427,7 @@ describe("Editor Canvas", () => {
         }
     }
 
-    fit("Toggles single tag for single region", () => {
+    it("Toggles single tag for single region", () => {
 
         const wrapper = getWrapperWithTaggedRegions();
         const canvas = wrapper.instance();
@@ -472,7 +472,7 @@ describe("Editor Canvas", () => {
         checkRegionTags(wrapper.state().currentAsset.regions, [tag3, tag1, tag2]);
     });
 
-    it("Toggles single tag for multiple regions", () => {
+    fit("Toggles single tag for multiple regions", () => {
         const wrapper = getWrapperWithTaggedRegions();
         const canvas = wrapper.instance();
         wrapper.setState({
@@ -493,35 +493,35 @@ describe("Editor Canvas", () => {
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper.state().selectedRegions, [tag2], [], [tag1]);
+        checkRegionTags(wrapper.state().selectedRegions, [tag2], [tag2, tag1], [tag1]);
 
         wrapper.setProps({
             selectedTag: tag2,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper.state().selectedRegions, [], [tag2], [tag1, tag2]);
+        checkRegionTags(wrapper.state().selectedRegions, [], [tag1], [tag1, tag2]);
 
         wrapper.setProps({
             selectedTag: tag3,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper.state().selectedRegions, [tag3], [tag2, tag3], [tag1, tag2, tag3]);
+        checkRegionTags(wrapper.state().selectedRegions, [tag3], [tag1, tag3], [tag1, tag2, tag3]);
 
         wrapper.setProps({
             selectedTag: tag1,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper.state().selectedRegions, [tag3, tag1], [tag2, tag3, tag1], [tag2, tag3]);
+        checkRegionTags(wrapper.state().selectedRegions, [tag3, tag1], [tag3], [tag2, tag3]);
 
         wrapper.setProps({
             selectedTag: tag2,
             lockedTags: [],
         });
 
-        checkRegionTags(wrapper.state().selectedRegions, [tag3, tag1, tag2], [tag3, tag1], [tag3]);
+        checkRegionTags(wrapper.state().selectedRegions, [tag3, tag1, tag2], [tag3, tag2], [tag3]);
     });
 
     it("Toggles locked tags on selection of single region", () => {
