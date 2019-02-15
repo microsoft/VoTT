@@ -2,18 +2,41 @@ import { mount } from "enzyme";
 import React from "react";
 import MockFactory from "../../../../common/mockFactory";
 import { KeyCodes } from "../../../../common/utils";
-import EditorTagsInput, { IEditorTagsInputProps } from "./editorTagsInput";
+import EditorTagsInput from "./editorTagsInput";
+import { ITagsInputProps } from "vott-react";
 
 // tslint:disable-next-line:no-var-requires
-const TagColors = require("../../common/tagsInput/tagColors.json");
+const TagColors = require("vott-react/dist/lib/components/common/tagColors");
+const ColorCodes = [];
+
+for (const key in TagColors) {
+    if (key) {
+        for (const color in TagColors[key]) {
+            if (color) {
+                ColorCodes.push(TagColors[key][color]);
+            }
+        }
+    }
+}
 
 describe("Tags Input Component", () => {
 
     const originalTags = MockFactory.createTestTags(15);
 
-    function createComponent(props: IEditorTagsInputProps) {
+    function createComponent(props: ITagsInputProps) {
         return mount(
-            <EditorTagsInput {...props}/>,
+            // Listing props one by one because of 'ref' typescript error.
+            // Example: https://github.com/ant-design/ant-design/issues/10405
+            <EditorTagsInput
+                tags={props.tags}
+                onChange={props.onChange}
+                placeHolder={props.placeHolder}
+                delimiters={props.delimiters}
+                onTagClick={props.onTagClick}
+                onCtrlTagClick={props.onCtrlTagClick}
+                onShiftTagClick={props.onShiftTagClick}
+                onCtrlShiftTagClick={props.onCtrlShiftTagClick}
+            />,
         );
     }
 
@@ -21,7 +44,6 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         const stateTags = wrapper.find(EditorTagsInput).state().tags;
@@ -37,7 +59,6 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find("div.tag-color-box")).toHaveLength(originalTags.length);
@@ -47,17 +68,15 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find("input")).toHaveLength(1);
     });
 
-    it("create a new tag from text box - enter key", () => {
+    it("creates a new tag from text box - enter key", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         const newTagName = "My new tag";
@@ -67,14 +86,13 @@ describe("Tags Input Component", () => {
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
         expect(wrapper.find(EditorTagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.find(EditorTagsInput).state().tags[newTagIndex].color);
+        expect(ColorCodes).toContain(wrapper.find(EditorTagsInput).state().tags[newTagIndex].color);
     });
 
     it("create a new tag from text box - comma key", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         const newTagName = "My new tag";
@@ -84,14 +102,13 @@ describe("Tags Input Component", () => {
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length + 1);
         const newTagIndex = originalTags.length;
         expect(wrapper.find(EditorTagsInput).state().tags[newTagIndex].id).toEqual(newTagName);
-        expect(TagColors).toContain(wrapper.find(EditorTagsInput).state().tags[newTagIndex].color);
+        expect(ColorCodes).toContain(wrapper.find(EditorTagsInput).state().tags[newTagIndex].color);
     });
 
     it("remove a tag", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length);
@@ -107,7 +124,6 @@ describe("Tags Input Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         // Root component calls handleDelete when backspace is pressed
@@ -117,84 +133,27 @@ describe("Tags Input Component", () => {
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length);
     });
 
-    it("ctrl clicking tag opens editor modal", () => {
-        const onChangeHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            displayHotKeys: true,
-            onChange: onChangeHandler,
-        });
-        expect(wrapper.find(EditorTagsInput).state().showModal).toBe(false);
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        expect(wrapper.find(EditorTagsInput).state().showModal).toBe(true);
-    });
-
-    it("ctrl clicking tag sets selected tag", () => {
-        const onChangeHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            displayHotKeys: true,
-            onChange: onChangeHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        expect(wrapper.find(EditorTagsInput).state().selectedTag.id).toEqual(originalTags[0].name);
-        expect(wrapper.find(EditorTagsInput).state().selectedTag.color).toEqual(originalTags[0].color);
-    });
-
     it("ctrl clicking tag does not call onTagClick or OnTagShiftClick", () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
         const onTagShiftClickHandler = jest.fn();
+        const onTagCtrlClickHandler = jest.fn();
+
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
+            onShiftTagClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
+            onCtrlTagClick: onTagCtrlClickHandler,
         });
         wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        // Shows modal
-        expect(wrapper.find(EditorTagsInput).state().showModal).toBe(true);
+        expect(onTagCtrlClickHandler).toBeCalled();
         // Does not Call onTagShiftClick
         expect(onTagShiftClickHandler).not.toBeCalled();
         // Does not call onTagClick
         expect(onTagClickHandler).not.toBeCalled();
-    });
-
-    it("clicking 'ok' in modal closes and calls onChangeHandler", () => {
-        const onChangeHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            displayHotKeys: true,
-            onChange: onChangeHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        wrapper.find("button.btn.btn-success").simulate("click");
-        expect(wrapper.find(EditorTagsInput).state().showModal).toBe(false);
-        expect(onChangeHandler).toBeCalled();
-    });
-
-    it("clicking 'cancel' in modal closes and does not call onChangeHandler", () => {
-        const onChangeHandler = jest.fn();
-        const wrapper = createComponent({
-            tags: originalTags,
-            displayHotKeys: true,
-            onChange: onChangeHandler,
-        });
-        wrapper.find("div.tag")
-            .first()
-            .simulate("click", { target: { innerText: originalTags[0].name}, ctrlKey: true});
-        wrapper.find("button.btn.btn-secondary").simulate("click");
-        expect(wrapper.find(EditorTagsInput).state().showModal).toBe(false);
-        expect(onChangeHandler).not.toBeCalled();
     });
 
     it("clicking tag calls onTagClick handler", () => {
@@ -202,7 +161,6 @@ describe("Tags Input Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagClick: onTagClickHandler,
         });
@@ -217,7 +175,6 @@ describe("Tags Input Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
             onTagClick: null,
         });
@@ -227,23 +184,20 @@ describe("Tags Input Component", () => {
         expect(onTagClickHandler).not.toBeCalled();
     });
 
-    it("clicking tag does not open modal or call onTagShiftClick handler", () => {
+    it("clicking tag does not call onTagShiftClick handler", () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
         const onTagShiftClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
+            onShiftTagClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
         });
         wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}});
         expect(onTagClickHandler).toBeCalledWith(originalTags[0]);
-        // Does not show modal
-        expect(wrapper.find(EditorTagsInput).state().showModal).toBe(false);
         // Does not call onTagShiftClick
         expect(onTagShiftClickHandler).not.toBeCalled();
     });
@@ -253,9 +207,8 @@ describe("Tags Input Component", () => {
         const onTagShiftClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
+            onShiftTagClick: onTagShiftClickHandler,
         });
         wrapper.find("div.tag")
             .first()
@@ -263,23 +216,20 @@ describe("Tags Input Component", () => {
         expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
     });
 
-    it("shift clicking tag does not open modal or call onTagClick handler", () => {
+    it("shift clicking tag does not call onTagClick handler", () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
         const onTagShiftClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
-            onTagShiftClick: onTagShiftClickHandler,
+            onShiftTagClick: onTagShiftClickHandler,
             onTagClick: onTagClickHandler,
         });
         wrapper.find("div.tag")
             .first()
             .simulate("click", { target: { innerText: originalTags[0].name}, shiftKey: true});
         expect(onTagShiftClickHandler).toBeCalledWith(originalTags[0]);
-        // Does not show modal
-        expect(wrapper.find(EditorTagsInput).state().showModal).toBe(false);
         // Does not call onTagClick
         expect(onTagClickHandler).not.toBeCalled();
     });
@@ -289,9 +239,8 @@ describe("Tags Input Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
-            onTagShiftClick: null,
+            onShiftTagClick: null,
         });
         wrapper.find("div.tag")
             .first()
@@ -302,9 +251,8 @@ describe("Tags Input Component", () => {
     it("displays correct initial index in span", () => {
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: null,
-            onTagShiftClick: null,
+            onShiftTagClick: null,
         });
         expect(wrapper.find(".tag-span-index")).toHaveLength(10);
         const tagSpans = wrapper.find(".tag-span-index");
@@ -319,18 +267,17 @@ describe("Tags Input Component", () => {
     it("does not display indices when specified not to", () => {
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: false,
             onChange: null,
-            onTagShiftClick: null,
+            onShiftTagClick: null,
         });
-        expect(wrapper.find(".tag-span-index")).toHaveLength(0);
+        expect(wrapper.find(".tag-span")).toHaveLength(15);
+        expect(wrapper.find(".tag-span-index")).toHaveLength(10);
     });
 
     it("updates indices in tags after removing first", (done) => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
             onChange: onChangeHandler,
         });
         expect(wrapper.find(EditorTagsInput).state().tags).toHaveLength(originalTags.length);

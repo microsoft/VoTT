@@ -135,6 +135,7 @@ describe("Project Form Component", () => {
             const newConnection = connections[1];
             const newDescription = "My new description";
             const newTagName = "My new tag";
+            const regX = new RegExp(/^#([0-9a-fA-F]{3}){1,2}$/i);
 
             wrapper.find("input#root_name").simulate("change", { target: { value: newName } });
             wrapper.find("select#root_sourceConnection").simulate("change", { target: { value: newConnection.id } });
@@ -155,7 +156,7 @@ describe("Project Form Component", () => {
                         ...project.tags,
                         {
                             name: newTagName,
-                            color: expect.stringMatching(/^#([0-9a-fA-F]{3}){1,2}$/i),
+                            color: expect.stringMatching(regX),
                         },
                     ]),
                 }),

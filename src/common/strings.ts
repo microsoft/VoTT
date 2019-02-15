@@ -13,6 +13,7 @@ export interface IAppStrings {
         description: string;
         submit: string;
         cancel: string;
+        save: string;
         delete: string;
         provider: string;
         homePage: string;

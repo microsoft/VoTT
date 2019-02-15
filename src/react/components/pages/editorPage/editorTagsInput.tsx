@@ -1,33 +1,20 @@
-import { ITag } from "../../../../models/applicationState";
-import TagsInput, { ITagsInputProps, IReactTag, ITagsInputState } from "../../common/tagsInput/tagsInput";
 import React from "react";
-
-/**
- * Properties for Editor Tags Input
- * @member displayHotKeys - True to display index of first 10 tags (for hot keys)
- * @member onTagClick - Function to call when tag is clicked
- * @member onTagShiftClick - Function to call when tag is clicked while holding shift
- */
-export interface IEditorTagsInputProps extends ITagsInputProps {
-    displayHotKeys: boolean;
-    onTagClick?: (tag: ITag) => void;
-    onTagShiftClick?: (tag: ITag) => void;
-}
+import { TagsInput } from "vott-react";
 
 /**
  * @name - Editor Tags Input
  * @description - Enhanced version of TagsInput. Allows for hot key display and two additional
  * click handlers (normal click and shift+click)
  */
-export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
+export default class EditorTagsInput extends TagsInput {
 
     /**
      * Shows the of the tag in the span of the first 10 tags
      * @param name Name of tag
      */
     protected getTagSpan(name: string) {
-        const index = this.indexOfTag(name);
-        const showIndex = this.props.displayHotKeys && index <= 9;
+        const index = this.indexOfTag(name); // get index from function below
+        const showIndex = index <= 9;
         const className = `tag-span${(showIndex) ? " tag-span-index" : ""}`;
         return (
             <span className={className}>
@@ -36,38 +23,20 @@ export default class EditorTagsInput extends TagsInput<IEditorTagsInputProps> {
         );
     }
 
-    /**
-     * Calls the onTagClick handler if not null with clicked tag
-     * @param event Click event
-     */
-    protected handleTagClick(event) {
-        const text = this.getTagIdFromClick(event);
-        const tag = this.getTag(text);
-        if (event.ctrlKey) {
-            this.openEditModal(tag);
-        } else if (event.shiftKey && this.props.onTagShiftClick) {
-            // Calls provided onTagShiftClick
-            this.props.onTagShiftClick(this.toItag(tag));
-        } else if (this.props.onTagClick) {
-            // Calls provided onTagClick function
-            this.props.onTagClick(this.toItag(tag));
-        }
-    }
-
     private indexOfTag(id: string): number {
         let index = -1;
-        if (this.state) {
-            index = this.state.tags.findIndex((tag) => tag.id === id);
-            if (index < 0) {
-                index = this.state.tags.length + 1;
+        if (this.state) { // if state exists
+            index = this.state.tags.findIndex((tag) => tag.id === id); // return index or -1
+            if (index < 0) { // if not found, i.e. -1
+                index = this.state.tags.length + 1; // create new final index and assign to index, i.e. 2 or 3
             }
-        } else {
-            index = this.props.tags.findIndex((tag) => tag.name === id);
+        } else { // if there is no state
+            index = this.props.tags.findIndex((tag) => tag.name === id); // check tags in props and return index or -1
         }
-        if (index < 0) {
+        if (index < 0) { // if neither of the above were triggered, throw error
             throw new Error(`No tag by id: ${id}`);
         }
-        index += 1;
-        return (index === 10) ? 0 : index;
+        index += 1; // whatever the index, increment by one to avoid zero-base in display
+        return (index === 10) ? 0 : index; // return index or 0, because max hotkeys are 10
     }
 }
