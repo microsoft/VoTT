@@ -166,6 +166,10 @@ export default class CanvasHelpers {
         };
     }
 
+    public static nullOrEmpty(item: any[]) {
+        return !item || !item.length
+    }
+
     public static editorModeToType(editorMode: EditorMode) {
         let type;
         switch (editorMode) {
