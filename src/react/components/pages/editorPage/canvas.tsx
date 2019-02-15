@@ -219,6 +219,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const taggedRegion = CanvasHelpers.applyTagsToRegions([newRegion], this.props.lockedTags)[0];
         this.addRegionsToAsset([taggedRegion]);
         this.updateCanvasToolsRegions([taggedRegion]);
+        this.setState({
+            selectedRegions: [taggedRegion],
+        });
     }
 
     /**

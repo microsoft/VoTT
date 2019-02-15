@@ -151,7 +151,7 @@ export default class CanvasHelpers {
     }
 
     public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[] {
-        let result: IRegion[] = [];
+        const result: IRegion[] = [];
         for (const region of regions) {
             const update = CanvasHelpers.getRegion(updates, region.id);
             result.push((update) ? update : region);
