@@ -3,6 +3,8 @@ import { IAsset, AssetType } from "../models/applicationState";
 import Guard from "./guard";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
+import { resolve } from "url";
+import { reject } from "q";
 
 /**
  * Helper class for reading HTML files
@@ -75,9 +77,7 @@ export default class HtmlFileReader {
 
         let response = null;
         if (asset.type === AssetType.VideoFrame) {
-            response = this.getAssetFrameImage(asset, (img, secs, event) => {
-                return {data: img};
-            });
+            response = await this.getAssetFrameImage(asset);
         } else {
             // Download the asset binary from the storage provider
             response = await axios.get<Blob>(asset.path, config);
@@ -89,26 +89,28 @@ export default class HtmlFileReader {
         return await response.data;
     }
 
-    public static async getAssetFrameImage(asset: IAsset, callback) {
-        const video = document.createElement("video");
-        const secs = asset.timestamp;
-        video.onloadedmetadata = function() {
-            this.currentTime = Math.min(Math.max(0, (secs < 0 ? this.duration : 0) + secs), this.duration);
-        }.bind(video);
-        video.onseeked = function(e) {
-            const canvas = document.createElement("canvas");
-            canvas.height = video.videoHeight;
-            canvas.width = video.videoWidth;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const img = new Image();
-            img.src = canvas.toDataURL();
-            callback(this, img, this.currentTime, e);
-        }.bind(video);
-        video.onerror = (e) => {
-            callback(this, undefined, undefined, e);
-        };
-        video.src = asset.path;
+    public static async getAssetFrameImage(asset: IAsset) {
+        return new Promise<Blob>((resolve, reject) => {
+            const video = document.createElement("video");
+            const secs = asset.timestamp;
+            video.onloadedmetadata = function() {
+                this.currentTime = Math.min(Math.max(0, (secs < 0 ? this.duration : 0) + secs), this.duration);
+            }.bind(video);
+            video.onseeked = (e) => {
+                const canvas = document.createElement("canvas");
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                });
+            };
+            video.onerror = (e) => {
+                reject(e);
+            };
+            video.src = asset.path;
+        });
     }
 
     /**
