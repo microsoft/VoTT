@@ -76,22 +76,20 @@ export default class HtmlFileReader {
         let response = null;
         if (asset.type === AssetType.VideoFrame) {
             response = this.getAssetFrameImage(asset, (img, secs, event) => {
-                console.log(img);
-                console.log(secs);
-                console.log(event);
-                return (img);
+                return {data: img};
             });
-        }
-        // Download the asset binary from the storage provider
-        response = await axios.get<Blob>(asset.path, config);
-        if (response.status !== 200) {
-            throw new Error("Error downloading asset binary");
+        } else {
+            // Download the asset binary from the storage provider
+            response = await axios.get<Blob>(asset.path, config);
+            if (response.status !== 200) {
+                throw new Error("Error downloading asset binary");
+            }
         }
 
-        return response.data;
+        return await response.data;
     }
 
-    public static getAssetFrameImage(asset: IAsset, callback) {
+    public static async getAssetFrameImage(asset: IAsset, callback) {
         const video = document.createElement("video");
         const secs = asset.timestamp;
         video.onloadedmetadata = function() {
@@ -105,10 +103,10 @@ export default class HtmlFileReader {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const img = new Image();
             img.src = canvas.toDataURL();
-            callback.call(this, img, this.currentTime, e);
+            callback(this, img, this.currentTime, e);
         }.bind(video);
         video.onerror = (e) => {
-            callback.call(this, undefined, undefined, e);
+            callback(this, undefined, undefined, e);
         };
         video.src = asset.path;
     }
