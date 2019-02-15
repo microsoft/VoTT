@@ -75,22 +75,23 @@ export default class HtmlFileReader {
             responseType: "blob",
         };
 
-        let response = null;
+        let data = null;
         if (asset.type === AssetType.VideoFrame) {
-            response = await this.getAssetFrameImage(asset);
+            data = await this.getAssetFrameImage(asset);
         } else {
             // Download the asset binary from the storage provider
-            response = await axios.get<Blob>(asset.path, config);
+            const response = await axios.get<Blob>(asset.path, config);
             if (response.status !== 200) {
                 throw new Error("Error downloading asset binary");
             }
+            data = await response.data;
         }
-
-        return await response.data;
+        console.log("blobbing");
+        return data;
     }
 
     public static async getAssetFrameImage(asset: IAsset) {
-        return new Promise<Blob>((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const video = document.createElement("video");
             const secs = asset.timestamp;
             video.onloadedmetadata = function() {
@@ -102,15 +103,27 @@ export default class HtmlFileReader {
                 canvas.width = video.videoWidth;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                // const img = new Image();
+                // img.src = canvas.toDataURL();
                 canvas.toBlob((blob) => {
                     resolve(blob);
                 });
+                // resolve(this.dataURItoBlob(canvas.toDataURL()));
             };
             video.onerror = (e) => {
                 reject(e);
             };
             video.src = asset.path;
         });
+    }
+
+    public static dataURItoBlob(dataURI) {
+        const binary = atob(dataURI.split(",")[1]);
+        const array = [];
+        for (let i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
+        }
+        return new Blob([new Uint8Array(array)], {type: "image/jpeg"});
     }
 
     /**

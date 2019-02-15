@@ -359,12 +359,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // debugger;
         // if (asset.type === AssetType.VideoFrame) {
-        //     HtmlFileReader.getAssetFrameImage(asset, (img, secs, event) => {
-        //         console.log(img);
-        //         console.log(secs);
-        //         console.log(event);
-        //         return img;
-        //     });
+        //     const resp = await HtmlFileReader.getAssetFrameImage(asset);
+        //     console.log(resp);
         // }
     }
 
