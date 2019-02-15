@@ -239,7 +239,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
-    private isChildAssetType = (asset: IAsset): boolean => {
+    private isTaggableAssetType = (asset: IAsset): boolean => {
         return asset.type === AssetType.Image || asset.type === AssetType.VideoFrame;
     }
 
@@ -250,7 +250,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
         const parentAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
 
-        if (this.isChildAssetType(assetMetadata.asset)) {
+        if (this.isTaggableAssetType(assetMetadata.asset)) {
             assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
         } else if (assetMetadata.asset.state === AssetState.NotVisited) {
             assetMetadata.asset.state = AssetState.Visited;
