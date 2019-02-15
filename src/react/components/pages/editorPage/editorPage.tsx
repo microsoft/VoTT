@@ -117,7 +117,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
-        const parentAssets = assets.filter((asset) => !asset.parent);
+        const rootAssets = assets.filter((asset) => !asset.parent);
 
         if (!project) {
             return (<div>Loading...</div>);
@@ -134,7 +134,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
-                        assets={parentAssets}
+                        assets={rootAssets}
                         selectedAsset={selectedAsset ? selectedAsset.asset : null}
                         onAssetSelected={this.selectAsset}
                     />
@@ -239,6 +239,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
+    /**
+     * Returns a value indicating whether the current asset is taggable
+     */
     private isTaggableAssetType = (asset: IAsset): boolean => {
         return asset.type === AssetType.Image || asset.type === AssetType.VideoFrame;
     }
@@ -248,7 +251,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
-        const parentAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
+        // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
+        // asset selected from the side bar (image/video).
+        const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
 
         if (this.isTaggableAssetType(assetMetadata.asset)) {
             assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
@@ -256,32 +261,37 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             assetMetadata.asset.state = AssetState.Visited;
         }
 
-        // Update parent asset if not already in the "Tagged" state
-        if (parentAsset.id === assetMetadata.asset.id) {
-            parentAsset.state = assetMetadata.asset.state;
+        // Update root asset if not already in the "Tagged" state
+        // This is primarily used in the case where a Video Fram is being edited.
+        // We want to ensure that in this case the root video asset state is accuratly
+        // updated to match that state of the asset.
+        if (rootAsset.id === assetMetadata.asset.id) {
+            rootAsset.state = assetMetadata.asset.state;
         } else {
-            const parentAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, parentAsset);
+            const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
 
-            if (parentAssetMetadata.asset.state !== AssetState.Tagged) {
-                parentAssetMetadata.asset.state = assetMetadata.asset.state;
-                await this.props.actions.saveAssetMetadata(this.props.project, parentAssetMetadata);
+            if (rootAssetMetadata.asset.state !== AssetState.Tagged) {
+                rootAssetMetadata.asset.state = assetMetadata.asset.state;
+                await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
             }
 
-            parentAsset.state = parentAssetMetadata.asset.state;
+            rootAsset.state = rootAssetMetadata.asset.state;
         }
 
         await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.actions.saveProject(this.props.project);
 
         const assetService = new AssetService(this.props.project);
-        const childAssets = assetService.getChildAssets(parentAsset);
+        const childAssets = assetService.getChildAssets(rootAsset);
 
-        // Find and update the parent asset in the internal state
+        // Find and update the root asset in the internal state
+        // This forces the root assets that are displayed in the sidebar to
+        // accuratly show their correct state (not-visited, visited or tagged)
         const assets = [...this.state.assets];
-        const assetIndex = assets.findIndex((asset) => asset.id === parentAsset.id);
+        const assetIndex = assets.findIndex((asset) => asset.id === rootAsset.id);
         if (assetIndex > -1) {
             assets[assetIndex] = {
-                ...parentAsset,
+                ...rootAsset,
             };
         }
 
@@ -326,18 +336,22 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 });
                 break;
             case "navigatePreviousAsset":
-                await this.goToParentAsset(-1);
+                await this.goToRootAsset(-1);
                 break;
             case "navigateNextAsset":
-                await this.goToParentAsset(1);
+                await this.goToRootAsset(1);
                 break;
         }
     }
 
-    private goToParentAsset = async (index: number) => {
-        const selectedParentAsset = this.state.selectedAsset.asset.parent || this.state.selectedAsset.asset;
+    /**
+     * Navigates to the previous / next root asset on the sidebar
+     * @param index Number specifiying asset navigation
+     */
+    private goToRootAsset = async (index: number) => {
+        const selectedRootAsset = this.state.selectedAsset.asset.parent || this.state.selectedAsset.asset;
         const currentIndex = this.state.assets
-            .findIndex((asset) => asset.id === selectedParentAsset.id);
+            .findIndex((asset) => asset.id === selectedRootAsset.id);
 
         if (index > 0) {
             await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
@@ -372,24 +386,24 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.loadingProjectAssets = true;
 
-        // Get all parent assets
-        const projectAssets = _.values(this.props.project.assets)
+        // Get all root project assets
+        const rootProjectAssets = _.values(this.props.project.assets)
             .filter((asset) => !asset.parent);
 
-        // Get all assets from source asset provider
+        // Get all root assets from source asset provider
         const sourceAssets = await this.props.actions.loadAssets(this.props.project);
 
         // Merge and uniquify
-        const allAssets = _(projectAssets)
+        const rootAssets = _(rootProjectAssets)
             .concat(sourceAssets)
             .uniqBy((asset) => asset.id)
             .value();
 
         this.setState({
-            assets: allAssets,
+            assets: rootAssets,
         }, async () => {
-            if (allAssets.length > 0) {
-                await this.selectAsset(allAssets[0]);
+            if (rootAssets.length > 0) {
+                await this.selectAsset(rootAssets[0]);
             }
             this.loadingProjectAssets = false;
         });

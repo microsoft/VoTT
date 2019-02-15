@@ -136,18 +136,18 @@ export class AssetService {
 
     /**
      * Get a list of child assets associated with the current asset
-     * @param parentAsset The parent asset to search
+     * @param rootAsset The parent asset to search
      */
-    public getChildAssets(parentAsset: IAsset): IAsset[] {
-        Guard.null(parentAsset);
+    public getChildAssets(rootAsset: IAsset): IAsset[] {
+        Guard.null(rootAsset);
 
-        if (parentAsset.type !== AssetType.Video) {
+        if (rootAsset.type !== AssetType.Video) {
             return [];
         }
 
         return _
             .values(this.project.assets)
-            .filter((asset) => asset.parent && asset.parent.id === parentAsset.id)
+            .filter((asset) => asset.parent && asset.parent.id === rootAsset.id)
             .sort((a, b) => a.timestamp - b.timestamp);
     }
 

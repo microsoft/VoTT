@@ -257,12 +257,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
         if (this.props.onChildAssetSelected) {
-            const parentAsset = this.props.asset.parent || this.props.asset;
-            const childPath = `${parentAsset.path}#t=${state.currentTime}`;
+            const rootAsset = this.props.asset.parent || this.props.asset;
+            const childPath = `${rootAsset.path}#t=${state.currentTime}`;
             const childAsset = AssetService.createAssetFromFilePath(childPath);
             childAsset.state = AssetState.Visited;
             childAsset.type = AssetType.VideoFrame;
-            childAsset.parent = parentAsset;
+            childAsset.parent = rootAsset;
             childAsset.timestamp = state.currentTime;
             childAsset.size = { ...this.props.asset.size };
 

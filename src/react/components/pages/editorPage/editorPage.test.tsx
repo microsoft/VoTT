@@ -234,8 +234,8 @@ describe("Editor Page Component", () => {
             regions: editedImageAsset.regions,
         });
 
-        const matchingParentAsset = editorPage.state().assets.find((asset) => asset.id === imageAsset.id);
-        expect(matchingParentAsset.state).toEqual(AssetState.Tagged);
+        const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === imageAsset.id);
+        expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
     });
 
     describe("Editing Video Assets", () => {
@@ -306,8 +306,8 @@ describe("Editor Page Component", () => {
             // Child asset is updated
             expect(saveMock.mock.calls[1][0]).toEqual(editedVideoFrame);
 
-            const matchingParentAsset = editorPage.state().assets.find((asset) => asset.id === videoAsset.id);
-            expect(matchingParentAsset.state).toEqual(AssetState.Tagged);
+            const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === videoAsset.id);
+            expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
         });
     });
     describe("Basic toolbar test", () => {
