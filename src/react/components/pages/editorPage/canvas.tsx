@@ -276,6 +276,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onWindowResize = () => {
         const contentSource = this.state.contentSource;
         this.positionCanvas(contentSource);
+        this.setContentSource(contentSource);
     }
 
     /**
