@@ -269,7 +269,7 @@ describe("Editor Page Component", () => {
             });
         });
 
-        it("When a VideoFrame is updated the parent asset is also updated", async () => {
+        it("When a VideoFrame is updated the root asset is also updated", async () => {
             const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
             getAssetMetadataMock.mockImplementationOnce(() => Promise.resolve({
                 asset: { ...videoAsset },
@@ -289,7 +289,7 @@ describe("Editor Page Component", () => {
 
             const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
-            const expectedParentVideoMetadata: IAssetMetadata = {
+            const expectedRootVideoMetadata: IAssetMetadata = {
                 asset: {
                     ...videoAsset,
                     state: AssetState.Tagged,
@@ -297,11 +297,11 @@ describe("Editor Page Component", () => {
                 regions: [],
             };
 
-            // Called 2 times, one for parent and once for child.
+            // Called 2 times, once for root and once for child.
             expect(saveMock).toBeCalledTimes(2);
 
-            // Parent asset is updated
-            expect(saveMock.mock.calls[0][0]).toEqual(expectedParentVideoMetadata);
+            // Root asset is updated
+            expect(saveMock.mock.calls[0][0]).toEqual(expectedRootVideoMetadata);
 
             // Child asset is updated
             expect(saveMock.mock.calls[1][0]).toEqual(editedVideoFrame);

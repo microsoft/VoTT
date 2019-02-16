@@ -262,7 +262,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         // Update root asset if not already in the "Tagged" state
-        // This is primarily used in the case where a Video Fram is being edited.
+        // This is primarily used in the case where a Video Frame is being edited.
         // We want to ensure that in this case the root video asset state is accuratly
         // updated to match that state of the asset.
         if (rootAsset.id === assetMetadata.asset.id) {
@@ -346,14 +346,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     /**
      * Navigates to the previous / next root asset on the sidebar
-     * @param index Number specifiying asset navigation
+     * @param direction Number specifying asset navigation
      */
-    private goToRootAsset = async (index: number) => {
+    private goToRootAsset = async (direction: number) => {
         const selectedRootAsset = this.state.selectedAsset.asset.parent || this.state.selectedAsset.asset;
         const currentIndex = this.state.assets
             .findIndex((asset) => asset.id === selectedRootAsset.id);
 
-        if (index > 0) {
+        if (direction > 0) {
             await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
         } else {
             await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
