@@ -24,10 +24,10 @@ export interface ICanvasState {
     currentAsset: IAssetMetadata;
     contentSource: ContentSource;
     selectedRegions?: IRegion[];
-    canvasEnabled: boolean;
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
+
     public static defaultProps: ICanvasProps = {
         selectionMode: SelectionMode.NONE,
         editorMode: EditorMode.Select,
@@ -41,9 +41,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         currentAsset: this.props.selectedAsset,
         contentSource: null,
         selectedRegions: [],
-        canvasEnabled: true,
     };
 
+    private intervalTimer: number = null;
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
 
     public componentDidMount = () => {
@@ -57,12 +57,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.AS.setSelectionMode(this.props.selectionMode, null);
 
         window.addEventListener("resize", this.onWindowResize);
-
-        this.clearAllRegions();
     }
 
     public componentWillUnmount() {
         window.removeEventListener("resize", this.onWindowResize);
+        if (this.intervalTimer) {
+            clearInterval(this.intervalTimer);
+        }
     }
 
     public componentDidUpdate = (prevProps: Readonly<ICanvasProps>) => {
@@ -82,9 +83,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public render = () => {
         return (
             <Fragment>
-                <div id="ct-zone"
-                    ref={this.canvasZone}
-                    className={this.state.canvasEnabled ? "canvas-enabled" : "canvas-disabled"}>
+                <div id="ct-zone" ref={this.canvasZone} className="canvas-enabled">
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
                     </div>
@@ -217,43 +216,55 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         });
     }
 
+    private syncContentSource = () => {
+        this.intervalTimer = window.setInterval(async () => {
+            this.positionCanvas(this.state.contentSource);
+            await this.setContentSource(this.state.contentSource);
+        }, 33);
+    }
+
+    private stopContentCourse = () => {
+        if (this.intervalTimer) {
+            window.clearInterval(this.intervalTimer);
+            this.intervalTimer = null;
+        }
+    }
+
     /**
      * Raised when the underlying asset has completed loading
      */
-    private onAssetLoaded = async (contentSource: ContentSource) => {
-        this.positionCanvas(contentSource);
-        await this.setContentSource(contentSource);
+    private onAssetLoaded = (contentSource: ContentSource) => {
+        this.setState({ contentSource });
         this.updateRegions();
     }
 
     /**
      * Raised when the asset is taking control over the rendering
      */
-    private onAssetActivated = (contentSource: ContentSource) => {
+    private onAssetActivated = () => {
         this.clearAllRegions();
-        this.setState({
-            canvasEnabled: false,
-        });
+        this.editor.AS.setSelectionMode(SelectionMode.NONE);
+        this.syncContentSource();
     }
 
     /**
      * Raise when the asset is handing off control of rendering
      */
-    private onAssetDeactivated = async (contentSource: ContentSource) => {
-        this.positionCanvas(contentSource);
-        await this.setContentSource(contentSource);
-        this.updateRegions();
+    private onAssetDeactivated = () => {
+        if (this.intervalTimer) {
+            this.stopContentCourse();
+        } else {
+            this.setContentSource(this.state.contentSource);
+        }
 
-        this.setState({
-            canvasEnabled: true,
-        });
+        this.updateRegions();
+        this.editor.AS.setSelectionMode(this.props.selectionMode);
     }
 
     /**
      * Set the loaded asset content source into the canvas tools canvas
      */
     private setContentSource = async (contentSource: ContentSource) => {
-        this.setState({ contentSource });
         try {
             await this.editor.addContentSource(contentSource);
         } catch (e) {
@@ -276,7 +287,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onWindowResize = () => {
         const contentSource = this.state.contentSource;
         this.positionCanvas(contentSource);
-        this.setContentSource(contentSource);
     }
 
     /**
@@ -304,6 +314,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (!this.state.currentAsset.regions || this.state.currentAsset.regions.length === 0) {
             return;
         }
+
+        this.clearAllRegions();
 
         // Add regions to the canvas
         this.state.currentAsset.regions.forEach((region: IRegion) => {

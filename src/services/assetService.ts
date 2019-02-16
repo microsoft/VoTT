@@ -167,7 +167,11 @@ export class AssetService {
         if (metadata.asset.state === AssetState.Tagged) {
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
         } else {
-            await this.storageProvider.deleteFile(fileName);
+            try {
+                await this.storageProvider.deleteFile(fileName);
+            } catch (e) {
+                return metadata;
+            }
         }
 
         return metadata;
