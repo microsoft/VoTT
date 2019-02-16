@@ -72,9 +72,18 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
         const { loaded } = this.state;
         const { asset, childAssets, autoPlay } = this.props;
         const rootAsset = asset.parent || asset;
+        const size = this.props.asset.size;
+        const classNames = ["asset-preview"];
+        if (size) {
+            if (size.width > size.height) {
+                classNames.push("landscape");
+            } else {
+                classNames.push("portrait");
+            }
+        }
 
         return (
-            <div className="asset-preview">
+            <div className={classNames.join(" ")}>
                 {!loaded &&
                     <div className="asset-loading">
                         <i className="fas fa-circle-notch fa-spin" />
