@@ -17,7 +17,6 @@ import registerToolbar from "../../../../registerToolbar";
 import { DrawPolygon } from "../../toolbar/drawPolygon";
 import { DrawRectangle } from "../../toolbar/drawRectangle";
 import { Select } from "../../toolbar/select";
-import { Pan } from "../../toolbar/pan";
 import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
 import { NextAsset } from "../../toolbar/nextAsset";
 import { PreviousAsset } from "../../toolbar/previousAsset";
@@ -222,9 +221,6 @@ describe("Editor Page Component", () => {
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Rectangle);
 
             wrapper.find(Select).simulate("click");
-            expect(getState(wrapper).editorMode).toEqual(EditorMode.Select);
-
-            wrapper.find(Pan).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Select);
         });
 

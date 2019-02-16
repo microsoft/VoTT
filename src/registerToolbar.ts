@@ -4,11 +4,7 @@ import { ExportProject } from "./react/components/toolbar/exportProject";
 import { Select } from "./react/components/toolbar/select";
 import { DrawRectangle } from "./react/components/toolbar/drawRectangle";
 import { DrawPolygon } from "./react/components/toolbar/drawPolygon";
-import { Pan } from "./react/components/toolbar/pan";
-import { ZoomIn } from "./react/components/toolbar/zoomIn";
-import { ZoomOut } from "./react/components/toolbar/zoomOut";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
-import { CopyRectangle } from "./react/components/toolbar/copyRectangle";
 import { NextAsset } from "./react/components/toolbar/nextAsset";
 import { PreviousAsset } from "./react/components/toolbar/previousAsset";
 
@@ -24,26 +20,10 @@ export default function registerToolbar() {
         type: ToolbarItemType.State,
     });
 
-    ToolbarItemFactory.register(Pan, {
-        name: "panCanvas",
-        tooltip: "Pan",
-        icon: "fa-arrows-alt",
-        group: "canvas",
-        type: ToolbarItemType.State,
-    });
-
     ToolbarItemFactory.register(DrawRectangle, {
         name: "drawRectangle",
         tooltip: "Draw Rectangle",
         icon: "fa-vector-square",
-        group: "canvas",
-        type: ToolbarItemType.State,
-    });
-
-    ToolbarItemFactory.register(CopyRectangle, {
-        name: "copyRectangle",
-        tooltip: "Copy Rectangle",
-        icon: "fa-clone",
         group: "canvas",
         type: ToolbarItemType.State,
     });
@@ -54,22 +34,6 @@ export default function registerToolbar() {
         icon: "fa-draw-polygon",
         group: "canvas",
         type: ToolbarItemType.State,
-    });
-
-    ToolbarItemFactory.register(ZoomIn, {
-        name: "zoomInCanvas",
-        tooltip: "Zoom In",
-        icon: "fa-search-plus",
-        group: "zoom",
-        type: ToolbarItemType.Action,
-    });
-
-    ToolbarItemFactory.register(ZoomOut, {
-        name: "zoomOutCanvas",
-        tooltip: "Zoom Out",
-        icon: "fa-search-minus",
-        group: "zoom",
-        type: ToolbarItemType.Action,
     });
 
     ToolbarItemFactory.register(PreviousAsset, {
