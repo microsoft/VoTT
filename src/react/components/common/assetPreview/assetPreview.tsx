@@ -84,38 +84,40 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
 
         return (
             <div className={classNames.join(" ")}>
-                {!loaded &&
-                    <div className="asset-loading">
-                        <i className="fas fa-circle-notch fa-spin" />
-                    </div>
-                }
-                {asset.type === AssetType.Image &&
-                    <ImageAsset asset={rootAsset}
-                        additionalSettings={this.props.additionalSettings}
-                        onLoaded={this.onAssetLoad}
-                        onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
-                }
-                {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
-                    <VideoAsset asset={rootAsset}
-                        additionalSettings={this.props.additionalSettings}
-                        childAssets={childAssets}
-                        timestamp={asset.timestamp}
-                        autoPlay={autoPlay}
-                        onLoaded={this.onAssetLoad}
-                        onChildAssetSelected={this.props.onChildAssetSelected}
-                        onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
-                }
-                {asset.type === AssetType.TFRecord &&
-                    <TFRecordAsset asset={asset}
-                        onLoaded={this.onAssetLoad}
-                        onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
-                }
-                {asset.type === AssetType.Unknown &&
-                    <div className="asset-error">{strings.editorPage.assetError}</div>
-                }
+                <div className="asset-preview-container">
+                    {!loaded &&
+                        <div className="asset-loading">
+                            <i className="fas fa-circle-notch fa-spin" />
+                        </div>
+                    }
+                    {asset.type === AssetType.Image &&
+                        <ImageAsset asset={rootAsset}
+                            additionalSettings={this.props.additionalSettings}
+                            onLoaded={this.onAssetLoad}
+                            onActivated={this.props.onActivated}
+                            onDeactivated={this.props.onDeactivated} />
+                    }
+                    {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
+                        <VideoAsset asset={rootAsset}
+                            additionalSettings={this.props.additionalSettings}
+                            childAssets={childAssets}
+                            timestamp={asset.timestamp}
+                            autoPlay={autoPlay}
+                            onLoaded={this.onAssetLoad}
+                            onChildAssetSelected={this.props.onChildAssetSelected}
+                            onActivated={this.props.onActivated}
+                            onDeactivated={this.props.onDeactivated} />
+                    }
+                    {asset.type === AssetType.TFRecord &&
+                        <TFRecordAsset asset={asset}
+                            onLoaded={this.onAssetLoad}
+                            onActivated={this.props.onActivated}
+                            onDeactivated={this.props.onDeactivated} />
+                    }
+                    {asset.type === AssetType.Unknown &&
+                        <div className="asset-error">{strings.editorPage.assetError}</div>
+                    }
+                </div>
             </div>
         );
     }

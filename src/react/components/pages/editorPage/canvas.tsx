@@ -49,6 +49,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public componentDidMount = () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
         this.editor = new CanvasTools.Editor(sz);
+        this.editor.autoResize = false;
         this.editor.onSelectionEnd = this.onSelectionEnd;
         this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
@@ -105,16 +106,20 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     /**
      * Method that gets called when a new region is drawn
-     * @param {RegionData} commit the RegionData of created region
+     * @param {RegionData} regionData the RegionData of created region
      * @returns {void}
      */
-    private onSelectionEnd = (commit: RegionData) => {
+    private onSelectionEnd = (regionData: RegionData) => {
         const id = shortid.generate();
 
-        this.editor.RM.addRegion(id, commit, null);
+        this.editor.RM.addRegion(id, regionData, null);
 
         // RegionData not serializable so need to extract data
-        const scaledRegionData = this.editor.scaleRegionToSourceSize(commit);
+        const scaledRegionData = this.editor.scaleRegionToSourceSize(
+            regionData,
+            this.props.selectedAsset.asset.size.width,
+            this.props.selectedAsset.asset.size.height,
+        );
         const newRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
@@ -156,7 +161,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const currentRegions = this.state.currentAsset.regions;
         const movedRegionIndex = currentRegions.findIndex((region) => region.id === id);
         const movedRegion = currentRegions[movedRegionIndex];
-        const scaledRegionData = this.editor.scaleRegionToSourceSize(regionData);
+        const scaledRegionData = this.editor.scaleRegionToSourceSize(
+            regionData,
+            this.props.selectedAsset.asset.size.width,
+            this.props.selectedAsset.asset.size.height,
+        );
 
         if (movedRegion) {
             movedRegion.points = scaledRegionData.points;
@@ -261,10 +270,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         canvas.style.left = `${contentSource.offsetLeft}px`;
         canvas.style.width = `${contentSource.offsetWidth}px`;
         canvas.style.height = `${contentSource.offsetHeight}px`;
+        this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
     }
 
     private onWindowResize = () => {
-        this.positionCanvas(this.state.contentSource);
+        const contentSource = this.state.contentSource;
+        this.positionCanvas(contentSource);
     }
 
     /**
@@ -298,7 +309,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             const loadedRegionData = CanvasHelpers.getRegionData(region);
             this.editor.RM.addRegion(
                 region.id,
-                this.editor.scaleRegionToFrameSize(loadedRegionData),
+                this.editor.scaleRegionToFrameSize(
+                    loadedRegionData,
+                    this.props.selectedAsset.asset.size.width,
+                    this.props.selectedAsset.asset.size.height,
+                ),
                 CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         });
 

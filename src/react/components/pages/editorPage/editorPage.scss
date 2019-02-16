@@ -31,6 +31,7 @@
             display: flex;
             flex-grow: 1;
             background-color: $darker-5;
+            flex-direction: column;
         }
 
         &-footer {
@@ -133,28 +134,27 @@
 
 .asset-preview {
     display: flex;
-    overflow: hidden;
+    flex: 1;
 
-    &.landscape {
-        margin: 0 auto;
-
-        img {
-            height: auto;
-        }
-    }
-
-    &.portrait {
-        margin: auto 0;
-        img {
-            width: auto;
-        }
+    &-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
     }
 
     img {
-        display: block;
         margin: auto;
         max-width: 100%;
         max-height: 100%;
+    }
+
+    &.landscape {
+        margin: auto 0;
+    }
+
+    &.portrait {
+        margin: 0 auto;
     }
 }
 
