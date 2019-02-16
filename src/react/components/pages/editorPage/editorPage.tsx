@@ -8,7 +8,7 @@ import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag,
+    IAssetMetadata, IProject, ITag, AssetType,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -117,7 +117,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
-        const parentAssets = assets.filter((asset) => !asset.parent);
+        const rootAssets = assets.filter((asset) => !asset.parent);
 
         if (!project) {
             return (<div>Loading...</div>);
@@ -134,7 +134,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
-                        assets={parentAssets}
+                        assets={rootAssets}
                         selectedAsset={selectedAsset ? selectedAsset.asset : null}
                         onAssetSelected={this.selectAsset}
                     />
@@ -239,19 +239,62 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     /**
+     * Returns a value indicating whether the current asset is taggable
+     */
+    private isTaggableAssetType = (asset: IAsset): boolean => {
+        return asset.type === AssetType.Image || asset.type === AssetType.VideoFrame;
+    }
+
+    /**
      * Raised when the selected asset has been changed.
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
-        assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+        // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
+        // asset selected from the side bar (image/video).
+        const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
+
+        if (this.isTaggableAssetType(assetMetadata.asset)) {
+            assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+        } else if (assetMetadata.asset.state === AssetState.NotVisited) {
+            assetMetadata.asset.state = AssetState.Visited;
+        }
+
+        // Update root asset if not already in the "Tagged" state
+        // This is primarily used in the case where a Video Frame is being edited.
+        // We want to ensure that in this case the root video asset state is accuratly
+        // updated to match that state of the asset.
+        if (rootAsset.id === assetMetadata.asset.id) {
+            rootAsset.state = assetMetadata.asset.state;
+        } else {
+            const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
+
+            if (rootAssetMetadata.asset.state !== AssetState.Tagged) {
+                rootAssetMetadata.asset.state = assetMetadata.asset.state;
+                await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
+            }
+
+            rootAsset.state = rootAssetMetadata.asset.state;
+        }
 
         await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         await this.props.actions.saveProject(this.props.project);
 
         const assetService = new AssetService(this.props.project);
-        const childAssets = assetService.getChildAssets(assetMetadata.asset.parent || assetMetadata.asset);
+        const childAssets = assetService.getChildAssets(rootAsset);
 
-        this.setState({ childAssets });
+        // Find and update the root asset in the internal state
+        // This forces the root assets that are displayed in the sidebar to
+        // accuratly show their correct state (not-visited, visited or tagged)
+        const assets = [...this.state.assets];
+        const assetIndex = assets.findIndex((asset) => asset.id === rootAsset.id);
+        if (assetIndex > -1) {
+            assets[assetIndex] = {
+                ...rootAsset,
+            };
+        }
+
+        this.setState({ childAssets, assets });
     }
 
     private onFooterChange = (footerState) => {
@@ -265,48 +308,59 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
-        let selectionMode: SelectionMode = null;
-        let editorMode: EditorMode = null;
-        const currentIndex = this.state.assets
-            .findIndex((asset) => asset.id === this.state.selectedAsset.asset.id);
-
         switch (toolbarItem.props.name) {
             case "drawRectangle":
-                selectionMode = SelectionMode.RECT;
-                editorMode = EditorMode.Rectangle;
+                this.setState({
+                    selectionMode: SelectionMode.RECT,
+                    editorMode: EditorMode.Rectangle,
+                });
                 break;
             case "drawPolygon":
-                selectionMode = SelectionMode.POLYGON;
-                editorMode = EditorMode.Polygon;
+                this.setState({
+                    selectionMode: SelectionMode.POLYGON,
+                    editorMode: EditorMode.Polygon,
+                });
                 break;
             case "copyRectangle":
-                selectionMode = SelectionMode.COPYRECT;
-                editorMode = EditorMode.CopyRect;
+                this.setState({
+                    selectionMode: SelectionMode.COPYRECT,
+                    editorMode: EditorMode.CopyRect,
+                });
                 break;
             case "selectCanvas":
             case "panCanvas":
-                selectionMode = SelectionMode.NONE;
-                editorMode = EditorMode.Select;
+                this.setState({
+                    selectionMode: SelectionMode.NONE,
+                    editorMode: EditorMode.Select,
+                });
                 break;
             case "navigatePreviousAsset":
-                await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+                await this.goToRootAsset(-1);
                 break;
             case "navigateNextAsset":
-                await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
+                await this.goToRootAsset(1);
                 break;
         }
+    }
 
-        this.setState({
-            selectionMode,
-            editorMode,
-        });
+    /**
+     * Navigates to the previous / next root asset on the sidebar
+     * @param direction Number specifying asset navigation
+     */
+    private goToRootAsset = async (direction: number) => {
+        const selectedRootAsset = this.state.selectedAsset.asset.parent || this.state.selectedAsset.asset;
+        const currentIndex = this.state.assets
+            .findIndex((asset) => asset.id === selectedRootAsset.id);
+
+        if (direction > 0) {
+            await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
+        } else {
+            await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
+        }
     }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
-        if (assetMetadata.asset.state === AssetState.NotVisited) {
-            assetMetadata.asset.state = AssetState.Visited;
-        }
 
         try {
             if (!assetMetadata.asset.size) {
@@ -314,7 +368,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 assetMetadata.asset.size = { width: assetProps.width, height: assetProps.height };
             }
         } catch (err) {
-            console.error(err);
+            console.warn("Error computing asset size");
         }
 
         this.onAssetMetadataChanged(assetMetadata);
@@ -331,18 +385,24 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         this.loadingProjectAssets = true;
 
-        const projectAssets = _.values(this.props.project.assets);
+        // Get all root project assets
+        const rootProjectAssets = _.values(this.props.project.assets)
+            .filter((asset) => !asset.parent);
+
+        // Get all root assets from source asset provider
         const sourceAssets = await this.props.actions.loadAssets(this.props.project);
-        const allAssets = _(projectAssets)
+
+        // Merge and uniquify
+        const rootAssets = _(rootProjectAssets)
             .concat(sourceAssets)
             .uniqBy((asset) => asset.id)
             .value();
 
         this.setState({
-            assets: allAssets,
+            assets: rootAssets,
         }, async () => {
-            if (allAssets.length > 0) {
-                await this.selectAsset(allAssets[0]);
+            if (rootAssets.length > 0) {
+                await this.selectAsset(rootAssets[0]);
             }
             this.loadingProjectAssets = false;
         });

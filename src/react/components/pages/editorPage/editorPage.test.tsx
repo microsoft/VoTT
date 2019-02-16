@@ -8,7 +8,7 @@ import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState, IRegion,
+    EditorMode, IAsset, AssetState,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -49,12 +49,13 @@ function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
-function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
+function getMockAssetMetadata(testAssets: IAsset[], assetIndex = 0): IAssetMetadata {
     const mockRegion = MockFactory.createMockRegion();
+    const asset = testAssets[assetIndex];
     const assetMetadata = {
         asset: {
-            ...testAssets[assetIndex],
-            state: AssetState.Visited,
+            ...asset,
+            state: AssetState.Tagged,
         },
         regions: [
             {
@@ -63,9 +64,6 @@ function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
             },
         ],
     };
-    if (assetMetadata.regions.length > 0) {
-        assetMetadata.asset.state = AssetState.Tagged;
-    }
 
     return assetMetadata;
 }
@@ -91,6 +89,7 @@ describe("Editor Page Component", () => {
                 asset: { ...asset },
                 regions: [MockFactory.createMockRegion()],
             };
+
             return Promise.resolve(assetMetadata);
         });
         assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
@@ -197,6 +196,114 @@ describe("Editor Page Component", () => {
         expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
     });
 
+    it("When an image is updated the asset metadata is updated", async () => {
+        const testProject = MockFactory.createTestProject("TestProject");
+        const store = createStore(testProject, true);
+        const props = MockFactory.editorPageProps(testProject.id);
+        const wrapper = createComponent(store, props);
+        const imageAsset = testAssets[0];
+
+        await MockFactory.flushUi();
+        wrapper.update();
+
+        const editedImageAsset: IAssetMetadata = {
+            asset: imageAsset,
+            regions: [MockFactory.createMockRegion()],
+        };
+
+        const saveMock = assetServiceMock.prototype.save as jest.Mock;
+        saveMock.mockClear();
+
+        wrapper.find(Canvas).props().onAssetMetadataChanged(editedImageAsset);
+        await MockFactory.flushUi();
+
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+        // Image asset is updated
+        expect(assetServiceMock.prototype.save).toBeCalledWith({
+            asset: {
+                ...imageAsset,
+                state: AssetState.Tagged,
+            },
+            regions: editedImageAsset.regions,
+        });
+
+        const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === imageAsset.id);
+        expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
+    });
+
+    describe("Editing Video Assets", () => {
+        let wrapper: ReactWrapper;
+        let videoAsset: IAsset;
+        let videoFrames: IAsset[];
+
+        beforeEach(async () => {
+            const testProject = MockFactory.createTestProject("TestProject");
+            videoAsset = MockFactory.createVideoTestAsset("TestVideo");
+            videoFrames = MockFactory.createChildVideoAssets(videoAsset);
+            const projectAssets = [videoAsset].concat(videoFrames);
+            testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
+
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+
+            wrapper = createComponent(store, props);
+
+            await MockFactory.flushUi();
+            wrapper.update();
+        });
+
+        it("Child assets are not included within editor page state", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+            expect(editorPage.state().assets.length).toEqual(testAssets.length + 1);
+            expect(editorPage.state().selectedAsset.asset).toEqual({
+                ...videoAsset,
+                state: AssetState.Visited,
+            });
+        });
+
+        it("When a VideoFrame is updated the root asset is also updated", async () => {
+            const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
+            getAssetMetadataMock.mockImplementationOnce(() => Promise.resolve({
+                asset: { ...videoAsset },
+                regions: [],
+            }));
+
+            const editedVideoFrame: IAssetMetadata = {
+                asset: videoFrames[0],
+                regions: [MockFactory.createMockRegion()],
+            };
+
+            const saveMock = assetServiceMock.prototype.save as jest.Mock;
+            saveMock.mockClear();
+
+            wrapper.find(Canvas).props().onAssetMetadataChanged(editedVideoFrame);
+            await MockFactory.flushUi();
+
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+            const expectedRootVideoMetadata: IAssetMetadata = {
+                asset: {
+                    ...videoAsset,
+                    state: AssetState.Tagged,
+                },
+                regions: [],
+            };
+
+            // Called 2 times, once for root and once for child.
+            expect(saveMock).toBeCalledTimes(2);
+
+            // Root asset is updated
+            expect(saveMock.mock.calls[0][0]).toEqual(expectedRootVideoMetadata);
+
+            // Child asset is updated
+            expect(saveMock.mock.calls[1][0]).toEqual(editedVideoFrame);
+
+            const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === videoAsset.id);
+            expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
+        });
+    });
     describe("Basic toolbar test", () => {
         let wrapper: ReactWrapper = null;
 

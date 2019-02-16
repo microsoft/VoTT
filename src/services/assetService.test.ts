@@ -109,7 +109,8 @@ describe("Asset Service", () => {
 
                     return JSON.stringify(assetMetadata, null, 4);
                 }),
-                writeText: jest.fn((filePath, contents) => true),
+                writeText: jest.fn(() => Promise.resolve()),
+                deleteFile: jest.fn(() => Promise.resolve()),
             };
 
             AssetProviderFactory.create = jest.fn(() => assetProviderMock);
@@ -172,6 +173,9 @@ describe("Asset Service", () => {
             const result = await assetService.save(assetMetadata);
 
             expect(storageProviderMock.writeText).not.toBeCalled();
+            expect(storageProviderMock.deleteFile).toBeCalledWith(
+                `${assetMetadata.asset.id}${constants.assetMetadataFileExtension}`,
+            );
             expect(result).toBe(assetMetadata);
         });
 

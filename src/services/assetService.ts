@@ -138,18 +138,18 @@ export class AssetService {
 
     /**
      * Get a list of child assets associated with the current asset
-     * @param parentAsset The parent asset to search
+     * @param rootAsset The parent asset to search
      */
-    public getChildAssets(parentAsset: IAsset): IAsset[] {
-        Guard.null(parentAsset);
+    public getChildAssets(rootAsset: IAsset): IAsset[] {
+        Guard.null(rootAsset);
 
-        if (parentAsset.type !== AssetType.Video) {
+        if (rootAsset.type !== AssetType.Video) {
             return [];
         }
 
         return _
             .values(this.project.assets)
-            .filter((asset) => asset.parent && asset.parent.id === parentAsset.id)
+            .filter((asset) => asset.parent && asset.parent.id === rootAsset.id)
             .sort((a, b) => a.timestamp - b.timestamp);
     }
 
@@ -160,11 +160,14 @@ export class AssetService {
     public async save(metadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(metadata);
 
+        const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
+
         // Only save asset metadata if asset is in a tagged state
         // Otherwise primary asset information is already persisted in the project file.
         if (metadata.asset.state === AssetState.Tagged) {
-            const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
+        } else {
+            await this.storageProvider.deleteFile(fileName);
         }
 
         return metadata;
