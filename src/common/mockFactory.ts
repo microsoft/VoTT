@@ -25,6 +25,7 @@ import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSyst
 import { generateKey } from "./crypto";
 import { AssetService } from "../services/assetService";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import packageJson from "../../package.json";
 
 export default class MockFactory {
 
@@ -228,7 +229,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
-            version: "v2",
+            version: packageJson.version,
             securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),

@@ -5,15 +5,14 @@ import { IV1Project } from "../models/v1Models";
 import { AssetService } from "./assetService";
 import { randomIntInRange } from "../common/utils";
 import TagColors from "../react/components/common/tagsInput/tagColors.json";
+import packageJson from "../../package.json";
 
 /**
  * Functions required for an import service
- * @member convertV1 - Converts a v1 project to v2 project
- * @member generateAssets - Generates v2 assets based on v1 project file
- * @member generateConnections - Generates v2 connections based on location of v1 project file
+ * @member convertProject - Converts a v1 project to v2 project
  */
 export interface IImportService {
-    convertV1(project: IFileInfo): Promise<IProject>;
+    convertProject(project: IFileInfo): Promise<IProject>;
 }
 
 /**
@@ -21,33 +20,33 @@ export interface IImportService {
  * @description - Functions for importing v1 projects to v2 application
  */
 export default class ImportService implements IImportService {
-    public async convertV1(project: IFileInfo): Promise<IProject> {
+    public async convertProject(projectInfo: IFileInfo): Promise<IProject> {
         let originalProject: IV1Project;
         let convertedProject: IProject;
-        let connections: IConnection[];
+        let connection: IConnection;
         let parsedTags: ITag[];
         let generatedAssetMetadata: any;
 
         try {
-            originalProject = JSON.parse(project.content as string);
+            originalProject = JSON.parse(projectInfo.content as string);
         } catch (e) {
             throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
         }
 
         parsedTags = this.parseTags(originalProject);
 
-        connections = this.generateConnections(project);
+        connection = this.generateConnection(projectInfo);
 
         // map v1 values to v2 values
         convertedProject = {
             id: shortid.generate(),
-            name: project.file.name.split(".")[0],
-            version: "v1-to-v2",
-            securityToken: `${project.file.name.split(".")[0]} Token`,
+            name: projectInfo.file.name.split(".")[0],
+            version: packageJson.version,
+            securityToken: `${projectInfo.file.name.split(".")[0]} Token`,
             description: "Converted V1 Project",
             tags: parsedTags,
-            sourceConnection: connections[0],
-            targetConnection: connections[1],
+            sourceConnection: connection,
+            targetConnection: connection,
             exportFormat: null,
             videoSettings: {
                 frameExtractionRate: 15,
@@ -57,7 +56,7 @@ export default class ImportService implements IImportService {
         };
 
         const assetService = new AssetService(convertedProject);
-        generatedAssetMetadata = this.generateAssets(project, assetService);
+        generatedAssetMetadata = this.generateAssets(projectInfo, assetService);
 
         const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
             assetMetadata.then((metadata) => {
@@ -66,7 +65,7 @@ export default class ImportService implements IImportService {
         });
 
         try {
-            Promise.all(saveAssets);
+            await Promise.all(saveAssets);
         } catch (e) {
             throw e;
         }
@@ -78,28 +77,17 @@ export default class ImportService implements IImportService {
      * Generate connections from v1 project file location
      * @param project - V1 Project Content and File Information
      */
-    private generateConnections(project: any): IConnection[] {
-        const sourceConnection: IConnection = {
+    private generateConnection(project: IFileInfo): IConnection {
+        const connection: IConnection = {
             id: shortid.generate(),
-            name: `${project.file.name.split(".")[0]} Source Connection`,
+            name: `${project.file.name.split(".")[0]} Connection`,
             providerType: "localFileSystemProxy",
             providerOptions: {
                 folderPath: project.file.path.replace(/[^\/]*$/, ""),
             },
         };
 
-        const targetConnection: IConnection = {
-            id: shortid.generate(),
-            name: `${project.file.name.split(".")[0]} Target Connection`,
-            providerType: "localFileSystemProxy",
-            providerOptions: {
-                folderPath: project.file.path.replace(/[^\/]*$/, ""),
-            },
-        };
-
-        const connections: IConnection[] = [sourceConnection, targetConnection];
-
-        return(connections);
+        return connection;
     }
 
     /**
