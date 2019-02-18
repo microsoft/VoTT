@@ -100,5 +100,6 @@ describe("Application Redux Actions", () => {
 
         expect(result).toEqual(appSettings);
         expect(testProject.securityToken).toEqual("Project TestProject Token");
+        // expect(appSettings.securityTokens).toContain(testProject.securityToken);
     });
 });

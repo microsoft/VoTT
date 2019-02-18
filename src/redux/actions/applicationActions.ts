@@ -65,7 +65,7 @@ export function ensureSecurityToken(project: IProject):
             .find((st) => st.name === project.securityToken);
 
         if (securityToken) {
-            return Promise.resolve(appState.appSettings);
+            return appState.appSettings;
         }
 
         securityToken = {
@@ -82,7 +82,7 @@ export function ensureSecurityToken(project: IProject):
 
         project.securityToken = securityToken.name;
         dispatch(ensureSecurityTokenAction(project));
-        return Promise.resolve(appState.appSettings);
+        return appState.appSettings;
     };
 }
 

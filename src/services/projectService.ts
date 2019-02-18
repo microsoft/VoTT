@@ -5,6 +5,7 @@ import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { decryptProject, encryptProject } from "../common/utils";
+import packageJson from "../../package.json";
 
 /**
  * Functions required for a project service
@@ -54,8 +55,7 @@ export default class ProjectService implements IProjectService {
                     project.id = shortid.generate();
                 }
 
-                // automate this eventually
-                project.version = "2.0.0-preview.1";
+                project.version = packageJson.version;
 
                 const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
                 await this.saveExportSettings(project);

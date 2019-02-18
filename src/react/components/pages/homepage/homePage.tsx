@@ -176,16 +176,8 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private loadSelectedProject = async (project: IProject) => {
-        console.log(project);
-        if (project.version === "v1-to-v2") {
-            console.log("loadingSelectedV1Project!!");
-            await this.settingsConfirm.current.open();
-            await this.props.actions.loadProject(project);
-            this.props.history.push(`/projects/${project.id}/settings`);
-        } else {
-            await this.props.actions.loadProject(project);
-            this.props.history.push(`/projects/${project.id}/edit`);
-        }
+        await this.props.actions.loadProject(project);
+        this.props.history.push(`/projects/${project.id}/edit`);
     }
 
     private deleteProject = async (project: IProject) => {
@@ -196,15 +188,15 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
     }
 
-    private convertProject = async (project: IFileInfo) => {
+    private convertProject = async (projectInfo: IFileInfo) => {
         const importService = new ImportService();
-        let projectJson;
+        let project;
         try {
-            projectJson = await importService.convertV1(project);
+            project = await importService.convertProject(projectInfo);
         } catch (e) {
-            throw new AppError(ErrorCode.ProjectUploadError, "Error converting v1 project file");
+            throw new AppError(ErrorCode.V1ImportError, "Error converting v1 project file");
         }
-        this.props.applicationActions.ensureSecurityToken(projectJson);
-        await this.loadSelectedProject(projectJson);
+        this.props.applicationActions.ensureSecurityToken(project);
+        await this.loadSelectedProject(project);
     }
 }
