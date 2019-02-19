@@ -234,8 +234,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Raised when the underlying asset has completed loading
      */
     private onAssetLoaded = (contentSource: ContentSource) => {
-        this.setState({ contentSource });
-        this.updateRegions();
+        this.setState({ contentSource }, async () => {
+            this.positionCanvas(this.state.contentSource);
+            await this.setContentSource(this.state.contentSource);
+            this.updateRegions();
+        });
     }
 
     /**
@@ -285,8 +288,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private onWindowResize = () => {
-        const contentSource = this.state.contentSource;
-        this.positionCanvas(contentSource);
+        this.positionCanvas(this.state.contentSource);
+        if (!this.intervalTimer) {
+            this.setContentSource(this.state.contentSource);
+        }
     }
 
     /**
