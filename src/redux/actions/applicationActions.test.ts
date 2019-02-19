@@ -95,7 +95,7 @@ describe("Application Redux Actions", () => {
         expect(actions.length).toEqual(1);
         expect(actions[0]).toEqual({
             type: ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS,
-            payload: testProject,
+            payload: result,
         });
 
         expect(testProject.securityToken).toEqual("Project TestProject Token");

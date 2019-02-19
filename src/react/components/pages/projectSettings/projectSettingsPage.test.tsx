@@ -100,7 +100,7 @@ describe("Project settings page", () => {
             // New security token was created for new project
             expect(saveAppSettingsSpy).toBeCalled();
             const appSettings = saveAppSettingsSpy.mock.calls[0][0] as IAppSettings;
-            // expect(appSettings.securityTokens.length).toEqual(initialState.appSettings.securityTokens.length + 1);
+            expect(appSettings.securityTokens.length).toEqual(initialState.appSettings.securityTokens.length + 1);
 
             // New project was saved with new security token
             expect(saveProjectSpy).toBeCalledWith({
