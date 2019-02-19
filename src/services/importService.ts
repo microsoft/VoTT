@@ -57,12 +57,10 @@ export default class ImportService implements IImportService {
         };
 
         const assetService = new AssetService(convertedProject);
-        generatedAssetMetadata = this.generateAssets(projectInfo, assetService);
+        generatedAssetMetadata = await this.generateAssets(projectInfo, assetService);
 
-        const saveAssets = generatedAssetMetadata.map((assetMetadata) => {
-            assetMetadata.then((metadata) => {
-                return assetService.save(metadata);
-            });
+        const saveAssets = generatedAssetMetadata.map(async (assetMetadata) => {
+            await assetService.save(assetMetadata);
         });
 
         try {
@@ -114,7 +112,7 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    private generateAssets(project: IFileInfo, assetService: AssetService): IAssetMetadata[] {
+    private async generateAssets(project: IFileInfo, assetService: AssetService): Promise<IAssetMetadata[]> {
         let originalProject: IV1Project;
         const generatedAssetMetadata: IAssetMetadata[] = [];
         let assetState: AssetState;
@@ -126,7 +124,7 @@ export default class ImportService implements IImportService {
                 const frameRegions = originalProject.frames[frameName];
                 const asset = AssetService.createAssetFromFilePath(
                     `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                const populatedMetadata = assetService.getAssetMetadata(asset).then((metadata) => {
+                const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                         ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
                         ? AssetState.Visited : AssetState.NotVisited);
@@ -134,9 +132,7 @@ export default class ImportService implements IImportService {
                     const taggedMetadata = this.addRegions(metadata, frameRegions);
                     return taggedMetadata;
                 });
-                populatedMetadata.then((metadata) => {
-                    generatedAssetMetadata.push(metadata);
-                });
+                generatedAssetMetadata.push(populatedMetadata);
             }
         }
         return generatedAssetMetadata;
