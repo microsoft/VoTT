@@ -59,15 +59,9 @@ export default class ImportService implements IImportService {
         const assetService = new AssetService(convertedProject);
         generatedAssetMetadata = await this.generateAssets(projectInfo, assetService);
 
-        const saveAssets = generatedAssetMetadata.map(async (assetMetadata) => {
+        generatedAssetMetadata.map(async (assetMetadata) => {
             await assetService.save(assetMetadata);
         });
-
-        try {
-            await Promise.all(saveAssets);
-        } catch (e) {
-            throw e;
-        }
 
         return convertedProject;
     }
