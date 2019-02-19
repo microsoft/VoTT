@@ -98,8 +98,8 @@ describe("Application Redux Actions", () => {
             payload: testProject,
         });
 
-        // expect(result).toEqual(appSettings);
         expect(testProject.securityToken).toEqual("Project TestProject Token");
-        // expect(result).toContain(testProject.securityToken);
+        expect(result.securityTokens).toHaveLength(4);
+        expect(result.securityTokens[3].name).toBe(testProject.securityToken);
     });
 });
