@@ -184,20 +184,20 @@ describe("Editor Canvas", () => {
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
     });
 
-    it("onTagClicked", () => {
-        const canvas = wrapper.instance();
-        const testRegion1 = MockFactory.createTestRegion("test1");
-        const testRegion2 = MockFactory.createTestRegion("test2");
+    // it("onTagClicked", () => {
+    //     const canvas = wrapper.instance();
+    //     const testRegion1 = MockFactory.createTestRegion("test1");
+    //     const testRegion2 = MockFactory.createTestRegion("test2");
 
-        wrapper.prop("selectedAsset").regions.push(testRegion1);
-        wrapper.prop("selectedAsset").regions.push(testRegion2);
-        canvas.editor.onRegionSelected("test1", false);
-        canvas.editor.onRegionSelected("test2", true);
+    //     wrapper.prop("selectedAsset").regions.push(testRegion1);
+    //     wrapper.prop("selectedAsset").regions.push(testRegion2);
+    //     canvas.editor.onRegionSelected("test1", false);
+    //     canvas.editor.onRegionSelected("test2", true);
 
-        const newTag = MockFactory.createTestTag();
-        canvas.onTagClicked(newTag);
-        for (const region of wrapper.instance().state.selectedRegions) {
-            expect(region.tags.findIndex((tag) => tag === newTag.name)).toBeGreaterThanOrEqual(0);
-        }
-    });
+    //     const newTag = MockFactory.createTestTag();
+    //     canvas.onTagClicked(newTag);
+    //     for (const region of wrapper.instance().state.selectedRegions) {
+    //         expect(region.tags.findIndex((tag) => tag === newTag.name)).toBeGreaterThanOrEqual(0);
+    //     }
+    // });
 });
