@@ -1,6 +1,6 @@
 import MockFactory from "../common/mockFactory";
 import ImportService from "./importService";
-import packageJson from '../../package.json';
+import packageJson from "../../package.json";
 
 describe("Import Service", () => {
     let importService: IImportService = null;

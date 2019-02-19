@@ -1,11 +1,12 @@
 import shortid from "shortid";
 import { IProject, ITag, IConnection, AppError, ErrorCode,
         IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo } from "../models/applicationState";
-import { IV1Project } from "../models/v1Models";
+import { IV1Project, IV1Region } from "../models/v1Models";
 import { AssetService } from "./assetService";
 import { randomIntInRange } from "../common/utils";
 import TagColors from "../react/components/common/tagsInput/tagColors.json";
 import packageJson from "../../package.json";
+import { IMetadata } from "@azure/storage-blob/typings/lib/models";
 
 /**
  * Functions required for an import service
@@ -113,67 +114,63 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    private generateAssets(project: any, assetService: AssetService): Array<Promise<IAssetMetadata>> {
+    private generateAssets(project: IFileInfo, assetService: AssetService): IAssetMetadata[] {
         let originalProject: IV1Project;
-        const generatedAssetMetadata: Array<Promise<IAssetMetadata>> = [];
-        let generatedRegion: IRegion;
+        const generatedAssetMetadata: IAssetMetadata[] = [];
         let assetState: AssetState;
-        const currentTagColorIndex = randomIntInRange(0, TagColors.length);
 
-        originalProject = JSON.parse(project.content);
+        originalProject = JSON.parse(project.content as string);
 
         for (const frameName in originalProject.frames) {
             if (originalProject.frames.hasOwnProperty(frameName)) {
                 const frameRegions = originalProject.frames[frameName];
                 const asset = AssetService.createAssetFromFilePath(
                     `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                const assetMetadata = assetService.getAssetMetadata(asset).then((metadata) => {
-                    // assetMetadata = metadata;
+                const populatedMetadata = assetService.getAssetMetadata(asset).then((metadata) => {
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
-                                ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
-                                ? AssetState.Visited : AssetState.NotVisited);
+                        ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
+                        ? AssetState.Visited : AssetState.NotVisited);
                     metadata.asset.state = assetState;
-
-                    /*
-                    for (const region of frameRegions) {
-                        generatedRegion = canvasHelpers.getRegion(region, "rect", region.UID)
-                        generatedRegion.tags = region.tags.map((tag) => {
-                                let newTag: ITag;
-                                newTag = {
-                                    name: tag,
-                                    color: TagColors[(currentTagColorIndex + 1) % TagColors.length],
-                                };
-                                return newTag;
-                            });
-                    */
-
-                    for (const region of frameRegions) {
-                        generatedRegion = {
-                            id: region.UID,
-                            type: RegionType.Rectangle,
-                            tags: region.tags.map((tag) => {
-                                let newTag: ITag;
-                                newTag = {
-                                    name: tag,
-                                    color: TagColors[(currentTagColorIndex + 1) % TagColors.length],
-                                };
-                                return newTag;
-                            }),
-                            points: region.points,
-                            boundingBox: {
-                                height: (region.x2 - region.x1),
-                                width: (region.y2 - region.y1),
-                                left: region.x1,
-                                top: region.y1,
-                            },
-                        };
-                        metadata.regions.push(generatedRegion);
-                    }
-                    return metadata;
+                    const taggedMetadata = this.addRegions(metadata, frameRegions);
+                    return taggedMetadata;
                 });
-                generatedAssetMetadata.push(assetMetadata);
+                populatedMetadata.then((metadata) => {
+                    generatedAssetMetadata.push(metadata);
+                });
             }
         }
         return generatedAssetMetadata;
+    }
+
+    /**
+     * Generate assets based on V1 Project frames and regions
+     * @param metadata - Asset Metadata from asset created from filepath
+     * @param frameRegions - V1 Regions within the V1 Frame
+     */
+    private addRegions(metadata: IAssetMetadata, frameRegions: IV1Region[]): IAssetMetadata {
+        const currentTagColorIndex = randomIntInRange(0, TagColors.length);
+        for (const region of frameRegions) {
+            const generatedRegion = {
+                id: region.UID,
+                type: RegionType.Rectangle,
+                tags: region.tags.map((tag) => {
+                    let newTag: ITag;
+                    newTag = {
+                        name: tag,
+                        color: TagColors[(currentTagColorIndex + 1) % TagColors.length],
+                    };
+                    return newTag;
+                }),
+                points: region.points,
+                boundingBox: {
+                    height: (region.x2 - region.x1),
+                    width: (region.y2 - region.y1),
+                    left: region.x1,
+                    top: region.y1,
+                },
+            };
+            metadata.regions.push(generatedRegion);
+        }
+        return metadata;
     }
 }
