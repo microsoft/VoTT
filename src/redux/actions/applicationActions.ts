@@ -79,11 +79,10 @@ export function ensureSecurityToken(project: IProject):
         };
 
         await this.saveAppSettings(updatedAppSettings);
-        appState.appSettings = updatedAppSettings;
 
         project.securityToken = securityToken.name;
-        dispatch(ensureSecurityTokenAction(project));
-        return appState.appSettings;
+        dispatch(ensureSecurityTokenAction(updatedAppSettings));
+        return updatedAppSettings;
     };
 }
 
@@ -111,7 +110,7 @@ export interface ISaveAppSettingsAction extends IPayloadAction<string, IAppSetti
 /**
  * Ensure project security token action type
  */
-export interface IEnsureSecurityTokenAction extends IPayloadAction<string, IProject> {
+export interface IEnsureSecurityTokenAction extends IPayloadAction<string, IAppSettings> {
     type: ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS;
 }
 
