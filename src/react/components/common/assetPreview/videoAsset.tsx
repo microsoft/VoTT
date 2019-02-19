@@ -118,7 +118,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     }
 
     public componentDidMount() {
-        this.videoPlayer.current.subscribeToStateChange(this.onVideoStateChange);
+        if (this.props.autoPlay) {
+            // We only need to subscribe to state change notificeations if autoPlay
+            // is true, otherwise the video is simply a preview on the side bar that
+            // doesn't change
+            this.videoPlayer.current.subscribeToStateChange(this.onVideoStateChange);
+        }
     }
 
     public componentDidUpdate(prevProps: Readonly<IVideoAssetProps>) {

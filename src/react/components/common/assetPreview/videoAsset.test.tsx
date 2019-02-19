@@ -16,7 +16,7 @@ describe("Video Asset Component", () => {
     const onChildSelectedHandler = jest.fn();
     const defaultProps: IVideoAssetProps = {
         asset: MockFactory.createVideoTestAsset("test-video"),
-        autoPlay: false,
+        autoPlay: true,
         timestamp: 0,
         onLoaded: onLoadedHandler,
         onActivated: onActivatedHandler,
@@ -53,6 +53,18 @@ describe("Video Asset Component", () => {
         const newAsset = MockFactory.createVideoTestAsset("new-video-asset");
         wrapper.setProps({ asset: newAsset });
         expect(wrapper.state().loaded).toBe(false);
+    });
+
+    it("does not subscribe to state change callback when autoPlay is false", () => {
+        const testProps: IVideoAssetProps = { ...defaultProps,
+            autoPlay: false,
+        };
+        wrapper = createComponent(testProps);
+        mockLoaded();
+
+        const newAsset = MockFactory.createVideoTestAsset("new-video-asset");
+        wrapper.setProps({ asset: newAsset });
+        expect(videoPlayerMock.prototype.subscribeToStateChange).not.toBeCalled();
     });
 
     it("seeks the video player to the spcified timestamp when timestamp changes", () => {
