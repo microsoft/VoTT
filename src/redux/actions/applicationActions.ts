@@ -79,6 +79,7 @@ export function ensureSecurityToken(project: IProject):
         };
 
         await this.saveAppSettings(updatedAppSettings);
+        appState.appSettings = updatedAppSettings;
 
         project.securityToken = securityToken.name;
         dispatch(ensureSecurityTokenAction(project));
