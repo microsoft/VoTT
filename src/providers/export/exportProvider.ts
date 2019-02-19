@@ -85,7 +85,8 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
         }
 
         const loadAssetTasks = _.values(this.project.assets)
-            .filter(predicate).filter((asset) => asset.type !== AssetType.Video)
+            .filter((asset) => asset.type !== AssetType.Video)
+            .filter(predicate)
             .map((asset) => this.assetService.getAssetMetadata(asset));
 
         return await Promise.all(loadAssetTasks);
