@@ -27,27 +27,7 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOption
      * Export project to VoTT JSON format
      */
     public async export(): Promise<void> {
-        const assetService = new AssetService(this.project);
-
-        let predicate: (asset: IAsset) => boolean = null;
-
-        switch (this.options.assetState) {
-            case ExportAssetState.All:
-                predicate = (asset) => true;
-                break;
-            case ExportAssetState.Visited:
-                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state === AssetState.Tagged;
-                break;
-        }
-
-        const loadAssetTasks = _.values(this.project.assets)
-            .filter(predicate)
-            .map((asset) => assetService.getAssetMetadata(asset));
-
-        const results = await Promise.all(loadAssetTasks);
+        const results = await this.getAssetsForExport();
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(results, (assetMetadata) => assetMetadata.asset.id);
 
