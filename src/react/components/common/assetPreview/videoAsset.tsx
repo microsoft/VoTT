@@ -66,6 +66,15 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         duration: 0,
     };
 
+    constructor(props, context) {
+        super(props, context);
+
+        this.moveNextTaggedFrame = this.moveNextTaggedFrame.bind(this);
+        this.movePreviousTaggedFrame = this.movePreviousTaggedFrame.bind(this);
+        this.moveNextExpectedFrame = this.moveNextExpectedFrame.bind(this);
+        this.movePreviousExpectedFrame = this.movePreviousExpectedFrame.bind(this);
+    }
+
     public render() {
         const { autoPlay, asset } = this.props;
         let videoPath = asset.path;
