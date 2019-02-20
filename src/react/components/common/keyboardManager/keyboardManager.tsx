@@ -63,24 +63,10 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
             return;
         }
 
-        const keyEventType = this.getKeyEventType(evt.type);
-        this.state.keyboard.invokeHandlers(keyEventType, this.getKeyParts(evt), evt);
+        this.state.keyboard.invokeHandlers(evt.type as KeyEventType, this.getKeyParts(evt), evt);
     }
 
     private isDisabled(): boolean {
         return document.activeElement && this.inputElementTypes.has(document.activeElement.tagName.toLowerCase());
-    }
-
-    private getKeyEventType(eventType: string): KeyEventType {
-        switch (eventType) {
-            case "keydown":
-                return KeyEventType.KeyDown;
-            case "keyup":
-                return KeyEventType.KeyUp;
-            case "keypress":
-                return KeyEventType.KeyPress;
-            default:
-                throw new Error("Unrecognized key event type");
-        }
     }
 }
