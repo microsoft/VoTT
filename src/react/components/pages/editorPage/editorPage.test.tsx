@@ -49,13 +49,12 @@ function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
-function getMockAssetMetadata(testAssets: IAsset[], assetIndex = 0): IAssetMetadata {
-    const mockRegion = MockFactory.createMockRegion();
-    const asset = testAssets[assetIndex];
+function getMockAssetMetadata(testAssets, assetIndex = 0, tagName?): IAssetMetadata {
+    const mockRegion = MockFactory.createMockRegion(null, tagName);
     const assetMetadata = {
         asset: {
-            ...asset,
-            state: AssetState.Tagged,
+            ...testAssets[assetIndex],
+            state: AssetState.Visited,
         },
         regions: [
             {
@@ -64,6 +63,9 @@ function getMockAssetMetadata(testAssets: IAsset[], assetIndex = 0): IAssetMetad
             },
         ],
     };
+    if (assetMetadata.regions.length > 0) {
+        assetMetadata.asset.state = AssetState.Tagged;
+    }
 
     return assetMetadata;
 }
