@@ -6,7 +6,7 @@ import { AssetService } from "./assetService";
 import { randomIntInRange } from "../common/utils";
 import TagColors from "../react/components/common/tagsInput/tagColors.json";
 import packageJson from "../../package.json";
-import { IMetadata } from "@azure/storage-blob/typings/lib/models";
+import IProjectActions, * as projectActions  from "../redux/actions/projectActions";
 
 /**
  * Functions required for an import service
@@ -26,7 +26,7 @@ export default class ImportService implements IImportService {
         let convertedProject: IProject;
         let connection: IConnection;
         let parsedTags: ITag[];
-        let generatedAssetMetadata: any;
+        let generatedAssetMetadata: IAssetMetadata[];
 
         try {
             originalProject = JSON.parse(projectInfo.content as string);
@@ -61,6 +61,7 @@ export default class ImportService implements IImportService {
 
         generatedAssetMetadata.map(async (assetMetadata) => {
             await assetService.save(assetMetadata);
+            await projectActions.saveAssetMetadata(convertedProject, assetMetadata);
         });
 
         return convertedProject;
