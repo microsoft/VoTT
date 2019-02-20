@@ -6,7 +6,7 @@ import { AssetService } from "./assetService";
 import { randomIntInRange } from "../common/utils";
 import TagColors from "../react/components/common/tagsInput/tagColors.json";
 import packageJson from "../../package.json";
-import IProjectActions, * as projectActions  from "../redux/actions/projectActions";
+import IProjectActions, * as projectActions from "../redux/actions/projectActions";
 
 /**
  * Functions required for an import service
