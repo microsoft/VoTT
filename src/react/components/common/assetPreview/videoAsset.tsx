@@ -190,7 +190,9 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private seekToTime(seekTime: number) {
         if (seekTime >= 0) {
             // Before seeking, pause the video
-            this.videoPlayer.current.pause();
+            if (!this.getVideoPlayerState().paused) {
+                this.videoPlayer.current.pause();
+            }
             this.videoPlayer.current.seek(seekTime);
         }
     }
@@ -278,6 +280,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (!this.props.additionalSettings) {
             return false;
         }
+
         const keyFrameTime = (1 / this.props.additionalSettings.videoSettings.frameExtractionRate);
         const timestamp = this.getVideoPlayerState().currentTime;
 
