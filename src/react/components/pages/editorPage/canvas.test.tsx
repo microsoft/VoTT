@@ -5,7 +5,7 @@ import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/Regi
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { AssetPreview, IAssetPreviewProps } from "../../common/assetPreview/assetPreview";
 import MockFactory from "../../../../common/mockFactory";
-import { EditorMode } from "../../../../models/applicationState";
+import { EditorMode, IAssetMetadata } from "../../../../models/applicationState";
 
 jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
@@ -219,20 +219,31 @@ describe("Editor Canvas", () => {
             .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
     });
 
-    // it("onTagClicked", () => {
-    //     const canvas = wrapper.instance();
-    //     const testRegion1 = MockFactory.createTestRegion("test1");
-    //     const testRegion2 = MockFactory.createTestRegion("test2");
+    it("Applies tag to selected region", () => {
+        const wrapper = createComponent();
+        const onAssetMetadataChanged = jest.fn();
+        wrapper.setProps({onAssetMetadataChanged});
+        const canvas = wrapper.instance();
 
-    //     wrapper.state().currentAsset.regions.push(testRegion1);
-    //     wrapper.state().currentAsset.regions.push(testRegion2);
-    //     canvas.editor.onRegionSelected("test1", false);
-    //     canvas.editor.onRegionSelected("test2", true);
+        canvas.editor.onRegionSelected("test1", null);
 
-    //     const newTag = MockFactory.createTestTag();
-    //     canvas.onTagClicked(newTag);
-    //     for (const region of wrapper.instance().state.selectedRegions) {
-    //         expect(region.tags.findIndex((tag) => tag === newTag.name)).toBeGreaterThanOrEqual(0);
-    //     }
-    // });
+        const newTag = MockFactory.createTestTag();
+        canvas.applyTag(newTag.name);
+
+        const original = getAssetMetadata();
+        const expected: IAssetMetadata = {
+            ...original,
+            regions: original.regions.map((r) => {
+                if (r.id === "test1") {
+                    return {
+                        ...r,
+                        tags: [newTag.name],
+                    };
+                }
+                return r;
+            }),
+        };
+        expect(onAssetMetadataChanged).toBeCalledWith(expected);
+        expect(wrapper.state().currentAsset.regions[0].tags).toEqual([newTag.name]);
+    });
 });

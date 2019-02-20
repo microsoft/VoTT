@@ -93,6 +93,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         );
     }
 
+    /**
+     * Toggles tag on all selected regions
+     * @param selectedTag Tag name
+     */
     public applyTag = (selectedTag: string) => {
         for (const region of this.state.selectedRegions) {
             this.toggleTagOnRegion(region, selectedTag);
