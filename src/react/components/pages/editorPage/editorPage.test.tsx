@@ -87,7 +87,7 @@ describe("Editor Page Component", () => {
         assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
-                regions: [MockFactory.createMockRegion(null, "NEWTAG")],
+                regions: [MockFactory.createMockRegion()],
             };
 
             return Promise.resolve(assetMetadata);
@@ -184,15 +184,6 @@ describe("Editor Page Component", () => {
             name: testProject.name,
         };
 
-        const partialProjectToBeSaved = {
-            id: testProject.id,
-            name: testProject.name,
-            tags: expect.arrayContaining([{
-                name: "NEWTAG",
-                color: "#808000",
-            }]),
-        };
-
         const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets);
 
         await MockFactory.flushUi();
@@ -202,7 +193,86 @@ describe("Editor Page Component", () => {
             expect.objectContaining(partialProject),
             expectedAssetMetadtata,
         );
-        expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProjectToBeSaved));
+        expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+    });
+
+    describe("Editor Page Component Forcing Tag Scenario", () => {
+        let assetServiceMock: jest.Mocked<typeof AssetService> = null;
+        let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
+
+        const testAssets: IAsset[] = MockFactory.createTestAssets(1, 0);
+
+        beforeAll(() => {
+            const editorMock = Editor as any;
+            editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
+            editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
+            editorMock.prototype.RM = new RegionsManager(null, null);
+            editorMock.prototype.AS = { setSelectionMode: jest.fn() };
+        });
+
+        beforeEach(() => {
+            assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
+            assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
+                const assetMetadata: IAssetMetadata = {
+                    asset: { ...asset },
+                    regions: [MockFactory.createMockRegion(null, "NEWTAG")],
+                };
+                return Promise.resolve(assetMetadata);
+            });
+            assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
+                return Promise.resolve({ ...assetMetadata });
+            });
+
+            projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+            projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve({ ...project }));
+            projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve({ ...project }));
+
+            AssetProviderFactory.create = jest.fn(() => {
+                return {
+                    getAssets: jest.fn(() => Promise.resolve(testAssets)),
+                };
+            });
+        });
+
+        it("Detect new Tag from asset metadata when selecting the Asset", async () => {
+            // create test project and asset
+            const testProject = MockFactory.createTestProject("TestProject");
+
+            // mock store and props
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+
+            const loadAssetMetadataSpy = jest.spyOn(props.actions, "loadAssetMetadata");
+            const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+            const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+
+            // create mock editor page
+            createComponent(store, props);
+
+            const partialProject = {
+                id: testProject.id,
+                name: testProject.name,
+            };
+
+            const partialProjectToBeSaved = {
+                id: testProject.id,
+                name: testProject.name,
+                tags: expect.arrayContaining([{
+                    name: "NEWTAG",
+                    color: "#808000",
+                }]),
+            };
+
+            const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets, 0, "NEWTAG");
+
+            await MockFactory.flushUi();
+
+            expect(saveAssetMetadataSpy).toBeCalledWith(
+                expect.objectContaining(partialProjectToBeSaved),
+                expectedAssetMetadtata,
+            );
+            expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProjectToBeSaved));
+        });
     });
 
     it("When an image is updated the asset metadata is updated", async () => {
