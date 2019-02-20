@@ -126,7 +126,7 @@ describe("Footer Component", () => {
         expect(onTagClickHandler).not.toBeCalled();
     });
 
-    it("componentDidUpdate check", () => {
+    it("componentDidUpdate check", async () => {
         const onChangeHandler = jest.fn();
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
@@ -136,7 +136,14 @@ describe("Footer Component", () => {
             onTagClicked: onTagClickHandler,
         });
 
-        wrapper.setProps({tags: [{color: "#808000", name: "NEWTAG"}]});
-        // expect(wrapper.instance().props.onLoadProfile).toBeCalled();
+        wrapper.setProps({tags: [...originalTags, {color: "#808000", name: "NEWTAG"}]});
+
+        await MockFactory.flushUi();
+        wrapper.update();
+
+        const tagChild = wrapper.find("div.tag");
+
+        expect(tagChild.length).toEqual(originalTags.length + 1);
+        expect(tagChild.at(tagChild.length - 1).props()["data-tag-name"]).toEqual("NEWTAG");
     });
 });
