@@ -51,10 +51,11 @@ function getState(wrapper): IEditorPageState {
 
 function getMockAssetMetadata(testAssets, assetIndex = 0, tagName?): IAssetMetadata {
     const mockRegion = MockFactory.createMockRegion(null, tagName);
+    const asset = testAssets[assetIndex];
     const assetMetadata = {
         asset: {
-            ...testAssets[assetIndex],
-            state: AssetState.Visited,
+            ...asset,
+            state: AssetState.Tagged,
         },
         regions: [
             {
@@ -63,9 +64,6 @@ function getMockAssetMetadata(testAssets, assetIndex = 0, tagName?): IAssetMetad
             },
         ],
     };
-    if (assetMetadata.regions.length > 0) {
-        assetMetadata.asset.state = AssetState.Tagged;
-    }
 
     return assetMetadata;
 }
@@ -251,11 +249,6 @@ describe("Editor Page Component", () => {
             // create mock editor page
             createComponent(store, props);
 
-            const partialProject = {
-                id: testProject.id,
-                name: testProject.name,
-            };
-
             const partialProjectToBeSaved = {
                 id: testProject.id,
                 name: testProject.name,
@@ -264,8 +257,6 @@ describe("Editor Page Component", () => {
                     color: "#808000",
                 }]),
             };
-
-            const expectedAssetMetadtata: IAssetMetadata = getMockAssetMetadata(testAssets, 0, "NEWTAG");
 
             await MockFactory.flushUi();
 

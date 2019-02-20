@@ -343,6 +343,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+        await this.updateProjectTagsFromAsset(assetMetadata);
 
         try {
             if (!assetMetadata.asset.size) {
