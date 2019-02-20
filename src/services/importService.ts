@@ -151,7 +151,7 @@ export default class ImportService implements IImportService {
                 };
                 return newTag;
             });
-            const generatedRegion = {
+            const generatedRegion: IRegion = {
                 id: region.UID,
                 type: RegionType.Rectangle,
                 tags: tagsArray,
