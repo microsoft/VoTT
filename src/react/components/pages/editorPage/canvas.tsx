@@ -69,7 +69,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.clearAllRegions();
             this.setState({
                 currentAsset: this.props.selectedAsset,
-                selectedRegions: []
+                selectedRegions: [],
             });
         }
 
@@ -91,6 +91,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 {this.renderChildren()}
             </Fragment>
         );
+    }
+
+    public applyTag = (selectedTag: string) => {
+        for (const region of this.state.selectedRegions) {
+            this.toggleTagOnRegion(region, selectedTag);
+        }
     }
 
     /**
@@ -119,27 +125,21 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         };
         this.updateAssetRegions([
             ...this.state.currentAsset.regions,
-            newRegion
+            newRegion,
         ], [newRegion]);
-    }
-
-    public applyTag = (selectedTag: string) => {
-        for (const region of this.state.selectedRegions) {
-            this.toggleTagOnRegion(region, selectedTag);
-        }
     }
 
     private updateAssetRegions(regions: IRegion[], selectedRegions: IRegion[]) {
         const currentAsset: IAssetMetadata = {
             ...this.state.currentAsset,
-            regions
-        }
+            regions,
+        };
         this.setState({
             currentAsset,
-            selectedRegions
+            selectedRegions,
         }, () => {
             this.props.onAssetMetadataChanged(currentAsset);
-        });       
+        });
     }
 
     /**
@@ -185,11 +185,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param {boolean} multiselection boolean whether multiselect is active
      * @returns {void}
      */
-    private onRegionSelected = (id: string) => {
+    private onRegionSelected = (id: string, multiselect: boolean) => {
         const region = this.state.currentAsset.regions.find((region) => region.id === id);
-        this.setState({
-            selectedRegions: [region]
-        });
+        let selectedRegions = this.state.selectedRegions;
+        if (multiselect) {
+            selectedRegions.push(region);
+        } else {
+            selectedRegions = [region];
+        }
+        this.setState({selectedRegions});
     }
 
     private renderChildren = () => {
