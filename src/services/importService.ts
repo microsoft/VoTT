@@ -2,12 +2,9 @@ import shortid from "shortid";
 import { IProject, ITag, IConnection, AppError, ErrorCode,
         IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
-import { AssetService } from "./assetService";
-import { randomIntInRange } from "../common/utils";
 import packageJson from "../../package.json";
+import { AssetService } from "./assetService";
 import IProjectActions, * as projectActions from "../redux/actions/projectActions";
-// tslint:disable-next-line:no-var-requires
-const TagColors = require("../react/components/common/tagsInput/tagColors.json");
 
 /**
  * Functions required for an import service
@@ -140,21 +137,11 @@ export default class ImportService implements IImportService {
      * @param frameRegions - V1 Regions within the V1 Frame
      */
     private addRegions(metadata: IAssetMetadata, frameRegions: IV1Region[]): IAssetMetadata {
-        const currentTagColorIndex = randomIntInRange(0, TagColors.length);
-        let tagsArray: ITag[] = [];
         for (const region of frameRegions) {
-            tagsArray = region.tags.map((tag) => {
-                let newTag: ITag;
-                newTag = {
-                    name: tag,
-                    color: TagColors[(currentTagColorIndex + 1) % TagColors.length],
-                };
-                return newTag;
-            });
             const generatedRegion: IRegion = {
                 id: region.UID,
                 type: RegionType.Rectangle,
-                tags: tagsArray,
+                tags: region.tags,
                 points: region.points,
                 boundingBox: {
                     height: (region.x2 - region.x1),
