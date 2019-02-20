@@ -23,8 +23,7 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
-// tslint:disable-next-line:no-var-requires
-const TagColors = require("../../common/tagsInput/tagColors.json");
+import { tagColors } from "../../../../common/tagColors";
 
 /**
  * Properties for Editor Page
@@ -371,9 +370,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assetTags.forEach((tag) => {
             if (!this.props.project.tags || this.props.project.tags.length === 0 ||
                 !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
+                const tagKeys = Object.keys(tagColors);
                 newTags.push({
                     name: tag,
-                    color: TagColors[newTags.length % TagColors.length],
+                    color: tagColors[tagKeys[newTags.length % tagKeys.length]],
                 });
                 updateTags = true;
             }
