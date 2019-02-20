@@ -6,7 +6,6 @@ import { AssetService } from "../../services/assetService";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import axios from "axios";
-import { all } from "deepmerge";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { strings, interpolate } from "../../common/strings";
 
@@ -150,9 +149,9 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                                                    region.type === RegionType.Square) &&
                                                    region.points.length === 2)
                                .forEach((region) => {
-                                    region.tags.forEach((tag) => {
+                                    region.tags.forEach((tagName) => {
                                         const objectInfo: IObjectInfo = {
-                                            name: tag.name,
+                                            name: tagName,
                                             xmin: region.points[0].x,
                                             ymin: region.points[0].y,
                                             xmax: region.points[1].x,
@@ -277,7 +276,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
                     asset.regions.forEach((region) => {
                         tags.forEach((tag) => {
                             const array = tagsDict.get(tag.name);
-                            if (region.tags.filter((regionTag) => regionTag.name === tag.name).length > 0) {
+                            if (region.tags.filter((tagName) => tagName === tag.name).length > 0) {
                                 array.push(`${asset.asset.name} 1`);
                             } else {
                                 array.push(`${asset.asset.name} -1`);

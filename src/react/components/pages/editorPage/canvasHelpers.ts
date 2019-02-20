@@ -3,6 +3,7 @@ import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import Guard from "../../../../common/guard";
 
 /**
  * Static functions to assist in operations within Canvas component
@@ -15,8 +16,8 @@ export default class CanvasHelpers {
      * @param tags Array of tags
      * @param tag Tag to toggle
      */
-    public static toggleTag(tags: ITag[], tag: ITag): void {
-        const tagIndex = tags.findIndex((existingTag) => existingTag.name === tag.name);
+    public static toggleTag(tags: string[], tag: string): void {
+        const tagIndex = tags.findIndex((existingTag) => existingTag === tag);
         if (tagIndex === -1) {
             // Tag isn't found within region tags, add it
             tags.push(tag);
@@ -44,8 +45,18 @@ export default class CanvasHelpers {
      * Create TagsDescriptor (CanvasTools) from IRegion
      * @param region IRegion from Canvas
      */
-    public static getTagsDescriptor(region: IRegion): TagsDescriptor {
-        return new TagsDescriptor(region.tags.map((tag) => new Tag(tag.name, tag.color)));
+    public static getTagsDescriptor(projectTags: ITag[], region: IRegion): TagsDescriptor {
+        Guard.null(projectTags);
+        Guard.null(region);
+
+        const tags = region.tags
+            .map((tagName) => {
+                const projectTag = projectTags.find((projectTag) => projectTag.name === tagName);
+                return projectTag ? new Tag(projectTag.name, projectTag.color) : null;
+            })
+            .filter((tag) => tag !== null);
+
+        return new TagsDescriptor(tags);
     }
 
     /**

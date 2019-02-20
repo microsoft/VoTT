@@ -28,6 +28,9 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
 <!-- command: `markdown-toc -i README.md`-->
 
 <!-- toc -->
+- [VoTT (Visual Object Tagging Tool)](#vott-visual-object-tagging-tool)
+  - [## **NOTE:** this is a Preview release of VoTT. Features may be incomplete or behave incorrectly (bugs! 🐞). Feedback is appreciated!](#note-this-is-a-preview-release-of-vott-features-may-be-incomplete-or-behave-incorrectly-bugs-%F0%9F%90%9E-feedback-is-appreciated)
+  - [Table of Contents](#table-of-contents)
 - [Getting Started](#getting-started)
   - [Running VoTT](#running-vott)
     - [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
@@ -150,7 +153,20 @@ As desired, repeat this process for any additional assets.
 
 ## Labeling a Video
 
-Coming soon!
+Labeling a video is much like labeling a series of images. When a video is selected from the left, it will begin automatically playing, and there are several controls on the player, as seen here:
+![alt text](docs/images/video-player.png "Video Player")
+
+In addition to the normal video playback controls, there are two extra pairs of buttons. 
+
+On the left, there are the previous and next frame buttons. Clicking these will pause the video, and move to the next appropriate frame as determined by the project settings. For example, if the project settings have a frame extraction rate of 1, these buttons will cause the video to be moved back or forward 1 second, while if the frame extraction rate is 10, the video will be moved back or forward a tenth of a second.
+
+On the right, there are the previous and next tagged frame buttons. Clicking these will pause the video and move to the next or previous frame that has a previously tagged region on it, if a tagged frame exists.
+
+Colored lines will also be visible along the video's timeline. These indicate the video frames that have already been visited. A yellow line denotes a frame that has been visited only, while a green line denotes a frame that has been both visited and tagged. The colored lines can be clicked for quick navigation to the indicated frame.
+
+The timeline can also be used to manually scrub through the video to an arbitrary point, though the project settings for frame extraction rate are always obeyed. Pausing the video will move to the closest frame according to this project setting. This way, a very low frame extraction rate, such as 1 frame per second, can be set for sections of the video known to contain few taggable items, and a much higher frame extraction rate, such as 30 frames per second, to allow fine-grained control.
+
+Tagging and drawing regions is not possible while the video is playing.
 
 ## Exporting Labels
 

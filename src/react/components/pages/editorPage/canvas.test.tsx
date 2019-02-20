@@ -197,7 +197,7 @@ describe("Editor Canvas", () => {
         const newTag = MockFactory.createTestTag();
         canvas.onTagClicked(newTag);
         for (const region of wrapper.instance().state.selectedRegions) {
-            expect(region.tags.findIndex((tag) => tag === newTag)).toBeGreaterThanOrEqual(0);
+            expect(region.tags.findIndex((tag) => tag === newTag.name)).toBeGreaterThanOrEqual(0);
         }
     });
 });

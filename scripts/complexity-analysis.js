@@ -4,7 +4,9 @@ const plato = require('es6-plato');
 // parse command line args
 const optionDefinitions = [
     { name: 'src', type: String, defaultValue: './es6-src/**' },
-    { name: 'output', type: String, defaultValue: './report' }
+    { name: 'output', type: String, defaultValue: './report' },
+    { name: 'version', type: String, defaultValue: '2.0.0' },
+    { name: 'commit', type: String, defaultValue: '' }
 ]
 const commandLineArgs = require('command-line-args');
 const options = commandLineArgs(optionDefinitions)
@@ -40,7 +42,7 @@ let exclude = /\.test|registerToolbar|en-us|es-cl|mockFactory/;
 let complexityRules = {};
 
 let platoArgs = {
-    title: 'VoTT v2 Complexity Analysis',
+    title: `VoTT Complexity Analysis<br/>v${options.version}<br/>commit: ${options.commit}`,
     exclude: exclude,
     eslint: lintRules,
     complexity: complexityRules

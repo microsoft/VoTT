@@ -2,16 +2,16 @@ import MD5 from "md5.js";
 import _ from "lodash";
 import * as shortid from "shortid";
 import Guard from "../common/guard";
-import { IAsset, AssetType, IProject, IAssetMetadata, AssetState,
-         IRegion, RegionType, ITFRecordMetadata } from "../models/applicationState";
+import {
+    IAsset, AssetType, IProject, IAssetMetadata, AssetState,
+    IRegion, RegionType, ITFRecordMetadata,
+} from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
 import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
-// tslint:disable-next-line:no-var-requires
-const TagColors = require("../react/components/common/tagsInput/tagColors.json");
 
 /**
  * @name - Asset Service
@@ -33,9 +33,11 @@ export class AssetService {
         // fileNameParts[0] = "video"
         // fileNameParts[1] = "mp4"
         // fileNameParts[2] = "t=5"
-        const fileNameParts = pathParts[pathParts.length - 1].split(/[\.\?#]/);
-        fileName = fileName || `${fileNameParts[0]}.${fileNameParts[1]}`;
-        const assetFormat = fileNameParts.length >= 2 ? fileNameParts[1] : "";
+        fileName = fileName || pathParts[pathParts.length - 1];
+        const fileNameParts = fileName.split(".");
+        const extensionParts = fileNameParts[fileNameParts.length - 1].split(/[\?#]/);
+        const assetFormat = extensionParts[0];
+
         const assetType = this.getAssetType(assetFormat);
 
         return {
@@ -136,18 +138,18 @@ export class AssetService {
 
     /**
      * Get a list of child assets associated with the current asset
-     * @param parentAsset The parent asset to search
+     * @param rootAsset The parent asset to search
      */
-    public getChildAssets(parentAsset: IAsset): IAsset[] {
-        Guard.null(parentAsset);
+    public getChildAssets(rootAsset: IAsset): IAsset[] {
+        Guard.null(rootAsset);
 
-        if (parentAsset.type !== AssetType.Video) {
+        if (rootAsset.type !== AssetType.Video) {
             return [];
         }
 
         return _
             .values(this.project.assets)
-            .filter((asset) => asset.parent && asset.parent.id === parentAsset.id)
+            .filter((asset) => asset.parent && asset.parent.id === rootAsset.id)
             .sort((a, b) => a.timestamp - b.timestamp);
     }
 
@@ -158,11 +160,14 @@ export class AssetService {
     public async save(metadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(metadata);
 
+        const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
+
         // Only save asset metadata if asset is in a tagged state
         // Otherwise primary asset information is already persisted in the project file.
         if (metadata.asset.state === AssetState.Tagged) {
-            const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
+        } else {
+            await this.storageProvider.deleteFile(fileName);
         }
         return metadata;
     }
@@ -202,18 +207,14 @@ export class AssetService {
         // Add Regions from TFRecord in Regions
         for (let index = 0; index < objectArray.textArray.length; index++) {
             tagPos = tags.findIndex((tag) => tag === objectArray.textArray[index]);
-            if (tagPos < 0 ) {
-                tagPos = tags.length;
+            if (tagPos < 0) {
                 tags.push(objectArray.textArray[index]);
             }
 
             regions.push({
                 id: shortid.generate(),
                 type: RegionType.Rectangle,
-                tags: [{
-                    name: objectArray.textArray[index],
-                    color: TagColors[tagPos],
-                }],
+                tags: [objectArray.textArray[index]],
                 boundingBox: {
                     left: objectArray.xminArray[index] * objectArray.width,
                     top: objectArray.yminArray[index] * objectArray.height,
@@ -221,13 +222,13 @@ export class AssetService {
                     height: (objectArray.ymaxArray[index] - objectArray.yminArray[index]) * objectArray.height,
                 },
                 points: [{
-                            x: objectArray.xminArray[index] * objectArray.width,
-                            y: objectArray.yminArray[index] * objectArray.height,
-                        },
-                        {
-                             x: objectArray.xmaxArray[index] * objectArray.width,
-                             y: objectArray.ymaxArray[index] * objectArray.height,
-                        }],
+                    x: objectArray.xminArray[index] * objectArray.width,
+                    y: objectArray.yminArray[index] * objectArray.height,
+                },
+                {
+                    x: objectArray.xmaxArray[index] * objectArray.width,
+                    y: objectArray.ymaxArray[index] * objectArray.height,
+                }],
             });
         }
 
@@ -247,6 +248,6 @@ export class AssetService {
         const ymaxArray = reader.getArrayFeature(0, "image/object/bbox/ymax", FeatureType.Float) as number[];
         const textArray = reader.getArrayFeature(0, "image/object/class/text", FeatureType.String) as string[];
 
-        return {width, height, xminArray, yminArray, xmaxArray, ymaxArray, textArray};
+        return { width, height, xminArray, yminArray, xmaxArray, ymaxArray, textArray };
     }
 }

@@ -85,11 +85,13 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 <BigPlayButton position="center" />
                 <ControlBar autoHide={false}>
                     <CustomVideoPlayerButton order={1.1}
+                        accelerators={["ArrowLeft", "a", "A"]}
                         tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
                         onClick={this.movePreviousExpectedFrame}>
                         <i className="fas fa-caret-left fa-lg" />
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={1.2}
+                        accelerators={["ArrowRight", "d", "D"]}
                         tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
                         onClick={this.moveNextExpectedFrame}>
                         <i className="fas fa-caret-right fa-lg" />
@@ -99,13 +101,13 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
                     <VolumeMenuButton enabled order={7.2} />
                     <CustomVideoPlayerButton order={8.1}
-                        accelerators={["ArrowLeft"]}
+                        accelerators={["q", "Q"]}
                         tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
                         onClick={this.movePreviousTaggedFrame}>
                         <i className="fas fa-step-backward"></i>
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={8.2}
-                        accelerators={["ArrowRight"]}
+                        accelerators={["e", "E"]}
                         tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
                         onClick={this.moveNextTaggedFrame}>
                         <i className="fas fa-step-forward"></i>
@@ -116,7 +118,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     }
 
     public componentDidMount() {
-        this.videoPlayer.current.subscribeToStateChange(this.onVideoStateChange);
+        if (this.props.autoPlay) {
+            // We only need to subscribe to state change notificeations if autoPlay
+            // is true, otherwise the video is simply a preview on the side bar that
+            // doesn't change
+            this.videoPlayer.current.subscribeToStateChange(this.onVideoStateChange);
+        }
     }
 
     public componentDidUpdate(prevProps: Readonly<IVideoAssetProps>) {
@@ -257,12 +264,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
         if (this.props.onChildAssetSelected) {
-            const parentAsset = this.props.asset.parent || this.props.asset;
-            const childPath = `${parentAsset.path}#t=${state.currentTime}`;
+            const rootAsset = this.props.asset.parent || this.props.asset;
+            const childPath = `${rootAsset.path}#t=${state.currentTime}`;
             const childAsset = AssetService.createAssetFromFilePath(childPath);
             childAsset.state = AssetState.Visited;
             childAsset.type = AssetType.VideoFrame;
-            childAsset.parent = parentAsset;
+            childAsset.parent = rootAsset;
             childAsset.timestamp = state.currentTime;
             childAsset.size = { ...this.props.asset.size };
 

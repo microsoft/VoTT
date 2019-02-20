@@ -178,10 +178,11 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     private updateAssetTagArrays(element: IAssetMetadata, imageInfo: IImageInfo) {
         element.regions.filter((region) => region.boundingBox)
                                .forEach((region) => {
-                                    region.tags.forEach((tag) => {
-                                        const index = this.project.tags.map((pTag) => pTag.name).indexOf(tag.name);
+                                    region.tags.forEach((tagName) => {
+                                        const index = this.project.tags
+                                            .findIndex((projectTag) => projectTag.name === tagName);
 
-                                        imageInfo.text.push(tag.name);
+                                        imageInfo.text.push(tagName);
                                         imageInfo.label.push(index);
                                         imageInfo.xmin.push(region.boundingBox.left / imageInfo.width);
                                         imageInfo.ymin.push(region.boundingBox.top / imageInfo.height);

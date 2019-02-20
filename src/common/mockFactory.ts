@@ -105,29 +105,29 @@ export default class MockFactory {
 
     /**
      * Creates a child videoFrame asset from a parent video asset
-     * @param parentAsset The parent video asset
+     * @param rootAsset The parent video asset
      * @param timestamp The timestamp to generate child asset
      */
-    public static createChildVideoAsset(parentAsset: IAsset, timestamp: number): IAsset {
-        const childPath = `${parentAsset.path}#t=${timestamp}`;
+    public static createChildVideoAsset(rootAsset: IAsset, timestamp: number): IAsset {
+        const childPath = `${rootAsset.path}#t=${timestamp}`;
         const childAsset = AssetService.createAssetFromFilePath(childPath);
         childAsset.type = AssetType.VideoFrame;
         childAsset.state = AssetState.Tagged;
-        childAsset.parent = parentAsset;
+        childAsset.parent = rootAsset;
         childAsset.timestamp = timestamp;
-        childAsset.size = { ...parentAsset.size };
+        childAsset.size = { ...rootAsset.size };
 
         return childAsset;
     }
 
     /**
      * Creates an array of child video frame assets from a parent video asset
-     * @param parentAsset The parent video asset
+     * @param rootAsset The parent video asset
      * @param count The number of child assets to create (default 10)
      */
-    public static createChildVideoAssets(parentAsset: IAsset, count: number = 10): IAsset[] {
+    public static createChildVideoAssets(rootAsset: IAsset, count: number = 10): IAsset[] {
         return [...Array(count).keys()].map((index) => {
-            return this.createChildVideoAsset(parentAsset, index);
+            return this.createChildVideoAsset(rootAsset, index);
         });
     }
 
@@ -157,7 +157,7 @@ export default class MockFactory {
         const mockRegion: IRegion = {
             id: id || "id",
             type: RegionType.Rectangle,
-            tags: [mockTag],
+            tags: [mockTag.name],
             points: [mockStartPoint, mockEndPoint],
             boundingBox: mockBoundingBox,
         };
@@ -173,11 +173,7 @@ export default class MockFactory {
     public static createTestAssets(count: number = 10, startIndex: number = 1): IAsset[] {
         const assets: IAsset[] = [];
         for (let i = startIndex; i < (count + startIndex); i++) {
-            const newAsset = (i % 2 === 1)
-                ? MockFactory.createVideoTestAsset(i.toString())
-                : MockFactory.createTestAsset(i.toString());
-
-            assets.push(newAsset);
+            assets.push(MockFactory.createTestAsset(i.toString()));
         }
 
         return assets;

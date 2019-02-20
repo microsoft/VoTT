@@ -57,6 +57,12 @@ describe("Asset Service", () => {
             expect(asset.type).toEqual(AssetType.Video);
         });
 
+        it("detects a video asset by common file extension", () => {
+            const path = "C:\\dir1\\dir2\\asset1.mp4#t=5";
+            const asset = AssetService.createAssetFromFilePath(path);
+            expect(asset.type).toEqual(AssetType.Video);
+        });
+
         it("detects a tfrecord asset by common file extension", () => {
             const path = "C:\\dir1\\dir2\\asset1.tfrecord";
             const asset = AssetService.createAssetFromFilePath(path);
@@ -65,6 +71,18 @@ describe("Asset Service", () => {
 
         it("detects an asset as unkonwn if it doesn't match well known file extensions", () => {
             const path = "C:\\dir1\\dir2\\asset1.docx";
+            const asset = AssetService.createAssetFromFilePath(path);
+            expect(asset.type).toEqual(AssetType.Unknown);
+        });
+
+        it("detects an asset in case asset name contains other file extension in the middle", () => {
+            const path = "C:\\dir1\\dir2\\asset1.docx.jpg";
+            const asset = AssetService.createAssetFromFilePath(path);
+            expect(asset.type).toEqual(AssetType.Image);
+        });
+
+        it("detects an asset in case asset name contains other file extension in the middle", () => {
+            const path = "C:\\dir1\\dir2\\asset1.jpg.docx";
             const asset = AssetService.createAssetFromFilePath(path);
             expect(asset.type).toEqual(AssetType.Unknown);
         });
@@ -91,7 +109,8 @@ describe("Asset Service", () => {
 
                     return JSON.stringify(assetMetadata, null, 4);
                 }),
-                writeText: jest.fn((filePath, contents) => true),
+                writeText: jest.fn(() => Promise.resolve()),
+                deleteFile: jest.fn(() => Promise.resolve()),
             };
 
             AssetProviderFactory.create = jest.fn(() => assetProviderMock);
@@ -154,6 +173,9 @@ describe("Asset Service", () => {
             const result = await assetService.save(assetMetadata);
 
             expect(storageProviderMock.writeText).not.toBeCalled();
+            expect(storageProviderMock.deleteFile).toBeCalledWith(
+                `${assetMetadata.asset.id}${constants.assetMetadataFileExtension}`,
+            );
             expect(result).toBe(assetMetadata);
         });
 
@@ -262,14 +284,14 @@ describe("Asset Service", () => {
 
             expect(result.regions.length).toEqual(2);
             expect(result.regions[0].tags.length).toEqual(1);
-            expect(result.regions[0].tags[0].name).toEqual("a");
+            expect(result.regions[0].tags[0]).toEqual("a");
             expect(result.regions[0].points.length).toEqual(2);
             expect(result.regions[0].points[0].x).toEqual(0);
             expect(result.regions[0].points[0].y).toEqual(0);
             expect(result.regions[0].points[1].x).toEqual(300);
             expect(result.regions[0].points[1].y).toEqual(400);
             expect(result.regions[1].tags.length).toEqual(1);
-            expect(result.regions[1].tags[0].name).toEqual("b");
+            expect(result.regions[1].tags[0]).toEqual("b");
             expect(result.regions[1].points.length).toEqual(2);
             expect(Math.floor(result.regions[1].points[0].x)).toEqual(60);
             expect(Math.floor(result.regions[1].points[0].y)).toEqual(80);

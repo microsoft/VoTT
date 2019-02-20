@@ -34,15 +34,15 @@ plato -r -d report -t 'VoTT v1 Complexity Analysis' -x 'public/js|test_|main.js'
 
 1. If `npm run plato` is not working for you, try runnnig the script manually:
 
-    * Make sure you have `typescript` & `es6-plato` installed locally
+    * Make sure you have `typescript` & `es6-plato` installed locally:
 
         ```bash
         npm install -g typescript
         npm install -g es6-plato
         ```
 
-    * Run following command
+    * Run following command from the root of the repository:
 
         ```bash
-        ./generate-report.sh
+        ./scripts/generate-report.sh -o report -v $(node -pe "require('./package.json').version") -c $(git rev-parse --short HEAD)
         ```
