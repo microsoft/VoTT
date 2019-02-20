@@ -217,13 +217,21 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private syncContentSource = () => {
+        // Don't start a new interval if one is alrady started
+        if (this.intervalTimer) {
+            return;
+        }
+
+        // Setup an interval for ever 33ms...
+        // This is roughly equivalent to 30fps on videos
         this.intervalTimer = window.setInterval(async () => {
             this.positionCanvas(this.state.contentSource);
             await this.setContentSource(this.state.contentSource);
         }, 33);
     }
 
-    private stopContentCourse = () => {
+    private stopContentSource = () => {
+        // If an sync interval exists then clear it
         if (this.intervalTimer) {
             window.clearInterval(this.intervalTimer);
             this.intervalTimer = null;
@@ -255,7 +263,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onAssetDeactivated = () => {
         if (this.intervalTimer) {
-            this.stopContentCourse();
+            this.stopContentSource();
         } else {
             this.setContentSource(this.state.contentSource);
         }
