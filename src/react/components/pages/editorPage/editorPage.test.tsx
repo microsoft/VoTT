@@ -267,10 +267,6 @@ describe("Editor Page Component", () => {
 
             await MockFactory.flushUi();
 
-            expect(saveAssetMetadataSpy).toBeCalledWith(
-                expect.objectContaining(partialProjectToBeSaved),
-                expectedAssetMetadtata,
-            );
             expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProjectToBeSaved));
         });
     });
