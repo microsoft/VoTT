@@ -216,8 +216,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         });
     }
 
+    /**
+     * Syncs the canvas with the content source
+     */
     private syncContentSource = () => {
-        // Don't start a new interval if one is alrady started
+        // Don't start a new interval if one is already started
         if (this.intervalTimer) {
             return;
         }
@@ -230,6 +233,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }, 33);
     }
 
+    /**
+     * Stops auto sync of the canvas with the underlying content source
+     */
     private stopContentSource = () => {
         // If an sync interval exists then clear it
         if (this.intervalTimer) {
@@ -295,6 +301,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
     }
 
+    /**
+     * Resizes and re-renders the canvas when the application window size changes
+     */
     private onWindowResize = () => {
         this.positionCanvas(this.state.contentSource);
         if (!this.intervalTimer) {

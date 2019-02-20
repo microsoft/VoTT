@@ -135,6 +135,7 @@
 .asset-preview {
     display: flex;
     flex: 1;
+    height: 100%;
 
     &-container {
         display: flex;
@@ -166,7 +167,7 @@
     height: 100%;
 
     .video-timeline {
-        &-tagged, &-untagged {
+        &-tagged, &-visited {
             width: 2px;
             position: absolute;
             height: 100%;
@@ -179,7 +180,7 @@
             z-index: 2
         }
 
-        &-untagged {
+        &-visited {
             background-color: yellow;
             z-index: 1;
         }
