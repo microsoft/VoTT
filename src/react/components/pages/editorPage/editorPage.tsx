@@ -356,12 +356,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             selectedAsset: assetMetadata,
         });
-
-        // debugger;
-        // if (asset.type === AssetType.VideoFrame) {
-        //     const resp = await HtmlFileReader.getAssetFrameImage(asset);
-        //     console.log(resp);
-        // }
     }
 
     private loadProjectAssets = async (): Promise<void> => {

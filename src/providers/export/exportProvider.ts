@@ -1,6 +1,6 @@
 import Guard from "../../common/guard";
 import { IProject, IExportFormat, IAssetMetadata, IAsset,
-        AssetState, IProviderOptions, AssetType } from "../../models/applicationState";
+        AssetState, AssetType } from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
 import _ from "lodash";
@@ -67,7 +67,7 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
     /**
      * Gets the assets that are configured to be exported based on the configured asset state
      */
-    public async getAssetsForExport(): Promise<IAssetMetadata[]> {
+    protected async getAssetsForExport(): Promise<IAssetMetadata[]> {
         let predicate: (asset: IAsset) => boolean = null;
 
         // @ts-ignore
