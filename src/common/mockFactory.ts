@@ -133,7 +133,7 @@ export default class MockFactory {
     /**
      * Creates a mock region
      */
-    public static createMockRegion(id?: string, forcedNewTag?: string): IRegion {
+    public static createMockRegion(id?: string): IRegion {
         const mockTag: ITag = MockFactory.createTestTag();
 
         const mockStartPoint: IPoint = {
@@ -156,7 +156,7 @@ export default class MockFactory {
         const mockRegion: IRegion = {
             id: id || "id",
             type: RegionType.Rectangle,
-            tags: [forcedNewTag ? forcedNewTag : mockTag.name],
+            tags: [mockTag.name],
             points: [mockStartPoint, mockEndPoint],
             boundingBox: mockBoundingBox,
         };

@@ -49,8 +49,8 @@ function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
-function getMockAssetMetadata(testAssets, assetIndex = 0, tagName?): IAssetMetadata {
-    const mockRegion = MockFactory.createMockRegion(null, tagName);
+function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
+    const mockRegion = MockFactory.createMockRegion();
     const asset = testAssets[assetIndex];
     const assetMetadata = {
         asset: {
@@ -202,7 +202,7 @@ describe("Editor Page Component", () => {
             getAssetMetadataMock.mockImplementationOnce((asset) => {
                 const assetMetadata: IAssetMetadata = {
                     asset: { ...asset },
-                    regions: [MockFactory.createMockRegion(null, "NEWTAG")],
+                    regions: [{...MockFactory.createMockRegion(), tags: ["NEWTAG"]}],
                 };
                 return Promise.resolve(assetMetadata);
             });
