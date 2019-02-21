@@ -243,7 +243,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             const rootAsset = this.props.asset.parent || this.props.asset;
             const childPath = `${rootAsset.path}#t=${state.currentTime}`;
             const childAsset = AssetService.createAssetFromFilePath(childPath);
-            childAsset.name = `${rootAsset.name}#t=${state.currentTime}`;
+            childAsset.name = `${rootAsset.name + "." + rootAsset.format}#t=${state.currentTime}`;
             childAsset.state = AssetState.Visited;
             childAsset.type = AssetType.VideoFrame;
             childAsset.parent = rootAsset;
