@@ -166,8 +166,6 @@ export class AssetService {
         // Otherwise primary asset information is already persisted in the project file.
         if (metadata.asset.state === AssetState.Tagged) {
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
-        } else {
-            await this.storageProvider.deleteFile(fileName);
         }
 
         return metadata;

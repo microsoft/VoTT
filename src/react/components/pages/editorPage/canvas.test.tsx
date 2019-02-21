@@ -73,11 +73,8 @@ describe("Editor Canvas", () => {
         expect(wrapper.state()).toEqual({
             contentSource: null,
             selectedRegions: [],
-            canvasEnabled: true,
             currentAsset: getAssetMetadata(),
         });
-
-        expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
     });
 
     it("regions are cleared and reset when selected asset changes", () => {
@@ -104,16 +101,15 @@ describe("Editor Canvas", () => {
 
     it("canvas is enabled when an asset is deactivated", () => {
         const wrapper = createComponent();
+        wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
         wrapper.find(AssetPreview).props().onDeactivated(expect.any(HTMLImageElement));
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
-        expect(wrapper.state().canvasEnabled).toEqual(true);
     });
 
     it("canvas is deactivated when an asset is activated", () => {
         const wrapper = createComponent();
         wrapper.find(AssetPreview).props().onActivated(expect.any(HTMLImageElement));
-        expect(wrapper.state().canvasEnabled).toEqual(false);
     });
 
     it("onSelectionEnd adds region to asset and selects it", () => {

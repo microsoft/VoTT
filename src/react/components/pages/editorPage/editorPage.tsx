@@ -242,7 +242,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Update root asset if not already in the "Tagged" state
         // This is primarily used in the case where a Video Frame is being edited.
-        // We want to ensure that in this case the root video asset state is accuratly
+        // We want to ensure that in this case the root video asset state is accurately
         // updated to match that state of the asset.
         if (rootAsset.id === assetMetadata.asset.id) {
             rootAsset.state = assetMetadata.asset.state;
@@ -265,7 +265,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Find and update the root asset in the internal state
         // This forces the root assets that are displayed in the sidebar to
-        // accuratly show their correct state (not-visited, visited or tagged)
+        // accurately show their correct state (not-visited, visited or tagged)
         const assets = [...this.state.assets];
         const assetIndex = assets.findIndex((asset) => asset.id === rootAsset.id);
         if (assetIndex > -1) {
@@ -351,7 +351,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.warn("Error computing asset size");
         }
 
-        this.onAssetMetadataChanged(assetMetadata);
+        await this.onAssetMetadataChanged(assetMetadata);
 
         this.setState({
             selectedAsset: assetMetadata,

@@ -173,9 +173,6 @@ describe("Asset Service", () => {
             const result = await assetService.save(assetMetadata);
 
             expect(storageProviderMock.writeText).not.toBeCalled();
-            expect(storageProviderMock.deleteFile).toBeCalledWith(
-                `${assetMetadata.asset.id}${constants.assetMetadataFileExtension}`,
-            );
             expect(result).toBe(assetMetadata);
         });
 
@@ -231,9 +228,9 @@ describe("Asset Service", () => {
     describe("TFRecords Methods", () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const testAsset = MockFactory.createTestAsset("tfrecord",
-                                                      AssetState.NotVisited,
-                                                      "C:\\Desktop\\asset.tfrecord",
-                                                      AssetType.TFRecord);
+            AssetState.NotVisited,
+            "C:\\Desktop\\asset.tfrecord",
+            AssetType.TFRecord);
         let assetService: AssetService = null;
         let assetProviderMock: IAssetProvider = null;
         let storageProviderMock: any = null;

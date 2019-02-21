@@ -114,4 +114,32 @@ describe("Asset Preview Component", () => {
 
         expect(onChildAssetSelectedHandler).toBeCalledWith(childAsset);
     });
+
+    it("renders landscape asset correctly", () => {
+        const props = { ...defaultProps };
+        props.asset.size = {
+            width: 800,
+            height: 600,
+        };
+
+        wrapper = createComponent(props);
+        const assetPreview = wrapper.find(".asset-preview");
+
+        expect(assetPreview.exists()).toBe(true);
+        expect(assetPreview.props().className).toContain("landscape");
+    });
+
+    it("renders portrait asset correctly", () => {
+        const props = { ...defaultProps };
+        props.asset.size = {
+            width: 600,
+            height: 800,
+        };
+
+        wrapper = createComponent(props);
+        const assetPreview = wrapper.find(".asset-preview");
+
+        expect(assetPreview.exists()).toBe(true);
+        expect(assetPreview.props().className).toContain("portrait");
+    });
 });
