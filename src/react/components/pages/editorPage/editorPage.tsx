@@ -23,6 +23,7 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import { tagColors } from "../../../../common/tagColors";
 
 /**
  * Properties for Editor Page
@@ -341,6 +342,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+        await this.updateProjectTagsFromAsset(assetMetadata);
 
         try {
             if (!assetMetadata.asset.size) {
@@ -356,6 +358,33 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             selectedAsset: assetMetadata,
         });
+    }
+
+    private async updateProjectTagsFromAsset(asset: IAssetMetadata) {
+        const assetTags = new Set();
+        asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
+
+        const newTags: ITag[] = this.props.project.tags ? [...this.props.project.tags] : [];
+        let updateTags = false;
+
+        assetTags.forEach((tag) => {
+            if (!this.props.project.tags || this.props.project.tags.length === 0 ||
+                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
+                const tagKeys = Object.keys(tagColors);
+                newTags.push({
+                    name: tag,
+                    color: tagColors[tagKeys[newTags.length % tagKeys.length]],
+                });
+                updateTags = true;
+            }
+        });
+
+        if (updateTags) {
+            asset.asset.state = AssetState.Tagged;
+            const newProject = {...this.props.project, tags: newTags};
+            await this.props.actions.saveAssetMetadata(newProject, asset);
+            await this.props.actions.saveProject(newProject);
+        }
     }
 
     private loadProjectAssets = async (): Promise<void> => {

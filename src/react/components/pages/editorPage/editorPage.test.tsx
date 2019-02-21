@@ -49,7 +49,7 @@ function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
-function getMockAssetMetadata(testAssets: IAsset[], assetIndex = 0): IAssetMetadata {
+function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
     const mockRegion = MockFactory.createMockRegion();
     const asset = testAssets[assetIndex];
     const assetMetadata = {
@@ -194,6 +194,44 @@ describe("Editor Page Component", () => {
             expectedAssetMetadtata,
         );
         expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+    });
+
+    describe("Editor Page Component Forcing Tag Scenario", () => {
+        it("Detect new Tag from asset metadata when selecting the Asset", async () => {
+            const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
+            getAssetMetadataMock.mockImplementationOnce((asset) => {
+                const assetMetadata: IAssetMetadata = {
+                    asset: { ...asset },
+                    regions: [{...MockFactory.createMockRegion(), tags: ["NEWTAG"]}],
+                };
+                return Promise.resolve(assetMetadata);
+            });
+
+            // create test project and asset
+            const testProject = MockFactory.createTestProject("TestProject");
+
+            // mock store and props
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+
+            const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+
+            // create mock editor page
+            createComponent(store, props);
+
+            const partialProjectToBeSaved = {
+                id: testProject.id,
+                name: testProject.name,
+                tags: expect.arrayContaining([{
+                    name: "NEWTAG",
+                    color: "#808000",
+                }]),
+            };
+
+            await MockFactory.flushUi();
+
+            expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProjectToBeSaved));
+        });
     });
 
     it("When an image is updated the asset metadata is updated", async () => {
