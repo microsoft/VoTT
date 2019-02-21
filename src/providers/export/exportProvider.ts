@@ -67,7 +67,7 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
     /**
      * Gets the assets that are configured to be exported based on the configured asset state
      */
-    protected async getAssetsForExport(): Promise<IAssetMetadata[]> {
+    public async getAssetsForExport(): Promise<IAssetMetadata[]> {
         let predicate: (asset: IAsset) => boolean = null;
 
         // @ts-ignore
