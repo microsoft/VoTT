@@ -71,7 +71,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
                         </li>
                         <li>
                             {/*Open Cloud Project*/}
-                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5">
+                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5 cloud-open-project">
                                 <i className="fas fa-cloud fa-9x"></i>
                                 <h6>{strings.homePage.openCloudProject.title}</h6>
                             </a>
