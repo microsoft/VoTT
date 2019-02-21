@@ -167,8 +167,8 @@ describe("Keyboard Manager Component", () => {
             .toBeCalledWith(KeyEventType.KeyPress, "F1", keyboardEvent);
     });
 
-    describe("Disabling keyboard events for input form elements", () => {
-        it("ignores keypress events when UI is focused on an input element", () => {
+    describe("Disabling keyboard manager", () => {
+        it("ignores keyboard events when UI is focused on an input element", () => {
             const keyboardEvent = new KeyboardEvent(
                 KeyEventType.KeyPress, {
                     ctrlKey: false,
@@ -186,7 +186,7 @@ describe("Keyboard Manager Component", () => {
             expect(registrationManagerMock.prototype.invokeHandlers).not.toBeCalled();
         });
 
-        it("ignores keypress events when UI is focused on an textarea element", () => {
+        it("ignores keyboard events when UI is focused on an textarea element", () => {
             const keyboardEvent = new KeyboardEvent(
                 KeyEventType.KeyPress, {
                     ctrlKey: false,
@@ -204,7 +204,7 @@ describe("Keyboard Manager Component", () => {
             expect(registrationManagerMock.prototype.invokeHandlers).not.toBeCalled();
         });
 
-        it("does not ignore keypress events when UI is focused other elements", () => {
+        it("does not ignore keyboard events when UI is focused on other elements", () => {
             const keyboardEvent = new KeyboardEvent(
                 KeyEventType.KeyPress, {
                     ctrlKey: false,
