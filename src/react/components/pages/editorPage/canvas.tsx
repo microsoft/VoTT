@@ -97,9 +97,36 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Toggles tag on all selected regions
      * @param selectedTag Tag name
      */
-    public applyTag = (selectedTag: string) => {
-        for (const region of this.state.selectedRegions) {
-            this.toggleTagOnRegion(region, selectedTag);
+    public applyTag = (selectedTag: string, lockedTags: string[]) => {
+        const selectedRegions = this.state.selectedRegions;
+        const lockedTagsEmpty = !lockedTags || !lockedTags.length;
+        // TODO still need to set locked tags in canvas state
+        if ((!selectedTag && lockedTagsEmpty) || !selectedRegions.length) {
+            return;
+        }
+        let transformer: (tags: string[], target: string|string[]) => void;
+        let target: string|string[] = selectedTag;
+        if (!selectedTag && !lockedTagsEmpty) {
+            // Region selection while exist locked tags
+            // Add all locked tags if missing (don't toggle)
+            transformer = CanvasHelpers.addAllIfMissing;
+            target = lockedTags;
+        } else if (lockedTagsEmpty) {
+            // Tag selected while region(s) selected
+            // Toggle selected tag
+            transformer = CanvasHelpers.toggleTag;
+        } else if (lockedTags.find((t) => t === selectedTag)) {
+            // Tag added to locked tags while region(s) selected
+            // Add selected tag if missing (don't toggle)
+            transformer = CanvasHelpers.addIfMissing;
+        } else {
+            // Tag removed from locked tags while region(s) selected
+            // Remove selected tag if contained (don't toggle)
+            transformer = CanvasHelpers.removeIfContained;
+        }
+        for (const region of selectedRegions) {
+            transformer(region.tags, target);
+            this.updateRegion(region);
         }
     }
 
@@ -251,7 +278,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({ contentSource }, async () => {
             this.positionCanvas(this.state.contentSource);
             await this.setContentSource(this.state.contentSource);
-            this.updateRegions();
+            this.updateCanvasToolsRegions();
         });
     }
 
@@ -274,7 +301,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.setContentSource(this.state.contentSource);
         }
 
-        this.updateRegions();
+        this.updateCanvasToolsRegions();
         this.editor.AS.setSelectionMode(this.props.selectionMode);
     }
 
@@ -317,8 +344,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param region Region to add or remove tag
      * @param tag Tag to add or remove from region
      */
-    private toggleTagOnRegion = (region: IRegion, tag: string) => {
-        CanvasHelpers.toggleTag(region.tags, tag);
+    private updateRegion = (region: IRegion) => {
         this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         const updatedRegions = this.state.currentAsset.regions.map((r) => (r.id === region.id) ? region : r);
         const updatedSelectedRegions = this.state.currentAsset.regions.map((r) => (r.id === region.id) ? region : r);
@@ -332,7 +358,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.RM.deleteAllRegions();
     }
 
-    private updateRegions = () => {
+    private updateCanvasToolsRegions = () => {
         if (!this.state.currentAsset.regions || this.state.currentAsset.regions.length === 0) {
             return;
         }

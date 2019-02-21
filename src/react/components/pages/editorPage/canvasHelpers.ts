@@ -27,6 +27,33 @@ export default class CanvasHelpers {
         }
     }
 
+    public static find(tags: string[], tag: string): string {
+        return tags.find((t) => t === tag);
+    }
+
+    public static findIndex(tags: string[], tag: string): number {
+        return tags.findIndex((t) => t === tag);
+    }
+
+    public static addIfMissing(tags: string[], tag: string): void {
+        if (!CanvasHelpers.find(tags, tag)) {
+            tags.push(tag);
+        }
+    }
+
+    public static addAllIfMissing(tags: string[], targets: string[]): void {
+        for (const target of targets) {
+            CanvasHelpers.addIfMissing(tags, target);
+        }
+    }
+
+    public static removeIfContained(tags: string[], tag: string): void {
+        const index = CanvasHelpers.findIndex(tags, tag);
+        if (index >= 0) {
+            tags.splice(index, 1);
+        }
+    }
+
     /**
      * Get RegionData (CanvasTools) from IRegion
      * @param region IRegion from Canvas component
