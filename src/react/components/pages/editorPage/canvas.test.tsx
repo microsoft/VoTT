@@ -100,6 +100,7 @@ describe("Editor Canvas", () => {
     });
 
     it("canvas is enabled when an asset is deactivated", () => {
+        const wrapper = createComponent();
         wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
         wrapper.find(AssetPreview).props().onDeactivated(expect.any(HTMLImageElement));
 
