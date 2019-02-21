@@ -27,8 +27,21 @@ export default class CanvasHelpers {
         }
     }
 
+    public static toggleRegion(regions: IRegion[], region: IRegion): void {
+        const index = regions.findIndex((r) => r.id === region.id);
+        if (index === -1) {
+            regions.push(region);
+        } else {
+            regions.splice(index, 1);
+        }
+    }
+
     public static find(tags: string[], tag: string): string {
         return tags.find((t) => t === tag);
+    }
+
+    public static findRegion(regions: IRegion[], id: string): IRegion {
+        return regions.find((r) => (r.id === id));
     }
 
     public static findIndex(tags: string[], tag: string): number {
@@ -52,6 +65,22 @@ export default class CanvasHelpers {
         if (index >= 0) {
             tags.splice(index, 1);
         }
+    }
+
+    public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[] {
+        if (!regions || !updates) {
+            return regions;
+        }
+        const result: IRegion[] = [];
+        for (const region of regions) {
+            const update = CanvasHelpers.findRegion(updates, region.id);
+            if (update) {
+                result.push(update);
+            } else {
+                result.push(region);
+            }
+        }
+        return result;
     }
 
     /**

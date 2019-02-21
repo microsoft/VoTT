@@ -16,6 +16,7 @@ export interface ICanvasProps extends React.Props<Canvas> {
     editorMode: EditorMode;
     selectionMode: SelectionMode;
     project: IProject;
+    lockedTags: string[];
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
 }
@@ -33,6 +34,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         editorMode: EditorMode.Select,
         selectedAsset: null,
         project: null,
+        lockedTags: [],
     };
 
     public editor: Editor;
@@ -97,16 +99,17 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Toggles tag on all selected regions
      * @param selectedTag Tag name
      */
-    public applyTag = (selectedTag: string, lockedTags: string[]) => {
-        const selectedRegions = this.state.selectedRegions;
+    public applyTag = (tag: string) => {
+        const regions = this.state.selectedRegions;
+        const lockedTags = this.props.lockedTags;
         const lockedTagsEmpty = !lockedTags || !lockedTags.length;
-        // TODO still need to set locked tags in canvas state
-        if ((!selectedTag && lockedTagsEmpty) || !selectedRegions.length) {
+        const regionsEmpty = !regions || !regions.length;
+        if ((!tag && lockedTagsEmpty) || regionsEmpty) {
             return;
         }
         let transformer: (tags: string[], target: string|string[]) => void;
-        let target: string|string[] = selectedTag;
-        if (!selectedTag && !lockedTagsEmpty) {
+        let target: string|string[] = tag;
+        if (!tag && !lockedTagsEmpty) {
             // Region selection while exist locked tags
             // Add all locked tags if missing (don't toggle)
             transformer = CanvasHelpers.addAllIfMissing;
@@ -115,7 +118,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             // Tag selected while region(s) selected
             // Toggle selected tag
             transformer = CanvasHelpers.toggleTag;
-        } else if (lockedTags.find((t) => t === selectedTag)) {
+        } else if (lockedTags.find((t) => t === tag)) {
             // Tag added to locked tags while region(s) selected
             // Add selected tag if missing (don't toggle)
             transformer = CanvasHelpers.addIfMissing;
@@ -124,10 +127,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             // Remove selected tag if contained (don't toggle)
             transformer = CanvasHelpers.removeIfContained;
         }
-        for (const region of selectedRegions) {
+        for (const region of regions) {
             transformer(region.tags, target);
-            this.updateRegion(region);
         }
+        this.updateRegions(regions, regions);
     }
 
     /**
@@ -146,10 +149,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.props.selectedAsset.asset.size.width,
             this.props.selectedAsset.asset.size.height,
         );
+        const lockedTags = this.props.lockedTags;
         const newRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
-            tags: [],
+            tags: (lockedTags) ? lockedTags : [],
             boundingBox: {
                 height: scaledRegionData.height,
                 width: scaledRegionData.width,
@@ -158,6 +162,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             },
             points: scaledRegionData.points,
         };
+        if (lockedTags && lockedTags.length) {
+            this.editor.RM.updateTagsById(id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, newRegion));
+        }
         this.updateAssetRegions([
             ...this.state.currentAsset.regions,
             newRegion,
@@ -225,14 +232,26 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
-        const region = this.state.currentAsset.regions.find((region) => region.id === id);
+        const region = CanvasHelpers.findRegion(this.state.currentAsset.regions, id);
+        if (!region) {
+            throw new Error(`Couldn't find region with id ${id}`);
+        }
         let selectedRegions = this.state.selectedRegions;
         if (multiselect) {
-            selectedRegions.push(region);
+            CanvasHelpers.toggleRegion(selectedRegions, region);
+        } else if (CanvasHelpers.findRegion(selectedRegions, id)) {
+            selectedRegions = [];
         } else {
             selectedRegions = [region];
         }
-        this.setState({selectedRegions});
+        if (this.props.lockedTags && this.props.lockedTags.length) {
+            for (const region of selectedRegions) {
+                CanvasHelpers.addAllIfMissing(region.tags, this.props.lockedTags);
+            }
+            this.updateRegions(selectedRegions, selectedRegions);
+        } else {
+            this.setState({selectedRegions});
+        }
     }
 
     private renderChildren = () => {
@@ -338,17 +357,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
 
-    /**
-     * Add tag to region if not there already, remove tag from region
-     * if already contained in tags. Update tags in CanvasTools editor
-     * @param region Region to add or remove tag
-     * @param tag Tag to add or remove from region
-     */
-    private updateRegion = (region: IRegion) => {
-        this.editor.RM.updateTagsById(region.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
-        const updatedRegions = this.state.currentAsset.regions.map((r) => (r.id === region.id) ? region : r);
-        const updatedSelectedRegions = this.state.currentAsset.regions.map((r) => (r.id === region.id) ? region : r);
-        this.updateAssetRegions(updatedRegions, updatedSelectedRegions);
+    private updateRegions = (updates: IRegion[], updatedSelectedRegions: IRegion[]) => {
+        const updatedRegions = CanvasHelpers.updateRegions(this.state.currentAsset.regions, updates);
+        for (const update of updates) {
+            this.editor.RM.updateTagsById(update.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, update));
+        }
+        this.updateAssetRegions(updatedRegions, updatedSelectedRegions)
     }
 
     /**

@@ -161,7 +161,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.editorMode}
                                 selectionMode={this.state.selectionMode}
-                                project={this.props.project}>
+                                project={this.props.project}
+                                lockedTags={this.state.lockedTags}>
                                 <AssetPreview
                                     additionalSettings={this.state.additionalSettings}
                                     autoPlay={true}
@@ -193,7 +194,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             selectedTag: tag.name,
             lockedTags: []
-        }, () => this.canvas.current.applyTag(tag.name, []));
+        }, () => this.canvas.current.applyTag(tag.name));
     }
 
     private onCtrlTagClicked = (tag: ITag): void => {
@@ -202,7 +203,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             selectedTag: tag.name,
             lockedTags: locked
-        }, () => this.canvas.current.applyTag(tag.name, locked));
+        }, () => this.canvas.current.applyTag(tag.name));
     }
 
     /**

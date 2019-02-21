@@ -13,6 +13,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 import { SelectionMode, AreaSelector } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import CanvasHelpers from "./canvasHelpers";
 
 describe("Editor Canvas", () => {
 
@@ -46,6 +47,7 @@ describe("Editor Canvas", () => {
             editorMode: EditorMode.Rectangle,
             selectionMode: SelectionMode.RECT,
             project: MockFactory.createTestProject(),
+            lockedTags: [],
         };
 
         const assetPreviewProps: IAssetPreviewProps = {
@@ -186,7 +188,7 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length);
 
         const canvas = wrapper.instance();
-        canvas.editor.onRegionDelete("test1");
+        canvas.editor.onRegionDelete("test1", CanvasHelpers.getRegionData(originalAssetMetadata.regions[0]));
 
         expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length - 1);
         expect(onAssetMetadataChanged).toBeCalledWith({
@@ -224,7 +226,7 @@ describe("Editor Canvas", () => {
         canvas.editor.onRegionSelected("test1", null);
 
         const newTag = MockFactory.createTestTag();
-        canvas.applyTag(newTag.name);
+        canvas.applyTags(newTag.name);
 
         const original = getAssetMetadata();
         const expected: IAssetMetadata = {

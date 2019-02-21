@@ -573,6 +573,7 @@ export default class MockFactory {
             editorMode: EditorMode.Rectangle,
             selectionMode: SelectionMode.RECT,
             children: null,
+            lockedTags: [],
         };
         return new Canvas(canvasProps);
     }
