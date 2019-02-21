@@ -204,7 +204,7 @@ describe("Keyboard Manager Component", () => {
             expect(registrationManagerMock.prototype.invokeHandlers).not.toBeCalled();
         });
 
-        it("does not ignore keyboard events when UI is focused on other elements", () => {
+        it("ignores keyboard events when UI is focused on select elements", () => {
             const keyboardEvent = new KeyboardEvent(
                 KeyEventType.KeyPress, {
                     ctrlKey: false,
@@ -214,6 +214,24 @@ describe("Keyboard Manager Component", () => {
 
             Object.defineProperty(document, "activeElement", {
                 get: jest.fn(() => document.createElement("select")),
+                configurable: true,
+            });
+
+            window.dispatchEvent(keyboardEvent);
+
+            expect(registrationManagerMock.prototype.invokeHandlers).not.toBeCalled();
+        });
+
+        it("does not ignore keyboard events when UI is focused on other form elements", () => {
+            const keyboardEvent = new KeyboardEvent(
+                KeyEventType.KeyPress, {
+                    ctrlKey: false,
+                    altKey: false,
+                    key: "a",
+                });
+
+            Object.defineProperty(document, "activeElement", {
+                get: jest.fn(() => document.createElement("button")),
                 configurable: true,
             });
 
