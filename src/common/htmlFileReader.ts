@@ -11,6 +11,8 @@ import { reject } from "q";
  */
 export default class HtmlFileReader {
 
+    public static videoAssetFiles = {};
+
     /**
      * Reads the file and returns the string value contained
      * @param file HTML file to read
@@ -92,8 +94,18 @@ export default class HtmlFileReader {
 
     public static async getAssetFrameImage(asset: IAsset) {
         return new Promise((resolve, reject) => {
-            const video = document.createElement("video");
+            // let video;
+            // let refresh = true;
+            // const secs = asset.timestamp;
+            // if (asset.parent.name in this.videoAssetFiles) {
+            //     video = this.videoAssetFiles[asset.parent.name];
+            //     refresh = false;
+            // } else {
+            //     video = document.createElement("video");
+            //     this.videoAssetFiles[asset.parent.name] = video;
+            // }
             const secs = asset.timestamp;
+            const video = document.createElement("video");
             video.onloadedmetadata = function() {
                 this.currentTime = Math.min(Math.max(0, (secs < 0 ? this.duration : 0) + secs), this.duration);
             }.bind(video);
@@ -114,6 +126,11 @@ export default class HtmlFileReader {
                 reject(e);
             };
             video.src = asset.path;
+            // if (refresh) {
+            //     video.src = asset.path;
+            // } else {
+            //     video.currentTime = Math.min(Math.max(0, (secs < 0 ? video.duration : 0) + secs), video.duration);
+            // }
         });
     }
 
