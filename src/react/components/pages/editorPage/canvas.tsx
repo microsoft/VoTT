@@ -293,12 +293,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Positions the canvas tools drawing surface to be exactly over the asset content
      */
     private positionCanvas = (contentSource: ContentSource) => {
-        const canvas = this.canvasZone.current;
-        canvas.style.top = `${contentSource.offsetTop}px`;
-        canvas.style.left = `${contentSource.offsetLeft}px`;
-        canvas.style.width = `${contentSource.offsetWidth}px`;
-        canvas.style.height = `${contentSource.offsetHeight}px`;
-        this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+        if (contentSource) {
+            const canvas = this.canvasZone.current;
+            canvas.style.top = `${contentSource.offsetTop}px`;
+            canvas.style.left = `${contentSource.offsetLeft}px`;
+            canvas.style.width = `${contentSource.offsetWidth}px`;
+            canvas.style.height = `${contentSource.offsetHeight}px`;
+            this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+        }
     }
 
     /**
