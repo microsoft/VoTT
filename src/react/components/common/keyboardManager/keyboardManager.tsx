@@ -24,7 +24,7 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
     };
 
     private nonSupportedKeys = new Set(["Ctrl", " Control", "Alt"]);
-    private inputElementTypes = new Set(["input", "textarea"]);
+    private inputElementTypes = new Set(["input", "select", "textarea"]);
 
     public componentDidMount() {
         window.addEventListener(KeyEventType.KeyDown, this.onKeyboardEvent);
