@@ -93,7 +93,7 @@ describe("Editor Canvas", () => {
 
     it("canvas is updated when asset loads", () => {
         const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
+        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
         expect(wrapper.state().contentSource).toEqual(expect.any(HTMLImageElement));
@@ -101,15 +101,14 @@ describe("Editor Canvas", () => {
 
     it("canvas is enabled when an asset is deactivated", () => {
         const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
-        wrapper.find(AssetPreview).props().onDeactivated(expect.any(HTMLImageElement));
+        wrapper.find(AssetPreview).props().onDeactivated(document.createElement("img"));
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
     });
 
     it("canvas is deactivated when an asset is activated", () => {
         const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onActivated(expect.any(HTMLImageElement));
+        wrapper.find(AssetPreview).props().onActivated(document.createElement("img"));
     });
 
     it("onSelectionEnd adds region to asset and selects it", () => {
@@ -143,7 +142,7 @@ describe("Editor Canvas", () => {
         (wrapper.instance().editor.RM.addRegion as any).mockClear();
 
         wrapper.setProps({ selectedAsset: assetMetadata });
-        wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
+        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
 
         await MockFactory.flushUi();
 
