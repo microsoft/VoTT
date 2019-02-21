@@ -19,6 +19,7 @@ describe("Homepage Component", () => {
     let props: IHomepageProps = null;
     let wrapper: ReactWrapper = null;
     let deleteProjectSpy: jest.SpyInstance = null;
+    let closeProjectSpy: jest.SpyInstance = null;
     const recentProjects = MockFactory.createTestProjects(2);
 
     function createComponent(store, props: IHomepageProps): ReactWrapper {
@@ -39,12 +40,17 @@ describe("Homepage Component", () => {
         store = createStore(recentProjects);
         props = createProps();
         deleteProjectSpy = jest.spyOn(props.actions, "deleteProject");
+        closeProjectSpy = jest.spyOn(props.actions, "closeProject");
 
         wrapper = createComponent(store, props);
     });
 
     it("should render a New Project Link", () => {
         expect(wrapper.find(Link).props().to).toBe("/projects/create");
+    });
+
+    it("should not close projects when homepage loads", () => {
+        expect(closeProjectSpy).not.toBeCalled();
     });
 
     it("should call upload when 'Open Project' is clicked", () => {
