@@ -197,44 +197,16 @@ describe("Editor Page Component", () => {
     });
 
     describe("Editor Page Component Forcing Tag Scenario", () => {
-        let assetServiceMock: jest.Mocked<typeof AssetService> = null;
-        let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
-
-        const testAssets: IAsset[] = MockFactory.createTestAssets(1, 0);
-
-        beforeAll(() => {
-            const editorMock = Editor as any;
-            editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
-            editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
-            editorMock.prototype.RM = new RegionsManager(null, null);
-            editorMock.prototype.AS = { setSelectionMode: jest.fn() };
-        });
-
-        beforeEach(() => {
-            assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
-            assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
+        it("Detect new Tag from asset metadata when selecting the Asset", async () => {
+            const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
+            getAssetMetadataMock.mockImplementationOnce((asset) => {
                 const assetMetadata: IAssetMetadata = {
                     asset: { ...asset },
                     regions: [MockFactory.createMockRegion(null, "NEWTAG")],
                 };
                 return Promise.resolve(assetMetadata);
             });
-            assetServiceMock.prototype.save = jest.fn((assetMetadata) => {
-                return Promise.resolve({ ...assetMetadata });
-            });
 
-            projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
-            projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve({ ...project }));
-            projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve({ ...project }));
-
-            AssetProviderFactory.create = jest.fn(() => {
-                return {
-                    getAssets: jest.fn(() => Promise.resolve(testAssets)),
-                };
-            });
-        });
-
-        it("Detect new Tag from asset metadata when selecting the Asset", async () => {
             // create test project and asset
             const testProject = MockFactory.createTestProject("TestProject");
 
@@ -242,8 +214,6 @@ describe("Editor Page Component", () => {
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
 
-            const loadAssetMetadataSpy = jest.spyOn(props.actions, "loadAssetMetadata");
-            const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
             const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
 
             // create mock editor page
