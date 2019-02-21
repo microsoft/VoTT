@@ -415,7 +415,7 @@ describe("Editor Page Component", () => {
                 .find(EditorPage)
                 .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage>;
 
-            wrapper.find(Canvas).find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
+            wrapper.find(Canvas).find(AssetPreview).props().onLoaded(document.createElement("img"));
             await MockFactory.flushUi();
 
             expect(editorPage.state().selectedAsset.regions[0].tags.length).toEqual(1);

@@ -67,7 +67,7 @@ describe("Asset Preview Component", () => {
 
     it("raises asset loaded handler when image asset loading is complete", () => {
         wrapper = createComponent();
-        wrapper.find(ImageAsset).props().onLoaded(expect.any(HTMLImageElement));
+        wrapper.find(ImageAsset).props().onLoaded(document.createElement("img"));
         wrapper.update();
 
         expect(onLoadedHandler).toBeCalledWith(expect.any(HTMLImageElement));
@@ -81,7 +81,7 @@ describe("Asset Preview Component", () => {
             asset: MockFactory.createVideoTestAsset("test-video-asset"),
         };
         wrapper = createComponent(props);
-        wrapper.find(VideoAsset).props().onLoaded(expect.any(HTMLVideoElement));
+        wrapper.find(VideoAsset).props().onLoaded(document.createElement("video"));
         wrapper.update();
 
         expect(onLoadedHandler).toBeCalledWith(expect.any(HTMLVideoElement));
@@ -91,14 +91,14 @@ describe("Asset Preview Component", () => {
 
     it("raises activated handler when asset is activated", () => {
         wrapper = createComponent();
-        wrapper.find(ImageAsset).props().onActivated(expect.any(HTMLImageElement));
+        wrapper.find(ImageAsset).props().onActivated(document.createElement("img"));
 
         expect(onActivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
     });
 
     it("raises deactivated handler when asset is deactivated", () => {
         wrapper = createComponent();
-        wrapper.find(ImageAsset).props().onDeactivated(expect.any(HTMLImageElement));
+        wrapper.find(ImageAsset).props().onDeactivated(document.createElement("img"));
 
         expect(onDeactivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
     });
