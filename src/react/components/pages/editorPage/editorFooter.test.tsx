@@ -144,6 +144,6 @@ describe("Footer Component", () => {
         const tagChild = wrapper.find("div.tag");
 
         expect(tagChild.length).toEqual(originalTags.length + 1);
-        expect(tagChild.at(tagChild.length - 1).props()["data-tag-name"]).toEqual("NEWTAG");
+        expect(tagChild.at(tagChild.length - 1).childAt(0).childAt(1).props().children[1]).toEqual("NEWTAG");
     });
 });
