@@ -7,7 +7,9 @@ import { StorageProviderFactory } from "../../../../providers/storage/storagePro
 import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+import { ISecurityTokenPickerProps, SecurityTokenPicker } from "../../common/securityTokenPicker/securityTokenPicker";
 import "vott-react/dist/css/tagsInput.css";
+import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
 
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
@@ -48,7 +50,6 @@ export interface IProjectFormState {
  * @description - Form for editing or creating VoTT projects
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
-
     private tagsInput: React.RefObject<TagsInput>;
     private tagEditorModal: React.RefObject<TagEditorModal>;
 
@@ -118,7 +119,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     private fields() {
         return {
-            sourceConnection: CustomField(ConnectionPicker, (props) => {
+            securityToken: CustomField<ISecurityTokenPickerProps>(SecurityTokenPicker, (props) => ({
+                id: props.idSchema.$id,
+                schema: props.schema,
+                value: props.formData,
+                securityTokens: this.props.appSettings.securityTokens,
+                onChange: props.onChange,
+            })),
+            sourceConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPicker, (props) => {
                 return {
                     id: props.idSchema.$id,
                     value: props.formData,
@@ -126,9 +134,10 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     onChange: props.onChange,
                 };
             }),
-            targetConnection: CustomField(ConnectionPicker, (props) => {
-                const targetConnections = this.props.connections.filter(
-                    (connection) => StorageProviderFactory.isRegistered(connection.providerType));
+            targetConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPicker, (props) => {
+                const targetConnections = this.props.connections
+                    .filter((connection) => StorageProviderFactory.isRegistered(connection.providerType));
+
                 return {
                     id: props.idSchema.$id,
                     value: props.formData,
@@ -136,15 +145,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     onChange: props.onChange,
                 };
             }),
-            tagsInput: CustomField(TagsInput, (props) => {
-                const tagsInputProps: ITagsInputProps = {
+            tagsInput: CustomField<ITagsInputProps>(TagsInput, (props) => {
+                return {
                     tags: props.formData,
                     onChange: props.onChange,
                     placeHolder: strings.tags.placeholder,
                     onCtrlTagClick: this.onTagClick,
                     ref: this.tagsInput,
                 };
-                return tagsInputProps;
             }),
         };
     }
