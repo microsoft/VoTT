@@ -26,14 +26,14 @@ describe("Editor Canvas", () => {
 
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
-            const props = createProps();
-            const cProps = canvasProps || props.canvas;
-            const aProps = assetPreviewProps || props.assetPreview;
-            return mount(
-                <Canvas {...cProps}>
-                    <AssetPreview {...aProps} />
-                </Canvas>,
-            );
+        const props = createProps();
+        const cProps = canvasProps || props.canvas;
+        const aProps = assetPreviewProps || props.assetPreview;
+        return mount(
+            <Canvas {...cProps}>
+                <AssetPreview {...aProps} />
+            </Canvas>,
+        );
     }
     function getAssetMetadata() {
         return MockFactory.createTestAssetMetadata(
@@ -66,7 +66,7 @@ describe("Editor Canvas", () => {
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
-        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
+        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
     });
 
     it("renders correctly from default state", () => {
@@ -96,29 +96,33 @@ describe("Editor Canvas", () => {
 
     it("canvas is updated when asset loads", () => {
         const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
+        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
         expect(wrapper.state().contentSource).toEqual(expect.any(HTMLImageElement));
     });
 
-    it("canvas is enabled when an asset is deactivated", () => {
+    it("canvas content source is updated when asset is deactivated", () => {
         const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
-        wrapper.find(AssetPreview).props().onDeactivated(expect.any(HTMLImageElement));
+        const contentSource = document.createElement("img");
+        wrapper.setState({ contentSource });
+        wrapper.find(AssetPreview).props().onDeactivated(document.createElement("img"));
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
     });
 
-    it("canvas is deactivated when an asset is activated", () => {
+    it("content source is updated on an interval", () => {
+        window.setInterval = jest.fn();
+
         const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onActivated(expect.any(HTMLImageElement));
+        wrapper.find(AssetPreview).props().onActivated(document.createElement("img"));
+        expect(window.setInterval).toBeCalled();
     });
 
     it("onSelectionEnd adds region to asset and selects it", () => {
         const wrapper = createComponent();
         const onAssetMetadataChanged = jest.fn();
-        wrapper.setProps({onAssetMetadataChanged});
+        wrapper.setProps({ onAssetMetadataChanged });
 
         const testCommit = createTestRegionData();
         const canvas = wrapper.instance();
@@ -146,7 +150,7 @@ describe("Editor Canvas", () => {
         (wrapper.instance().editor.RM.addRegion as any).mockClear();
 
         wrapper.setProps({ selectedAsset: assetMetadata });
-        wrapper.find(AssetPreview).props().onLoaded(expect.any(HTMLImageElement));
+        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
 
         await MockFactory.flushUi();
 
@@ -157,7 +161,7 @@ describe("Editor Canvas", () => {
     it("onRegionMove edits region info in asset", () => {
         const wrapper = createComponent();
         const onAssetMetadataChanged = jest.fn();
-        wrapper.setProps({onAssetMetadataChanged});
+        wrapper.setProps({ onAssetMetadataChanged });
 
         const canvas = wrapper.instance();
 
@@ -183,7 +187,7 @@ describe("Editor Canvas", () => {
     it("onRegionDelete removes region from asset and clears selectedRegions", () => {
         const wrapper = createComponent();
         const onAssetMetadataChanged = jest.fn();
-        wrapper.setProps({onAssetMetadataChanged});
+        wrapper.setProps({ onAssetMetadataChanged });
 
         const originalAssetMetadata = getAssetMetadata();
         expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length);
@@ -221,7 +225,7 @@ describe("Editor Canvas", () => {
     it("Applies tag to selected region", () => {
         const wrapper = createComponent();
         const onAssetMetadataChanged = jest.fn();
-        wrapper.setProps({onAssetMetadataChanged});
+        wrapper.setProps({ onAssetMetadataChanged });
         const canvas = wrapper.instance();
 
         canvas.editor.onRegionSelected("test1", null);

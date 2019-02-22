@@ -126,4 +126,24 @@ describe("Footer Component", () => {
         expect(onTagClickHandler).not.toBeCalled();
     });
 
+    it("componentDidUpdate check", async () => {
+        const onChangeHandler = jest.fn();
+        const onTagClickHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: originalTags,
+            displayHotKeys: true,
+            onTagsChanged: onChangeHandler,
+            onTagClicked: onTagClickHandler,
+        });
+
+        wrapper.setProps({tags: [...originalTags, {color: "#808000", name: "NEWTAG"}]});
+
+        await MockFactory.flushUi();
+        wrapper.update();
+
+        const tagChild = wrapper.find("div.tag");
+
+        expect(tagChild.length).toEqual(originalTags.length + 1);
+        expect(tagChild.last().text()).toMatch("NEWTAG");
+    });
 });

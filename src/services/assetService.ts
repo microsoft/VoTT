@@ -198,18 +198,12 @@ export class AssetService {
     }
 
     private async getRegionsFromTFRecord(asset: IAsset): Promise<IRegion[]> {
-        const objectArray = await this.getTFRecordObjectArrays(asset);
+        const objectArray = await this.getTFRecordMetadata(asset);
         const regions: IRegion[] = [];
         const tags: string[] = [];
-        let tagPos = 0;
 
         // Add Regions from TFRecord in Regions
         for (let index = 0; index < objectArray.textArray.length; index++) {
-            tagPos = tags.findIndex((tag) => tag === objectArray.textArray[index]);
-            if (tagPos < 0) {
-                tags.push(objectArray.textArray[index]);
-            }
-
             regions.push({
                 id: shortid.generate(),
                 type: RegionType.Rectangle,
@@ -234,7 +228,7 @@ export class AssetService {
         return regions;
     }
 
-    private async getTFRecordObjectArrays(asset: IAsset): Promise<ITFRecordMetadata> {
+    private async getTFRecordMetadata(asset: IAsset): Promise<ITFRecordMetadata> {
         const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
 

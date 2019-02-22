@@ -52,6 +52,14 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         this.onTagModalOk = this.onTagModalOk.bind(this);
     }
 
+    public componentDidUpdate(prevProp: IEditorFooterProps) {
+        if (prevProp.tags !== this.props.tags) {
+            this.setState({
+                tags: this.props.tags,
+            });
+        }
+    }
+
     public render() {
         return (
             <div>

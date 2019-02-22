@@ -4,13 +4,16 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
-import { IApplicationState, IProject } from "../../../../models/applicationState";
+import { IApplicationState, IProject, AppError, ErrorCode } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
-import FilePicker from "../../common/filePicker/filePicker";
+import FilePicker, { IFilePickerProps } from "../../common/filePicker/filePicker";
 import HomePage, { IHomepageProps } from "./homePage";
+
+jest.mock("../../common/cloudFilePicker/cloudFilePicker");
+import { CloudFilePicker, ICloudFilePickerProps } from "../../common/cloudFilePicker/cloudFilePicker";
 
 jest.mock("../../../../services/projectService");
 
@@ -19,6 +22,7 @@ describe("Homepage Component", () => {
     let props: IHomepageProps = null;
     let wrapper: ReactWrapper = null;
     let deleteProjectSpy: jest.SpyInstance = null;
+    let closeProjectSpy: jest.SpyInstance = null;
     const recentProjects = MockFactory.createTestProjects(2);
 
     function createComponent(store, props: IHomepageProps): ReactWrapper {
@@ -39,6 +43,7 @@ describe("Homepage Component", () => {
         store = createStore(recentProjects);
         props = createProps();
         deleteProjectSpy = jest.spyOn(props.actions, "deleteProject");
+        closeProjectSpy = jest.spyOn(props.actions, "closeProject");
 
         wrapper = createComponent(store, props);
     });
@@ -47,12 +52,24 @@ describe("Homepage Component", () => {
         expect(wrapper.find(Link).props().to).toBe("/projects/create");
     });
 
+    it("should not close projects when homepage loads", () => {
+        expect(closeProjectSpy).not.toBeCalled();
+    });
+
     it("should call upload when 'Open Project' is clicked", () => {
         const fileUpload = wrapper.find("a.file-upload").first();
         const filePicker = wrapper.find(FilePicker);
         const spy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
         fileUpload.simulate("click");
         expect(spy).toBeCalled();
+    });
+
+    it("should show an error if the uploaded file is invalid", () => {
+        const genericError = new Error("Error parsing project file JSON");
+        const expectedError = new AppError(ErrorCode.ProjectUploadError, "Error uploading project file");
+        const filePicker = wrapper.find(FilePicker) as ReactWrapper<IFilePickerProps>;
+
+        expect(() => filePicker.props().onError(null, genericError)).toThrowError(expectedError);
     });
 
     it("should render a file picker", () => {
@@ -110,6 +127,23 @@ describe("Homepage Component", () => {
         await MockFactory.flushUi();
 
         expect(uploadSpy).toBeCalled();
+        expect(openProjectSpy).toBeCalledWith(testProject);
+    });
+
+    it("opens the cloud picker when selecting the open cloud project button", () => {
+        const mockCloudFilePicker = CloudFilePicker as jest.Mocked<typeof CloudFilePicker>;
+
+        wrapper.find("a.cloud-open-project").first().simulate("click");
+        expect(mockCloudFilePicker.prototype.open).toBeCalled();
+    });
+
+    it("loads a cloud project after project file has been selected", () => {
+        const openProjectSpy = jest.spyOn(props.actions, "loadProject");
+        const testProject = MockFactory.createTestProject("TestProject");
+        const projectJson = JSON.stringify(testProject, null, 4);
+        const cloudFilePicker = wrapper.find(CloudFilePicker) as ReactWrapper<ICloudFilePickerProps>;
+        cloudFilePicker.props().onSubmit(projectJson);
+
         expect(openProjectSpy).toBeCalledWith(testProject);
     });
 
