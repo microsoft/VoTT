@@ -107,28 +107,19 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if ((!tag && lockedTagsEmpty) || regionsEmpty) {
             return;
         }
-        let transformer: (tags: string[], target: string|string[]) => void;
-        let target: string|string[] = tag;
-        if (!tag && !lockedTagsEmpty) {
-            // Region selection while exist locked tags
-            // Add all locked tags if missing (don't toggle)
-            transformer = CanvasHelpers.addAllIfMissing;
-            target = lockedTags;
-        } else if (lockedTagsEmpty) {
+        let transformer: (tags: string[], tag: string) => void;
+        if (lockedTagsEmpty) {
             // Tag selected while region(s) selected
-            // Toggle selected tag
             transformer = CanvasHelpers.toggleTag;
         } else if (lockedTags.find((t) => t === tag)) {
             // Tag added to locked tags while region(s) selected
-            // Add selected tag if missing (don't toggle)
             transformer = CanvasHelpers.addIfMissing;
         } else {
             // Tag removed from locked tags while region(s) selected
-            // Remove selected tag if contained (don't toggle)
             transformer = CanvasHelpers.removeIfContained;
         }
         for (const region of regions) {
-            transformer(region.tags, target);
+            transformer(region.tags, tag);
         }
         this.updateRegions(regions, regions);
     }
@@ -232,6 +223,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
+        if (!id) {
+            this.setState({
+                selectedRegions: [],
+            });
+        }
         const region = CanvasHelpers.findRegion(this.state.currentAsset.regions, id);
         if (!region) {
             throw new Error(`Couldn't find region with id ${id}`);
@@ -239,8 +235,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         let selectedRegions = this.state.selectedRegions;
         if (multiselect) {
             CanvasHelpers.toggleRegion(selectedRegions, region);
-        } else if (CanvasHelpers.findRegion(selectedRegions, id)) {
-            selectedRegions = [];
         } else {
             selectedRegions = [region];
         }
@@ -362,7 +356,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         for (const update of updates) {
             this.editor.RM.updateTagsById(update.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, update));
         }
-        this.updateAssetRegions(updatedRegions, updatedSelectedRegions)
+        this.updateAssetRegions(updatedRegions, updatedSelectedRegions);
     }
 
     /**
