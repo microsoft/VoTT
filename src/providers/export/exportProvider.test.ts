@@ -4,6 +4,9 @@ import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
 import registerProviders from "../../registerProviders";
 import _ from "lodash";
+import registerMixins from "../../registerMixins";
+
+registerMixins();
 
 describe("Export Provider Base", () => {
     let testProject: IProject = null;

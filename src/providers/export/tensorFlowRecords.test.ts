@@ -14,6 +14,9 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
+import registerMixins from "../../registerMixins";
+
+registerMixins();
 
 describe("TFRecords Json Export Provider", () => {
     const baseTestProject = MockFactory.createTestProject("Test Project");
