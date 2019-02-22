@@ -43,7 +43,7 @@ describe("Export Provider Base", () => {
         ExportProviderFactory.register({
             name: "test",
             displayName: "Test DisplayName",
-            factory: (project) => new TestExportProvider(project, {assetState: ExportAssetState.All}),
+            factory: (project) => new TestExportProvider(project, { assetState: ExportAssetState.All }),
         });
 
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
@@ -58,14 +58,14 @@ describe("Export Provider Base", () => {
         ExportProviderFactory.register({
             name: "test",
             displayName: "Test DisplayName",
-            factory: (project) => new TestExportProvider(project, {assetState: ExportAssetState.Visited}),
+            factory: (project) => new TestExportProvider(project, { assetState: ExportAssetState.Visited }),
         });
 
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
         const assetsToExport = await exportProvider.getAssetsForExport();
         const visitedAssets = _
-                .values(testProject.assets)
-                .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+            .values(testProject.assets)
+            .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
         expect(assetsToExport.length).toEqual(visitedAssets.length);
     });
 
@@ -75,14 +75,14 @@ describe("Export Provider Base", () => {
         ExportProviderFactory.register({
             name: "test",
             displayName: "Test DisplayName",
-            factory: (project) => new TestExportProvider(project, {assetState: ExportAssetState.Tagged}),
+            factory: (project) => new TestExportProvider(project, { assetState: ExportAssetState.Tagged }),
         });
 
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
         const assetsToExport = await exportProvider.getAssetsForExport();
         const taggedAssets = _
-                .values(testProject.assets)
-                .filter((asset) => asset.state === AssetState.Tagged);
+            .values(testProject.assets)
+            .filter((asset) => asset.state === AssetState.Tagged);
         expect(assetsToExport.length).toEqual(taggedAssets.length);
     });
 });

@@ -1,10 +1,8 @@
 import _ from "lodash";
-import axios, { AxiosRequestConfig } from "axios";
 import { ExportProvider, ExportAssetState, IExportResults } from "./exportProvider";
 import Guard from "../../common/guard";
-import { AssetService } from "../../services/assetService";
 import {
-    IProject, IExportFormat, IAsset, AssetState, IAssetMetadata,
+    IProject, IExportFormat, IAssetMetadata,
     IBoundingBox, ISize, IProviderOptions,
 } from "../../models/applicationState";
 import {

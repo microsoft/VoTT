@@ -1,7 +1,6 @@
 import _ from "lodash";
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType, IAsset } from "../../models/applicationState";
-import { AssetService } from "../../services/assetService";
+import { IProject } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import { constants } from "../../common/constants";
 
