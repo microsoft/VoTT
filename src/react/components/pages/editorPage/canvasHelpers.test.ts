@@ -153,5 +153,7 @@ describe("Canvas Helpers", () => {
             ...MockFactory.createTestRegion(originals[0].id),
             tags: ["tag1"],
         });
+
+        expect(CanvasHelpers.updateRegions(originals, [])).toEqual(originals);
     });
 });

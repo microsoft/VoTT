@@ -95,7 +95,7 @@ export default class CanvasHelpers {
      * @param updates Regions that are to be updated in `regions`
      */
     public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[] {
-        if (!regions || !updates) {
+        if (!regions || !updates || !updates.length) {
             return regions;
         }
         const result: IRegion[] = [];
