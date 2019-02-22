@@ -227,6 +227,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.setState({
                 selectedRegions: [],
             });
+            return;
         }
         const region = CanvasHelpers.findRegion(this.state.currentAsset.regions, id);
         if (!region) {
