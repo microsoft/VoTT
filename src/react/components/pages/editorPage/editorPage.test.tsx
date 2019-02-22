@@ -460,6 +460,49 @@ describe("Editor Page Component", () => {
             wrapper.find(EditorFooter).props().onTagClicked(expectedTag);
             expect(editorPage.state().selectedAsset.regions[0].tags.length).toEqual(2);
         });
+
+        it("Adds tag to locked tags when ctrl clicked", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+        });
+
+        it("Removes tag from locked tags when ctrl clicked", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+            let editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+            editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([]);
+        });
     });
 });
 
