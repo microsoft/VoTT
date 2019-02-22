@@ -19,6 +19,9 @@ jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import HtmlFileReader from "../../common/htmlFileReader";
 import * as packageJson from "../../../package.json";
+import registerMixins from "../../registerMixins";
+
+registerMixins();
 
 describe("Azure Custom Vision Export Provider", () => {
     let testProject: IProject = null;

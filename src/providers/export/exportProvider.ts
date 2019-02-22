@@ -1,6 +1,8 @@
 import Guard from "../../common/guard";
-import { IProject, IExportFormat, IAssetMetadata, IAsset,
-        AssetState, AssetType } from "../../models/applicationState";
+import {
+    IProject, IExportFormat, IAssetMetadata, IAsset,
+    AssetState, AssetType,
+} from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
 import _ from "lodash";
@@ -84,12 +86,10 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
                 break;
         }
 
-        const loadAssetTasks = _.values(this.project.assets)
+        return await _.values(this.project.assets)
             .filter((asset) => asset.type !== AssetType.Video)
             .filter(predicate)
-            .map((asset) => this.assetService.getAssetMetadata(asset));
-
-        return await Promise.all(loadAssetTasks);
+            .mapAsync(async (asset) => await this.assetService.getAssetMetadata(asset));
     }
 
     /**
