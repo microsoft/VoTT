@@ -10,6 +10,8 @@ import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
+import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
+import { Clipboard } from "../../../../common/clipboard";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -83,6 +85,22 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public render = () => {
         return (
             <Fragment>
+                <KeyboardBinding
+                    accelerators={["Ctrl+c"]}
+                    onKeyEvent={this.copyRegions}
+                />
+                <KeyboardBinding
+                    accelerators={["Ctrl+v"]}
+                    onKeyEvent={this.pasteRegions}
+                />
+                <KeyboardBinding
+                    accelerators={["Ctrl+x"]}
+                    onKeyEvent={this.cutRegions}
+                />
+                <KeyboardBinding
+                    accelerators={["Ctrl+d"]}
+                    onKeyEvent={this.clearRegions}
+                />
                 <div id="ct-zone" ref={this.canvasZone} className="canvas-enabled">
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
@@ -101,6 +119,23 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         for (const region of this.state.selectedRegions) {
             this.toggleTagOnRegion(region, selectedTag);
         }
+    }
+
+    private copyRegions = async () => {
+        await Clipboard.writeText(JSON.stringify(this.state.selectedRegions));        
+    }
+
+    private cutRegions = () => {
+        const selectedRegions = this.state.selectedRegions;
+        
+    }
+
+    private pasteRegions = () => {
+
+    }
+
+    private clearRegions = () => {
+
     }
 
     /**
@@ -251,7 +286,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({ contentSource }, async () => {
             this.positionCanvas(this.state.contentSource);
             await this.setContentSource(this.state.contentSource);
-            this.updateRegions();
+            this.refreshCanvasToolsRegions();
         });
     }
 
@@ -274,7 +309,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.setContentSource(this.state.contentSource);
         }
 
-        this.updateRegions();
+        this.refreshCanvasToolsRegions();
         this.editor.AS.setSelectionMode(this.props.selectionMode);
     }
 
@@ -332,7 +367,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.RM.deleteAllRegions();
     }
 
-    private updateRegions = () => {
+    private refreshCanvasToolsRegions = () => {
         if (!this.state.currentAsset.regions || this.state.currentAsset.regions.length === 0) {
             return;
         }
