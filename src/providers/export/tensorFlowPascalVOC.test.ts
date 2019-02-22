@@ -122,21 +122,32 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3.jpg")).toEqual(true);
             expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4.jpg")).toEqual(true);
 
-            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
             expect(writeTextFileCalls.length).toEqual(11);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length));
-            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
-            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
-            expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/Annotations/Asset 4.xml")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 1_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 2_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[8][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[9][0].endsWith("/ImageSets/Main/Tag 1_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[10][0].endsWith("/ImageSets/Main/Tag 2_train.txt")).toEqual(true);
+
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 1.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 2.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 3.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 4.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_train.txt")))
+                .toBeGreaterThanOrEqual(0);
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
@@ -165,16 +176,22 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2.jpg")).toEqual(true);
             expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3.jpg")).toEqual(true);
 
-            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
             expect(writeTextFileCalls.length).toEqual(6);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length));
-            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
-            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
-            expect(writeTextFileCalls[3][0].endsWith("/Annotations/Asset 3.xml")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
+
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 1.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 2.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 3.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+                .toBeGreaterThanOrEqual(0);
         });
 
         it("Exports only tagged assets", async () => {
@@ -202,19 +219,28 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1.jpg")).toEqual(true);
             expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2.jpg")).toEqual(true);
 
-            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
             expect(writeTextFileCalls.length).toEqual(9);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length));
-            expect(writeTextFileCalls[1][0].endsWith("/Annotations/Asset 1.xml")).toEqual(true);
-            expect(writeTextFileCalls[2][0].endsWith("/Annotations/Asset 2.xml")).toEqual(true);
-            expect(writeTextFileCalls[3][0].endsWith("/ImageSets/Main/Tag 0_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[4][0].endsWith("/ImageSets/Main/Tag 1_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[5][0].endsWith("/ImageSets/Main/Tag 2_val.txt")).toEqual(true);
-            expect(writeTextFileCalls[6][0].endsWith("/ImageSets/Main/Tag 0_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[7][0].endsWith("/ImageSets/Main/Tag 1_train.txt")).toEqual(true);
-            expect(writeTextFileCalls[8][0].endsWith("/ImageSets/Main/Tag 2_train.txt")).toEqual(true);
+
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 1.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 2.xml")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_train.txt")))
+                .toBeGreaterThanOrEqual(0);
         });
     });
 });

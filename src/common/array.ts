@@ -6,7 +6,7 @@ import Guard from "./guard";
  * @param action The action to perform on each item in the array
  * @param batchSize The batch size for actions to perform in parallel (default: 5)
  */
-export async function forEachAsync<T>(
+export async function arrayForEachAsync<T>(
     this: T[],
     action: (item: T) => Promise<void>,
     batchSize: number = 5): Promise<void> {
@@ -33,7 +33,10 @@ export async function forEachAsync<T>(
  * @param action The transformer action to perform on each item in the array
  * @param batchSize The batch size for actions to perform in parallel (default: 5);
  */
-export async function mapAsync<T, R>(this: T[], action: (item: T) => Promise<R>, batchSize: number = 5): Promise<R[]> {
+export async function arrayMapAsync<T, R>(
+    this: T[],
+    action: (item: T) => Promise<R>,
+    batchSize: number = 5): Promise<R[]> {
     Guard.null(this);
     Guard.null(action);
 

@@ -175,46 +175,36 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const annotationsFolderName = `${exportFolderName}/Annotations`;
         await this.storageProvider.createContainer(annotationsFolderName);
 
-        const allAnnotationExports = [];  // Promise<void>[]
+        try {
+            // Save Annotations
+            await this.imagesInfo.forEachAsync(async (imageInfo, imageName) => {
+                const imageFilePath = `${annotationsFolderName}/${imageName}`;
+                const assetFilePath = `${imageFilePath.substr(0, imageFilePath.lastIndexOf("."))
+                    || imageFilePath}.xml`;
 
-        // Save Annotations
-        this.imagesInfo.forEach((imageInfo, imageName) => {
-            allAnnotationExports.push(
-                new Promise(async (resolve, reject) => {
-                    const imageFilePath = `${annotationsFolderName}/${imageName}`;
-                    const assetFilePath = `${imageFilePath.substr(0, imageFilePath.lastIndexOf("."))
-                        || imageFilePath}.xml`;
-
-                    const objectsXML = imageInfo.objects.map((o) => {
-                        const params = {
-                            name: o.name,
-                            xmin: o.xmin.toString(),
-                            ymin: o.ymin.toString(),
-                            xmax: o.xmax.toString(),
-                            ymax: o.ymax.toString(),
-                        };
-
-                        return interpolate(objectTemplate, params);
-                    });
-
+                const objectsXML = imageInfo.objects.map((o) => {
                     const params = {
-                        fileName: imageName,
-                        filePath: imageFilePath,
-                        width: imageInfo.width.toString(),
-                        height: imageInfo.height.toString(),
-                        objects: objectsXML.join(""),
+                        name: o.name,
+                        xmin: o.xmin.toString(),
+                        ymin: o.ymin.toString(),
+                        xmax: o.xmax.toString(),
+                        ymax: o.ymax.toString(),
                     };
 
-                    // Save Annotation File
-                    await this.storageProvider.writeText(assetFilePath, interpolate(annotationTemplate, params));
+                    return interpolate(objectTemplate, params);
+                });
 
-                    resolve();
-                }),
-            );
-        });
+                const params = {
+                    fileName: imageName,
+                    filePath: imageFilePath,
+                    width: imageInfo.width.toString(),
+                    height: imageInfo.height.toString(),
+                    objects: objectsXML.join(""),
+                };
 
-        try {
-            await Promise.all(allAnnotationExports);
+                // Save Annotation File
+                await this.storageProvider.writeText(assetFilePath, interpolate(annotationTemplate, params));
+            });
         } catch (err) {
             console.log(err);
         }
