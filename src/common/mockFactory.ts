@@ -872,20 +872,7 @@ export default class MockFactory {
      * Generates a random color string
      */
     private static randomColor(): string {
-        return [
-            "#",
-            MockFactory.randomColorSegment(),
-            MockFactory.randomColorSegment(),
-            MockFactory.randomColorSegment(),
-        ].join("");
-    }
-
-    /**
-     * Generates random color segment
-     */
-    private static randomColorSegment(): string {
-        const num = Math.floor(Math.random() * 255);
-        return num.toString(16);
+        return "#" + (Math.random() * 0xFFFFFF << 0).toString(16);
     }
 
     /**
