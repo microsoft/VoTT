@@ -112,11 +112,13 @@ export default class HtmlFileReader {
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 canvas.toBlob((blob) => {
                     resolve(blob);
+
+                    video.src = "";
+                    video.remove();
+                    canvas.remove();
                 });
             };
-            video.onerror = (e) => {
-                reject(e);
-            };
+            video.onerror = reject;
             if (refresh) {
                 video.src = asset.parent.path;
             } else {
