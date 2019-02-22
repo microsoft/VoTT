@@ -75,4 +75,83 @@ describe("Canvas Helpers", () => {
         expect(CanvasHelpers.regionTypeToType(RegionType.Polyline)).toEqual(RegionDataType.Polyline);
         expect(CanvasHelpers.regionTypeToType(null)).toBeUndefined();
     });
+
+    it("Toggles a tag", () => {
+        const tags = ["tag1", "tag2", "tag3"];
+        CanvasHelpers.toggleTag(tags, "tag1");
+        expect(tags).toEqual(["tag2", "tag3"]);
+    });
+
+    it("Toggles a region", () => {
+        const regions = [
+            MockFactory.createTestRegion("region1"),
+            MockFactory.createTestRegion("region2"),
+            MockFactory.createTestRegion("region3"),
+        ];
+        CanvasHelpers.toggleRegion(regions, regions[0]);
+        expect(regions).toEqual([
+            MockFactory.createTestRegion("region2"),
+            MockFactory.createTestRegion("region3"),
+        ]);
+        CanvasHelpers.toggleRegion(regions, MockFactory.createTestRegion("region4"));
+        expect(regions).toEqual([
+            MockFactory.createTestRegion("region2"),
+            MockFactory.createTestRegion("region3"),
+            MockFactory.createTestRegion("region4"),
+        ]);
+
+    });
+
+    it("Finds a region", () => {
+        const regions = [
+            MockFactory.createTestRegion("region1"),
+            MockFactory.createTestRegion("region2"),
+            MockFactory.createTestRegion("region3"),
+        ];
+        const found = CanvasHelpers.findRegion(regions, "region1");
+        expect(found).toEqual(MockFactory.createTestRegion("region1"));
+        const notFound = CanvasHelpers.findRegion(regions, "region4");
+        expect(notFound).toBeUndefined();
+    });
+
+    it("Finds index of tag", () => {
+        const tags = ["tag1", "tag2", "tag3"];
+        expect(CanvasHelpers.findIndex(tags, "tag1")).toBe(0);
+    });
+
+    it("Adds tag if missing", () => {
+        const tags = ["tag1", "tag2", "tag3"];
+        CanvasHelpers.addIfMissing(tags, "tag2");
+        expect(tags).toEqual(["tag1", "tag2", "tag3"]);
+        CanvasHelpers.addIfMissing(tags, "tag4");
+        expect(tags).toEqual(["tag1", "tag2", "tag3", "tag4"]);
+    });
+
+    it("Adds all tags if missing", () => {
+        const tags = ["tag1", "tag2", "tag3"];
+        const targets = ["tag3", "tag4", "tag5"];
+        CanvasHelpers.addAllIfMissing(tags, targets);
+        expect(tags).toEqual(["tag1", "tag2", "tag3", "tag4", "tag5"]);
+    });
+
+    it("Removes tag if contained", () => {
+        const tags = ["tag1", "tag2", "tag3"];
+        CanvasHelpers.removeIfContained(tags, "tag4");
+        expect(tags).toEqual(["tag1", "tag2", "tag3"]);
+        CanvasHelpers.removeIfContained(tags, "tag1");
+        expect(tags).toEqual(["tag2", "tag3"]);
+    });
+
+    it("Updates regions", () => {
+        const originals = MockFactory.createTestRegions();
+        const updates = [{
+            ...MockFactory.createTestRegion(originals[0].id),
+            tags: ["tag1"],
+        }];
+        const updated = CanvasHelpers.updateRegions(originals, updates);
+        expect(updated[0]).toEqual({
+            ...MockFactory.createTestRegion(originals[0].id),
+            tags: ["tag1"],
+        });
+    });
 });

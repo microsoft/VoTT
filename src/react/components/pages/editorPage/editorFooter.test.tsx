@@ -74,7 +74,7 @@ describe("Footer Component", () => {
         });
         wrapper.find("div.tag")
             .first()
-            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
+            .simulate("click", { target: { innerText: originalTags[0].name }, shiftKey: true});
         wrapper.find("button.btn.btn-success").simulate("click");
         expect(onChangeHandler).toBeCalled();
     });
@@ -88,7 +88,7 @@ describe("Footer Component", () => {
         });
         wrapper.find("div.tag")
             .first()
-            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
+            .simulate("click", { target: { innerText: originalTags[0].name }, shiftKey: true});
         wrapper.find("button.btn.btn-secondary").simulate("click");
 
         expect(onChangeHandler).not.toBeCalled();
@@ -121,7 +121,7 @@ describe("Footer Component", () => {
         });
         wrapper.find("div.tag")
             .first()
-            .simulate("click", { target: { innerText: originalTags[0].name }, ctrlKey: true});
+            .simulate("click", { target: { innerText: originalTags[0].name }, shiftKey: true});
 
         expect(onTagClickHandler).not.toBeCalled();
     });

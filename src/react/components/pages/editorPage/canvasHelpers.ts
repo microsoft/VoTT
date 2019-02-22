@@ -27,6 +27,10 @@ export default class CanvasHelpers {
         }
     }
 
+    /**
+     * Adds region to regions if missing,
+     * Removes region from regions if contained
+     */
     public static toggleRegion(regions: IRegion[], region: IRegion): void {
         const index = regions.findIndex((r) => r.id === region.id);
         if (index === -1) {
@@ -36,30 +40,48 @@ export default class CanvasHelpers {
         }
     }
 
-    public static find(tags: string[], tag: string): string {
-        return tags.find((t) => t === tag);
+    /**
+     * Finds a string in array of strings
+     */
+    public static find(items: string[], item: string): string {
+        return items.find((t) => t === item);
     }
 
+    /**
+     * Finds region with id if contained in array of regions
+     */
     public static findRegion(regions: IRegion[], id: string): IRegion {
         return regions.find((r) => (r.id === id));
     }
 
+    /**
+     * Find index of string in array of strings
+     */
     public static findIndex(tags: string[], tag: string): number {
         return tags.findIndex((t) => t === tag);
     }
 
+    /**
+     * Adds tag to tags if not contained
+     */
     public static addIfMissing(tags: string[], tag: string): void {
         if (!CanvasHelpers.find(tags, tag)) {
             tags.push(tag);
         }
     }
 
+    /**
+     * Adds all target tags if missing from tags
+     */
     public static addAllIfMissing(tags: string[], targets: string[]): void {
         for (const target of targets) {
             CanvasHelpers.addIfMissing(tags, target);
         }
     }
 
+    /**
+     * Removes tag from tags if contained
+     */
     public static removeIfContained(tags: string[], tag: string): void {
         const index = CanvasHelpers.findIndex(tags, tag);
         if (index >= 0) {
@@ -67,6 +89,11 @@ export default class CanvasHelpers {
         }
     }
 
+    /**
+     * Updates any IRegion in `regions` that has the same id as IRegion in `updates`
+     * @param regions Original regions
+     * @param updates Regions that are to be updated in `regions`
+     */
     public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[] {
         if (!regions || !updates) {
             return regions;
