@@ -1,5 +1,5 @@
 import shortid from "shortid";
-import { IProject, ITag, IConnection, AppError, ErrorCode,
+import { IProject, ITag, IConnection, AppError, ErrorCode, IPoint,
         IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import packageJson from "../../package.json";
@@ -156,7 +156,10 @@ export default class ImportService implements IImportService {
                 id: region.UID,
                 type: RegionType.Rectangle,
                 tags: region.tags,
-                points: region.points,
+                points: [{x: region.x1, y: region.y1},
+                    {x: region.x1, y: region.y2},
+                    {x: region.x2, y: region.y1},
+                    {x: region.x2, y: region.y2}],
                 boundingBox: {
                     height: (region.y2 - region.y1),
                     width: (region.x2 - region.x1),
