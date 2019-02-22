@@ -37,7 +37,7 @@ export async function mapAsync<T, R>(this: T[], action: (item: T) => Promise<R>,
     Guard.null(this);
     Guard.null(action);
 
-    let results: R[] = null;
+    let results: R[] = [];
     const all: T[] = [...this];
 
     while (all.length > 0) {

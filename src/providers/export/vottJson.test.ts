@@ -12,6 +12,10 @@ import { AssetService } from "../../services/assetService";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import { constants } from "../../common/constants";
+import registerMixins from "../../registerMixins";
+import HtmlFileReader from "../../common/htmlFileReader";
+
+registerMixins();
 
 describe("VoTT Json Export Provider", () => {
     const testProject: IProject = {
@@ -30,7 +34,13 @@ describe("VoTT Json Export Provider", () => {
         },
     };
 
-    const expectedFileName = testProject.name.replace(" ", "-") + constants.exportFileExtension;
+    const expectedFileName = "vott-json-export/" + testProject.name.replace(" ", "-") + constants.exportFileExtension;
+
+    beforeAll(() => {
+        HtmlFileReader.getAssetBlob = jest.fn(() => {
+            return Promise.resolve(new Blob(["Some binary data"]));
+        });
+    });
 
     beforeEach(() => {
         registerProviders();

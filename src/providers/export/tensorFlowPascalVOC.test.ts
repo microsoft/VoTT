@@ -1,25 +1,26 @@
 import _ from "lodash";
-import { TFPascalVOCJsonExportProvider,
-         ITFPascalVOCJsonExportOptions } from "./tensorFlowPascalVOC";
+import { TFPascalVOCJsonExportProvider, ITFPascalVOCJsonExportOptions } from "./tensorFlowPascalVOC";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState, IRegion, RegionType,
-         ITag, IPoint } from "../../models/applicationState";
+import { IAssetMetadata, AssetState, IRegion, RegionType, IPoint } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
-import axios from "axios";
 
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
+import registerMixins from "../../registerMixins";
+import HtmlFileReader from "../../common/htmlFileReader";
+
+registerMixins();
 
 function _base64ToArrayBuffer(base64: string) {
-    const binaryString =  window.atob(base64);
+    const binaryString = window.atob(base64);
     const len = binaryString.length;
-    const bytes = new Uint8Array( len );
-    for (let i = 0; i < len; i++)        {
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
         bytes[i] = binaryString.charCodeAt(i);
     }
     return bytes.buffer;
@@ -38,10 +39,8 @@ describe("TFPascalVOC Json Export Provider", () => {
 
     const tagLengthInPbtxt = 31;
 
-    axios.get = jest.fn(() => {
-        return Promise.resolve({
-            data: [1, 2, 3],
-        });
+    HtmlFileReader.getAssetArray = jest.fn(() => {
+        return Promise.resolve(new Uint8Array([1, 2, 3]).buffer);
     });
 
     beforeEach(() => {
@@ -101,7 +100,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 assetState: ExportAssetState.All,
             };
 
-            const testProject = {...baseTestProject};
+            const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
@@ -145,7 +144,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 assetState: ExportAssetState.Visited,
             };
 
-            const testProject = {...baseTestProject};
+            const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(1);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
@@ -183,7 +182,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 assetState: ExportAssetState.Tagged,
             };
 
-            const testProject = {...baseTestProject};
+            const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
             const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);

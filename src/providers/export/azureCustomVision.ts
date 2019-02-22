@@ -65,24 +65,21 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
         const assetsToExport = await this.getAssetsForExport();
         const tagMap = _.keyBy(customVisionTags, "name");
 
-        const createImageTasks = assetsToExport.map((asset) => {
-            return this.uploadAsset(asset, tagMap)
-                .then(() => {
-                    return {
-                        asset,
-                        success: true,
-                    };
-                })
-                .catch((e) => {
-                    return {
-                        asset,
-                        success: false,
-                        error: e,
-                    };
-                });
+        const results = await assetsToExport.mapAsync(async (asset) => {
+            try {
+                await this.uploadAsset(asset, tagMap);
+                return {
+                    asset,
+                    success: true,
+                };
+            } catch (e) {
+                return {
+                    asset,
+                    success: false,
+                    error: e,
+                };
+            }
         });
-
-        const results = await Promise.all(createImageTasks);
 
         return {
             completed: results.filter((r) => r.success),

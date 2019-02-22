@@ -1,13 +1,10 @@
 import _ from "lodash";
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType, IAsset,
-         IAssetMetadata, RegionType, ITag } from "../../models/applicationState";
-import { AssetService } from "../../services/assetService";
+import { IProject, IAssetMetadata, RegionType, ITag } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
-import axios from "axios";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
-import { strings, interpolate } from "../../common/strings";
+import { interpolate } from "../../common/strings";
 
 /**
  * @name - ITFPascalVOCJsonExportOptions
@@ -47,27 +44,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
      * Export project to TensorFlow PascalVOC
      */
     public async export(): Promise<void> {
-        const assetService = new AssetService(this.project);
-
-        let predicate: (asset: IAsset) => boolean = null;
-
-        switch (this.options.assetState) {
-            case ExportAssetState.All:
-                predicate = (asset) => true;
-                break;
-            case ExportAssetState.Visited:
-                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state === AssetState.Tagged;
-                break;
-        }
-
-        const loadAssetTasks = _.values(this.project.assets)
-            .filter(predicate)
-            .map((asset) => assetService.getAssetMetadata(asset));
-
-        const allAssets = await Promise.all(loadAssetTasks);
+        const allAssets = await this.getAssetsForExport();
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(allAssets, (assetMetadata) => assetMetadata.asset.id);
 
@@ -88,92 +65,79 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
-        const allImageExports = allAssets.map((element) => {
-            return this.exportSingleImage(jpegImagesFolderName, element);
-        });
-
         try {
-            await Promise.all(allImageExports);
+            await allAssets.mapAsync(async (element) => {
+                await this.exportSingleImage(jpegImagesFolderName, element);
+            });
         } catch (err) {
             console.log(err);
         }
     }
 
     private async exportSingleImage(jpegImagesFolderName: string, element: IAssetMetadata): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
+        const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
 
-            // Get image
-            axios.get(element.asset.path, {
-                responseType: "arraybuffer",
-            })
-            .then(async (response) => {
-                // Get buffer
-                const buffer = new Buffer(response.data);
+        try {
+            const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset);
+            const buffer = Buffer.from(arrayBuffer);
 
-                // Write Binary
-                await this.storageProvider.writeBinary(imageFileName, buffer);
+            // Write Binary
+            await this.storageProvider.writeBinary(imageFileName, buffer);
 
-                // Get Array of all Box shaped tag for the Asset
-                const tagObjects = this.getAssetTagArray(element);
+            // Get Array of all Box shaped tag for the Asset
+            const tagObjects = this.getAssetTagArray(element);
 
-                const imageInfo: IImageInfo = {
-                    width: element.asset.size ? element.asset.size.width : 0,
-                    height: element.asset.size ? element.asset.size.height : 0,
-                    objects: tagObjects,
-                };
+            const imageInfo: IImageInfo = {
+                width: element.asset.size ? element.asset.size.width : 0,
+                height: element.asset.size ? element.asset.size.height : 0,
+                objects: tagObjects,
+            };
 
-                this.imagesInfo.set(element.asset.name, imageInfo);
+            this.imagesInfo.set(element.asset.name, imageInfo);
 
-                if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
-                    await this.updateImageSizeInfo(response.data, imageFileName, element.asset.name);
-                }
-
-                resolve();
-            })
-            .catch((err) => {
-                // Ignore the error at the moment
-                // TODO: Refactor ExportProvider abstract class export() method
-                //       to return Promise<object> with an object containing
-                //       the number of files succesfully exported out of total
-                console.log(`Error downloading ${imageFileName} - ${err}`);
-                resolve();
-                // eject(err);
-            });
-        });
+            if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
+                await this.updateImageSizeInfo(arrayBuffer, imageFileName, element.asset.name);
+            }
+        } catch (err) {
+            // Ignore the error at the moment
+            // TODO: Refactor ExportProvider abstract class export() method
+            //       to return Promise<object> with an object containing
+            //       the number of files successfully exported out of total
+            console.log(`Error downloading ${imageFileName} - ${err}`);
+        }
     }
 
     private getAssetTagArray(element: IAssetMetadata): IObjectInfo[] {
         const tagObjects = [];
         element.regions.filter((region) => (region.type === RegionType.Rectangle ||
-                                                   region.type === RegionType.Square) &&
-                                                   region.points.length === 2)
-                               .forEach((region) => {
-                                    region.tags.forEach((tagName) => {
-                                        const objectInfo: IObjectInfo = {
-                                            name: tagName,
-                                            xmin: region.points[0].x,
-                                            ymin: region.points[0].y,
-                                            xmax: region.points[1].x,
-                                            ymax: region.points[1].y,
-                                        };
+            region.type === RegionType.Square) &&
+            region.points.length === 2)
+            .forEach((region) => {
+                region.tags.forEach((tagName) => {
+                    const objectInfo: IObjectInfo = {
+                        name: tagName,
+                        xmin: region.points[0].x,
+                        ymin: region.points[0].y,
+                        xmax: region.points[1].x,
+                        ymax: region.points[1].y,
+                    };
 
-                                        tagObjects.push(objectInfo);
-                                    });
-                                });
+                    tagObjects.push(objectInfo);
+                });
+            });
         return tagObjects;
     }
 
-    private async updateImageSizeInfo(imageBuffer: any, imageFileName: string, assetName: string) {
+    private async updateImageSizeInfo(imageBuffer: ArrayBuffer, imageFileName: string, assetName: string) {
         // Get Base64
         const image64 = btoa(new Uint8Array(imageBuffer).
-        reduce((data, byte) => data + String.fromCharCode(byte), ""));
+            reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
         if (image64.length < 10) {
             // Ignore the error at the moment
             // TODO: Refactor ExportProvider abstract class export() method
             //       to return Promise<object> with an object containing
-            //       the number of files succesfully exported out of total
+            //       the number of files successfully exported out of total
             console.log(`Image not valid ${imageFileName}`);
         } else {
             const assetProps = await HtmlFileReader.readAssetAttributesWithBuffer(image64);
@@ -256,8 +220,12 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
         }
     }
 
-    private async exportImageSets(exportFolderName: string, allAssets: IAssetMetadata[],
-                                  tags: ITag[], testSplit: number, exportUnassignedTags: boolean) {
+    private async exportImageSets(
+        exportFolderName: string,
+        allAssets: IAssetMetadata[],
+        tags: ITag[],
+        testSplit: number,
+        exportUnassignedTags: boolean) {
         // Create ImageSets Sub Folder (Main ?)
         const imageSetsFolderName = `${exportFolderName}/ImageSets`;
         await this.storageProvider.createContainer(imageSetsFolderName);
