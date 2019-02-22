@@ -86,21 +86,24 @@ export default class HtmlFileReader {
             }
             data = await response.data;
         }
-        console.log("blobbing");
+
         return data;
     }
 
     public static async getAssetFrameImage(asset: IAsset) {
         return new Promise((resolve, reject) => {
-            let video: HTMLVideoElement;
-            let refresh = true;
-            if (asset.parent.name in this.videoAssetFiles) {
-                video = this.videoAssetFiles[asset.parent.name];
-                refresh = false;
-            } else {
+            const cachingEnabled = false;
+            let refresh = cachingEnabled ? false : true;
+            let video: HTMLVideoElement = this.videoAssetFiles[asset.parent.name];
+
+            if (!video) {
                 video = document.createElement("video");
-                this.videoAssetFiles[asset.parent.name] = video;
+                if (cachingEnabled) {
+                    this.videoAssetFiles[asset.parent.name] = video;
+                    refresh = true;
+                }
             }
+
             video.onloadedmetadata = () => {
                 video.currentTime = asset.timestamp;
             };
@@ -110,13 +113,7 @@ export default class HtmlFileReader {
                 canvas.width = video.videoWidth;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob((blob) => {
-                    resolve(blob);
-
-                    video.src = "";
-                    video.remove();
-                    canvas.remove();
-                });
+                canvas.toBlob(resolve);
             };
             video.onerror = reject;
             if (refresh) {
