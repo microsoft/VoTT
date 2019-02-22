@@ -193,7 +193,7 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length);
 
         const canvas = wrapper.instance();
-        canvas.editor.onRegionDelete("test1", CanvasHelpers.getRegionData(originalAssetMetadata.regions[0]));
+        canvas.editor.onRegionDelete("test1");
 
         expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length - 1);
         expect(onAssetMetadataChanged).toBeCalledWith({
