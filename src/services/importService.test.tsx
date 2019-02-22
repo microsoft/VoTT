@@ -7,7 +7,8 @@ describe("Import Service", () => {
     let importService: IImportService = null;
 
     beforeEach(() => {
-        importService = new ImportService();
+        let actions = MockFactory.projectActions();
+        importService = new ImportService(actions);
     });
 
     it("ConvertProject takes a V1 Project and produces a valid V2 project JSON string", async () => {

@@ -19,6 +19,8 @@ import {
 import { IV1Project, IV1Region } from "../../../../models/v1Models";
 import IMessageBox from "../../common/messageBox/messageBox";
 import ImportService from "../../../../services/importService";
+import { AssetService } from "../../../../services/assetService";
+import { IAssetMetadata } from "../../../../models/applicationState"
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -26,6 +28,7 @@ export interface IHomepageProps extends RouteComponentProps, React.Props<HomePag
     actions: IProjectActions;
     applicationActions: IApplicationActions;
     appSettings: IAppSettings;
+    project: IProject;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -33,6 +36,7 @@ function mapStateToProps(state: IApplicationState) {
         recentProjects: state.recentProjects,
         connections: state.connections,
         appSettings: state.appSettings,
+        project: state.currentProject,
     };
 }
 
@@ -183,14 +187,32 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private convertProject = async (projectInfo: IFileInfo) => {
-        const importService = new ImportService();
+        const importService = new ImportService(this.props.actions);
+        let generatedAssetMetadata: IAssetMetadata[];
         let project;
         try {
             project = await importService.convertProject(projectInfo);
         } catch (e) {
             throw new AppError(ErrorCode.V1ImportError, "Error converting v1 project file");
         }
+        
         this.props.applicationActions.ensureSecurityToken(project);
-        await this.loadSelectedProject(project);
+        const assetService = new AssetService(project);
+        // await importService.addAssets(project, projectInfo);
+        
+        generatedAssetMetadata = await importService.generateAssets(projectInfo, assetService)
+        await this.props.actions.saveProject(project);
+        await this.props.actions.loadProject(project);
+        let savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
+            return this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+        });
+        try {
+            await Promise.all(savedMetadata);
+        } catch (e) {
+            throw e;
+        }
+        await this.props.actions.saveProject(this.props.project);
+        // await this.props.actions.loadAssets(this.props.project);
+        await this.loadSelectedProject(this.props.project);
     }
 }

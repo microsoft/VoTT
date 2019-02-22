@@ -63,7 +63,7 @@ describe("Homepage Component", () => {
 
     it("should render a list of recent projects", () => {
         expect(wrapper).not.toBeNull();
-        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps>;
+        const homePage = wrapper.find(HomePage).childAt(0);
         if (homePage.props().recentProjects && homePage.props().recentProjects.length > 0) {
             expect(wrapper.find(CondensedList).exists()).toBeTruthy();
         }
@@ -83,7 +83,7 @@ describe("Homepage Component", () => {
         await MockFactory.flushUi();
         wrapper.update();
 
-        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps>;
+        const homePage = wrapper.find(HomePage).childAt(0);
 
         expect(deleteProjectSpy).toBeCalledWith(recentProjects[0]);
         expect(homePage.props().recentProjects.length).toEqual(recentProjects.length - 1);
@@ -117,6 +117,7 @@ describe("Homepage Component", () => {
     function createProps(): IHomepageProps {
         return {
             recentProjects: [],
+            project: MockFactory.createTestProject(),
             connections: MockFactory.createTestConnections(),
             history: {
                 length: 0,

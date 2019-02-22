@@ -4,7 +4,9 @@ import { IProject, ITag, IConnection, AppError, ErrorCode,
 import { IV1Project, IV1Region } from "../models/v1Models";
 import packageJson from "../../package.json";
 import { AssetService } from "./assetService";
-import IProjectActions, * as projectActions from "../redux/actions/projectActions";
+import IProjectActions from "../redux/actions/projectActions";
+import IApplicationsActions, * as applicationActions from "../redux/actions/applicationActions";
+import ProjectService from "./projectService";
 
 /**
  * Functions required for an import service
@@ -19,12 +21,15 @@ export interface IImportService {
  * @description - Functions for importing v1 projects to v2 application
  */
 export default class ImportService implements IImportService {
+    actions: IProjectActions;
+    constructor(actions: IProjectActions){
+        this.actions = actions;
+    }
     public async convertProject(projectInfo: IFileInfo): Promise<IProject> {
         let originalProject: IV1Project;
         let convertedProject: IProject;
         let connection: IConnection;
         let parsedTags: ITag[];
-        let generatedAssetMetadata: IAssetMetadata[];
 
         try {
             originalProject = JSON.parse(projectInfo.content as string);
@@ -51,18 +56,27 @@ export default class ImportService implements IImportService {
                 frameExtractionRate: 15,
             },
             autoSave: true,
-            assets: {},
         };
+        return convertedProject;
+    }
 
-        const assetService = new AssetService(convertedProject);
+    public async addAssets(project: IProject, projectInfo: IFileInfo) {
+        let generatedAssetMetadata: IAssetMetadata[];
+        const assetService = new AssetService(project);
         generatedAssetMetadata = await this.generateAssets(projectInfo, assetService);
 
-        generatedAssetMetadata.map(async (assetMetadata) => {
-            await assetService.save(assetMetadata);
-            await projectActions.saveAssetMetadata(convertedProject, assetMetadata);
-        });
+        await this.actions.saveProject(project).then((newProj) => {
+            this.actions.loadProject(newProj);
+        })
 
-        return convertedProject;
+        let savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
+            return assetService.save(assetMetadata);
+        });
+        try {
+            await Promise.all(savedMetadata);
+        } catch (e) {
+            throw e;
+        }
     }
 
     /**
@@ -105,7 +119,7 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    private async generateAssets(project: IFileInfo, assetService: AssetService): Promise<IAssetMetadata[]> {
+    public async generateAssets(project: IFileInfo, assetService: AssetService): Promise<IAssetMetadata[]> {
         let originalProject: IV1Project;
         const generatedAssetMetadata: IAssetMetadata[] = [];
         let assetState: AssetState;
@@ -121,8 +135,8 @@ export default class ImportService implements IImportService {
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                         ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
                         ? AssetState.Visited : AssetState.NotVisited);
-                    metadata.asset.state = assetState;
                     const taggedMetadata = this.addRegions(metadata, frameRegions);
+                    taggedMetadata.asset.state = assetState;
                     return taggedMetadata;
                 });
                 generatedAssetMetadata.push(populatedMetadata);
@@ -144,8 +158,8 @@ export default class ImportService implements IImportService {
                 tags: region.tags,
                 points: region.points,
                 boundingBox: {
-                    height: (region.x2 - region.x1),
-                    width: (region.y2 - region.y1),
+                    height: (region.y2 - region.y1),
+                    width: (region.x2 - region.x1),
                     left: region.x1,
                     top: region.y1,
                 },
