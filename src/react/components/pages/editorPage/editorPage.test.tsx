@@ -122,7 +122,7 @@ describe("Editor Page Component", () => {
     });
 
     it("Loads and merges project assets with asset provider assets when state changes", async () => {
-        const projectAssets = MockFactory.createTestAssets(10);
+        const projectAssets = MockFactory.createTestAssets(10, 10);
         const testProject = MockFactory.createTestProject("TestProject");
         testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
 

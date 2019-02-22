@@ -3,8 +3,6 @@ import { IAsset, AssetType } from "../models/applicationState";
 import Guard from "./guard";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
-import { resolve } from "url";
-import { reject } from "q";
 
 /**
  * Helper class for reading HTML files
@@ -94,43 +92,24 @@ export default class HtmlFileReader {
 
     public static async getAssetFrameImage(asset: IAsset) {
         return new Promise((resolve, reject) => {
-            // let video;
-            // let refresh = true;
-            // const secs = asset.timestamp;
-            // if (asset.parent.name in this.videoAssetFiles) {
-            //     video = this.videoAssetFiles[asset.parent.name];
-            //     refresh = false;
-            // } else {
-            //     video = document.createElement("video");
-            //     this.videoAssetFiles[asset.parent.name] = video;
-            // }
-            const secs = asset.timestamp;
             const video = document.createElement("video");
-            video.onloadedmetadata = function() {
-                this.currentTime = Math.min(Math.max(0, (secs < 0 ? this.duration : 0) + secs), this.duration);
-            }.bind(video);
-            video.onseeked = (e) => {
+            video.onloadedmetadata = () => {
+                video.currentTime = asset.timestamp;
+            };
+            video.onseeked = () => {
                 const canvas = document.createElement("canvas");
                 canvas.height = video.videoHeight;
                 canvas.width = video.videoWidth;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                // const img = new Image();
-                // img.src = canvas.toDataURL();
                 canvas.toBlob((blob) => {
                     resolve(blob);
                 });
-                // resolve(this.dataURItoBlob(canvas.toDataURL()));
             };
             video.onerror = (e) => {
                 reject(e);
             };
             video.src = asset.path;
-            // if (refresh) {
-            //     video.src = asset.path;
-            // } else {
-            //     video.currentTime = Math.min(Math.max(0, (secs < 0 ? video.duration : 0) + secs), video.duration);
-            // }
         });
     }
 
@@ -140,7 +119,7 @@ export default class HtmlFileReader {
         for (let i = 0; i < binary.length; i++) {
             array.push(binary.charCodeAt(i));
         }
-        return new Blob([new Uint8Array(array)], {type: "image/jpeg"});
+        return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
     }
 
     /**
