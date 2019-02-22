@@ -92,7 +92,15 @@ export default class HtmlFileReader {
 
     public static async getAssetFrameImage(asset: IAsset) {
         return new Promise((resolve, reject) => {
-            const video = document.createElement("video");
+            let video: HTMLVideoElement;
+            let refresh = true;
+            if (asset.parent.name in this.videoAssetFiles) {
+                video = this.videoAssetFiles[asset.parent.name];
+                refresh = false;
+            } else {
+                video = document.createElement("video");
+                this.videoAssetFiles[asset.parent.name] = video;
+            }
             video.onloadedmetadata = () => {
                 video.currentTime = asset.timestamp;
             };
@@ -109,7 +117,11 @@ export default class HtmlFileReader {
             video.onerror = (e) => {
                 reject(e);
             };
-            video.src = asset.path;
+            if (refresh) {
+                video.src = asset.parent.path;
+            } else {
+                video.currentTime = asset.timestamp;
+            }
         });
     }
 
