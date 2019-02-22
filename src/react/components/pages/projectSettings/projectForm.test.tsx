@@ -6,6 +6,9 @@ import { KeyCodes } from "../../../../common/utils";
 import registerProviders from "../../../../registerProviders";
 import ProjectForm, { IProjectFormProps, IProjectFormState } from "./projectForm";
 import { IProjectVideoSettings } from "../../../../models/applicationState";
+import { SecurityTokenPicker } from "../../common/securityTokenPicker/securityTokenPicker";
+import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
+import { TagsInput } from "vott-react";
 
 describe("Project Form Component", () => {
     const project = MockFactory.createTestProject("TestProject");
@@ -39,6 +42,12 @@ describe("Project Form Component", () => {
                 onSubmit: onSubmitHandler,
                 onCancel: onCancelHandler,
             });
+        });
+
+        it("renders the form correctly", () => {
+            expect(wrapper.find(SecurityTokenPicker)).toHaveLength(1);
+            expect(wrapper.find(ConnectionPicker)).toHaveLength(2);
+            expect(wrapper.find(TagsInput)).toHaveLength(1);
         });
 
         it("starting project has initial state loaded correctly", () => {
