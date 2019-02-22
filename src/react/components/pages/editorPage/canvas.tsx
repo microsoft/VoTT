@@ -125,17 +125,18 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         await Clipboard.writeText(JSON.stringify(this.state.selectedRegions));        
     }
 
-    private cutRegions = () => {
-        const selectedRegions = this.state.selectedRegions;
-        
+    private cutRegions = async () => {
+        await Clipboard.writeText(JSON.stringify(this.state.selectedRegions));
+        // Remove selected regions
     }
 
-    private pasteRegions = () => {
-
+    private pasteRegions = async () => {
+        const regionsToPaste = JSON.parse(await Clipboard.readText());
+        // Add regions with transformation (+10 for left and top of each region)
     }
 
     private clearRegions = () => {
-
+        // Remove all regions
     }
 
     /**
