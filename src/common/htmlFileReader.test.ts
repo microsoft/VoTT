@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import HtmlFileReader from "./htmlFileReader";
 import { AssetService } from "../services/assetService";
 import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
+import MockFactory from "./mockFactory";
 
 describe("Html File Reader", () => {
     it("Resolves promise after successfully reading file", async () => {
@@ -91,6 +92,19 @@ describe("Html File Reader", () => {
             expect(result).not.toBeNull();
             expect(result).toBeInstanceOf(Blob);
             expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
+        });
+
+        it("Downloads a blob from the asset path", async () => {
+            const testAssetVideo = MockFactory.createVideoTestAsset("video-test");
+            const testAssetFrame = MockFactory.createChildVideoAsset(testAssetVideo, 0);
+            HtmlFileReader.getAssetFrameImage = jest.fn((asset) => {
+                return Promise.resolve(new Blob(["Some binary data"]));
+            });
+
+            const result = await HtmlFileReader.getAssetBlob(testAssetFrame);
+            expect(result).not.toBeNull();
+            expect(result).toBeInstanceOf(Blob);
+            expect(HtmlFileReader.getAssetFrameImage).toBeCalledWith(testAssetFrame);
         });
 
         it("Rejects the promise when request receives non 200 result", async () => {

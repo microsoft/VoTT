@@ -90,9 +90,28 @@ export default class HtmlFileReader {
         return data;
     }
 
+    public static dataURItoBlob(dataURI) {
+        const binary = atob(dataURI.split(",")[1]);
+        const array = [];
+        for (let i = 0; i < binary.length; i++) {
+            array.push(binary.charCodeAt(i));
+        }
+        return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
+    }
+
+    /**
+     * Downloads the binary array from the asset path
+     * @param asset The asset to download
+     */
+    public static async getAssetArray(asset: IAsset): Promise<Uint8Array> {
+        const blob = await this.getAssetBlob(asset);
+        const byteArray = await new Response(blob).arrayBuffer();
+        return new Uint8Array(byteArray);
+    }
+
     public static async getAssetFrameImage(asset: IAsset) {
         return new Promise((resolve, reject) => {
-            const cachingEnabled = false;
+            const cachingEnabled = true;
             let refresh = cachingEnabled ? false : true;
             let video: HTMLVideoElement = this.videoAssetFiles[asset.parent.name];
 
@@ -122,25 +141,6 @@ export default class HtmlFileReader {
                 video.currentTime = asset.timestamp;
             }
         });
-    }
-
-    public static dataURItoBlob(dataURI) {
-        const binary = atob(dataURI.split(",")[1]);
-        const array = [];
-        for (let i = 0; i < binary.length; i++) {
-            array.push(binary.charCodeAt(i));
-        }
-        return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
-    }
-
-    /**
-     * Downloads the binary array from the asset path
-     * @param asset The asset to download
-     */
-    public static async getAssetArray(asset: IAsset): Promise<Uint8Array> {
-        const blob = await this.getAssetBlob(asset);
-        const byteArray = await new Response(blob).arrayBuffer();
-        return new Uint8Array(byteArray);
     }
 
     private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {
