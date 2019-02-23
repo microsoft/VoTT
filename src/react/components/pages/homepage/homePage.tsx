@@ -20,7 +20,7 @@ import { IV1Project, IV1Region } from "../../../../models/v1Models";
 import IMessageBox from "../../common/messageBox/messageBox";
 import ImportService from "../../../../services/importService";
 import { AssetService } from "../../../../services/assetService";
-import { IAssetMetadata } from "../../../../models/applicationState"
+import { IAssetMetadata } from "../../../../models/applicationState";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -201,15 +201,15 @@ export default class HomePage extends React.Component<IHomepageProps> {
         } catch (e) {
             throw new AppError(ErrorCode.V1ImportError, "Error converting v1 project file");
         }
-        
+
         this.props.applicationActions.ensureSecurityToken(project);
         const assetService = new AssetService(project);
         // await importService.addAssets(project, projectInfo);
-        
-        generatedAssetMetadata = await importService.generateAssets(projectInfo, assetService)
+
+        generatedAssetMetadata = await importService.generateAssets(projectInfo, assetService);
         await this.props.actions.saveProject(project);
         await this.props.actions.loadProject(project);
-        let savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
+        const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
             return this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         });
         try {

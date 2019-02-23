@@ -6,7 +6,7 @@ describe("Import Service", () => {
     let importService: IImportService = null;
 
     beforeEach(() => {
-        let actions = MockFactory.projectActions();
+        const actions = MockFactory.projectActions();
         importService = new ImportService(actions);
     });
 
