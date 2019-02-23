@@ -72,41 +72,52 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
         const { loaded } = this.state;
         const { asset, childAssets, autoPlay } = this.props;
         const rootAsset = asset.parent || asset;
+        const size = this.props.asset.size;
+        const classNames = ["asset-preview"];
+        if (size) {
+            if (size.width > size.height) {
+                classNames.push("landscape");
+            } else {
+                classNames.push("portrait");
+            }
+        }
 
         return (
-            <div className="asset-preview">
-                {!loaded &&
-                    <div className="asset-loading">
-                        <i className="fas fa-circle-notch fa-spin" />
-                    </div>
-                }
-                {asset.type === AssetType.Image &&
-                    <ImageAsset asset={rootAsset}
-                        additionalSettings={this.props.additionalSettings}
-                        onLoaded={this.onAssetLoad}
-                        onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
-                }
-                {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
-                    <VideoAsset asset={rootAsset}
-                        additionalSettings={this.props.additionalSettings}
-                        childAssets={childAssets}
-                        timestamp={asset.timestamp}
-                        autoPlay={autoPlay}
-                        onLoaded={this.onAssetLoad}
-                        onChildAssetSelected={this.props.onChildAssetSelected}
-                        onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
-                }
-                {asset.type === AssetType.TFRecord &&
-                    <TFRecordAsset asset={asset}
-                        onLoaded={this.onAssetLoad}
-                        onActivated={this.props.onActivated}
-                        onDeactivated={this.props.onDeactivated} />
-                }
-                {asset.type === AssetType.Unknown &&
-                    <div className="asset-error">{strings.editorPage.assetError}</div>
-                }
+            <div className={classNames.join(" ")}>
+                <div className="asset-preview-container">
+                    {!loaded &&
+                        <div className="asset-loading">
+                            <i className="fas fa-circle-notch fa-spin" />
+                        </div>
+                    }
+                    {asset.type === AssetType.Image &&
+                        <ImageAsset asset={rootAsset}
+                            additionalSettings={this.props.additionalSettings}
+                            onLoaded={this.onAssetLoad}
+                            onActivated={this.props.onActivated}
+                            onDeactivated={this.props.onDeactivated} />
+                    }
+                    {(asset.type === AssetType.Video || asset.type === AssetType.VideoFrame) &&
+                        <VideoAsset asset={rootAsset}
+                            additionalSettings={this.props.additionalSettings}
+                            childAssets={childAssets}
+                            timestamp={asset.timestamp}
+                            autoPlay={autoPlay}
+                            onLoaded={this.onAssetLoad}
+                            onChildAssetSelected={this.props.onChildAssetSelected}
+                            onActivated={this.props.onActivated}
+                            onDeactivated={this.props.onDeactivated} />
+                    }
+                    {asset.type === AssetType.TFRecord &&
+                        <TFRecordAsset asset={asset}
+                            onLoaded={this.onAssetLoad}
+                            onActivated={this.props.onActivated}
+                            onDeactivated={this.props.onDeactivated} />
+                    }
+                    {asset.type === AssetType.Unknown &&
+                        <div className="asset-error">{strings.editorPage.assetError}</div>
+                    }
+                </div>
             </div>
         );
     }

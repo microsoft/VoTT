@@ -23,6 +23,7 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import { tagColors } from "../../../../common/tagColors";
 
 /**
  * Properties for Editor Page
@@ -54,6 +55,8 @@ export interface IEditorPageState {
     childAssets?: IAsset[];
     /** Additional settings for asset previews */
     additionalSettings?: IAssetPreviewSettings;
+    /** Most recently selected tag */
+    selectedTag: string;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -77,6 +80,7 @@ function mapDispatchToProps(dispatch) {
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         project: this.props.project,
+        selectedTag: null,
         selectionMode: SelectionMode.RECT,
         assets: [],
         childAssets: [],
@@ -181,30 +185,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * @param tag Tag clicked
      */
     public onTagClicked = (tag: ITag): void => {
-        const selectedAsset = this.state.selectedAsset;
-        if (this.canvas.current.state.selectedRegions && this.canvas.current.state.selectedRegions.length) {
-            const selectedRegions = this.canvas.current.state.selectedRegions;
-            selectedRegions.map((region) => {
-                const selectedIndex = selectedAsset.regions.findIndex((r) => r.id === region.id);
-                const selectedRegion = selectedAsset.regions[selectedIndex];
-                const tagIndex = selectedRegion.tags.findIndex((existingTag) => existingTag === tag.name);
-                if (tagIndex === -1) {
-                    selectedRegion.tags.push(tag.name);
-                } else {
-                    selectedRegion.tags.splice(tagIndex, 1);
-                }
-                if (selectedRegion.tags.length) {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id,
-                        new TagsDescriptor(selectedRegion.tags.map((tempTag) => new Tag(tempTag,
-                            this.props.project.tags.find((t) => t.name === tempTag).color))));
-                } else {
-                    this.canvas.current.editor.RM.updateTagsById(selectedRegion.id, null);
-                }
-
-                return region;
-            });
-        }
-        this.onAssetMetadataChanged(selectedAsset);
+        this.canvas.current.applyTag(tag.name);
     }
 
     /**
@@ -262,7 +243,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Update root asset if not already in the "Tagged" state
         // This is primarily used in the case where a Video Frame is being edited.
-        // We want to ensure that in this case the root video asset state is accuratly
+        // We want to ensure that in this case the root video asset state is accurately
         // updated to match that state of the asset.
         if (rootAsset.id === assetMetadata.asset.id) {
             rootAsset.state = assetMetadata.asset.state;
@@ -285,7 +266,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Find and update the root asset in the internal state
         // This forces the root assets that are displayed in the sidebar to
-        // accuratly show their correct state (not-visited, visited or tagged)
+        // accurately show their correct state (not-visited, visited or tagged)
         const assets = [...this.state.assets];
         const assetIndex = assets.findIndex((asset) => asset.id === rootAsset.id);
         if (assetIndex > -1) {
@@ -361,6 +342,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+        await this.updateProjectTagsFromAsset(assetMetadata);
 
         try {
             if (!assetMetadata.asset.size) {
@@ -371,11 +353,38 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.warn("Error computing asset size");
         }
 
-        this.onAssetMetadataChanged(assetMetadata);
+        await this.onAssetMetadataChanged(assetMetadata);
 
         this.setState({
             selectedAsset: assetMetadata,
         });
+    }
+
+    private async updateProjectTagsFromAsset(asset: IAssetMetadata) {
+        const assetTags = new Set();
+        asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
+
+        const newTags: ITag[] = this.props.project.tags ? [...this.props.project.tags] : [];
+        let updateTags = false;
+
+        assetTags.forEach((tag) => {
+            if (!this.props.project.tags || this.props.project.tags.length === 0 ||
+                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
+                const tagKeys = Object.keys(tagColors);
+                newTags.push({
+                    name: tag,
+                    color: tagColors[tagKeys[newTags.length % tagKeys.length]],
+                });
+                updateTags = true;
+            }
+        });
+
+        if (updateTags) {
+            asset.asset.state = AssetState.Tagged;
+            const newProject = {...this.props.project, tags: newTags};
+            await this.props.actions.saveAssetMetadata(newProject, asset);
+            await this.props.actions.saveProject(newProject);
+        }
     }
 
     private loadProjectAssets = async (): Promise<void> => {

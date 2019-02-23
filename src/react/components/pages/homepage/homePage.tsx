@@ -31,6 +31,10 @@ export interface IHomepageProps extends RouteComponentProps, React.Props<HomePag
     project: IProject;
 }
 
+export interface IHomepageState {
+    cloudPickerOpen: boolean;
+}
+
 function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
@@ -49,33 +53,13 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class HomePage extends React.Component<IHomepageProps> {
-    private filePicker: React.RefObject<FilePicker>;
-    private deleteConfirm: React.RefObject<Confirm>;
-    private cloudFilePicker: React.RefObject<CloudFilePicker>;
-    private importConfirm: React.RefObject<Confirm>;
-    private settingsConfirm: React.RefObject<IMessageBox>;
+    public state: IHomepageState = {
+        cloudPickerOpen: false,
+    };
 
-    constructor(props: IHomepageProps, context) {
-        super(props, context);
-
-        this.state = {
-            cloudPickerOpen: false,
-        };
-
-        this.filePicker = React.createRef<FilePicker>();
-        this.deleteConfirm = React.createRef<Confirm>();
-        this.cloudFilePicker = React.createRef<CloudFilePicker>();
-        this.importConfirm = React.createRef<Confirm>();
-        this.settingsConfirm = React.createRef<IMessageBox>();
-
-        this.loadSelectedProject = this.loadSelectedProject.bind(this);
-        this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
-        this.deleteProject = this.deleteProject.bind(this);
-        this.handleOpenCloudProjectClick = this.handleOpenCloudProjectClick.bind(this);
-        this.convertProject = this.convertProject.bind(this);
-
-        this.props.actions.closeProject();
-    }
+    private filePicker: React.RefObject<FilePicker> = React.createRef();
+    private deleteConfirm: React.RefObject<Confirm> = React.createRef();
+    private cloudFilePicker: React.RefObject<CloudFilePicker> = React.createRef();
 
     public render() {
         return (
@@ -83,10 +67,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 <div className="app-homepage-main text-light">
                     <ul>
                         <li>
-                            <Link to={"/projects/create"} className="p-5">
+                            <a href="#" onClick={this.createNewProject} className="p-5 new-project">
                                 <i className="fas fa-folder-plus fa-9x"></i>
                                 <h6>{strings.homePage.newProject}</h6>
-                            </Link>
+                            </a>
                         </li>
                         <li>
                             <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
@@ -99,7 +83,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
                         </li>
                         <li>
                             {/*Open Cloud Project*/}
-                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5">
+                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5 cloud-open-project">
                                 <i className="fas fa-cloud fa-9x"></i>
                                 <h6>{strings.homePage.openCloudProject.title}</h6>
                             </a>
@@ -140,7 +124,12 @@ export default class HomePage extends React.Component<IHomepageProps> {
         );
     }
 
-    private handleOpenCloudProjectClick() {
+    private createNewProject = () => {
+        this.props.actions.closeProject();
+        this.props.history.push("/projects/create");
+    }
+
+    private handleOpenCloudProjectClick = () => {
         this.cloudFilePicker.current.open();
     }
 

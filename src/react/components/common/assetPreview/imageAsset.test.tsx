@@ -23,40 +23,6 @@ describe("Image Asset Component", () => {
         return mount(<ImageAsset {...props} />);
     }
 
-    it("renders landscape image correctly", () => {
-        const props = { ...defaultProps };
-        props.asset.size = {
-            width: 800,
-            height: 600,
-        };
-
-        wrapper = createComponent(props);
-        const img = wrapper.find("img");
-
-        expect(img.exists()).toBe(true);
-        expect(img.props()).toEqual(expect.objectContaining({
-            className: "landscape",
-            src: defaultProps.asset.path,
-        }));
-    });
-
-    it("renders portrait image correctly", () => {
-        const props = { ...defaultProps };
-        props.asset.size = {
-            width: 600,
-            height: 800,
-        };
-
-        wrapper = createComponent(props);
-        const img = wrapper.find("img");
-
-        expect(img.exists()).toBe(true);
-        expect(img.props()).toEqual(expect.objectContaining({
-            className: "portrait",
-            src: defaultProps.asset.path,
-        }));
-    });
-
     it("raises onLoad handler when image has completed loading", () => {
         wrapper = createComponent();
 

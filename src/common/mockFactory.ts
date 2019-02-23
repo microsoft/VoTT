@@ -55,7 +55,7 @@ export default class MockFactory {
      * @param assetType Type of asset
      */
     public static createTestAsset(
-        name: string,
+        name: string = "test",
         assetState: AssetState = AssetState.NotVisited,
         path: string = `C:\\Desktop\\asset${name}.jpg`,
         assetType: AssetType = AssetType.Image): IAsset {
@@ -195,10 +195,10 @@ export default class MockFactory {
      * Creates fake IAssetMetadata
      * @param asset Test asset
      */
-    public static createTestAssetMetadata(asset: IAsset): IAssetMetadata {
+    public static createTestAssetMetadata(asset: IAsset, regions?: IRegion[]): IAssetMetadata {
         return {
             asset,
-            regions: [],
+            regions: regions || [],
         };
     }
 
@@ -625,6 +625,14 @@ export default class MockFactory {
             children: null,
         };
         return new Canvas(canvasProps);
+    }
+
+    public static createTestRegions(count= 5) {
+        const regions: IRegion[] = [];
+        for (let i = 1; i <= count; i++) {
+            regions.push(MockFactory.createTestRegion(`test${i}`));
+        }
+        return regions;
     }
 
     public static createTestRegion(id = null) {

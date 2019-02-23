@@ -8,13 +8,7 @@ export class ImageAsset extends React.Component<IAssetProps> {
     private image: React.RefObject<HTMLImageElement> = React.createRef();
 
     public render() {
-        const size = this.props.asset.size;
-        let className = "";
-        if (size) {
-            className = size.width > size.height ? "landscape" : "portrait";
-        }
-
-        return (<img ref={this.image} className={className} src={this.props.asset.path} onLoad={this.onLoad} />);
+        return (<img ref={this.image} src={this.props.asset.path} onLoad={this.onLoad} />);
     }
 
     private onLoad = () => {

@@ -31,6 +31,7 @@
             display: flex;
             flex-grow: 1;
             background-color: $darker-5;
+            flex-direction: column;
         }
 
         &-footer {
@@ -133,26 +134,28 @@
 
 .asset-preview {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    overflow: hidden;
+    flex: 1;
+    height: 100%;
+
+    &-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+    }
 
     img {
-        display: block;
         margin: auto;
         max-width: 100%;
         max-height: 100%;
+    }
 
-        &.landscape {
-            width: 100%;
-            height: auto;
-        }
+    &.landscape {
+        margin: auto 0;
+    }
 
-        &.portrait {
-            height: 100%;
-            width: auto;
-        }
+    &.portrait {
+        margin: 0 auto;
     }
 }
 
@@ -164,7 +167,7 @@
     height: 100%;
 
     .video-timeline {
-        &-tagged, &-untagged {
+        &-tagged, &-visited {
             width: 2px;
             position: absolute;
             height: 100%;
@@ -177,7 +180,7 @@
             z-index: 2
         }
 
-        &-untagged {
+        &-visited {
             background-color: yellow;
             z-index: 1;
         }

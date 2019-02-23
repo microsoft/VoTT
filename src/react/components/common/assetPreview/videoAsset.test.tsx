@@ -9,6 +9,13 @@ import { AssetType, AssetState } from "../../../../models/applicationState";
 describe("Video Asset Component", () => {
     let wrapper: ReactWrapper<IVideoAssetProps, IVideoAssetState> = null;
     let onVideoStateChangeHandler: (state: Readonly<IVideoPlayerState>, prev: Readonly<IVideoPlayerState>) => void;
+    let videoPlayerState: IVideoPlayerState = {
+        currentTime: 0,
+        duration: 10,
+        paused: false,
+        readyState: 1,
+        seeking: false,
+    };
     const videoPlayerMock = Player as jest.Mocked<typeof Player>;
     const onLoadedHandler = jest.fn();
     const onActivatedHandler = jest.fn();
@@ -22,10 +29,11 @@ describe("Video Asset Component", () => {
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
         onChildAssetSelected: onChildSelectedHandler,
-        additionalSettings: { videoSettings: { frameExtractionRate: 1} },
+        additionalSettings: { videoSettings: { frameExtractionRate: 1 } },
     };
 
     beforeEach(() => {
+        videoPlayerMock.prototype.getState = jest.fn(() => ({ player: videoPlayerState }));
         videoPlayerMock.prototype.subscribeToStateChange = jest.fn((handler) => onVideoStateChangeHandler = handler);
         videoPlayerMock.prototype.pause = jest.fn();
         videoPlayerMock.prototype.seek = jest.fn((timestamp) => {
@@ -56,7 +64,8 @@ describe("Video Asset Component", () => {
     });
 
     it("does not subscribe to state change callback when autoPlay is false", () => {
-        const testProps: IVideoAssetProps = { ...defaultProps,
+        const testProps: IVideoAssetProps = {
+            ...defaultProps,
             autoPlay: false,
         };
         wrapper = createComponent(testProps);
@@ -67,7 +76,7 @@ describe("Video Asset Component", () => {
         expect(videoPlayerMock.prototype.subscribeToStateChange).not.toBeCalled();
     });
 
-    it("seeks the video player to the spcified timestamp when timestamp changes", () => {
+    it("seeks the video player to the specified timestamp when timestamp changes", () => {
         const expectedTime = 10.2;
         wrapper = createComponent();
         mockLoaded();
@@ -81,8 +90,9 @@ describe("Video Asset Component", () => {
         const expectedTime = 10;
         wrapper = createComponent();
         mockLoaded();
-
         wrapper.setProps({ timestamp: invalidTime });
+        mockSeek(invalidTime);
+
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
     });
 
@@ -91,8 +101,9 @@ describe("Video Asset Component", () => {
         const expectedTime = 7;
         wrapper = createComponent();
         mockLoaded();
-
         wrapper.setProps({ timestamp: invalidTime });
+        mockSeek(invalidTime);
+
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedTime);
     });
 
@@ -185,7 +196,7 @@ describe("Video Asset Component", () => {
 
         expect(videoPlayerMock.prototype.pause).toBeCalled();
         expect(videoPlayerMock.prototype.seek).toBeCalledWith(
-           currentAsset.timestamp + (1 / defaultProps.additionalSettings.videoSettings.frameExtractionRate));
+            currentAsset.timestamp + (1 / defaultProps.additionalSettings.videoSettings.frameExtractionRate));
     });
 
     it("moves to the previous expected frame when clicking the back button", () => {
@@ -272,6 +283,7 @@ describe("Video Asset Component", () => {
             duration: 10,
         };
 
+        videoPlayerState = state;
         onVideoStateChangeHandler(state, prev);
     }
 
@@ -292,6 +304,7 @@ describe("Video Asset Component", () => {
             duration: 10,
         };
 
+        videoPlayerState = state;
         onVideoStateChangeHandler(state, prev);
     }
 
@@ -309,6 +322,27 @@ describe("Video Asset Component", () => {
             paused: true,
             currentTime: 0,
             seeking: false,
+            duration: 10,
+        };
+
+        videoPlayerState = state;
+        onVideoStateChangeHandler(state, prev);
+    }
+
+    function mockSeek(currentTime: number) {
+        const state: IVideoPlayerState = {
+            readyState: 4,
+            paused: true,
+            currentTime,
+            seeking: false,
+            duration: 10,
+        };
+
+        const prev: IVideoPlayerState = {
+            readyState: 4,
+            paused: true,
+            currentTime: 0,
+            seeking: true,
             duration: 10,
         };
 
