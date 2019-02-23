@@ -9,7 +9,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
  * @member connections - Array of connections for choosing
  * @member onChange - Function to call on change of selection
  */
-interface IConnectionPickerProps extends RouteComponentProps {
+export interface IConnectionPickerProps extends RouteComponentProps {
     id?: string;
     value: any;
     connections: IConnection[];
@@ -20,7 +20,7 @@ interface IConnectionPickerProps extends RouteComponentProps {
  * State for Connection Picker
  * @member value - Selected value
  */
-interface IConnectionPickerState {
+export interface IConnectionPickerState {
     value: any;
 }
 
@@ -28,7 +28,7 @@ interface IConnectionPickerState {
  * @name - Connection Picker
  * @description - Enhanced dropdown for selecting a Connection
  */
-class ConnectionPicker extends React.Component<IConnectionPickerProps, IConnectionPickerState> {
+export class ConnectionPicker extends React.Component<IConnectionPickerProps, IConnectionPickerState> {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -63,7 +63,9 @@ class ConnectionPicker extends React.Component<IConnectionPickerProps, IConnecti
                     }
                 </select>
                 <div className="input-group-append">
-                    <button className="btn btn-primary" type="button" onClick={this.createConnection}>Add Connection</button>
+                    <button className="btn btn-primary add-connection"
+                        type="button"
+                        onClick={this.createConnection}>Add Connection</button>
                 </div>
             </div>
         );
@@ -83,4 +85,4 @@ class ConnectionPicker extends React.Component<IConnectionPickerProps, IConnecti
     }
 }
 
-export default withRouter(ConnectionPicker)
+export const ConnectionPickerWithRouter = withRouter<IConnectionPickerProps>(ConnectionPicker);

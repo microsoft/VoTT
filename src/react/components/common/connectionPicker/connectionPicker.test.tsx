@@ -1,8 +1,8 @@
 import React from "react";
-import ConnectionPicker from "./connectionPicker";
+import { ConnectionPicker, ConnectionPickerWithRouter, IConnectionPickerProps } from "./connectionPicker";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
-import { mount } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import { IConnection } from "../../../../models/applicationState";
 
 describe("Connection Picker Component", () => {
@@ -17,13 +17,10 @@ describe("Connection Picker Component", () => {
 
         wrapper = mount(
             <Router>
-                <ConnectionPicker
+                <ConnectionPickerWithRouter
                     value={null}
                     connections={connections}
                     onChange={onChangeHandler}
-                    history={null}
-                    location={null}
-                    match={null}
                 />
             </Router>,
         );
@@ -46,5 +43,12 @@ describe("Connection Picker Component", () => {
 
         wrapper.find("select").simulate("change", { target: { value: newConnection.id } });
         expect(onChangeHandler).toBeCalledWith(newConnection);
+    });
+
+    it("navigates to create connection page when clicking on Add Connection button", () => {
+        const connectionPicker = wrapper.find(ConnectionPicker) as ReactWrapper<IConnectionPickerProps>;
+        const pushSpy = jest.spyOn(connectionPicker.props().history, "push");
+        connectionPicker.find("button.add-connection").simulate("click");
+        expect(pushSpy).toBeCalledWith("/connections/create");
     });
 });

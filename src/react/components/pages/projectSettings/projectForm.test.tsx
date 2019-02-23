@@ -7,7 +7,7 @@ import registerProviders from "../../../../registerProviders";
 import ProjectForm, { IProjectFormProps, IProjectFormState } from "./projectForm";
 import { IProjectVideoSettings } from "../../../../models/applicationState";
 import { SecurityTokenPicker } from "../../common/securityTokenPicker/securityTokenPicker";
-import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
+import { ConnectionPickerWithRouter } from "../../common/connectionPicker/connectionPicker";
 import { TagsInput } from "vott-react";
 
 describe("Project Form Component", () => {
@@ -46,7 +46,7 @@ describe("Project Form Component", () => {
 
         it("renders the form correctly", () => {
             expect(wrapper.find(SecurityTokenPicker)).toHaveLength(1);
-            expect(wrapper.find(ConnectionPicker)).toHaveLength(2);
+            expect(wrapper.find(ConnectionPickerWithRouter)).toHaveLength(2);
             expect(wrapper.find(TagsInput)).toHaveLength(1);
         });
 
