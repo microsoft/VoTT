@@ -50,7 +50,7 @@ function getState(wrapper): IEditorPageState {
 }
 
 function getMockAssetMetadata(testAssets, assetIndex = 0): IAssetMetadata {
-    const mockRegion = MockFactory.createMockRegion();
+    const mockRegion = MockFactory.createTestRegion();
     const asset = testAssets[assetIndex];
     const assetMetadata = {
         asset: {
@@ -87,7 +87,7 @@ describe("Editor Page Component", () => {
         assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
-                regions: [MockFactory.createMockRegion()],
+                regions: [MockFactory.createTestRegion()],
             };
 
             return Promise.resolve(assetMetadata);
@@ -202,7 +202,7 @@ describe("Editor Page Component", () => {
             getAssetMetadataMock.mockImplementationOnce((asset) => {
                 const assetMetadata: IAssetMetadata = {
                     asset: { ...asset },
-                    regions: [{...MockFactory.createMockRegion(), tags: ["NEWTAG"]}],
+                    regions: [{...MockFactory.createTestRegion(), tags: ["NEWTAG"]}],
                 };
                 return Promise.resolve(assetMetadata);
             });
@@ -246,7 +246,7 @@ describe("Editor Page Component", () => {
 
         const editedImageAsset: IAssetMetadata = {
             asset: imageAsset,
-            regions: [MockFactory.createMockRegion()],
+            regions: [MockFactory.createTestRegion()],
         };
 
         const saveMock = assetServiceMock.prototype.save as jest.Mock;
@@ -310,7 +310,7 @@ describe("Editor Page Component", () => {
 
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
-                regions: [MockFactory.createMockRegion()],
+                regions: [MockFactory.createTestRegion()],
             };
 
             const saveMock = assetServiceMock.prototype.save as jest.Mock;

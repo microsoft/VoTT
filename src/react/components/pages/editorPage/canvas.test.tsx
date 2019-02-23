@@ -1,27 +1,20 @@
 import React from "react";
 import { ReactWrapper, mount } from "enzyme";
 import Canvas, { ICanvasProps, ICanvasState } from "./canvas";
-import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { AssetPreview, IAssetPreviewProps } from "../../common/assetPreview/assetPreview";
 import MockFactory from "../../../../common/mockFactory";
-import { EditorMode, IAssetMetadata } from "../../../../models/applicationState";
+import { EditorMode, IAssetMetadata, IRegion } from "../../../../models/applicationState";
 
 jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
-import { SelectionMode, AreaSelector } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import CanvasHelpers from "./canvasHelpers";
+import { RegionType } from "vott-react";
 
 describe("Editor Canvas", () => {
-
-    function createTestRegionData() {
-        const testRegionData = new RegionData(0, 0, 100, 100,
-            [new Point2D(0, 0), new Point2D(1, 0), new Point2D(0, 1), new Point2D(1, 1)], RegionDataType.Rect);
-        return testRegionData;
-    }
-
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
         const props = createProps();
@@ -39,7 +32,6 @@ describe("Editor Canvas", () => {
     }
 
     function createProps() {
-
         const canvasProps: ICanvasProps = {
             selectedAsset: getAssetMetadata(),
             onAssetMetadataChanged: jest.fn(),
@@ -68,12 +60,13 @@ describe("Editor Canvas", () => {
 
     it("renders correctly from default state", () => {
         const wrapper = createComponent();
+        const canvas = wrapper.instance();
 
         expect(wrapper.find(".canvas-enabled").exists()).toBe(true);
         expect(wrapper.state()).toEqual({
             contentSource: null,
             selectedRegions: [],
-            currentAsset: getAssetMetadata(),
+            currentAsset: canvas.props.selectedAsset,
         });
     });
 
@@ -83,8 +76,8 @@ describe("Editor Canvas", () => {
         rmMock.prototype.deleteAllRegions.mockClear();
 
         const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
-        assetMetadata.regions.push(MockFactory.createMockRegion());
-        assetMetadata.regions.push(MockFactory.createMockRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
 
         wrapper.setProps({ selectedAsset: assetMetadata });
         expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
@@ -121,18 +114,20 @@ describe("Editor Canvas", () => {
         const onAssetMetadataChanged = jest.fn();
         wrapper.setProps({ onAssetMetadataChanged });
 
-        const testCommit = createTestRegionData();
+        const newRegionData = MockFactory.createTestRegionData();
         const canvas = wrapper.instance();
-        canvas.editor.onSelectionEnd(testCommit);
+        const original: IAssetMetadata = {
+            asset: { ...canvas.props.selectedAsset.asset },
+            regions: [...canvas.props.selectedAsset.regions],
+        };
 
-        const testRegion = MockFactory.createTestRegion();
+        canvas.editor.onSelectionEnd(newRegionData);
+        const expectedRegion = CanvasHelpers.fromRegionData(newRegionData, RegionType.Rectangle);
 
-        const originalAssetMetadata = getAssetMetadata();
-
-        expect(wrapper.instance().state.selectedRegions).toMatchObject([testRegion]);
+        expect(wrapper.instance().state.selectedRegions).toMatchObject([{ ...expectedRegion, id: expect.any(String) }]);
         expect(wrapper.state().currentAsset.regions).toMatchObject([
-            ...originalAssetMetadata.regions,
-            testRegion,
+            ...original.regions,
+            { ...expectedRegion, id: expect.any(String) },
         ]);
     });
 
@@ -140,8 +135,8 @@ describe("Editor Canvas", () => {
         const wrapper = createComponent();
 
         const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
-        assetMetadata.regions.push(MockFactory.createMockRegion());
-        assetMetadata.regions.push(MockFactory.createMockRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
 
         // Clear out mock counts
         (wrapper.instance().editor.RM.addRegion as any).mockClear();
@@ -161,19 +156,27 @@ describe("Editor Canvas", () => {
         wrapper.setProps({ onAssetMetadataChanged });
 
         const canvas = wrapper.instance();
+        const original: IAssetMetadata = {
+            asset: { ...canvas.props.selectedAsset.asset },
+            regions: [...canvas.props.selectedAsset.regions],
+        };
 
-        const regionData = createTestRegionData();
-        canvas.editor.onRegionMoveEnd("test1", regionData);
-
-        const originalAssetMetadata = getAssetMetadata();
+        const movedRegionData = MockFactory.createTestRegionData();
+        canvas.editor.onRegionMoveEnd("test1", movedRegionData);
 
         expect(onAssetMetadataChanged).toBeCalledWith({
-            ...originalAssetMetadata,
-            regions: originalAssetMetadata.regions.map((r) => {
+            ...original,
+            regions: original.regions.map((r) => {
                 if (r.id === "test1") {
                     return {
                         ...r,
-                        points: regionData.points,
+                        points: movedRegionData.points,
+                        boundingBox: {
+                            height: movedRegionData.height,
+                            width: movedRegionData.width,
+                            left: movedRegionData.x,
+                            top: movedRegionData.y,
+                        },
                     };
                 }
                 return r;
@@ -186,16 +189,20 @@ describe("Editor Canvas", () => {
         const onAssetMetadataChanged = jest.fn();
         wrapper.setProps({ onAssetMetadataChanged });
 
-        const originalAssetMetadata = getAssetMetadata();
-        expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length);
-
         const canvas = wrapper.instance();
+        const original: IAssetMetadata = {
+            asset: { ...canvas.props.selectedAsset.asset },
+            regions: [...canvas.props.selectedAsset.regions],
+        };
+
+        expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
+
         canvas.editor.onRegionDelete("test1");
 
-        expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length - 1);
+        expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length - 1);
         expect(onAssetMetadataChanged).toBeCalledWith({
-            ...originalAssetMetadata,
-            regions: originalAssetMetadata.regions.filter((r) => r.id !== "test1"),
+            ...original,
+            regions: original.regions.filter((r) => r.id !== "test1"),
         });
         expect(wrapper.instance().state.selectedRegions.length).toEqual(0);
     });
@@ -203,20 +210,24 @@ describe("Editor Canvas", () => {
     it("onRegionSelected adds region to list of selected regions on asset", () => {
         const wrapper = createComponent();
         const canvas = wrapper.instance();
-
-        const originalAssetMetadata = getAssetMetadata();
-
-        expect(wrapper.state().currentAsset.regions.length).toEqual(originalAssetMetadata.regions.length);
+        const original: IAssetMetadata = {
+            asset: { ...canvas.props.selectedAsset.asset },
+            regions: [...canvas.props.selectedAsset.regions],
+        };
+        expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
 
         canvas.editor.onRegionSelected("test1", false);
         expect(wrapper.state().selectedRegions.length).toEqual(1);
-        expect(wrapper.state().selectedRegions)
-            .toMatchObject([MockFactory.createTestRegion("test1")]);
+        expect(wrapper.state().selectedRegions).toMatchObject([
+            original.regions.find((region) => region.id === "test1"),
+        ]);
 
         canvas.editor.onRegionSelected("test2", true);
         expect(wrapper.state().selectedRegions.length).toEqual(2);
-        expect(wrapper.state().selectedRegions)
-            .toMatchObject([MockFactory.createTestRegion("test1"), MockFactory.createTestRegion("test2")]);
+        expect(wrapper.state().selectedRegions).toMatchObject([
+            original.regions.find((region) => region.id === "test1"),
+            original.regions.find((region) => region.id === "test2"),
+        ]);
     });
 
     it("Applies tag to selected region", () => {
@@ -224,13 +235,13 @@ describe("Editor Canvas", () => {
         const onAssetMetadataChanged = jest.fn();
         wrapper.setProps({ onAssetMetadataChanged });
         const canvas = wrapper.instance();
+        const original = { ...canvas.props.selectedAsset };
 
         canvas.editor.onRegionSelected("test1", null);
 
         const newTag = MockFactory.createTestTag();
         canvas.applyTag(newTag.name);
 
-        const original = getAssetMetadata();
         const expected: IAssetMetadata = {
             ...original,
             regions: original.regions.map((r) => {
@@ -243,6 +254,7 @@ describe("Editor Canvas", () => {
                 return r;
             }),
         };
+
         expect(onAssetMetadataChanged).toBeCalledWith(expected);
         expect(wrapper.state().currentAsset.regions[0].tags).toEqual([newTag.name]);
     });
