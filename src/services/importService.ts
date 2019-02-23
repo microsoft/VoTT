@@ -92,13 +92,14 @@ export default class ImportService implements IImportService {
             if (originalProject.frames.hasOwnProperty(frameName)) {
                 const frameRegions = originalProject.frames[frameName];
                 const asset = AssetService.createAssetFromFilePath(
-                    `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
+                    `${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
                 const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                         ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
                         ? AssetState.Visited : AssetState.NotVisited);
                     const taggedMetadata = this.addRegions(metadata, frameRegions);
                     taggedMetadata.asset.state = assetState;
+                    taggedMetadata.asset.path = `file:${taggedMetadata.asset.path}`;
                     return taggedMetadata;
                 });
                 generatedAssetMetadata.push(populatedMetadata);
