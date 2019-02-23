@@ -21,6 +21,9 @@ describe("Connection Picker Component", () => {
                     value={null}
                     connections={connections}
                     onChange={onChangeHandler}
+                    history={null}
+                    location={null}
+                    match={null}
                 />
             </Router>,
         );
