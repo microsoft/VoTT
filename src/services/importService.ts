@@ -5,8 +5,6 @@ import { IV1Project, IV1Region } from "../models/v1Models";
 import packageJson from "../../package.json";
 import { AssetService } from "./assetService";
 import IProjectActions from "../redux/actions/projectActions";
-import IApplicationsActions, * as applicationActions from "../redux/actions/applicationActions";
-import ProjectService from "./projectService";
 
 /**
  * Functions required for an import service
@@ -21,8 +19,8 @@ export interface IImportService {
  * @description - Functions for importing v1 projects to v2 application
  */
 export default class ImportService implements IImportService {
-    actions: IProjectActions;
-    constructor(actions: IProjectActions){
+    private actions: IProjectActions;
+    constructor(actions: IProjectActions) {
         this.actions = actions;
     }
     public async convertProject(projectInfo: IFileInfo): Promise<IProject> {
@@ -67,9 +65,9 @@ export default class ImportService implements IImportService {
 
         await this.actions.saveProject(project).then((newProj) => {
             this.actions.loadProject(newProj);
-        })
+        });
 
-        let savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
+        const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
             return assetService.save(assetMetadata);
         });
         try {
@@ -77,6 +75,36 @@ export default class ImportService implements IImportService {
         } catch (e) {
             throw e;
         }
+    }
+
+    /**
+     * Generate assets based on V1 Project frames and regions
+     * @param project - V1 Project Content and File Information
+     */
+    public async generateAssets(project: IFileInfo, assetService: AssetService): Promise<IAssetMetadata[]> {
+        let originalProject: IV1Project;
+        const generatedAssetMetadata: IAssetMetadata[] = [];
+        let assetState: AssetState;
+
+        originalProject = JSON.parse(project.content as string);
+
+        for (const frameName in originalProject.frames) {
+            if (originalProject.frames.hasOwnProperty(frameName)) {
+                const frameRegions = originalProject.frames[frameName];
+                const asset = AssetService.createAssetFromFilePath(
+                    `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
+                const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
+                    assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
+                        ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
+                        ? AssetState.Visited : AssetState.NotVisited);
+                    const taggedMetadata = this.addRegions(metadata, frameRegions);
+                    taggedMetadata.asset.state = assetState;
+                    return taggedMetadata;
+                });
+                generatedAssetMetadata.push(populatedMetadata);
+            }
+        }
+        return generatedAssetMetadata;
     }
 
     /**
@@ -113,36 +141,6 @@ export default class ImportService implements IImportService {
             finalTags.push(newTag);
         }
         return finalTags;
-    }
-
-    /**
-     * Generate assets based on V1 Project frames and regions
-     * @param project - V1 Project Content and File Information
-     */
-    public async generateAssets(project: IFileInfo, assetService: AssetService): Promise<IAssetMetadata[]> {
-        let originalProject: IV1Project;
-        const generatedAssetMetadata: IAssetMetadata[] = [];
-        let assetState: AssetState;
-
-        originalProject = JSON.parse(project.content as string);
-
-        for (const frameName in originalProject.frames) {
-            if (originalProject.frames.hasOwnProperty(frameName)) {
-                const frameRegions = originalProject.frames[frameName];
-                const asset = AssetService.createAssetFromFilePath(
-                    `file:${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
-                    assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
-                        ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
-                        ? AssetState.Visited : AssetState.NotVisited);
-                    const taggedMetadata = this.addRegions(metadata, frameRegions);
-                    taggedMetadata.asset.state = assetState;
-                    return taggedMetadata;
-                });
-                generatedAssetMetadata.push(populatedMetadata);
-            }
-        }
-        return generatedAssetMetadata;
     }
 
     /**
