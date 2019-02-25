@@ -13,6 +13,7 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import CanvasHelpers from "./canvasHelpers";
 import { RegionType } from "vott-react";
+import * as packageJson from "../../../../../package.json";
 
 describe("Editor Canvas", () => {
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
@@ -119,6 +120,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            version: packageJson.version,
         };
 
         canvas.editor.onSelectionEnd(newRegionData);
@@ -159,6 +161,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            version: packageJson.version,
         };
 
         const movedRegionData = MockFactory.createTestRegionData();
@@ -193,6 +196,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            version: packageJson.version,
         };
 
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
@@ -213,6 +217,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            version: packageJson.version,
         };
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
 

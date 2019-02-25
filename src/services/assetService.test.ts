@@ -105,6 +105,7 @@ describe("Asset Service", () => {
                     const assetMetadata: IAssetMetadata = {
                         asset: testAssets[0],
                         regions: [],
+                        version: "",
                     };
 
                     return JSON.stringify(assetMetadata, null, 4);
@@ -150,6 +151,7 @@ describe("Asset Service", () => {
                     state: AssetState.Tagged,
                 },
                 regions: [],
+                version: "",
             };
 
             const result = await assetService.save(assetMetadata);
@@ -168,6 +170,7 @@ describe("Asset Service", () => {
                     state: AssetState.Visited,
                 },
                 regions: [],
+                version: "",
             };
 
             const result = await assetService.save(assetMetadata);
@@ -203,6 +206,7 @@ describe("Asset Service", () => {
                     const assetMetadata: IAssetMetadata = {
                         asset: testAssets[0],
                         regions: [],
+                        version: "",
                     };
 
                     return JSON.stringify(assetMetadata, null, 4);

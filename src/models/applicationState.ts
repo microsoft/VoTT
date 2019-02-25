@@ -98,6 +98,7 @@ export interface IAppSettings {
 export interface IProject {
     id: string;
     name: string;
+    version: string;
     securityToken: string;
     description?: string;
     tags: ITag[];
@@ -218,6 +219,7 @@ export interface IAsset {
 export interface IAssetMetadata {
     asset: IAsset;
     regions: IRegion[];
+    version: string;
 }
 
 /**
