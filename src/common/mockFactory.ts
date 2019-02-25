@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType, IBoundingBox,
+    IRegion, RegionType,
 } from "../models/applicationState";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -25,6 +25,10 @@ import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSyst
 import { generateKey } from "./crypto";
 import { AssetService } from "../services/assetService";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
+import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import { randomIntInRange } from "./utils";
+import * as packageJson from "../../package.json";
 
 export default class MockFactory {
 
@@ -131,40 +135,6 @@ export default class MockFactory {
     }
 
     /**
-     * Creates a mock region
-     */
-    public static createMockRegion(id?: string): IRegion {
-        const mockTag: ITag = MockFactory.createTestTag();
-
-        const mockStartPoint: IPoint = {
-            x: 1,
-            y: 2,
-        };
-
-        const mockEndPoint: IPoint = {
-            x: 3,
-            y: 4,
-        };
-
-        const mockBoundingBox: IBoundingBox = {
-            left: 0,
-            top: 0,
-            width: 256,
-            height: 256,
-        };
-
-        const mockRegion: IRegion = {
-            id: id || "id",
-            type: RegionType.Rectangle,
-            tags: [mockTag.name],
-            points: [mockStartPoint, mockEndPoint],
-            boundingBox: mockBoundingBox,
-        };
-
-        return mockRegion;
-    }
-
-    /**
      * Creates array of fake IAsset
      * @param count Number of assets to create (default: 10)
      * @param startIndex The index that the assets should start at (default: 1)
@@ -198,6 +168,7 @@ export default class MockFactory {
         return {
             asset,
             regions: regions || [],
+            version: packageJson.version,
         };
     }
 
@@ -224,6 +195,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
+            version: packageJson.version,
             securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),
@@ -577,7 +549,11 @@ export default class MockFactory {
         return new Canvas(canvasProps);
     }
 
-    public static createTestRegions(count= 5) {
+    /**
+     * Creates an array of test regions
+     * @param count The number of regions to create (deafult: 5)
+     */
+    public static createTestRegions(count: number = 5) {
         const regions: IRegion[] = [];
         for (let i = 1; i <= count; i++) {
             regions.push(MockFactory.createTestRegion(`test${i}`));
@@ -585,24 +561,61 @@ export default class MockFactory {
         return regions;
     }
 
-    public static createTestRegion(id = null) {
-        const testRegion: any = {
-            boundingBox: {
-                height: 100,
-                width: 100,
-                left: 0,
-                top: 0,
-            },
-            points: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }],
-            tags: [],
-            type: "RECTANGLE",
+    /**
+     * Creates a test region with the optional specified id
+     * @param id The id to assign to the region
+     */
+    public static createTestRegion(id = null): IRegion {
+        const origin = {
+            x: randomIntInRange(0, 1024),
+            y: randomIntInRange(0, 768),
         };
-        if (id) {
-            testRegion.id = id;
-        }
-        return testRegion;
+        const size = {
+            width: randomIntInRange(1, 100),
+            height: randomIntInRange(1, 100),
+        };
+
+        return {
+            id,
+            boundingBox: {
+                left: origin.x,
+                top: origin.y,
+                width: size.width,
+                height: size.height,
+            },
+            points: [
+                { x: origin.x, y: origin.y }, // Top left
+                { x: origin.x + size.width, y: origin.y }, // Top Right
+                { x: origin.x, y: origin.y + size.height }, // Bottom Left
+                { x: origin.x + size.width, y: origin.y + size.height }, // Bottom Right
+            ],
+            tags: [],
+            type: RegionType.Rectangle,
+        };
     }
 
+    /**
+     * Creates a random test canvas tool RegionData
+     */
+    public static createTestRegionData() {
+        const origin = {
+            x: randomIntInRange(0, 1024),
+            y: randomIntInRange(0, 768),
+        };
+        const size = {
+            width: randomIntInRange(1, 100),
+            height: randomIntInRange(1, 100),
+        };
+
+        return new RegionData(origin.x, origin.y, size.width, size.height,
+            [
+                new Point2D(origin.x, origin.y), // Top left
+                new Point2D(origin.x + size.width, origin.y), // Top Right
+                new Point2D(origin.x, origin.y + size.height), // Bottom Left
+                new Point2D(origin.x + size.width, origin.y + size.height), // Bottom Right
+            ],
+            RegionDataType.Rect);
+    }
     /**
      * Creates fake IAssetProviderRegistrationOptions
      * @param name Name of asset provider

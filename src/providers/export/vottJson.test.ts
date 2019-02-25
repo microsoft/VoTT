@@ -12,6 +12,7 @@ import { AssetService } from "../../services/assetService";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import { constants } from "../../common/constants";
+import * as packageJson from "../../../package.json";
 
 describe("VoTT Json Export Provider", () => {
     const testProject: IProject = {
@@ -56,6 +57,7 @@ describe("VoTT Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [],
+                    version: packageJson.version,
                 };
 
                 return Promise.resolve(assetMetadata);

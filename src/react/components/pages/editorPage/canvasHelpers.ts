@@ -1,10 +1,10 @@
-import { ITag, IRegion, RegionType, IBoundingBox } from "../../../../models/applicationState";
+import shortid from "shortid";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import Guard from "../../../../common/guard";
-import shortid from "shortid";
+import { IBoundingBox, IRegion, ITag, RegionType } from "../../../../models/applicationState";
 
 /**
  * Static functions to assist in operations within Canvas component
@@ -42,6 +42,28 @@ export default class CanvasHelpers {
             region.points.map((point) =>
                 new Point2D(point.x, point.y)),
             this.regionTypeToType(region.type));
+    }
+
+    /**
+     * Converts a canvas tools RegionData to VoTT IRegion
+     * @param regionData The region data to convert
+     * @param regionType The region type
+     */
+    public static fromRegionData(regionData: RegionData, regionType: RegionType): IRegion {
+        Guard.null(regionData);
+
+        return {
+            id: shortid.generate(),
+            type: regionType,
+            boundingBox: {
+                left: regionData.x,
+                top: regionData.y,
+                width: regionData.width,
+                height: regionData.height,
+            },
+            points: regionData.points.map((point) => new Point2D(point.x, point.y)),
+            tags: [],
+        };
     }
 
     /**

@@ -55,10 +55,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 <div className="app-homepage-main text-light">
                     <ul>
                         <li>
-                            <Link to={"/projects/create"} className="p-5">
+                            <a href="#" onClick={this.createNewProject} className="p-5 new-project">
                                 <i className="fas fa-folder-plus fa-9x"></i>
                                 <h6>{strings.homePage.newProject}</h6>
-                            </Link>
+                            </a>
                         </li>
                         <li>
                             <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
@@ -101,6 +101,11 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     onConfirm={this.deleteProject} />
             </div>
         );
+    }
+
+    private createNewProject = () => {
+        this.props.actions.closeProject();
+        this.props.history.push("/projects/create");
     }
 
     private handleOpenCloudProjectClick = () => {

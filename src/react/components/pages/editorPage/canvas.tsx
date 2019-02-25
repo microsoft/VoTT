@@ -251,6 +251,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         if (movedRegion) {
             movedRegion.points = scaledRegionData.points;
+            movedRegion.boundingBox = {
+                height: scaledRegionData.height,
+                width: scaledRegionData.width,
+                left: scaledRegionData.x,
+                top: scaledRegionData.y,
+            };
         }
 
         currentRegions[movedRegionIndex] = movedRegion;
@@ -288,7 +294,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         } else {
             selectedRegions = [region];
         }
-        this.setState({selectedRegions});
+        this.setState({ selectedRegions });
     }
 
     private renderChildren = () => {
