@@ -12,6 +12,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import Clipboard from "../../../../common/clipboard";
+import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -77,7 +78,20 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         if (this.props.selectionMode !== prevProps.selectionMode) {
-            this.editor.AS.setSelectionMode(this.props.selectionMode, null);
+            let  options = null;
+            if (this.props.selectionMode === SelectionMode.COPYRECT) {
+                const selectedRegion = this.state.selectedRegions[0];
+                if (selectedRegion) {
+                    // const width = selectedRegion.boundingBox.width;
+                    // const height = selectedRegion.boundingBox.height;
+                    const scaledRegionData = this.editor.scaleRegionToFrameSize(
+                        CanvasHelpers.getRegionData(selectedRegion));
+                    options = {template: new Rect(scaledRegionData.width, scaledRegionData.height)};
+                } else {
+                    throw new Error("No region selected to copy");
+                }
+            }
+            this.editor.AS.setSelectionMode(this.props.selectionMode, options);
         }
     }
 

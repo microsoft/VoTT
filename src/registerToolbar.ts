@@ -92,6 +92,14 @@ export default function registerToolbar() {
     });
 
     ToolbarItemFactory.register({
+        name: ToolbarItemName.CopyRectangle,
+        tooltip: "Copy Rectangle",
+        icon: "far fa-clone",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.State,
+    });
+
+    ToolbarItemFactory.register({
         name: ToolbarItemName.PreviousAsset,
         tooltip: "Previous Asset (W)",
         icon: "fas fa-arrow-circle-up",
