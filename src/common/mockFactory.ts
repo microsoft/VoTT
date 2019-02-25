@@ -27,6 +27,7 @@ import { AssetService } from "../services/assetService";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
+import { randomIntInRange } from "./utils";
 
 export default class MockFactory {
 
@@ -563,12 +564,12 @@ export default class MockFactory {
      */
     public static createTestRegion(id = null): IRegion {
         const origin = {
-            x: MockFactory.randomNumber(0, 1024),
-            y: MockFactory.randomNumber(0, 768),
+            x: randomIntInRange(0, 1024),
+            y: randomIntInRange(0, 768),
         };
         const size = {
-            width: MockFactory.randomNumber(1, 100),
-            height: MockFactory.randomNumber(1, 100),
+            width: randomIntInRange(1, 100),
+            height: randomIntInRange(1, 100),
         };
 
         return {
@@ -595,12 +596,12 @@ export default class MockFactory {
      */
     public static createTestRegionData() {
         const origin = {
-            x: MockFactory.randomNumber(0, 1024),
-            y: MockFactory.randomNumber(0, 768),
+            x: randomIntInRange(0, 1024),
+            y: randomIntInRange(0, 768),
         };
         const size = {
-            width: MockFactory.randomNumber(1, 100),
-            height: MockFactory.randomNumber(1, 100),
+            width: randomIntInRange(1, 100),
+            height: randomIntInRange(1, 100),
         };
 
         return new RegionData(origin.x, origin.y, size.width, size.height,
@@ -909,9 +910,5 @@ export default class MockFactory {
             default:
                 return StorageType.Other;
         }
-    }
-
-    private static randomNumber(min: number, max: number) {
-        return Math.floor(Math.random() * max) + min;
     }
 }
