@@ -1,14 +1,17 @@
-import { ITag, IRegion, RegionType } from "../../../../models/applicationState";
+import { ITag, IRegion, RegionType, IBoundingBox } from "../../../../models/applicationState";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import Guard from "../../../../common/guard";
+import shortid from "shortid";
 
 /**
  * Static functions to assist in operations within Canvas component
  */
 export default class CanvasHelpers {
+
+    public static pasteMargin = 10;
 
     /**
      * Adds tag to array if it does not contain the tag,
@@ -81,5 +84,60 @@ export default class CanvasHelpers {
                 break;
         }
         return type;
+    }
+
+    public static getNewBoundingBox = (boundingBox: IBoundingBox, otherRegions: IRegion[]): IBoundingBox => {
+        let targetX = boundingBox.left;
+        let targetY = boundingBox.top;
+
+        let foundRegionAtTarget = false;
+
+        while (!foundRegionAtTarget) {
+            for (const region of otherRegions) {
+                if (region.boundingBox.left === targetX && region.boundingBox.top === targetY) {
+                    foundRegionAtTarget = true;
+                    break;
+                }
+            }
+            if (foundRegionAtTarget) {
+                targetX += CanvasHelpers.pasteMargin;
+                targetY += CanvasHelpers.pasteMargin;
+                foundRegionAtTarget = false;
+            } else {
+                return {
+                    ...boundingBox,
+                    left: boundingBox.left + targetX,
+                    top: boundingBox.top + targetY,
+                };
+            }
+        }
+    }
+
+    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[]): IRegion[] => {
+        const result: IRegion[] = [];
+        for (const region of regions) {
+            const dup = CanvasHelpers.duplicateRegionAndMove(region, others.concat(result));
+            result.push(dup);
+        }
+        return result;
+    }
+
+    public static duplicateRegionAndMove = (region: IRegion, others: IRegion[]): IRegion => {
+        const targetX = region.boundingBox.left;
+        const targetY = region.boundingBox.top;
+
+        let foundRegionAtTarget = false;
+
+        while (!foundRegionAtTarget) {
+            if (region.boundingBox.left === targetX && region.boundingBox.top === targetY) {
+                foundRegionAtTarget = true;
+                break;
+            }
+        }
+        return {
+            ...region,
+            id: shortid.generate(),
+            boundingBox: CanvasHelpers.getNewBoundingBox(region.boundingBox, others),
+        };
     }
 }

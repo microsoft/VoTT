@@ -11,7 +11,7 @@ import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPrev
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
-import { Clipboard } from "../../../../common/clipboard";
+import Clipboard from "../../../../common/clipboard";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -90,12 +90,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     onKeyEvent={this.copyRegions}
                 />
                 <KeyboardBinding
-                    accelerators={["Ctrl+v"]}
-                    onKeyEvent={this.pasteRegions}
-                />
-                <KeyboardBinding
                     accelerators={["Ctrl+x"]}
                     onKeyEvent={this.cutRegions}
+                />
+                <KeyboardBinding
+                    accelerators={["Ctrl+v"]}
+                    onKeyEvent={this.pasteRegions}
                 />
                 <KeyboardBinding
                     accelerators={["Ctrl+d"]}
@@ -122,21 +122,68 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private copyRegions = async () => {
-        await Clipboard.writeText(JSON.stringify(this.state.selectedRegions));        
+        await Clipboard.writeObject(this.state.selectedRegions);
     }
 
     private cutRegions = async () => {
-        await Clipboard.writeText(JSON.stringify(this.state.selectedRegions));
-        // Remove selected regions
+        await Clipboard.writeObject(this.state.selectedRegions);
+        this.deleteRegions(this.state.selectedRegions);
     }
 
     private pasteRegions = async () => {
-        const regionsToPaste = JSON.parse(await Clipboard.readText());
-        // Add regions with transformation (+10 for left and top of each region)
+        const regionsToPaste: IRegion[] = await Clipboard.readObject();
+        const duplicates = CanvasHelpers.duplicateRegionsAndMove(
+            regionsToPaste,
+            this.state.currentAsset.regions,
+        );
+        this.addRegions(duplicates);
     }
 
     private clearRegions = () => {
-        // Remove all regions
+        this.deleteRegions(this.state.currentAsset.regions);
+    }
+
+    private addRegions = (regions: IRegion[]) => {
+        this.addRegionsToCanvasTools(regions);
+        this.addRegionsToAsset(regions);
+    }
+
+    private addRegionsToAsset = (regions: IRegion[]) => {
+        const a = 4;
+        this.updateAssetRegions(
+            this.state.currentAsset.regions.concat(regions),
+            this.state.selectedRegions,
+        );
+    }
+
+    private addRegionsToCanvasTools = (regions: IRegion[]) => {
+        for (const region of regions) {
+            const regionData = CanvasHelpers.getRegionData(region);
+            const scaledRegionData = this.editor.scaleRegionToFrameSize(regionData);
+            this.editor.RM.addRegion(
+                region.id,
+                scaledRegionData,
+                CanvasHelpers.getTagsDescriptor(this.props.project.tags, region),
+            );
+        }
+    }
+
+    private deleteRegions = (regions: IRegion[]) => {
+        this.deleteRegionsFromCanvasTools(regions);
+        this.deleteRegionsFromAsset(regions);
+    }
+
+    private deleteRegionsFromAsset = (regions: IRegion[]) => {
+        const filteredRegions = this.state.currentAsset.regions.filter((assetRegion) => {
+            return !regions.find((r) => r.id === assetRegion.id);
+        });
+        this.updateAssetRegions(filteredRegions, []);
+    }
+
+    private deleteRegionsFromCanvasTools = (regions: IRegion[]) => {
+        for (const region of regions) {
+            this.editor.RM.deleteRegionById(region.id);
+        }
     }
 
     /**
@@ -391,12 +438,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // Set selected region to the last region
         this.setState({
             selectedRegions: [this.state.currentAsset.regions[this.state.currentAsset.regions.length - 1]],
-        });
-    }
-
-    private updateSelected = (selectedRegions: IRegion[]) => {
-        this.setState({
-            selectedRegions,
         });
     }
 
