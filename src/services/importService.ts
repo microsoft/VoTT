@@ -58,25 +58,6 @@ export default class ImportService implements IImportService {
         return convertedProject;
     }
 
-    public async addAssets(project: IProject, projectInfo: IFileInfo) {
-        let generatedAssetMetadata: IAssetMetadata[];
-        const assetService = new AssetService(project);
-        generatedAssetMetadata = await this.generateAssets(projectInfo, assetService);
-
-        await this.actions.saveProject(project).then((newProj) => {
-            this.actions.loadProject(newProj);
-        });
-
-        const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
-            return assetService.save(assetMetadata);
-        });
-        try {
-            await Promise.all(savedMetadata);
-        } catch (e) {
-            throw e;
-        }
-    }
-
     /**
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information

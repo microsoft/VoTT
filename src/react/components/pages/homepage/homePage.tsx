@@ -203,7 +203,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
         this.props.applicationActions.ensureSecurityToken(project);
         const assetService = new AssetService(project);
-        // await importService.addAssets(project, projectInfo);
 
         generatedAssetMetadata = await importService.generateAssets(projectInfo, assetService);
         await this.props.actions.saveProject(project);
@@ -214,10 +213,9 @@ export default class HomePage extends React.Component<IHomepageProps> {
         try {
             await Promise.all(savedMetadata);
         } catch (e) {
-            throw e;
+            throw new Error(`Error importing project information - ${e.message}`);
         }
         await this.props.actions.saveProject(this.props.project);
-        // await this.props.actions.loadAssets(this.props.project);
         await this.loadSelectedProject(this.props.project);
     }
 }
