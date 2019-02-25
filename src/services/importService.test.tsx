@@ -1,9 +1,9 @@
 import MockFactory from "../common/mockFactory";
-import ImportService from "./importService";
 import packageJson from "../../package.json";
+import ImportService from "./importService";
 
 describe("Import Service", () => {
-    let importService: IImportService = null;
+    let importService: ImportService = null;
 
     beforeEach(() => {
         const actions = MockFactory.projectActions();

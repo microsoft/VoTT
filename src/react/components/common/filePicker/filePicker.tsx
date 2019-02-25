@@ -8,7 +8,7 @@ import { IFileInfo } from "../../../../models/applicationState";
  * @member onChange - Function to call on change of file selection
  * @member onError - Function to call on file picking error
  */
-interface IFilePickerProps {
+export interface IFilePickerProps {
     onChange: (sender: SyntheticEvent, fileText: IFileInfo) => void;
     onError: (sender: SyntheticEvent, error: any) => void;
 }

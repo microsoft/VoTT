@@ -10,7 +10,7 @@ import IProjectActions from "../redux/actions/projectActions";
  * Functions required for an import service
  * @member convertProject - Converts a v1 project to v2 project
  */
-export interface IImportService {
+interface IImportService {
     convertProject(project: IFileInfo): Promise<IProject>;
 }
 
@@ -186,11 +186,11 @@ export default class ImportService implements IImportService {
         //  const currentAssetMetadata = this.props.selectedAsset;
         //  currentAssetMetadata.regions.push(newRegion);
         //  this.updateSelected([newRegion]);
- 
+
         //  if (currentAssetMetadata.regions.length) {
         //      currentAssetMetadata.asset.state = AssetState.Tagged;
         //  }
- 
+
         //  this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 }

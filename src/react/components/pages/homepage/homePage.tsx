@@ -31,6 +31,10 @@ export interface IHomepageProps extends RouteComponentProps, React.Props<HomePag
     project: IProject;
 }
 
+export interface IHomepageState {
+    cloudPickerOpen: boolean;
+}
+
 function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
@@ -49,11 +53,13 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class HomePage extends React.Component<IHomepageProps> {
+    public state: IHomepageState = {
+        cloudPickerOpen: false,
+    };
     private filePicker: React.RefObject<FilePicker>;
     private deleteConfirm: React.RefObject<Confirm>;
     private cloudFilePicker: React.RefObject<CloudFilePicker>;
     private importConfirm: React.RefObject<Confirm>;
-    private settingsConfirm: React.RefObject<IMessageBox>;
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
@@ -66,17 +72,13 @@ export default class HomePage extends React.Component<IHomepageProps> {
         this.deleteConfirm = React.createRef<Confirm>();
         this.cloudFilePicker = React.createRef<CloudFilePicker>();
         this.importConfirm = React.createRef<Confirm>();
-        this.settingsConfirm = React.createRef<IMessageBox>();
 
         this.loadSelectedProject = this.loadSelectedProject.bind(this);
         this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
         this.deleteProject = this.deleteProject.bind(this);
         this.handleOpenCloudProjectClick = this.handleOpenCloudProjectClick.bind(this);
         this.convertProject = this.convertProject.bind(this);
-
-    private filePicker: React.RefObject<FilePicker> = React.createRef();
-    private deleteConfirm: React.RefObject<Confirm> = React.createRef();
-    private cloudFilePicker: React.RefObject<CloudFilePicker> = React.createRef();
+    }
 
     public render() {
         return (
@@ -134,9 +136,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
                         ${project.file.name} ${strings.homePage.importProject.recommendation}`}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
-                <IMessageBox title="Confirm Settings"
-                    ref={this.settingsConfirm}
-                    message={"Please confirm your new v2 project settings."} />
             </div>
         );
     }
