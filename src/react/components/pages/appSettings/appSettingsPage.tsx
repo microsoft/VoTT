@@ -62,7 +62,7 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps> 
                     onCancel={this.onFormCancel} />
                 <div className="app-settings-page-sidebar p-3 bg-lighter-1">
                     <div className="my-3">
-                        <p>{strings.appSettings.version.description + packageJson.version}</p>
+                        <p>{`${strings.appSettings.version.description} ${packageJson.version}`}</p>
                     </div>
                     <div className="my-3">
                         <p>{strings.appSettings.devTools.description}</p>

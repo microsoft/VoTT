@@ -48,7 +48,7 @@ export const english: IAppStrings = {
             description: "Security tokens are used to encrypt sensitive data within your project configuration",
         },
         version: {
-            description: "Version: ",
+            description: "Version:",
         },
         devTools: {
             description: "Open application developer tools to help diagnose issues",

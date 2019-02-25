@@ -49,7 +49,7 @@ export const spanish: IAppStrings = {
             description: "Los tokens de seguridad se utilizan para cifrar datos confidenciales dentro de la configuración del proyecto",
         },
         version: {
-            description: "Versión: ",
+            description: "Versión:",
         },
         devTools: {
             description: "Abrir herramientas de desarrollo de aplicaciones para ayudar a diagnosticar problemas.",
