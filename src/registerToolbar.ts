@@ -31,26 +31,29 @@ export enum ToolbarItemGroup {
 export default function registerToolbar() {
     ToolbarItemFactory.register({
         name: ToolbarItemName.SelectCanvas,
-        tooltip: "Select",
+        tooltip: "Select (V)",
         icon: "fa-mouse-pointer",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
+        accelerators: ["v", "V"],
     });
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawRectangle,
-        tooltip: "Draw Rectangle",
+        tooltip: "Draw Rectangle (R)",
         icon: "fa-vector-square",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
+        accelerators: ["r", "R"],
     });
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawPolygon,
-        tooltip: "Draw Polygon",
+        tooltip: "Draw Polygon (P)",
         icon: "fa-draw-polygon",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
+        accelerators: ["p", "P"],
     });
 
     ToolbarItemFactory.register({
@@ -86,12 +89,11 @@ export default function registerToolbar() {
         icon: "fa-trash-alt",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+e"],
     });
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.PreviousAsset,
-        tooltip: "Previous Asset",
+        tooltip: "Previous Asset (W)",
         icon: "fas fa-arrow-circle-up",
         group: ToolbarItemGroup.Navigation,
         type: ToolbarItemType.Action,
@@ -100,7 +102,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.NextAsset,
-        tooltip: "Next Asset",
+        tooltip: "Next Asset (S)",
         icon: "fas fa-arrow-circle-down",
         group: ToolbarItemGroup.Navigation,
         type: ToolbarItemType.Action,
@@ -109,7 +111,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.SaveProject,
-        tooltip: "Save Project",
+        tooltip: "Save Project (Ctrl+S)",
         icon: "fa-save",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
@@ -117,10 +119,10 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.ExportProject,
-        tooltip: "Export Project",
+        tooltip: "Export Project (Ctrl+E)",
         icon: "fa-external-link-square-alt",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-    }, ExportProject);
-
+        accelerators: ["Ctrl+e", "Ctrl+E"],
+    });
 }
