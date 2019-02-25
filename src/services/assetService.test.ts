@@ -161,7 +161,7 @@ describe("Asset Service", () => {
             expect(result).toBe(assetMetadata);
         });
 
-        it("Does not save asset JSON to the storage provider if asset has not been tagged", async () => {
+        it("Deletes asset JSON from the storage provider if asset has not been tagged", async () => {
             const assetMetadata: IAssetMetadata = {
                 asset: {
                     ...testAssets[0],
@@ -173,6 +173,7 @@ describe("Asset Service", () => {
             const result = await assetService.save(assetMetadata);
 
             expect(storageProviderMock.writeText).not.toBeCalled();
+            expect(storageProviderMock.deleteFile).toBeCalled();
             expect(result).toBe(assetMetadata);
         });
 
