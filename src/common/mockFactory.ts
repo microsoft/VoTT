@@ -193,6 +193,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
+            version: "Mock-Version",
             securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),

@@ -9,6 +9,7 @@ import {
 } from "../../models/applicationState";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
+import * as packageJson from "../../../package.json";
 
 /**
  * Actions to be performed in relation to projects
@@ -70,7 +71,9 @@ export function saveProject(project: IProject)
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const savedProject = await projectService.save(project, projectToken);
+        const newProject = {...project, version: packageJson.version};
+
+        const savedProject = await projectService.save(newProject, projectToken);
         dispatch(saveProjectAction(savedProject));
 
         // Reload project after save actions
