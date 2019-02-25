@@ -186,19 +186,11 @@ export default class ImportService implements IImportService {
         //  const currentAssetMetadata = this.props.selectedAsset;
         //  currentAssetMetadata.regions.push(newRegion);
         //  this.updateSelected([newRegion]);
-<<<<<<< HEAD
 
         //  if (currentAssetMetadata.regions.length) {
         //      currentAssetMetadata.asset.state = AssetState.Tagged;
         //  }
 
-=======
- 
-        //  if (currentAssetMetadata.regions.length) {
-        //      currentAssetMetadata.asset.state = AssetState.Tagged;
-        //  }
- 
->>>>>>> c08e1d9ae18c8de79c17b7c3bd7cd1291b66855c
         //  this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 }
