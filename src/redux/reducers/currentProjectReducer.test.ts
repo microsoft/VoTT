@@ -90,6 +90,7 @@ describe("Current Project Reducer", () => {
                 },
             },
             regions: [],
+            version: "",
         };
 
         const action = saveAssetMetadataAction(assetMetadata);

@@ -12,6 +12,7 @@ import { constants } from "../common/constants";
 import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
+import * as packageJson from "../../package.json";
 
 /**
  * @name - Asset Service
@@ -185,11 +186,13 @@ export class AssetService {
                 return {
                     asset: { ...asset },
                     regions: await this.getRegionsFromTFRecord(asset),
+                    version: packageJson.version,
                 };
             } else {
                 return {
                     asset: { ...asset },
                     regions: [],
+                    version: packageJson.version,
                 };
             }
         }

@@ -4,7 +4,7 @@ import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag, IAppSettings } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
-import ConnectionPicker from "../../common/connectionPicker/connectionPicker";
+import { ConnectionPickerWithRouter } from "../../common/connectionPicker/connectionPicker";
 import CustomField from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ISecurityTokenPickerProps, SecurityTokenPicker } from "../../common/securityTokenPicker/securityTokenPicker";
@@ -126,7 +126,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 securityTokens: this.props.appSettings.securityTokens,
                 onChange: props.onChange,
             })),
-            sourceConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPicker, (props) => {
+            sourceConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPickerWithRouter, (props) => {
                 return {
                     id: props.idSchema.$id,
                     value: props.formData,
@@ -134,7 +134,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     onChange: props.onChange,
                 };
             }),
-            targetConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPicker, (props) => {
+            targetConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPickerWithRouter, (props) => {
                 const targetConnections = this.props.connections
                     .filter((connection) => StorageProviderFactory.isRegistered(connection.providerType));
 

@@ -8,6 +8,7 @@ import {
     ErrorCode, AppError } from "../../models/applicationState";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
+import * as packageJson from "../../../package.json";
 
 /**
  * Actions to be performed in relation to projects
@@ -70,7 +71,9 @@ export function saveProject(project: IProject)
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const savedProject = await projectService.save(project, projectToken);
+        const newProject = {...project, version: packageJson.version};
+
+        const savedProject = await projectService.save(newProject, projectToken);
         dispatch(saveProjectAction(savedProject));
 
         // Reload project after save actions
@@ -151,9 +154,11 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
 export function saveAssetMetadata(
     project: IProject,
     assetMetadata: IAssetMetadata): (dispatch: Dispatch) => Promise<IAssetMetadata> {
+    const newAssetMetadata = {...assetMetadata, version: packageJson.version};
+
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
-        const savedMetadata = await assetService.save(assetMetadata);
+        const savedMetadata = await assetService.save(newAssetMetadata);
         dispatch(saveAssetMetadataAction(savedMetadata));
 
         return { ...savedMetadata };

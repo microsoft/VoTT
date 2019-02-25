@@ -14,6 +14,7 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
+import * as packageJson from "../../../package.json";
 
 function _base64ToArrayBuffer(base64: string) {
     const binaryString =  window.atob(base64);
@@ -87,6 +88,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion],
+                    version: packageJson.version,
                 };
 
                 return Promise.resolve(assetMetadata);
