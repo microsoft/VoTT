@@ -219,6 +219,7 @@ export interface IAsset {
 export interface IAssetMetadata {
     asset: IAsset;
     regions: IRegion[];
+    version: string;
 }
 
 /**

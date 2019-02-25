@@ -28,6 +28,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { randomIntInRange } from "./utils";
+import * as packageJson from "../../package.json";
 
 export default class MockFactory {
 
@@ -167,6 +168,7 @@ export default class MockFactory {
         return {
             asset,
             regions: regions || [],
+            version: packageJson.version,
         };
     }
 
@@ -193,7 +195,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
-            version: "Mock-Version",
+            version: packageJson.version,
             securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),

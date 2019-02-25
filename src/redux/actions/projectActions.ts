@@ -154,9 +154,11 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
 export function saveAssetMetadata(
     project: IProject,
     assetMetadata: IAssetMetadata): (dispatch: Dispatch) => Promise<IAssetMetadata> {
+    const newAssetMetadata = {...assetMetadata, version: packageJson.version};
+
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
-        const savedMetadata = await assetService.save(assetMetadata);
+        const savedMetadata = await assetService.save(newAssetMetadata);
         dispatch(saveAssetMetadataAction(savedMetadata));
 
         return { ...savedMetadata };
