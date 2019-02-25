@@ -114,6 +114,34 @@ describe("Editor Canvas", () => {
         expect(wrapper.instance().getSelectedRegions()).toEqual([]);
     });
 
+    it("copies correct rectangle for copyRect", () => {
+        const wrapper = createComponent();
+        const rmMock = RegionsManager as any;
+        rmMock.prototype.deleteAllRegions.mockClear();
+
+        const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+
+        wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
+        expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
+        expect(wrapper.state().selectedRegions).toEqual([]);
+    });
+
+    it("throws error when no selected region for copyRect", () => {
+        const wrapper = createComponent();
+        const rmMock = RegionsManager as any;
+        rmMock.prototype.deleteAllRegions.mockClear();
+
+        const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+        assetMetadata.regions.push(MockFactory.createTestRegion());
+
+        wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
+        expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
+        expect(wrapper.state().selectedRegions).toEqual([]);
+    });
+
     it("canvas is updated when asset loads", () => {
         const wrapper = createComponent();
         wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));

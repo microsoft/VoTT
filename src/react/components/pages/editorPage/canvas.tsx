@@ -80,13 +80,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (this.props.selectionMode !== prevProps.selectionMode) {
             let  options = null;
             if (this.props.selectionMode === SelectionMode.COPYRECT) {
-                const selectedRegion = this.state.selectedRegions[0];
+                const selectedRegion = this.editor.RM.getSelectedRegionsBounds(); // this.state.selectedRegions[0];
                 if (selectedRegion) {
-                    // const width = selectedRegion.boundingBox.width;
-                    // const height = selectedRegion.boundingBox.height;
-                    const scaledRegionData = this.editor.scaleRegionToFrameSize(
-                        CanvasHelpers.getRegionData(selectedRegion));
-                    options = {template: new Rect(scaledRegionData.width, scaledRegionData.height)};
+                    options = {template: new Rect(selectedRegion[0].width, selectedRegion[0].height)};
                 } else {
                     throw new Error("No region selected to copy");
                 }
