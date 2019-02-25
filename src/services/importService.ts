@@ -169,5 +169,28 @@ export default class ImportService implements IImportService {
             metadata.regions.push(generatedRegion);
         }
         return metadata;
+         // RegionData not serializable so need to extract data
+        //  const scaledRegionData = this.editor.scaleRegionToSourceSize(commit);
+        //  const newRegion = {
+        //      id,
+        //      type: this.editorModeToType(this.props.editorMode),
+        //      tags: [],
+        //      boundingBox: {
+        //          height: scaledRegionData.height,
+        //          width: scaledRegionData.width,
+        //          left: scaledRegionData.x,
+        //          top: scaledRegionData.y,
+        //      },
+        //      points: scaledRegionData.points,
+        //  };
+        //  const currentAssetMetadata = this.props.selectedAsset;
+        //  currentAssetMetadata.regions.push(newRegion);
+        //  this.updateSelected([newRegion]);
+ 
+        //  if (currentAssetMetadata.regions.length) {
+        //      currentAssetMetadata.asset.state = AssetState.Tagged;
+        //  }
+ 
+        //  this.props.onAssetMetadataChanged(currentAssetMetadata);
     }
 }
