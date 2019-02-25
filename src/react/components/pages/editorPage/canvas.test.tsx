@@ -316,35 +316,18 @@ describe("Editor Canvas", () => {
         MockFactory.flushUi();
 
         expect((navigator as any).clipboard.writeText).toBeCalledWith(JSON.stringify([region1]));
-
-        // dispatchKeyEvent("Ctrl+v");
-
-        // const expectedNewRegion: IRegion = {
-        //     ...region1,
-        //     id: expect.any(String),
-        //     boundingBox: {
-        //         ...region1.boundingBox,
-        //         left: region1.boundingBox.left + CanvasHelpers.pasteMargin,
-        //         top: region1.boundingBox.top + CanvasHelpers.pasteMargin,
-        //     },
-
-        // };
-
-        // MockFactory.flushUi();
-        // expect(wrapper.state().currentAsset.regions).toEqual([
-        //     ...getAssetMetadata().regions,
-        //     expectedNewRegion,
-        // ]);
     });
 
-    it("Pastes regions to canvas from clipboard", () => {
+    fit("Pastes regions to canvas from clipboard", async () => {
         const wrapper = createComponent(true).find(Canvas);
-        const canvas = wrapper.instance() as Canvas;
+        const original: IAssetMetadata = {
+            ...wrapper.prop("selectedAsset"),
+        };
+
+        expect(wrapper.state().currentAsset).toEqual(original);
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
-
         dispatchKeyEvent("Ctrl+v");
-        MockFactory.flushUi();
 
         expect((navigator as any).clipboard.readText).toBeCalled();
 
@@ -352,56 +335,47 @@ describe("Editor Canvas", () => {
             ...region1,
             id: expect.any(String),
             boundingBox: {
-                ...region1.boundingBox,
+              ...region1.boundingBox,
                 left: region1.boundingBox.left + CanvasHelpers.pasteMargin,
                 top: region1.boundingBox.top + CanvasHelpers.pasteMargin,
-            }
+            },
         };
 
+        await MockFactory.flushUi();
+
         expect(wrapper.state().currentAsset.regions).toEqual([
-            ...getAssetMetadata().regions,
+            ...original.regions,
             expectedNewRegion,
         ]);
-
-
     });
 
-    it("Cuts currently selected regions to clipboard and pastes duplicates to canvas", async () => {
+    it("Cuts currently selected regions to clipboard", async () => {
         const wrapper = createComponent(true).find(Canvas);
+        const original: IAssetMetadata = {
+            ...wrapper.prop("selectedAsset"),
+        };
         const canvas = wrapper.instance() as Canvas;
         canvas.editor.onRegionSelected("test1", true);
+        const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
         dispatchKeyEvent("Ctrl+x");
 
-        let expectedRegions = [
-            ...getAssetMetadata().regions.filter((r) => r.id !== "test1"),
+        const expectedRegions = [
+            ...original.regions.filter((r) => r.id !== "test1"),
         ];
 
         await MockFactory.flushUi();
 
         expect(wrapper.state().currentAsset.regions).toMatchObject(expectedRegions);
-
-        dispatchKeyEvent("Ctrl+v");
-
-        await MockFactory.flushUi();
-
-        expectedRegions = [
-            ...getAssetMetadata().regions.map((r) => (r.id === "test1") ? {
-                ...r,
-                id: expect.any(String),
-            } : r),
-        ];
-
-        expect(wrapper.state().currentAsset.regions).toMatchObject(expectedRegions);
+        expect((navigator as any).clipboard.writeText).toBeCalledWith(JSON.stringify([region1]));
     });
 
-    xit("Clears all regions from asset", () => {
+    it("Clears all regions from asset", async () => {
         const wrapper = createComponent(true);
         const canvas = wrapper.instance();
         dispatchKeyEvent("Ctrl+d");
 
-        setImmediate(() => {
-            expect(wrapper.state().currentAsset.regions).toEqual([]);
-        });
+        await MockFactory.flushUi();
+        expect(wrapper.state().currentAsset.regions).toEqual([]);
     });
 });

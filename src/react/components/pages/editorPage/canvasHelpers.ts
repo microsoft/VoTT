@@ -108,7 +108,20 @@ export default class CanvasHelpers {
         return type;
     }
 
-    public static getNewBoundingBox = (boundingBox: IBoundingBox, otherRegions: IRegion[]): IBoundingBox => {
+    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[]): IRegion[] => {
+        const result: IRegion[] = [];
+        for (const region of regions) {
+            const newRegion: IRegion = {
+                ...region,
+                id: shortid.generate(),
+                boundingBox: CanvasHelpers.getNewBoundingBox(region.boundingBox, others),
+            };
+            result.push(newRegion);
+        }
+        return result;
+    }
+
+    private static getNewBoundingBox = (boundingBox: IBoundingBox, otherRegions: IRegion[]): IBoundingBox => {
         let targetX = boundingBox.left;
         let targetY = boundingBox.top;
 
@@ -128,38 +141,10 @@ export default class CanvasHelpers {
             } else {
                 return {
                     ...boundingBox,
-                    left: boundingBox.left + targetX,
-                    top: boundingBox.top + targetY,
+                    left: targetX,
+                    top: targetY,
                 };
             }
         }
-    }
-
-    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[]): IRegion[] => {
-        const result: IRegion[] = [];
-        for (const region of regions) {
-            const dup = CanvasHelpers.duplicateRegionAndMove(region, others.concat(result));
-            result.push(dup);
-        }
-        return result;
-    }
-
-    public static duplicateRegionAndMove = (region: IRegion, others: IRegion[]): IRegion => {
-        const targetX = region.boundingBox.left;
-        const targetY = region.boundingBox.top;
-
-        let foundRegionAtTarget = false;
-
-        while (!foundRegionAtTarget) {
-            if (region.boundingBox.left === targetX && region.boundingBox.top === targetY) {
-                foundRegionAtTarget = true;
-                break;
-            }
-        }
-        return {
-            ...region,
-            id: shortid.generate(),
-            boundingBox: CanvasHelpers.getNewBoundingBox(region.boundingBox, others),
-        };
     }
 }
