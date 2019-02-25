@@ -1,6 +1,6 @@
 import React from "react";
 import { IConnection } from "../../../../models/applicationState";
-import { Link } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
 /**
  * Properties for Connection Picker
@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
  * @member connections - Array of connections for choosing
  * @member onChange - Function to call on change of selection
  */
-interface IConnectionPickerProps {
+export interface IConnectionPickerProps extends RouteComponentProps {
     id?: string;
     value: any;
     connections: IConnection[];
@@ -20,7 +20,7 @@ interface IConnectionPickerProps {
  * State for Connection Picker
  * @member value - Selected value
  */
-interface IConnectionPickerState {
+export interface IConnectionPickerState {
     value: any;
 }
 
@@ -28,7 +28,7 @@ interface IConnectionPickerState {
  * @name - Connection Picker
  * @description - Enhanced dropdown for selecting a Connection
  */
-export default class ConnectionPicker extends React.Component<IConnectionPickerProps, IConnectionPickerState> {
+export class ConnectionPicker extends React.Component<IConnectionPickerProps, IConnectionPickerState> {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -63,7 +63,9 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
                     }
                 </select>
                 <div className="input-group-append">
-                    <Link to="/connections/create" className="btn btn-primary" type="button">Add Connection</Link>
+                    <button className="btn btn-primary add-connection"
+                        type="button"
+                        onClick={this.createConnection}>Add Connection</button>
                 </div>
             </div>
         );
@@ -77,4 +79,10 @@ export default class ConnectionPicker extends React.Component<IConnectionPickerP
             value: selectedConnection,
         }, () => this.props.onChange(selectedConnection));
     }
+
+    private createConnection = () => {
+        this.props.history.push("/connections/create");
+    }
 }
+
+export const ConnectionPickerWithRouter = withRouter<IConnectionPickerProps>(ConnectionPicker);
