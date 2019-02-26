@@ -73,40 +73,38 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 autoPlay={autoPlay}
                 src={videoPath}>
                 <BigPlayButton position="center" />
-                <ControlBar autoHide={false}>
-                    <CustomVideoPlayerButton order={1.1}
-                        keyboardEnabled={!!this.props.autoPlay}
-                        accelerators={["ArrowLeft", "a", "A"]}
-                        tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
-                        onClick={this.movePreviousExpectedFrame}>
-                        <i className="fas fa-caret-left fa-lg" />
-                    </CustomVideoPlayerButton>
-                    <CustomVideoPlayerButton order={1.2}
-                        keyboardEnabled={!!this.props.autoPlay}
-                        accelerators={["ArrowRight", "d", "D"]}
-                        tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
-                        onClick={this.moveNextExpectedFrame}>
-                        <i className="fas fa-caret-right fa-lg" />
-                    </CustomVideoPlayerButton>
-                    <CurrentTimeDisplay order={1.3} />
-                    <TimeDivider order={1.4} />
-                    <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
-                    <VolumeMenuButton enabled order={7.2} />
-                    <CustomVideoPlayerButton order={8.1}
-                        keyboardEnabled={!!this.props.autoPlay}
-                        accelerators={["q", "Q"]}
-                        tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
-                        onClick={this.movePreviousTaggedFrame}>
-                        <i className="fas fa-step-backward"></i>
-                    </CustomVideoPlayerButton>
-                    <CustomVideoPlayerButton order={8.2}
-                        keyboardEnabled={!!this.props.autoPlay}
-                        accelerators={["e", "E"]}
-                        tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
-                        onClick={this.moveNextTaggedFrame}>
-                        <i className="fas fa-step-forward"></i>
-                    </CustomVideoPlayerButton>
-                </ControlBar>
+                {autoPlay &&
+                    <ControlBar autoHide={false}>
+                        <CustomVideoPlayerButton order={1.1}
+                            accelerators={["ArrowLeft", "a", "A"]}
+                            tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
+                            onClick={this.movePreviousExpectedFrame}>
+                            <i className="fas fa-caret-left fa-lg" />
+                        </CustomVideoPlayerButton>
+                        <CustomVideoPlayerButton order={1.2}
+                            accelerators={["ArrowRight", "d", "D"]}
+                            tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
+                            onClick={this.moveNextExpectedFrame}>
+                            <i className="fas fa-caret-right fa-lg" />
+                        </CustomVideoPlayerButton>
+                        <CurrentTimeDisplay order={1.3} />
+                        <TimeDivider order={1.4} />
+                        <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
+                        <VolumeMenuButton enabled order={7.2} />
+                        <CustomVideoPlayerButton order={8.1}
+                            accelerators={["q", "Q"]}
+                            tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
+                            onClick={this.movePreviousTaggedFrame}>
+                            <i className="fas fa-step-backward"></i>
+                        </CustomVideoPlayerButton>
+                        <CustomVideoPlayerButton order={8.2}
+                            accelerators={["e", "E"]}
+                            tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
+                            onClick={this.moveNextTaggedFrame}>
+                            <i className="fas fa-step-forward"></i>
+                        </CustomVideoPlayerButton>
+                    </ControlBar>
+                }
             </Player >
         );
     }

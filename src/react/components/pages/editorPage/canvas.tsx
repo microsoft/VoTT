@@ -1,32 +1,22 @@
-import React, { Fragment } from "react";
+import React, { Fragment, ReactElement } from "react";
 import * as shortid from "shortid";
 import { CanvasTools } from "vott-ct";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
-    EditorMode, IAssetMetadata,
-    IProject, IRegion, RegionType, IAsset,
+    AssetState, EditorMode, IAssetMetadata,
+    IProject, IRegion, ITag, RegionType,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
-import { ContentSource, IAssetPreviewSettings, AssetPreview } from "../../common/assetPreview/assetPreview";
+import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 export interface ICanvasProps extends React.Props<Canvas> {
-    /** The asset loaded into the canvas editor */
     selectedAsset: IAssetMetadata;
-    /** The child assets (ex. video frames) of the parent asset */
-    childAssets?: IAsset[];
-    /** The editor mode */
     editorMode: EditorMode;
-    /** The canvas selection mode */
     selectionMode: SelectionMode;
-    /** The current active project */
     project: IProject;
-    /** Additional settings for this asset */
-    additionalSettings?: IAssetPreviewSettings;
-    /** Event handler that fires when a child asset is selected (ex. Paused on a video frame) */
-    onChildAssetSelected?: (asset: IAsset) => void;
-    /** Event handler that fires when a new asset is loaded into the editing canvas */
+    children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
 }
 
@@ -98,14 +88,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                         <div id="editor-zone" className="full-size" />
                     </div>
                 </div>
-                <AssetPreview autoPlay={true}
-                    additionalSettings={this.props.additionalSettings}
-                    asset={this.props.selectedAsset.asset}
-                    childAssets={this.props.childAssets}
-                    onLoaded={this.onAssetLoaded}
-                    onActivated={this.onAssetActivated}
-                    onDeactivated={this.onAssetDeactivated}
-                    onChildAssetSelected={this.props.onChildAssetSelected} />
+                {this.renderChildren()}
             </Fragment>
         );
     }
@@ -229,6 +212,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             selectedRegions = [region];
         }
         this.setState({ selectedRegions });
+    }
+
+    private renderChildren = () => {
+        return React.cloneElement(this.props.children, {
+            onLoaded: this.onAssetLoaded,
+            onActivated: this.onAssetActivated,
+            onDeactivated: this.onAssetDeactivated,
+        });
     }
 
     /**
