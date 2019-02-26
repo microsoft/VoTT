@@ -409,11 +409,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             .uniqBy((asset) => asset.id)
             .value();
 
+        const lastVisited = rootAssets.find((asset) => asset.id === this.props.project.lastVisitedAssetId);
+
         this.setState({
             assets: rootAssets,
         }, async () => {
             if (rootAssets.length > 0) {
-                await this.selectAsset(rootAssets[0]);
+                await this.selectAsset(lastVisited ? lastVisited : rootAssets[0]);
             }
             this.loadingProjectAssets = false;
         });
