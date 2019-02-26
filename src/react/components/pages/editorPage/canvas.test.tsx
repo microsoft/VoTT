@@ -311,7 +311,7 @@ describe("Editor Canvas", () => {
 
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
-        dispatchKeyEvent("Ctrl+c");
+        dispatchKeyEvent(Canvas.hotKeys.copy);
 
         const clipboard = (navigator as any).clipboard;
 
@@ -332,7 +332,7 @@ describe("Editor Canvas", () => {
             },
         }).find(Canvas);
 
-        dispatchKeyEvent("Ctrl+v");
+        dispatchKeyEvent(Canvas.hotKeys.paste);
 
         expect((navigator as any).clipboard.readText).toBeCalled();
 
@@ -369,7 +369,7 @@ describe("Editor Canvas", () => {
         canvas.editor.onRegionSelected("test1", true);
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
-        dispatchKeyEvent("Ctrl+x");
+        dispatchKeyEvent(Canvas.hotKeys.cut);
 
         const expectedRegions = [
             ...original.regions.filter((r) => r.id !== "test1"),
@@ -383,7 +383,7 @@ describe("Editor Canvas", () => {
 
     it("Clears all regions from asset", async () => {
         const wrapper = createComponent(true).find(Canvas);
-        dispatchKeyEvent("Ctrl+d");
+        dispatchKeyEvent(Canvas.hotKeys.clear);
 
         await MockFactory.flushUi();
         expect(wrapper.state().currentAsset.regions).toEqual([]);

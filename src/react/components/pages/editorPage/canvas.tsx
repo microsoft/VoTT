@@ -37,6 +37,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         project: null,
     };
 
+    public static hotKeys = {
+        copy: "Ctrl+c",
+        paste: "Ctrl+v",
+        cut: "Ctrl+x",
+        clear: "Ctrl+e",
+    };
+
     public editor: Editor;
 
     public state: ICanvasState = {
@@ -56,6 +63,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
+
         this.editor.AS.setSelectionMode(this.props.selectionMode, null);
 
         window.addEventListener("resize", this.onWindowResize);
@@ -86,19 +94,19 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         return (
             <Fragment>
                 <KeyboardBinding
-                    accelerators={["Ctrl+c"]}
+                    accelerators={[Canvas.hotKeys.copy]}
                     onKeyEvent={this.copyRegions}
                 />
                 <KeyboardBinding
-                    accelerators={["Ctrl+x"]}
+                    accelerators={[Canvas.hotKeys.cut]}
                     onKeyEvent={this.cutRegions}
                 />
                 <KeyboardBinding
-                    accelerators={["Ctrl+v"]}
+                    accelerators={[Canvas.hotKeys.paste]}
                     onKeyEvent={this.pasteRegions}
                 />
                 <KeyboardBinding
-                    accelerators={["Ctrl+d"]}
+                    accelerators={[Canvas.hotKeys.clear]}
                     onKeyEvent={this.clearRegions}
                 />
                 <div id="ct-zone" ref={this.canvasZone} className="canvas-enabled">
@@ -141,7 +149,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private clearRegions = () => {
-        this.editor.RM.deleteAllRegions();
+        const ids = this.state.currentAsset.regions.map((r) => r.id);
+        for (const id of ids) {
+            this.editor.RM.deleteRegionById(id);
+        }
         this.deleteRegionsFromAsset(this.state.currentAsset.regions);
     }
 
@@ -350,6 +361,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onAssetActivated = () => {
         this.clearAllRegions();
+
         this.editor.AS.setSelectionMode(SelectionMode.NONE);
         this.syncContentSource();
     }
@@ -365,6 +377,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         this.refreshCanvasToolsRegions();
+
         this.editor.AS.setSelectionMode(this.props.selectionMode);
     }
 
