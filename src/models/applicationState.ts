@@ -108,6 +108,7 @@ export interface IProject {
     videoSettings: IProjectVideoSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
+    lastVisitedAssetId?: string;
 }
 
 /**
