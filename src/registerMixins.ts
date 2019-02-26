@@ -1,5 +1,5 @@
-import { arrayForEachAsync, arrayMapAsync } from "./common/array";
-import { mapForEachAsync } from "./common/map";
+import { forEachAsync as arrayForEachAsync, mapAsync } from "./common/extensions/array";
+import { forEachAsync as mapForEachAsync } from "./common/extensions/map";
 
 declare global {
     // tslint:disable-next-line:interface-name
@@ -39,7 +39,7 @@ export default function registerMixins() {
     }
 
     if (!Array.prototype.mapAsync) {
-        Array.prototype.mapAsync = arrayMapAsync;
+        Array.prototype.mapAsync = mapAsync;
     }
 
     if (!Map.prototype.forEachAsync) {
