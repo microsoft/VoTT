@@ -102,23 +102,6 @@ describe("Canvas Helpers", () => {
 
     });
 
-    it("Finds a region", () => {
-        const regions = [
-            MockFactory.createTestRegion("region1"),
-            MockFactory.createTestRegion("region2"),
-            MockFactory.createTestRegion("region3"),
-        ];
-        const found = CanvasHelpers.findRegion(regions, "region1");
-        expect(found).toEqual(MockFactory.createTestRegion("region1"));
-        const notFound = CanvasHelpers.findRegion(regions, "region4");
-        expect(notFound).toBeUndefined();
-    });
-
-    it("Finds index of tag", () => {
-        const tags = ["tag1", "tag2", "tag3"];
-        expect(CanvasHelpers.findIndex(tags, "tag1")).toBe(0);
-    });
-
     it("Adds tag if missing", () => {
         const tags = ["tag1", "tag2", "tag3"];
         CanvasHelpers.addIfMissing(tags, "tag2");
