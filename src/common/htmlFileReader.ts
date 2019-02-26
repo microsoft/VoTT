@@ -90,15 +90,6 @@ export default class HtmlFileReader {
         return data;
     }
 
-    public static dataURItoBlob(dataURI) {
-        const binary = atob(dataURI.split(",")[1]);
-        const array = [];
-        for (let i = 0; i < binary.length; i++) {
-            array.push(binary.charCodeAt(i));
-        }
-        return new Blob([new Uint8Array(array)], { type: "image/jpeg" });
-    }
-
     /**
      * Downloads the binary array from the asset path
      * @param asset The asset to download

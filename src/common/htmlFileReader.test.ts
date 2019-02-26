@@ -97,8 +97,17 @@ describe("Html File Reader", () => {
         it("Downloads a blob from the asset path", async () => {
             const testAssetVideo = MockFactory.createVideoTestAsset("video-test");
             const testAssetFrame = MockFactory.createChildVideoAsset(testAssetVideo, 0);
-            HtmlFileReader.getAssetFrameImage = jest.fn((asset) => {
-                return Promise.resolve(new Blob(["Some binary data"]));
+            // HtmlFileReader.getAssetFrameImage = jest.fn((asset) => {
+            //     return Promise.resolve(new Blob(["Some binary data"]));
+            // });
+            axios.get = jest.fn((url, config) => {
+                return Promise.resolve<AxiosResponse>({
+                    config,
+                    headers: null,
+                    status: 200,
+                    statusText: "OK",
+                    data: new Blob(["Some binary data"]),
+                });
             });
 
             const result = await HtmlFileReader.getAssetBlob(testAssetFrame);
