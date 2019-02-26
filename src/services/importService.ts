@@ -12,6 +12,7 @@ import IProjectActions from "../redux/actions/projectActions";
  */
 interface IImportService {
     convertProject(project: IFileInfo): Promise<IProject>;
+    generateAssets(v1Project: IFileInfo, v2Project: IProject): Promise<IAssetMetadata[]>;
 }
 
 /**
@@ -62,18 +63,19 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    public async generateAssets(project: IFileInfo, assetService: AssetService): Promise<IAssetMetadata[]> {
+    public async generateAssets(v1Project: IFileInfo, v2Project: IProject): Promise<IAssetMetadata[]> {
         let originalProject: IV1Project;
         const generatedAssetMetadata: IAssetMetadata[] = [];
         let assetState: AssetState;
+        const assetService = new AssetService(v2Project);
 
-        originalProject = JSON.parse(project.content as string);
+        originalProject = JSON.parse(v1Project.content as string);
 
         for (const frameName in originalProject.frames) {
             if (originalProject.frames.hasOwnProperty(frameName)) {
                 const frameRegions = originalProject.frames[frameName];
                 const asset = AssetService.createAssetFromFilePath(
-                    `${project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
+                    `${v1Project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
                 const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
                     assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
                         ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1

@@ -56,10 +56,10 @@ export default class HomePage extends React.Component<IHomepageProps> {
     public state: IHomepageState = {
         cloudPickerOpen: false,
     };
-    private filePicker: React.RefObject<FilePicker>;
-    private deleteConfirm: React.RefObject<Confirm>;
-    private cloudFilePicker: React.RefObject<CloudFilePicker>;
-    private importConfirm: React.RefObject<Confirm>;
+    private filePicker: React.RefObject<FilePicker> = React.createRef();
+    private deleteConfirm: React.RefObject<Confirm> = React.createRef();
+    private cloudFilePicker: React.RefObject<CloudFilePicker> = React.createRef();
+    private importConfirm: React.RefObject<Confirm> = React.createRef();
 
     constructor(props: IHomepageProps, context) {
         super(props, context);
@@ -159,11 +159,11 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
 
         // need a better check to tell if its v1
-        if (projectJson.name == null) {
+        if (projectJson.name === null || projectJson.name === undefined) {
             try {
                 await this.importConfirm.current.open(project);
-            } catch (error) {
-                console.log(error);
+            } catch (e) {
+                throw new Error(e.message);
             }
         } else {
             await this.loadSelectedProject(projectJson);
@@ -202,9 +202,8 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
 
         this.props.applicationActions.ensureSecurityToken(project);
-        const assetService = new AssetService(project);
 
-        generatedAssetMetadata = await importService.generateAssets(projectInfo, assetService);
+        generatedAssetMetadata = await importService.generateAssets(projectInfo, project);
         await this.props.actions.saveProject(project);
         await this.props.actions.loadProject(project);
         const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {

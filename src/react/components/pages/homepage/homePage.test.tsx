@@ -9,7 +9,9 @@ import IProjectActions, * as projectActions from "../../../../redux/actions/proj
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
+import ImportService from "../../../../services/importService";
 import CondensedList from "../../common/condensedList/condensedList";
+import Confirm from "../../common/confirm/confirm";
 import FilePicker, { IFilePickerProps } from "../../common/filePicker/filePicker";
 import HomePage, { IHomepageProps, IHomepageState } from "./homePage";
 
@@ -17,6 +19,7 @@ jest.mock("../../common/cloudFilePicker/cloudFilePicker");
 import { CloudFilePicker, ICloudFilePickerProps } from "../../common/cloudFilePicker/cloudFilePicker";
 
 jest.mock("../../../../services/projectService");
+jest.mock("../../../../services/importService");
 
 describe("Homepage Component", () => {
     let store: Store<IApplicationState> = null;
@@ -40,6 +43,9 @@ describe("Homepage Component", () => {
         const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve(project));
         projectServiceMock.prototype.delete = jest.fn(() => Promise.resolve());
+
+        const importServiceMock = ImportService as jest.Mocked<typeof ImportService>;
+        importServiceMock.prototype.convertProject = jest.fn((project) => Promise.resolve(project));
 
         store = createStore(recentProjects);
         props = createProps();
@@ -104,6 +110,50 @@ describe("Homepage Component", () => {
 
         expect(deleteProjectSpy).toBeCalledWith(recentProjects[0]);
         expect(homePage.props().recentProjects.length).toEqual(recentProjects.length - 1);
+    });
+
+    it("should call convert project method if a v1 project is uploaded", async () => {
+        // const testv1Project = MockFactory.createTestV1Project();
+        // const testv1ProjectJson = JSON.stringify(testv1Project);
+        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+        const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
+
+        const arrayOfBlob = new Array<Blob>();
+        const file = new File(arrayOfBlob, "TestV1Project.jpg", { type: "application/json" });
+        file.path = "/Users/user/path/to/TestV1Project.jpg";
+        const testv1Project = MockFactory.createTestV1Project();
+        const testv1ProjectJson = JSON.stringify(testv1Project);
+        const testBlob = new Blob([testv1ProjectJson], { type: "application/json" });
+        const fileInfo = {
+            content: testv1ProjectJson,
+            file,
+        };
+
+        const wrapper = createComponent(store, props);
+
+        const filePicker = wrapper.find(FilePicker) as ReactWrapper<IFilePickerProps>;
+        const fileUpload = wrapper.find("a.file-upload").first();
+        const fileInput = wrapper.find(`input[type="file"]`);
+        const uploadSpy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
+
+        fileUpload.simulate("click");
+        await MockFactory.flushUi(() => {
+            fileInput.simulate("change", ({ target: { files: [testBlob] } }));
+        });
+
+        // expect(() => filePicker.props()).toHaveBeenCalled
+        await MockFactory.flushUi();
+
+        wrapper.find(Confirm).at(1).simulate("click");
+        // const spy = jest.spyOn(confirmBox.instance() as Confirm, "onConfirmClick");
+        // fileUpload.simulate("click");
+
+        // const finalProject = await importService.convertProject(fileInfo);
+
+        expect(saveProjectSpy).toBeCalled();
+        expect(loadProjectSpy).toBeCalled();
+        expect(saveAssetMetadataSpy).toBeCalled();
     });
 
     it("should call open project action after successful file upload", async () => {

@@ -212,7 +212,7 @@ export default class MockFactory {
      * @param name Name of project.
      */
     public static createTestV1Project(): IV1Project {
-        const regions = MockFactory.createTestV1Region();
+        const regions = MockFactory.createTestV1Regions(10);
 
         return {
             frames: {"testFrame.jpg": regions},
@@ -228,23 +228,23 @@ export default class MockFactory {
     /**
      * Creates fake IV1Region
      */
-    public static createTestV1Region(): IV1Region[] {
+    public static createTestV1Regions(count: number = 10): IV1Region[] {
         const regions: IV1Region[] = [];
 
         const testRegion = {
             x1: 1,
             y1: 1,
-            x2: 2,
-            y2: 2,
-            width: 1,
-            height: 1,
+            x2: 11,
+            y2: 11,
+            width: 10,
+            height: 10,
             box: {
                 x1: 1,
                 y1: 1,
-                x2: 2,
-                y2: 2 },
+                x2: 11,
+                y2: 11 },
             points: [],
-            UID: "123",
+            UID: count.toString(),
             id: 2,
             type: "rect",
             tags: [],
