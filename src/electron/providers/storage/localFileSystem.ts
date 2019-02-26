@@ -78,15 +78,17 @@ export default class LocalFileSystem implements IStorageProvider {
     public deleteFile(filePath: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const exists = fs.existsSync(path.normalize(filePath));
-            if (exists) {
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        return reject(err);
-                    }
-
-                    resolve();
-                });
+            if (!exists) {
+                resolve();
             }
+
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve();
+            });
         });
     }
 

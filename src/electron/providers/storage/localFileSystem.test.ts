@@ -84,4 +84,8 @@ describe("LocalFileSystem Storage Provider", () => {
 
         await expect(localFileSystem.selectContainer()).rejects.not.toBeNull();
     });
+
+    it("deleting file that doesn't exist resolves successfully", async () => {
+        await expect(localFileSystem.deleteFile("/path/to/fake/file.txt")).resolves.not.toBeNull();
+    });
 });
