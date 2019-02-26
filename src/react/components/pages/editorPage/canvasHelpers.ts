@@ -30,6 +30,8 @@ export default class CanvasHelpers {
     /**
      * Adds region to regions if missing,
      * Removes region from regions if contained
+     * @param regions Existing regions array
+     * @param region Region to be toggled
      */
     public static toggleRegion(regions: IRegion[], region: IRegion): void {
         const index = regions.findIndex((r) => r.id === region.id);
@@ -41,49 +43,34 @@ export default class CanvasHelpers {
     }
 
     /**
-     * Finds a string in array of strings
-     */
-    public static find(items: string[], item: string): string {
-        return items.find((t) => t === item);
-    }
-
-    /**
-     * Finds region with id if contained in array of regions
-     */
-    public static findRegion(regions: IRegion[], id: string): IRegion {
-        return regions.find((r) => (r.id === id));
-    }
-
-    /**
-     * Find index of string in array of strings
-     */
-    public static findIndex(tags: string[], tag: string): number {
-        return tags.findIndex((t) => t === tag);
-    }
-
-    /**
      * Adds tag to tags if not contained
+     * @param tags Existing tags array
+     * @param tag Tag to be added if missing
      */
     public static addIfMissing(tags: string[], tag: string): void {
-        if (!CanvasHelpers.find(tags, tag)) {
+        if (tags.find((t) => t === tag)) {
             tags.push(tag);
         }
     }
 
     /**
      * Adds all target tags if missing from tags
+     * @param tags Existing tags array
+     * @param newTags Tags to be added if not contained
      */
-    public static addAllIfMissing(tags: string[], targets: string[]): void {
-        for (const target of targets) {
+    public static addAllIfMissing(tags: string[], newTags: string[]): void {
+        for (const target of newTags) {
             CanvasHelpers.addIfMissing(tags, target);
         }
     }
 
     /**
      * Removes tag from tags if contained
+     * @param tags Existing tags array
+     * @param tag Tag to be removed if contained in `tags`
      */
     public static removeIfContained(tags: string[], tag: string): void {
-        const index = CanvasHelpers.findIndex(tags, tag);
+        const index = tags.findIndex((t) => t === tag)
         if (index >= 0) {
             tags.splice(index, 1);
         }
@@ -100,7 +87,7 @@ export default class CanvasHelpers {
         }
         const result: IRegion[] = [];
         for (const region of regions) {
-            const update = CanvasHelpers.findRegion(updates, region.id);
+            const update = updates.find((r) => r.id === region.id);
             if (update) {
                 result.push(update);
             } else {

@@ -144,7 +144,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const newRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
-            tags: (lockedTags) ? lockedTags : [],
+            tags: lockedTags || [],
             boundingBox: {
                 height: scaledRegionData.height,
                 width: scaledRegionData.width,
@@ -229,7 +229,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             });
             return;
         }
-        const region = CanvasHelpers.findRegion(this.state.currentAsset.regions, id);
+        const region = this.state.currentAsset.regions.find((r) => r.id === id);
         if (!region) {
             throw new Error(`Couldn't find region with id ${id}`);
         }
@@ -352,6 +352,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
 
+    /**
+     * Updates regions in both Canvas Tools and the asset data store
+     * @param updates Regions to be updated
+     * @param updatedSelectedRegions Selected regions with any changes already applied
+     */
     private updateRegions = (updates: IRegion[], updatedSelectedRegions: IRegion[]) => {
         const updatedRegions = CanvasHelpers.updateRegions(this.state.currentAsset.regions, updates);
         for (const update of updates) {
