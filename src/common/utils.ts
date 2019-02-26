@@ -7,15 +7,18 @@ import { encryptObject, decryptObject } from "./crypto";
  * @param min Lower bound of random number generation - INCLUSIVE
  * @param max Upper bound of random number generation - EXCLUSIVE
  */
-export function randomIntInRange(min, max) {
+export function randomIntInRange(min: number, max: number) {
     if (min > max) {
         throw new Error(`min (${min}) can't be bigger than max (${max})`);
     }
+
     if (min === max) {
         return min;
     }
+
     min = Math.ceil(min);
     max = Math.floor(max);
+
     return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive
 }
 

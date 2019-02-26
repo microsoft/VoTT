@@ -1,4 +1,5 @@
-import { ITag, IRegion, RegionType } from "../../../../models/applicationState";
+import shortid from "shortid";
+import { ITag, IRegion, RegionType, EditorMode } from "../../../../models/applicationState";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
@@ -70,7 +71,7 @@ export default class CanvasHelpers {
      * @param tag Tag to be removed if contained in `tags`
      */
     public static removeIfContained(tags: string[], tag: string): void {
-        const index = tags.findIndex((t) => t === tag)
+        const index = tags.findIndex((t) => t === tag);
         if (index >= 0) {
             tags.splice(index, 1);
         }
@@ -109,6 +110,28 @@ export default class CanvasHelpers {
             region.points.map((point) =>
                 new Point2D(point.x, point.y)),
             this.regionTypeToType(region.type));
+    }
+
+    /**
+     * Converts a canvas tools RegionData to VoTT IRegion
+     * @param regionData The region data to convert
+     * @param regionType The region type
+     */
+    public static fromRegionData(regionData: RegionData, regionType: RegionType): IRegion {
+        Guard.null(regionData);
+
+        return {
+            id: shortid.generate(),
+            type: regionType,
+            boundingBox: {
+                left: regionData.x,
+                top: regionData.y,
+                width: regionData.width,
+                height: regionData.height,
+            },
+            points: regionData.points.map((point) => new Point2D(point.x, point.y)),
+            tags: [],
+        };
     }
 
     /**

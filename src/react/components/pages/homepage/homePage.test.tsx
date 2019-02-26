@@ -10,7 +10,7 @@ import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
 import FilePicker, { IFilePickerProps } from "../../common/filePicker/filePicker";
-import HomePage, { IHomepageProps } from "./homePage";
+import HomePage, { IHomepageProps, IHomepageState } from "./homePage";
 
 jest.mock("../../common/cloudFilePicker/cloudFilePicker");
 import { CloudFilePicker, ICloudFilePickerProps } from "../../common/cloudFilePicker/cloudFilePicker";
@@ -49,7 +49,7 @@ describe("Homepage Component", () => {
     });
 
     it("should render a New Project Link", () => {
-        expect(wrapper.find(Link).props().to).toBe("/projects/create");
+        expect(wrapper.find("a.new-project").exists()).toBe(true);
     });
 
     it("should not close projects when homepage loads", () => {
@@ -145,6 +145,13 @@ describe("Homepage Component", () => {
         cloudFilePicker.props().onSubmit(projectJson);
 
         expect(openProjectSpy).toBeCalledWith(testProject);
+    });
+
+    it("closes any open project and navigates to the new project screen", () => {
+        const homepage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps, IHomepageState>;
+        homepage.find("a.new-project").simulate("click");
+        expect(closeProjectSpy).toBeCalled();
+        expect(homepage.props().history.push).toBeCalledWith("/projects/create");
     });
 
     function createProps(): IHomepageProps {

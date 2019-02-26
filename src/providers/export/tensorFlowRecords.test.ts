@@ -14,6 +14,7 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
+import * as packageJson from "../../../package.json";
 
 describe("TFRecords Json Export Provider", () => {
     const baseTestProject = MockFactory.createTestProject("Test Project");
@@ -81,6 +82,7 @@ describe("TFRecords Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion],
+                    version: packageJson.version,
                 };
 
                 return Promise.resolve(assetMetadata);
