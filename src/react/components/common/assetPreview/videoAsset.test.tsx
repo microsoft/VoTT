@@ -5,6 +5,7 @@ import { IVideoAssetProps, VideoAsset, IVideoPlayerState, IVideoAssetState } fro
 import MockFactory from "../../../../common/mockFactory";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 import { AssetType, AssetState } from "../../../../models/applicationState";
+import { ControlBar } from "video-react";
 
 describe("Video Asset Component", () => {
     let wrapper: ReactWrapper<IVideoAssetProps, IVideoAssetState> = null;
@@ -264,6 +265,20 @@ describe("Video Asset Component", () => {
         expect(onLoadedHandler).not.toBeCalled();
         expect(onDeactivatedHandler).not.toBeCalled();
         expect(onActivatedHandler).toBeCalledWith(expect.any(HTMLVideoElement));
+    });
+
+    it("renders the control bar when autoPlay is enabled", () => {
+        const props = { ...defaultProps, autoPlay: true };
+        wrapper = createComponent(props);
+
+        expect(wrapper.find(ControlBar).exists()).toBe(true);
+    });
+
+    it("does not render the control bar when autoPlay is disabled", () => {
+        const props = { ...defaultProps, autoPlay: false };
+        wrapper = createComponent(props);
+        wrapper.update();
+        expect(wrapper.find(ControlBar).exists()).toBe(false);
     });
 
     function mockLoaded() {
