@@ -344,6 +344,12 @@ describe("Editor Canvas", () => {
                 left: copiedRegion.boundingBox.left + CanvasHelpers.pasteMargin,
                 top: copiedRegion.boundingBox.top + CanvasHelpers.pasteMargin,
             },
+            points: copiedRegion.points.map((p) => {
+                return {
+                    x: p.x + CanvasHelpers.pasteMargin,
+                    y: p.y + CanvasHelpers.pasteMargin,
+                };
+            }),
         };
 
         await MockFactory.flushUi();

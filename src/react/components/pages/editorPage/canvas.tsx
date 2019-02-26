@@ -137,10 +137,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.state.currentAsset.regions,
         );
         this.addRegions(duplicates);
+
     }
 
     private clearRegions = () => {
-        this.deleteRegions(this.state.currentAsset.regions);
+        this.editor.RM.deleteAllRegions();
+        this.deleteRegionsFromAsset(this.state.currentAsset.regions);
     }
 
     private addRegions = (regions: IRegion[]) => {
@@ -149,10 +151,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private addRegionsToAsset = (regions: IRegion[]) => {
-        const a = 4;
         this.updateAssetRegions(
             this.state.currentAsset.regions.concat(regions),
-            this.state.selectedRegions,
+            regions,
         );
     }
 

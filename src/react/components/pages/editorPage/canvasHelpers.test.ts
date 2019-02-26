@@ -87,6 +87,12 @@ describe("Canvas Helpers", () => {
                 left: regions[0].boundingBox.left + CanvasHelpers.pasteMargin,
                 top: regions[0].boundingBox.top + CanvasHelpers.pasteMargin,
             },
+            points: regions[0].points.map((p) => {
+                return {
+                    x: p.x + CanvasHelpers.pasteMargin,
+                    y: p.y + CanvasHelpers.pasteMargin,
+                };
+            }),
         });
     });
 });
