@@ -154,18 +154,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         {selectedAsset &&
                             <Canvas
                                 ref={this.canvas}
-                                selectedAsset={this.state.selectedAsset}
-                                onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                additionalSettings={this.state.additionalSettings}
                                 editorMode={this.state.editorMode}
                                 selectionMode={this.state.selectionMode}
-                                project={this.props.project}>
-                                <AssetPreview
-                                    additionalSettings={this.state.additionalSettings}
-                                    autoPlay={true}
-                                    onChildAssetSelected={this.onChildAssetSelected}
-                                    asset={this.state.selectedAsset.asset}
-                                    childAssets={this.state.childAssets} />
-                            </Canvas>
+                                project={this.props.project}
+                                selectedAsset={this.state.selectedAsset}
+                                childAssets={this.state.childAssets}
+                                onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                onChildAssetSelected={this.onChildAssetSelected} />
                         }
                     </div>
                     <div>
@@ -369,7 +365,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         assetTags.forEach((tag) => {
             if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
+                !this.props.project.tags.find((projectTag) => tag === projectTag.name)) {
                 const tagKeys = Object.keys(tagColors);
                 newTags.push({
                     name: tag,
@@ -381,7 +377,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         if (updateTags) {
             asset.asset.state = AssetState.Tagged;
-            const newProject = {...this.props.project, tags: newTags};
+            const newProject = { ...this.props.project, tags: newTags };
             await this.props.actions.saveAssetMetadata(newProject, asset);
             await this.props.actions.saveProject(newProject);
         }
