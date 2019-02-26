@@ -9,7 +9,7 @@ describe("Clipboard tests", () => {
 
     beforeAll(() => {
         const clipboard = (navigator as any).clipboard;
-        if (!(clipboard && clipboard.writeText)) {
+        if (!(clipboard && clipboard.writeText && clipboard.readText)) {
             (navigator as any).clipboard = {
                 writeText: jest.fn(() => Promise.resolve()),
                 readText: jest.fn(() => Promise.resolve(JSON.stringify(mockObject))),
