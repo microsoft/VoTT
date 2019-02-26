@@ -24,12 +24,6 @@ export interface ICanvasProps extends React.Props<Canvas> {
     project: IProject;
     /** Additional settings for this asset */
     additionalSettings?: IAssetPreviewSettings;
-    /** Event handler that fires when the asset has been loaded */
-    onAssetLoaded?: (ContentSource: ContentSource) => void;
-    /** Event handler that fires when the asset has been activated (ex. Video resumes playing) */
-    onAssetActivated?: (contentSource: ContentSource) => void;
-    /** Event handler that fires when the asset has been deactivated (ex. Canvas tools takes over) */
-    onAssetDeactivated?: (contentSource: ContentSource) => void;
     /** Event handler that fires when a child asset is selected (ex. Paused on a video frame) */
     onChildAssetSelected?: (asset: IAsset) => void;
     /** Event handler that fires when a new asset is loaded into the editing canvas */
@@ -110,7 +104,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     childAssets={this.props.childAssets}
                     onLoaded={this.onAssetLoaded}
                     onActivated={this.onAssetActivated}
-                    onDeactivated={this.onAssetDeactivated} />
+                    onDeactivated={this.onAssetDeactivated}
+                    onChildAssetSelected={this.props.onChildAssetSelected} />
             </Fragment>
         );
     }

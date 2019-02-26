@@ -75,12 +75,14 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 <BigPlayButton position="center" />
                 <ControlBar autoHide={false}>
                     <CustomVideoPlayerButton order={1.1}
+                        keyboardEnabled={!!this.props.autoPlay}
                         accelerators={["ArrowLeft", "a", "A"]}
                         tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
                         onClick={this.movePreviousExpectedFrame}>
                         <i className="fas fa-caret-left fa-lg" />
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={1.2}
+                        keyboardEnabled={!!this.props.autoPlay}
                         accelerators={["ArrowRight", "d", "D"]}
                         tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
                         onClick={this.moveNextExpectedFrame}>
@@ -91,12 +93,14 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                     <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
                     <VolumeMenuButton enabled order={7.2} />
                     <CustomVideoPlayerButton order={8.1}
+                        keyboardEnabled={!!this.props.autoPlay}
                         accelerators={["q", "Q"]}
                         tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
                         onClick={this.movePreviousTaggedFrame}>
                         <i className="fas fa-step-backward"></i>
                     </CustomVideoPlayerButton>
                     <CustomVideoPlayerButton order={8.2}
+                        keyboardEnabled={!!this.props.autoPlay}
                         accelerators={["e", "E"]}
                         tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
                         onClick={this.moveNextTaggedFrame}>
@@ -187,7 +191,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * Seeks the current video to the passed in time stamp, pausing the video before hand
      * @param seekTime - Time (in seconds) in the video to seek to
      */
-    private seekToTime(seekTime: number) {
+    private seekToTime = (seekTime: number) => {
         if (seekTime >= 0) {
             // Before seeking, pause the video
             if (!this.getVideoPlayerState().paused) {
@@ -276,7 +280,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * position is
      * @returns true if moved to a new position; false otherwise
      */
-    private ensureSeekIsOnValidKeyframe(): boolean {
+    private ensureSeekIsOnValidKeyframe = (): boolean => {
         if (!this.props.additionalSettings) {
             return false;
         }
@@ -300,7 +304,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @param childAssets - Array of child assets in the video
      * @param videoDuration - Length (in seconds) of the video
      */
-    private addAssetTimelineTags(childAssets: any[], videoDuration: number) {
+    private addAssetTimelineTags = (childAssets: any[], videoDuration: number) => {
         if (!this.props.autoPlay) {
             return;
         }
@@ -332,7 +336,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @param childAssets - Array of child assets in the video
      * @param videoDuration - Length (in seconds) of the video
      */
-    private renderTimeline(childAssets: IAsset[], videoDuration: number) {
+    private renderTimeline = (childAssets: IAsset[], videoDuration: number) => {
         return (
             <div className={"video-timeline-container"}>
                 {childAssets.map((childAsset) => this.renderChildAssetMarker(childAsset, videoDuration))}
@@ -345,7 +349,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @param childAsset The child asset to render
      * @param videoDuration The total video duration
      */
-    private renderChildAssetMarker(childAsset: IAsset, videoDuration: number) {
+    private renderChildAssetMarker = (childAsset: IAsset, videoDuration: number) => {
         const className = childAsset.state === AssetState.Tagged ? "video-timeline-tagged" : "video-timeline-visited";
         const childPosition: number = (childAsset.timestamp / videoDuration);
         const style = { left: `${childPosition * 100}%` };
@@ -361,7 +365,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     /**
      * Gets the current video player state
      */
-    private getVideoPlayerState(): Readonly<IVideoPlayerState> {
+    private getVideoPlayerState = (): Readonly<IVideoPlayerState> => {
         return this.videoPlayer.current.getState().player;
     }
 }

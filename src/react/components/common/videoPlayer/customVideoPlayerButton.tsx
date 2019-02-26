@@ -8,14 +8,17 @@ export interface ICustomVideoPlayerButtonProps {
     accelerators?: string[];
     tooltip?: string;
     player?: Player;
+    keyboardEnabled?: boolean;
     onClick: () => void;
 }
 
 export class CustomVideoPlayerButton extends React.Component<ICustomVideoPlayerButtonProps> {
     public render() {
+        const keyboardEnabled = { ...this.props } || false;
+
         return (
             <Fragment>
-                {this.props.accelerators &&
+                {keyboardEnabled && this.props.accelerators &&
                     <KeyboardBinding keyEventType={KeyEventType.KeyDown}
                         accelerators={this.props.accelerators}
                         onKeyEvent={this.props.onClick} />
