@@ -112,50 +112,6 @@ describe("Homepage Component", () => {
         expect(homePage.props().recentProjects.length).toEqual(recentProjects.length - 1);
     });
 
-    it("should call convert project method if a v1 project is uploaded", async () => {
-        // const testv1Project = MockFactory.createTestV1Project();
-        // const testv1ProjectJson = JSON.stringify(testv1Project);
-        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
-        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
-        const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
-
-        const arrayOfBlob = new Array<Blob>();
-        const file = new File(arrayOfBlob, "TestV1Project.jpg", { type: "application/json" });
-        file.path = "/Users/user/path/to/TestV1Project.jpg";
-        const testv1Project = MockFactory.createTestV1Project();
-        const testv1ProjectJson = JSON.stringify(testv1Project);
-        const testBlob = new Blob([testv1ProjectJson], { type: "application/json" });
-        const fileInfo = {
-            content: testv1ProjectJson,
-            file,
-        };
-
-        const wrapper = createComponent(store, props);
-
-        const filePicker = wrapper.find(FilePicker) as ReactWrapper<IFilePickerProps>;
-        const fileUpload = wrapper.find("a.file-upload").first();
-        const fileInput = wrapper.find(`input[type="file"]`);
-        const uploadSpy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
-
-        fileUpload.simulate("click");
-        await MockFactory.flushUi(() => {
-            fileInput.simulate("change", ({ target: { files: [testBlob] } }));
-        });
-
-        // expect(() => filePicker.props()).toHaveBeenCalled
-        await MockFactory.flushUi();
-
-        wrapper.find(Confirm).at(1).simulate("click");
-        // const spy = jest.spyOn(confirmBox.instance() as Confirm, "onConfirmClick");
-        // fileUpload.simulate("click");
-
-        // const finalProject = await importService.convertProject(fileInfo);
-
-        expect(saveProjectSpy).toBeCalled();
-        expect(loadProjectSpy).toBeCalled();
-        expect(saveAssetMetadataSpy).toBeCalled();
-    });
-
     it("should call open project action after successful file upload", async () => {
         const openProjectSpy = jest.spyOn(props.actions, "loadProject");
 
