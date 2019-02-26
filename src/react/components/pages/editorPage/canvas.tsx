@@ -63,7 +63,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
-
         this.editor.AS.setSelectionMode(this.props.selectionMode, null);
 
         window.addEventListener("resize", this.onWindowResize);
@@ -145,7 +144,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.state.currentAsset.regions,
         );
         this.addRegions(duplicates);
-
     }
 
     private clearRegions = () => {

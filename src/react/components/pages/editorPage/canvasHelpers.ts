@@ -108,6 +108,12 @@ export default class CanvasHelpers {
         return type;
     }
 
+    /**
+     * Duplicates region with a new ID, and moves it to the next available location by intervals
+     * of `CanvasHelpers.pasteMargin`.
+     * @param regions Regions to duplicate
+     * @param others Other regions existing in the asset (used to not put region on top of other region)
+     */
     public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[]): IRegion[] => {
         const result: IRegion[] = [];
         for (const region of regions) {
