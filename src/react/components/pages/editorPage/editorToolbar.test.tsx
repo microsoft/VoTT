@@ -2,8 +2,8 @@ import React from "react";
 import _ from "lodash";
 import { EditorToolbar, IEditorToolbarProps, IEditorToolbarState } from "./editorToolbar";
 import MockFactory from "../../../../common/mockFactory";
-import { ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
+import { ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import { ReactWrapper, mount } from "enzyme";
 import { ExportProject } from "../../toolbar/exportProject";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
@@ -64,5 +64,11 @@ describe("Editor Toolbar", () => {
 
         const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
         expect(toolbar.state().selectedItem).toEqual(ToolbarItemName.ExportProject);
+    });
+
+    it("Sets correct keyboard binding when accelerator is defined", () => {
+        const drawRectangle = wrapper.find(ToolbarItemName.DrawRectangle).first();
+        expect(drawRectangle.exists()).toBe(true);
+        expect(drawRectangle).toContain("r");
     });
 });
