@@ -246,8 +246,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             selectedRegions = [region];
         }
         if (this.props.lockedTags && this.props.lockedTags.length) {
-            for (const region of selectedRegions) {
-                CanvasHelpers.addAllIfMissing(region.tags, this.props.lockedTags);
+            for (const selectedRegion of selectedRegions) {
+                CanvasHelpers.addAllIfMissing(selectedRegion.tags, this.props.lockedTags);
             }
             this.updateRegions(selectedRegions, selectedRegions);
         } else {

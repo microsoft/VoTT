@@ -83,22 +83,18 @@ describe("Canvas Helpers", () => {
     });
 
     it("Toggles a region", () => {
-        const regions = [
-            MockFactory.createTestRegion("region1"),
-            MockFactory.createTestRegion("region2"),
-            MockFactory.createTestRegion("region3"),
-        ];
-        CanvasHelpers.toggleRegion(regions, regions[0]);
-        expect(regions).toEqual([
-            MockFactory.createTestRegion("region2"),
-            MockFactory.createTestRegion("region3"),
-        ]);
-        CanvasHelpers.toggleRegion(regions, MockFactory.createTestRegion("region4"));
-        expect(regions).toEqual([
-            MockFactory.createTestRegion("region2"),
-            MockFactory.createTestRegion("region3"),
-            MockFactory.createTestRegion("region4"),
-        ]);
+        const region1 = MockFactory.createTestRegion("region1");
+        const region2 = MockFactory.createTestRegion("region2");
+        const region3 = MockFactory.createTestRegion("region3");
+        const region4 = MockFactory.createTestRegion("region4");
+
+        const regions = [region1, region2, region3];
+
+        CanvasHelpers.toggleRegion(regions, region1);
+        expect(regions).toEqual([region2, region3]);
+
+        CanvasHelpers.toggleRegion(regions, region4);
+        expect(regions).toEqual([region2, region3, region4]);
 
     });
 
@@ -127,13 +123,14 @@ describe("Canvas Helpers", () => {
 
     it("Updates regions", () => {
         const originals = MockFactory.createTestRegions();
-        const updates = [{
-            ...MockFactory.createTestRegion(originals[0].id),
+        const updatedRegion = {
+            ...originals[0],
             tags: ["tag1"],
-        }];
-        const updated = CanvasHelpers.updateRegions(originals, updates);
+        };
+
+        const updated = CanvasHelpers.updateRegions(originals, [updatedRegion]);
         expect(updated[0]).toEqual({
-            ...MockFactory.createTestRegion(originals[0].id),
+            ...originals[0],
             tags: ["tag1"],
         });
 

@@ -49,7 +49,7 @@ export default class CanvasHelpers {
      * @param tag Tag to be added if missing
      */
     public static addIfMissing(tags: string[], tag: string): void {
-        if (tags.find((t) => t === tag)) {
+        if (!tags.find((t) => t === tag)) {
             tags.push(tag);
         }
     }
@@ -60,8 +60,8 @@ export default class CanvasHelpers {
      * @param newTags Tags to be added if not contained
      */
     public static addAllIfMissing(tags: string[], newTags: string[]): void {
-        for (const target of newTags) {
-            CanvasHelpers.addIfMissing(tags, target);
+        for (const newTag of newTags) {
+            CanvasHelpers.addIfMissing(tags, newTag);
         }
     }
 
