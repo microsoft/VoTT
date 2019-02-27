@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import { IApplicationState, IProject, AppError, ErrorCode } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -29,6 +30,11 @@ describe("Homepage Component", () => {
     let closeProjectSpy: jest.SpyInstance = null;
     // let importServiceMock: jest.Mocked<typeof ImportService> = null;
     const recentProjects = MockFactory.createTestProjects(2);
+    const storageProviderMock = {
+        writeText: jest.fn((project) => Promise.resolve(project)),
+        deleteFile: jest.fn(() => Promise.resolve()),
+    };
+    StorageProviderFactory.create = jest.fn(() => storageProviderMock);
 
     function createComponent(store, props: IHomepageProps): ReactWrapper {
         return mount(

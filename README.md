@@ -94,7 +94,7 @@ Master still reflects The V1 codebase - any fixes or updates can still be made t
 
 ## Can I use my V1 project in V2?
 
-Yes you can! There is support for converting a V1 project into V2 format. For a smooth experience, it is recommended that you keep your current V1 project (JSON) file in a directory with all your images and videos for that project. When you open the JSON file, you will be directed to the project settings screen to confirm the generated project information. Once you save the project, a `.vott` file will be generated in the same project directory and you can use this as your project file from now on. It is recommended that you back up your V1 project file before converting the project.
+Yes you can! There is support for converting a V1 project into V2 format, but only for V1 projects that have only picture assets. Video assets from V1 are not yet supported. For a smooth experience, it is recommended that you keep your current V1 project (JSON) file in a directory with all your images for that project. When you open the JSON file, you will asked to confirm that you would like to convert your project and then you will be directed to the editor screen. In this process, a `.vott` file will be generated in the same project directory and you can use this as your project file from now on. It is recommended that you back up your V1 project file before converting the project.
 
 # Using VoTT
 
