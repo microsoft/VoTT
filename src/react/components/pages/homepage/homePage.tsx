@@ -131,6 +131,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
                 <Confirm title="Import Project"
+                    className="confirm-import"
                     ref={this.importConfirm}
                     message={(project: IFileInfo) => `${strings.homePage.importProject.confirmation}
                         ${project.file.name} ${strings.homePage.importProject.recommendation}`}
@@ -203,13 +204,14 @@ export default class HomePage extends React.Component<IHomepageProps> {
 
         this.props.applicationActions.ensureSecurityToken(project);
 
-        generatedAssetMetadata = await importService.generateAssets(projectInfo, project);
-        await this.props.actions.saveProject(project);
-        await this.props.actions.loadProject(project);
-        const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
-            return this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
-        });
         try {
+            generatedAssetMetadata = await importService.generateAssets(projectInfo, project);
+            await this.props.actions.saveProject(project);
+            await this.props.actions.loadProject(project);
+            const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
+                return this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+            });
+        
             await Promise.all(savedMetadata);
         } catch (e) {
             throw new Error(`Error importing project information - ${e.message}`);
