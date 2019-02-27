@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
  * @description - Toolbar item to save current project
  */
 export class SaveProject extends ToolbarItem {
-    protected async onItemClick() {
+    protected onItemClick = async () => {
         try {
             await this.props.actions.saveProject(this.props.project);
             toast.success(`${this.props.project.name} saved successfully!`);
