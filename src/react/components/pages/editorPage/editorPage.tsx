@@ -23,6 +23,7 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import CanvasHelpers from "./canvasHelpers";
 import { tagColors } from "../../../../common/tagColors";
 
 /**
@@ -57,6 +58,8 @@ export interface IEditorPageState {
     additionalSettings?: IAssetPreviewSettings;
     /** Most recently selected tag */
     selectedTag: string;
+    /** Tags locked for region labeling */
+    lockedTags: string[];
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -81,6 +84,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
+        lockedTags: [],
         selectionMode: SelectionMode.RECT,
         assets: [],
         childAssets: [],
@@ -158,7 +162,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.editorMode}
                                 selectionMode={this.state.selectionMode}
-                                project={this.props.project}>
+                                project={this.props.project}
+                                lockedTags={this.state.lockedTags}>
                                 <AssetPreview
                                     additionalSettings={this.state.additionalSettings}
                                     autoPlay={true}
@@ -173,7 +178,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             displayHotKeys={true}
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked} />
+                            onTagClicked={this.onTagClicked}
+                            onCtrlTagClicked={this.onCtrlTagClicked}
+                        />
                     </div>
                 </div>
             </div>
@@ -184,8 +191,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Called when a tag from footer is clicked
      * @param tag Tag clicked
      */
-    public onTagClicked = (tag: ITag): void => {
-        this.canvas.current.applyTag(tag.name);
+    private onTagClicked = (tag: ITag): void => {
+        this.setState({
+            selectedTag: tag.name,
+            lockedTags: [],
+        }, () => this.canvas.current.applyTag(tag.name));
+    }
+
+    private onCtrlTagClicked = (tag: ITag): void => {
+        const locked = this.state.lockedTags;
+        CanvasHelpers.toggleTag(locked, tag.name);
+        this.setState({
+            selectedTag: tag.name,
+            lockedTags: locked,
+        }, () => this.canvas.current.applyTag(tag.name));
     }
 
     /**

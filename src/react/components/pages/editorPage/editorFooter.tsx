@@ -16,6 +16,8 @@ export interface IEditorFooterProps {
     displayHotKeys: boolean;
     onTagsChanged?: (value) => void;
     onTagClicked?: (value) => void;
+    onCtrlTagClicked?: (value) => void;
+    onCtrlShiftTagClicked?: (value) => void;
 }
 
 /**
@@ -46,7 +48,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         this.tagEditorModal = React.createRef<TagEditorModal>();
 
         this.onTagsChanged = this.onTagsChanged.bind(this);
-        this.onCtrlTagClicked = this.onCtrlTagClicked.bind(this);
+        this.onShiftTagClicked = this.onShiftTagClicked.bind(this);
         this.onTagModalOk = this.onTagModalOk.bind(this);
     }
 
@@ -66,7 +68,9 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
                     ref={this.editorTagsInput}
                     onChange={this.onTagsChanged}
                     onTagClick={this.props.onTagClicked}
-                    onCtrlTagClick={this.onCtrlTagClicked}
+                    onCtrlTagClick={this.props.onCtrlTagClicked}
+                    onShiftTagClick={this.onShiftTagClicked}
+                    onCtrlShiftTagClick={this.props.onCtrlShiftTagClicked}
                 />
                 <TagEditorModal
                     ref={this.tagEditorModal}
@@ -80,7 +84,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         );
     }
 
-    private onCtrlTagClicked(tag: ITag) {
+    private onShiftTagClicked(tag: ITag) {
         this.setState({
             selectedTag: tag,
         }, () => {

@@ -29,6 +29,76 @@ export default class CanvasHelpers {
     }
 
     /**
+     * Adds region to regions if missing,
+     * Removes region from regions if contained
+     * @param regions Existing regions array
+     * @param region Region to be toggled
+     */
+    public static toggleRegion(regions: IRegion[], region: IRegion): void {
+        const index = regions.findIndex((r) => r.id === region.id);
+        if (index === -1) {
+            regions.push(region);
+        } else {
+            regions.splice(index, 1);
+        }
+    }
+
+    /**
+     * Adds tag to tags if not contained
+     * @param tags Existing tags array
+     * @param tag Tag to be added if missing
+     */
+    public static addIfMissing(tags: string[], tag: string): void {
+        if (!tags.find((t) => t === tag)) {
+            tags.push(tag);
+        }
+    }
+
+    /**
+     * Adds all target tags if missing from tags
+     * @param tags Existing tags array
+     * @param newTags Tags to be added if not contained
+     */
+    public static addAllIfMissing(tags: string[], newTags: string[]): void {
+        for (const newTag of newTags) {
+            CanvasHelpers.addIfMissing(tags, newTag);
+        }
+    }
+
+    /**
+     * Removes tag from tags if contained
+     * @param tags Existing tags array
+     * @param tag Tag to be removed if contained in `tags`
+     */
+    public static removeIfContained(tags: string[], tag: string): void {
+        const index = tags.findIndex((t) => t === tag);
+        if (index >= 0) {
+            tags.splice(index, 1);
+        }
+    }
+
+    /**
+     * Updates any IRegion in `regions` that has the same id as IRegion in `updates`
+     * @param regions Original regions
+     * @param updates Regions that are to be updated in `regions`
+     */
+    public static updateRegions(regions: IRegion[], updates: IRegion[]): IRegion[] {
+        if (!regions || !updates || !updates.length) {
+            return regions;
+        }
+        const result: IRegion[] = [];
+        for (const region of regions) {
+            const update = updates.find((r) => r.id === region.id);
+            if (update) {
+                result.push(update);
+            } else {
+                result.push(region);
+            }
+        }
+        return result;
+    }
+
+    /**
      * Get RegionData (CanvasTools) from IRegion
      * @param region IRegion from Canvas component
      */

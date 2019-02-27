@@ -1,19 +1,19 @@
+import { mount, ReactWrapper } from "enzyme";
 import React from "react";
-import { ReactWrapper, mount } from "enzyme";
-import Canvas, { ICanvasProps, ICanvasState } from "./canvas";
-import { AssetPreview, IAssetPreviewProps } from "../../common/assetPreview/assetPreview";
-import MockFactory from "../../../../common/mockFactory";
-import { EditorMode, IAssetMetadata, IRegion } from "../../../../models/applicationState";
-
-jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-
-jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
-import CanvasHelpers from "./canvasHelpers";
 import { RegionType } from "vott-react";
 import * as packageJson from "../../../../../package.json";
+import MockFactory from "../../../../common/mockFactory";
+import { EditorMode, IAssetMetadata, IRegion } from "../../../../models/applicationState";
+import { AssetPreview, IAssetPreviewProps } from "../../common/assetPreview/assetPreview";
+import Canvas, { ICanvasProps, ICanvasState } from "./canvas";
+import CanvasHelpers from "./canvasHelpers";
+
+jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
+
+jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 
 describe("Editor Canvas", () => {
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
@@ -39,6 +39,7 @@ describe("Editor Canvas", () => {
             editorMode: EditorMode.Rectangle,
             selectionMode: SelectionMode.RECT,
             project: MockFactory.createTestProject(),
+            lockedTags: [],
         };
 
         const assetPreviewProps: IAssetPreviewProps = {
@@ -235,32 +236,162 @@ describe("Editor Canvas", () => {
         ]);
     });
 
-    it("Applies tag to selected region", () => {
+    it("onRegionSelected with invalid id throws error", () => {
         const wrapper = createComponent();
-        const onAssetMetadataChanged = jest.fn();
-        wrapper.setProps({ onAssetMetadataChanged });
         const canvas = wrapper.instance();
         const original = { ...canvas.props.selectedAsset };
 
-        canvas.editor.onRegionSelected("test1", null);
+        expect(() => {
+            canvas.editor.onRegionSelected("fakeRegion", false);
+        }).toThrowError("Couldn't find region with id fakeRegion");
+    });
 
-        const newTag = MockFactory.createTestTag();
-        canvas.applyTag(newTag.name);
-
-        const expected: IAssetMetadata = {
+    function cloneWithUpdatedRegionTags(original: IAssetMetadata, regionId: string, tags: string[]) {
+        return {
             ...original,
             regions: original.regions.map((r) => {
-                if (r.id === "test1") {
+                if (r.id === regionId) {
                     return {
                         ...r,
-                        tags: [newTag.name],
+                        tags,
                     };
                 }
                 return r;
             }),
         };
+    }
+
+    it("Applies single tag to selected region", () => {
+        const wrapper = createComponent();
+        const onAssetMetadataChanged = jest.fn();
+        wrapper.setProps({ onAssetMetadataChanged });
+        const canvas = wrapper.instance();
+
+        canvas.editor.onRegionSelected("test1", null);
+
+        const newTag = "newTag";
+        canvas.applyTag(newTag);
+
+        const expected = cloneWithUpdatedRegionTags(wrapper.prop("selectedAsset"), "test1", [newTag]);
 
         expect(onAssetMetadataChanged).toBeCalledWith(expected);
-        expect(wrapper.state().currentAsset.regions[0].tags).toEqual([newTag.name]);
+        expect(wrapper.state().currentAsset.regions[0].tags).toEqual([newTag]);
+    });
+
+    it("Adds new locked tag to selected region", () => {
+        const wrapper = createComponent();
+        const onAssetMetadataChanged = jest.fn();
+        const newTag = "newTag";
+        wrapper.setProps({
+            onAssetMetadataChanged,
+            lockedTags: [newTag],
+        });
+        const canvas = wrapper.instance();
+
+        canvas.editor.onRegionSelected("test1", false);
+
+        canvas.applyTag(newTag);
+
+        const expected = cloneWithUpdatedRegionTags(wrapper.prop("selectedAsset"), "test1", [newTag]);
+
+        expect(onAssetMetadataChanged).toBeCalledWith(expected);
+        expect(wrapper.state().currentAsset.regions[0].tags).toEqual([newTag]);
+    });
+
+    it("Removes old locked tag from selected region", () => {
+        const original = cloneWithUpdatedRegionTags(getAssetMetadata(), "test1", ["tag4"]);
+        const canvasProps: ICanvasProps = {
+            ...createProps().canvas,
+            selectedAsset: original,
+        };
+        const wrapper = createComponent(canvasProps);
+        const onAssetMetadataChanged = jest.fn();
+        const lockedTags = ["tag4"];
+
+        wrapper.setProps({
+            onAssetMetadataChanged,
+            lockedTags,
+        });
+        const canvas = wrapper.instance();
+
+        canvas.editor.onRegionSelected("test1", false);
+        const expectedTags = ["tag4"];
+        expect(wrapper.state().currentAsset.regions[0].tags).toEqual(expectedTags);
+        expect(onAssetMetadataChanged).toBeCalledWith(cloneWithUpdatedRegionTags(original, "test1", expectedTags));
+
+        wrapper.setProps({
+            lockedTags: [],
+        });
+
+        canvas.applyTag("tag4");
+        expect(onAssetMetadataChanged).toBeCalledWith(cloneWithUpdatedRegionTags(original, "test1", []));
+        expect(wrapper.state().currentAsset.regions[0].tags).toEqual([]);
+    });
+
+    it("Applies locked tags to selected region with empty tags", () => {
+        const wrapper = createComponent();
+        const onAssetMetadataChanged = jest.fn();
+        const lockedTags = ["tag1", "tag2", "tag3"];
+        wrapper.setProps({
+            onAssetMetadataChanged,
+            lockedTags,
+        });
+        const canvas = wrapper.instance();
+
+        canvas.editor.onRegionSelected("test1", null);
+
+        const expected: IAssetMetadata = cloneWithUpdatedRegionTags(wrapper.prop("selectedAsset"), "test1", lockedTags);
+        expect(wrapper.state().currentAsset.regions[0].tags).toEqual(lockedTags);
+        expect(onAssetMetadataChanged).toBeCalledWith(expected);
+    });
+
+    it("Applies locked tags to selected region with existing tags", () => {
+        const original = getAssetMetadata();
+        const canvasProps: ICanvasProps = {
+            ...createProps().canvas,
+            selectedAsset: cloneWithUpdatedRegionTags(original, "test1", ["tag4"]),
+        };
+        const wrapper = createComponent(canvasProps);
+        const onAssetMetadataChanged = jest.fn();
+        const lockedTags = ["tag1", "tag2", "tag3"];
+
+        wrapper.setProps({
+            onAssetMetadataChanged,
+            lockedTags,
+        });
+        const canvas = wrapper.instance();
+
+        canvas.editor.onRegionSelected("test1", null);
+
+        const expectedTags = ["tag4", ...lockedTags];
+
+        const expected: IAssetMetadata = cloneWithUpdatedRegionTags(original, "test1", expectedTags);
+        expect(wrapper.state().currentAsset.regions[0].tags).toEqual(expectedTags);
+        expect(onAssetMetadataChanged).toBeCalledWith(expected);
+    });
+
+    it("Applies locked tags to newly drawn region", () => {
+        const wrapper = createComponent();
+        const onAssetMetadataChanged = jest.fn();
+        const lockedTags = ["tag1", "tag2", "tag3"];
+        const canvas = wrapper.instance();
+
+        const newRegionData = MockFactory.createTestRegionData();
+        const newRegion = CanvasHelpers.fromRegionData(newRegionData, RegionType.Rectangle);
+
+        wrapper.setProps({
+            onAssetMetadataChanged,
+            lockedTags,
+        });
+
+        canvas.editor.onSelectionEnd(newRegionData);
+
+        const expected: IRegion = {
+            ...newRegion,
+            id: expect.any(String),
+            tags: lockedTags,
+        };
+
+        expect(wrapper.instance().state.selectedRegions).toMatchObject([expected]);
     });
 });
