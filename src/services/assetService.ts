@@ -164,7 +164,7 @@ export class AssetService {
         // Only save asset metadata if asset is in a tagged state
         // Otherwise primary asset information is already persisted in the project file.
         if (metadata.asset.state === AssetState.Tagged) {
-            const fileName = `${metadata.asset.id}-asset.json`;
+            const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
         }
         return metadata;
@@ -177,7 +177,7 @@ export class AssetService {
     public async getAssetMetadata(asset: IAsset): Promise<IAssetMetadata> {
         Guard.null(asset);
 
-        const fileName = `${asset.id}-asset.json`;
+        const fileName = `${asset.id}${constants.assetMetadataFileExtension}`;
         try {
             const json = await this.storageProvider.readText(fileName);
             return JSON.parse(json) as IAssetMetadata;
