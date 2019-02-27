@@ -94,28 +94,6 @@ describe("Html File Reader", () => {
             expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
 
-        it("Downloads a blob from the asset path", async () => {
-            const testAssetVideo = MockFactory.createVideoTestAsset("video-test");
-            const testAssetFrame = MockFactory.createChildVideoAsset(testAssetVideo, 0);
-            // HtmlFileReader.getAssetFrameImage = jest.fn((asset) => {
-            //     return Promise.resolve(new Blob(["Some binary data"]));
-            // });
-            axios.get = jest.fn((url, config) => {
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 200,
-                    statusText: "OK",
-                    data: new Blob(["Some binary data"]),
-                });
-            });
-
-            const result = await HtmlFileReader.getAssetBlob(testAssetFrame);
-            expect(result).not.toBeNull();
-            expect(result).toBeInstanceOf(Blob);
-            expect(HtmlFileReader.getAssetFrameImage).toBeCalledWith(testAssetFrame);
-        });
-
         it("Rejects the promise when request receives non 200 result", async () => {
             const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
             axios.get = jest.fn((url, config) => {
