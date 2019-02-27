@@ -32,11 +32,12 @@ steps:
 - bash: |
     set -e
 
-    if [[ -z "${CODECOV_TOKEN}" ]]; then
+    token=$(CODECOV_TOKEN)
+    if [[ -z "${token}" ]]; then
       echo "Need to set CODECOV_TOKEN"
       exit 1
     fi
 
-      # https://docs.codecov.io/docs/about-the-codecov-bash-uploader
-    bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
+    # https://docs.codecov.io/docs/about-the-codecov-bash-uploader
+    bash <(curl -s https://codecov.io/bash) -t ${token}
   displayName: 'Upload coverage report'
