@@ -272,16 +272,20 @@ export default class MockFactory {
      * Creates fake IV1Project
      * @param name Name of project.
      */
-    public static createTestV1Project(): IV1Project {
-        const regions = MockFactory.createTestV1Regions(10);
+    public static createTestV1Project(frameCount: number = 10): IV1Project {
+        const frames: { [frameName: string]: IV1Region[]; } = {};
+        for (let i = 0; i < frameCount; i++) {
+            const name = `testFrame${i}.jpg`;
+            frames[name] = MockFactory.createTestV1Regions(3);
+        }
 
         return {
-            frames: {"testFrame.jpg": regions},
+            frames,
             framerate: "1",
             inputTags: "testTag1,testTag2",
             suggestiontype: "suggestiontype",
             scd: true,
-            visitedFrames: ["testFrame.jpg"],
+            visitedFrames: ["testFrame0.jpg"],
             tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
         };
     }
@@ -292,27 +296,28 @@ export default class MockFactory {
     public static createTestV1Regions(count: number = 10): IV1Region[] {
         const regions: IV1Region[] = [];
 
-        const testRegion = {
-            x1: 1,
-            y1: 1,
-            x2: 11,
-            y2: 11,
-            width: 10,
-            height: 10,
-            box: {
+        for (let i = 0; i < count; i++) {
+            const testRegion = {
                 x1: 1,
                 y1: 1,
                 x2: 11,
-                y2: 11 },
-            points: [],
-            UID: count.toString(),
-            id: 2,
-            type: "rect",
-            tags: [],
-            name: 1,
-        };
-
-        regions.push(testRegion);
+                y2: 11,
+                width: 10,
+                height: 10,
+                box: {
+                    x1: 1,
+                    y1: 1,
+                    x2: 11,
+                    y2: 11 },
+                points: [],
+                UID: i.toString(),
+                id: 2,
+                type: "rect",
+                tags: [],
+                name: 1,
+            };
+            regions.push(testRegion);
+        }
         return regions;
     }
 

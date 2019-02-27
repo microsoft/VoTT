@@ -33,7 +33,7 @@ export interface IV1Project {
  * @member box - Object holding x1, y1, x2, y2
  * @member points - List of IPoints describing the 4 corners of the region
  * @member UID - Unique, auto-generated ID
- * @member id - TODO: Add description
+ * @member id - Index of the region in the list of all regions in project
  * @member type - shape of the region, "rect" is the only option in V1
  * @member tags - List of strings that are the tags associated with the region
  * @member name - Index of the region in the frame (starts at 1)

@@ -47,7 +47,7 @@ describe("Import Service", () => {
         const v2Project = await importService.convertProject({file, content});
 
         const testRegion = {
-            id: "10",
+            id: "0",
             boundingBox: {
                 left: 1,
                 top: 1,
@@ -65,8 +65,9 @@ describe("Import Service", () => {
         };
         const result = await importService.generateAssets(fileInfo, v2Project);
 
-        expect(result[0].asset.name).toEqual("testFrame.jpg");
+        expect(result[0].asset.name).toEqual("testFrame0.jpg");
         expect(result[0].asset.state).toEqual(AssetState.Tagged);
+        expect(result[1].asset.state).toEqual(AssetState.NotVisited);
         expect(result[0].regions[0]).toEqual(testRegion);
     });
 });
