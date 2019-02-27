@@ -123,9 +123,10 @@ describe("Homepage Component", () => {
         const testv1Project = MockFactory.createTestV1Project();
         const testv1ProjectJson = JSON.stringify(testv1Project);
         const testConnection = MockFactory.createTestConnection();
-        const asset = MockFactory.createTestAsset();
-        const testMetadata = MockFactory.createTestAssetMetadata(asset);
-        // const testBlob = new Blob([testv1ProjectJson], { type: "application/json" });
+        const assets = MockFactory.createTestAssets(2);
+        const testMetadata = assets.map((asset) => {
+            return MockFactory.createTestAssetMetadata(asset);
+        });
         const fileInfo = {
             content: testv1ProjectJson,
             file,
@@ -159,7 +160,13 @@ describe("Homepage Component", () => {
         generateAssetsMock.mockClear();
 
         const saveMock = projectServiceMock.prototype.save as jest.Mock;
-        saveMock.mockImplementationOnce(() => {
+        saveMock.mockImplementation(() => {
+            return convertedProject;
+        });
+        saveMock.mockClear();
+
+        const loadMock = projectServiceMock.prototype.load as jest.Mock;
+        loadMock.mockImplementation(() => {
             return convertedProject;
         });
         saveMock.mockClear();
@@ -170,10 +177,7 @@ describe("Homepage Component", () => {
         const importConfirm = wrapper.find(Confirm).at(1) as ReactWrapper<IConfirmProps>;
         importConfirm.props().onConfirm(testv1Project);
 
-        // const filePicker = wrapper.find(FilePicker);
-        // const uploadSpy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
-
-        // expect(uploadSpy).toBeCalled();
+        await MockFactory.flushUi();
         expect(convertProjectMock).toBeCalled();
         expect(generateAssetsMock).toBeCalled();
         expect(saveProjectSpy).toBeCalled();
