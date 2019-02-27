@@ -164,8 +164,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     /**
      * Update regions within the current asset
-     * @param regions 
-     * @param selectedRegions 
+     * @param regions
+     * @param selectedRegions
      */
     private updateAssetRegions = (regions: IRegion[], selectedRegions: IRegion[]) => {
         const currentAsset: IAssetMetadata = {
