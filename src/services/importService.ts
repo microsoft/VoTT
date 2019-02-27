@@ -24,6 +24,11 @@ export default class ImportService implements IImportService {
     constructor(actions: IProjectActions) {
         this.actions = actions;
     }
+
+    /**
+     * Converts given v1 project information to v2 format
+     * @param projectInfo The project file information and content
+     */
     public async convertProject(projectInfo: IFileInfo): Promise<IProject> {
         let originalProject: IV1Project;
         let convertedProject: IProject;
