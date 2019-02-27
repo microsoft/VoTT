@@ -277,10 +277,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             rootAsset.state = rootAssetMetadata.asset.state;
         }
 
-        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
-        await this.props.actions.saveProject(this.props.project);
+        const newProject = {...this.props.project, lastVisitedAssetId: assetMetadata.asset.id};
 
-        const assetService = new AssetService(this.props.project);
+        await this.props.actions.saveAssetMetadata(newProject, assetMetadata);
+        await this.props.actions.saveProject(newProject);
+
+        const assetService = new AssetService(newProject);
         const childAssets = assetService.getChildAssets(rootAsset);
 
         // Find and update the root asset in the internal state
@@ -426,11 +428,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             .uniqBy((asset) => asset.id)
             .value();
 
+        const lastVisited = rootAssets.find((asset) => asset.id === this.props.project.lastVisitedAssetId);
+
         this.setState({
             assets: rootAssets,
         }, async () => {
             if (rootAssets.length > 0) {
-                await this.selectAsset(rootAssets[0]);
+                await this.selectAsset(lastVisited ? lastVisited : rootAssets[0]);
             }
             this.loadingProjectAssets = false;
         });
