@@ -276,7 +276,7 @@ export default class MockFactory {
         const frames: { [frameName: string]: IV1Region[]; } = {};
         for (let i = 0; i < frameCount; i++) {
             const name = `testFrame${i}.jpg`;
-            frames[name] = MockFactory.createTestV1Regions(3);
+            frames[name] = MockFactory.createTestV1Regions();
         }
 
         return {
@@ -293,7 +293,7 @@ export default class MockFactory {
     /**
      * Creates fake IV1Region
      */
-    public static createTestV1Regions(count: number = 10): IV1Region[] {
+    public static createTestV1Regions(count: number = 3): IV1Region[] {
         const regions: IV1Region[] = [];
 
         for (let i = 0; i < count; i++) {

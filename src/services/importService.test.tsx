@@ -67,6 +67,7 @@ describe("Import Service", () => {
 
         expect(result[0].asset.name).toEqual("testFrame0.jpg");
         expect(result[0].asset.state).toEqual(AssetState.Tagged);
+        expect(result[0].regions).toHaveLength(3);
         expect(result[1].asset.state).toEqual(AssetState.NotVisited);
         expect(result[0].regions[0]).toEqual(testRegion);
     });
