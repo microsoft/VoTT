@@ -50,32 +50,10 @@ export default class ProjectService implements IProjectService {
     public async save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
-        return new Promise<IProject>(async (resolve, reject) => {
-            try {
-                if (!project.id) {
-                    project.id = shortid.generate();
-                }
-
-                project.version = packageJson.version;
-
-                const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
-                await this.saveExportSettings(project);
-                project = encryptProject(project, securityToken);
-
-                await storageProvider.writeText(
-                    `${project.name}${constants.projectFileExtension}`,
-                    JSON.stringify(project, null, 4),
-                );
-
-                resolve(project);
-            } catch (err) {
-                reject(err);
-            }
-        });
         if (!project.id) {
             project.id = shortid.generate();
         }
-      
+
         project.version = packageJson.version;
 
         const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
