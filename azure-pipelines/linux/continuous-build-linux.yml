@@ -30,7 +30,8 @@ steps:
   displayName: 'Run tests and coverage'
 
 - bash: |
-    set -e
+    # u flag will exit if there's any unbound variable
+    set -eu
 
     # https://docs.codecov.io/docs/about-the-codecov-bash-uploader
     bash <(curl -s https://codecov.io/bash) -t $(CODECOV_TOKEN)
