@@ -30,9 +30,13 @@ steps:
   displayName: 'Run tests and coverage'
 
 - bash: |
-    # u flag will exit if there's any unbound variable
-    set -eu
+    set -e
 
-    # https://docs.codecov.io/docs/about-the-codecov-bash-uploader
-    bash <(curl -s https://codecov.io/bash) -t $(CODECOV_TOKEN)
+    if [[ -z "${CODECOV_TOKEN}" ]]; then
+      echo "Need to set CODECOV_TOKEN"
+      exit 1
+    fi
+
+      # https://docs.codecov.io/docs/about-the-codecov-bash-uploader
+    bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
   displayName: 'Upload coverage report'
