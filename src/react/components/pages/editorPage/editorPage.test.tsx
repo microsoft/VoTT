@@ -13,13 +13,8 @@ import {
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
-import registerToolbar from "../../../../registerToolbar";
-import { DrawPolygon } from "../../toolbar/drawPolygon";
-import { DrawRectangle } from "../../toolbar/drawRectangle";
-import { Select } from "../../toolbar/select";
+import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
 import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
-import { NextAsset } from "../../toolbar/nextAsset";
-import { PreviousAsset } from "../../toolbar/previousAsset";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -33,6 +28,7 @@ import EditorFooter from "./editorFooter";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import Canvas from "./canvas";
 import * as packageJson from "../../../../../package.json";
+import CardBody from "reactstrap/lib/CardBody";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
@@ -344,11 +340,17 @@ describe("Editor Page Component", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
 
+        let canvasMock: jest.Mocked<typeof Canvas> = null;
+
         beforeAll(() => {
+            canvasMock = Canvas as any;
+            canvasMock.prototype.copyRegions = jest.fn();
+
             registerToolbar();
         });
 
         beforeEach(async () => {
+            canvasMock = Canvas as jest.Mocked<typeof Canvas>;
             const testProject = MockFactory.createTestProject("TestProject");
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
@@ -359,18 +361,19 @@ describe("Editor Page Component", () => {
         });
 
         it("editor mode is changed correctly", async () => {
-            wrapper.find(DrawPolygon).simulate("click");
+            wrapper.find(`.${ToolbarItemName.DrawPolygon}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Polygon);
 
-            wrapper.find(DrawRectangle).simulate("click");
+            wrapper.find(`.${ToolbarItemName.DrawRectangle}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Rectangle);
 
-            wrapper.find(Select).simulate("click");
+            wrapper.find(`.${ToolbarItemName.SelectCanvas}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Select);
         });
 
         it("selects the next asset when clicking the 'Next Asset' button in the toolbar", async () => {
-            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 2
             wrapper.update();
 
             const expectedAsset = editorPage.state().assets[1];
@@ -378,14 +381,38 @@ describe("Editor Page Component", () => {
         });
 
         it("selects the previous asset when clicking the 'Previous Asset' button in the toolbar", async () => {
-            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 2
-            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 3
-            await MockFactory.flushUi(() => wrapper.find(PreviousAsset).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 3
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.PreviousAsset}`).simulate("click")); // Move to Asset 2
 
             wrapper.update();
 
             const expectedAsset = editorPage.state().assets[1];
             expect(getState(wrapper).selectedAsset).toMatchObject({ asset: expectedAsset });
+        });
+
+        it("Calls copy regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
+            expect(canvasMock.prototype.copyRegions).toBeCalled();
+        });
+
+        it("Calls cut regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+            .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
+        });
+
+        it("Calls paste regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+            .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
+        });
+
+        it("Calls clear regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+            .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
         });
     });
 

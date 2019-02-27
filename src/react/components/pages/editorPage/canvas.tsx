@@ -37,13 +37,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         project: null,
     };
 
-    public static hotKeys = {
-        copy: "Ctrl+c",
-        paste: "Ctrl+v",
-        cut: "Ctrl+x",
-        clear: "Ctrl+e",
-    };
-
     public editor: Editor;
 
     public state: ICanvasState = {
@@ -92,22 +85,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public render = () => {
         return (
             <Fragment>
-                <KeyboardBinding
-                    accelerators={[Canvas.hotKeys.copy]}
-                    onKeyEvent={this.copyRegions}
-                />
-                <KeyboardBinding
-                    accelerators={[Canvas.hotKeys.cut]}
-                    onKeyEvent={this.cutRegions}
-                />
-                <KeyboardBinding
-                    accelerators={[Canvas.hotKeys.paste]}
-                    onKeyEvent={this.pasteRegions}
-                />
-                <KeyboardBinding
-                    accelerators={[Canvas.hotKeys.clear]}
-                    onKeyEvent={this.clearRegions}
-                />
                 <div id="ct-zone" ref={this.canvasZone} className="canvas-enabled">
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
@@ -128,16 +105,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
 
-    private copyRegions = async () => {
+    public copyRegions = async () => {
         await Clipboard.writeObject(this.state.selectedRegions);
     }
 
-    private cutRegions = async () => {
+    public cutRegions = async () => {
         await Clipboard.writeObject(this.state.selectedRegions);
         this.deleteRegions(this.state.selectedRegions);
     }
 
-    private pasteRegions = async () => {
+    public pasteRegions = async () => {
         const regionsToPaste: IRegion[] = await Clipboard.readObject();
         const duplicates = CanvasHelpers.duplicateRegionsAndMove(
             regionsToPaste,
@@ -146,7 +123,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.addRegions(duplicates);
     }
 
-    private clearRegions = () => {
+    public clearRegions = () => {
         const ids = this.state.currentAsset.regions.map((r) => r.id);
         for (const id of ids) {
             this.editor.RM.deleteRegionById(id);

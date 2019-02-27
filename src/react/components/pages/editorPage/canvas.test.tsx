@@ -26,27 +26,16 @@ describe("Editor Canvas", () => {
         return testRegionData;
     }
 
-    function createComponent(
-            includeKeyboard?: boolean, canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
+    function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
         const props = createProps();
         const cProps = canvasProps || props.canvas;
         const aProps = assetPreviewProps || props.assetPreview;
-        if (includeKeyboard) {
-            return mount(
-                <KeyboardManager>
-                    <Canvas {...cProps}>
-                        <AssetPreview {...aProps} />
-                    </Canvas>,
-                </KeyboardManager>,
-            );
-        } else {
-            return mount(
-                <Canvas {...cProps}>
-                    <AssetPreview {...aProps} />
-                </Canvas>,
-            );
-        }
+        return mount(
+            <Canvas {...cProps}>
+                <AssetPreview {...aProps} />
+            </Canvas>,
+        );
     }
 
     function getAssetMetadata() {
@@ -296,24 +285,14 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().currentAsset.regions[0].tags).toEqual([newTag.name]);
     });
 
-    function dispatchKeyEvent(key: string, keyEventType: KeyEventType= KeyEventType.KeyDown) {
-        window.dispatchEvent(new KeyboardEvent(
-            keyEventType, {
-                key,
-            },
-        ));
-    }
-
     it("Copies currently selected regions to clipboard", () => {
-        const wrapper = createComponent(true).find(Canvas);
+        const wrapper = createComponent().find(Canvas);
         const canvas = wrapper.instance() as Canvas;
         canvas.editor.onRegionSelected("test1", true);
 
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
-        dispatchKeyEvent(Canvas.hotKeys.copy);
-
-        const clipboard = (navigator as any).clipboard;
+        canvas.copyRegions();
 
         MockFactory.flushUi();
 
@@ -324,7 +303,7 @@ describe("Editor Canvas", () => {
         const cProps: ICanvasProps = {
             ...createProps().canvas,
         };
-        const wrapper = createComponent(true, {
+        const wrapper = createComponent({
             ...cProps,
             selectedAsset: {
                 ...cProps.selectedAsset,
@@ -332,7 +311,8 @@ describe("Editor Canvas", () => {
             },
         }).find(Canvas);
 
-        dispatchKeyEvent(Canvas.hotKeys.paste);
+        const canvas = wrapper.instance() as Canvas;
+        canvas.pasteRegions();
 
         expect((navigator as any).clipboard.readText).toBeCalled();
 
@@ -361,7 +341,7 @@ describe("Editor Canvas", () => {
     });
 
     it("Cuts currently selected regions to clipboard", async () => {
-        const wrapper = createComponent(true).find(Canvas);
+        const wrapper = createComponent().find(Canvas);
         const original: IAssetMetadata = {
             ...wrapper.prop("selectedAsset"),
         };
@@ -369,7 +349,7 @@ describe("Editor Canvas", () => {
         canvas.editor.onRegionSelected("test1", true);
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
-        dispatchKeyEvent(Canvas.hotKeys.cut);
+        canvas.cutRegions();
 
         const expectedRegions = [
             ...original.regions.filter((r) => r.id !== "test1"),
@@ -382,8 +362,9 @@ describe("Editor Canvas", () => {
     });
 
     it("Clears all regions from asset", async () => {
-        const wrapper = createComponent(true).find(Canvas);
-        dispatchKeyEvent(Canvas.hotKeys.clear);
+        const wrapper = createComponent().find(Canvas);
+        const canvas = wrapper.instance() as Canvas;
+        canvas.clearRegions();
 
         await MockFactory.flushUi();
         expect(wrapper.state().currentAsset.regions).toEqual([]);

@@ -24,6 +24,7 @@ import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
 import { tagColors } from "../../../../common/tagColors";
+import { ToolbarItemName } from "../../../../registerToolbar";
 
 /**
  * Properties for Editor Page
@@ -290,36 +291,47 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
         switch (toolbarItem.props.name) {
-            case "drawRectangle":
+            case ToolbarItemName.DrawRectangle:
                 this.setState({
                     selectionMode: SelectionMode.RECT,
                     editorMode: EditorMode.Rectangle,
                 });
                 break;
-            case "drawPolygon":
+            case ToolbarItemName.DrawPolygon:
                 this.setState({
                     selectionMode: SelectionMode.POLYGON,
                     editorMode: EditorMode.Polygon,
                 });
                 break;
-            case "copyRectangle":
+            case ToolbarItemName.CopyRectangle:
                 this.setState({
                     selectionMode: SelectionMode.COPYRECT,
                     editorMode: EditorMode.CopyRect,
                 });
                 break;
-            case "selectCanvas":
-            case "panCanvas":
+            case ToolbarItemName.SelectCanvas:
                 this.setState({
                     selectionMode: SelectionMode.NONE,
                     editorMode: EditorMode.Select,
                 });
                 break;
-            case "navigatePreviousAsset":
+            case ToolbarItemName.PreviousAsset:
                 await this.goToRootAsset(-1);
                 break;
-            case "navigateNextAsset":
+            case ToolbarItemName.NextAsset:
                 await this.goToRootAsset(1);
+                break;
+            case ToolbarItemName.CopyRegions:
+                this.canvas.current.copyRegions();
+                break;
+            case ToolbarItemName.CutRegions:
+                this.canvas.current.cutRegions();
+                break;
+            case ToolbarItemName.PasteRegions:
+                this.canvas.current.pasteRegions();
+                break;
+            case ToolbarItemName.ClearRegions:
+                this.canvas.current.clearRegions();
                 break;
         }
     }

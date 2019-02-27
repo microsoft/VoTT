@@ -3,12 +3,11 @@ import _ from "lodash";
 import { EditorToolbar, IEditorToolbarProps, IEditorToolbarState } from "./editorToolbar";
 import MockFactory from "../../../../common/mockFactory";
 import { ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import registerToolbar from "../../../../registerToolbar";
+import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
 import { ReactWrapper, mount } from "enzyme";
-import { Select } from "../../toolbar/select";
+import { ExportProject } from "../../toolbar/exportProject";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
-import { DrawPolygon } from "../../toolbar/drawPolygon";
 
 describe("Editor Toolbar", () => {
     let wrapper: ReactWrapper = null;
@@ -41,7 +40,7 @@ describe("Editor Toolbar", () => {
 
     it("Initializes state", () => {
         const state = wrapper.find(EditorToolbar).state() as IEditorToolbarState;
-        expect(state.selectedItem).toEqual(Select.prototype);
+        expect(state.selectedItem).toEqual(ToolbarItemName.SelectCanvas);
     });
 
     it("Renders toolbar items in groups", () => {
@@ -59,11 +58,11 @@ describe("Editor Toolbar", () => {
     });
 
     it("Sets the selected toolbar item", async () => {
-        const drawPolygon = wrapper.find(DrawPolygon).first();
-        expect(drawPolygon.exists()).toBe(true);
-        drawPolygon.find("button").simulate("click");
+        const exportProject = wrapper.find(ExportProject).first();
+        expect(exportProject.exists()).toBe(true);
+        exportProject.find("button").simulate("click");
 
         const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
-        expect(toolbar.state().selectedItem).toEqual(DrawPolygon.prototype);
+        expect(toolbar.state().selectedItem).toEqual(ToolbarItemName.ExportProject);
     });
 });
