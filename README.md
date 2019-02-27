@@ -175,7 +175,6 @@ In addition, users may choose to export all assets, only visited assets, or only
 
 ![alt text](docs/images/export-labels.png "Export Labels")
 
-
 # Collaborators
 
 VoTT was originally developed by the [Commercial Software Engineering (CSE) group at Microsoft](https://www.microsoft.com/developerblog/) in Israel.
