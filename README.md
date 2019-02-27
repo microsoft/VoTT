@@ -1,7 +1,8 @@
 # VoTT (Visual Object Tagging Tool)
 
-[![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT/VoTT-CI?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=6&branchName=v2)
-[![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/v2/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=alert_status)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
+[![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/Microsoft.VoTT?branchName=v2)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=25&branchName=v2)
+[![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/v2/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=alert_status)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=ncloc)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
 
 [Current Complexity Analysis Report](https://vottv2.z5.web.core.windows.net/)
@@ -179,7 +180,6 @@ Once assets have been labeled, they can be exported into a variety of formats:
 In addition, users may choose to export all assets, only visited assets, or only tagged assets.  Click on the 'Export' icon in the left hand navigation. Select the appropriate export provider and which assets to export.
 
 ![alt text](docs/images/export-labels.png "Export Labels")
-
 
 # Collaborators
 

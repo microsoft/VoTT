@@ -3,8 +3,6 @@ import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
@@ -23,6 +21,7 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import CanvasHelpers from "./canvasHelpers";
 import { tagColors } from "../../../../common/tagColors";
 
 /**
@@ -57,6 +56,8 @@ export interface IEditorPageState {
     additionalSettings?: IAssetPreviewSettings;
     /** Most recently selected tag */
     selectedTag: string;
+    /** Tags locked for region labeling */
+    lockedTags: string[];
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -81,6 +82,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
+        lockedTags: [],
         selectionMode: SelectionMode.RECT,
         assets: [],
         childAssets: [],
@@ -158,7 +160,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.editorMode}
                                 selectionMode={this.state.selectionMode}
-                                project={this.props.project}>
+                                project={this.props.project}
+                                lockedTags={this.state.lockedTags}>
                                 <AssetPreview
                                     additionalSettings={this.state.additionalSettings}
                                     autoPlay={true}
@@ -173,7 +176,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             displayHotKeys={true}
                             tags={this.props.project.tags}
                             onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked} />
+                            onTagClicked={this.onTagClicked}
+                            onCtrlTagClicked={this.onCtrlTagClicked}
+                        />
                     </div>
                 </div>
             </div>
@@ -184,8 +189,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Called when a tag from footer is clicked
      * @param tag Tag clicked
      */
-    public onTagClicked = (tag: ITag): void => {
-        this.canvas.current.applyTag(tag.name);
+    private onTagClicked = (tag: ITag): void => {
+        this.setState({
+            selectedTag: tag.name,
+            lockedTags: [],
+        }, () => this.canvas.current.applyTag(tag.name));
+    }
+
+    private onCtrlTagClicked = (tag: ITag): void => {
+        const locked = this.state.lockedTags;
+        CanvasHelpers.toggleTag(locked, tag.name);
+        this.setState({
+            selectedTag: tag.name,
+            lockedTags: locked,
+        }, () => this.canvas.current.applyTag(tag.name));
     }
 
     /**
@@ -258,10 +275,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             rootAsset.state = rootAssetMetadata.asset.state;
         }
 
-        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
-        await this.props.actions.saveProject(this.props.project);
+        const newProject = {...this.props.project, lastVisitedAssetId: assetMetadata.asset.id};
 
-        const assetService = new AssetService(this.props.project);
+        await this.props.actions.saveAssetMetadata(newProject, assetMetadata);
+        await this.props.actions.saveProject(newProject);
+
+        const assetService = new AssetService(newProject);
         const childAssets = assetService.getChildAssets(rootAsset);
 
         // Find and update the root asset in the internal state
@@ -407,11 +426,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             .uniqBy((asset) => asset.id)
             .value();
 
+        const lastVisited = rootAssets.find((asset) => asset.id === this.props.project.lastVisitedAssetId);
+
         this.setState({
             assets: rootAssets,
         }, async () => {
             if (rootAssets.length > 0) {
-                await this.selectAsset(rootAssets[0]);
+                await this.selectAsset(lastVisited ? lastVisited : rootAssets[0]);
             }
             this.loadingProjectAssets = false;
         });

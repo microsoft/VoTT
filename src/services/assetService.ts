@@ -166,6 +166,10 @@ export class AssetService {
         if (metadata.asset.state === AssetState.Tagged) {
             const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
+        } else {
+            // If the asset is no longer tagged, then it doesn't contain any regions
+            // and the file is not required.
+            await this.storageProvider.deleteFile(fileName);
         }
         return metadata;
     }

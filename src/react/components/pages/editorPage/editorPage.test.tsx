@@ -189,6 +189,46 @@ describe("Editor Page Component", () => {
         expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
     });
 
+    it("Check correct saving and loading of last visited asset", async () => {
+        // create test project and asset
+        const testProject = MockFactory.createTestProject("TestProject");
+        testProject.lastVisitedAssetId = testAssets[1].id;
+        const defaultAsset = testAssets[1];
+
+        // mock store and props
+        const store = createStore(testProject, true);
+        const props = MockFactory.editorPageProps(testProject.id);
+
+        const loadAssetMetadataSpy = jest.spyOn(props.actions, "loadAssetMetadata");
+        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+
+        // create mock editor page
+        const wrapper = createComponent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+        await MockFactory.flushUi();
+
+        const expectedAsset = editorPage.state().assets[1];
+        const partialProject = {
+            id: testProject.id,
+            name: testProject.name,
+            lastVisitedAssetId: testAssets[1].id,
+        };
+
+        expect(loadAssetMetadataSpy).toBeCalledWith(expect.objectContaining(partialProject), defaultAsset);
+        expect(saveAssetMetadataSpy).toBeCalledWith(
+            expect.objectContaining(partialProject),
+            expect.objectContaining({
+                asset: {
+                    ...expectedAsset,
+                    state: AssetState.Tagged,
+                },
+            }),
+        );
+        expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+    });
+
     describe("Editor Page Component Forcing Tag Scenario", () => {
         it("Detect new Tag from asset metadata when selecting the Asset", async () => {
             const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
@@ -459,6 +499,49 @@ describe("Editor Page Component", () => {
             expect(editorPage.state().selectedAsset.regions[0].tags.length).toEqual(0);
             wrapper.find(EditorFooter).props().onTagClicked(expectedTag);
             expect(editorPage.state().selectedAsset.regions[0].tags.length).toEqual(1);
+        });
+
+        it("Adds tag to locked tags when ctrl clicked", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+        });
+
+        it("Removes tag from locked tags when ctrl clicked", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+            let editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+            editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([]);
         });
     });
 });

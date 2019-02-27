@@ -1,6 +1,13 @@
 {
-    "name": "vott-react-typescript",
+    "name": "vott",
     "version": "2.0.0-preview.1",
+    "description": "Visual Object Tagging Tool (VoTT) - an annotation and labeling tool for images and video.",
+    "homepage": "https://github.com/Microsoft/VoTT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Microsoft/VoTT.git"
+    },
+    "license": "MIT",
     "private": true,
     "main": "build/main.js",
     "dependencies": {
@@ -47,6 +54,7 @@
         "electron:start:prod": "npm run webpack:prod && npm run electron-start",
         "electron-start": "node src/electron/start",
         "eject": "react-scripts eject",
+        "release-pr": "./scripts/release-pr.sh",
         "release": "npm run build && npm run webpack:prod && electron-builder",
         "pretest": "./node_modules/.bin/tslint 'src/**/*.ts*'",
         "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
@@ -100,5 +108,9 @@
         "webpack": "^4.19.1",
         "webpack-cli": "^3.1.2",
         "webpack-merge": "^4.1.5"
+    },
+    "engines": {
+        "node": ">=10.14.2",
+        "npm": ">=6.4.1"
     }
 }

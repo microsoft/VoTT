@@ -61,19 +61,80 @@ export default class MockFactory {
         name: string = "test",
         assetState: AssetState = AssetState.NotVisited,
         path: string = `C:\\Desktop\\asset${name}.jpg`,
-        assetType: AssetType = AssetType.Image): IAsset {
-        return {
-            id: `asset-${name}`,
-            format: "jpg",
-            name: `Asset ${name}.jpg`,
-            path: `${path}`,
-            state: assetState,
-            type: assetType,
-            size: {
-                width: 800,
-                height: 600,
-            },
-        };
+        assetType: AssetType = AssetType.Image,
+        timestamp: number = 0): IAsset {
+        let testAsset = null;
+        switch (assetType) {
+            case AssetType.Video:
+                testAsset = {
+                    id: `videoasset-${name}`,
+                    format: "mp4",
+                    name: `videoasset${name}`,
+                    path: `C:\\Desktop\\videoasset${name}.mp4`,
+                    state: assetState,
+                    type: AssetType.Video,
+                    size: {
+                        width: 800,
+                        height: 600,
+                        },
+                    };
+                break;
+            case AssetType.VideoFrame:
+                testAsset = {
+                    id: `videoasset-${name}#t=${timestamp}`,
+                    format: "mp4",
+                    name: `videoasset${name}.mp4#t=${timestamp}`,
+                    path: `C:\\Desktop\\videoasset${name}.mp4#t=${timestamp}`,
+                    state: assetState,
+                    type: AssetType.VideoFrame,
+                    size: {
+                        width: 800,
+                        height: 600,
+                        },
+                    parent: {
+                        id: `videoasset-${name}`,
+                        format: "mp4",
+                        name: `videoasset${name}`,
+                        path: `C:\\Desktop\\videoasset${name}.mp4`,
+                        state: assetState,
+                        type: AssetType.Video,
+                        size: {
+                            width: 800,
+                            height: 600,
+                            },
+                        },
+                    };
+                break;
+            case AssetType.Image:
+                testAsset = {
+                    id: `asset-${name}`,
+                    format: "jpg",
+                    name: `Asset ${name}.jpg`,
+                    path: `${path}`,
+                    state: assetState,
+                    type: assetType,
+                    size: {
+                        width: 800,
+                        height: 600,
+                    },
+                };
+                break;
+            default:
+                testAsset = {
+                    id: `asset-${name}`,
+                    format: "?",
+                    name: `Asset ${name}.asset`,
+                    path: `${path}`,
+                    state: assetState,
+                    type: assetType,
+                    size: {
+                        width: 800,
+                        height: 600,
+                    },
+                };
+        }
+
+        return testAsset;
     }
 
     /**
@@ -95,7 +156,7 @@ export default class MockFactory {
         return {
             id: `videoasset-${name}`,
             format: "mp4",
-            name: `Video Asset ${name}`,
+            name: `videoasset${name}`,
             path: `C:\\Desktop\\videoasset${name}.mp4`,
             state: assetState,
             type: AssetType.Video,
@@ -593,6 +654,7 @@ export default class MockFactory {
             editorMode: EditorMode.Rectangle,
             selectionMode: SelectionMode.RECT,
             children: null,
+            lockedTags: [],
         };
         return new Canvas(canvasProps);
     }
@@ -932,20 +994,7 @@ export default class MockFactory {
      * Generates a random color string
      */
     private static randomColor(): string {
-        return [
-            "#",
-            MockFactory.randomColorSegment(),
-            MockFactory.randomColorSegment(),
-            MockFactory.randomColorSegment(),
-        ].join("");
-    }
-
-    /**
-     * Generates random color segment
-     */
-    private static randomColorSegment(): string {
-        const num = Math.floor(Math.random() * 255);
-        return num.toString(16);
+        return "#" + (Math.random() * 0xFFFFFF << 0).toString(16);
     }
 
     /**

@@ -266,6 +266,20 @@ describe("Video Asset Component", () => {
         expect(onActivatedHandler).toBeCalledWith(expect.any(HTMLVideoElement));
     });
 
+    it("renders the custom video player buttons when autoPlay is enabled", () => {
+        const props = { ...defaultProps, autoPlay: true };
+        wrapper = createComponent(props);
+
+        expect(wrapper.find(CustomVideoPlayerButton)).toHaveLength(4);
+    });
+
+    it("does not render the custom video player buttons when autoPlay is disabled", () => {
+        const props = { ...defaultProps, autoPlay: false };
+        wrapper = createComponent(props);
+
+        expect(wrapper.find(CustomVideoPlayerButton)).toHaveLength(0);
+    });
+
     function mockLoaded() {
         const state: IVideoPlayerState = {
             readyState: 4,
