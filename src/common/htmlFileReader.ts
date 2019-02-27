@@ -9,6 +9,8 @@ import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBui
  */
 export default class HtmlFileReader {
 
+    public static videoAssetFiles = {};
+
     /**
      * Reads the file and returns the string value contained
      * @param file HTML file to read
@@ -73,13 +75,19 @@ export default class HtmlFileReader {
             responseType: "blob",
         };
 
-        // Download the asset binary from the storage provider
-        const response = await axios.get<Blob>(asset.path, config);
-        if (response.status !== 200) {
-            throw new Error("Error downloading asset binary");
+        let data = null;
+        if (asset.type === AssetType.VideoFrame) {
+            data = await this.getAssetFrameImage(asset);
+        } else {
+            // Download the asset binary from the storage provider
+            const response = await axios.get<Blob>(asset.path, config);
+            if (response.status !== 200) {
+                throw new Error("Error downloading asset binary");
+            }
+            data = await response.data;
         }
 
-        return response.data;
+        return data;
     }
 
     /**
@@ -90,6 +98,40 @@ export default class HtmlFileReader {
         const blob = await this.getAssetBlob(asset);
         const byteArray = await new Response(blob).arrayBuffer();
         return new Uint8Array(byteArray);
+    }
+
+    public static async getAssetFrameImage(asset: IAsset) {
+        return new Promise((resolve, reject) => {
+            const cachingEnabled = false;
+            let refresh = cachingEnabled ? false : true;
+            let video: HTMLVideoElement = this.videoAssetFiles[asset.parent.name];
+
+            if (!video) {
+                video = document.createElement("video");
+                if (cachingEnabled) {
+                    this.videoAssetFiles[asset.parent.name] = video;
+                    refresh = true;
+                }
+            }
+
+            video.onloadedmetadata = () => {
+                video.currentTime = asset.timestamp;
+            };
+            video.onseeked = () => {
+                const canvas = document.createElement("canvas");
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob(resolve);
+            };
+            video.onerror = reject;
+            if (refresh) {
+                video.src = asset.parent.path;
+            } else {
+                video.currentTime = asset.timestamp;
+            }
+        });
     }
 
     private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {

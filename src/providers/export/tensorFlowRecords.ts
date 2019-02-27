@@ -1,14 +1,11 @@
 import _ from "lodash";
 import CryptoJS from "crypto-js";
-import axios from "axios";
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType, IAsset,
-         IAssetMetadata, RegionType, ITag } from "../../models/applicationState";
-import { AssetService } from "../../services/assetService";
+import { IProject, IAssetMetadata } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
-import { strings, interpolate } from "../../common/strings";
+import { interpolate } from "../../common/strings";
 import { TFRecordsBuilder, FeatureType } from "./tensorFlowRecords/tensorFlowBuilder";
 
 /**64
@@ -47,27 +44,7 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
      * Export project to TensorFlow Records
      */
     public async export(): Promise<void> {
-        const assetService = new AssetService(this.project);
-
-        let predicate: (asset: IAsset) => boolean = null;
-
-        switch (this.options.assetState) {
-            case ExportAssetState.All:
-                predicate = (asset) => true;
-                break;
-            case ExportAssetState.Visited:
-                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state === AssetState.Tagged;
-                break;
-        }
-
-        const loadAssetTasks = _.values(this.project.assets)
-            .filter(predicate)
-            .map((asset) => assetService.getAssetMetadata(asset));
-
-        const allAssets = await Promise.all(loadAssetTasks);
+        const allAssets = await this.getAssetsForExport();
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(allAssets, (assetMetadata) => assetMetadata.asset.id);
 
@@ -80,11 +57,9 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     }
 
     private async exportRecords(exportFolderName: string, allAssets: IAssetMetadata[]) {
-        const allImageExports = allAssets.map((element) => {
-            return this.exportSingleRecord(exportFolderName, element);
+        return await allAssets.mapAsync(async (element) => {
+            return await this.exportSingleRecord(exportFolderName, element);
         });
-
-        await Promise.all(allImageExports);
     }
 
     private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata): Promise<void> {
@@ -177,24 +152,24 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
 
     private updateAssetTagArrays(element: IAssetMetadata, imageInfo: IImageInfo) {
         element.regions.filter((region) => region.boundingBox)
-                               .forEach((region) => {
-                                    region.tags.forEach((tagName) => {
-                                        const index = this.project.tags
-                                            .findIndex((projectTag) => projectTag.name === tagName);
+            .forEach((region) => {
+                region.tags.forEach((tagName) => {
+                    const index = this.project.tags
+                        .findIndex((projectTag) => projectTag.name === tagName);
 
-                                        imageInfo.text.push(tagName);
-                                        imageInfo.label.push(index);
-                                        imageInfo.xmin.push(region.boundingBox.left / imageInfo.width);
-                                        imageInfo.ymin.push(region.boundingBox.top / imageInfo.height);
-                                        imageInfo.xmax.push((region.boundingBox.left + region.boundingBox.width)
-                                            / imageInfo.width);
-                                        imageInfo.ymax.push((region.boundingBox.top + region.boundingBox.height)
-                                            / imageInfo.height);
-                                        imageInfo.difficult.push(0);
-                                        imageInfo.truncated.push(0);
-                                        imageInfo.view.push("Unspecified");
-                                    });
-                                });
+                    imageInfo.text.push(tagName);
+                    imageInfo.label.push(index);
+                    imageInfo.xmin.push(region.boundingBox.left / imageInfo.width);
+                    imageInfo.ymin.push(region.boundingBox.top / imageInfo.height);
+                    imageInfo.xmax.push((region.boundingBox.left + region.boundingBox.width)
+                        / imageInfo.width);
+                    imageInfo.ymax.push((region.boundingBox.top + region.boundingBox.height)
+                        / imageInfo.height);
+                    imageInfo.difficult.push(0);
+                    imageInfo.truncated.push(0);
+                    imageInfo.view.push("Unspecified");
+                });
+            });
     }
 
     private async exportPBTXT(exportFolderName: string, project: IProject) {

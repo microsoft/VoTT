@@ -1,10 +1,8 @@
 import _ from "lodash";
-import axios, { AxiosRequestConfig } from "axios";
 import { ExportProvider, ExportAssetState, IExportResults } from "./exportProvider";
 import Guard from "../../common/guard";
-import { AssetService } from "../../services/assetService";
 import {
-    IProject, IExportFormat, IAsset, AssetState, IAssetMetadata,
+    IProject, IExportFormat, IAssetMetadata,
     IBoundingBox, ISize, IProviderOptions,
 } from "../../models/applicationState";
 import {
@@ -46,7 +44,6 @@ export enum NewOrExisting {
  */
 export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVisionExportOptions> {
     private customVisionService: AzureCustomVisionService;
-    private assetService: AssetService;
 
     constructor(project: IProject, options: IAzureCustomVisionExportOptions) {
         super(project, options);
@@ -57,7 +54,6 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
             baseUrl: "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training",
         };
         this.customVisionService = new AzureCustomVisionService(cusomVisionServiceOptions);
-        this.assetService = new AssetService(this.project);
     }
 
     /**
@@ -69,24 +65,21 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
         const assetsToExport = await this.getAssetsForExport();
         const tagMap = _.keyBy(customVisionTags, "name");
 
-        const createImageTasks = assetsToExport.map((asset) => {
-            return this.uploadAsset(asset, tagMap)
-                .then(() => {
-                    return {
-                        asset,
-                        success: true,
-                    };
-                })
-                .catch((e) => {
-                    return {
-                        asset,
-                        success: false,
-                        error: e,
-                    };
-                });
+        const results = await assetsToExport.mapAsync(async (asset) => {
+            try {
+                await this.uploadAsset(asset, tagMap);
+                return {
+                    asset,
+                    success: true,
+                };
+            } catch (e) {
+                return {
+                    asset,
+                    success: false,
+                    error: e,
+                };
+            }
         });
-
-        const results = await Promise.all(createImageTasks);
 
         return {
             completed: results.filter((r) => r.success),
@@ -122,32 +115,6 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
             projectId: customVisionProject.id,
             newOrExisting: NewOrExisting.Existing,
         };
-    }
-
-    /**
-     * Gets the assets that are configured to be exported based on the configured asset state
-     */
-    private async getAssetsForExport(): Promise<IAssetMetadata[]> {
-        let predicate: (asset: IAsset) => boolean = null;
-
-        switch (this.options.assetState) {
-            case ExportAssetState.Visited:
-                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.All:
-            default:
-                predicate = () => true;
-                break;
-        }
-
-        const loadAssetTasks = _.values(this.project.assets)
-            .filter(predicate)
-            .map((asset) => this.assetService.getAssetMetadata(asset));
-
-        return await Promise.all(loadAssetTasks);
     }
 
     /**
