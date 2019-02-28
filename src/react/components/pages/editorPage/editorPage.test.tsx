@@ -14,7 +14,7 @@ import { AssetProviderFactory } from "../../../../providers/storage/assetProvide
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
-import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
+import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyboardManager";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -364,6 +364,14 @@ describe("Editor Page Component", () => {
             await waitForSelectedAsset(wrapper);
         });
 
+        function dispatchKeyEvent(key: string, eventType: KeyEventType = KeyEventType.KeyDown) {
+            window.dispatchEvent(new KeyboardEvent(
+                eventType, {
+                    key,
+                },
+            ));
+        }
+
         it("editor mode is changed correctly", async () => {
             wrapper.find(`.${ToolbarItemName.DrawPolygon}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Polygon);
@@ -399,51 +407,53 @@ describe("Editor Page Component", () => {
         });
 
         it("Calls copy regions with button click", async () => {
-            const wrapper = shallow(<EditorPage/>);
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
             expect((navigator as any).clipboard.writeText).toBeCalled();
-
+            // TODO - Find way to assert that canvas.copyRegions was called
         });
 
         it("Calls cut regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
             expect((navigator as any).clipboard.writeText).toBeCalled();
+            // TODO - Find way to assert that canvas.cutRegions was called
         });
 
         it("Calls paste regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
             expect((navigator as any).clipboard.readText).toBeCalled();
+            // TODO - Find way to assert that canvas.pasteRegions was called
         });
 
         it("Calls clear regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
+            // TODO - Find way to assert that canvas.clearRegions was called
         });
 
         it("Calls copy regions with hot key", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
+            dispatchKeyEvent("Ctrl+c");
             expect((navigator as any).clipboard.writeText).toBeCalled();
+            // TODO - Find way to assert that canvas.copyRegions was called
         });
 
         it("Calls cut regions with hot key", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
+            dispatchKeyEvent("Ctrl+x");
             expect((navigator as any).clipboard.writeText).toBeCalled();
+            // TODO - Find way to assert that canvas.cutRegions was called
         });
 
         it("Calls paste regions with hot key", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
+            dispatchKeyEvent("Ctrl+v");
             expect((navigator as any).clipboard.readText).toBeCalled();
+            // TODO - Find way to assert that canvas.pasteRegions was called
         });
 
         it("Calls clear regions with hot key", async () => {
-            await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
+            dispatchKeyEvent("Ctrl+e");
+            // TODO - Find way to assert that canvas.clearRegions was called
         });
     });
 
