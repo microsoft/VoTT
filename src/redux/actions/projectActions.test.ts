@@ -13,8 +13,7 @@ import { ExportProviderFactory } from "../../providers/export/exportProviderFact
 import { IExportProvider } from "../../providers/export/exportProvider";
 import { IApplicationState } from "../../models/applicationState";
 import initialState from "../store/initialState";
-import { encryptProject } from "../../common/utils";
-import * as packageJson from "../../../package.json";
+import { appInfo } from "../../common/appInfo";
 
 describe("Project Redux Actions", () => {
     let store: MockStoreEnhanced<IApplicationState>;
@@ -82,7 +81,7 @@ describe("Project Redux Actions", () => {
 
         const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
 
-        expect(result.version).toEqual(packageJson.version);
+        expect(result.version).toEqual(appInfo.version);
     });
 
     it("Delete Project action calls project service and dispatches redux action", async () => {
@@ -186,7 +185,7 @@ describe("Project Redux Actions", () => {
         const project = MockFactory.createTestProject("TestProject");
         const result = await projectActions.saveAssetMetadata(project, assetMetadata)(store.dispatch);
 
-        expect(result.version).toEqual(packageJson.version);
+        expect(result.version).toEqual(appInfo.version);
     });
 
     it("Export project calls export provider and dispatches redux action", async () => {

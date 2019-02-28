@@ -18,8 +18,8 @@ import {
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import HtmlFileReader from "../../common/htmlFileReader";
-import * as packageJson from "../../../package.json";
 import registerMixins from "../../registerMixins";
+import { appInfo } from "../../common/appInfo";
 
 registerMixins();
 
@@ -151,7 +151,7 @@ describe("Azure Custom Vision Export Provider", () => {
                 return Promise.resolve<IAssetMetadata>({
                     asset,
                     regions: asset.state === AssetState.Tagged ? regions : [],
-                    version: packageJson.version,
+                    version: appInfo.version,
                 });
             });
 

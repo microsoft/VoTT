@@ -1,6 +1,6 @@
 import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
-import HomePage from "../pages/homepage/homePage";
+import { Switch, Route } from "react-router-dom";
+import { HomePageWithRouter } from "../pages/homepage/homePage";
 import ActiveLearningPage from "../pages/activeLearningPage";
 import AppSettingsPage from "../pages/appSettings/appSettingsPage";
 import ConnectionPage from "../pages/connections/connectionsPage";
@@ -17,17 +17,17 @@ export default function MainContentRouter() {
     return (
         <div className="app-content">
             <Switch>
-                <Route path="/" exact component={HomePage} />
+                <Route path="/" exact component={HomePageWithRouter} />
                 <Route path="/settings" component={AppSettingsPage} />
                 <Route path="/profile" component={ProfileSettingsPage} />
                 <Route path="/connections/:connectionId" component={ConnectionPage} />
                 <Route path="/connections" exact component={ConnectionPage} />
                 <Route path="/projects/:projectId/edit" component={EditorPage} />
-                <Route path="/projects/create" component={ProjectSettingsPage} />
                 <Route path="/projects/:projectId/settings" component={ProjectSettingsPage} />
                 <Route path="/projects/:projectId/export" component={ExportPage} />
                 <Route path="/projects/:projectId/active-learning" component={ActiveLearningPage} />
-                <Route component={HomePage} />
+                <Route path="/projects/create" exact component={ProjectSettingsPage} />
+                <Route component={HomePageWithRouter} />
             </Switch>
         </div>
     );

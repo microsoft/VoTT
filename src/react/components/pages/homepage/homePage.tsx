@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { strings } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -16,13 +16,13 @@ import {
     ErrorCode, AppError, IAppError,
 } from "../../../../models/applicationState";
 
-export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
+export interface IHomePageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
 }
 
-export interface IHomepageState {
+export interface IHomePageState {
     cloudPickerOpen: boolean;
 }
 
@@ -39,9 +39,8 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class HomePage extends React.Component<IHomepageProps> {
-    public state: IHomepageState = {
+export class HomePage extends React.Component<IHomePageProps, IHomePageState> {
+    public state: IHomePageState = {
         cloudPickerOpen: false,
     };
 
@@ -104,8 +103,12 @@ export default class HomePage extends React.Component<IHomepageProps> {
     }
 
     private createNewProject = () => {
-        this.props.actions.closeProject();
-        this.props.history.push("/projects/create");
+        try {
+            this.props.actions.closeProject();
+            this.props.history.push("/projects/create");
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     private handleOpenCloudProjectClick = () => {
@@ -145,3 +148,5 @@ export default class HomePage extends React.Component<IHomepageProps> {
         }
     }
 }
+
+export const HomePageWithRouter = withRouter(connect(mapStateToProps, mapDispatchToProps)(HomePage));

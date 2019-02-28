@@ -13,7 +13,7 @@ describe("Array Extensions", () => {
         beforeEach(() => output.length = 0);
 
         const actionFunc = async (asset): Promise<void> => {
-            return new Promise((resolve) => {
+            return new Promise<void>((resolve) => {
                 setImmediate(() => {
                     output.push(asset);
                     resolve();
