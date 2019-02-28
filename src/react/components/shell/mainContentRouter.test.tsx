@@ -8,7 +8,7 @@ import { AnyAction, Store } from "redux";
 import createReduxStore from "../../../redux/store/store";
 
 import MainContentRouter from "./mainContentRouter";
-import { IHomePageProps, HomePageWithRouter } from "./../pages/homepage/homePage";
+import HomePage, { IHomepageProps } from "./../pages/homepage/homePage";
 import SettingsPage from "./../pages/appSettings/appSettingsPage";
 import ConnectionsPage from "./../pages/connections/connectionsPage";
 import ProfilePage from "./../pages/profileSettingsPage";
@@ -17,11 +17,11 @@ import { IApplicationState } from "./../../../models/applicationState";
 describe("Main Content Router", () => {
     const badRoute: string = "/index.html";
 
-    function createComponent(routerContext, route, store, props: IHomePageProps): ReactWrapper {
+    function createComponent(routerContext, route, store, props: IHomepageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
                 <Router location={route} context={routerContext}>
-                    <HomePageWithRouter {...props} />
+                    <HomePage {...props} />
                 </Router>
             </Provider>,
         );
@@ -40,7 +40,7 @@ describe("Main Content Router", () => {
             return pathMap;
         }, {});
 
-        expect(pathMap["/"]).toBe(HomePageWithRouter);
+        expect(pathMap["/"]).toBe(HomePage);
         expect(pathMap["/settings"]).toBe(SettingsPage);
         expect(pathMap["/connections"]).toBe(ConnectionsPage);
         expect(pathMap["/profile"]).toBe(ProfilePage);
@@ -49,7 +49,7 @@ describe("Main Content Router", () => {
     it("renders a redirect when no route is matched", () => {
         const wrapper = createWrapper();
 
-        const homePage = wrapper.find(HomePageWithRouter);
+        const homePage = wrapper.find(HomePage);
         expect(homePage.find(".app-homepage").exists()).toEqual(true);
   });
 });
