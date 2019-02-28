@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, ReactWrapper } from "enzyme";
+import { mount, ReactWrapper, shallow } from "enzyme";
 import _ from "lodash";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -340,22 +340,26 @@ describe("Editor Page Component", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
 
-        let canvasMock: jest.Mocked<typeof Canvas> = null;
+        const copiedRegion = MockFactory.createTestRegion("copiedRegion");
 
         beforeAll(() => {
-            canvasMock = Canvas as any;
-            canvasMock.prototype.copyRegions = jest.fn();
-
             registerToolbar();
+            const clipboard = (navigator as any).clipboard;
+            if (!(clipboard && clipboard.writeText)) {
+                (navigator as any).clipboard = {
+                    writeText: jest.fn(() => Promise.resolve()),
+                    readText: jest.fn(() => Promise.resolve(JSON.stringify([copiedRegion]))),
+                };
+            }
         });
 
         beforeEach(async () => {
-            canvasMock = Canvas as jest.Mocked<typeof Canvas>;
             const testProject = MockFactory.createTestProject("TestProject");
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
 
             wrapper = createComponent(store, props);
+
             editorPage = wrapper.find(EditorPage).childAt(0);
             await waitForSelectedAsset(wrapper);
         });
@@ -395,24 +399,51 @@ describe("Editor Page Component", () => {
         });
 
         it("Calls copy regions with button click", async () => {
+            const wrapper = shallow(<EditorPage/>);
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
-            expect(canvasMock.prototype.copyRegions).toBeCalled();
+            expect((navigator as any).clipboard.writeText).toBeCalled();
+
         });
 
         it("Calls cut regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
-            .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
+                .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
+            expect((navigator as any).clipboard.writeText).toBeCalled();
         });
 
         it("Calls paste regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
-            .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
+                .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
+            expect((navigator as any).clipboard.readText).toBeCalled();
         });
 
         it("Calls clear regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
-            .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
+                .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
+        });
+
+        it("Calls copy regions with hot key", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
+            expect((navigator as any).clipboard.writeText).toBeCalled();
+        });
+
+        it("Calls cut regions with hot key", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
+            expect((navigator as any).clipboard.writeText).toBeCalled();
+        });
+
+        it("Calls paste regions with hot key", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
+            expect((navigator as any).clipboard.readText).toBeCalled();
+        });
+
+        it("Calls clear regions with hot key", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
         });
     });
 
