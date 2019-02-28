@@ -102,7 +102,7 @@ export default class HtmlFileReader {
     public static async getAssetFrameImage(asset: IAsset) {
         return new Promise((resolve, reject) => {
             const cachingEnabled = false;
-            let refresh = cachingEnabled ? false : true;
+            let refresh = !cachingEnabled;
             let video: HTMLVideoElement = this.videoAssetFiles[asset.parent.name];
 
             if (!video) {
