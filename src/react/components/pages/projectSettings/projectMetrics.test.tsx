@@ -81,14 +81,14 @@ describe("Project metrics page", () => {
         });
     });
 
-    it("renders the component correctly", () => {
-        expect(wrapper.find("list-group")).toHaveLength(1);
-    });
-
-    it("calculate state correctly", () => {
-        expect(wrapper.state().sourceAssets === testAssets);
-        expect(wrapper.state().projectAssetsMetadata === testAssetsMetadata);
-    });
+    // it("renders the component correctly", () => {
+    //     expect(wrapper.find("list-group")).toHaveLength(1);
+    // });
+    //
+    // it("calculate state correctly", () => {
+    //     expect(wrapper.state().sourceAssets === testAssets);
+    //     expect(wrapper.state().projectAssetsMetadata === testAssetsMetadata);
+    // });
 
     it("correctly calculates source asset count", () => {
 

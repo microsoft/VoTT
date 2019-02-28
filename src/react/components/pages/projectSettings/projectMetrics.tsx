@@ -61,8 +61,10 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
             const tagName = tag.name;
             return (
                 <li>
-                    <b>{tagName}:</b>
-                    <span className="tag-count"> {tagsMap.get(tagName) || 0} </span>
+                    <b>{tagName}: </b>
+                    <span className="tag-count badge badge-light badge-pill">
+                        {tagsMap.get(tagName) || 0}
+                    </span>
                 </li>
             );
         });
@@ -77,26 +79,38 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                 </h3>
                 <ul className="list-group list-group-flush m-3">
                     <li className="list-group-item total-source-asset">
-                        <b>Total source assets:  </b>
+                        <b>Total source assets: </b>
                         <span
-                            className="source-asset-count badge badge-light badge-pill">{this.getSourceAssetCount()}
+                            className="source-asset-count badge badge-light badge-pill">
+                            {this.getSourceAssetCount()}
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Number of assets visited:  </b>
-                        <span className="visited-asset-count badge badge-light badge-pill">{this.getVisitedAssetsCount()} </span>
+                        <b>Number of assets visited: </b>
+                        <span
+                            className="visited-asset-count badge badge-light badge-pill">
+                            {this.getVisitedAssetsCount()}
+                        </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Total tagged assets:  </b>
-                        <span className="tagged-asset-count badge badge-light badge-pill">{this.getTaggedAssetCount()} </span>
+                        <b>Total tagged assets: </b>
+                        <span
+                            className="tagged-asset-count badge badge-light badge-pill">
+                            {this.getTaggedAssetCount()}
+                        </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Number of regions:  </b>
-                        <span className="regions-count badge badge-light badge-pill">{this.getRegionsCount()}</span>
+                        <b>Number of regions: </b>
+                        <span className="regions-count badge badge-light badge-pill">
+                            {this.getRegionsCount()}
+                        </span>
                     </li>
                     <li className="list-group-item">
                         <h5>Total tag categories:
-                            <span className="tag-categories-count badge badge-light badge-pill"> {this.getTagCategoriesCount()} </span>
+                            <span
+                                className="tag-categories-count badge badge-light badge-pill">
+                                {this.getTagCategoriesCount()}
+                            </span>
                         </h5>
                         <ul>{renderTagCategories}</ul>
                     </li>
@@ -107,8 +121,11 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Average tags per asset:  </b>
-                        <span className="average-tags-count badge badge-light badge-pill"> {this.getAverageTagsCount()} </span>
+                        <b>Average tags per asset: </b>
+                        <span
+                            className="average-tags-count badge badge-light badge-pill">
+                            {this.getAverageTagsCount()}
+                        </span>
                     </li>
                 </ul>
             </div>
