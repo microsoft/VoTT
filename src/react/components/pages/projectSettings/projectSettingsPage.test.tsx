@@ -6,11 +6,14 @@ import MockFactory from "../../../../common/mockFactory";
 import createReduxStore from "../../../../redux/store/store";
 import ProjectSettingsPage, { IProjectSettingsPageProps } from "./projectSettingsPage";
 
-jest.mock("../../../../services/projectService");
+// jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 import { IAppSettings } from "../../../../models/applicationState";
+import registerProviders from "../../../../registerProviders";
 
 describe("Project settings page", () => {
+    beforeAll(registerProviders);
+
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
     function createCompoent(store, props: IProjectSettingsPageProps): ReactWrapper {

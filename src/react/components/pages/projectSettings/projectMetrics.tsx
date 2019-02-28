@@ -78,7 +78,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 </span>
                 </h3>
                 <ul className="list-group list-group-flush m-3">
-                    <li className="list-group-item total-source-asset">
+                    <li className="list-group-item">
                         <b>Total source assets: </b>
                         <span
                             className="source-asset-count badge badge-light badge-pill">
