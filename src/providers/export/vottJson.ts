@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType, IAsset } from "../../models/applicationState";
-import { AssetService } from "../../services/assetService";
+import { IProject } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import { constants } from "../../common/constants";
+import HtmlFileReader from "../../common/htmlFileReader";
 
 /**
  * @name - IVottJsonExportOptions
@@ -27,31 +27,26 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOption
      * Export project to VoTT JSON format
      */
     public async export(): Promise<void> {
-        const assetService = new AssetService(this.project);
+        const results = await this.getAssetsForExport();
 
-        let predicate: (asset: IAsset) => boolean = null;
+        await results.forEachAsync(async (assetMetadata) => {
+            return new Promise(async (resolve) => {
+                const blob = await HtmlFileReader.getAssetBlob(assetMetadata.asset);
+                const assetFilePath = `vott-json-export/${assetMetadata.asset.id}.jpg`;
+                const fileReader = new FileReader();
+                fileReader.onload = async () => {
+                    const buffer = Buffer.from(fileReader.result as ArrayBuffer);
+                    await this.storageProvider.writeBinary(assetFilePath, buffer);
+                    resolve();
+                };
+                fileReader.readAsArrayBuffer(blob);
+            });
+        });
 
-        switch (this.options.assetState) {
-            case ExportAssetState.All:
-                predicate = (asset) => true;
-                break;
-            case ExportAssetState.Visited:
-                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
-                break;
-            case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state === AssetState.Tagged;
-                break;
-        }
-
-        const loadAssetTasks = _.values(this.project.assets)
-            .filter(predicate)
-            .map((asset) => assetService.getAssetMetadata(asset));
-
-        const results = await Promise.all(loadAssetTasks);
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(results, (assetMetadata) => assetMetadata.asset.id);
 
-        const fileName = `${this.project.name.replace(" ", "-")}${constants.exportFileExtension}`;
+        const fileName = `vott-json-export/${this.project.name.replace(" ", "-")}${constants.exportFileExtension}`;
         await this.storageProvider.writeText(fileName, JSON.stringify(exportObject, null, 4));
     }
 }

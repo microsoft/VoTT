@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import HtmlFileReader from "./htmlFileReader";
 import { AssetService } from "../services/assetService";
 import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
+import MockFactory from "./mockFactory";
 
 describe("Html File Reader", () => {
     it("Resolves promise after successfully reading file", async () => {

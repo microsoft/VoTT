@@ -1,6 +1,7 @@
+import _ from "lodash";
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, ISecurityToken, AppError, ErrorCode } from "../models/applicationState";
+import { IProject, ISecurityToken, AppError, ErrorCode, AssetState } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
@@ -44,54 +45,48 @@ export default class ProjectService implements IProjectService {
      * Save a project
      * @param project - Project to save
      */
-    public save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
+    public async save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
-        return new Promise<IProject>(async (resolve, reject) => {
-            try {
-                if (!project.id) {
-                    project.id = shortid.generate();
-                }
+        if (!project.id) {
+            project.id = shortid.generate();
+        }
 
-                const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
-                await this.saveExportSettings(project);
-                project = encryptProject(project, securityToken);
+        const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
+        await this.saveExportSettings(project);
+        project = encryptProject(project, securityToken);
 
-                await storageProvider.writeText(
-                    `${project.name}${constants.projectFileExtension}`,
-                    JSON.stringify(project, null, 4),
-                );
+        await storageProvider.writeText(
+            `${project.name}${constants.projectFileExtension}`,
+            JSON.stringify(project, null, 4),
+        );
 
-                resolve(project);
-            } catch (err) {
-                reject(err);
-            }
-        });
+        return project;
     }
 
     /**
      * Delete a project
      * @param project - Project to delete
      */
-    public delete(project: IProject): Promise<void> {
+    public async delete(project: IProject): Promise<void> {
         Guard.null(project);
 
-        return new Promise<void>(async (resolve, reject) => {
-            try {
-                const storageProvider = StorageProviderFactory.create(
-                    project.targetConnection.providerType,
-                    project.targetConnection.providerOptions,
-                );
+        const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
 
-                await storageProvider.deleteFile(`${project.name}${constants.projectFileExtension}`);
+        // Delete all asset metadata files created for project
+        const deleteFiles = _.values(project.assets)
+            .filter((asset) => asset.state === AssetState.Tagged)
+            .map((asset) => storageProvider.deleteFile(`${asset.id}${constants.assetMetadataFileExtension}`));
 
-                resolve();
-            } catch (err) {
-                reject(err);
-            }
-        });
+        await Promise.all(deleteFiles);
+        await storageProvider.deleteFile(`${project.name}${constants.projectFileExtension}`);
     }
 
+    /**
+     * Checks whether or not the project would cause a duplicate at the target connection
+     * @param project The project to validate
+     * @param projectList The list of known projects
+     */
     public isDuplicate(project: IProject, projectList: IProject[]): boolean {
         const duplicateProjects = projectList.find((p) =>
             p.id !== project.id &&

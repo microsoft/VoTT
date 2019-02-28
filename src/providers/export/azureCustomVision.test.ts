@@ -6,7 +6,7 @@ import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
 import {
     IProject, AssetState, IAsset, IAssetMetadata,
-    RegionType, IRegion, IExportProviderOptions,
+    RegionType, IRegion, IExportProviderOptions, AssetType,
 } from "../../models/applicationState";
 import { ExportAssetState } from "./exportProvider";
 jest.mock("./azureCustomVision/azureCustomVisionService");
@@ -19,6 +19,9 @@ jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import HtmlFileReader from "../../common/htmlFileReader";
 import * as packageJson from "../../../package.json";
+import registerMixins from "../../registerMixins";
+
+registerMixins();
 
 describe("Azure Custom Vision Export Provider", () => {
     let testProject: IProject = null;
@@ -46,6 +49,7 @@ describe("Azure Custom Vision Export Provider", () => {
                 "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
                 "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
                 "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
+                "asset-5": MockFactory.createTestAsset("5", AssetState.Tagged, null, AssetType.VideoFrame),
             },
             exportFormat: {
                 providerType: "azureCustomVision",

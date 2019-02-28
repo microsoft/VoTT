@@ -1,7 +1,8 @@
+import _ from "lodash";
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, IExportFormat, ISecurityToken } from "../models/applicationState";
+import { IProject, IExportFormat, ISecurityToken, AssetState } from "../models/applicationState";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { generateKey } from "../common/crypto";
@@ -33,6 +34,9 @@ describe("Project Service", () => {
         };
         testProject = MockFactory.createTestProject("TestProject");
         projectSerivce = new ProjectService();
+
+        storageProviderMock.writeText.mockClear();
+        storageProviderMock.deleteFile.mockClear();
     });
 
     it("Load decrypts any project settings using the specified key", async () => {
@@ -140,5 +144,17 @@ describe("Project Service", () => {
         testProject.id = undefined;
         projectList = MockFactory.createTestProjects();
         expect(projectSerivce.isDuplicate(testProject, projectList)).toEqual(true);
+    });
+
+    it("deletes all asset metadata files when project is deleted", async () => {
+        const assets = MockFactory.createTestAssets(10);
+        assets.forEach((asset) => {
+            asset.state = AssetState.Tagged;
+        });
+
+        testProject.assets = _.keyBy(assets, (asset) => asset.id);
+
+        await projectSerivce.delete(testProject);
+        expect(storageProviderMock.deleteFile.mock.calls).toHaveLength(assets.length + 1);
     });
 });
