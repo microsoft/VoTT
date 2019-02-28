@@ -382,6 +382,11 @@ describe("Editor Page Component", () => {
 
         const copiedRegion = MockFactory.createTestRegion("copiedRegion");
 
+        const copyRegions = jest.fn();
+        const cutRegions = jest.fn();
+        const pasteRegions = jest.fn();
+        const clearRegions = jest.fn();
+
         beforeAll(() => {
             registerToolbar();
             const clipboard = (navigator as any).clipboard;
@@ -397,11 +402,16 @@ describe("Editor Page Component", () => {
             const testProject = MockFactory.createTestProject("TestProject");
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
-
             wrapper = createComponent(store, props);
 
             editorPage = wrapper.find(EditorPage).childAt(0);
             await waitForSelectedAsset(wrapper);
+            wrapper.update();
+            const canvas = wrapper.find(Canvas).instance() as Canvas;
+            canvas.copyRegions = copyRegions;
+            canvas.cutRegions = cutRegions;
+            canvas.pasteRegions = pasteRegions;
+            canvas.clearRegions = clearRegions;
         });
 
         function dispatchKeyEvent(key: string, eventType: KeyEventType = KeyEventType.KeyDown) {
@@ -449,51 +459,45 @@ describe("Editor Page Component", () => {
         it("Calls copy regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
-            expect((navigator as any).clipboard.writeText).toBeCalled();
-            // TODO - Find way to assert that canvas.copyRegions was called
+            expect(copyRegions).toBeCalled();
         });
 
         it("Calls cut regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
-            expect((navigator as any).clipboard.writeText).toBeCalled();
-            // TODO - Find way to assert that canvas.cutRegions was called
+            expect(cutRegions).toBeCalled();
         });
 
         it("Calls paste regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
-            expect((navigator as any).clipboard.readText).toBeCalled();
-            // TODO - Find way to assert that canvas.pasteRegions was called
+            expect(pasteRegions).toBeCalled();
         });
 
         it("Calls clear regions with button click", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
-            // TODO - Find way to assert that canvas.clearRegions was called
+            expect(clearRegions).toBeCalled();
         });
 
         it("Calls copy regions with hot key", async () => {
             dispatchKeyEvent("Ctrl+c");
-            expect((navigator as any).clipboard.writeText).toBeCalled();
-            // TODO - Find way to assert that canvas.copyRegions was called
+            expect(copyRegions).toBeCalled();
         });
 
         it("Calls cut regions with hot key", async () => {
             dispatchKeyEvent("Ctrl+x");
-            expect((navigator as any).clipboard.writeText).toBeCalled();
-            // TODO - Find way to assert that canvas.cutRegions was called
+            expect(cutRegions).toBeCalled();
         });
 
         it("Calls paste regions with hot key", async () => {
             dispatchKeyEvent("Ctrl+v");
-            expect((navigator as any).clipboard.readText).toBeCalled();
-            // TODO - Find way to assert that canvas.pasteRegions was called
+            expect(pasteRegions).toBeCalled();
         });
 
         it("Calls clear regions with hot key", async () => {
             dispatchKeyEvent("Ctrl+e");
-            // TODO - Find way to assert that canvas.clearRegions was called
+            expect(clearRegions).toBeCalled();
         });
     });
 
@@ -582,7 +586,7 @@ describe("Editor Page Component", () => {
             wrapper.update();
             wrapper.find("div.tag")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             const editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
         });
@@ -600,14 +604,14 @@ describe("Editor Page Component", () => {
             wrapper.update();
             wrapper.find("div.tag")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             let editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
 
             wrapper.update();
             wrapper.find("div.tag")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([]);
         });
