@@ -1,0 +1,15 @@
+.project-settings-page {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+
+    &-settings {
+        flex-grow: 1;
+    }
+
+    &-metrics {
+        flex-grow: 1;
+        align-content: center;
+        align-items: center;
+    }
+}

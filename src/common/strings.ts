@@ -90,6 +90,16 @@ export interface IAppStrings {
             saveSuccess: string;
         },
     };
+    projectMetrics: {
+        title: string;
+        sourceAssets: string;
+        visitedAssets: string;
+        taggedAssets: string;
+        regionsCount: string;
+        tagCategories: string;
+        tagCount: string;
+        averageTagPerAsset: string;
+    };
     tags: {
         title: string;
         placeholder: string;
