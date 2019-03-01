@@ -78,7 +78,6 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      */
     private handleError(error: string | Error | AppError) {
         let appError: IAppError = null;
-
         // Promise rejection with reason
         if (typeof (error) === "string") {
             // Promise rejection with string base reason
@@ -105,10 +104,21 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         }
 
         if (!appError) {
-            appError = new AppError(ErrorCode.Unknown, "Unknown Error occurred");
+            appError = {
+                title: "Unknown Error Occurred:",
+                errorCode: ErrorCode.Unknown, 
+                message: this.getUnknownErrorMessage(error),
+            };
         }
-
         this.props.onError(appError);
+    }
+
+    private getUnknownErrorMessage(e) {
+        return (
+            <pre>
+                {JSON.stringify(e, null, 2)}
+            </pre>
+        )
     }
 
     /**
@@ -116,15 +126,17 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      * @param appError The error thrown by the application
      */
     private getLocalizedError(appError: IAppError): IAppError {
+        if (appError.errorCode === ErrorCode.Unknown) {
+            return appError;
+        }
         const localizedError = strings.errors[appError.errorCode];
         if (!localizedError) {
             return appError;
         }
-
         return {
             errorCode: appError.errorCode,
-            message: localizedError.message || strings.errors.unknown.message,
-            title: localizedError.title || strings.errors.unknown.title,
+            message: localizedError.message,
+            title: localizedError.title,
         };
     }
 }

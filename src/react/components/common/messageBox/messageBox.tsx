@@ -16,7 +16,7 @@ export type MessageFormatHandler = (...params: any[]) => string;
  */
 export interface IMessageBoxProps {
     title: string;
-    message: string | MessageFormatHandler;
+    message: string | Element | MessageFormatHandler;
     params?: any[];
     onButtonSelect?: (button: HTMLButtonElement) => void;
     onCancel?: () => void;
@@ -60,16 +60,12 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
             return null;
         }
 
-        const messageText = typeof this.props.message === "string"
-            ? this.props.message
-            : this.props.message.apply(this, this.props.params);
-
         return (
             <Modal className="messagebox-modal"
                 isOpen={this.state.isOpen}
                 onClosed={this.onClosed}>
                 <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader>
-                <ModalBody>{messageText}</ModalBody>
+                <ModalBody>{this.getMessage(this.props.message)}</ModalBody>
                 <ModalFooter onClick={this.onFooterClick}>
                     {this.props.children}
                 </ModalFooter>
@@ -101,6 +97,14 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
                 isOpen: this.props.show,
                 isRendered: this.props.show,
             });
+        }
+    }
+
+    private getMessage = (message: string | MessageFormatHandler | Element) => {
+        if (typeof message === "function") {
+            return message.apply(this, this.props.params);
+        } else {
+            return message;
         }
     }
 
