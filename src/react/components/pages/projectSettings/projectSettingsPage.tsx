@@ -80,7 +80,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                         onSubmit={this.onFormSubmit}
                         onCancel={this.onFormCancel}/>
                 </div>
-                {this.props.project &&
+                {this.props.project.id &&
                 <ProjectMetrics project={this.props.project}/>}
             </div>
         );

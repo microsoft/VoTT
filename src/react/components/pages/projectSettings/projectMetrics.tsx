@@ -47,7 +47,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
         const tags = this.props.project.tags || [];
         const renderTagCategories = tags.map((item) => {
-            return (<li>{item.name}</li>);
+            return (<li className={item.name}>{item.name}</li>);
         });
 
         const tagsMap = this.getTagsCount();
@@ -62,7 +62,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
             return (
                 <li>
                     <b>{tagName}: </b>
-                    <span className="tag-count badge badge-light badge-pill">
+                    <span className="${tagName}-count badge badge-light badge-pill">
                         {tagsMap.get(tagName) || 0}
                     </span>
                 </li>
@@ -102,13 +102,12 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     <li className="list-group-item">
                         <b>Number of regions: </b>
                         <span className="regions-count badge badge-light badge-pill">
-                            {this.getRegionsCount()}
+                              {this.getRegionsCount()}
                         </span>
                     </li>
                     <li className="list-group-item">
                         <h5>Total tag categories:
-                            <span
-                                className="tag-categories-count badge badge-light badge-pill">
+                            <span className="tag-categories-count badge badge-light badge-pill">
                                 {this.getTagCategoriesCount()}
                             </span>
                         </h5>
@@ -123,7 +122,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     <li className="list-group-item">
                         <b>Average tags per asset: </b>
                         <span
-                            className="average-tags-count badge badge-light badge-pill">
+                            className="average-tag-count badge badge-light badge-pill">
                             {this.getAverageTagsCount()}
                         </span>
                     </li>
@@ -154,7 +153,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * Count the number of tagged images or video frames
      */
-    private getTaggedAssetCount() {
+    private getTaggedAssetCount = () => {
         const metadata = this.state.projectAssetsMetadata;
 
         const taggedAssets = _.filter(metadata,
@@ -169,7 +168,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * Count the avg number of tags per image or video frame
      */
-    private getAverageTagsCount() {
+    private getAverageTagsCount = () => {
         const tags = this.getAllTags();
         return tags.length / this.getTaggedAssetCount();
     }
@@ -177,7 +176,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * The number of visited image or video frames
      */
-    private getVisitedAssetsCount() {
+    private getVisitedAssetsCount = () => {
         const metadata = this.state.projectAssetsMetadata;
 
         const visitedAssets = _.filter(metadata, (m) => {
@@ -190,7 +189,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * Total regions drawn on all assets
      */
-    private getRegionsCount() {
+    private getRegionsCount = () => {
         const regions = this.getRegions();
         return regions.length;
     }
@@ -199,7 +198,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
      * Total number of source assets in the project
      *   Note: video frames are not counted, only the video container
      */
-    private getSourceAssetCount() {
+    private getSourceAssetCount = () => {
         const assets = this.state.sourceAssets;
         return assets.length;
     }
@@ -207,7 +206,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * The number of tag categories in the project
      */
-    private getTagCategoriesCount(): number {
+    private getTagCategoriesCount = (): number => {
         const tags = this.props.project.tags;
         return tags ? tags.length : 0;
     }
@@ -215,7 +214,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * a map of asset count per tag
      */
-    private getTagsCount() {
+    private getTagsCount = () => {
         const tags = this.getAllTags();
 
         const map = new Map();
@@ -230,7 +229,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * retrieve the list of regions drawn
      */
-    private getRegions(): IRegion[] {
+    private getRegions = (): IRegion[] => {
         const assetsMetadata = this.state.projectAssetsMetadata;
 
         // find all assets with non-zero regions, extract regions
@@ -247,7 +246,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * retrieve the list of tags assigned
      */
-    private getAllTags() {
+    private getAllTags = () => {
         const regions = this.getRegions();
 
         const tags = [];
