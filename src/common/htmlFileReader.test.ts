@@ -128,7 +128,7 @@ describe("Html File Reader", () => {
             const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
             const result = await HtmlFileReader.getAssetArray(asset);
             expect(result).not.toBeNull();
-            expect(result).toBeInstanceOf(Uint8Array);
+            expect(result).toBeInstanceOf(ArrayBuffer);
             expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
 

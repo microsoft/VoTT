@@ -15,8 +15,8 @@ export function generateKey(keySize: number = 32): string {
  * @param secret The base64 encoded secret
  */
 export function encrypt(message: string, secret: string): string {
-    Guard.emtpy(message);
-    Guard.emtpy(secret);
+    Guard.empty(message);
+    Guard.empty(secret);
 
     try {
         const secretBytes = enc.Base64.parse(secret);
@@ -51,8 +51,8 @@ export function encryptObject(message: any, secret: string): string {
  * @param secret The base64 encoded secret
  */
 export function decrypt(encodedMessage: string, secret: string): string {
-    Guard.emtpy(encodedMessage);
-    Guard.emtpy(secret);
+    Guard.empty(encodedMessage);
+    Guard.empty(secret);
 
     try {
         const secretBytes = enc.Base64.parse(secret);

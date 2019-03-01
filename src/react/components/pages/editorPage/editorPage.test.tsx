@@ -27,7 +27,7 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import EditorFooter from "./editorFooter";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import Canvas from "./canvas";
-import * as packageJson from "../../../../../package.json";
+import { appInfo } from "../../../../common/appInfo";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
@@ -65,7 +65,7 @@ describe("Editor Page Component", () => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
                 regions: [MockFactory.createTestRegion()],
-                version: packageJson.version,
+                version: appInfo.version,
             };
 
             return Promise.resolve(assetMetadata);
@@ -231,7 +231,7 @@ describe("Editor Page Component", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset: { ...asset },
                     regions: [{ ...MockFactory.createTestRegion(), tags: ["NEWTAG"] }],
-                    version: packageJson.version,
+                    version: appInfo.version,
                 };
                 return Promise.resolve(assetMetadata);
             });
@@ -276,7 +276,7 @@ describe("Editor Page Component", () => {
         const editedImageAsset: IAssetMetadata = {
             asset: imageAsset,
             regions: [MockFactory.createTestRegion()],
-            version: packageJson.version,
+            version: appInfo.version,
         };
 
         const saveMock = assetServiceMock.prototype.save as jest.Mock;
@@ -294,7 +294,7 @@ describe("Editor Page Component", () => {
                 state: AssetState.Tagged,
             },
             regions: editedImageAsset.regions,
-            version: packageJson.version,
+            version: appInfo.version,
         });
 
         const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === imageAsset.id);
@@ -342,7 +342,7 @@ describe("Editor Page Component", () => {
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
                 regions: [MockFactory.createTestRegion()],
-                version: packageJson.version,
+                version: appInfo.version,
             };
 
             const saveMock = assetServiceMock.prototype.save as jest.Mock;
@@ -359,7 +359,7 @@ describe("Editor Page Component", () => {
                     state: AssetState.Tagged,
                 },
                 regions: [],
-                version: packageJson.version,
+                version: appInfo.version,
             };
 
             // Called 2 times, once for root and once for child.

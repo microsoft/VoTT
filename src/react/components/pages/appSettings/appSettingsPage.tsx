@@ -8,7 +8,7 @@ import { strings } from "../../../../common/strings";
 import { AppSettingsForm } from "./appSettingsForm";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
-import * as packageJson from "../../../../../package.json";
+import { appInfo } from "../../../../common/appInfo";
 
 /**
  * Props for App Settings Page
@@ -62,7 +62,7 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps> 
                     onCancel={this.onFormCancel} />
                 <div className="app-settings-page-sidebar p-3 bg-lighter-1">
                     <div className="my-3">
-                        <p>{`${strings.appSettings.version.description} ${packageJson.version}`}</p>
+                        <p>{`${strings.appSettings.version.description} ${appInfo.version}`}</p>
                     </div>
                     <div className="my-3">
                         <p>{strings.appSettings.devTools.description}</p>
