@@ -176,6 +176,34 @@ In addition, users may choose to export all assets, only visited assets, or only
 
 ![alt text](docs/images/export-labels.png "Export Labels")
 
+## Keyboard Shortcuts
+
+VoTT allows a number of keyboard shortcuts to make it easier to keep one hand on the mouse when tagging. It allows most common shortcuts:
+
+* Ctrl+C - copy
+* Ctrl+X - cut 
+* Ctrl+V - paste
+* Ctrl+A - select all
+* Ctrl+Z - undo
+* Ctrl+Shift+Z - redo
+
+The editor page assigns hotkeys of 1 through 0 to the first ten tags. These can be reordered by dragging tags in the footer. In addition, the editor page has some special shortcuts to select tagging tools:
+
+* V - Pointer/Select
+* R - Draw Rectangle
+* P - Draw Polygon
+* W or ArrowUp - Previous Asset
+* S or ArrowDown - Next Asset
+* Ctrl+S - Save Project
+* Ctrl+E - Export Project
+
+When the video playback bar is present, it allows the following shortcuts to select frames:
+
+* A or ArrowLeft - Previous Frame
+* D or ArrowRight - Next Frame
+* Q - Previous Tagged Frame
+* E - Next Tagged Frame
+
 # Collaborators
 
 VoTT was originally developed by the [Commercial Software Engineering (CSE) group at Microsoft](https://www.microsoft.com/developerblog/) in Israel.
