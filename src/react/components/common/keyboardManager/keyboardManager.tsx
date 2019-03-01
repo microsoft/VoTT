@@ -1,16 +1,7 @@
 import React from "react";
-import { KeyboardRegistrationManager } from "./keyboardRegistrationManager";
+import { KeyboardRegistrationManager, KeyEventType } from "./keyboardRegistrationManager";
 
 export const KeyboardContext = React.createContext<IKeyboardContext>(null);
-
-/**
- * Types of Key events supported by registration manager
- */
-export enum KeyEventType {
-    KeyDown = "keydown",
-    KeyUp = "keyup",
-    KeyPress = "keypress",
-}
 
 export interface IKeyboardContext {
     keyboard: KeyboardRegistrationManager;

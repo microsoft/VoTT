@@ -1,6 +1,14 @@
 import Guard from "../../../../common/guard";
-import { KeyEventType } from "./keyboardManager";
-// FIXME: should KeyEventType enum in keyboardManager be moved here to avoid circular dependency?
+
+/**
+ * Types of Key events supported by registration manager
+ */
+export enum KeyEventType {
+    KeyDown = "keydown",
+    KeyUp = "keyup",
+    KeyPress = "keypress",
+}
+
 /**
  * A map of keyboard event registrations
  */
