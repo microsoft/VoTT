@@ -16,12 +16,19 @@ export default class EditorTagsInput extends React.Component<ITagsInputProps> {
     protected getTagSpan(name: string, index: number) {
         const displayIndex = (index === 9) ? 0 : index + 1;
         const showIndex = index < 10;
-        const className = `tag-span${(showIndex) ? " tag-span-index" : ""}`;
-        return (
-            <span className={className}>
-                {(showIndex) ? `[${index}]  ` : ""}{name}
-            </span>
-        );
+        if (showIndex) {
+            return (
+                <span className={"tag-span tag-span-index"}>
+                    {`[${displayIndex}]  ${name}`}
+                </span>
+            )
+        } else {
+            return (
+                <span className={"tag-span"}>
+                    {name}
+                </span>
+            )
+        }
     }
 
     render() {
