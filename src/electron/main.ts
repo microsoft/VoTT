@@ -1,4 +1,4 @@
-import { app, ipcMain, BrowserWindow, dialog, BrowserWindowConstructorOptions, Menu } from "electron";
+import { app, ipcMain, BrowserWindow, BrowserWindowConstructorOptions, Menu } from "electron";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
 
@@ -8,27 +8,20 @@ let mainWindow: BrowserWindow;
 let ipcMainProxy: IpcMainProxy;
 
 function createWindow() {
-    // and load the index.html of the app.
-
     const windowOptions: BrowserWindowConstructorOptions = {
         width: 1024,
         height: 768,
     };
-    // Create the browser window.
 
+    const staticUrl = process.env.ELECTRON_START_URL || `file:///${__dirname}/index.html`;
     if (process.env.ELECTRON_START_URL) {
-        // Disable web security to support loading in local file system resources
-        // TODO: Look into defined local security policy
         windowOptions.webPreferences = {
             webSecurity: false,
         };
-        mainWindow = new BrowserWindow(windowOptions);
-        mainWindow.loadURL(process.env.ELECTRON_START_URL);
-    } else {
-        // When running in production mode or with static files use loadFile api vs. loadUrl api.
-        mainWindow = new BrowserWindow(windowOptions);
-        mainWindow.loadFile("build/index.html");
     }
+
+    mainWindow = new BrowserWindow(windowOptions);
+    mainWindow.loadURL(staticUrl);
 
     // Emitted when the window is closed.
     mainWindow.on("closed", () => {
@@ -53,12 +46,8 @@ function onReloadApp() {
     return true;
 }
 
-function onToggleDevTools(sender: any, show: boolean) {
-    if (show) {
-        mainWindow.webContents.openDevTools();
-    } else {
-        mainWindow.webContents.closeDevTools();
-    }
+function onToggleDevTools() {
+    mainWindow.webContents.toggleDevTools();
 }
 
 /**

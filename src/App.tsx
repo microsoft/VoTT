@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Navbar from "./react/components/shell/navbar";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
-import { IAppError, IApplicationState, IProject, AppError, ErrorCode } from "./models/applicationState";
+import { IAppError, IApplicationState, IProject, ErrorCode } from "./models/applicationState";
 import "./App.scss";
 import "react-toastify/dist/ReactToastify.css";
 import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActions";
