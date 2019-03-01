@@ -4,15 +4,14 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { RegionType } from "vott-react";
-import * as packageJson from "../../../../../package.json";
 import MockFactory from "../../../../common/mockFactory";
 import { EditorMode, IAssetMetadata, IRegion } from "../../../../models/applicationState";
 import { AssetPreview, IAssetPreviewProps } from "../../common/assetPreview/assetPreview";
 import Canvas, { ICanvasProps, ICanvasState } from "./canvas";
 import CanvasHelpers from "./canvasHelpers";
+import { appInfo } from "../../../../common/appInfo";
 
 jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
-
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 
 describe("Editor Canvas", () => {
@@ -121,7 +120,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
-            version: packageJson.version,
+            version: appInfo.version,
         };
 
         canvas.editor.onSelectionEnd(newRegionData);
@@ -162,7 +161,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
-            version: packageJson.version,
+            version: appInfo.version,
         };
 
         const movedRegionData = MockFactory.createTestRegionData();
@@ -197,7 +196,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
-            version: packageJson.version,
+            version: appInfo.version,
         };
 
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
@@ -218,7 +217,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
-            version: packageJson.version,
+            version: appInfo.version,
         };
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
 

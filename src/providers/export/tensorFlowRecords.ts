@@ -65,7 +65,8 @@ export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonEx
     private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                const imageBuffer = await HtmlFileReader.getAssetArray(element.asset);
+                const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset);
+                const imageBuffer = new Uint8Array(arrayBuffer);
 
                 // Get Base64
                 const image64 = btoa(imageBuffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
