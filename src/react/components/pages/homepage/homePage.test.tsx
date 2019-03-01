@@ -10,7 +10,7 @@ import createReduxStore from "../../../../redux/store/store";
 import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
 import FilePicker, { IFilePickerProps } from "../../common/filePicker/filePicker";
-import HomePage, { IHomepageProps, IHomepageState } from "./homePage";
+import HomePage, { IHomePageProps, IHomePageState } from "./homePage";
 
 jest.mock("../../common/cloudFilePicker/cloudFilePicker");
 import { CloudFilePicker, ICloudFilePickerProps } from "../../common/cloudFilePicker/cloudFilePicker";
@@ -19,13 +19,13 @@ jest.mock("../../../../services/projectService");
 
 describe("Homepage Component", () => {
     let store: Store<IApplicationState> = null;
-    let props: IHomepageProps = null;
+    let props: IHomePageProps = null;
     let wrapper: ReactWrapper = null;
     let deleteProjectSpy: jest.SpyInstance = null;
     let closeProjectSpy: jest.SpyInstance = null;
     const recentProjects = MockFactory.createTestProjects(2);
 
-    function createComponent(store, props: IHomepageProps): ReactWrapper {
+    function createComponent(store, props: IHomePageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -79,7 +79,7 @@ describe("Homepage Component", () => {
 
     it("should render a list of recent projects", () => {
         expect(wrapper).not.toBeNull();
-        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps>;
+        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomePageProps>;
         if (homePage.props().recentProjects && homePage.props().recentProjects.length > 0) {
             expect(wrapper.find(CondensedList).exists()).toBeTruthy();
         }
@@ -99,7 +99,7 @@ describe("Homepage Component", () => {
         await MockFactory.flushUi();
         wrapper.update();
 
-        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps>;
+        const homePage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomePageProps>;
 
         expect(deleteProjectSpy).toBeCalledWith(recentProjects[0]);
         expect(homePage.props().recentProjects.length).toEqual(recentProjects.length - 1);
@@ -148,13 +148,13 @@ describe("Homepage Component", () => {
     });
 
     it("closes any open project and navigates to the new project screen", () => {
-        const homepage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomepageProps, IHomepageState>;
+        const homepage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomePageProps, IHomePageState>;
         homepage.find("a.new-project").simulate("click");
         expect(closeProjectSpy).toBeCalled();
         expect(homepage.props().history.push).toBeCalledWith("/projects/create");
     });
 
-    function createProps(): IHomepageProps {
+    function createProps(): IHomePageProps {
         return {
             recentProjects: [],
             connections: MockFactory.createTestConnections(),
