@@ -20,7 +20,7 @@ export class ToolbarItemFactory {
      * @param component - React component ToolbarItem
      * @param config - Configuration of ToolbarItem
      */
-    public static register(component: typeof ToolbarItem, config: IToolbarItemMetadata) {
+    public static register(config: IToolbarItemMetadata, component: typeof ToolbarItem = ToolbarItem) {
         Guard.null(component);
         Guard.null(config);
 

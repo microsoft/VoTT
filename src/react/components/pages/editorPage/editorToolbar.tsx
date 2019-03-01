@@ -5,7 +5,7 @@ import IProjectActions from "../../../../redux/actions/projectActions";
 import { IProject } from "../../../../models/applicationState";
 import { IToolbarItemProps, ToolbarItem, ToolbarItemType } from "../../toolbar/toolbarItem";
 import "./editorToolbar.scss";
-import { Select } from "../../toolbar/select";
+import { ToolbarItemName } from "../../../../registerToolbar";
 
 /**
  * Properties for Editor Toolbar
@@ -25,7 +25,7 @@ export interface IEditorToolbarProps {
  * @member selectedItem - Item selected from toolbar
  */
 export interface IEditorToolbarState {
-    selectedItem: any;
+    selectedItem: ToolbarItemName;
 }
 
 /**
@@ -33,15 +33,10 @@ export interface IEditorToolbarState {
  * @description - Collection of buttons that perform actions in toolbar on editor page
  */
 export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorToolbarState> {
-    constructor(props, context) {
-        super(props, context);
 
-        this.state = {
-            selectedItem: Select.prototype,
-        };
-
-        this.onToolbarItemSelected = this.onToolbarItemSelected.bind(this);
-    }
+    public state = {
+        selectedItem: ToolbarItemName.SelectCanvas,
+    };
 
     public render() {
         const groups = _(this.props.items)
@@ -71,17 +66,17 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
         );
     }
 
-    private onToolbarItemSelected(toolbarItem: ToolbarItem) {
+    private onToolbarItemSelected = (toolbarItem: ToolbarItem) => {
         this.setState({
-            selectedItem: Object.getPrototypeOf(toolbarItem),
+            selectedItem: toolbarItem.props.name,
         }, () => {
             this.props.onToolbarItemSelected(toolbarItem);
         });
     }
 
-    private isComponentActive(selected: any, componentRegistration: IToolbarItemRegistration) {
+    private isComponentActive(selected: ToolbarItemName, componentRegistration: IToolbarItemRegistration) {
         return selected
-            ? selected === componentRegistration.component.prototype &&
+            ? selected === componentRegistration.config.name &&
             componentRegistration.config.type === ToolbarItemType.State
             : false;
     }
