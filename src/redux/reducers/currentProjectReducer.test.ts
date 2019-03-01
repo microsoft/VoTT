@@ -97,6 +97,7 @@ describe("Current Project Reducer", () => {
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result.assets[testAssets[0].id]).toEqual(assetMetadata.asset);
+        expect(result.lastVisitedAssetId).toEqual(assetMetadata.asset.id);
     });
 
     it("Unknown action performs a noop", () => {
