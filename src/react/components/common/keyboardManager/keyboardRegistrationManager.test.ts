@@ -104,7 +104,7 @@ describe("Keyboard Registration Manager", () => {
         expect(handlers.length).toEqual(0);
     });
 
-    it("get handlers for unregistered key code returns emtpy array", () => {
+    it("get handlers for unregistered key code returns empty array", () => {
         const handlers = keyboardManager.getHandlers(KeyEventType.KeyDown, "Alt+1");
         expect(handlers.length).toEqual(0);
     });

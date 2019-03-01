@@ -5,7 +5,7 @@ export default class Guard {
      * @param paramName - The name of the parameter to validate
      * @param message - The error message to return on invalid value
      */
-    public static emtpy(value: string, paramName?: string, message?: string) {
+    public static empty(value: string, paramName?: string, message?: string) {
         if ((!!value === false || value.trim().length === 0)) {
             message = message || (`'${paramName || "value"}' cannot be null or empty`);
             throw new Error(message);
