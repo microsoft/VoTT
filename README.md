@@ -178,7 +178,7 @@ In addition, users may choose to export all assets, only visited assets, or only
 
 ## Keyboard Shortcuts
 
-VoTT allows a number of keyboard shortcuts to make it easier to keep one hand on the mouse when tagging. It allows most common shortcuts:
+VoTT allows a number of keyboard shortcuts to make it easier to keep one hand on the mouse while tagging. It allows most common shortcuts:
 
 * Ctrl+C - copy
 * Ctrl+X - cut 
