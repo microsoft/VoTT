@@ -2,11 +2,11 @@ import Guard from "./guard";
 
 describe("Guard", () => {
     function methodWithRequiredName(name: string) {
-        Guard.emtpy(name);
+        Guard.empty(name);
     }
 
     function methodWithRequiredNameWithParam(name: string) {
-        Guard.emtpy(name, "name", "Name is required");
+        Guard.empty(name, "name", "Name is required");
     }
 
     function methodWithRequiredObject(options: any) {

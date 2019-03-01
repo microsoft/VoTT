@@ -26,7 +26,7 @@ export class AssetService {
      * @param fileName - name of asset
      */
     public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
-        Guard.emtpy(filePath);
+        Guard.empty(filePath);
 
         const md5Hash = new MD5().update(filePath).digest("hex");
         const pathParts = filePath.split(/[\\\/]/);
