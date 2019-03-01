@@ -114,11 +114,7 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
     }
 
     private getUnknownErrorMessage(e) {
-        return (
-            <pre>
-                {JSON.stringify(e, null, 2)}
-            </pre>
-        )
+        return (<pre>{JSON.stringify(e, null, 2)}</pre>);
     }
 
     /**
