@@ -148,10 +148,15 @@ describe("Homepage Component", () => {
     });
 
     it("closes any open project and navigates to the new project screen", () => {
+        const eventMock = {
+            preventDefault: jest.fn(),
+        };
+
         const homepage = wrapper.find(HomePage).childAt(0) as ReactWrapper<IHomePageProps, IHomePageState>;
-        homepage.find("a.new-project").simulate("click");
+        homepage.find("a.new-project").simulate("click", eventMock);
         expect(closeProjectSpy).toBeCalled();
         expect(homepage.props().history.push).toBeCalledWith("/projects/create");
+        expect(eventMock.preventDefault).toBeCalled();
     });
 
     function createProps(): IHomePageProps {

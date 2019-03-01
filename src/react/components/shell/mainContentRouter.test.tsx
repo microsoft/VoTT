@@ -51,7 +51,7 @@ describe("Main Content Router", () => {
 
         const homePage = wrapper.find(HomePage);
         expect(homePage.find(".app-homepage").exists()).toEqual(true);
-  });
+    });
 });
 
 function createStore(state?: IApplicationState): Store<any, AnyAction> {
