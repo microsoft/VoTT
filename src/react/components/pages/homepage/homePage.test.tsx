@@ -9,8 +9,6 @@ import { IApplicationState, IProject, AppError, ErrorCode } from "../../../../mo
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import createReduxStore from "../../../../redux/store/store";
-import ProjectService from "../../../../services/projectService";
-import ImportService from "../../../../services/importService";
 import CondensedList from "../../common/condensedList/condensedList";
 import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 import FilePicker, { IFilePickerProps } from "../../common/filePicker/filePicker";
@@ -20,7 +18,10 @@ jest.mock("../../common/cloudFilePicker/cloudFilePicker");
 import { CloudFilePicker, ICloudFilePickerProps } from "../../common/cloudFilePicker/cloudFilePicker";
 
 jest.mock("../../../../services/projectService");
+import ProjectService from "../../../../services/projectService";
+
 jest.mock("../../../../services/importService");
+import ImportService from "../../../../services/importService";
 
 describe("Homepage Component", () => {
     let store: Store<IApplicationState> = null;
@@ -28,7 +29,6 @@ describe("Homepage Component", () => {
     let wrapper: ReactWrapper = null;
     let deleteProjectSpy: jest.SpyInstance = null;
     let closeProjectSpy: jest.SpyInstance = null;
-    // let importServiceMock: jest.Mocked<typeof ImportService> = null;
     const recentProjects = MockFactory.createTestProjects(2);
     const storageProviderMock = {
         writeText: jest.fn((project) => Promise.resolve(project)),

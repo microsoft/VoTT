@@ -45,30 +45,12 @@ describe("Import Service", () => {
             file,
         };
         const v2Project = await importService.convertProject({file, content});
-
-        const testRegion = {
-            id: "0",
-            boundingBox: {
-                left: 1,
-                top: 1,
-                width: 10,
-                height: 10,
-            },
-            points: [
-                { x: 1, y: 1},
-                { x: 1, y: 11 },
-                { x: 11, y: 1 },
-                { x: 11, y: 11 },
-            ],
-            tags: [],
-            type: RegionType.Rectangle,
-        };
         const result = await importService.generateAssets(fileInfo, v2Project);
 
         expect(result[0].asset.name).toEqual("testFrame0.jpg");
         expect(result[0].asset.state).toEqual(AssetState.Tagged);
         expect(result[0].regions).toHaveLength(3);
         expect(result[1].asset.state).toEqual(AssetState.NotVisited);
-        expect(result[0].regions[0]).toEqual(testRegion);
+        expect(result[0].regions[0].id).toEqual("0");
     });
 });

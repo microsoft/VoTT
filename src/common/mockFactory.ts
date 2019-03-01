@@ -295,20 +295,24 @@ export default class MockFactory {
      */
     public static createTestV1Regions(count: number = 3): IV1Region[] {
         const regions: IV1Region[] = [];
+        const left = randomIntInRange(0, 511);
+        const top = randomIntInRange(0, 383);
+        const right = randomIntInRange(512, 1024);
+        const bottom = randomIntInRange(384, 786);
 
         for (let i = 0; i < count; i++) {
             const testRegion = {
-                x1: 1,
-                y1: 1,
-                x2: 11,
-                y2: 11,
+                x1: left,
+                y1: top,
+                x2: right,
+                y2: bottom,
                 width: 10,
                 height: 10,
                 box: {
-                    x1: 1,
-                    y1: 1,
-                    x2: 11,
-                    y2: 11 },
+                    x1: left,
+                    y1: top,
+                    x2: right,
+                    y2: bottom },
                 points: [],
                 UID: i.toString(),
                 id: 2,

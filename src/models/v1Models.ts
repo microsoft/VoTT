@@ -6,8 +6,8 @@ import { IPoint } from "./applicationState";
  * @member frames - Dictionary of all frame objects in the project (filename: list of regions in that file)
  * @member framerate - Rate at which a video is stepped through
  * @member inputTags - Comma delimited list of all tags in the project
- * @member suggestiontype - TODO: Add description
- * @member scd - TODO: Add description
+ * @member suggestiontype - Setting to suggest regions for the next frame
+ * @member scd - Boolean to describe whether scene-change detection is enabled
  * @member visitedFrames - List of names of the frames in the project that have been visited
  * @member tag_colors - List of all tag colors corresponding to the tags in "tags"
  */
