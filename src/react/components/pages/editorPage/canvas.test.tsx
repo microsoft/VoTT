@@ -1,7 +1,5 @@
 import { mount, ReactWrapper } from "enzyme";
 import React from "react";
-import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
-import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { RegionType } from "vott-react";
 import * as packageJson from "../../../../../package.json";
@@ -18,12 +16,6 @@ jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 
 describe("Editor Canvas", () => {
-
-    function createTestRegionData() {
-        const testRegionData = new RegionData(0, 0, 100, 100,
-            [new Point2D(0, 0), new Point2D(1, 0), new Point2D(0, 1), new Point2D(1, 1)], RegionDataType.Rect);
-        return testRegionData;
-    }
 
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {

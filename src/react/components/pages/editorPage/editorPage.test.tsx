@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { mount, ReactWrapper } from "enzyme";
 import _ from "lodash";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -28,7 +28,6 @@ import EditorFooter from "./editorFooter";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import Canvas from "./canvas";
 import * as packageJson from "../../../../../package.json";
-import CardBody from "reactstrap/lib/CardBody";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
