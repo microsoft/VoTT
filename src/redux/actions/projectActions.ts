@@ -8,7 +8,7 @@ import {
     ErrorCode, AppError } from "../../models/applicationState";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
-import * as packageJson from "../../../package.json";
+import { appInfo } from "../../common/appInfo";
 
 /**
  * Actions to be performed in relation to projects
@@ -17,7 +17,7 @@ export default interface IProjectActions {
     loadProject(project: IProject): Promise<IProject>;
     saveProject(project: IProject): Promise<IProject>;
     deleteProject(project: IProject): Promise<void>;
-    closeProject();
+    closeProject(): void;
     exportProject(project: IProject): Promise<void> | Promise<IExportResults>;
     loadAssets(project: IProject): Promise<IAsset[]>;
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
@@ -71,7 +71,7 @@ export function saveProject(project: IProject)
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const newProject = {...project, version: packageJson.version};
+        const newProject = { ...project, version: appInfo.version };
 
         const savedProject = await projectService.save(newProject, projectToken);
         dispatch(saveProjectAction(savedProject));
@@ -112,7 +112,7 @@ export function deleteProject(project: IProject)
  * Dispatches Close Project action
  */
 export function closeProject(): (dispatch: Dispatch) => void {
-    return (dispatch: Dispatch) => {
+    return (dispatch: Dispatch): void => {
         dispatch({ type: ActionTypes.CLOSE_PROJECT_SUCCESS });
     };
 }
@@ -154,7 +154,7 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
 export function saveAssetMetadata(
     project: IProject,
     assetMetadata: IAssetMetadata): (dispatch: Dispatch) => Promise<IAssetMetadata> {
-    const newAssetMetadata = {...assetMetadata, version: packageJson.version};
+    const newAssetMetadata = { ...assetMetadata, version: appInfo.version };
 
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);

@@ -76,6 +76,26 @@ describe("Canvas Helpers", () => {
         expect(CanvasHelpers.regionTypeToType(null)).toBeUndefined();
     });
 
+    it("Duplicates and moves a region", () => {
+        const regions = MockFactory.createTestRegions();
+        const duplicates = CanvasHelpers.duplicateRegionsAndMove([regions[0]], regions);
+        expect(duplicates[0]).toMatchObject({
+            ...regions[0],
+            id: expect.any(String),
+            boundingBox: {
+                ...regions[0].boundingBox,
+                left: regions[0].boundingBox.left + CanvasHelpers.pasteMargin,
+                top: regions[0].boundingBox.top + CanvasHelpers.pasteMargin,
+            },
+            points: regions[0].points.map((p) => {
+                return {
+                    x: p.x + CanvasHelpers.pasteMargin,
+                    y: p.y + CanvasHelpers.pasteMargin,
+                };
+            }),
+        });
+    });
+
     it("Toggles a tag", () => {
         const tags = ["tag1", "tag2", "tag3"];
         CanvasHelpers.toggleTag(tags, "tag1");

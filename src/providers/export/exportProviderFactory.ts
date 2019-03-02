@@ -35,8 +35,8 @@ export class ExportProviderFactory {
      */
     public static register(options: IExportProviderRegistrationOptions) {
         Guard.null(options);
-        Guard.emtpy(options.name);
-        Guard.emtpy(options.displayName);
+        Guard.empty(options.name);
+        Guard.empty(options.displayName);
         Guard.null(options.factory);
 
         // The first provider registered will be the default
@@ -53,7 +53,7 @@ export class ExportProviderFactory {
      * @param options  - The provider specific options for exporting
      */
     public static create(name: string, project: IProject, options?: any): IExportProvider {
-        Guard.emtpy(name);
+        Guard.empty(name);
         Guard.null(project);
 
         const handler = ExportProviderFactory.providerRegistry[name];

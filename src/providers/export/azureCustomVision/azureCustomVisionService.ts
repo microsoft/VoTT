@@ -80,7 +80,7 @@ export class AzureCustomVisionService {
      * @param projectId The Azure Custom Vision project ID
      */
     public async getProjectTags(projectId: string): Promise<IAzureCustomVisionTag[]> {
-        Guard.emtpy(projectId);
+        Guard.empty(projectId);
 
         const url = `${this.options.baseUrl}/projects/${projectId}/tags`;
         const response = await axios.get(url, this.createRequestConfig());
@@ -98,7 +98,7 @@ export class AzureCustomVisionService {
      * @param tag The tag to save
      */
     public async createTag(projectId: string, tag: IAzureCustomVisionTag): Promise<IAzureCustomVisionTag> {
-        Guard.emtpy(projectId);
+        Guard.empty(projectId);
         Guard.null(tag);
 
         const urlParams = {
@@ -122,7 +122,7 @@ export class AzureCustomVisionService {
      * @param contents The asset binary contents
      */
     public async createImage(projectId: string, contents: File | Blob | ArrayBuffer): Promise<IAzureCustomVisionImage> {
-        Guard.emtpy(projectId);
+        Guard.empty(projectId);
         Guard.null(contents);
 
         const url = `${this.options.baseUrl}/projects/${projectId}/images`;
@@ -147,7 +147,7 @@ export class AzureCustomVisionService {
      * @param regions The regions to create
      */
     public async createRegions(projectId: string, regions: IAzureCustomVisionRegion[]): Promise<void> {
-        Guard.emtpy(projectId);
+        Guard.empty(projectId);
         Guard.null(regions);
 
         const url = `${this.options.baseUrl}/projects/${projectId}/images/regions`;

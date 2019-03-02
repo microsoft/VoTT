@@ -28,7 +28,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { randomIntInRange } from "./utils";
-import * as packageJson from "../../package.json";
+import { appInfo } from "./appInfo";
 
 export default class MockFactory {
 
@@ -76,8 +76,8 @@ export default class MockFactory {
                     size: {
                         width: 800,
                         height: 600,
-                        },
-                    };
+                    },
+                };
                 break;
             case AssetType.VideoFrame:
                 testAsset = {
@@ -90,7 +90,7 @@ export default class MockFactory {
                     size: {
                         width: 800,
                         height: 600,
-                        },
+                    },
                     parent: {
                         id: `videoasset-${name}`,
                         format: "mp4",
@@ -101,9 +101,9 @@ export default class MockFactory {
                         size: {
                             width: 800,
                             height: 600,
-                            },
                         },
-                    };
+                    },
+                };
                 break;
             case AssetType.Image:
                 testAsset = {
@@ -229,7 +229,7 @@ export default class MockFactory {
         return {
             asset,
             regions: regions || [],
-            version: packageJson.version,
+            version: appInfo.version,
         };
     }
 
@@ -256,7 +256,7 @@ export default class MockFactory {
         return {
             id: `project-${name}`,
             name: `Project ${name}`,
-            version: packageJson.version,
+            version: appInfo.version,
             securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),

@@ -7,6 +7,7 @@ import MockFactory from "../../../common/mockFactory";
 
 jest.mock("react-toastify");
 import { toast } from "react-toastify";
+import { ToolbarItemName, ToolbarItemGroup } from "../../../registerToolbar";
 
 describe("Save Project Toolbar Item", () => {
     const testProject = MockFactory.createTestProject("TestProject");
@@ -20,10 +21,10 @@ describe("Save Project Toolbar Item", () => {
 
     function createProps(): IToolbarItemProps {
         return {
-            name: "saveProject",
+            name: ToolbarItemName.SaveProject,
             tooltip: "Save Project",
             icon: "fa-save",
-            group: "project",
+            group: ToolbarItemGroup.Project,
             type: ToolbarItemType.Action,
             actions,
             active: true,

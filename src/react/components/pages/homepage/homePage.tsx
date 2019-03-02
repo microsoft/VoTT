@@ -1,6 +1,6 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { connect } from "react-redux";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { strings, interpolate } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -20,7 +20,7 @@ import ImportService from "../../../../services/importService";
 import { IAssetMetadata } from "../../../../models/applicationState";
 import { toast } from "react-toastify";
 
-export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
+export interface IHomePageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
@@ -29,7 +29,7 @@ export interface IHomepageProps extends RouteComponentProps, React.Props<HomePag
     project: IProject;
 }
 
-export interface IHomepageState {
+export interface IHomePageState {
     cloudPickerOpen: boolean;
 }
 
@@ -50,8 +50,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class HomePage extends React.Component<IHomepageProps> {
-    public state: IHomepageState = {
+export default class HomePage extends React.Component<IHomePageProps, IHomePageState> {
+    public state: IHomePageState = {
         cloudPickerOpen: false,
     };
     private filePicker: React.RefObject<FilePicker> = React.createRef();
@@ -119,9 +119,11 @@ export default class HomePage extends React.Component<IHomepageProps> {
         );
     }
 
-    private createNewProject = () => {
+    private createNewProject = (e: SyntheticEvent) => {
         this.props.actions.closeProject();
         this.props.history.push("/projects/create");
+
+        e.preventDefault();
     }
 
     private handleOpenCloudProjectClick = () => {

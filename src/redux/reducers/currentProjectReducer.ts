@@ -32,6 +32,7 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             return {
                 ...state,
                 assets: updatedAssets,
+                lastVisitedAssetId: action.payload.asset.id,
             };
         case ActionTypes.SAVE_CONNECTION_SUCCESS:
             if (!state) {

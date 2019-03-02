@@ -13,13 +13,8 @@ import {
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
-import registerToolbar from "../../../../registerToolbar";
-import { DrawPolygon } from "../../toolbar/drawPolygon";
-import { DrawRectangle } from "../../toolbar/drawRectangle";
-import { Select } from "../../toolbar/select";
-import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
-import { NextAsset } from "../../toolbar/nextAsset";
-import { PreviousAsset } from "../../toolbar/previousAsset";
+import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
+import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyboardManager";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -32,7 +27,7 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import EditorFooter from "./editorFooter";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import Canvas from "./canvas";
-import * as packageJson from "../../../../../package.json";
+import { appInfo } from "../../../../common/appInfo";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
@@ -70,7 +65,7 @@ describe("Editor Page Component", () => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
                 regions: [MockFactory.createTestRegion()],
-                version: packageJson.version,
+                version: appInfo.version,
             };
 
             return Promise.resolve(assetMetadata);
@@ -236,7 +231,7 @@ describe("Editor Page Component", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset: { ...asset },
                     regions: [{ ...MockFactory.createTestRegion(), tags: ["NEWTAG"] }],
-                    version: packageJson.version,
+                    version: appInfo.version,
                 };
                 return Promise.resolve(assetMetadata);
             });
@@ -281,7 +276,7 @@ describe("Editor Page Component", () => {
         const editedImageAsset: IAssetMetadata = {
             asset: imageAsset,
             regions: [MockFactory.createTestRegion()],
-            version: packageJson.version,
+            version: appInfo.version,
         };
 
         const saveMock = assetServiceMock.prototype.save as jest.Mock;
@@ -299,7 +294,7 @@ describe("Editor Page Component", () => {
                 state: AssetState.Tagged,
             },
             regions: editedImageAsset.regions,
-            version: packageJson.version,
+            version: appInfo.version,
         });
 
         const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === imageAsset.id);
@@ -347,7 +342,7 @@ describe("Editor Page Component", () => {
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
                 regions: [MockFactory.createTestRegion()],
-                version: packageJson.version,
+                version: appInfo.version,
             };
 
             const saveMock = assetServiceMock.prototype.save as jest.Mock;
@@ -364,7 +359,7 @@ describe("Editor Page Component", () => {
                     state: AssetState.Tagged,
                 },
                 regions: [],
-                version: packageJson.version,
+                version: appInfo.version,
             };
 
             // Called 2 times, once for root and once for child.
@@ -384,33 +379,62 @@ describe("Editor Page Component", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
 
+        const copiedRegion = MockFactory.createTestRegion("copiedRegion");
+
+        const copyRegions = jest.fn();
+        const cutRegions = jest.fn();
+        const pasteRegions = jest.fn();
+        const clearRegions = jest.fn();
+
         beforeAll(() => {
             registerToolbar();
+            const clipboard = (navigator as any).clipboard;
+            if (!(clipboard && clipboard.writeText)) {
+                (navigator as any).clipboard = {
+                    writeText: jest.fn(() => Promise.resolve()),
+                    readText: jest.fn(() => Promise.resolve(JSON.stringify([copiedRegion]))),
+                };
+            }
         });
 
         beforeEach(async () => {
             const testProject = MockFactory.createTestProject("TestProject");
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
-
             wrapper = createComponent(store, props);
+
             editorPage = wrapper.find(EditorPage).childAt(0);
             await waitForSelectedAsset(wrapper);
+            wrapper.update();
+            const canvas = wrapper.find(Canvas).instance() as Canvas;
+            canvas.copyRegions = copyRegions;
+            canvas.cutRegions = cutRegions;
+            canvas.pasteRegions = pasteRegions;
+            canvas.clearRegions = clearRegions;
         });
 
+        function dispatchKeyEvent(key: string, eventType: KeyEventType = KeyEventType.KeyDown) {
+            window.dispatchEvent(new KeyboardEvent(
+                eventType, {
+                    key,
+                },
+            ));
+        }
+
         it("editor mode is changed correctly", async () => {
-            wrapper.find(DrawPolygon).simulate("click");
+            wrapper.find(`.${ToolbarItemName.DrawPolygon}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Polygon);
 
-            wrapper.find(DrawRectangle).simulate("click");
+            wrapper.find(`.${ToolbarItemName.DrawRectangle}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Rectangle);
 
-            wrapper.find(Select).simulate("click");
+            wrapper.find(`.${ToolbarItemName.SelectCanvas}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Select);
         });
 
         it("selects the next asset when clicking the 'Next Asset' button in the toolbar", async () => {
-            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 2
             wrapper.update();
 
             const expectedAsset = editorPage.state().assets[1];
@@ -418,14 +442,61 @@ describe("Editor Page Component", () => {
         });
 
         it("selects the previous asset when clicking the 'Previous Asset' button in the toolbar", async () => {
-            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 2
-            await MockFactory.flushUi(() => wrapper.find(NextAsset).simulate("click")); // Move to Asset 3
-            await MockFactory.flushUi(() => wrapper.find(PreviousAsset).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 2
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.NextAsset}`).simulate("click")); // Move to Asset 3
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.PreviousAsset}`).simulate("click")); // Move to Asset 2
 
             wrapper.update();
 
             const expectedAsset = editorPage.state().assets[1];
             expect(getState(wrapper).selectedAsset).toMatchObject({ asset: expectedAsset });
+        });
+
+        it("Calls copy regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.CopyRegions}`).simulate("click"));
+            expect(copyRegions).toBeCalled();
+        });
+
+        it("Calls cut regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.CutRegions}`).simulate("click"));
+            expect(cutRegions).toBeCalled();
+        });
+
+        it("Calls paste regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.PasteRegions}`).simulate("click"));
+            expect(pasteRegions).toBeCalled();
+        });
+
+        it("Calls clear regions with button click", async () => {
+            await MockFactory.flushUi(() => wrapper
+                .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
+            expect(clearRegions).toBeCalled();
+        });
+
+        it("Calls copy regions with hot key", async () => {
+            dispatchKeyEvent("Ctrl+c");
+            expect(copyRegions).toBeCalled();
+        });
+
+        it("Calls cut regions with hot key", async () => {
+            dispatchKeyEvent("Ctrl+x");
+            expect(cutRegions).toBeCalled();
+        });
+
+        it("Calls paste regions with hot key", async () => {
+            dispatchKeyEvent("Ctrl+v");
+            expect(pasteRegions).toBeCalled();
+        });
+
+        it("Calls clear regions with hot key", async () => {
+            dispatchKeyEvent("Ctrl+e");
+            expect(clearRegions).toBeCalled();
         });
     });
 
@@ -514,7 +585,7 @@ describe("Editor Page Component", () => {
             wrapper.update();
             wrapper.find("div.tag")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             const editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
         });
@@ -532,14 +603,14 @@ describe("Editor Page Component", () => {
             wrapper.update();
             wrapper.find("div.tag")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             let editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
 
             wrapper.update();
             wrapper.find("div.tag")
                 .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true});
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([]);
         });

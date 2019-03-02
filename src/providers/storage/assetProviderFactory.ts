@@ -98,7 +98,7 @@ export class AssetProviderFactory {
      * @param options - Options for Asset Provider
      */
     public static create(name: string, options?: any): IAssetProvider {
-        Guard.emtpy(name);
+        Guard.empty(name);
 
         const registrationOptions = AssetProviderFactory.providerRegistry[name];
         if (!registrationOptions) {

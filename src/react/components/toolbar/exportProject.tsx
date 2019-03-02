@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
  * @description - Toolbar item to export current project
  */
 export class ExportProject extends ToolbarItem {
-    protected async onItemClick() {
+    protected onItemClick = async () => {
         const infoId = toast.info(`Started export for ${this.props.project.name}...`, { autoClose: false });
         const results = await this.props.actions.exportProject(this.props.project);
 
