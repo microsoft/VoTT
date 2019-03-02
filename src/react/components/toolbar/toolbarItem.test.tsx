@@ -4,6 +4,7 @@ import { mount, ReactWrapper } from "enzyme";
 import MockFactory from "../../../common/mockFactory";
 import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
 import { KeyboardManager } from "../common/keyboardManager/keyboardManager";
+import { ToolbarItemGroup, ToolbarItemName } from "../../../registerToolbar";
 
 describe("Toolbar Item", () => {
     let onClickHandler = jest.fn();
@@ -22,9 +23,9 @@ describe("Toolbar Item", () => {
             actions: MockFactory.projectActions(),
             project: MockFactory.createTestProject("TestProject"),
             active: false,
-            group: "test-groups",
+            group: ToolbarItemGroup.Canvas,
             icon: "fa-test",
-            name: "Test Item",
+            name: ToolbarItemName.SelectCanvas,
             tooltip: "Test Item Tooltip",
             onClick: onClickHandler,
             type: ToolbarItemType.Action,
@@ -37,7 +38,7 @@ describe("Toolbar Item", () => {
         const wrapper = createComponent();
         const button = wrapper.find("button");
         expect(button.exists()).toBe(true);
-        expect(button.prop("className")).toEqual("toolbar-btn");
+        expect(button.prop("className")).toEqual(`toolbar-btn ${ToolbarItemName.SelectCanvas}`);
         expect(wrapper.find(KeyboardBinding).exists()).toBe(false);
     });
 
@@ -53,7 +54,7 @@ describe("Toolbar Item", () => {
         const wrapper = createComponent(props);
 
         const button = wrapper.find("button");
-        expect(button.prop("className")).toEqual("toolbar-btn active");
+        expect(button.prop("className")).toEqual(`toolbar-btn ${ToolbarItemName.SelectCanvas} active`);
     });
 
     it("Renders a keyboard binding when an accelerator is configured", () => {

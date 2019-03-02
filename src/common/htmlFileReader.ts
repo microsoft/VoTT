@@ -99,10 +99,9 @@ export default class HtmlFileReader {
      * Downloads the binary array from the asset path
      * @param asset The asset to download
      */
-    public static async getAssetArray(asset: IAsset): Promise<Uint8Array> {
+    public static async getAssetArray(asset: IAsset): Promise<ArrayBuffer> {
         const blob = await this.getAssetBlob(asset);
-        const byteArray = await new Response(blob).arrayBuffer();
-        return new Uint8Array(byteArray);
+        return await new Response(blob).arrayBuffer();
     }
 
     public static async getAssetFrameImage(asset: IAsset) {

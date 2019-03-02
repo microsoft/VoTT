@@ -110,7 +110,7 @@ export class StorageProviderFactory {
      * @param options - Options for Storage Provider
      */
     public static create(name: string, options?: any): IStorageProvider {
-        Guard.emtpy(name);
+        Guard.empty(name);
 
         const registrationOptions = StorageProviderFactory.providerRegistry[name];
         if (!registrationOptions) {

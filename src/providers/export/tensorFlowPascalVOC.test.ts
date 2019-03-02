@@ -11,9 +11,9 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
-import * as packageJson from "../../../package.json";
 import registerMixins from "../../registerMixins";
 import HtmlFileReader from "../../common/htmlFileReader";
+import { appInfo } from "../../common/appInfo";
 
 registerMixins();
 
@@ -87,7 +87,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion],
-                    version: packageJson.version,
+                    version: appInfo.version,
                 };
 
                 return Promise.resolve(assetMetadata);

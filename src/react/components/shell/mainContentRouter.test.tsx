@@ -8,7 +8,7 @@ import { AnyAction, Store } from "redux";
 import createReduxStore from "../../../redux/store/store";
 
 import MainContentRouter from "./mainContentRouter";
-import HomePage, { IHomepageProps } from "./../pages/homepage/homePage";
+import HomePage, { IHomePageProps } from "./../pages/homepage/homePage";
 import SettingsPage from "./../pages/appSettings/appSettingsPage";
 import ConnectionsPage from "./../pages/connections/connectionsPage";
 import ProfilePage from "./../pages/profileSettingsPage";
@@ -17,7 +17,7 @@ import { IApplicationState } from "./../../../models/applicationState";
 describe("Main Content Router", () => {
     const badRoute: string = "/index.html";
 
-    function createComponent(routerContext, route, store, props: IHomepageProps): ReactWrapper {
+    function createComponent(routerContext, route, store, props: IHomePageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
                 <Router location={route} context={routerContext}>
@@ -51,7 +51,7 @@ describe("Main Content Router", () => {
 
         const homePage = wrapper.find(HomePage);
         expect(homePage.find(".app-homepage").exists()).toEqual(true);
-  });
+    });
 });
 
 function createStore(state?: IApplicationState): Store<any, AnyAction> {

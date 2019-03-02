@@ -1,15 +1,17 @@
 import shortid from "shortid";
-import { ITag, IRegion, RegionType, EditorMode } from "../../../../models/applicationState";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import Guard from "../../../../common/guard";
+import { IBoundingBox, IRegion, ITag, RegionType, IPoint } from "../../../../models/applicationState";
 
 /**
  * Static functions to assist in operations within Canvas component
  */
 export default class CanvasHelpers {
+
+    public static pasteMargin = 10;
 
     /**
      * Adds tag to array if it does not contain the tag,
@@ -174,5 +176,70 @@ export default class CanvasHelpers {
                 break;
         }
         return type;
+    }
+
+    /**
+     * Duplicates region with a new ID, and moves it to the next available location by intervals
+     * of `CanvasHelpers.pasteMargin`.
+     * @param regions Regions to duplicate
+     * @param others Other regions existing in the asset (used to not put region on top of other region)
+     */
+    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[]): IRegion[] => {
+        const result: IRegion[] = [];
+        for (const region of regions) {
+            const shiftCoordinates = CanvasHelpers.getShiftCoordinates(region.boundingBox, others);
+
+            const newRegion: IRegion = {
+                ...region,
+                id: shortid.generate(),
+                boundingBox: CanvasHelpers.shiftBoundingBox(region.boundingBox, shiftCoordinates),
+                points: CanvasHelpers.shiftPoints(region.points, shiftCoordinates),
+            };
+            result.push(newRegion);
+        }
+        return result;
+    }
+
+    private static shiftBoundingBox = (boundingBox: IBoundingBox, shiftCoordinates: IPoint): IBoundingBox => {
+        return {
+            ...boundingBox,
+            left: boundingBox.left + shiftCoordinates.x,
+            top: boundingBox.top + shiftCoordinates.y,
+        };
+    }
+
+    private static shiftPoints = (points: IPoint[], shiftCoordinates: IPoint) => {
+        return points.map((p) => {
+            return {
+                x: p.x + shiftCoordinates.x,
+                y: p.y + shiftCoordinates.y,
+            };
+        });
+    }
+
+    private static getShiftCoordinates = (boundingBox: IBoundingBox, otherRegions: IRegion[]) => {
+        let x = boundingBox.left;
+        let y = boundingBox.top;
+
+        let foundRegionAtTarget = false;
+
+        while (!foundRegionAtTarget) {
+            for (const region of otherRegions) {
+                if (region.boundingBox.left === x && region.boundingBox.top === y) {
+                    foundRegionAtTarget = true;
+                    break;
+                }
+            }
+            if (foundRegionAtTarget) {
+                x += CanvasHelpers.pasteMargin;
+                y += CanvasHelpers.pasteMargin;
+                foundRegionAtTarget = false;
+            } else {
+                return {
+                    x: x - boundingBox.left,
+                    y: y - boundingBox.top,
+                };
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 import { ToolbarItemFactory } from "./toolbarItemFactory";
 import { IToolbarItemMetadata, ToolbarItemType, ToolbarItem } from "../../react/components/toolbar/toolbarItem";
-import registerToolbar from "../../registerToolbar";
+import registerToolbar, { ToolbarItemName, ToolbarItemGroup } from "../../registerToolbar";
 
 class TestToolbarItem extends ToolbarItem {
     protected onItemClick() {
@@ -10,8 +10,8 @@ class TestToolbarItem extends ToolbarItem {
 
 describe("Toolbar Item Factory", () => {
     const testToolbarItemConfig: IToolbarItemMetadata = {
-        name: "test",
-        group: "testGroup",
+        name: ToolbarItemName.SelectCanvas,
+        group: ToolbarItemGroup.Canvas,
         icon: "fa-test",
         tooltip: "Test Component",
         type: ToolbarItemType.Action,
@@ -21,7 +21,7 @@ describe("Toolbar Item Factory", () => {
         const existingItems = ToolbarItemFactory.getToolbarItems();
         expect(existingItems.length).toEqual(0);
 
-        ToolbarItemFactory.register(TestToolbarItem, testToolbarItemConfig);
+        ToolbarItemFactory.register(testToolbarItemConfig, TestToolbarItem);
         const newItems = ToolbarItemFactory.getToolbarItems();
         expect(newItems.length).toEqual(1);
         expect(newItems[0].config).toEqual(testToolbarItemConfig);
@@ -30,8 +30,8 @@ describe("Toolbar Item Factory", () => {
 
     it("Registering a toolbar item with invalid values throws an exception", () => {
         expect(() => ToolbarItemFactory.register(null, null)).toThrowError();
-        expect(() => ToolbarItemFactory.register(TestToolbarItem, null)).toThrowError();
-        expect(() => ToolbarItemFactory.register(null, testToolbarItemConfig)).toThrowError();
+        expect(() => ToolbarItemFactory.register(null, TestToolbarItem)).toThrowError();
+        expect(() => ToolbarItemFactory.register(testToolbarItemConfig, null)).toThrowError();
     });
 
     it("Calling 'getToolbarItems' returns a copy of the component registry", () => {

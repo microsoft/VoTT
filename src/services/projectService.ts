@@ -79,7 +79,6 @@ export default class ProjectService implements IProjectService {
 
         // Delete all asset metadata files created for project
         const deleteFiles = _.values(project.assets)
-            .filter((asset) => asset.state === AssetState.Tagged)
             .map((asset) => storageProvider.deleteFile(`${asset.id}${constants.assetMetadataFileExtension}`));
 
         await Promise.all(deleteFiles);

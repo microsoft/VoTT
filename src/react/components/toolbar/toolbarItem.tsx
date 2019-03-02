@@ -3,6 +3,7 @@ import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
 import { IKeyboardContext, KeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
 import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
+import { ToolbarItemName, ToolbarItemGroup } from "../../../registerToolbar";
 
 /**
  * Toolbar Item Metadata
@@ -14,10 +15,10 @@ import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
  * @member accelerators - collection of accelerator that map to same action
  */
 export interface IToolbarItemMetadata {
-    name: string;
+    name: ToolbarItemName;
     icon: string;
     tooltip: string;
-    group: string;
+    group: ToolbarItemGroup;
     type: ToolbarItemType;
     accelerators?: string[];
 }
@@ -55,13 +56,6 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
     public context!: IKeyboardContext;
     private unregisterKeyboardHandler: () => void;
 
-    constructor(props, context) {
-        super(props, context);
-
-        this.onItemClick = this.onItemClick.bind(this);
-        this.onClick = this.onClick.bind(this);
-    }
-
     public componentWillUnmount() {
         if (this.unregisterKeyboardHandler) {
             this.unregisterKeyboardHandler();
@@ -69,7 +63,7 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
     }
 
     public render() {
-        const className = ["toolbar-btn"];
+        const className = [`toolbar-btn ${this.props.name}`];
         if (this.props.active) {
             className.push("active");
         }
@@ -98,8 +92,10 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
 
     protected abstract onItemClick();
 
-    private onClick() {
-        this.onItemClick();
+    private onClick = () => {
+        if (this.onItemClick) {
+            this.onItemClick();
+        }
         this.props.onClick(this);
     }
 }

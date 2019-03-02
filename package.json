@@ -1,6 +1,10 @@
 {
     "name": "vott",
     "version": "2.0.0-preview.1",
+    "author": {
+        "name": "Microsoft",
+        "url": "https://github.com/Microsoft/VoTT"
+    },
     "description": "Visual Object Tagging Tool (VoTT) - an annotation and labeling tool for images and video.",
     "homepage": "https://github.com/Microsoft/VoTT",
     "repository": {

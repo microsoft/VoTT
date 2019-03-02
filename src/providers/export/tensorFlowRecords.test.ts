@@ -1,11 +1,9 @@
 import _ from "lodash";
-import { TFRecordsJsonExportProvider,
-         ITFRecordsJsonExportOptions } from "./tensorFlowRecords";
+import { TFRecordsJsonExportProvider, ITFRecordsJsonExportOptions } from "./tensorFlowRecords";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState, IRegion, RegionType,
-         ITag, IPoint } from "../../models/applicationState";
+import { IAssetMetadata, AssetState, IRegion, RegionType, IPoint } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 import axios, { AxiosResponse } from "axios";
 
@@ -14,8 +12,8 @@ import { AssetService } from "../../services/assetService";
 
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
-import * as packageJson from "../../../package.json";
 import registerMixins from "../../registerMixins";
+import { appInfo } from "../../common/appInfo";
 
 registerMixins();
 
@@ -85,7 +83,7 @@ describe("TFRecords Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion],
-                    version: packageJson.version,
+                    version: appInfo.version,
                 };
 
                 return Promise.resolve(assetMetadata);
@@ -100,7 +98,7 @@ describe("TFRecords Json Export Provider", () => {
                 assetState: ExportAssetState.All,
             };
 
-            const testProject = {...baseTestProject};
+            const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
             const exportProvider = new TFRecordsJsonExportProvider(testProject, options);
@@ -129,7 +127,7 @@ describe("TFRecords Json Export Provider", () => {
                 assetState: ExportAssetState.Visited,
             };
 
-            const testProject = {...baseTestProject};
+            const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(1);
 
             const exportProvider = new TFRecordsJsonExportProvider(testProject, options);
@@ -157,7 +155,7 @@ describe("TFRecords Json Export Provider", () => {
                 assetState: ExportAssetState.Tagged,
             };
 
-            const testProject = {...baseTestProject};
+            const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
             const exportProvider = new TFRecordsJsonExportProvider(testProject, options);
