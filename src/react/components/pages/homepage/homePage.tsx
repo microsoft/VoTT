@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { strings } from "../../../../common/strings";
+import { strings, interpolate } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
@@ -16,11 +16,9 @@ import {
     IApplicationState, IConnection, IProject, IFileInfo,
     ErrorCode, AppError, IAppError, IAppSettings,
 } from "../../../../models/applicationState";
-import { IV1Project, IV1Region } from "../../../../models/v1Models";
-import IMessageBox from "../../common/messageBox/messageBox";
 import ImportService from "../../../../services/importService";
-import { AssetService } from "../../../../services/assetService";
 import { IAssetMetadata } from "../../../../models/applicationState";
+import { toast } from "react-toastify";
 
 export interface IHomepageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -60,25 +58,6 @@ export default class HomePage extends React.Component<IHomepageProps> {
     private deleteConfirm: React.RefObject<Confirm> = React.createRef();
     private cloudFilePicker: React.RefObject<CloudFilePicker> = React.createRef();
     private importConfirm: React.RefObject<Confirm> = React.createRef();
-
-    constructor(props: IHomepageProps, context) {
-        super(props, context);
-
-        this.state = {
-            cloudPickerOpen: false,
-        };
-
-        this.filePicker = React.createRef<FilePicker>();
-        this.deleteConfirm = React.createRef<Confirm>();
-        this.cloudFilePicker = React.createRef<CloudFilePicker>();
-        this.importConfirm = React.createRef<Confirm>();
-
-        this.loadSelectedProject = this.loadSelectedProject.bind(this);
-        this.onProjectFileUpload = this.onProjectFileUpload.bind(this);
-        this.deleteProject = this.deleteProject.bind(this);
-        this.handleOpenCloudProjectClick = this.handleOpenCloudProjectClick.bind(this);
-        this.convertProject = this.convertProject.bind(this);
-    }
 
     public render() {
         return (
@@ -133,8 +112,7 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 <Confirm title="Import Project"
                     className="confirm-import"
                     ref={this.importConfirm}
-                    message={(project: IFileInfo) => `${strings.homePage.importProject.confirmation}
-                        ${project.file.name} ${strings.homePage.importProject.recommendation}`}
+                    message={(project: IFileInfo) => interpolate(strings.homePage.importProject.confirmation, { project })}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
             </div>

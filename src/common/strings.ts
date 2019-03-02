@@ -34,7 +34,6 @@ export interface IAppStrings {
         importProject: {
             title: string;
             confirmation: string;
-            recommendation: string;
         },
         recentProjects: string,
     };
