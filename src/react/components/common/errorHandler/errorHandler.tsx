@@ -105,16 +105,28 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
 
         if (!appError) {
             appError = {
-                title: "Unknown Error Occurred:",
-                errorCode: ErrorCode.Unknown, 
+                title: strings.errors.unknown.title,
+                errorCode: ErrorCode.Unknown,
                 message: this.getUnknownErrorMessage(error),
             };
         }
         this.props.onError(appError);
     }
 
+    private getUnknownAppError(e): IAppError{
+        return {
+            title: strings.errors.unknown.title,
+            errorCode: ErrorCode.Unknown,
+            message: this.getUnknownErrorMessage(e)
+        };
+    }
+
     private getUnknownErrorMessage(e) {
-        return (<pre>{JSON.stringify(e, null, 2)}</pre>);
+        if (process.env.NODE_ENV !== "production") {
+            return (<pre>{JSON.stringify(e, null, 2)}</pre>);
+        } else {
+            return strings.errors.unknown.message;
+        }
     }
 
     /**

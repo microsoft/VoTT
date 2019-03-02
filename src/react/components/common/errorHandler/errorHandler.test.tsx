@@ -37,8 +37,8 @@ describe("Error Handler Component", () => {
         const wrapper = createComponent(props);
         const alert = wrapper.find(Alert);
         expect(alert.exists()).toBe(true);
-        expect(alert.prop("title")).toEqual(strings.errors.unknown.title);
-        expect(alert.prop("message")).toEqual(strings.errors.unknown.message);
+        expect(alert.prop("title")).toEqual("error title");
+        expect(alert.prop("message")).toEqual("error message");
     });
 
     it("renders an alert with localized error messages", () => {
