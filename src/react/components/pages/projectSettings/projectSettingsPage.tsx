@@ -70,8 +70,8 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                     <h3>
                         <i className="fas fa-sliders-h fa-1x"/>
                         <span className="px-2">
-                        {strings.projectSettings.title}
-                    </span>
+                            {strings.projectSettings.title}
+                        </span>
                     </h3>
                     <ProjectForm
                         project={this.props.project}
@@ -80,7 +80,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                         onSubmit={this.onFormSubmit}
                         onCancel={this.onFormCancel}/>
                 </div>
-                {this.props.project.id &&
+                {this.props.project &&
                 <ProjectMetrics project={this.props.project}/>}
             </div>
         );

@@ -92,13 +92,13 @@ export interface IAppStrings {
     };
     projectMetrics: {
         title: string;
-        sourceAssets: string;
-        visitedAssets: string;
-        taggedAssets: string;
+        sourceAssetsCount: string;
+        visitedAssetsCount: string;
+        taggedAssetsCount: string;
         regionsCount: string;
         tagCategories: string;
         tagCount: string;
-        averageTagPerAsset: string;
+        averageTagPerTaggedAsset: string;
     };
     tags: {
         title: string;

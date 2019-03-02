@@ -62,7 +62,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
             return (
                 <li>
                     <b>{tagName}: </b>
-                    <span className="${tagName}-count badge badge-light badge-pill">
+                    <span className="${tagName}-count badge badge-light badge-pill float-center">
                         {tagsMap.get(tagName) || 0}
                     </span>
                 </li>
@@ -74,55 +74,55 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                 <h3>
                     <i className="fas fa-chart-bar fa-1x"/>
                     <span className="px-2">
-{strings.projectMetrics.title}
-</span>
+                        {strings.projectMetrics.title}
+                    </span>
                 </h3>
                 <ul className="list-group list-group-flush m-3">
                     <li className="list-group-item">
-                        <b>Total source assets: </b>
+                        <b>{strings.projectMetrics.sourceAssetsCount}   </b>
                         <span
-                            className="source-asset-count badge badge-light badge-pill">
+                            className="source-asset-count badge badge-light badge-pill float-center">
                             {this.getSourceAssetCount()}
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Number of assets visited: </b>
+                        <b>{strings.projectMetrics.visitedAssetsCount}   </b>
                         <span
-                            className="visited-asset-count badge badge-light badge-pill">
+                            className="visited-asset-count badge badge-light badge-pill float-center">
                             {this.getVisitedAssetsCount()}
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Total tagged assets: </b>
+                        <b>{strings.projectMetrics.taggedAssetsCount}   </b>
                         <span
-                            className="tagged-asset-count badge badge-light badge-pill">
+                            className="tagged-asset-count badge badge-light badge-pill float-center">
                             {this.getTaggedAssetCount()}
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Number of regions: </b>
-                        <span className="regions-count badge badge-light badge-pill">
+                        <b>{strings.projectMetrics.regionsCount}   </b>
+                        <span className="regions-count badge badge-light badge-pill float-center">
                               {this.getRegionsCount()}
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <h5>Total tag categories:
-                            <span className="tag-categories-count badge badge-light badge-pill">
+                        <h5>{strings.projectMetrics.tagCategories}
+                            <span className="tag-categories-count badge badge-light badge-pill float-center">
                                 {this.getTagCategoriesCount()}
                             </span>
                         </h5>
                         <ul>{renderTagCategories}</ul>
                     </li>
                     <li className="list-group-item">
-                        <h5>Per tag totals (number of instances of that tag) </h5>
+                        <h5>{strings.projectMetrics.tagCount}   </h5>
                         <span className="tags-map">
                             <ul>{renderTagCount}</ul>
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <b>Average tags per asset: </b>
+                        <b>{strings.projectMetrics.averageTagPerTaggedAsset}   </b>
                         <span
-                            className="average-tag-count badge badge-light badge-pill">
+                            className="average-tag-count badge badge-light badge-pill float-center">
                             {this.getAverageTagsCount()}
                         </span>
                     </li>
@@ -169,8 +169,14 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
      * Count the avg number of tags per image or video frame
      */
     private getAverageTagsCount = () => {
+        const taggedAssetCount = this.getTaggedAssetCount();
+
+        if (taggedAssetCount === 0) {
+            return 0;
+        }
+
         const tags = this.getAllTags();
-        return tags.length / this.getTaggedAssetCount();
+        return tags.length / taggedAssetCount;
     }
 
     /**

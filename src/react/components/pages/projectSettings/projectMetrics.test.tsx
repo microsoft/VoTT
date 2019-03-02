@@ -25,7 +25,7 @@ describe("Project metrics page", () => {
         );
     }
 
-    beforeAll(() => {
+    beforeEach(() => {
         mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
 
         testAssets = MockFactory.createTestAssets(testAssetCount);
@@ -83,19 +83,20 @@ describe("Project metrics page", () => {
         await MockFactory.flushUi();
         expect(wrapper.state().sourceAssets === testAssets);
         expect(wrapper.state().projectAssetsMetadata === testAssetsMetadata);
-        return;
     });
 
     it("calculates the right categories count", async () => {
         await MockFactory.flushUi();
+
         const tagCategoriesCount = wrapper.find(".tag-categories-count");
         expect(tagCategoriesCount).toEqual(defaultProject.tags.length);
     });
 
     it("correctly calculates source asset count", async () => {
-        await MockFactory.flushUi();
-        const sourceAssetCount = wrapper.find(".source-asset-count");
-        expect(sourceAssetCount.html()).toEqual(`${testAssetCount}`);
+        await MockFactory.flushUi(() => {
+            const sourceAssetCount = wrapper.find(".source-asset-count");
+            expect(sourceAssetCount.html()).toEqual(`${testAssetCount}`);
+        });
     });
 
     it("correctly calculate visited asset count", async () => {
