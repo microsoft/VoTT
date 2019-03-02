@@ -112,7 +112,8 @@ export default class HomePage extends React.Component<IHomepageProps> {
                 <Confirm title="Import Project"
                     className="confirm-import"
                     ref={this.importConfirm}
-                    message={(project: IFileInfo) => interpolate(strings.homePage.importProject.confirmation, { project })}
+                    message={(project: IFileInfo) =>
+                        interpolate(strings.homePage.importProject.confirmation, { project })}
                     confirmButtonColor="danger"
                     onConfirm={this.convertProject} />
             </div>
