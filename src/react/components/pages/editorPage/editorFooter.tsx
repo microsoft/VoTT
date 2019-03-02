@@ -1,8 +1,7 @@
 import React from "react";
-import { ITag } from "../../../../models/applicationState";
-import EditorTagsInput from "./editorTagsInput";
-import { TagsInput, TagEditorModal } from "vott-react";
+import { TagEditorModal, TagsInput } from "vott-react";
 import { strings } from "../../../../common/strings";
+import { ITag } from "../../../../models/applicationState";
 
 /**
  * Properties for Editor Footer
@@ -13,7 +12,7 @@ import { strings } from "../../../../common/strings";
  */
 export interface IEditorFooterProps {
     tags: ITag[];
-    displayHotKeys: boolean;
+    lockedTags: string[];
     onTagsChanged?: (value) => void;
     onTagClicked?: (value) => void;
     onCtrlTagClicked?: (value) => void;
@@ -35,7 +34,7 @@ export interface IEditorFooterState {
  */
 export default class EditorFooter extends React.Component<IEditorFooterProps, IEditorFooterState> {
 
-    private editorTagsInput: React.RefObject<EditorTagsInput>;
+    private tagsInput: React.RefObject<TagsInput>;
     private tagEditorModal: React.RefObject<TagEditorModal>;
 
     constructor(props) {
@@ -44,7 +43,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
             tags: props.tags,
             selectedTag: null,
         };
-        this.editorTagsInput = React.createRef<EditorTagsInput>();
+        this.tagsInput = React.createRef<TagsInput>();
         this.tagEditorModal = React.createRef<TagEditorModal>();
 
         this.onTagsChanged = this.onTagsChanged.bind(this);
@@ -63,14 +62,15 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     public render() {
         return (
             <div>
-                <EditorTagsInput
+                <TagsInput
                     tags={this.state.tags}
-                    ref={this.editorTagsInput}
+                    ref={this.tagsInput}
                     onChange={this.onTagsChanged}
                     onTagClick={this.props.onTagClicked}
                     onCtrlTagClick={this.props.onCtrlTagClicked}
                     onShiftTagClick={this.onShiftTagClicked}
                     onCtrlShiftTagClick={this.props.onCtrlShiftTagClicked}
+                    getTagSpan={this.getTagSpan}
                 />
                 <TagEditorModal
                     ref={this.tagEditorModal}
@@ -93,7 +93,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     }
 
     private onTagModalOk(oldTag: ITag, newTag: ITag) {
-        this.editorTagsInput.current.updateTag(oldTag, newTag);
+        this.tagsInput.current.updateTag(oldTag, newTag);
         this.tagEditorModal.current.close();
     }
 
@@ -101,5 +101,26 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         this.setState({
             tags,
         }, () => this.props.onTagsChanged(this.state));
+    }
+
+    /**
+     * Shows the of the tag in the span of the first 10 tags
+     * @param name Name of tag
+     * @param index Index of tag
+     */
+    private getTagSpan = (name: string, index: number) => {
+        let className = "tag-span";
+        let displayName = name;
+        if (index < 10) {
+            const displayIndex = (index === 9) ? 0 : index + 1;
+            displayName = `[${displayIndex}]  ` + name;
+            className += " tag-span-index";
+        }
+        if (this.props.lockedTags.find((t) => t === name)) {
+            className += " locked-tag";
+        }
+        return (
+            <span className={className}>{displayName}</span>
+        ); 
     }
 }
