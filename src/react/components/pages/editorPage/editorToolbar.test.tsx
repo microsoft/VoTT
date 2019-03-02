@@ -58,8 +58,7 @@ describe("Editor Toolbar", () => {
     });
 
     it("Sets the selected toolbar item", async () => {
-        const exportProject = wrapper.find(ExportProject).first();
-        expect(exportProject.exists()).toBe(true);
+        const exportProject = wrapper.find(".exportProject");
         exportProject.find("button").simulate("click");
 
         const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
@@ -67,8 +66,10 @@ describe("Editor Toolbar", () => {
     });
 
     it("Sets correct keyboard binding when accelerator is defined", () => {
-        const drawRectangle = wrapper.find(ToolbarItemName.DrawRectangle).first();
-        expect(drawRectangle.exists()).toBe(true);
-        expect(drawRectangle).toContain("r");
+        const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
+        const select = toolbar.props().items[0];
+        const toolbarRegistry = ToolbarItemFactory.getToolbarItems();
+        expect(select.config).toHaveProperty("accelerators", ["v", "V" ]);
+        expect(select.config).toEqual(toolbarRegistry[0].config);
     });
 });
