@@ -113,11 +113,11 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         this.props.onError(appError);
     }
 
-    private getUnknownAppError(e): IAppError{
+    private getUnknownAppError(e): IAppError {
         return {
             title: strings.errors.unknown.title,
             errorCode: ErrorCode.Unknown,
-            message: this.getUnknownErrorMessage(e)
+            message: this.getUnknownErrorMessage(e),
         };
     }
 
