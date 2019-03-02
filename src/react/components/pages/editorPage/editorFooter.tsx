@@ -6,6 +6,7 @@ import { ITag } from "../../../../models/applicationState";
 /**
  * Properties for Editor Footer
  * @member tags - Array of tags for TagsInput component
+ * @member lockedTags - Tags currently locked for applying to regions
  * @member displayHotKeys - Determines whether indices for first 10 tags are shown on tag buttons
  * @member onTagsChanged - Function to call when tags are changed
  * @member onTagClicked - Function to call when tags are clicked
@@ -34,22 +35,13 @@ export interface IEditorFooterState {
  */
 export default class EditorFooter extends React.Component<IEditorFooterProps, IEditorFooterState> {
 
-    private tagsInput: React.RefObject<TagsInput>;
-    private tagEditorModal: React.RefObject<TagEditorModal>;
+    private tagsInput: React.RefObject<TagsInput> = React.createRef<TagsInput>();
+    private tagEditorModal: React.RefObject<TagEditorModal> = React.createRef<TagEditorModal>();
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            tags: props.tags,
-            selectedTag: null,
-        };
-        this.tagsInput = React.createRef<TagsInput>();
-        this.tagEditorModal = React.createRef<TagEditorModal>();
-
-        this.onTagsChanged = this.onTagsChanged.bind(this);
-        this.onShiftTagClicked = this.onShiftTagClicked.bind(this);
-        this.onTagModalOk = this.onTagModalOk.bind(this);
-    }
+    state = {
+        tags: this.props.tags,
+        selectedTag: null,
+    };
 
     public componentDidUpdate(prevProp: IEditorFooterProps) {
         if (prevProp.tags !== this.props.tags) {
@@ -84,7 +76,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         );
     }
 
-    private onShiftTagClicked(tag: ITag) {
+    private onShiftTagClicked = (tag: ITag) => {
         this.setState({
             selectedTag: tag,
         }, () => {
@@ -92,12 +84,12 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         });
     }
 
-    private onTagModalOk(oldTag: ITag, newTag: ITag) {
+    private onTagModalOk = (oldTag: ITag, newTag: ITag) => {
         this.tagsInput.current.updateTag(oldTag, newTag);
         this.tagEditorModal.current.close();
     }
 
-    private onTagsChanged(tags) {
+    private onTagsChanged = (tags) => {
         this.setState({
             tags,
         }, () => this.props.onTagsChanged(this.state));
@@ -121,6 +113,6 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         }
         return (
             <span className={className}>{displayName}</span>
-        ); 
+        );
     }
 }
