@@ -35,13 +35,13 @@ export interface IEditorFooterState {
  */
 export default class EditorFooter extends React.Component<IEditorFooterProps, IEditorFooterState> {
 
-    private tagsInput: React.RefObject<TagsInput> = React.createRef<TagsInput>();
-    private tagEditorModal: React.RefObject<TagEditorModal> = React.createRef<TagEditorModal>();
-
-    state = {
+    public state = {
         tags: this.props.tags,
         selectedTag: null,
     };
+
+    private tagsInput: React.RefObject<TagsInput> = React.createRef<TagsInput>();
+    private tagEditorModal: React.RefObject<TagEditorModal> = React.createRef<TagEditorModal>();
 
     public componentDidUpdate(prevProp: IEditorFooterProps) {
         if (prevProp.tags !== this.props.tags) {
