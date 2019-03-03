@@ -12,6 +12,7 @@ import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActi
 import { bindActionCreators } from "redux";
 import { ErrorHandler } from "./react/components/common/errorHandler/errorHandler";
 import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
+import { TitleBar } from "./react/components/shell/titleBar";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -66,7 +67,9 @@ export default class App extends React.Component<IAppProps> {
                     <KeyboardManager>
                         <Router>
                             <div className="app-shell">
-                                <Navbar />
+                                <TitleBar title={this.props.currentProject ? this.props.currentProject.name : ""}>
+                                </TitleBar>
+                                {/* <Navbar /> */}
                                 <div className="app-main">
                                     <Sidebar project={this.props.currentProject} />
                                     <MainContentRouter />
