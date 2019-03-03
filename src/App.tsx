@@ -13,6 +13,7 @@ import { bindActionCreators } from "redux";
 import { ErrorHandler } from "./react/components/common/errorHandler/errorHandler";
 import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
 import { TitleBar } from "./react/components/shell/titleBar";
+import { StatusBar } from "./react/components/shell/statusBar";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -75,6 +76,21 @@ export default class App extends React.Component<IAppProps> {
                                     <Sidebar project={this.props.currentProject} />
                                     <MainContentRouter />
                                 </div>
+                                <StatusBar>
+                                    {
+                                        this.props.currentProject &&
+                                        <Fragment>
+                                            <div>
+                                                <strong>Source</strong>:
+                                                <span>{this.props.currentProject.sourceConnection.name}</span>
+                                            </div>
+                                            <div>
+                                                <strong>Target</strong>:
+                                                <span>{this.props.currentProject.targetConnection.name}</span>
+                                            </div>
+                                        </Fragment>
+                                    }
+                                </StatusBar>
                                 <ToastContainer />
                             </div>
                         </Router >

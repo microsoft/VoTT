@@ -1,0 +1,28 @@
+@import '../../../assets/sass/theme.scss';
+
+.status-bar {
+    font-size: 0.75em;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    padding: 0.25em 0.8em;
+
+    background-color: rgba($color-blue, 0.50);
+
+    &-main {
+        flex: 1;
+
+        div {
+            display: inline-block;
+            margin-left: 0.8em;
+        }
+
+        span {
+            padding-left: 0.4em;
+        }
+    }
+
+    &-version {
+        text-align: right;
+    }
+}
