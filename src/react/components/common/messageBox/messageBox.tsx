@@ -14,7 +14,7 @@ export type MessageFormatHandler = (...params: any[]) => string;
  * @member onButtonSelect - Function to call when button is selected
  * @member onCancel - Function to call upon cancel
  */
-export interface IMessageBoxProps extends React.Props<MessageBox> {
+export interface IMessageBoxProps {
     title: string;
     message: string | MessageFormatHandler;
     params?: any[];
