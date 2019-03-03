@@ -124,16 +124,16 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private minimizeWindow = () => {
-        this.remote.getCurrentWindow().minimize();
+        this.currentWindow.minimize();
     }
 
     private maximizeWindow = () => {
-        this.remote.getCurrentWindow().maximize();
+        this.currentWindow.maximize();
         this.setState({ maximized: true });
     }
 
     private restoreWindow = () => {
-        this.remote.getCurrentWindow().restore();
+        this.currentWindow.restore();
         this.setState({ maximized: false });
     }
 
@@ -144,7 +144,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     private onMenuItemSelected = (key: string, item: React.Component) => {
         this.menu.current.store.setState({
             openKeys: [],
-            selectedKeys: []
+            selectedKeys: [],
         });
     }
 }
