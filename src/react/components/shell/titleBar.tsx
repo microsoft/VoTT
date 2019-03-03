@@ -3,6 +3,7 @@ import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import "./titleBar.scss";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
+    icon?: string | JSX.Element;
     title?: string;
     menu?: any;
 }
@@ -52,7 +53,8 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         return (
             <div className="title-bar bg-lighter-3">
                 <div className="title-bar-icon">
-                    <i className="fas fa-tags"></i>
+                    {typeof (this.props.icon) === "string" && <i className={`${this.props.icon}`}></i>}
+                    {typeof (this.props.icon) !== "string" && this.props.icon}
                 </div>
                 <div className="title-bar-menu">
                     {this.state.isElectron &&

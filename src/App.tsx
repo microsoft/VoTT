@@ -67,7 +67,8 @@ export default class App extends React.Component<IAppProps> {
                     <KeyboardManager>
                         <Router>
                             <div className="app-shell">
-                                <TitleBar title={this.props.currentProject ? this.props.currentProject.name : ""}>
+                                <TitleBar icon="fas fa-tags"
+                                    title={this.props.currentProject ? this.props.currentProject.name : ""}>
                                 </TitleBar>
                                 {/* <Navbar /> */}
                                 <div className="app-main">
