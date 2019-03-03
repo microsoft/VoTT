@@ -5,7 +5,6 @@ import "./titleBar.scss";
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
     title?: string;
-    menu?: any;
 }
 
 export interface ITitleBarState {
