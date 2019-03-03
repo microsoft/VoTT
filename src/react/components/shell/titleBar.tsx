@@ -8,6 +8,7 @@ export interface ITitleBarProps extends React.Props<TitleBar> {
 }
 
 export interface ITitleBarState {
+    isElectron: boolean;
     maximized: boolean;
     minimized: boolean;
     menu: Electron.Menu;
@@ -15,23 +16,30 @@ export interface ITitleBarState {
 
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     public state: ITitleBarState = {
+        isElectron: false,
         maximized: false,
         minimized: false,
         menu: null,
     };
 
     private menu: Menu = React.createRef();
-    private remote: Electron.Remote = (window as any).require("electron").remote as Electron.Remote;
+    private remote: Electron.Remote;
     private currentWindow: Electron.BrowserWindow;
 
     public componentDidMount() {
-        this.currentWindow = this.remote.getCurrentWindow();
+        const isElectron: boolean = !!window["require"];
 
-        this.setState({
-            minimized: this.currentWindow.isMinimized(),
-            maximized: this.currentWindow.isMaximized(),
-            menu: this.remote.Menu.getApplicationMenu(),
-        });
+        if (isElectron) {
+            this.remote = (window as any).require("electron").remote as Electron.Remote;
+            this.currentWindow = this.remote.getCurrentWindow();
+
+            this.setState({
+                isElectron: true,
+                minimized: this.currentWindow.isMinimized(),
+                maximized: this.currentWindow.isMaximized(),
+                menu: this.remote.Menu.getApplicationMenu(),
+            });
+        }
     }
 
     public componentDidUpdate(prevProps: Readonly<ITitleBarProps>) {
@@ -47,34 +55,38 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     <i className="fas fa-tags"></i>
                 </div>
                 <div className="title-bar-menu">
-                    <Menu ref={this.menu}
-                        mode="horizontal"
-                        selectable={false}
-                        triggerSubMenuAction="click"
-                        onClick={this.onMenuItemSelected}>
-                        {this.renderMenu(this.state.menu)}
-                    </Menu>
+                    {this.state.isElectron &&
+                        <Menu ref={this.menu}
+                            mode="horizontal"
+                            selectable={false}
+                            triggerSubMenuAction="click"
+                            onClick={this.onMenuItemSelected}>
+                            {this.renderMenu(this.state.menu)}
+                        </Menu>
+                    }
                 </div>
                 <div className="title-bar-main">{this.props.title || "Welcome"} - VoTT</div>
                 <div className="title-bar-controls">
-                    <ul>
-                        <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
-                            <i className="far fa-window-minimize" />
-                        </li>
-                        {!this.state.maximized &&
-                            <li title="Maximize" className="btn-window-maximize" onClick={this.maximizeWindow}>
-                                <i className="far fa-window-maximize" />
+                    {this.state.isElectron &&
+                        <ul>
+                            <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
+                                <i className="far fa-window-minimize" />
                             </li>
-                        }
-                        {this.state.maximized &&
-                            <li title="Restore" className="btn-window-restore" onClick={this.restoreWindow}>
-                                <i className="far fa-window-restore" />
+                            {!this.state.maximized &&
+                                <li title="Maximize" className="btn-window-maximize" onClick={this.maximizeWindow}>
+                                    <i className="far fa-window-maximize" />
+                                </li>
+                            }
+                            {this.state.maximized &&
+                                <li title="Restore" className="btn-window-restore" onClick={this.restoreWindow}>
+                                    <i className="far fa-window-restore" />
+                                </li>
+                            }
+                            <li title="Close" className="btn-window-close" onClick={this.closeWindow}>
+                                <i className="fas fa-times" />
                             </li>
-                        }
-                        <li title="Close" className="btn-window-close" onClick={this.closeWindow}>
-                            <i className="fas fa-times" />
-                        </li>
-                    </ul>
+                        </ul>
+                    }
                 </div>
             </div>
         );
@@ -120,21 +132,24 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private syncTitle = (): void => {
-        this.currentWindow.setTitle(`${this.props.title} - VoTT`);
+        if (this.state.isElectron) {
+            this.currentWindow.setTitle(`${this.props.title} - VoTT`);
+        }
     }
 
     private minimizeWindow = () => {
         this.currentWindow.minimize();
+        this.setState({ minimized: true });
     }
 
     private maximizeWindow = () => {
         this.currentWindow.maximize();
-        this.setState({ maximized: true });
+        this.setState({ maximized: true, minimized: false });
     }
 
     private restoreWindow = () => {
         this.currentWindow.restore();
-        this.setState({ maximized: false });
+        this.setState({ maximized: false, minimized: false });
     }
 
     private closeWindow = () => {
