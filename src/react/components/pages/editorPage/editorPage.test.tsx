@@ -56,7 +56,7 @@ describe("Editor Page Component", () => {
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
-        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
+        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
     });
 
     beforeEach(() => {

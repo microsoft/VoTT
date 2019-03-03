@@ -172,7 +172,6 @@ export class AssetService {
             // and the file is not required.
             await this.storageProvider.deleteFile(fileName);
         }
-
         return metadata;
     }
 

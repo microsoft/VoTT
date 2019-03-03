@@ -2,9 +2,9 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IRegion, RegionType,
-} from "../models/applicationState";
+    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
+    IPoint, IRegion, RegionType, IBoundingBox } from "../models/applicationState";
+import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
@@ -266,6 +266,63 @@ export default class MockFactory {
             videoSettings: MockFactory.createVideoSettings(),
             autoSave: true,
         };
+    }
+
+    /**
+     * Creates fake IV1Project
+     * @param name Name of project.
+     */
+    public static createTestV1Project(frameCount: number = 10): IV1Project {
+        const frames: { [frameName: string]: IV1Region[]; } = {};
+        for (let i = 0; i < frameCount; i++) {
+            const name = `testFrame${i}.jpg`;
+            frames[name] = MockFactory.createTestV1Regions();
+        }
+
+        return {
+            frames,
+            framerate: "1",
+            inputTags: "testTag1,testTag2",
+            suggestiontype: "suggestiontype",
+            scd: true,
+            visitedFrames: ["testFrame0.jpg"],
+            tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
+        };
+    }
+
+    /**
+     * Creates fake IV1Region
+     */
+    public static createTestV1Regions(count: number = 3): IV1Region[] {
+        const regions: IV1Region[] = [];
+        const left = randomIntInRange(0, 511);
+        const top = randomIntInRange(0, 383);
+        const right = randomIntInRange(512, 1024);
+        const bottom = randomIntInRange(384, 786);
+
+        for (let i = 0; i < count; i++) {
+            const testRegion = {
+                x1: left,
+                y1: top,
+                x2: right,
+                y2: bottom,
+                width: 10,
+                height: 10,
+                box: {
+                    x1: left,
+                    y1: top,
+                    x2: right,
+                    y2: bottom },
+                points: [],
+                UID: i.toString(),
+                id: 2,
+                type: "rect",
+                tags: [],
+                name: 1,
+            };
+            regions.push(testRegion);
+        }
+        return regions;
     }
 
     /**

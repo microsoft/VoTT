@@ -38,6 +38,7 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
     - [Build and run from source](#build-and-run-from-source)
 - [V1 & V2](#v1--v2)
   - [Where is V1?](#where-is-v1)
+  - [Can I use my V1 projects in V2?](#converting-to-v2)
 - [Using VoTT](#using-vott)
   - [Creating Connections](#creating-connections)
   - [Creating a New Project](#creating-a-new-project)
@@ -90,6 +91,10 @@ All V2 efforts are on the [v2](https://github.com/Microsoft/VoTT/tree/v2) branch
 ## Where is V1?
 
 Master still reflects The V1 codebase - any fixes or updates can still be made there.  Likewise, all 1.x releases can still be found under [GitHub Releases](https://github.com/Microsoft/VoTT/releases).
+
+## Can I use my V1 project in V2?
+
+Yes you can! There is support for converting a V1 project into V2 format, but only for V1 projects that have only picture assets. Video assets from V1 are not yet supported. For a smooth experience, it is recommended that you keep your current V1 project (JSON) file in a directory with all your images for that project. When you open the JSON file, you will asked to confirm that you would like to convert your project and then you will be directed to the editor screen. In this process, a `.vott` file will be generated in the same project directory and you can use this as your project file from now on. It is recommended that you back up your V1 project file before converting the project.
 
 # Using VoTT
 

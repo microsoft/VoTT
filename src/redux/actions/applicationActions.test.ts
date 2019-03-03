@@ -4,14 +4,22 @@ import * as applicationActions from "./applicationActions";
 import { ActionTypes } from "./actionTypes";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IAppSettings } from "../../models/applicationState";
+import { IApplicationState } from "../../models/applicationState";
+import MockFactory from "../../common/mockFactory";
+import initialState from "../store/initialState";
 
 describe("Application Redux Actions", () => {
-    let store: MockStoreEnhanced;
+    let store: MockStoreEnhanced<IApplicationState>;
+    const appSettings = MockFactory.appSettings();
 
     beforeEach(() => {
         IpcRendererProxy.send = jest.fn(() => Promise.resolve());
         const middleware = [thunk];
-        store = createMockStore(middleware)();
+        const mockState: IApplicationState = {
+            ...initialState,
+            appSettings,
+        };
+        store = createMockStore<IApplicationState>(middleware)(mockState);
     });
 
     it("Toggle Dev Tools action forwards call to IpcRenderer proxy and dispatches redux action", async () => {
@@ -60,5 +68,38 @@ describe("Application Redux Actions", () => {
         });
 
         expect(result).toEqual(appSettings);
+    });
+
+    it("Ensure security token action creates a token if one doesn't exist", async () => {
+        const appSettings: IAppSettings = {
+            devToolsEnabled: false,
+            securityTokens: [
+                { name: "A", key: "1" },
+                { name: "B", key: "2" },
+                { name: "C", key: "3" },
+            ],
+        };
+        const middleware = [thunk];
+        const mockState: IApplicationState = {
+            ...initialState,
+            appSettings,
+        };
+
+        store = createMockStore<IApplicationState>(middleware)(mockState);
+
+        const testProject = MockFactory.createTestProject("TestProject");
+
+        const result = await applicationActions.ensureSecurityToken(testProject)(store.dispatch, store.getState);
+        const actions = store.getActions();
+
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS,
+            payload: result,
+        });
+
+        expect(testProject.securityToken).toEqual("Project TestProject Token");
+        expect(result.securityTokens).toHaveLength(4);
+        expect(result.securityTokens[3].name).toBe(testProject.securityToken);
     });
 });

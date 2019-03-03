@@ -29,6 +29,11 @@ export const english: IAppStrings = {
             title: "Delete Project",
             confirmation: "Are you sure you want to delete project",
         },
+        importProject: {
+            title: "Import Project",
+            confirmation: "Are you sure you want to convert project ${project.file.name} project settings" +
+                "to v2 format? We recommend you backup the project file first.",
+        },
     },
     appSettings: {
         title: "Application Settings",
@@ -285,6 +290,10 @@ export const english: IAppStrings = {
         canvasError: {
             title: "Error loading canvas",
             message: "There was an error loading the canvas, check the project's assets and try again.",
+        },
+        importError: {
+            title: "Error importing V1 project",
+            message: "There was an error importing the V1 project. Check the project file and try again",
         },
     },
 };
