@@ -16,7 +16,6 @@ export interface IConfirmProps extends IMessageBoxProps {
     cancelButtonText?: string;
     confirmButtonColor?: string;
     cancelButtonColor?: string;
-    className?: string;
     onConfirm: (...params: any[]) => void;
     onCancel?: (...params: any[]) => void;
 }

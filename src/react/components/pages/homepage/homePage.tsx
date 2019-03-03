@@ -19,6 +19,7 @@ import {
 import ImportService from "../../../../services/importService";
 import { IAssetMetadata } from "../../../../models/applicationState";
 import { toast } from "react-toastify";
+import MessageBox from "../../common/messageBox/messageBox";
 
 export interface IHomePageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -105,13 +106,12 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
                     </div>
                 }
                 <Confirm title="Delete Project"
-                    ref={this.deleteConfirm}
+                    ref={this.deleteConfirm as any}
                     message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} ${project.name}?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
                 <Confirm title="Import Project"
-                    className="confirm-import"
-                    ref={this.importConfirm}
+                    ref={this.importConfirm as any}
                     message={(project: IFileInfo) =>
                         interpolate(strings.homePage.importProject.confirmation, { project })}
                     confirmButtonColor="danger"
