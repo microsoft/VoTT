@@ -6,6 +6,7 @@ import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { decryptProject, encryptProject } from "../common/utils";
+import packageJson from "../../package.json";
 
 /**
  * Functions required for a project service
@@ -44,6 +45,7 @@ export default class ProjectService implements IProjectService {
     /**
      * Save a project
      * @param project - Project to save
+     * @param securityToken - Security Token to encrypt
      */
     public async save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
@@ -51,6 +53,8 @@ export default class ProjectService implements IProjectService {
         if (!project.id) {
             project.id = shortid.generate();
         }
+
+        project.version = packageJson.version;
 
         const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
         await this.saveExportSettings(project);

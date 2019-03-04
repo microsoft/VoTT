@@ -7,7 +7,6 @@ import { strings, interpolate } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { IApplicationState, IProject, IConnection, IAppSettings } from "../../../../models/applicationState";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
-import { generateKey } from "../../../../common/crypto";
 import { toast } from "react-toastify";
 
 /**
@@ -54,6 +53,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         const projectId = this.props.match.params["projectId"];
         if (!this.props.project && projectId) {
             const project = this.props.recentProjects.find((project) => project.id === projectId);
+            this.props.applicationActions.ensureSecurityToken(project);
             this.props.projectActions.loadProject(project);
         }
 
@@ -85,7 +85,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     private onFormSubmit = async (project: IProject) => {
         const isNew = !(!!project.id);
 
-        await this.ensureSecurityToken(project);
+        await this.props.applicationActions.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
 
         toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }));
@@ -99,33 +99,5 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
 
     private onFormCancel() {
         this.props.history.goBack();
-    }
-
-    /**
-     * Ensures that a valid security token is associated with the project, otherwise creates one
-     * @param project The project to validate
-     */
-    private async ensureSecurityToken(project: IProject): Promise<IProject> {
-        let projectToken = this.props.appSettings.securityTokens
-            .find((securityToken) => securityToken.name === project.securityToken);
-
-        if (projectToken) {
-            return project;
-        }
-
-        projectToken = {
-            name: `${project.name} Token`,
-            key: generateKey(),
-        };
-
-        const updatedAppSettings: IAppSettings = {
-            devToolsEnabled: this.props.appSettings.devToolsEnabled,
-            securityTokens: [...this.props.appSettings.securityTokens, projectToken],
-        };
-
-        await this.props.applicationActions.saveAppSettings(updatedAppSettings);
-
-        project.securityToken = projectToken.name;
-        return project;
     }
 }
