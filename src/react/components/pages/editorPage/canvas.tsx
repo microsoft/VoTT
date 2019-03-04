@@ -99,14 +99,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param selectedTag Tag name
      */
     public applyTag = (tag: string) => {
-        const regions = this.getSelectedRegions();
+        const selectedRegions = this.getSelectedRegions();
         const lockedTags = this.props.lockedTags;
         const lockedTagsEmpty = !lockedTags || !lockedTags.length;
-        const regionsEmpty = !regions || !regions.length;
+        const regionsEmpty = !selectedRegions || !selectedRegions.length;
         if ((!tag && lockedTagsEmpty) || regionsEmpty) {
             return;
         }
-        let transformer: (tags: string[], tag: string) => void;
+        let transformer: (tags: string[], tag: string) => string[];
         if (lockedTagsEmpty) {
             // Tag selected while region(s) selected
             transformer = CanvasHelpers.toggleTag;
@@ -117,10 +117,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             // Tag removed from locked tags while region(s) selected
             transformer = CanvasHelpers.removeIfContained;
         }
-        for (const region of regions) {
-            transformer(region.tags, tag);
+        for (const selectedRegion of selectedRegions) {
+            selectedRegion.tags = transformer(selectedRegion.tags, tag);
         }
-        this.updateRegions(regions);
+        this.updateRegions(selectedRegions);
     }
 
     public copyRegions = async () => {
