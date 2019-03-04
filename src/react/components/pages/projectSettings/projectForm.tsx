@@ -69,7 +69,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         this.onFormSubmit = this.onFormSubmit.bind(this);
         this.onFormCancel = this.onFormCancel.bind(this);
         this.onFormValidate = this.onFormValidate.bind(this);
-        this.onTagClick = this.onTagClick.bind(this);
+        this.onTagShiftClick = this.onTagShiftClick.bind(this);
         this.onTagModalOk = this.onTagModalOk.bind(this);
     }
     /**
@@ -150,14 +150,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     tags: props.formData,
                     onChange: props.onChange,
                     placeHolder: strings.tags.placeholder,
-                    onCtrlTagClick: this.onTagClick,
+                    onShiftTagClick: this.onTagShiftClick,
                     ref: this.tagsInput,
                 };
             }),
         };
     }
 
-    private onTagClick(tag: ITag) {
+    private onTagShiftClick(tag: ITag) {
         this.tagEditorModal.current.open(tag);
     }
 

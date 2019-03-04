@@ -46,7 +46,7 @@ export function reloadApplication(): (dipatch: Dispatch) => Promise<void> {
 /**
  * Save app settings
  */
-export function saveAppSettings(appSettings: IAppSettings): (dispath: Dispatch) => Promise<IAppSettings> {
+export function saveAppSettings(appSettings: IAppSettings): (dispatch: Dispatch) => Promise<IAppSettings> {
     return (dispatch: Dispatch) => {
         dispatch(saveAppSettingsAction(appSettings));
         return Promise.resolve(appSettings);

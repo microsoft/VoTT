@@ -16,7 +16,7 @@ describe("Footer Component", () => {
     it("tags are initialized correctly", () => {
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
         });
         const stateTags = wrapper.state().tags;
         expect(stateTags).toEqual(originalTags);
@@ -25,7 +25,7 @@ describe("Footer Component", () => {
     it("tags are empty", () => {
         const wrapper = createComponent({
             tags: [],
-            displayHotKeys: true,
+            lockedTags: [],
         });
         const stateTags = wrapper.state()["tags"];
         expect(stateTags).toEqual([]);
@@ -35,7 +35,7 @@ describe("Footer Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
             onTagsChanged: onChangeHandler,
         });
         const newTagName = "My new tag";
@@ -52,7 +52,7 @@ describe("Footer Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
             onTagsChanged: onChangeHandler,
         });
         expect(wrapper.state().tags).toHaveLength(originalTags.length);
@@ -69,7 +69,7 @@ describe("Footer Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
             onTagsChanged: onChangeHandler,
         });
         wrapper.find("div.tag")
@@ -83,7 +83,7 @@ describe("Footer Component", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
             onTagsChanged: onChangeHandler,
         });
         wrapper.find("div.tag")
@@ -99,7 +99,7 @@ describe("Footer Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
             onTagsChanged: onChangeHandler,
             onTagClicked: onTagClickHandler,
         });
@@ -115,7 +115,7 @@ describe("Footer Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
             onTagsChanged: onChangeHandler,
             onTagClicked: onTagClickHandler,
         });
@@ -131,7 +131,7 @@ describe("Footer Component", () => {
         const onTagClickHandler = jest.fn();
         const wrapper = createComponent({
             tags: originalTags,
-            displayHotKeys: true,
+            lockedTags: [],
             onTagsChanged: onChangeHandler,
             onTagClicked: onTagClickHandler,
         });
