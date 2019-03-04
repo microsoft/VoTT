@@ -4,11 +4,13 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import MockFactory from "../../../../common/mockFactory";
+import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import { IApplicationState, IProject, AppError, ErrorCode } from "../../../../models/applicationState";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import createReduxStore from "../../../../redux/store/store";
-import ProjectService from "../../../../services/projectService";
 import CondensedList from "../../common/condensedList/condensedList";
+import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 import FilePicker, { IFilePickerProps } from "../../common/filePicker/filePicker";
 import HomePage, { IHomePageProps, IHomePageState } from "./homePage";
 
@@ -16,6 +18,10 @@ jest.mock("../../common/cloudFilePicker/cloudFilePicker");
 import { CloudFilePicker, ICloudFilePickerProps } from "../../common/cloudFilePicker/cloudFilePicker";
 
 jest.mock("../../../../services/projectService");
+import ProjectService from "../../../../services/projectService";
+
+jest.mock("../../../../services/importService");
+import ImportService from "../../../../services/importService";
 
 describe("Homepage Component", () => {
     let store: Store<IApplicationState> = null;
@@ -24,6 +30,11 @@ describe("Homepage Component", () => {
     let deleteProjectSpy: jest.SpyInstance = null;
     let closeProjectSpy: jest.SpyInstance = null;
     const recentProjects = MockFactory.createTestProjects(2);
+    const storageProviderMock = {
+        writeText: jest.fn((project) => Promise.resolve(project)),
+        deleteFile: jest.fn(() => Promise.resolve()),
+    };
+    StorageProviderFactory.create = jest.fn(() => storageProviderMock);
 
     function createComponent(store, props: IHomePageProps): ReactWrapper {
         return mount(
@@ -105,6 +116,81 @@ describe("Homepage Component", () => {
         expect(homePage.props().recentProjects.length).toEqual(recentProjects.length - 1);
     });
 
+    it("should call convert project method if a v1 project is uploaded", async () => {
+        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const importServiceMock = ImportService as jest.Mocked<typeof ImportService>;
+        const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
+        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+        const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
+
+        const arrayOfBlob = new Array<Blob>();
+        const file = new File(arrayOfBlob, "TestV1Project.jpg", { type: "application/json" });
+        file.path = "/Users/user/path/to/TestV1Project.jpg";
+        const testv1Project = MockFactory.createTestV1Project();
+        const testv1ProjectJson = JSON.stringify(testv1Project);
+        const testConnection = MockFactory.createTestConnection();
+        const assets = MockFactory.createTestAssets(2);
+        const testMetadata = assets.map((asset) => {
+            return MockFactory.createTestAssetMetadata(asset);
+        });
+        const fileInfo = {
+            content: testv1ProjectJson,
+            file,
+        };
+        const convertedProject = {
+            id: "aBC123",
+            name: fileInfo.file.name.split(".")[0],
+            version: "currentversion",
+            securityToken: `${fileInfo.file.name.split(".")[0]} Token`,
+            description: "Converted V1 Project",
+            tags: [],
+            sourceConnection: testConnection,
+            targetConnection: testConnection,
+            exportFormat: null,
+            videoSettings: {
+                frameExtractionRate: 15,
+            },
+            autoSave: true,
+        };
+
+        const convertProjectMock = importServiceMock.prototype.convertProject as jest.Mock;
+        convertProjectMock.mockImplementationOnce(() => {
+            return convertedProject;
+        });
+        convertProjectMock.mockClear();
+
+        const generateAssetsMock = importServiceMock.prototype.generateAssets as jest.Mock;
+        generateAssetsMock.mockImplementationOnce(() => {
+            return testMetadata;
+        });
+        generateAssetsMock.mockClear();
+
+        const saveMock = projectServiceMock.prototype.save as jest.Mock;
+        saveMock.mockImplementation(() => {
+            return convertedProject;
+        });
+        saveMock.mockClear();
+
+        const loadMock = projectServiceMock.prototype.load as jest.Mock;
+        loadMock.mockImplementation(() => {
+            return convertedProject;
+        });
+        saveMock.mockClear();
+
+        const wrapper = createComponent(store, props);
+
+        await MockFactory.flushUi();
+        const importConfirm = wrapper.find(Confirm).at(1) as ReactWrapper<IConfirmProps>;
+        importConfirm.props().onConfirm(testv1Project);
+
+        await MockFactory.flushUi();
+        expect(convertProjectMock).toBeCalled();
+        expect(generateAssetsMock).toBeCalled();
+        expect(saveProjectSpy).toBeCalled();
+        expect(loadProjectSpy).toBeCalled();
+        expect(saveAssetMetadataSpy).toBeCalled();
+    });
+
     it("should call open project action after successful file upload", async () => {
         const openProjectSpy = jest.spyOn(props.actions, "loadProject");
 
@@ -162,6 +248,7 @@ describe("Homepage Component", () => {
     function createProps(): IHomePageProps {
         return {
             recentProjects: [],
+            project: MockFactory.createTestProject(),
             connections: MockFactory.createTestConnections(),
             history: {
                 length: 0,
@@ -183,6 +270,11 @@ describe("Homepage Component", () => {
                 state: null,
             },
             actions: (projectActions as any) as IProjectActions,
+            applicationActions: (applicationActions as any) as IApplicationActions,
+            appSettings: {
+                devToolsEnabled: false,
+                securityTokens: [],
+            },
             match: {
                 params: {},
                 isExact: true,

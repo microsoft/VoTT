@@ -1,5 +1,5 @@
 import Guard from "../../../../common/guard";
-import { KeyEventType } from "./keyboardManager";
+import { KeyboardManager, KeyEventType } from "./keyboardManager";
 
 /**
  * A map of keyboard event registrations

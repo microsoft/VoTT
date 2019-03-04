@@ -2,8 +2,8 @@ import React from "react";
 import _ from "lodash";
 import { EditorToolbar, IEditorToolbarProps, IEditorToolbarState } from "./editorToolbar";
 import MockFactory from "../../../../common/mockFactory";
-import { ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
+import { ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import { ReactWrapper, mount } from "enzyme";
 import { ExportProject } from "../../toolbar/exportProject";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
@@ -58,11 +58,18 @@ describe("Editor Toolbar", () => {
     });
 
     it("Sets the selected toolbar item", async () => {
-        const exportProject = wrapper.find(ExportProject).first();
-        expect(exportProject.exists()).toBe(true);
+        const exportProject = wrapper.find(".exportProject");
         exportProject.find("button").simulate("click");
 
         const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
         expect(toolbar.state().selectedItem).toEqual(ToolbarItemName.ExportProject);
+    });
+
+    it("Sets correct keyboard binding when accelerator is defined", () => {
+        const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
+        const select = toolbar.props().items[0];
+        const toolbarRegistry = ToolbarItemFactory.getToolbarItems();
+        expect(select.config).toHaveProperty("accelerators", ["v", "V" ]);
+        expect(select.config).toEqual(toolbarRegistry[0].config);
     });
 });
