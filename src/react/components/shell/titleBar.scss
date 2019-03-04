@@ -1,11 +1,82 @@
 @import '../../../assets/sass/theme.scss';
 
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/fonts/fontawesome-webfont.eot');
-  src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/fonts/fontawesome-webfont.eot?#iefix') format('embedded-opentype'), url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/fonts/fontawesome-webfont.woff') format('woff'), url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/fonts/fontawesome-webfont.ttf') format('truetype'), url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/fonts/fontawesome-webfont.svg?#fontawesomeregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
+.title-bar {
+    color: #ccc;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: 34px;
+    height: 34px;
+
+    &-main {
+        -webkit-app-region: drag;
+        -webkit-user-select: none;
+
+        flex: 1;
+        text-align: center;
+        font-size: 0.80em;
+    }
+
+    &-icon {
+        -webkit-app-region: drag;
+        -webkit-user-select: none;
+
+        padding: 0.4em 0.8em;
+        color: $color-green;
+    }
+
+    &-controls {
+        display: flex;
+        flex-direction: row;
+
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            color: #ccc;
+            list-style: none;
+            padding: 0.4em 0.8em;
+            display: inline-block;
+
+            &:hover {
+                color: #fff;
+                background-color: $lighter-2;
+                cursor: pointer;
+            }
+        }
+
+        .btn-window-close {
+            &:hover {
+                background-color: $color-red;
+                color: #fff;
+            }
+        }
+    }
+}
+
+.menu-item {
+    &-container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    &-label {
+        flex: 1;
+    }
+
+    &-accelerator {
+        color: #999;
+        text-align: right;
+        margin-left: 2em;
+    }
+
+    &-checkbox {
+        font-size: 0.8em;
+        position: absolute;
+        margin-left: -1.5em;
+    }
 }
 
 .rc-menu {
@@ -16,7 +87,7 @@
   color: #ccc;
   font-size: 12px;
 
-  &-hidden {
+  &-hidden, &-submenu-hidden {
     display: none;
   }
 

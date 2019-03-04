@@ -1,8 +1,7 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { HashRouter as Router } from "react-router-dom";
+import { HashRouter as Router, NavLink, Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Navbar from "./react/components/shell/navbar";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
 import { IAppError, IApplicationState, IProject, ErrorCode } from "./models/applicationState";
@@ -14,6 +13,7 @@ import { ErrorHandler } from "./react/components/common/errorHandler/errorHandle
 import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
 import { TitleBar } from "./react/components/shell/titleBar";
 import { StatusBar } from "./react/components/shell/statusBar";
+import { strings } from "./common/strings";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -70,6 +70,13 @@ export default class App extends React.Component<IAppProps> {
                             <div className="app-shell">
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}>
+                                    <ul>
+                                        <li>
+                                            <Link title={strings.profile.settings} to={`/profile`}>
+                                                <i className="fas fa-user-circle"></i>
+                                            </Link>
+                                        </li>
+                                    </ul>
                                 </TitleBar>
                                 {/* <Navbar /> */}
                                 <div className="app-main">

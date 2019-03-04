@@ -68,8 +68,9 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 </div>
                 <div className="title-bar-main">{this.props.title || "Welcome"} - VoTT</div>
                 <div className="title-bar-controls">
+                    {this.props.children}
                     {this.state.isElectron &&
-                        <ul>
+                        <ul className="ml-3">
                             <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
                             </li>
@@ -102,8 +103,11 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private renderMenuItem = (menuItem: Electron.MenuItem) => {
+        if (!menuItem.visible) {
+            return null;
+        }
+
         const itemType: string = menuItem["type"];
-        console.log(itemType);
 
         switch (itemType) {
             case "submenu":
@@ -114,12 +118,30 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 );
             case "separator":
                 return (<Divider />);
+            case "checkbox":
+                console.log(menuItem.checked);
+                return (
+                    <MenuItem key={menuItem.label}
+                        disabled={!menuItem.enabled}
+                        onClick={(e) => this.onMenuItemClick(e, menuItem)}>
+                        <div className="menu-item-container">
+                            {Boolean(menuItem.checked) &&
+                                <div className="menu-item-checkbox">
+                                    <i className="fas fa-check" />
+                                </div>
+                            }
+                            <div className="menu-item-label">{menuItem.label}{menuItem["sublabel"]}</div>
+                            <div className="menu-item-accelerator">{this.getAcceleratorString(menuItem)}</div>
+                        </div>
+                    </MenuItem>);
             case "normal":
                 return (
-                    <MenuItem key={menuItem.label} onClick={(e) => this.onMenuItemClick(e, menuItem)}>
+                    <MenuItem key={menuItem.label}
+                        disabled={!menuItem.enabled}
+                        onClick={(e) => this.onMenuItemClick(e, menuItem)}>
                         <div className="menu-item-container">
                             <div className="menu-item-label">{menuItem.label}{menuItem["sublabel"]}</div>
-                            <div className="menu-item-accelerator">{menuItem["accelerator"]}</div>
+                            <div className="menu-item-accelerator">{this.getAcceleratorString(menuItem)}</div>
                         </div>
                     </MenuItem>
                 );
@@ -127,8 +149,20 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private onMenuItemClick(e: any, menuItem: Electron.MenuItem) {
+        let updateMenu = false;
+        if (menuItem["type"] === "checkbox") {
+            menuItem.checked = !menuItem.checked;
+            updateMenu = true;
+        }
+
         if (menuItem.click) {
             menuItem.click.call(menuItem, menuItem, this.currentWindow);
+        }
+
+        if (updateMenu) {
+            this.setState({
+                menu: this.remote.Menu.getApplicationMenu(),
+            });
         }
     }
 
@@ -162,5 +196,49 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
             openKeys: [],
             selectedKeys: [],
         });
+    }
+
+    private getAcceleratorString(menuItem: Electron.MenuItem) {
+        const accelerator = menuItem["accelerator"] || this.getAcceleratorFromRole(menuItem["role"]);
+        if (accelerator) {
+            return accelerator.replace("CmdOrCtrl", "Ctrl");
+        }
+
+        return null;
+    }
+
+    private getAcceleratorFromRole(role: string) {
+        switch (role) {
+            case "undo":
+                return "CmdOrCtrl+Z";
+            case "redo":
+                return "CmdOrCtrl+Y";
+            case "cut":
+                return "CmdOrCtrl+X";
+            case "copy":
+                return "CmdOrCtrl+C";
+            case "paste":
+                return "CmdOrCtrl+V";
+            case "selectall":
+                return "CmdOrCtrl+A";
+            case "minimize":
+                return "CmdOrCtrl+M";
+            case "close":
+                return "CmdOrCtrl+W";
+            case "quit":
+                return "CmdOrCtrl+Q";
+            case "reload":
+                return "CmdOrCtrl+R";
+            case "togglefullscreen":
+                return "F11";
+            case "toggledevtools":
+                return "CmdOrCtrl+Shift+I";
+            case "resetzoom":
+                return "CmdOrCtrl+0";
+            case "zoomin":
+                return "CmdOrCtrl+Shift+=";
+            case "zoomout":
+                return "CmdOrCtrl+-";
+        }
     }
 }
