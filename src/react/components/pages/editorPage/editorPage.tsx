@@ -97,7 +97,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
-        if (this.props.project) {
+        if (this.state.project) {
             await this.loadProjectAssets();
         } else if (projectId) {
             const project = this.props.recentProjects.find((project) => project.id === projectId);
@@ -106,17 +106,17 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     public async componentDidUpdate() {
-        if (this.props.project && this.state.assets.length === 0) {
+        if (this.state.project && this.state.assets.length === 0) {
             await this.loadProjectAssets();
         }
 
         // Navigating directly to the page via URL (ie, http://vott/projects/a1b2c3dEf/edit) sets the default state
         // before props has been set, this updates the project and additional settings to be valid once props are
         // retrieved.
-        if (!this.state.project && this.props.project) {
+        if (!this.state.project && this.state.project) {
             this.setState({
-                project: this.props.project,
-                additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+                project: this.state.project,
+                additionalSettings: { videoSettings: (this.state.project) ? this.state.project.videoSettings : null },
             });
         }
     }
@@ -148,7 +148,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
                 <div className="editor-page-content">
                     <div className="editor-page-content-header">
-                        <EditorToolbar project={this.props.project}
+                        <EditorToolbar project={this.state.project}
                             items={this.toolbarItems}
                             actions={this.props.actions}
                             onToolbarItemSelected={this.onToolbarItemSelected} />
@@ -161,7 +161,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onAssetMetadataChanged={this.onAssetMetadataChanged}
                                 editorMode={this.state.editorMode}
                                 selectionMode={this.state.selectionMode}
-                                project={this.props.project}
+                                project={this.state.project}
                                 lockedTags={this.state.lockedTags}>
                                 <AssetPreview
                                     additionalSettings={this.state.additionalSettings}
@@ -175,7 +175,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div>
                         <EditorFooter
                             displayHotKeys={true}
-                            tags={this.props.project.tags}
+                            tags={this.state.project.tags}
                             onTagsChanged={this.onFooterChange}
                             onTagClicked={this.onTagClicked}
                             onCtrlTagClicked={this.onCtrlTagClicked}
@@ -216,7 +216,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             return;
         }
         let tag: ITag;
-        const tags = this.props.project.tags;
+        const tags = this.state.project.tags;
         if (key === 0) {
             if (tags.length >= 10) {
                 tag = tags[9];
@@ -266,20 +266,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (rootAsset.id === assetMetadata.asset.id) {
             rootAsset.state = assetMetadata.asset.state;
         } else {
-            const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
+            const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.state.project, rootAsset);
 
             if (rootAssetMetadata.asset.state !== AssetState.Tagged) {
                 rootAssetMetadata.asset.state = assetMetadata.asset.state;
-                await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
+                await this.props.actions.saveAssetMetadata(this.state.project, rootAssetMetadata);
             }
 
             rootAsset.state = rootAssetMetadata.asset.state;
         }
 
-        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
-        await this.props.actions.saveProject(this.props.project);
+        await this.props.actions.saveAssetMetadata(this.state.project, assetMetadata);
+        await this.props.actions.saveProject(this.state.project);
 
-        const assetService = new AssetService(this.props.project);
+        const assetService = new AssetService(this.state.project);
         const childAssets = assetService.getChildAssets(rootAsset);
 
         // Find and update the root asset in the internal state
@@ -298,7 +298,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onFooterChange = (footerState) => {
         const project = {
-            ...this.props.project,
+            ...this.state.project,
             tags: footerState.tags,
         };
         this.setState({ project }, async () => {
@@ -370,7 +370,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
-        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+        const assetMetadata = await this.props.actions.loadAssetMetadata(this.state.project, asset);
         await this.updateProjectTagsFromAsset(assetMetadata);
 
         try {
@@ -393,12 +393,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const assetTags = new Set();
         asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
 
-        const newTags: ITag[] = this.props.project.tags ? [...this.props.project.tags] : [];
+        const newTags: ITag[] = this.state.project.tags ? [...this.state.project.tags] : [];
         let updateTags = false;
 
         assetTags.forEach((tag) => {
-            if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
+            if (!this.state.project.tags || this.state.project.tags.length === 0 ||
+                !this.state.project.tags.find((projectTag) => tag === projectTag.name) ) {
                 const tagKeys = Object.keys(tagColors);
                 newTags.push({
                     name: tag,
@@ -410,7 +410,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         if (updateTags) {
             asset.asset.state = AssetState.Tagged;
-            const newProject = {...this.props.project, tags: newTags};
+            const newProject = {...this.state.project, tags: newTags};
             await this.props.actions.saveAssetMetadata(newProject, asset);
             await this.props.actions.saveProject(newProject);
         }
@@ -424,11 +424,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.loadingProjectAssets = true;
 
         // Get all root project assets
-        const rootProjectAssets = _.values(this.props.project.assets)
+        const rootProjectAssets = _.values(this.state.project.assets)
             .filter((asset) => !asset.parent);
 
         // Get all root assets from source asset provider
-        const sourceAssets = await this.props.actions.loadAssets(this.props.project);
+        const sourceAssets = await this.props.actions.loadAssets(this.state.project);
 
         // Merge and uniquify
         const rootAssets = _(rootProjectAssets)
@@ -436,10 +436,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             .uniqBy((asset) => asset.id)
             .value();
 
-        const lastVisited = rootAssets.find((asset) => asset.id === this.props.project.lastVisitedAssetId);
+        const lastVisited = rootAssets.find((asset) => asset.id === this.state.project.lastVisitedAssetId);
 
         this.setState({
             assets: rootAssets,
+            project: {...this.state.project,
+                allAssetsIds: rootAssets.map((asset) => asset.id)},
         }, async () => {
             if (rootAssets.length > 0) {
                 await this.selectAsset(lastVisited ? lastVisited : rootAssets[0]);
