@@ -31,21 +31,6 @@ export default class CanvasHelpers {
     }
 
     /**
-     * Adds region to regions if missing,
-     * Removes region from regions if contained
-     * @param regions Existing regions array
-     * @param region Region to be toggled
-     */
-    public static toggleRegion(regions: IRegion[], region: IRegion): void {
-        const index = regions.findIndex((r) => r.id === region.id);
-        if (index === -1) {
-            regions.push(region);
-        } else {
-            regions.splice(index, 1);
-        }
-    }
-
-    /**
      * Adds tag to tags if not contained
      * @param tags Existing tags array
      * @param tag Tag to be added if missing
@@ -65,7 +50,7 @@ export default class CanvasHelpers {
     public static addAllIfMissing(tags: string[], newTags: string[]): string[] {
         let result = [...tags];
         for (const newTag of newTags) {
-            result = CanvasHelpers.addIfMissing(tags, newTag);
+            result = CanvasHelpers.addIfMissing(result, newTag);
         }
         return result;
     }

@@ -45,6 +45,14 @@ function getState(wrapper): IEditorPageState {
     return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
 }
 
+function dispatchKeyEvent(key: string, eventType: KeyEventType = KeyEventType.KeyDown) {
+    window.dispatchEvent(new KeyboardEvent(
+        eventType, {
+            key,
+        },
+    ));
+}
+
 describe("Editor Page Component", () => {
     let assetServiceMock: jest.Mocked<typeof AssetService> = null;
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
@@ -55,7 +63,10 @@ describe("Editor Page Component", () => {
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
-        editorMock.prototype.RM = new RegionsManager(null, null);
+        editorMock.prototype.RM = {
+            ...new RegionsManager(null, null),
+            getSelectedRegionsBounds: jest.fn(() => MockFactory.createTestRegions()),
+        };
         editorMock.prototype.AS = {setSelectionMode: jest.fn()};
     });
 
@@ -413,14 +424,6 @@ describe("Editor Page Component", () => {
             canvas.clearRegions = clearRegions;
         });
 
-        function dispatchKeyEvent(key: string, eventType: KeyEventType = KeyEventType.KeyDown) {
-            window.dispatchEvent(new KeyboardEvent(
-                eventType, {
-                    key,
-                },
-            ));
-        }
-
         it("editor mode is changed correctly", async () => {
             wrapper.find(`.${ToolbarItemName.DrawPolygon}`).simulate("click");
             expect(getState(wrapper).editorMode).toEqual(EditorMode.Polygon);
@@ -547,7 +550,7 @@ describe("Editor Page Component", () => {
             expect(stateTags).toHaveLength(project.tags.length - 1);
         });
 
-        it("calls onTagClick handler when hot key is pressed", async () => {
+        it("sets selected tag and locked tags when hot key is pressed", async () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
                 ...MockFactory.initialState(),
@@ -559,17 +562,13 @@ describe("Editor Page Component", () => {
 
             wrapper.update();
 
-            const expectedTag = project.tags[2];
-            const editorPage = wrapper
-                .find(EditorPage)
-                .childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage>;
+            const editorPage = wrapper.find(EditorPage).childAt(0);
 
-            wrapper.find(Canvas).find(AssetPreview).props().onLoaded(document.createElement("img"));
-            await MockFactory.flushUi();
+            dispatchKeyEvent("1");
 
-            expect(editorPage.state().selectedAsset.regions[0].tags.length).toEqual(0);
-            wrapper.find(EditorFooter).props().onTagClicked(expectedTag);
-            expect(editorPage.state().selectedAsset.regions[0].tags.length).toEqual(1);
+            expect(editorPage.state().lockedTags).toEqual([]);
+            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+
         });
 
         it("Adds tag to locked tags when ctrl clicked", async () => {
@@ -586,8 +585,8 @@ describe("Editor Page Component", () => {
             wrapper.find("div.tag")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-            const editorPage = wrapper.find(EditorPage).childAt(0);
-            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+            const newEditorPage = wrapper.find(EditorPage).childAt(0);
+            expect(newEditorPage.state().lockedTags).toEqual([project.tags[0].name]);
         });
 
         it("Removes tag from locked tags when ctrl clicked", async () => {

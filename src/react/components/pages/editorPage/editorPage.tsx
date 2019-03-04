@@ -199,10 +199,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onCtrlTagClicked = (tag: ITag): void => {
         const locked = this.state.lockedTags;
-        CanvasHelpers.toggleTag(locked, tag.name);
         this.setState({
             selectedTag: tag.name,
-            lockedTags: locked,
+            lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
         }, () => this.canvas.current.applyTag(tag.name));
     }
 
