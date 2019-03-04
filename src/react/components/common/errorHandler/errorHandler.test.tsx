@@ -179,7 +179,7 @@ describe("Error Handler Component", () => {
         expect(onErrorHandler).toBeCalledWith(expectedError);
     });
 
-    it("formulates pre-formatted JSON error with unknown error code in production mode", () => {
+    it("Displays generic unknown error message in production mode", () => {
         const thrownError = {
             code: "ENOENT",
             errno: -4058,
