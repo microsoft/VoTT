@@ -3,6 +3,7 @@ import { IAppError, ErrorCode, AppError } from "../../../../models/applicationSt
 import { strings } from "../../../../common/strings";
 import Alert from "../alert/alert";
 import { instanceOf } from "prop-types";
+import { getEnv, Env } from "../../../../common/environment";
 
 /**
  * Component properties for ErrorHandler component
@@ -101,9 +102,7 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
                 message: reason.message,
                 title: reason.name,
             };
-        }
-
-        if (!appError) {
+        } else {
             appError = {
                 title: strings.errors.unknown.title,
                 errorCode: ErrorCode.Unknown,
@@ -113,16 +112,8 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         this.props.onError(appError);
     }
 
-    private getUnknownAppError(e): IAppError {
-        return {
-            title: strings.errors.unknown.title,
-            errorCode: ErrorCode.Unknown,
-            message: this.getUnknownErrorMessage(e),
-        };
-    }
-
     private getUnknownErrorMessage(e) {
-        if (process.env.NODE_ENV !== "production") {
+        if (Env.get() !== "production") {
             return (<pre>{JSON.stringify(e, null, 2)}</pre>);
         } else {
             return strings.errors.unknown.message;
