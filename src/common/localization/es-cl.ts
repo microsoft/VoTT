@@ -29,6 +29,11 @@ export const spanish: IAppStrings = {
             title: "Borrar Proyecto",
             confirmation: "¿Está seguro que quiere borrar el proyecto",
         },
+        importProject: {
+            title: "Importar Proyecto",
+            confirmation: "¿Está seguro que quiere convertir el proyecto ${project.file.name}" +
+                "a formato v2? Le recomendamos que haga una copia de seguridad de su archivo de proyecto.",
+        },
     },
     appSettings: {
         title: "Configuración de Aplicación",
@@ -287,6 +292,10 @@ export const spanish: IAppStrings = {
             title: "Error al cargar el lienzo",
             message: `Se produjo un error al cargar el lienzo, verifique los activos del
                 proyecto y vuelva a intentarlo.`,
+        },
+        importError: {
+            title: "Error al importar el proyecto V1",
+            message: "Hubo un error al importar el proyecto V1. Revisa el archivo del proyecto y vuelve a intentarlo",
         },
     },
 };

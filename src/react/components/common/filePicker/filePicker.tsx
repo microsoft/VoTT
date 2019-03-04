@@ -1,6 +1,7 @@
 import React, { SyntheticEvent } from "react";
 import shortid from "shortid";
 import HtmlFileReader from "../../../../common/htmlFileReader";
+import { IFileInfo } from "../../../../models/applicationState";
 
 /**
  * Properties for File Picker
@@ -8,7 +9,7 @@ import HtmlFileReader from "../../../../common/htmlFileReader";
  * @member onError - Function to call on file picking error
  */
 export interface IFilePickerProps {
-    onChange: (sender: SyntheticEvent, fileText: string | ArrayBuffer) => void;
+    onChange: (sender: SyntheticEvent, fileText: IFileInfo) => void;
     onError: (sender: SyntheticEvent, error: any) => void;
 }
 
@@ -45,7 +46,7 @@ export default class FilePicker extends React.Component<IFilePickerProps> {
         }
 
         HtmlFileReader.readAsText(e.target.files[0])
-            .then((fileText) => this.props.onChange(e, fileText))
+            .then((fileInfo) => this.props.onChange(e, fileInfo))
             .catch((err) => this.props.onError(e, err));
     }
 }
