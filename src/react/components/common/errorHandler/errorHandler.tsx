@@ -2,8 +2,7 @@ import React from "react";
 import { IAppError, ErrorCode, AppError } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import Alert from "../alert/alert";
-import { instanceOf } from "prop-types";
-import { getEnv, Env } from "../../../../common/environment";
+import { Env } from "../../../../common/environment";
 
 /**
  * Component properties for ErrorHandler component
