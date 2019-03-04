@@ -96,7 +96,8 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     }
 
     /**
-     * Shows the of the tag in the span of the first 10 tags
+     * Shows the display index of the tag in the span of the first 10 tags
+     * Also adds necessary stylings to all locked tags
      * @param name Name of tag
      * @param index Index of tag
      */
