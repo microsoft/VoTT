@@ -9,24 +9,24 @@ describe("Canvas Helpers", () => {
         const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const newTag = MockFactory.createTestTag("New Tag");
-        CanvasHelpers.toggleTag(
+        const toggled = CanvasHelpers.toggleTag(
             tags,
             newTag.name,
         );
-        expect(tags).toHaveLength(originalLength + 1);
-        expect(tags[tags.length - 1]).toEqual(newTag.name);
+        expect(toggled).toHaveLength(originalLength + 1);
+        expect(toggled[toggled.length - 1]).toEqual(newTag.name);
     });
 
     it("Removes a tag from list", () => {
         const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const originalFirstTag = tags[0];
-        CanvasHelpers.toggleTag(
+        const removed = CanvasHelpers.toggleTag(
             tags,
             tags[0],
         );
-        expect(tags).toHaveLength(originalLength - 1);
-        expect(tags[0]).not.toEqual(originalFirstTag);
+        expect(removed).toHaveLength(originalLength - 1);
+        expect(removed[0]).not.toEqual(originalFirstTag);
     });
 
     it("Gets correct region data", () => {

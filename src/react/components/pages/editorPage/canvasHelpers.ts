@@ -23,7 +23,7 @@ export default class CanvasHelpers {
         const tagIndex = tags.findIndex((existingTag) => existingTag === tag);
         if (tagIndex === -1) {
             // Tag isn't found within region tags, add it
-            return [...tags, tag]
+            return [...tags, tag];
         } else {
             // Tag is within region tags, remove it
             return tags.filter((t) => t !== tag);
@@ -52,7 +52,7 @@ export default class CanvasHelpers {
      */
     public static addIfMissing(tags: string[], tag: string): string[] {
         if (!tags.find((t) => t === tag)) {
-            return [...tags, tag]
+            return [...tags, tag];
         }
         return tags;
     }
@@ -63,7 +63,7 @@ export default class CanvasHelpers {
      * @param newTags Tags to be added if not contained
      */
     public static addAllIfMissing(tags: string[], newTags: string[]): string[] {
-        let result = [...tags]
+        let result = [...tags];
         for (const newTag of newTags) {
             result = CanvasHelpers.addIfMissing(tags, newTag);
         }
