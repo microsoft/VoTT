@@ -71,23 +71,26 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
      */
     public async getAssetsForExport(): Promise<IAssetMetadata[]> {
         let predicate: (asset: IAsset) => boolean = null;
+        let source: IAsset[] = null;
 
         // @ts-ignore
         switch (this.options.assetState) {
             case ExportAssetState.Visited:
                 predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
+                source = await _.values(this.project.assets);
                 break;
             case ExportAssetState.Tagged:
                 predicate = (asset) => asset.state === AssetState.Tagged;
+                source = await _.values(this.project.assets);
                 break;
             case ExportAssetState.All:
             default:
                 predicate = () => true;
+                source = this.project.allAssets;
                 break;
         }
 
-        return await _.values(this.project.assets)
-            .filter((asset) => asset.type !== AssetType.Video)
+        return await source.filter((asset) => asset.type !== AssetType.Video)
             .filter(predicate)
             .mapAsync(async (asset) => await this.assetService.getAssetMetadata(asset));
     }

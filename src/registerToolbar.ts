@@ -124,5 +124,5 @@ export default function registerToolbar() {
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
         accelerators: ["Ctrl+e", "Ctrl+E"],
-    });
+    }, ExportProject);
 }
