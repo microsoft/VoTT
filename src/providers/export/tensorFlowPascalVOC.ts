@@ -75,7 +75,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
     }
 
     private async exportSingleImage(jpegImagesFolderName: string, element: IAssetMetadata): Promise<void> {
-        const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
+        const imageFileName = `${jpegImagesFolderName}/${element.asset.name.replace(/\.[^/.]+$/, ".jpg")}`;  // 
 
         try {
             const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset);
