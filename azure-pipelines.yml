@@ -3,6 +3,7 @@ trigger:
   - greenkeeper/* # enable CI to run on greepkeeper branches
 pr:
   - v2 # only kick off for pr targeting v2
+  - dev # kick off for pr targeting dev
 
 jobs:
 - job: Linux
