@@ -194,6 +194,10 @@ export function saveAssetMetadata(
  */
 export function exportProject(project: IProject): (dispatch: Dispatch) => Promise<void> | Promise<IExportResults> {
     return async (dispatch: Dispatch) => {
+        if (!project.exportFormat) {
+            throw new AppError(ErrorCode.ExportFormatNotFound, "Export Format missing for project.");
+        }
+
         if (project.exportFormat && project.exportFormat.providerType) {
             const exportProvider = ExportProviderFactory.create(
                 project.exportFormat.providerType,
