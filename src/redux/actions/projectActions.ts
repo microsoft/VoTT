@@ -9,8 +9,7 @@ import {
     IApplicationState,
     IAsset,
     IAssetMetadata,
-    IExportProviderOptions,
-    IProject
+    IProject,
 } from "../../models/applicationState";
 import { createAction, createPayloadAction, IPayloadAction } from "./actionCreators";
 import { ExportAssetState, IExportResults } from "../../providers/export/exportProvider";
