@@ -48,6 +48,23 @@ describe("Footer Component", () => {
         expect(tags[tags.length - 1].name).toEqual(newTagName);
     });
 
+    it("create a new tag when no tags exist", () => {
+        const onChangeHandler = jest.fn();
+        const wrapper = createComponent({
+            tags: null,
+            lockedTags: [],
+            onTagsChanged: onChangeHandler,
+        });
+        const newTagName = "My new tag";
+        wrapper.find("input").simulate("change", { target: { value: newTagName } });
+        wrapper.find("input").simulate("keyDown", { keyCode: 13 });
+        expect(onChangeHandler).toBeCalled();
+
+        const tags = wrapper.state().tags;
+        expect(tags).toHaveLength(1);
+        expect(tags[0].name).toEqual(newTagName);
+    });
+
     it("remove a tag", () => {
         const onChangeHandler = jest.fn();
         const wrapper = createComponent({
