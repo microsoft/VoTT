@@ -96,7 +96,7 @@ export const spanish: IAppStrings = {
     projectMetrics: {
         title: "Métricas del Proyecto",
         sourceAssetsCount: "Número de activos de origen",
-        visitedAssetsCount: "Número de bienes visitados",
+        visitedAssetsCount: "Número de activos visitados",
         taggedAssetsCount: "Número de activos etiquetados",
         regionsCount: "Número de regiones dibujadas",
         tagCategories: "Número de categorías de etiquetas",

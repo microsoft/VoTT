@@ -75,31 +75,32 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                 </h3>
                 <ul className="list-group list-group-flush m-3">
                     <li className="list-group-item">
-                        <b>{strings.projectMetrics.sourceAssetsCount}   </b>
-                        <span
-                            className={"source-asset-count " + badgeCSS}>
-                            {this.getSourceAssetCount()}
-                        </span>
+                        <h5>{strings.projectMetrics.sourceAssetsCount}
+                            <span className={"source-asset-count " + badgeCSS}>
+                                {this.getSourceAssetCount()}
+                            </span>
+                        </h5>
                     </li>
                     <li className="list-group-item">
-                        <b>{strings.projectMetrics.visitedAssetsCount}   </b>
-                        <span
-                            className={"visited-asset-count " + badgeCSS}>
-                            {this.getVisitedAssetsCount()}
-                        </span>
+                        <h5>{strings.projectMetrics.visitedAssetsCount}
+                            <span className={"visited-asset-count " + badgeCSS}>
+                                {this.getVisitedAssetsCount()}
+                            </span>
+                        </h5>
                     </li>
                     <li className="list-group-item">
-                        <b>{strings.projectMetrics.taggedAssetsCount}   </b>
-                        <span
-                            className={"tagged-asset-count " + badgeCSS}>
-                            {this.getTaggedAssetCount()}
-                        </span>
+                        <h5>{strings.projectMetrics.taggedAssetsCount}
+                            <span className={"tagged-asset-count " + badgeCSS}>
+                                {this.getTaggedAssetCount()}
+                            </span>
+                        </h5>
                     </li>
                     <li className="list-group-item">
-                        <b>{strings.projectMetrics.regionsCount}   </b>
-                        <span className={"regions-count " + badgeCSS}>
-                              {this.getRegionsCount()}
-                        </span>
+                        <h5>{strings.projectMetrics.regionsCount}
+                            <span className={"regions-count " + badgeCSS}>
+                                {this.getRegionsCount()}
+                            </span>
+                        </h5>
                     </li>
                     <li className="list-group-item tag-categories">
                         <h5>{strings.projectMetrics.tagCategories}
@@ -116,11 +117,11 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                         </span>
                     </li>
                     <li className="list-group-item">
-                        <b>{strings.projectMetrics.averageTagPerTaggedAsset}   </b>
-                        <span
-                            className={"average-tag-count " + badgeCSS}>
-                            {this.getAverageTagCount()}
-                        </span>
+                        <h5>{strings.projectMetrics.averageTagPerTaggedAsset}
+                            <span className={"average-tag-count " + badgeCSS}>
+                                {this.getAverageTagCount()}
+                            </span>
+                        </h5>
                     </li>
                 </ul>
             </div>
