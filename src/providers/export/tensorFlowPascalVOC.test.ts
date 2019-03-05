@@ -138,17 +138,17 @@ describe("TFPascalVOC Json Export Provider", () => {
                 .toBeGreaterThanOrEqual(0);
             expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 4.xml")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-0_val.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-1_val.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_val.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-2_val.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-0_train.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-1_train.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_train.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-2_train.txt")))
                 .toBeGreaterThanOrEqual(0);
         });
 
@@ -190,9 +190,9 @@ describe("TFPascalVOC Json Export Provider", () => {
                 .toBeGreaterThanOrEqual(0);
             expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 3.xml")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-0_val.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-0_train.txt")))
                 .toBeGreaterThanOrEqual(0);
         });
 
@@ -231,17 +231,17 @@ describe("TFPascalVOC Json Export Provider", () => {
                 .toBeGreaterThanOrEqual(0);
             expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 2.xml")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-0_val.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-1_val.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_val.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-2_val.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-0_train.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-1_train.txt")))
                 .toBeGreaterThanOrEqual(0);
-            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_train.txt")))
+            expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag-2_train.txt")))
                 .toBeGreaterThanOrEqual(0);
         });
     });
