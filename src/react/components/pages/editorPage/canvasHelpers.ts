@@ -184,10 +184,10 @@ export default class CanvasHelpers {
      * @param regions Regions to duplicate
      * @param others Other regions existing in the asset (used to not put region on top of other region)
      */
-    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[]): IRegion[] => {
+    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[], width: number, height: number): IRegion[] => {
         const result: IRegion[] = [];
         for (const region of regions) {
-            const shiftCoordinates = CanvasHelpers.getShiftCoordinates(region.boundingBox, others);
+            const shiftCoordinates = CanvasHelpers.getShiftCoordinates(region.boundingBox, others, width, height);
 
             const newRegion: IRegion = {
                 ...region,
@@ -198,6 +198,34 @@ export default class CanvasHelpers {
             result.push(newRegion);
         }
         return result;
+    }
+
+    public static boundingBoxWithin = (boundingBox: IBoundingBox, width: number, height: number) => {
+        return (
+            (boundingBox.left + boundingBox.width) < width &&
+            (boundingBox.top + boundingBox.height) < height
+        );
+    }
+
+    public static fromBoundingBox = (boundingBox: IBoundingBox):IPoint[] => {
+        return [
+            {
+                x: boundingBox.left,
+                y: boundingBox.top,
+            },
+            {
+                x: boundingBox.left + boundingBox.width,
+                y: boundingBox.top,
+            },
+            {
+                x: boundingBox.left + boundingBox.width,
+                y: boundingBox.top + boundingBox.height,
+            },
+            {
+                x: boundingBox.left,
+                y: boundingBox.top + boundingBox.height,
+            },
+        ]
     }
 
     private static shiftBoundingBox = (boundingBox: IBoundingBox, shiftCoordinates: IPoint): IBoundingBox => {
@@ -217,7 +245,7 @@ export default class CanvasHelpers {
         });
     }
 
-    private static getShiftCoordinates = (boundingBox: IBoundingBox, otherRegions: IRegion[]) => {
+    private static getShiftCoordinates = (boundingBox: IBoundingBox, otherRegions: IRegion[], width: number, height: number): IPoint => {
         let x = boundingBox.left;
         let y = boundingBox.top;
 
@@ -235,10 +263,11 @@ export default class CanvasHelpers {
                 y += CanvasHelpers.pasteMargin;
                 foundRegionAtTarget = false;
             } else {
-                return {
+                const result = {
                     x: x - boundingBox.left,
                     y: y - boundingBox.top,
                 };
+                return result;
             }
         }
     }
