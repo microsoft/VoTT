@@ -375,6 +375,7 @@ describe("Editor Page Component", () => {
             expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
         });
     });
+
     describe("Basic toolbar test", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
@@ -492,11 +493,6 @@ describe("Editor Page Component", () => {
         it("Calls paste regions with hot key", async () => {
             dispatchKeyEvent("Ctrl+v");
             expect(pasteRegions).toBeCalled();
-        });
-
-        it("Calls clear regions with hot key", async () => {
-            dispatchKeyEvent("Ctrl+e");
-            expect(clearRegions).toBeCalled();
         });
     });
 
