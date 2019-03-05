@@ -297,5 +297,9 @@ export const spanish: IAppStrings = {
             title: "Error al importar el proyecto V1",
             message: "Hubo un error al importar el proyecto V1. Revisa el archivo del proyecto y vuelve a intentarlo",
         },
+        pasteRegionTooBigError: {
+            title: "Error al pegar region al activo",
+            message: "Hubo un error al pagar el region al activo. Intenta copiar otra region",
+        }
     },
 };

@@ -46,6 +46,7 @@ export enum ErrorCode {
     SecurityTokenNotFound = "securityTokenNotFound",
     CanvasError = "canvasError",
     V1ImportError = "v1ImportError",
+    PasteRegionTooBigError = "pasteRegionTooBigError",
 }
 
 /**

@@ -257,7 +257,7 @@ export const english: IAppStrings = {
     errors: {
         unknown: {
             title: "Unknown Error",
-            message: "The app encounted an unknown error. Please try again.",
+            message: "The app encountered an unknown error. Please try again.",
         },
         projectUploadError: {
             title: "Error Uploading File",
@@ -295,5 +295,9 @@ export const english: IAppStrings = {
             title: "Error importing V1 project",
             message: "There was an error importing the V1 project. Check the project file and try again",
         },
+        pasteRegionTooBigError: {
+            title: "Error pasting region",
+            message: "Region too big for this asset. Try copying another region",
+        }
     },
 };

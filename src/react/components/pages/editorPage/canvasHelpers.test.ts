@@ -78,7 +78,7 @@ describe("Canvas Helpers", () => {
 
     it("Duplicates and moves a region", () => {
         const regions = MockFactory.createTestRegions();
-        const duplicates = CanvasHelpers.duplicateRegionsAndMove([regions[0]], regions);
+        const duplicates = CanvasHelpers.duplicateRegionsAndMove([regions[0]], regions, 1000, 2000);
         expect(duplicates[0]).toMatchObject({
             ...regions[0],
             id: expect.any(String),
