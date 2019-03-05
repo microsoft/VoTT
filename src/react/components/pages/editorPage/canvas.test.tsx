@@ -76,7 +76,9 @@ describe("Editor Canvas", () => {
     function setSelectedRegions(ids: string[]) {
         editorMock.prototype.RM = {
             ...new RegionsManager(null, null),
-            getSelectedRegionsBounds: jest.fn(() => ids.map((id) => {id})),
+            getSelectedRegionsBounds: jest.fn(() => ids.map((id) => {
+                return {id}
+            })),
         };
     }
 
