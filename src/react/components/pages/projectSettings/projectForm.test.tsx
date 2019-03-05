@@ -232,5 +232,22 @@ describe("Project Form Component", () => {
             form.simulate("submit");
             expect(onSubmitHandler).not.toBeCalled();
         });
+
+        it("create a new tag when no tags exist", () => {
+            wrapper = createComponent({
+                project: null,
+                appSettings,
+                connections,
+                onSubmit: onSubmitHandler,
+                onCancel: onCancelHandler,
+            });
+            const newTagName = "My new tag";
+            wrapper.find("input").last().simulate("change", { target: { value: newTagName } });
+            wrapper.find("input").last().simulate("keyDown", { keyCode: 13 });
+    
+            const tags = wrapper.state().formData.tags;
+            expect(tags).toHaveLength(1);
+            expect(tags[0].name).toEqual(newTagName);
+        });
     });
 });
