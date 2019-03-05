@@ -93,6 +93,16 @@ export const spanish: IAppStrings = {
             saveSuccess: "Guardado correctamente ${project.name} configuración del proyecto",
         },
     },
+    projectMetrics: {
+        title: "Métricas del Proyecto",
+        sourceAssetsCount: "Número de activos de origen",
+        visitedAssetsCount: "Número de activos visitados",
+        taggedAssetsCount: "Número de activos etiquetados",
+        regionsCount: "Número de regiones dibujadas",
+        tagCategories: "Número de categorías de etiquetas",
+        tagCount: "Totales por etiqueta (número de instancias de esa etiqueta)",
+        averageTagPerTaggedAsset: "Etiquetas promedio por activo etiquetado",
+    },
     tags: {
         title: "Etiquetas",
         placeholder: "Agregar nuevo etiqueta",

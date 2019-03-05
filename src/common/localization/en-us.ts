@@ -92,6 +92,16 @@ export const english: IAppStrings = {
             saveSuccess: "Successfully saved ${project.name} project settings",
         },
     },
+    projectMetrics: {
+        title: "Project Metrics",
+        sourceAssetsCount: "Number of source assets",
+        visitedAssetsCount: "Number of visited assets",
+        taggedAssetsCount: "Number of tagged assets",
+        regionsCount: "Number of regions drawn",
+        tagCategories: "Number of tag categories",
+        tagCount: "Per tag totals (number of instances of that tag)",
+        averageTagPerTaggedAsset: "Average tags per tagged asset",
+    },
     tags: {
         title: "Tags",
         placeholder: "Add new tag",
