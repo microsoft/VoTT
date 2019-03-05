@@ -55,10 +55,11 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         const tagsMap = this.getTagsCount();
         const renderTagCount = tags.map((tag) => {
             const tagName = tag.name;
+            const normalizedTagName = tagName.split(" ").join("-");
             return (
                 <li>
                     <b>{tagName}: </b>
-                    <span className={tagName + "-count " + badgeCSS}>
+                    <span className={normalizedTagName + " " + badgeCSS}>
                         {tagsMap.get(tagName) || 0}
                     </span>
                 </li>

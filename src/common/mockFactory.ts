@@ -437,7 +437,7 @@ export default class MockFactory {
      */
     public static createTestTag(name: string = "1"): ITag {
         return {
-            name: `Tag-${name}`,
+            name: `Tag ${name}`,
             color: MockFactory.randomColor(),
         };
     }

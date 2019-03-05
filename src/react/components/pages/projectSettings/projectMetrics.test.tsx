@@ -59,10 +59,7 @@ describe("Project metrics page", () => {
             // 4 tag categories, 8 tagged asset
             const assetCountPerTag = 2;
 
-            const tags = defaultProject.tags;
-            const tagName = tags[0].name;
-
-            const tagCount = wrapper.find(`.${tagName}-count`);
+            const tagCount = wrapper.find(".Tag-0");
             expect(tagCount.text()).toEqual(assetCountPerTag.toString());
         });
 
@@ -75,6 +72,34 @@ describe("Project metrics page", () => {
         it("correctly calculate visited asset count", async () => {
             const visitedAssetCount = wrapper.find(".visited-asset-count");
             expect(visitedAssetCount.text()).toEqual("2");
+        });
+    });
+
+    describe("tag name has dash", () => {
+        beforeEach(async () => {
+            setUpMockAssetService(testAssets);
+
+            const project = {
+                ...defaultProject,
+                tags: [
+                    {
+                        ...defaultProject.tags[0],
+                        name: `Tag-0`,
+                    },
+                ],
+            };
+
+            wrapper = createComponent({
+                project,
+            });
+
+            await MockFactory.flushUi();
+            wrapper.update();
+        });
+
+        it("generate the right span class name ", async () => {
+            const tagCount = wrapper.find(".Tag-0");
+            expect(tagCount).toHaveLength(1);
         });
     });
 
@@ -144,4 +169,5 @@ describe("Project metrics page", () => {
             />,
         );
     };
-});
+})
+;
