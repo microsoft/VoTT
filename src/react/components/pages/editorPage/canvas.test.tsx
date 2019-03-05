@@ -73,11 +73,11 @@ describe("Editor Canvas", () => {
         }
     });
 
-    function setSelectedRegions(ids: string[]) {
+    function mockSelectedRegions(ids: string[]) {
         editorMock.prototype.RM = {
             ...new RegionsManager(null, null),
             getSelectedRegionsBounds: jest.fn(() => ids.map((id) => {
-                return {id}
+                return {id};
             })),
         };
     }
@@ -102,6 +102,7 @@ describe("Editor Canvas", () => {
         assetMetadata.regions.push(MockFactory.createTestRegion());
         assetMetadata.regions.push(MockFactory.createTestRegion());
 
+        mockSelectedRegions([]);
         wrapper.setProps({ selectedAsset: assetMetadata });
         expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
         expect(wrapper.instance().getSelectedRegions()).toEqual([]);
@@ -139,6 +140,7 @@ describe("Editor Canvas", () => {
 
         const newRegionData = MockFactory.createTestRegionData();
         const canvas = wrapper.instance();
+        const originalRegions = wrapper.state().currentAsset.regions;
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
@@ -148,7 +150,12 @@ describe("Editor Canvas", () => {
         canvas.editor.onSelectionEnd(newRegionData);
         const expectedRegion = CanvasHelpers.fromRegionData(newRegionData, RegionType.Rectangle);
 
-        expect(wrapper.instance().getSelectedRegions()).toMatchObject([{ ...expectedRegion, id: expect.any(String) }]);
+        const newRegion = wrapper.state().currentAsset.regions
+            .find((r) => !originalRegions.find((or) => or.id === r.id));
+
+        mockSelectedRegions([newRegion.id]);
+        expect(wrapper.instance().getSelectedRegions()).toEqual([newRegion]);
+
         expect(wrapper.state().currentAsset.regions).toMatchObject([
             ...original.regions,
             { ...expectedRegion, id: expect.any(String) },
@@ -171,8 +178,6 @@ describe("Editor Canvas", () => {
         await MockFactory.flushUi();
 
         expect(wrapper.instance().editor.RM.addRegion).toBeCalledTimes(assetMetadata.regions.length);
-        expect(wrapper.instance().getSelectedRegions())
-            .toEqual([assetMetadata.regions[assetMetadata.regions.length - 1]]);
     });
 
     it("onRegionMove edits region info in asset", () => {
@@ -224,6 +229,7 @@ describe("Editor Canvas", () => {
 
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
 
+        mockSelectedRegions(["test1"]);
         canvas.editor.onRegionDelete("test1");
 
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length - 1);
@@ -244,28 +250,18 @@ describe("Editor Canvas", () => {
         };
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);
 
-        canvas.editor.onRegionSelected("test1", false);
+        mockSelectedRegions(["test1"]);
         expect(wrapper.instance().getSelectedRegions().length).toEqual(1);
         expect(wrapper.instance().getSelectedRegions()).toMatchObject([
             original.regions.find((region) => region.id === "test1"),
         ]);
 
-        canvas.editor.onRegionSelected("test2", true);
+        mockSelectedRegions(["test1", "test2"]);
         expect(wrapper.instance().getSelectedRegions().length).toEqual(2);
         expect(wrapper.instance().getSelectedRegions()).toMatchObject([
             original.regions.find((region) => region.id === "test1"),
             original.regions.find((region) => region.id === "test2"),
         ]);
-    });
-
-    it("onRegionSelected with invalid id throws error", () => {
-        const wrapper = createComponent();
-        const canvas = wrapper.instance();
-        const original = { ...canvas.props.selectedAsset };
-
-        expect(() => {
-            canvas.editor.onRegionSelected("fakeRegion", false);
-        }).toThrowError("Couldn't find region with id fakeRegion");
     });
 
     function cloneWithUpdatedRegionTags(original: IAssetMetadata, regionId: string, tags: string[]) {
@@ -288,7 +284,7 @@ describe("Editor Canvas", () => {
         const onAssetMetadataChanged = jest.fn();
         wrapper.setProps({ onAssetMetadataChanged });
         const canvas = wrapper.instance();
-
+        mockSelectedRegions(["test1"]);
         canvas.editor.onRegionSelected("test1", null);
 
         const newTag = "newTag";
@@ -309,7 +305,7 @@ describe("Editor Canvas", () => {
             lockedTags: [newTag],
         });
         const canvas = wrapper.instance();
-
+        mockSelectedRegions(["test1"]);
         canvas.editor.onRegionSelected("test1", false);
 
         canvas.applyTag(newTag);
@@ -336,6 +332,7 @@ describe("Editor Canvas", () => {
         });
         const canvas = wrapper.instance();
 
+        mockSelectedRegions(["test1"]);
         canvas.editor.onRegionSelected("test1", false);
         const expectedTags = ["tag4"];
         expect(wrapper.state().currentAsset.regions[0].tags).toEqual(expectedTags);
@@ -360,6 +357,7 @@ describe("Editor Canvas", () => {
         });
         const canvas = wrapper.instance();
 
+        mockSelectedRegions(["test1"]);
         canvas.editor.onRegionSelected("test1", null);
 
         const expected: IAssetMetadata = cloneWithUpdatedRegionTags(wrapper.prop("selectedAsset"), "test1", lockedTags);
@@ -383,6 +381,7 @@ describe("Editor Canvas", () => {
         });
         const canvas = wrapper.instance();
 
+        mockSelectedRegions(["test1"]);
         canvas.editor.onRegionSelected("test1", null);
 
         const expectedTags = ["tag4", ...lockedTags];
@@ -406,6 +405,8 @@ describe("Editor Canvas", () => {
             lockedTags,
         });
 
+        const originalRegions = wrapper.state().currentAsset.regions;
+
         canvas.editor.onSelectionEnd(newRegionData);
 
         const expected: IRegion = {
@@ -414,13 +415,17 @@ describe("Editor Canvas", () => {
             tags: lockedTags,
         };
 
-        expect(wrapper.instance().getSelectedRegions()).toMatchObject([expected]);
+        mockSelectedRegions([expected.id]);
+
+        expect(wrapper.state().currentAsset.regions
+            .find((r) => !originalRegions.find((or) => or.id === r.id)))
+            .toMatchObject(expected);
     });
 
     it("Copies currently selected regions to clipboard", () => {
         const wrapper = createComponent().find(Canvas);
         const canvas = wrapper.instance() as Canvas;
-        canvas.editor.onRegionSelected("test1", true);
+        mockSelectedRegions(["test1"]);
 
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
@@ -444,6 +449,8 @@ describe("Editor Canvas", () => {
         }).find(Canvas);
 
         const canvas = wrapper.instance() as Canvas;
+
+        mockSelectedRegions([]);
         canvas.pasteRegions();
 
         expect((navigator as any).clipboard.readText).toBeCalled();
@@ -480,7 +487,7 @@ describe("Editor Canvas", () => {
         const canvas = wrapper.instance() as Canvas;
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
 
-        setSelectedRegions(["test1"]);
+        mockSelectedRegions(["test1"]);
 
         canvas.cutRegions();
 

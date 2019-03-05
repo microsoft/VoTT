@@ -237,10 +237,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (lockedTags && lockedTags.length) {
             this.editor.RM.updateTagsById(id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, newRegion));
         }
-        this.updateAssetRegions([
-            ...this.state.currentAsset.regions,
-            newRegion,
-        ]);
+        this.updateAssetRegions([...this.state.currentAsset.regions, newRegion]);
     }
 
     /**
@@ -317,7 +314,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (this.props.lockedTags && this.props.lockedTags.length) {
             const selectedRegions = this.getSelectedRegions();
             for (const selectedRegion of selectedRegions) {
-                CanvasHelpers.addAllIfMissing(selectedRegion.tags, this.props.lockedTags);
+                selectedRegion.tags = CanvasHelpers.addAllIfMissing(selectedRegion.tags, this.props.lockedTags);
             }
             this.updateRegions(selectedRegions);
         }
