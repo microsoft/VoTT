@@ -40,10 +40,12 @@ export enum ErrorCode {
     GenericRenderError = "genericRenderError",
     ProjectInvalidJson = "projectInvalidJson",
     ProjectInvalidSecurityToken = "projectInvalidSecurityToken",
+    ProjectDuplicateName = "projectDuplicateName",
     ProjectUploadError = "projectUploadError",
     ProjectDeleteError = "projectDeleteError",
     SecurityTokenNotFound = "securityTokenNotFound",
     CanvasError = "canvasError",
+    V1ImportError = "v1ImportError",
 }
 
 /**
@@ -109,6 +111,17 @@ export interface IProject {
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
     lastVisitedAssetId?: string;
+}
+
+/**
+ * @name - FileInfo
+ * @description - Defines the file information and content for V1 projects
+ * @member content - The content of a file (JSON string)
+ * @member file - The File object point to the V1 project file
+ */
+export interface IFileInfo {
+    content: string | ArrayBuffer;
+    file: File;
 }
 
 /**

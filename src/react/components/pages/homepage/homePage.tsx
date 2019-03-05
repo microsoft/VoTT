@@ -2,8 +2,9 @@ import React, { SyntheticEvent } from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { strings } from "../../../../common/strings";
+import { strings, interpolate } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { CloudFilePicker } from "../../common/cloudFilePicker/cloudFilePicker";
 import CondensedList from "../../common/condensedList/condensedList";
 import Confirm from "../../common/confirm/confirm";
@@ -12,14 +13,21 @@ import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
-    IApplicationState, IConnection, IProject,
-    ErrorCode, AppError,
+    IApplicationState, IConnection, IProject, IFileInfo,
+    ErrorCode, AppError, IAppError, IAppSettings,
 } from "../../../../models/applicationState";
+import ImportService from "../../../../services/importService";
+import { IAssetMetadata } from "../../../../models/applicationState";
+import { toast } from "react-toastify";
+import MessageBox from "../../common/messageBox/messageBox";
 
 export interface IHomePageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
+    applicationActions: IApplicationActions;
+    appSettings: IAppSettings;
+    project: IProject;
 }
 
 export interface IHomePageState {
@@ -30,12 +38,15 @@ function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
         connections: state.connections,
+        appSettings: state.appSettings,
+        project: state.currentProject,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        applicationActions: bindActionCreators(applicationActions, dispatch),
     };
 }
 
@@ -44,10 +55,10 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     public state: IHomePageState = {
         cloudPickerOpen: false,
     };
-
     private filePicker: React.RefObject<FilePicker> = React.createRef();
     private deleteConfirm: React.RefObject<Confirm> = React.createRef();
     private cloudFilePicker: React.RefObject<CloudFilePicker> = React.createRef();
+    private importConfirm: React.RefObject<Confirm> = React.createRef();
 
     public render() {
         return (
@@ -95,10 +106,16 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
                     </div>
                 }
                 <Confirm title="Delete Project"
-                    ref={this.deleteConfirm}
-                    message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} '${project.name}'?`}
+                    ref={this.deleteConfirm as any}
+                    message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} ${project.name}?`}
                     confirmButtonColor="danger"
                     onConfirm={this.deleteProject} />
+                <Confirm title="Import Project"
+                    ref={this.importConfirm as any}
+                    message={(project: IFileInfo) =>
+                        interpolate(strings.homePage.importProject.confirmation, { project })}
+                    confirmButtonColor="danger"
+                    onConfirm={this.convertProject} />
             </div>
         );
     }
@@ -118,12 +135,21 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
         let projectJson: IProject;
 
         try {
-            projectJson = JSON.parse(project);
+            projectJson = JSON.parse(project.content);
         } catch (error) {
             throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
         }
 
-        await this.loadSelectedProject(projectJson);
+        // need a better check to tell if its v1
+        if (projectJson.name === null || projectJson.name === undefined) {
+            try {
+                await this.importConfirm.current.open(project);
+            } catch (e) {
+                throw new Error(e.message);
+            }
+        } else {
+            await this.loadSelectedProject(projectJson);
+        }
     }
 
     private onProjectFileUploadError = (e, error: any) => {
@@ -145,5 +171,33 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
         } catch (error) {
             throw new AppError(ErrorCode.ProjectDeleteError, "Error deleting project file");
         }
+    }
+
+    private convertProject = async (projectInfo: IFileInfo) => {
+        const importService = new ImportService(this.props.actions);
+        let generatedAssetMetadata: IAssetMetadata[];
+        let project;
+        try {
+            project = await importService.convertProject(projectInfo);
+        } catch (e) {
+            throw new AppError(ErrorCode.V1ImportError, "Error converting v1 project file");
+        }
+
+        this.props.applicationActions.ensureSecurityToken(project);
+
+        try {
+            generatedAssetMetadata = await importService.generateAssets(projectInfo, project);
+            await this.props.actions.saveProject(project);
+            await this.props.actions.loadProject(project);
+            const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
+                return this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+            });
+
+            await Promise.all(savedMetadata);
+        } catch (e) {
+            throw new Error(`Error importing project information - ${e.message}`);
+        }
+        await this.props.actions.saveProject(this.props.project);
+        await this.loadSelectedProject(this.props.project);
     }
 }

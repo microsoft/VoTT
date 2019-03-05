@@ -31,6 +31,10 @@ export interface IAppStrings {
             title: string;
             confirmation: string;
         },
+        importProject: {
+            title: string;
+            confirmation: string;
+        },
         recentProjects: string,
     };
     appSettings: {
@@ -261,6 +265,7 @@ export interface IAppStrings {
         genericRenderError: IErrorMetadata,
         securityTokenNotFound: IErrorMetadata,
         canvasError: IErrorMetadata,
+        importError: IErrorMetadata,
     };
 }
 

@@ -170,9 +170,12 @@ export class AssetService {
         } else {
             // If the asset is no longer tagged, then it doesn't contain any regions
             // and the file is not required.
-            await this.storageProvider.deleteFile(fileName);
+            try {
+                await this.storageProvider.deleteFile(fileName);
+            } catch (err) {
+                // The file may not exist - that's OK
+            }
         }
-
         return metadata;
     }
 

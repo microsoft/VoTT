@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { IAsset, AssetType } from "../models/applicationState";
+import { IAsset, AssetType, IFileInfo } from "../models/applicationState";
 import Guard from "./guard";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
@@ -15,15 +15,20 @@ export default class HtmlFileReader {
      * Reads the file and returns the string value contained
      * @param file HTML file to read
      */
-    public static readAsText(file: File): Promise<string | ArrayBuffer> {
+    public static readAsText(file: File): Promise<IFileInfo> {
         Guard.null(file);
+        let fileInfo: IFileInfo;
 
-        return new Promise<string | ArrayBuffer>((resolve, reject) => {
+        return new Promise<IFileInfo>((resolve, reject) => {
             const reader = new FileReader();
             reader.onerror = reject;
             reader.onload = () => {
                 if (reader.result) {
-                    resolve(reader.result);
+                    fileInfo = {
+                        content: reader.result,
+                        file,
+                    };
+                    resolve(fileInfo);
                 } else {
                     reject();
                 }

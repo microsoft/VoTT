@@ -5,8 +5,7 @@ import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import {
     IProject, IAsset, IAssetMetadata, IApplicationState,
-    ErrorCode, AppError,
-} from "../../models/applicationState";
+    ErrorCode, AppError } from "../../models/applicationState";
 import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
 import { IExportResults } from "../../providers/export/exportProvider";
 import { appInfo } from "../../common/appInfo";
@@ -34,6 +33,7 @@ export function loadProject(project: IProject):
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         const projectService = new ProjectService();
+        console.log(project);
 
         // Lookup security token used to decrypt project settings
         const projectToken = appState.appSettings.securityTokens
@@ -60,7 +60,7 @@ export function saveProject(project: IProject)
         const projectService = new ProjectService();
 
         if (projectService.isDuplicate(project, appState.recentProjects)) {
-            throw new Error(`Project with name '${project.name}
+            throw new AppError(ErrorCode.ProjectDuplicateName, `Project with name '${project.name}
                 already exists with the same target connection '${project.targetConnection.name}'`);
         }
 

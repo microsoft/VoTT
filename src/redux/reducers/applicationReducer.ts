@@ -17,6 +17,8 @@ export const reducer = (state: IAppSettings = null, action: AnyAction): IAppSett
             return { ...state };
         case ActionTypes.SAVE_APP_SETTINGS_SUCCESS:
             return { ...action.payload };
+        case ActionTypes.ENSURE_SECURITY_TOKEN_SUCCESS:
+            return { ...action.payload };
         default:
             return state;
     }
