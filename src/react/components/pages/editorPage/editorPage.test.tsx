@@ -10,6 +10,8 @@ import {
     IApplicationState, IAssetMetadata, IProject,
     EditorMode, IAsset, AssetState,
 } from "../../../../models/applicationState";
+import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
+import { IExportProvider, ExportProvider } from "../../../../providers/export/exportProvider";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
@@ -549,6 +551,20 @@ describe("Editor Page Component", () => {
 
         it("calls onTagClick handler when hot key is pressed", async () => {
             const project = MockFactory.createTestProject();
+            const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
+            Object.defineProperty(ExportProviderFactory, "providers", {
+                get: jest.fn(() => exportProviderRegistrations),
+            });
+            Object.defineProperty(ExportProviderFactory, "defaultProvider", {
+                get: jest.fn(() => exportProviderRegistrations[0]),
+            });
+            const mockExportProvider: IExportProvider = {
+                project,
+                export: jest.fn(() => Promise.resolve()),
+            };
+            ExportProviderFactory.create = jest.fn(() => {
+                return mockExportProvider;
+            });
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
@@ -574,6 +590,15 @@ describe("Editor Page Component", () => {
 
         it("Adds tag to locked tags when ctrl clicked", async () => {
             const project = MockFactory.createTestProject();
+            const mockExportProvider: IExportProvider = {
+                project: null,
+                export: jest.fn(() => Promise.resolve()),
+            };
+            ExportProviderFactory.create = jest.fn(() => {
+                return {
+                    factory: jest.fn((project: IProject, options?: any) => Promise.resolve(mockExportProvider)),
+                };
+            });
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
@@ -637,3 +662,9 @@ async function waitForSelectedAsset(wrapper: ReactWrapper) {
         return !!editorPage.state().selectedAsset;
     });
 }
+
+// class TestExportProvider extends ExportProvider<{}> {
+//     public export(): Promise<void> {
+//         throw new Error("Method not implemented.");
+//     }
+// }
