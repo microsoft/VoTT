@@ -56,8 +56,9 @@ describe("Editor Canvas", () => {
 
     const copiedRegion = MockFactory.createTestRegion("copiedRegion");
 
+    const editorMock = Editor as any;
+
     beforeAll(() => {
-        const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
@@ -72,6 +73,13 @@ describe("Editor Canvas", () => {
         }
     });
 
+    function setSelectedRegions(ids: string[]) {
+        editorMock.prototype.RM = {
+            ...new RegionsManager(null, null),
+            getSelectedRegionsBounds: jest.fn(() => ids.map((id) => {id})),
+        };
+    }
+
     it("renders correctly from default state", () => {
         const wrapper = createComponent();
         const canvas = wrapper.instance();
@@ -79,7 +87,6 @@ describe("Editor Canvas", () => {
         expect(wrapper.find(".canvas-enabled").exists()).toBe(true);
         expect(wrapper.state()).toEqual({
             contentSource: null,
-            selectedRegions: [],
             currentAsset: canvas.props.selectedAsset,
         });
     });
@@ -469,8 +476,9 @@ describe("Editor Canvas", () => {
             ...wrapper.prop("selectedAsset"),
         };
         const canvas = wrapper.instance() as Canvas;
-        canvas.editor.onRegionSelected("test1", true);
         const region1 = wrapper.state().currentAsset.regions.find((r) => r.id === "test1");
+
+        setSelectedRegions(["test1"]);
 
         canvas.cutRegions();
 

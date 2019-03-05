@@ -386,7 +386,7 @@ describe("Editor Page Component", () => {
             expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
         });
     });
-    describe("Basic toolbar test", () => {
+    describe("Basic toolbar test and hotkey tests", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
 
@@ -501,6 +501,27 @@ describe("Editor Page Component", () => {
             dispatchKeyEvent("Ctrl+e");
             expect(clearRegions).toBeCalled();
         });
+
+        it("sets selected tag and locked tags when hot key is pressed", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            wrapper.update();
+
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+
+            dispatchKeyEvent("1");
+
+            expect(editorPage.state().lockedTags).toEqual([]);
+            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+
+        });
     });
 
     describe("Basic tag interaction tests", () => {
@@ -548,27 +569,6 @@ describe("Editor Page Component", () => {
 
             const stateTags = getState(wrapper).project.tags;
             expect(stateTags).toHaveLength(project.tags.length - 1);
-        });
-
-        it("sets selected tag and locked tags when hot key is pressed", async () => {
-            const project = MockFactory.createTestProject();
-            const store = createReduxStore({
-                ...MockFactory.initialState(),
-                currentProject: project,
-            });
-
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
-            await waitForSelectedAsset(wrapper);
-
-            wrapper.update();
-
-            const editorPage = wrapper.find(EditorPage).childAt(0);
-
-            dispatchKeyEvent("1");
-
-            expect(editorPage.state().lockedTags).toEqual([]);
-            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
-
         });
 
         it("Adds tag to locked tags when ctrl clicked", async () => {
