@@ -84,23 +84,23 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
             // Promise rejection with string base reason
             appError = {
                 errorCode: ErrorCode.Unknown,
-                message: error,
+                message: error || this.getUnknownErrorMessage(error),
             };
         } else if (error instanceof AppError) {
             // Promise rejection with AppError
             const reason = error as IAppError;
             appError = {
+                title: reason.title || strings.errors.unknown.title,
                 errorCode: reason.errorCode,
-                message: reason.message,
-                title: reason.title,
+                message: reason.message || this.getUnknownErrorMessage(error),
             };
         } else if (error instanceof Error) {
             // Promise rejection with other error like object
             const reason = error as Error;
             appError = {
+                title: reason.name || strings.errors.unknown.title,
                 errorCode: ErrorCode.Unknown,
-                message: reason.message,
-                title: reason.name,
+                message: reason.message || this.getUnknownErrorMessage(error),
             };
         } else {
             appError = {
