@@ -102,7 +102,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         return menu.items.map(this.renderMenuItem);
     }
 
-    private renderMenuItem = (menuItem: Electron.MenuItem) => {
+    private renderMenuItem = (menuItem: Electron.MenuItem, index: number) => {
         if (!menuItem.visible) {
             return null;
         }
@@ -117,9 +117,8 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     </SubMenu>
                 );
             case "separator":
-                return (<Divider />);
+                return (<Divider key={index} />);
             case "checkbox":
-                console.log(menuItem.checked);
                 return (
                     <MenuItem key={menuItem.label}
                         disabled={!menuItem.enabled}
@@ -149,21 +148,11 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private onMenuItemClick(e: any, menuItem: Electron.MenuItem) {
-        let updateMenu = false;
-        if (menuItem["type"] === "checkbox") {
-            menuItem.checked = !menuItem.checked;
-            updateMenu = true;
-        }
-
         if (menuItem.click) {
             menuItem.click.call(menuItem, menuItem, this.currentWindow);
         }
 
-        if (updateMenu) {
-            this.setState({
-                menu: this.remote.Menu.getApplicationMenu(),
-            });
-        }
+        this.setState({ menu: { ...this.state.menu } as Electron.Menu });
     }
 
     private syncTitle = (): void => {
