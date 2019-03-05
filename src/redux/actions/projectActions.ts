@@ -20,19 +20,12 @@ import { appInfo } from "../../common/appInfo";
  */
 export default interface IProjectActions {
     loadProject(project: IProject): Promise<IProject>;
-
     saveProject(project: IProject): Promise<IProject>;
-
     deleteProject(project: IProject): Promise<void>;
-
     closeProject(): void;
-
     exportProject(project: IProject): Promise<void> | Promise<IExportResults>;
-
     loadAssets(project: IProject): Promise<IAsset[]>;
-
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
-
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
 }
 
