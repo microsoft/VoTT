@@ -77,11 +77,11 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
         switch (this.options.assetState) {
             case ExportAssetState.Visited:
                 predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
-                source = await _.values(this.project.assets);
+                source = _.values(this.project.assets);
                 break;
             case ExportAssetState.Tagged:
                 predicate = (asset) => asset.state === AssetState.Tagged;
-                source = await _.values(this.project.assets);
+                source = _.values(this.project.assets);
                 break;
             case ExportAssetState.All:
             default:

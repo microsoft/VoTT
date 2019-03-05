@@ -14,6 +14,7 @@ jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import registerMixins from "../../registerMixins";
 import { appInfo } from "../../common/appInfo";
+import { asin } from "snapsvg";
 
 registerMixins();
 
@@ -25,6 +26,7 @@ describe("TFRecords Json Export Provider", () => {
         "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
         "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
     };
+    baseTestProject.allAssets = _.values(baseTestProject.assets);
     baseTestProject.sourceConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
     baseTestProject.targetConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
 

@@ -22,6 +22,7 @@ describe("Export Provider Base", () => {
                 "asset-5": MockFactory.createTestAsset("5", AssetState.Tagged, null, AssetType.VideoFrame),
             },
         };
+        testProject.allAssets = _.values(testProject.assets);
     });
 
     it("initializes the asset and storage providers", () => {

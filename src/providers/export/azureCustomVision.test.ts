@@ -60,6 +60,8 @@ describe("Azure Custom Vision Export Provider", () => {
                 },
             },
         };
+
+        testProject.allAssets = _.values(testProject.assets);
     });
 
     it("Is Defined", () => {

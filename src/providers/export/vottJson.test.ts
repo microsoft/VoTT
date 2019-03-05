@@ -34,6 +34,7 @@ describe("VoTT Json Export Provider", () => {
             },
         },
     };
+    testProject.allAssets = _.values(testProject.assets);
 
     const expectedFileName = "vott-json-export/" + testProject.name.replace(" ", "-") + constants.exportFileExtension;
 
