@@ -89,7 +89,6 @@ export default function registerToolbar() {
         icon: "fa-trash-alt",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+e"],
     });
 
     ToolbarItemFactory.register({
