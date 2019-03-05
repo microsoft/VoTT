@@ -551,7 +551,11 @@ describe("Editor Page Component", () => {
 
         it("calls onTagClick handler when hot key is pressed", async () => {
             const project = MockFactory.createTestProject();
+<<<<<<< HEAD
             // const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
+=======
+            const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
+>>>>>>> 1826fe389e8fb81f066598c44223d005346958b0
             // Object.defineProperty(ExportProviderFactory, "providers", {
             //     get: jest.fn(() => exportProviderRegistrations),
             // });
