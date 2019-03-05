@@ -47,7 +47,7 @@ export class ExportProviderFactory {
     }
 
     /**
-     * Creates new instances of the specifed export provider
+     * Creates new instances of the specified export provider
      * @param name - The name of the export provider to instantiate
      * @param project - The project to load into the export provider
      * @param options  - The provider specific options for exporting
