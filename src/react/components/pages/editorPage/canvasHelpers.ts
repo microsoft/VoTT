@@ -4,7 +4,9 @@ import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/Regi
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import Guard from "../../../../common/guard";
-import { IBoundingBox, IRegion, ITag, RegionType, IPoint } from "../../../../models/applicationState";
+import { IBoundingBox, IRegion, ITag, RegionType,
+    IPoint, AppError, ErrorCode } from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
 
 /**
  * Static functions to assist in operations within Canvas component
@@ -169,10 +171,11 @@ export default class CanvasHelpers {
      * @param regions Regions to duplicate
      * @param others Other regions existing in the asset (used to not put region on top of other region)
      */
-    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[]): IRegion[] => {
+    public static duplicateRegionsAndMove =
+            (regions: IRegion[], others: IRegion[], width: number, height: number): IRegion[] => {
         const result: IRegion[] = [];
         for (const region of regions) {
-            const shiftCoordinates = CanvasHelpers.getShiftCoordinates(region.boundingBox, others);
+            const shiftCoordinates = CanvasHelpers.getShiftCoordinates(region.boundingBox, others, width, height);
 
             const newRegion: IRegion = {
                 ...region,
@@ -183,6 +186,34 @@ export default class CanvasHelpers {
             result.push(newRegion);
         }
         return result;
+    }
+
+    public static boundingBoxWithin = (boundingBox: IBoundingBox, width: number, height: number) => {
+        return (
+            (boundingBox.left + boundingBox.width) < width &&
+            (boundingBox.top + boundingBox.height) < height
+        );
+    }
+
+    public static fromBoundingBox = (boundingBox: IBoundingBox): IPoint[] => {
+        return [
+            {
+                x: boundingBox.left,
+                y: boundingBox.top,
+            },
+            {
+                x: boundingBox.left + boundingBox.width,
+                y: boundingBox.top,
+            },
+            {
+                x: boundingBox.left + boundingBox.width,
+                y: boundingBox.top + boundingBox.height,
+            },
+            {
+                x: boundingBox.left,
+                y: boundingBox.top + boundingBox.height,
+            },
+        ];
     }
 
     private static shiftBoundingBox = (boundingBox: IBoundingBox, shiftCoordinates: IPoint): IBoundingBox => {
@@ -202,28 +233,58 @@ export default class CanvasHelpers {
         });
     }
 
-    private static getShiftCoordinates = (boundingBox: IBoundingBox, otherRegions: IRegion[]) => {
+    private static existsRegionAt = (regions: IRegion[], x: number, y: number) => {
+        for (const region of regions) {
+            if (region.boundingBox.left === x && region.boundingBox.top === y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static getShiftCoordinates =
+            (boundingBox: IBoundingBox, otherRegions: IRegion[], width: number, height: number): IPoint => {
         let x = boundingBox.left;
         let y = boundingBox.top;
+
+        let defaultTargetX = 0;
+        const defaultTargetY = 0;
+
+        if (boundingBox.height > height || boundingBox.width > width) {
+            throw new AppError(ErrorCode.PasteRegionTooBigError, strings.errors.pasteRegionTooBigError.message);
+        }
+
+        if (!CanvasHelpers.boundingBoxWithin(boundingBox, width, height)) {
+            x = defaultTargetX;
+            y = defaultTargetY;
+        }
 
         let foundRegionAtTarget = false;
 
         while (!foundRegionAtTarget) {
-            for (const region of otherRegions) {
-                if (region.boundingBox.left === x && region.boundingBox.top === y) {
-                    foundRegionAtTarget = true;
-                    break;
-                }
-            }
-            if (foundRegionAtTarget) {
+            if (CanvasHelpers.existsRegionAt(otherRegions, x, y)) {
                 x += CanvasHelpers.pasteMargin;
                 y += CanvasHelpers.pasteMargin;
                 foundRegionAtTarget = false;
             } else {
-                return {
+                const result = {
                     x: x - boundingBox.left,
                     y: y - boundingBox.top,
                 };
+                const tempBoundingBox = {
+                    ...boundingBox,
+                    left: boundingBox.left + result.x,
+                    top: boundingBox.top + result.y,
+                };
+                if (CanvasHelpers.boundingBoxWithin(tempBoundingBox, width, height)) {
+                    return result;
+                } else {
+                    x = defaultTargetX;
+                    y = defaultTargetY;
+                    if (CanvasHelpers.existsRegionAt(otherRegions, defaultTargetX, defaultTargetY)) {
+                        defaultTargetX += CanvasHelpers.pasteMargin;
+                    }
+                }
             }
         }
     }

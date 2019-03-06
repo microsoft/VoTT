@@ -1,6 +1,6 @@
 import CanvasHelpers from "./canvasHelpers";
 import MockFactory from "../../../../common/mockFactory";
-import { RegionType, IRegion } from "../../../../models/applicationState";
+import { RegionType, IRegion, IBoundingBox } from "../../../../models/applicationState";
 import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 
@@ -76,9 +76,36 @@ describe("Canvas Helpers", () => {
         expect(CanvasHelpers.regionTypeToType(null)).toBeUndefined();
     });
 
+    it("Creates a point array from a bounding box", () => {
+        const boundingBox = {
+            left: 0,
+            top: 0,
+            width: 100,
+            height: 100,
+        };
+        expect(CanvasHelpers.fromBoundingBox(boundingBox)).toEqual([
+            {
+                x: 0,
+                y: 0,
+            },
+            {
+                x: 100,
+                y: 0,
+            },
+            {
+                x: 100,
+                y: 100,
+            },
+            {
+                x: 0,
+                y: 100,
+            },
+        ]);
+    });
+
     it("Duplicates and moves a region", () => {
         const regions = MockFactory.createTestRegions();
-        const duplicates = CanvasHelpers.duplicateRegionsAndMove([regions[0]], regions);
+        const duplicates = CanvasHelpers.duplicateRegionsAndMove([regions[0]], regions, 1000, 2000);
         expect(duplicates[0]).toMatchObject({
             ...regions[0],
             id: expect.any(String),
@@ -94,6 +121,59 @@ describe("Canvas Helpers", () => {
                 };
             }),
         });
+    });
+
+    function expectDefaultDuplication(left, top, width = 100, height = 100) {
+        const regions = MockFactory.createTestRegions();
+        const boundingBox: IBoundingBox = {
+            left,
+            top,
+            width,
+            height,
+        };
+        regions[0] = {
+            ...regions[0],
+            boundingBox,
+            points: CanvasHelpers.fromBoundingBox(boundingBox),
+        };
+        const duplicates = CanvasHelpers.duplicateRegionsAndMove([regions[0]], regions, 1000, 1000);
+        const expectedBoundingBox: IBoundingBox = {
+            ...boundingBox,
+            left: 0,
+            top: 0,
+        };
+        expect(duplicates[0]).toMatchObject({
+            ...regions[0],
+            id: expect.any(String),
+            boundingBox: expectedBoundingBox,
+            points: CanvasHelpers.fromBoundingBox(expectedBoundingBox),
+        });
+    }
+
+    it("Duplicates a region with coordinates out of range into the default location", () => {
+        // Starting coordinates out of range
+        expectDefaultDuplication(1001, 1001);
+        // Starting left out of range
+        expectDefaultDuplication(1001, 0);
+        // Starting right out of range
+        expectDefaultDuplication(0, 1001);
+        // Both width and height put out of range
+        expectDefaultDuplication(999, 999);
+        // Width puts out of range
+        expectDefaultDuplication(999, 0);
+        // Height puts out of range
+        expectDefaultDuplication(0, 999);
+    });
+
+    it("Throws error for region too big", () => {
+        // Both width and height too big
+        expect(() => expectDefaultDuplication(500, 500, 1001, 1001)).toThrowError();
+        // Just width too big
+        expect(() => expectDefaultDuplication(500, 500, 1001, 10)).toThrowError();
+        // Just height too big
+        expect(() => expectDefaultDuplication(500, 500, 10, 1001)).toThrowError();
+        // Neither too big
+        expect(() => expectDefaultDuplication(1001, 1001, 10, 10)).not.toThrowError();
     });
 
     it("Toggles a tag", () => {
