@@ -122,6 +122,26 @@ describe("Editor Canvas", () => {
         expect(wrapper.state().contentSource).toEqual(expect.any(HTMLImageElement));
     });
 
+    it("loads asset with regions even if project has no tags", () => {
+        const cProps = createProps().canvas;
+        const assetMetadata = {
+            ...MockFactory.createTestAssetMetadata(),
+            regions: MockFactory.createTestRegions(),
+        };
+
+        const wrapper = createComponent({
+            ...cProps,
+            project: {
+                ...MockFactory.createTestProject(),
+                tags: null,
+            },
+            selectedAsset: assetMetadata,
+        });
+        const canvas = wrapper.instance() as Canvas;
+        expect(wrapper.state().currentAsset).toEqual(assetMetadata);
+        expect(() => canvas.updateCanvasToolsRegions()).not.toThrowError();
+    });
+
     it("canvas content source is updated when asset is deactivated", () => {
         const wrapper = createComponent();
         const contentSource = document.createElement("img");
