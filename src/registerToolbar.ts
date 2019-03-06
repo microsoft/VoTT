@@ -97,6 +97,7 @@ export default function registerToolbar() {
         icon: "far fa-clone",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
+        accelerators: ["Ctrl + w", "Ctrl + W"],
     });
 
     ToolbarItemFactory.register({
