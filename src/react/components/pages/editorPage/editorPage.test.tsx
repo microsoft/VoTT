@@ -497,6 +497,12 @@ describe("Editor Page Component", () => {
             expect(pasteRegions).toBeCalled();
         });
 
+        it("Calls clear regions with hot key", async () => {
+            dispatchKeyEvent("Ctrl+Delete");
+            expect(clearRegions).toBeCalled();
+        });
+
+
         it("sets selected tag and locked tags when hot key is pressed", async () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
