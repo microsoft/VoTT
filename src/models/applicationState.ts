@@ -47,6 +47,7 @@ export enum ErrorCode {
     ExportFormatNotFound = "exportFormatNotFound",
     CanvasError = "canvasError",
     V1ImportError = "v1ImportError",
+    PasteRegionTooBigError = "pasteRegionTooBigError",
 }
 
 /**

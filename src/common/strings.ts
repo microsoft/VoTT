@@ -276,6 +276,7 @@ export interface IAppStrings {
         securityTokenNotFound: IErrorMetadata,
         canvasError: IErrorMetadata,
         importError: IErrorMetadata,
+        pasteRegionTooBigError: IErrorMetadata,
         exportFormatNotFound: IErrorMetadata,
     };
 }

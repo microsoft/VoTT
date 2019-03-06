@@ -135,9 +135,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public pasteRegions = async () => {
         const regionsToPaste: IRegion[] = await Clipboard.readObject();
+        const asset = this.state.currentAsset;
         const duplicates = CanvasHelpers.duplicateRegionsAndMove(
             regionsToPaste,
-            this.state.currentAsset.regions,
+            asset.regions,
+            asset.asset.size.width,
+            asset.asset.size.height,
         );
         this.addRegions(duplicates);
     }
@@ -178,7 +181,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private addRegionsToCanvasTools = (regions: IRegion[]) => {
         for (const region of regions) {
             const regionData = CanvasHelpers.getRegionData(region);
-            const scaledRegionData = this.editor.scaleRegionToFrameSize(regionData);
+            const scaledRegionData = this.editor.scaleRegionToFrameSize(
+                regionData,
+                this.state.currentAsset.asset.size.width,
+                this.state.currentAsset.asset.size.height);
             this.editor.RM.addRegion(
                 region.id,
                 scaledRegionData,
