@@ -80,12 +80,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (this.props.selectionMode !== prevProps.selectionMode) {
             let  options = null;
             if (this.props.selectionMode === SelectionMode.COPYRECT) {
-                const selectedRegion = this.getSelectedRegions(); // this.state.selectedRegions[0];
+                const selectedRegion = this.getSelectedRegions();
                 if (selectedRegion) {
-                    options = {template: new Rect(selectedRegion[0].boundingBox.width,
-                                                selectedRegion[0].boundingBox.height)};
+                    options = new Rect(selectedRegion[0].boundingBox.width,
+                                                selectedRegion[0].boundingBox.height);
                 } else {
-                    throw new Error("No region selected to copy");
+                    // default size if no region selected
+                    options = new Rect(20,
+                                    20);
                 }
             }
             this.editor.AS.setSelectionMode({mode: this.props.selectionMode, template: options});
@@ -149,6 +151,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const duplicates = CanvasHelpers.duplicateRegionsAndMove(
             regionsToPaste,
             this.state.currentAsset.regions,
+            this.state.currentAsset.asset.size.width,
+            this.state.currentAsset.asset.size.height,
         );
         this.addRegions(duplicates);
     }
@@ -481,6 +485,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private editorModeToType = (editorMode: EditorMode) => {
         let type;
         switch (editorMode) {
+            case EditorMode.CopyRect:
             case EditorMode.Rectangle:
                 type = RegionType.Rectangle;
                 break;

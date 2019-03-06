@@ -72,7 +72,7 @@ describe("Editor Canvas", () => {
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
         // tslint:disable-next-line:max-line-length
-        editorMock.prototype.AS = { setSelectionMode: jest.fn(({mode, template = null}) => {selectionMode = {mode, ...template}; }),
+        editorMock.prototype.AS = { setSelectionMode: jest.fn(({mode, template = null}) => {selectionMode = {mode, template}; }),
                                     getSelectorSettings: jest.fn(() => selectionMode) };
 
         const clipboard = (navigator as any).clipboard;
