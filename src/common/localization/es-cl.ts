@@ -300,6 +300,6 @@ export const spanish: IAppStrings = {
         pasteRegionTooBigError: {
             title: "Error al pegar region al activo",
             message: "Hubo un error al pagar el region al activo. Intenta copiar otra region",
-        }
+        },
     },
 };

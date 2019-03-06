@@ -298,6 +298,6 @@ export const english: IAppStrings = {
         pasteRegionTooBigError: {
             title: "Error pasting region",
             message: "Region too big for this asset. Try copying another region",
-        }
+        },
     },
 };

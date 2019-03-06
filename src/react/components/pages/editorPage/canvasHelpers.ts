@@ -4,7 +4,8 @@ import { RegionData, RegionDataType } from "vott-ct/lib/js/CanvasTools/Core/Regi
 import { Tag } from "vott-ct/lib/js/CanvasTools/Core/Tag";
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import Guard from "../../../../common/guard";
-import { IBoundingBox, IRegion, ITag, RegionType, IPoint, AppError, ErrorCode } from "../../../../models/applicationState";
+import { IBoundingBox, IRegion, ITag, RegionType,
+    IPoint, AppError, ErrorCode } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 
 /**
@@ -185,7 +186,8 @@ export default class CanvasHelpers {
      * @param regions Regions to duplicate
      * @param others Other regions existing in the asset (used to not put region on top of other region)
      */
-    public static duplicateRegionsAndMove = (regions: IRegion[], others: IRegion[], width: number, height: number): IRegion[] => {
+    public static duplicateRegionsAndMove =
+            (regions: IRegion[], others: IRegion[], width: number, height: number): IRegion[] => {
         const result: IRegion[] = [];
         for (const region of regions) {
             const shiftCoordinates = CanvasHelpers.getShiftCoordinates(region.boundingBox, others, width, height);
@@ -208,7 +210,7 @@ export default class CanvasHelpers {
         );
     }
 
-    public static fromBoundingBox = (boundingBox: IBoundingBox):IPoint[] => {
+    public static fromBoundingBox = (boundingBox: IBoundingBox): IPoint[] => {
         return [
             {
                 x: boundingBox.left,
@@ -226,7 +228,7 @@ export default class CanvasHelpers {
                 x: boundingBox.left,
                 y: boundingBox.top + boundingBox.height,
             },
-        ]
+        ];
     }
 
     private static shiftBoundingBox = (boundingBox: IBoundingBox, shiftCoordinates: IPoint): IBoundingBox => {
@@ -255,7 +257,8 @@ export default class CanvasHelpers {
         return false;
     }
 
-    private static getShiftCoordinates = (boundingBox: IBoundingBox, otherRegions: IRegion[], width: number, height: number): IPoint => {
+    private static getShiftCoordinates =
+            (boundingBox: IBoundingBox, otherRegions: IRegion[], width: number, height: number): IPoint => {
         let x = boundingBox.left;
         let y = boundingBox.top;
 
@@ -287,13 +290,13 @@ export default class CanvasHelpers {
                     ...boundingBox,
                     left: boundingBox.left + result.x,
                     top: boundingBox.top + result.y,
-                }
+                };
                 if (CanvasHelpers.boundingBoxWithin(tempBoundingBox, width, height)) {
                     return result;
                 } else {
                     x = defaultTargetX;
                     y = defaultTargetY;
-                    if (CanvasHelpers.existsRegionAt(otherRegions, defaultTargetX, defaultTargetY)){
+                    if (CanvasHelpers.existsRegionAt(otherRegions, defaultTargetX, defaultTargetY)) {
                         defaultTargetX += CanvasHelpers.pasteMargin;
                     }
                 }
