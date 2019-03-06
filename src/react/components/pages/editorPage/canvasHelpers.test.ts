@@ -9,24 +9,24 @@ describe("Canvas Helpers", () => {
         const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const newTag = MockFactory.createTestTag("New Tag");
-        CanvasHelpers.toggleTag(
+        const toggled = CanvasHelpers.toggleTag(
             tags,
             newTag.name,
         );
-        expect(tags).toHaveLength(originalLength + 1);
-        expect(tags[tags.length - 1]).toEqual(newTag.name);
+        expect(toggled).toHaveLength(originalLength + 1);
+        expect(toggled[toggled.length - 1]).toEqual(newTag.name);
     });
 
     it("Removes a tag from list", () => {
         const tags = MockFactory.createTestTags().map((tag) => tag.name);
         const originalLength = tags.length;
         const originalFirstTag = tags[0];
-        CanvasHelpers.toggleTag(
+        const removed = CanvasHelpers.toggleTag(
             tags,
             tags[0],
         );
-        expect(tags).toHaveLength(originalLength - 1);
-        expect(tags[0]).not.toEqual(originalFirstTag);
+        expect(removed).toHaveLength(originalLength - 1);
+        expect(removed[0]).not.toEqual(originalFirstTag);
     });
 
     it("Gets correct region data", () => {
@@ -178,47 +178,26 @@ describe("Canvas Helpers", () => {
 
     it("Toggles a tag", () => {
         const tags = ["tag1", "tag2", "tag3"];
-        CanvasHelpers.toggleTag(tags, "tag1");
-        expect(tags).toEqual(["tag2", "tag3"]);
-    });
-
-    it("Toggles a region", () => {
-        const region1 = MockFactory.createTestRegion("region1");
-        const region2 = MockFactory.createTestRegion("region2");
-        const region3 = MockFactory.createTestRegion("region3");
-        const region4 = MockFactory.createTestRegion("region4");
-
-        const regions = [region1, region2, region3];
-
-        CanvasHelpers.toggleRegion(regions, region1);
-        expect(regions).toEqual([region2, region3]);
-
-        CanvasHelpers.toggleRegion(regions, region4);
-        expect(regions).toEqual([region2, region3, region4]);
-
+        expect(CanvasHelpers.toggleTag(tags, "tag1")).toEqual(["tag2", "tag3"]);
+        expect(CanvasHelpers.toggleTag(tags, "tag4")).toEqual(["tag1", "tag2", "tag3", "tag4"]);
     });
 
     it("Adds tag if missing", () => {
         const tags = ["tag1", "tag2", "tag3"];
-        CanvasHelpers.addIfMissing(tags, "tag2");
-        expect(tags).toEqual(["tag1", "tag2", "tag3"]);
-        CanvasHelpers.addIfMissing(tags, "tag4");
-        expect(tags).toEqual(["tag1", "tag2", "tag3", "tag4"]);
+        expect(CanvasHelpers.addIfMissing(tags, "tag2")).toEqual(["tag1", "tag2", "tag3"]);
+        expect(CanvasHelpers.addIfMissing(tags, "tag4")).toEqual(["tag1", "tag2", "tag3", "tag4"]);
     });
 
     it("Adds all tags if missing", () => {
         const tags = ["tag1", "tag2", "tag3"];
         const targets = ["tag3", "tag4", "tag5"];
-        CanvasHelpers.addAllIfMissing(tags, targets);
-        expect(tags).toEqual(["tag1", "tag2", "tag3", "tag4", "tag5"]);
+        expect(CanvasHelpers.addAllIfMissing(tags, targets)).toEqual(["tag1", "tag2", "tag3", "tag4", "tag5"]);
     });
 
     it("Removes tag if contained", () => {
         const tags = ["tag1", "tag2", "tag3"];
-        CanvasHelpers.removeIfContained(tags, "tag4");
-        expect(tags).toEqual(["tag1", "tag2", "tag3"]);
-        CanvasHelpers.removeIfContained(tags, "tag1");
-        expect(tags).toEqual(["tag2", "tag3"]);
+        expect(CanvasHelpers.removeIfContained(tags, "tag4")).toEqual(["tag1", "tag2", "tag3"]);
+        expect(CanvasHelpers.removeIfContained(tags, "tag1")).toEqual(["tag2", "tag3"]);
     });
 
     it("Updates regions", () => {

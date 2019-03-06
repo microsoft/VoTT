@@ -21,29 +21,14 @@ export default class CanvasHelpers {
      * @param tags Array of tags
      * @param tag Tag to toggle
      */
-    public static toggleTag(tags: string[], tag: string): void {
+    public static toggleTag(tags: string[], tag: string): string[] {
         const tagIndex = tags.findIndex((existingTag) => existingTag === tag);
         if (tagIndex === -1) {
             // Tag isn't found within region tags, add it
-            tags.push(tag);
+            return [...tags, tag];
         } else {
             // Tag is within region tags, remove it
-            tags.splice(tagIndex, 1);
-        }
-    }
-
-    /**
-     * Adds region to regions if missing,
-     * Removes region from regions if contained
-     * @param regions Existing regions array
-     * @param region Region to be toggled
-     */
-    public static toggleRegion(regions: IRegion[], region: IRegion): void {
-        const index = regions.findIndex((r) => r.id === region.id);
-        if (index === -1) {
-            regions.push(region);
-        } else {
-            regions.splice(index, 1);
+            return tags.filter((t) => t !== tag);
         }
     }
 
@@ -52,10 +37,11 @@ export default class CanvasHelpers {
      * @param tags Existing tags array
      * @param tag Tag to be added if missing
      */
-    public static addIfMissing(tags: string[], tag: string): void {
+    public static addIfMissing(tags: string[], tag: string): string[] {
         if (!tags.find((t) => t === tag)) {
-            tags.push(tag);
+            return [...tags, tag];
         }
+        return tags;
     }
 
     /**
@@ -63,10 +49,12 @@ export default class CanvasHelpers {
      * @param tags Existing tags array
      * @param newTags Tags to be added if not contained
      */
-    public static addAllIfMissing(tags: string[], newTags: string[]): void {
+    public static addAllIfMissing(tags: string[], newTags: string[]): string[] {
+        let result = [...tags];
         for (const newTag of newTags) {
-            CanvasHelpers.addIfMissing(tags, newTag);
+            result = CanvasHelpers.addIfMissing(result, newTag);
         }
+        return result;
     }
 
     /**
@@ -74,11 +62,8 @@ export default class CanvasHelpers {
      * @param tags Existing tags array
      * @param tag Tag to be removed if contained in `tags`
      */
-    public static removeIfContained(tags: string[], tag: string): void {
-        const index = tags.findIndex((t) => t === tag);
-        if (index >= 0) {
-            tags.splice(index, 1);
-        }
+    public static removeIfContained(tags: string[], tag: string): string[] {
+        return tags.filter((t) => t !== tag);
     }
 
     /**

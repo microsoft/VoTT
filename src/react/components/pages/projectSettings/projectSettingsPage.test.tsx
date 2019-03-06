@@ -10,10 +10,19 @@ jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 import { IAppSettings } from "../../../../models/applicationState";
 
+jest.mock("./projectMetrics", () => () => {
+        return (
+            <div className="project-settings-page-metrics">
+                Dummy Project Metrics
+            </div>
+        );
+    },
+);
+
 describe("Project settings page", () => {
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
-    function createCompoent(store, props: IProjectSettingsPageProps): ReactWrapper {
+    function createComponent(store, props: IProjectSettingsPageProps): ReactWrapper {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -25,7 +34,7 @@ describe("Project settings page", () => {
 
     beforeEach(() => {
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
-        projectServiceMock.prototype.load = jest.fn((project) => ({ ...project }));
+        projectServiceMock.prototype.load = jest.fn((project) => ({...project}));
     });
 
     it("Form submission calls save project action", (done) => {
@@ -35,7 +44,7 @@ describe("Project settings page", () => {
 
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         wrapper.find("form").simulate("submit");
 
         setImmediate(() => {
@@ -54,7 +63,7 @@ describe("Project settings page", () => {
         const props = MockFactory.projectSettingsProps();
         const saveProjectSpy = jest.spyOn(props.projectActions, "saveProject");
 
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         wrapper.setProps({
             form: {
                 name: project.name,
@@ -79,7 +88,7 @@ describe("Project settings page", () => {
         const initialState = MockFactory.initialState();
 
         // New Project should not have id or security token set by default
-        const project = { ...initialState.recentProjects[0] };
+        const project = {...initialState.recentProjects[0]};
         project.id = null;
         project.name = "Brand New Project";
         project.securityToken = "";
@@ -93,7 +102,7 @@ describe("Project settings page", () => {
         const saveAppSettingsSpy = jest.spyOn(props.applicationActions, "saveAppSettings");
 
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
-        const wrapper = createCompoent(store, props);
+        const wrapper = createComponent(store, props);
         wrapper.find("form").simulate("submit");
 
         setImmediate(() => {
@@ -109,6 +118,31 @@ describe("Project settings page", () => {
             });
 
             done();
+        });
+    });
+
+    it("render ProjectMetrics", () => {
+        const store = createReduxStore(MockFactory.initialState());
+        const props = MockFactory.projectSettingsProps();
+
+        const wrapper = createComponent(store, props);
+        const projectMetrics = wrapper.find(".project-settings-page-metrics");
+        expect(projectMetrics).toHaveLength(1);
+    });
+
+    describe("project does not exists", () => {
+        it("does not render ProjectMetrics", () => {
+            const initialState = MockFactory.initialState();
+
+            // Override currentProject to load the form values
+            initialState.currentProject = null;
+
+            const store = createReduxStore(initialState);
+            const props = MockFactory.projectSettingsProps();
+
+            const wrapper = createComponent(store, props);
+            const projectMetrics = wrapper.find(".project-settings-page-metrics");
+            expect(projectMetrics).toHaveLength(0);
         });
     });
 });

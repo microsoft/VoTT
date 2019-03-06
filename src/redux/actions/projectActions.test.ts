@@ -10,7 +10,7 @@ import ProjectService from "../../services/projectService";
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
-import { IExportProvider } from "../../providers/export/exportProvider";
+import { ExportAssetState, IExportProvider } from "../../providers/export/exportProvider";
 import { IApplicationState } from "../../models/applicationState";
 import initialState from "../store/initialState";
 import { appInfo } from "../../common/appInfo";
@@ -76,12 +76,39 @@ describe("Project Redux Actions", () => {
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 
         const project = MockFactory.createTestProject("TestProject");
-        const projectToken = appSettings.securityTokens
-            .find((securityToken) => securityToken.name === project.securityToken);
-
         const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
 
         expect(result.version).toEqual(appInfo.version);
+    });
+
+    it("Save Project action on new project correctly add default export format", async () => {
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
+
+        const skeletonProject = MockFactory.createTestProject("TestProject");
+        const project = {
+            ...skeletonProject,
+            exportFormat: null,
+        };
+
+        const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
+
+        expect(result.exportFormat).toEqual({
+            providerType: "vottJson",
+            providerOptions: {
+                assetState: ExportAssetState.Visited,
+            },
+        });
+    });
+
+    it("Save Project action does not override existing export format", async () => {
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
+
+        const project = MockFactory.createTestProject("TestProject");
+        const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
+
+        const expectedExportFormat = MockFactory.exportFormat();
+
+        expect(result.exportFormat).toEqual(expectedExportFormat);
     });
 
     it("Delete Project action calls project service and dispatches redux action", async () => {

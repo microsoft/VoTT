@@ -93,6 +93,16 @@ export const spanish: IAppStrings = {
             saveSuccess: "Guardado correctamente ${project.name} configuración del proyecto",
         },
     },
+    projectMetrics: {
+        title: "Métricas del Proyecto",
+        sourceAssetsCount: "Número de activos de origen",
+        visitedAssetsCount: "Número de activos visitados",
+        taggedAssetsCount: "Número de activos etiquetados",
+        regionsCount: "Número de regiones dibujadas",
+        tagCategories: "Número de categorías de etiquetas",
+        tagCount: "Totales por etiqueta (número de instancias de esa etiqueta)",
+        averageTagPerTaggedAsset: "Etiquetas promedio por activo etiquetado",
+    },
     tags: {
         title: "Etiquetas",
         placeholder: "Agregar nuevo etiqueta",
@@ -283,7 +293,7 @@ export const spanish: IAppStrings = {
                 Validar el archivo de proyecto y el token de seguridad existen e inténtelo de nuevo`,
         },
         securityTokenNotFound: {
-            title: "Error loading project file",
+            title: "Error al cargar el archivo del proyecto",
             message: `El token de seguridad al que hace referencia el proyecto no se encuentra en la
                 configuración de la aplicación actual. Compruebe que existe el token de seguridad e intente
                 volver a cargar el proyecto.`,
@@ -300,6 +310,11 @@ export const spanish: IAppStrings = {
         pasteRegionTooBigError: {
             title: "Error al pegar region al activo",
             message: "Hubo un error al pagar el region al activo. Intenta copiar otra region",
+        },
+        exportFormatNotFound: {
+            title: "Error exportando proyecto",
+            message: `Proyecto falta el formato de exportación. Seleccione un formato de exportación en la página
+            de configuración de exportación.`,
         },
     },
 };

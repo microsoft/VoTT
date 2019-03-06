@@ -1,14 +1,20 @@
-import { Dispatch, Action } from "redux";
+import { Action, Dispatch } from "redux";
 import ProjectService from "../../services/projectService";
 import { ActionTypes } from "./actionTypes";
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import {
-    IProject, IAsset, IAssetMetadata, IApplicationState,
-    ErrorCode, AppError } from "../../models/applicationState";
-import { createPayloadAction, IPayloadAction, createAction } from "./actionCreators";
-import { IExportResults } from "../../providers/export/exportProvider";
+    AppError,
+    ErrorCode,
+    IApplicationState,
+    IAsset,
+    IAssetMetadata,
+    IProject,
+} from "../../models/applicationState";
+import { createAction, createPayloadAction, IPayloadAction } from "./actionCreators";
+import { ExportAssetState, IExportResults } from "../../providers/export/exportProvider";
 import { appInfo } from "../../common/appInfo";
+import { strings } from "../../common/strings";
 
 /**
  * Actions to be performed in relation to projects
@@ -71,7 +77,18 @@ export function saveProject(project: IProject)
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const newProject = { ...project, version: appInfo.version };
+        const defaultExportFormat = {
+            providerType: "vottJson",
+            providerOptions: {
+                assetState: ExportAssetState.Visited,
+            },
+        };
+
+        const newProject = {
+            ...project,
+            version: appInfo.version,
+            exportFormat: project.exportFormat || defaultExportFormat,
+        };
 
         const savedProject = await projectService.save(newProject, projectToken);
         dispatch(saveProjectAction(savedProject));
@@ -113,7 +130,7 @@ export function deleteProject(project: IProject)
  */
 export function closeProject(): (dispatch: Dispatch) => void {
     return (dispatch: Dispatch): void => {
-        dispatch({ type: ActionTypes.CLOSE_PROJECT_SUCCESS });
+        dispatch({type: ActionTypes.CLOSE_PROJECT_SUCCESS});
     };
 }
 
@@ -142,7 +159,7 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
         const assetMetadata = await assetService.getAssetMetadata(asset);
         dispatch(loadAssetMetadataAction(assetMetadata));
 
-        return { ...assetMetadata };
+        return {...assetMetadata};
     };
 }
 
@@ -154,14 +171,14 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
 export function saveAssetMetadata(
     project: IProject,
     assetMetadata: IAssetMetadata): (dispatch: Dispatch) => Promise<IAssetMetadata> {
-    const newAssetMetadata = { ...assetMetadata, version: appInfo.version };
+    const newAssetMetadata = {...assetMetadata, version: appInfo.version};
 
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const savedMetadata = await assetService.save(newAssetMetadata);
         dispatch(saveAssetMetadataAction(savedMetadata));
 
-        return { ...savedMetadata };
+        return {...savedMetadata};
     };
 }
 
@@ -171,6 +188,10 @@ export function saveAssetMetadata(
  */
 export function exportProject(project: IProject): (dispatch: Dispatch) => Promise<void> | Promise<IExportResults> {
     return async (dispatch: Dispatch) => {
+        if (!project.exportFormat) {
+            throw new AppError(ErrorCode.ExportFormatNotFound, strings.errors.exportFormatNotFound.message);
+        }
+
         if (project.exportFormat && project.exportFormat.providerType) {
             const exportProvider = ExportProviderFactory.create(
                 project.exportFormat.providerType,
@@ -240,6 +261,7 @@ export interface ISaveAssetMetadataAction extends IPayloadAction<string, IAssetM
 export interface IExportProjectAction extends IPayloadAction<string, IProject> {
     type: ActionTypes.EXPORT_PROJECT_SUCCESS;
 }
+
 /**
  * Instance of Load Project action
  */

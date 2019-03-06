@@ -249,8 +249,9 @@ export default class MockFactory {
     /**
      * Creates fake IProject
      * @param name Name of project. project.id = `project-${name}` and project.name = `Project ${name}`
+     * @param tagCount number of tags to create for project
      */
-    public static createTestProject(name: string = "test"): IProject {
+    public static createTestProject(name: string = "test", tagCount: number = 5): IProject {
         const connection = MockFactory.createTestConnection(name);
 
         return {
@@ -262,7 +263,7 @@ export default class MockFactory {
             exportFormat: MockFactory.exportFormat(),
             sourceConnection: connection,
             targetConnection: connection,
-            tags: MockFactory.createTestTags(),
+            tags: MockFactory.createTestTags(tagCount),
             videoSettings: MockFactory.createVideoSettings(),
             autoSave: true,
         };
@@ -683,8 +684,9 @@ export default class MockFactory {
     /**
      * Creates a test region with the optional specified id
      * @param id The id to assign to the region
+     * @param tags the tags used in this region
      */
-    public static createTestRegion(id = null): IRegion {
+    public static createTestRegion(id = null, tags: string[] = []): IRegion {
         const origin = {
             x: randomIntInRange(0, 1024),
             y: randomIntInRange(0, 768),
@@ -708,7 +710,7 @@ export default class MockFactory {
                 { x: origin.x, y: origin.y + size.height }, // Bottom Left
                 { x: origin.x + size.width, y: origin.y + size.height }, // Bottom Right
             ],
-            tags: [],
+            tags,
             type: RegionType.Rectangle,
         };
     }
@@ -1020,4 +1022,5 @@ export default class MockFactory {
                 return StorageType.Other;
         }
     }
+
 }

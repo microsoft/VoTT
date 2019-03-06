@@ -26,7 +26,7 @@ export interface IApplicationState {
  */
 export interface IAppError {
     errorCode: ErrorCode;
-    message: string;
+    message: any;
     title?: string;
 }
 
@@ -44,6 +44,7 @@ export enum ErrorCode {
     ProjectUploadError = "projectUploadError",
     ProjectDeleteError = "projectDeleteError",
     SecurityTokenNotFound = "securityTokenNotFound",
+    ExportFormatNotFound = "exportFormatNotFound",
     CanvasError = "canvasError",
     V1ImportError = "v1ImportError",
     PasteRegionTooBigError = "pasteRegionTooBigError",
