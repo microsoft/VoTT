@@ -43,7 +43,7 @@
         "shortid": "^2.2.14",
         "video-react": "^0.13.2",
         "vott-ct": "^2.1.19",
-        "vott-react": "^0.2.8"
+        "vott-react": "^0.2.9"
     },
     "scripts": {
         "start": "nf start -p 3000",
