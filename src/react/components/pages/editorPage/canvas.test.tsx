@@ -3,7 +3,7 @@ import React from "react";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { RegionType } from "vott-react";
 import MockFactory from "../../../../common/mockFactory";
-import { EditorMode, IAssetMetadata, IRegion } from "../../../../models/applicationState";
+import { EditorMode, IAssetMetadata, IRegion, IAsset } from "../../../../models/applicationState";
 import { AssetPreview, IAssetPreviewProps } from "../../common/assetPreview/assetPreview";
 import Canvas, { ICanvasProps, ICanvasState } from "./canvas";
 import CanvasHelpers from "./canvasHelpers";
@@ -30,8 +30,14 @@ describe("Editor Canvas", () => {
     }
 
     function getAssetMetadata() {
-        return MockFactory.createTestAssetMetadata(
-            MockFactory.createTestAsset(), MockFactory.createTestRegions());
+        const asset: IAsset = {
+            ...MockFactory.createTestAsset(),
+            size: {
+                width: 1600,
+                height: 1200,
+            },
+        };
+        return MockFactory.createTestAssetMetadata(asset, MockFactory.createTestRegions());
     }
 
     function createProps() {
