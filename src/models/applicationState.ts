@@ -26,7 +26,7 @@ export interface IApplicationState {
  */
 export interface IAppError {
     errorCode: ErrorCode;
-    message: string;
+    message: any;
     title?: string;
 }
 
