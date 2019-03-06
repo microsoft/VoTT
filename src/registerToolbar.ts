@@ -2,6 +2,7 @@ import { ToolbarItemFactory } from "./providers/toolbar/toolbarItemFactory";
 import { ExportProject } from "./react/components/toolbar/exportProject";
 import { SaveProject } from "./react/components/toolbar/saveProject";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
+import { strings } from "./common/strings";
 
 export enum ToolbarItemName {
     SelectCanvas = "selectCanvas",
@@ -11,7 +12,7 @@ export enum ToolbarItemName {
     CopyRegions = "copyRegions",
     CutRegions = "cutRegions",
     PasteRegions = "pasteRegions",
-    ClearRegions = "clearRegions",
+    RemoveAllRegions = "removeAllRegions",
     PreviousAsset = "navigatePreviousAsset",
     NextAsset = "navigateNextAsset",
     SaveProject = "saveProject",
@@ -84,8 +85,8 @@ export default function registerToolbar() {
     });
 
     ToolbarItemFactory.register({
-        name: ToolbarItemName.ClearRegions,
-        tooltip: "Clear Regions",
+        name: ToolbarItemName.RemoveAllRegions,
+        tooltip: strings.editorPage.canvas.removeAllRegions.title,
         icon: "fa-ban",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,

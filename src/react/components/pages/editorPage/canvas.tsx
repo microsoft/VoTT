@@ -87,11 +87,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public render = () => {
         return (
             <Fragment>
-                <Confirm title="Clear Regions"
+                <Confirm title={strings.editorPage.canvas.removeAllRegions.title}
                     ref={this.clearConfirm as any}
-                    message={strings.editorPage.canvas.clearRegions.confirmation}
+                    message={strings.editorPage.canvas.removeAllRegions.confirmation}
                     confirmButtonColor="danger"
-                    onConfirm={this.clearRegions}
+                    onConfirm={this.removeAllRegions}
                 />
                 <div id="ct-zone" ref={this.canvasZone} className="canvas-enabled">
                     <div id="selection-zone">
@@ -154,7 +154,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.addRegions(duplicates);
     }
 
-    public confirmClearRegions = () => {
+    public confirmRemoveAllRegions = () => {
         this.clearConfirm.current.open();
     }
 
@@ -172,7 +172,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
 
-    private clearRegions = () => {
+    private removeAllRegions = () => {
         const ids = this.state.currentAsset.regions.map((r) => r.id);
         for (const id of ids) {
             this.editor.RM.deleteRegionById(id);

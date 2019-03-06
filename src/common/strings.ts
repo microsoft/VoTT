@@ -187,7 +187,7 @@ export interface IAppStrings {
         }
         assetError: string;
         canvas: {
-            clearRegions: {
+            removeAllRegions: {
                 title: string;
                 confirmation: string;
             },

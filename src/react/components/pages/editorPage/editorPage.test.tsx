@@ -396,7 +396,7 @@ describe("Editor Page Component", () => {
         const copyRegions = jest.fn();
         const cutRegions = jest.fn();
         const pasteRegions = jest.fn();
-        const confirmClearRegions = jest.fn();
+        const removeAllRegionsConfirm = jest.fn();
 
         beforeAll(() => {
             registerToolbar();
@@ -422,7 +422,7 @@ describe("Editor Page Component", () => {
             canvas.copyRegions = copyRegions;
             canvas.cutRegions = cutRegions;
             canvas.pasteRegions = pasteRegions;
-            canvas.confirmClearRegions = confirmClearRegions;
+            canvas.confirmRemoveAllRegions = removeAllRegionsConfirm;
         });
 
         it("editor mode is changed correctly", async () => {
@@ -477,10 +477,10 @@ describe("Editor Page Component", () => {
             expect(pasteRegions).toBeCalled();
         });
 
-        it("Calls clear regions with button click and confirmation", async () => {
+        it("Calls remove all regions confirmation with button click", async () => {
             await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
-            expect(confirmClearRegions).toBeCalled();
+                .find(`.${ToolbarItemName.RemoveAllRegions}`).simulate("click"));
+            expect(removeAllRegionsConfirm).toBeCalled();
         });
 
         it("Calls copy regions with hot key", async () => {
@@ -498,9 +498,9 @@ describe("Editor Page Component", () => {
             expect(pasteRegions).toBeCalled();
         });
 
-        it("Calls clear regions with hot key and confirmation", async () => {
+        it("Calls remove all regions confirmation with hot key", async () => {
             dispatchKeyEvent("Ctrl+Delete");
-            expect(confirmClearRegions).toBeCalled();
+            expect(removeAllRegionsConfirm).toBeCalled();
         });
 
         it("sets selected tag and locked tags when hot key is pressed", async () => {
