@@ -225,9 +225,9 @@ export default class MockFactory {
      * Creates fake IAssetMetadata
      * @param asset Test asset
      */
-    public static createTestAssetMetadata(asset: IAsset, regions?: IRegion[]): IAssetMetadata {
+    public static createTestAssetMetadata(asset?: IAsset, regions?: IRegion[]): IAssetMetadata {
         return {
-            asset,
+            asset: asset || MockFactory.createTestAsset(),
             regions: regions || [],
             version: appInfo.version,
         };
