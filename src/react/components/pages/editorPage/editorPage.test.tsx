@@ -28,6 +28,7 @@ import EditorFooter from "./editorFooter";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import Canvas from "./canvas";
 import { appInfo } from "../../../../common/appInfo";
+import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
@@ -395,7 +396,7 @@ describe("Editor Page Component", () => {
         const copyRegions = jest.fn();
         const cutRegions = jest.fn();
         const pasteRegions = jest.fn();
-        const clearRegions = jest.fn();
+        const removeAllRegionsConfirm = jest.fn();
 
         beforeAll(() => {
             registerToolbar();
@@ -421,7 +422,7 @@ describe("Editor Page Component", () => {
             canvas.copyRegions = copyRegions;
             canvas.cutRegions = cutRegions;
             canvas.pasteRegions = pasteRegions;
-            canvas.clearRegions = clearRegions;
+            canvas.confirmRemoveAllRegions = removeAllRegionsConfirm;
         });
 
         it("editor mode is changed correctly", async () => {
@@ -476,10 +477,10 @@ describe("Editor Page Component", () => {
             expect(pasteRegions).toBeCalled();
         });
 
-        it("Calls clear regions with button click", async () => {
+        it("Calls remove all regions confirmation with button click", async () => {
             await MockFactory.flushUi(() => wrapper
-                .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
-            expect(clearRegions).toBeCalled();
+                .find(`.${ToolbarItemName.RemoveAllRegions}`).simulate("click"));
+            expect(removeAllRegionsConfirm).toBeCalled();
         });
 
         it("Calls copy regions with hot key", async () => {
@@ -495,6 +496,11 @@ describe("Editor Page Component", () => {
         it("Calls paste regions with hot key", async () => {
             dispatchKeyEvent("Ctrl+v");
             expect(pasteRegions).toBeCalled();
+        });
+
+        it("Calls remove all regions confirmation with hot key", async () => {
+            dispatchKeyEvent("Ctrl+Delete");
+            expect(removeAllRegionsConfirm).toBeCalled();
         });
 
         it("sets selected tag and locked tags when hot key is pressed", async () => {

@@ -43,7 +43,7 @@ export default class ExportPage extends React.Component<IExportPageProps> {
     private emptyExportFormat: IExportFormat = {
         providerType: "",
         providerOptions: {
-            assetState: ExportAssetState.All,
+            assetState: ExportAssetState.Visited,
         },
     };
 

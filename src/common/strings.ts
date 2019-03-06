@@ -186,6 +186,12 @@ export interface IAppStrings {
             },
         }
         assetError: string;
+        canvas: {
+            removeAllRegions: {
+                title: string;
+                confirmation: string;
+            },
+        }
     };
     export: {
         title: string;
