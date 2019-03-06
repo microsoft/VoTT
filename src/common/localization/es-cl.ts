@@ -293,7 +293,7 @@ export const spanish: IAppStrings = {
                 Validar el archivo de proyecto y el token de seguridad existen e inténtelo de nuevo`,
         },
         securityTokenNotFound: {
-            title: "Error loading project file",
+            title: "Error al cargar el archivo del proyecto",
             message: `El token de seguridad al que hace referencia el proyecto no se encuentra en la
                 configuración de la aplicación actual. Compruebe que existe el token de seguridad e intente
                 volver a cargar el proyecto.`,
@@ -306,6 +306,11 @@ export const spanish: IAppStrings = {
         importError: {
             title: "Error al importar el proyecto V1",
             message: "Hubo un error al importar el proyecto V1. Revisa el archivo del proyecto y vuelve a intentarlo",
+        },
+        exportFormatNotFound: {
+            title: "Error exportando proyecto",
+            message: `Proyecto falta el formato de exportación. Seleccione un formato de exportación en la página
+            de configuración de exportación.`,
         },
     },
 };

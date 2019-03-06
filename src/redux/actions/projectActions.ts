@@ -14,6 +14,7 @@ import {
 import { createAction, createPayloadAction, IPayloadAction } from "./actionCreators";
 import { ExportAssetState, IExportResults } from "../../providers/export/exportProvider";
 import { appInfo } from "../../common/appInfo";
+import { strings } from "../../common/strings";
 
 /**
  * Actions to be performed in relation to projects
@@ -188,7 +189,7 @@ export function saveAssetMetadata(
 export function exportProject(project: IProject): (dispatch: Dispatch) => Promise<void> | Promise<IExportResults> {
     return async (dispatch: Dispatch) => {
         if (!project.exportFormat) {
-            throw new AppError(ErrorCode.ExportFormatNotFound, "Export Format missing for project.");
+            throw new AppError(ErrorCode.ExportFormatNotFound, strings.errors.exportFormatNotFound.message);
         }
 
         if (project.exportFormat && project.exportFormat.providerType) {
