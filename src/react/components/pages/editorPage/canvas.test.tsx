@@ -16,6 +16,7 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
+import { AreaSelector } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 
 describe("Editor Canvas", () => {
 
@@ -70,7 +71,9 @@ describe("Editor Canvas", () => {
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
-        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
+        // tslint:disable-next-line:max-line-length
+        editorMock.prototype.AS = { setSelectionMode: jest.fn(({mode, template = null}) => {selectionMode = {mode, ...template}; }),
+                                    getSelectorSettings: jest.fn(() => selectionMode) };
 
         const clipboard = (navigator as any).clipboard;
         if (!(clipboard && clipboard.writeText)) {
@@ -79,12 +82,17 @@ describe("Editor Canvas", () => {
                 readText: jest.fn(() => Promise.resolve(JSON.stringify([copiedRegion]))),
             };
         }
+
+        let selectionMode = {
+            mode: SelectionMode.NONE,
+            template: null,
+        };
     });
 
     function mockSelectedRegions(ids: string[]) {
         editorMock.prototype.RM = {
             ...new RegionsManager(null, null),
-            getSelectedRegionsBounds: jest.fn(() => ids.map((id) => {
+            getSelectedRegions: jest.fn(() => ids.map((id) => {
                 return {id};
             })),
         };
@@ -175,22 +183,23 @@ describe("Editor Canvas", () => {
         const onAssetMetadataChanged = jest.fn();
         wrapper.setProps({ onAssetMetadataChanged });
 
-        const testRegion = MockFactory.createTestRegion("test-region");
         const testRegionData = MockFactory.createTestRegionData();
         wrapper.instance().editor.onSelectionEnd(testRegionData);
 
+        const testRegion = wrapper.state().currentAsset.regions[0];
         mockSelectedRegions([testRegion.id]);
         expect(wrapper.instance().getSelectedRegions()).toEqual([testRegion]);
 
         wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
         expect(wrapper.instance().editor.AS.getSelectorSettings()).toEqual({
             mode: SelectionMode.COPYRECT,
-            template: new Rect(testRegionData.width, testRegionData.height),
+            template: new Rect(testRegion.boundingBox.width, testRegion.boundingBox.height),
         });
     });
 
     it("throws error when no selected region for copyRect", () => {
         const wrapper = createComponent();
+        mockSelectedRegions([]);
         expect(() => {
             wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
         }).toThrowError();

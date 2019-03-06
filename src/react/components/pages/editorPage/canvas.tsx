@@ -162,7 +162,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public getSelectedRegions = (): IRegion[] => {
-        const selectedRegions = this.editor.RM.getSelectedRegionsBounds().map((rb) => rb.id);
+        const selectedRegions = this.editor.RM.getSelectedRegions().map((rb) => rb.id);
         return this.state.currentAsset.regions.filter((r) => selectedRegions.find((id) => r.id === id));
     }
 
