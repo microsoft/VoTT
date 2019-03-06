@@ -2,7 +2,7 @@ import React from "react";
 import { IAppError, ErrorCode, AppError } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import Alert from "../alert/alert";
-import { instanceOf } from "prop-types";
+import { Env } from "../../../../common/environment";
 
 /**
  * Component properties for ErrorHandler component
@@ -77,39 +77,46 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      * @param error The error to handle
      */
     private handleError(error: string | Error | AppError) {
-        console.log(error);
         let appError: IAppError = null;
-
         // Promise rejection with reason
         if (typeof (error) === "string") {
             // Promise rejection with string base reason
             appError = {
                 errorCode: ErrorCode.Unknown,
-                message: error,
+                message: error || this.getUnknownErrorMessage(error),
             };
         } else if (error instanceof AppError) {
             // Promise rejection with AppError
             const reason = error as IAppError;
             appError = {
+                title: reason.title || strings.errors.unknown.title,
                 errorCode: reason.errorCode,
-                message: reason.message,
-                title: reason.title,
+                message: reason.message || this.getUnknownErrorMessage(error),
             };
         } else if (error instanceof Error) {
             // Promise rejection with other error like object
             const reason = error as Error;
             appError = {
+                title: reason.name || strings.errors.unknown.title,
                 errorCode: ErrorCode.Unknown,
-                message: reason.message,
-                title: reason.name,
+                message: reason.message || this.getUnknownErrorMessage(error),
+            };
+        } else {
+            appError = {
+                title: strings.errors.unknown.title,
+                errorCode: ErrorCode.Unknown,
+                message: this.getUnknownErrorMessage(error),
             };
         }
-
-        if (!appError) {
-            appError = new AppError(ErrorCode.Unknown, "Unknown Error occurred");
-        }
-
         this.props.onError(appError);
+    }
+
+    private getUnknownErrorMessage(e) {
+        if (Env.get() !== "production") {
+            return (<pre>{JSON.stringify(e, null, 2)}</pre>);
+        } else {
+            return strings.errors.unknown.message;
+        }
     }
 
     /**
@@ -117,15 +124,17 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      * @param appError The error thrown by the application
      */
     private getLocalizedError(appError: IAppError): IAppError {
+        if (appError.errorCode === ErrorCode.Unknown) {
+            return appError;
+        }
         const localizedError = strings.errors[appError.errorCode];
         if (!localizedError) {
             return appError;
         }
-
         return {
             errorCode: appError.errorCode,
-            message: localizedError.message || strings.errors.unknown.message,
-            title: localizedError.title || strings.errors.unknown.title,
+            message: localizedError.message,
+            title: localizedError.title,
         };
     }
 }

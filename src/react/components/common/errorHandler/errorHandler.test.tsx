@@ -4,6 +4,8 @@ import { mount, ReactWrapper } from "enzyme";
 import Alert from "../alert/alert";
 import { ErrorCode, IAppError, AppError } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
+jest.mock("../../../../common/environment");
+import { Env } from "../../../../common/environment";
 
 describe("Error Handler Component", () => {
     const onErrorHandler = jest.fn();
@@ -37,8 +39,8 @@ describe("Error Handler Component", () => {
         const wrapper = createComponent(props);
         const alert = wrapper.find(Alert);
         expect(alert.exists()).toBe(true);
-        expect(alert.prop("title")).toEqual(strings.errors.unknown.title);
-        expect(alert.prop("message")).toEqual(strings.errors.unknown.message);
+        expect(alert.prop("title")).toEqual("error title");
+        expect(alert.prop("message")).toEqual("error message");
     });
 
     it("renders an alert with localized error messages", () => {
@@ -145,6 +147,54 @@ describe("Error Handler Component", () => {
         const expectedError: IAppError = {
             errorCode: ErrorCode.Unknown,
             message: thrownError,
+        };
+
+        createComponent();
+        document.dispatchEvent(errorEvent);
+
+        expect(onErrorHandler).toBeCalledWith(expectedError);
+    });
+
+    it("formulates pre-formatted JSON error with unknown error code in dev mode", () => {
+        const thrownError = {
+            code: "ENOENT",
+            errno: -4058,
+            path: "C:/images",
+        };
+        const errorEvent = new CustomEvent("unhandledrejection", {
+            detail: thrownError,
+        });
+
+        Env.get = jest.fn(() => "development");
+
+        const expectedError: IAppError = {
+            title: strings.errors.unknown.title,
+            errorCode: ErrorCode.Unknown,
+            message: <pre>{JSON.stringify(thrownError, null, 2)}</pre>,
+        };
+
+        createComponent();
+        document.dispatchEvent(errorEvent);
+
+        expect(onErrorHandler).toBeCalledWith(expectedError);
+    });
+
+    it("Displays generic unknown error message in production mode", () => {
+        const thrownError = {
+            code: "ENOENT",
+            errno: -4058,
+            path: "C:/images",
+        };
+        const errorEvent = new CustomEvent("unhandledrejection", {
+            detail: thrownError,
+        });
+
+        Env.get = jest.fn(() => "production");
+
+        const expectedError: IAppError = {
+            title: strings.errors.unknown.title,
+            errorCode: ErrorCode.Unknown,
+            message: strings.errors.unknown.message,
         };
 
         createComponent();

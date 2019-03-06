@@ -6,7 +6,7 @@ export interface IExportProviderRegistrationOptions {
     name: string;
     displayName: string;
     description?: string;
-    factory: (project, IProject, options?: any) => IExportProvider;
+    factory: (project: IProject, options?: any) => IExportProvider;
 }
 
 /**
