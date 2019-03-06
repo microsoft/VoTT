@@ -76,6 +76,33 @@ describe("Canvas Helpers", () => {
         expect(CanvasHelpers.regionTypeToType(null)).toBeUndefined();
     });
 
+    it("Creates a point array from a bounding box", () => {
+        const boundingBox = {
+            left: 0,
+            top: 0,
+            width: 100,
+            height: 100,
+        };
+        expect(CanvasHelpers.fromBoundingBox(boundingBox)).toEqual([
+            {
+                x: 0,
+                y: 0,
+            },
+            {
+                x: 100,
+                y: 0,
+            },
+            {
+                x: 100,
+                y: 100,
+            },
+            {
+                x: 0,
+                y: 100,
+            },
+        ]);
+    });
+
     it("Duplicates and moves a region", () => {
         const regions = MockFactory.createTestRegions();
         const duplicates = CanvasHelpers.duplicateRegionsAndMove([regions[0]], regions, 1000, 2000);
