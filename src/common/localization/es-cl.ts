@@ -185,6 +185,12 @@ export const spanish: IAppStrings = {
             },
         },
         assetError: "No se puede mostrar el activo",
+        canvas: {
+            clearRegions: {
+                title: "Borrar Regiones",
+                confirmation: "¿Está seguro que quiere borrar todas las regiones?",
+            },
+        },
     },
     export: {
         title: "Exportar",

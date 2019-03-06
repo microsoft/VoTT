@@ -347,7 +347,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.canvas.current.pasteRegions();
                 break;
             case ToolbarItemName.ClearRegions:
-                this.canvas.current.clearRegions();
+                this.canvas.current.confirmClearRegions();
                 break;
         }
     }

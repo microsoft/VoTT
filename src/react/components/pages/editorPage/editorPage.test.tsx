@@ -28,6 +28,7 @@ import EditorFooter from "./editorFooter";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import Canvas from "./canvas";
 import { appInfo } from "../../../../common/appInfo";
+import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(
@@ -395,7 +396,7 @@ describe("Editor Page Component", () => {
         const copyRegions = jest.fn();
         const cutRegions = jest.fn();
         const pasteRegions = jest.fn();
-        const clearRegions = jest.fn();
+        const confirmClearRegions = jest.fn();
 
         beforeAll(() => {
             registerToolbar();
@@ -421,7 +422,7 @@ describe("Editor Page Component", () => {
             canvas.copyRegions = copyRegions;
             canvas.cutRegions = cutRegions;
             canvas.pasteRegions = pasteRegions;
-            canvas.clearRegions = clearRegions;
+            canvas.confirmClearRegions = confirmClearRegions;
         });
 
         it("editor mode is changed correctly", async () => {
@@ -476,10 +477,10 @@ describe("Editor Page Component", () => {
             expect(pasteRegions).toBeCalled();
         });
 
-        it("Calls clear regions with button click", async () => {
+        it("Calls clear regions with button click and confirmation", async () => {
             await MockFactory.flushUi(() => wrapper
                 .find(`.${ToolbarItemName.ClearRegions}`).simulate("click"));
-            expect(clearRegions).toBeCalled();
+            expect(confirmClearRegions).toBeCalled();
         });
 
         it("Calls copy regions with hot key", async () => {
@@ -497,11 +498,10 @@ describe("Editor Page Component", () => {
             expect(pasteRegions).toBeCalled();
         });
 
-        it("Calls clear regions with hot key", async () => {
+        it("Calls clear regions with hot key and confirmation", async () => {
             dispatchKeyEvent("Ctrl+Delete");
-            expect(clearRegions).toBeCalled();
+            expect(confirmClearRegions).toBeCalled();
         });
-
 
         it("sets selected tag and locked tags when hot key is pressed", async () => {
             const project = MockFactory.createTestProject();

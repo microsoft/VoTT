@@ -14,6 +14,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
+import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 
 describe("Editor Canvas", () => {
 
@@ -509,8 +510,8 @@ describe("Editor Canvas", () => {
 
     it("Clears all regions from asset", async () => {
         const wrapper = createComponent().find(Canvas);
-        const canvas = wrapper.instance() as Canvas;
-        canvas.clearRegions();
+        const clearConfirm = wrapper.find(Confirm) as ReactWrapper<IConfirmProps>;
+        clearConfirm.props().onConfirm();
 
         await MockFactory.flushUi();
         expect(wrapper.state().currentAsset.regions).toEqual([]);

@@ -86,10 +86,10 @@ export default function registerToolbar() {
     ToolbarItemFactory.register({
         name: ToolbarItemName.ClearRegions,
         tooltip: "Clear Regions",
-        icon: "fa-trash-alt",
+        icon: "fa-ban",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+Delete"]
+        accelerators: ["Ctrl+Delete"],
     });
 
     ToolbarItemFactory.register({

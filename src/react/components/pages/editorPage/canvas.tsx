@@ -12,6 +12,8 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import Clipboard from "../../../../common/clipboard";
+import Confirm from "../../common/confirm/confirm";
+import { strings } from "../../../../common/strings";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -47,6 +49,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     private intervalTimer: number = null;
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
+    private clearConfirm: React.RefObject<Confirm> = React.createRef();
 
     public componentDidMount = () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
@@ -84,6 +87,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public render = () => {
         return (
             <Fragment>
+                <Confirm title="Clear Regions"
+                    ref={this.clearConfirm as any}
+                    message={strings.editorPage.canvas.clearRegions.confirmation}
+                    confirmButtonColor="danger"
+                    onConfirm={this.clearRegions}
+                />
                 <div id="ct-zone" ref={this.canvasZone} className="canvas-enabled">
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
@@ -145,12 +154,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.addRegions(duplicates);
     }
 
-    public clearRegions = () => {
-        const ids = this.state.currentAsset.regions.map((r) => r.id);
-        for (const id of ids) {
-            this.editor.RM.deleteRegionById(id);
-        }
-        this.deleteRegionsFromAsset(this.state.currentAsset.regions);
+    public confirmClearRegions = () => {
+        this.clearConfirm.current.open();
     }
 
     public getSelectedRegions = (): IRegion[] => {
@@ -165,6 +170,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 CanvasHelpers.getTagsDescriptor(this.props.project.tags, region),
             );
         }
+    }
+
+    private clearRegions = () => {
+        const ids = this.state.currentAsset.regions.map((r) => r.id);
+        for (const id of ids) {
+            this.editor.RM.deleteRegionById(id);
+        }
+        this.deleteRegionsFromAsset(this.state.currentAsset.regions);
     }
 
     private addRegions = (regions: IRegion[]) => {
