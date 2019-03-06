@@ -1,6 +1,5 @@
 import { mount, ReactWrapper } from "enzyme";
 import React from "react";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { RegionType } from "vott-react";
 import MockFactory from "../../../../common/mockFactory";
 import { EditorMode, IAssetMetadata, IRegion, IAsset } from "../../../../models/applicationState";
@@ -14,6 +13,9 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
+import { TagsDescriptor } from "vott-ct/lib/js/CanvasTools/Core/TagsDescriptor";
+import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 
 describe("Editor Canvas", () => {
 
@@ -114,23 +116,6 @@ describe("Editor Canvas", () => {
         expect(wrapper.instance().getSelectedRegions()).toEqual([]);
     });
 
-    // it("copies correct rectangle for copyRect", () => {
-    //     const wrapper = createComponent();
-    //     const testRegion = MockFactory.createTestRegion();
-    //     wrapper.setState({selectedRegions: [testRegion]});
-
-    //     wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
-    //     expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
-    //     expect(wrapper.state().selectedRegions).toEqual([]);
-    // });
-
-    it("throws error when no selected region for copyRect", () => {
-        const wrapper = createComponent();
-        expect(() => {
-            wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
-        }).toThrowError();
-    });
-
     it("canvas is updated when asset loads", () => {
         const wrapper = createComponent();
         wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
@@ -183,6 +168,32 @@ describe("Editor Canvas", () => {
             ...original.regions,
             { ...expectedRegion, id: expect.any(String) },
         ]);
+    });
+
+    it("copies correct rectangle for copyRect", () => {
+        const wrapper = createComponent();
+        const onAssetMetadataChanged = jest.fn();
+        wrapper.setProps({ onAssetMetadataChanged });
+
+        const testRegion = MockFactory.createTestRegion("test-region");
+        const testRegionData = MockFactory.createTestRegionData();
+        wrapper.instance().editor.onSelectionEnd(testRegionData);
+
+        mockSelectedRegions([testRegion.id]);
+        expect(wrapper.instance().getSelectedRegions()).toEqual([testRegion]);
+
+        wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
+        expect(wrapper.instance().editor.AS.getSelectorSettings()).toEqual({
+            mode: SelectionMode.COPYRECT,
+            template: new Rect(testRegionData.width, testRegionData.height),
+        });
+    });
+
+    it("throws error when no selected region for copyRect", () => {
+        const wrapper = createComponent();
+        expect(() => {
+            wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
+        }).toThrowError();
     });
 
     it("canvas updates regions when a new asset is loaded", async () => {
