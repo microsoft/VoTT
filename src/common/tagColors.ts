@@ -1,6 +1,4 @@
 export const tagColors = {
-    White: "#FFFFFF",
-    Gray: "#808080",
     Red: "#FF0000",
     Maroon: "#800000",
     Yellow: "#FFFF00",
