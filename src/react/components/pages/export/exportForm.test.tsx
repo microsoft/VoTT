@@ -88,7 +88,7 @@ describe("Export Form Component", () => {
         const defaultExportSettings: IExportFormat = {
             providerType: "vottJson",
             providerOptions: {
-                assetState: ExportAssetState.Visited,
+                assetState: ExportAssetState.All,
             },
         };
 

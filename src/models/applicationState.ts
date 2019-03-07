@@ -165,11 +165,6 @@ export interface IConnection {
     providerOptions: IProviderOptions | ISecureString;
 }
 
-/**
- * @name - Export Provider Options
- * @description - options defining the type of asset to export
- * @member assetState - export asset with the following state
- */
 export interface IExportProviderOptions extends IProviderOptions {
     assetState: ExportAssetState;
 }
