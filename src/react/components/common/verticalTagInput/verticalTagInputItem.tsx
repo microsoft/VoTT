@@ -3,6 +3,7 @@ import { ITag } from "../../../../models/applicationState";
 import { invertColor } from "../../../../common/utils";
 import { CirclePicker } from 'react-color'
 import { TagEditMode } from "./verticalTagInput";
+import { tagColors } from "../../../../common/tagColors";
 
 export interface IVerticalTagItemProps {
     tag: ITag;
@@ -41,6 +42,10 @@ function getTagContent(item: IVerticalTagItemProps, onChange){
                     <CirclePicker
                         color={tag.color}
                         onChangeComplete={(color) => handleColorEdit(tag, color, onChange)}
+                        colors={tagColors}
+                        width={175}
+                        circleSize={22}
+                        circleSpacing={10}
                     />
                 </div>
             )
