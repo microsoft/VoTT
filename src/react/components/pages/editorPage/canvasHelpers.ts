@@ -128,7 +128,9 @@ export default class CanvasHelpers {
      * @param region IRegion from Canvas
      */
     public static getTagsDescriptor(projectTags: ITag[], region: IRegion): TagsDescriptor {
-        Guard.null(projectTags);
+        if (!projectTags || !projectTags.length) {
+            return null;
+        }
         Guard.null(region);
 
         const tags = region.tags

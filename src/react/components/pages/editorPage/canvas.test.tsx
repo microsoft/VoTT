@@ -14,6 +14,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
+import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 
 describe("Editor Canvas", () => {
 
@@ -120,6 +121,26 @@ describe("Editor Canvas", () => {
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
         expect(wrapper.state().contentSource).toEqual(expect.any(HTMLImageElement));
+    });
+
+    it("loads asset with regions even if project has no tags", () => {
+        const cProps = createProps().canvas;
+        const assetMetadata = {
+            ...MockFactory.createTestAssetMetadata(),
+            regions: MockFactory.createTestRegions(),
+        };
+
+        const wrapper = createComponent({
+            ...cProps,
+            project: {
+                ...MockFactory.createTestProject(),
+                tags: null,
+            },
+            selectedAsset: assetMetadata,
+        });
+        const canvas = wrapper.instance() as Canvas;
+        expect(wrapper.state().currentAsset).toEqual(assetMetadata);
+        expect(() => canvas.updateCanvasToolsRegions()).not.toThrowError();
     });
 
     it("canvas content source is updated when asset is deactivated", () => {
@@ -509,8 +530,8 @@ describe("Editor Canvas", () => {
 
     it("Clears all regions from asset", async () => {
         const wrapper = createComponent().find(Canvas);
-        const canvas = wrapper.instance() as Canvas;
-        canvas.clearRegions();
+        const clearConfirm = wrapper.find(Confirm) as ReactWrapper<IConfirmProps>;
+        clearConfirm.props().onConfirm();
 
         await MockFactory.flushUi();
         expect(wrapper.state().currentAsset.regions).toEqual([]);
