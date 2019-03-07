@@ -24,6 +24,7 @@ import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/a
 import CanvasHelpers from "./canvasHelpers";
 import { tagColors } from "../../../../common/tagColors";
 import { ToolbarItemName } from "../../../../registerToolbar";
+import { VerticalTagInput } from "../../common/verticalTagInput/verticalTagInput";
 
 /**
  * Properties for Editor Page
@@ -145,6 +146,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         selectedAsset={selectedAsset ? selectedAsset.asset : null}
                         onAssetSelected={this.selectAsset}
                     />
+                    
                 </div>
                 <div className="editor-page-content">
                     <div className="editor-page-content-header">
@@ -171,6 +173,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     childAssets={this.state.childAssets} />
                             </Canvas>
                         }
+                        <VerticalTagInput
+                            tags={this.props.project.tags}
+                        />
                     </div>
                     <div>
                         <EditorFooter
