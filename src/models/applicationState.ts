@@ -139,6 +139,7 @@ export interface ITag {
 
 export interface ITagMetadata extends ITag {
     index: number;
+    isLocked: boolean;
 }
 
 /**

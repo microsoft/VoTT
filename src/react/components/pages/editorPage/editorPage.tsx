@@ -175,6 +175,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         }
                         <VerticalTagInput
                             tags={this.props.project.tags}
+                            lockedTags={this.state.lockedTags}
+                            onChange={this.onTagsChanged}
                         />
                     </div>
                     <div>
@@ -298,6 +300,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         this.setState({ childAssets, assets });
+    }
+
+    private onTagsChanged = (tags) => {
+        debugger;
     }
 
     private onFooterChange = (footerState) => {

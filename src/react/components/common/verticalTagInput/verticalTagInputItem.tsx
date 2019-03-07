@@ -2,48 +2,64 @@ import React from "react";
 import { ITag, ITagMetadata } from "../../../../models/applicationState";
 import { invertColor } from "../../../../common/utils";
 
-export interface IVerticalTagInputItemProps {
-    item: ITagMetadata;
-    onClick: (e) => void;
-    onDelete: (e) => void;
+export default function VerticalTagInputItem({item, onClick, onChange}) {
+    return (
+        <li className="tag-item" onClick={onClick}>
+            <table><tr>
+                <td className={"tag-color"} style={getColorStyle(item)}>
+                    {getDisplayIndex(item)}
+                </td>
+                <td className={"tag-content"} onDoubleClick={item.onDoubleClick}>                        
+                    {getTagContent(item, onChange)}
+                </td>
+            </tr></table>
+        </li>
+    )
 }
 
-export interface IVerticalTagInputItemState {
 
-}
-
-export class VerticalTagInputItem extends React.Component<IVerticalTagInputItemProps, IVerticalTagInputItemState> {
-    
-
-    render() {
+function getTagContent(item, onChange){
+    if (item.editMode) {
         return (
-            <li className="tag-item" onClick={this.props.onClick}>
-                <table><tr>
-                    <td className={"tag-color"} style={
-                        {
-                            backgroundColor: this.props.item.color,
-                            color: invertColor(this.props.item.color),
-                            display: "flex",
-                            justifyContent: "center",
-                        }
-                    }>{this.getDisplayIndex()}</td>
-                    <td className={"tag-content"}>
-                        <span className="px-2">{this.props.item.name}</span>
-                    </td>
-                </tr></table>
-            </li>
+            <input className="tag-editor" type="text" defaultValue={item.name} onKeyPress={(e) => handleTagEdit(item, e, onChange)}/>
+        )
+    } else {
+        return (
+            <span className={getContentClassName(item.isLocked)}>{item.name}</span>
         )
     }
+}
 
-    private getColorStyle = () => {
-        return 
+function handleTagEdit(item: ITag, e, onChange){
+    if(e.key === "Enter") {
+        const newTagName = e.target.value;
+        onChange(item, {
+            ...item, 
+            name: newTagName,
+        })
     }
+}
 
-    private getDisplayIndex = () => {
-        const index = this.props.item.index;
-        const displayIndex = (index === 9) ? 0 : index + 1;
-        return (index < 10) ? displayIndex : " ";
+function getContentClassName(isLocked){
+    let className = "px-2";
+    if(isLocked) {
+        className += " locked-tag";
     }
+    return className;
+}
 
-    
+function getColorStyle(item,){
+    const style = {
+        backgroundColor: item.color,
+        color: invertColor(item.color),
+        display: "flex",
+        justifyContent: "center",
+    };
+    return style;
+}
+
+function getDisplayIndex(item){
+    const index = item.index;
+    const displayIndex = (index === 9) ? 0 : index + 1;
+    return (index < 10) ? displayIndex : " ";
 }
