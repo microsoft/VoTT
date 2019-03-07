@@ -265,7 +265,7 @@ describe("Editor Page Component", () => {
                 name: testProject.name,
                 tags: expect.arrayContaining([{
                     name: "NEWTAG",
-                    color: "#808000",
+                    color: "#008000",
                 }]),
             };
 
