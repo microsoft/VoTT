@@ -177,15 +177,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             tags={this.props.project.tags}
                             lockedTags={this.state.lockedTags}
                             onChange={this.onTagsChanged}
-                        />
-                    </div>
-                    <div>
-                        <EditorFooter
-                            tags={this.props.project.tags}
-                            lockedTags={this.state.lockedTags}
-                            onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked}
-                            onCtrlTagClicked={this.onCtrlTagClicked}
+                            onTagClick={this.onTagClicked}
+                            onCtrlTagClick={this.onCtrlTagClicked}
                         />
                     </div>
                 </div>
@@ -303,7 +296,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onTagsChanged = (tags) => {
-        debugger;
+        const project = {
+            ...this.props.project,
+            tags: tags,
+        };
+        this.setState({ project }, async () => {
+            await this.props.actions.saveProject(project);
+            this.canvas.current.updateCanvasToolsRegions();
+        });
     }
 
     private onFooterChange = (footerState) => {

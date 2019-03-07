@@ -4,7 +4,8 @@ import { invertColor } from "../../../../common/utils";
 import { CirclePicker } from 'react-color'
 import { TagEditMode } from "./verticalTagInput";
 
-export interface IVerticalTagItemProps extends ITag {
+export interface IVerticalTagItemProps {
+    tag: ITag;
     index: number;
     isLocked: boolean;
     isBeingEdited: boolean;
@@ -27,18 +28,19 @@ export default function VerticalTagInputItem({item, onClick, onChange}) {
 }
 
 function getTagContent(item: IVerticalTagItemProps, onChange){
+    const tag = item.tag;
     if (item.isBeingEdited) {
         if (item.tagEditMode === TagEditMode.Name) {
             return (
-                <input className="tag-editor" type="text" defaultValue={item.name} onKeyPress={(e) => handleTagEdit(item, e, onChange)}/>
+                <input className="tag-editor" type="text" defaultValue={tag.name} onKeyPress={(e) => handleTagEdit(tag, e, onChange)}/>
             )
         } else if (item.tagEditMode === TagEditMode.Color) {
             return (
                 <div>
                     {getDefaultTagContent(item)}
                     <CirclePicker
-                        color={item.color}
-                        onChangeComplete={(color) => handleColorEdit(item, color, onChange)}
+                        color={tag.color}
+                        onChangeComplete={(color) => handleColorEdit(tag, color, onChange)}
                     />
                 </div>
             )
@@ -48,9 +50,14 @@ function getTagContent(item: IVerticalTagItemProps, onChange){
     }
 }
 
-function getDefaultTagContent(item) {
+function getDefaultTagContent(item, additionalClassNames?) {
     return (
-        <span className={getContentClassName(item.isLocked)}>{item.name}</span>
+        <div>
+            {
+                (item.isLocked) ? <i className="fas fa-lock tag-lock-icon"></i> : ""
+            }
+            <span className={getContentClassName(item)}>{item.tag.name}</span>
+        </div>
     )
 }
 
@@ -71,18 +78,21 @@ function handleColorEdit(item: ITag, color, onChange) {
     })
 }
 
-function getContentClassName(isLocked){
+function getContentClassName(item){
     let className = "px-2";
-    if(isLocked) {
+    if(item.isLocked) {
         className += " locked-tag";
+    }
+    if(item.isBeingEdited && item.tagEditMode === TagEditMode.Color) {
+        className += " tag-color-edit";
     }
     return className;
 }
 
-function getColorStyle(item,){
+function getColorStyle(item){
     const style = {
-        backgroundColor: item.color,
-        color: invertColor(item.color),
+        backgroundColor: item.tag.color,
+        color: invertColor(item.tag.color),
         display: "flex",
         justifyContent: "center",
     };

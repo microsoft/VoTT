@@ -1,12 +1,23 @@
+@import "../../../../index.scss";
+
 .tag-item {
      margin: 0 0 3px 0;
 }
 
 .tag-item:hover {
-    background:#A5A5A5;
+    background:$lighter-4;
+    cursor: pointer;
+}
+
+.tag-color-edit:hover {
+    background: $darker-1;
     cursor: pointer;
 }
 
 .tag-color {
     width: 20px;
+}
+
+.tag-lock-icon {
+    margin-left: 5px
 }

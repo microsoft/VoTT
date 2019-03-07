@@ -1,13 +1,9 @@
 import React from "react";
-import CondensedList from "../condensedList/condensedList";
-import { ITag } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
-import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
+import { ITag } from "../../../../models/applicationState";
+import CondensedList from "../condensedList/condensedList";
 import "./verticalTagInput.scss";
-import CanvasHelpers from "../../pages/editorPage/canvasHelpers";
-import { SketchPicker } from "react-color";
-
-
+import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
 
 export interface IVerticalTagInputProps {
     /** Current list of tags */
@@ -27,10 +23,6 @@ export interface IVerticalTagInputProps {
     onTagClick?: (tag: ITag) => void;
     /** Function to call on clicking individual tag while holding CTRL key */
     onCtrlTagClick?: (tag: ITag) => void;
-    /** Function to call on clicking individual tag while holding Shift key */
-    onShiftTagClick?: (tag: ITag) => void;
-    /** Function to call on clicking individual tag while holding CTRL and Shift keys */
-    onCtrlShiftTagClick?: (tag: ITag) => void;
 }
 
 export interface IVerticalTagInputState {
@@ -80,14 +72,14 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             tags,
             editingTag: null,
             selectedTag: newTag,
-        });
+        }, () => this.props.onChange(tags));
     }
 
     private getListItems = (): IVerticalTagItemProps[] => {
         const tags = this.state.tags;
         return tags.map((tag) => {
             const item: IVerticalTagItemProps = {
-                ...tag,
+                tag,
                 index: tags.findIndex((t) => t.name === tag.name),
                 isLocked: this.props.lockedTags.findIndex((t) => t === tag.name) > -1,
                 isBeingEdited: this.state.editingTag && this.state.editingTag.name === tag.name,
@@ -97,22 +89,26 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         })
     }
 
-    private handleClick = (tag: IVerticalTagItemProps, e, props) => {
-        if (e.shiftKey) {
+    private handleClick = (item: IVerticalTagItemProps, e, props) => {
+        const tag = item.tag;
+        if (e.altKey) {
             this.setState({
                 editingTag: tag,
                 selectedTag: null,
                 tagEditMode: props.clickTarget,
             });
-        } else {
-            if (this.state.editingTag && tag && tag.name !== this.state.editingTag.name) {
+        } else if (e.ctrlKey && this.props.onCtrlTagClick) {
+            this.props.onCtrlTagClick(tag);
+        }
+        else {
+            if (this.state.editingTag && item && tag.name !== this.state.editingTag.name) {
                 this.setState({
                     selectedTag: tag,
                     editingTag: null,
                 });
-                if (this.props.onTagClick) {
-                    this.props.onTagClick(tag);
-                }
+            }
+            if (this.props.onTagClick) {
+                this.props.onTagClick(tag);
             }
         }
     }
@@ -139,9 +135,10 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
 
     private addTag = (tag: ITag) => {
         if (!this.state.tags.find((t) => t.name === tag.name)) {
+            const tags = [...this.state.tags, tag]
             this.setState({
-                tags: [...this.state.tags, tag]
-            });
+                tags
+            }, () => this.props.onChange(tags));
         }
     }
 }
