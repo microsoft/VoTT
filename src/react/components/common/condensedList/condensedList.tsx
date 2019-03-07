@@ -16,7 +16,7 @@ interface ICondensedListProps {
     Component: any;
     items: any[];
     newLinkTo?: string;
-    onClick?: (item, e?) => void;
+    onClick?: (item, e, properties: any) => void;
     onChange?: (oldItem, newItem) => void;
     onDelete?: (item) => void;
 }
@@ -58,7 +58,7 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
                     <ul className="condensed-list-items">
                         {items.map((item) => <Component key={item.id}
                             item={item}
-                            onClick={(e) => this.onItemClick(e, item)}
+                            onClick={(e, props: any) => this.onItemClick(item, e, props)}
                             onChange={(oldItem, newItem) => this.onItemChange(oldItem, newItem)}
                             onDelete={(e) => this.onItemDelete(e, item)} />)}
                     </ul>
@@ -67,9 +67,9 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
         );
     }
 
-    private onItemClick = (e, item) => {
+    private onItemClick = (item, e, props: any) => {
         if (this.props.onClick) {
-            this.props.onClick(item, e);
+            this.props.onClick(item, e, props);
         }
     }
 

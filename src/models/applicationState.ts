@@ -137,11 +137,6 @@ export interface ITag {
     color: string;
 }
 
-export interface ITagMetadata extends ITag {
-    index: number;
-    isLocked: boolean;
-}
-
 /**
  * @enum LOCAL - Local storage type
  * @enum CLOUD - Cloud storage type

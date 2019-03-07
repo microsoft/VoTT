@@ -1,15 +1,24 @@
 import React from "react";
-import { ITag, ITagMetadata } from "../../../../models/applicationState";
+import { ITag } from "../../../../models/applicationState";
 import { invertColor } from "../../../../common/utils";
+import { CirclePicker } from 'react-color'
+import { TagEditMode } from "./verticalTagInput";
+
+export interface IVerticalTagItemProps extends ITag {
+    index: number;
+    isLocked: boolean;
+    isBeingEdited: boolean;
+    tagEditMode: TagEditMode;
+}
 
 export default function VerticalTagInputItem({item, onClick, onChange}) {
     return (
-        <li className="tag-item" onClick={onClick}>
+        <li className="tag-item">
             <table><tr>
-                <td className={"tag-color"} style={getColorStyle(item)}>
+                <td onClick={(e) => onClick(e, {clickTarget: TagEditMode.Color})} className={"tag-color"} style={getColorStyle(item)}>
                     {getDisplayIndex(item)}
                 </td>
-                <td className={"tag-content"} onDoubleClick={item.onDoubleClick}>                        
+                <td onClick={(e) => onClick(e, {clickTarget: TagEditMode.Name})} className={"tag-content"}>                        
                     {getTagContent(item, onChange)}
                 </td>
             </tr></table>
@@ -17,17 +26,32 @@ export default function VerticalTagInputItem({item, onClick, onChange}) {
     )
 }
 
-
-function getTagContent(item, onChange){
-    if (item.editMode) {
-        return (
-            <input className="tag-editor" type="text" defaultValue={item.name} onKeyPress={(e) => handleTagEdit(item, e, onChange)}/>
-        )
+function getTagContent(item: IVerticalTagItemProps, onChange){
+    if (item.isBeingEdited) {
+        if (item.tagEditMode === TagEditMode.Name) {
+            return (
+                <input className="tag-editor" type="text" defaultValue={item.name} onKeyPress={(e) => handleTagEdit(item, e, onChange)}/>
+            )
+        } else if (item.tagEditMode === TagEditMode.Color) {
+            return (
+                <div>
+                    {getDefaultTagContent(item)}
+                    <CirclePicker
+                        color={item.color}
+                        onChangeComplete={(color) => handleColorEdit(item, color, onChange)}
+                    />
+                </div>
+            )
+        }
     } else {
-        return (
-            <span className={getContentClassName(item.isLocked)}>{item.name}</span>
-        )
+        return getDefaultTagContent(item);
     }
+}
+
+function getDefaultTagContent(item) {
+    return (
+        <span className={getContentClassName(item.isLocked)}>{item.name}</span>
+    )
 }
 
 function handleTagEdit(item: ITag, e, onChange){
@@ -38,6 +62,13 @@ function handleTagEdit(item: ITag, e, onChange){
             name: newTagName,
         })
     }
+}
+
+function handleColorEdit(item: ITag, color, onChange) {
+    onChange(item, {
+        ...item,
+        color: color.hex
+    })
 }
 
 function getContentClassName(isLocked){

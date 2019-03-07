@@ -1,10 +1,11 @@
 import React from "react";
 import CondensedList from "../condensedList/condensedList";
-import { ITag, ITagMetadata } from "../../../../models/applicationState";
+import { ITag } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
-import VerticalTagInputItem from "./verticalTagInputItem";
+import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
 import "./verticalTagInput.scss";
 import CanvasHelpers from "../../pages/editorPage/canvasHelpers";
+import { SketchPicker } from "react-color";
 
 
 
@@ -36,6 +37,12 @@ export interface IVerticalTagInputState {
     tags: ITag[];
     selectedTag: ITag;
     editingTag: ITag;
+    tagEditMode: TagEditMode;
+}
+
+export enum TagEditMode {
+    Color = "color",
+    Name = "name",
 }
 
 export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IVerticalTagInputState> {
@@ -45,6 +52,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         lockedTags: [],
         selectedTag: null,
         editingTag: null,
+        tagEditMode: null,
     }
 
 
@@ -55,9 +63,9 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                     title={strings.tags.title}
                     Component={VerticalTagInputItem}
                     items={this.getListItems()}
-                    onClick={(item, e) => this.handleClick(item, e)}
-                    onChange={(oldItem, newItem) => this.updateTag(oldItem, newItem)}
-                    onDelete={(tag) => this.handleDelete(tag)}
+                    onClick={this.handleClick}
+                    onChange={this.updateTag}
+                    onDelete={this.handleDelete}
                 />
                 <input type="text" onKeyPress={this.handleKeyPress} placeholder="Add new tag"/>
             </div>
@@ -65,30 +73,39 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
     }
 
     private updateTag = (oldTag: ITag, newTag: ITag) => {
-        debugger;
-    } 
+        const tags = this.state.tags.map((t) => {
+            return (t.name === oldTag.name) ? newTag : t;
+        });
+        this.setState({
+            tags,
+            editingTag: null,
+            selectedTag: newTag,
+        });
+    }
 
-    private getListItems = (): ITagMetadata[] => {
+    private getListItems = (): IVerticalTagItemProps[] => {
         const tags = this.state.tags;
         return tags.map((tag) => {
-            const tagMetadata = {
+            const item: IVerticalTagItemProps = {
                 ...tag,
                 index: tags.findIndex((t) => t.name === tag.name),
                 isLocked: this.props.lockedTags.findIndex((t) => t === tag.name) > -1,
-                editMode: this.state.editingTag && this.state.editingTag.name === tag.name,
+                isBeingEdited: this.state.editingTag && this.state.editingTag.name === tag.name,
+                tagEditMode: this.state.tagEditMode,
             }
-            return tagMetadata;
+            return item;
         })
     }
 
-    private handleClick = (tag: ITag, e?) => {
+    private handleClick = (tag: IVerticalTagItemProps, e, props) => {
         if (e.shiftKey) {
             this.setState({
                 editingTag: tag,
                 selectedTag: null,
+                tagEditMode: props.clickTarget,
             });
         } else {
-            if (tag.name !== this.state.editingTag.name) {
+            if (this.state.editingTag && tag && tag.name !== this.state.editingTag.name) {
                 this.setState({
                     selectedTag: tag,
                     editingTag: null,
