@@ -1,4 +1,4 @@
-import { randomIntInRange, createQueryString, encryptProject, decryptProject } from "./utils";
+import { randomIntInRange, createQueryString, encryptProject, decryptProject, replaceExtension } from "./utils";
 import MockFactory from "./mockFactory";
 
 describe("Helper functions", () => {
@@ -49,6 +49,13 @@ describe("Helper functions", () => {
             const decryptedProject = decryptProject(testProject, securityToken);
 
             expect(decryptedProject).toEqual(testProject);
+        });
+
+        it("Replaces an extension with new extension", () => {
+            expect(replaceExtension("filename.badext", ".jpg")).toEqual("filename.jpg");
+            expect(replaceExtension("filename.this.is.bad", ".jpg")).toEqual("filename.this.is.jpg");
+            expect(replaceExtension("filename", ".jpg")).toEqual("filename");
+            expect(replaceExtension("filename.jpg", ".jpg")).toEqual("filename.jpg");
         });
     });
 });

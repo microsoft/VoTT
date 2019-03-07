@@ -5,6 +5,7 @@ import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { interpolate } from "../../common/strings";
+import { replaceExtension } from "../../common/utils";
 
 /**
  * @name - ITFPascalVOCJsonExportOptions
@@ -75,7 +76,7 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJs
     }
 
     private async exportSingleImage(jpegImagesFolderName: string, element: IAssetMetadata): Promise<void> {
-        const imageFileName = `${jpegImagesFolderName}/${element.asset.name.replace(/\.[^/.]+$/, ".jpg")}`;
+        const imageFileName = `${jpegImagesFolderName}/${replaceExtension(element.asset.name, ".jpg")}`;
 
         try {
             const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset);

@@ -125,3 +125,7 @@ function decryptProviderOptions<T = IProviderOptions>(providerOptions: IProvider
 
     return decryptObject(providerOptions.encrypted, secret) as T;
 }
+
+export function replaceExtension(filename: string, ext: string) {
+    return filename.replace(/\.[^/.]+$/, ext);
+}
