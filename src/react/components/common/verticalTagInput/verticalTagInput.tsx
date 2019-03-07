@@ -5,8 +5,7 @@ import CondensedList from "../condensedList/condensedList";
 import "./verticalTagInput.scss";
 import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
-const tagColors = require("./tagColors.json");
-
+const tagColors = require("../../common/tagColors.json");
 
 export interface IVerticalTagInputProps {
     /** Current list of tags */

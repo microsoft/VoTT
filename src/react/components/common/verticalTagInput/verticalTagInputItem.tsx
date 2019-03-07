@@ -3,7 +3,7 @@ import { ITag } from "../../../../models/applicationState";
 import { invertColor } from "../../../../common/utils";
 import { CirclePicker } from 'react-color'
 import { TagEditMode } from "./verticalTagInput";
-import { tagColors } from "../../../../common/tagColors";
+const tagColors = require("../../common/tagColors.json");
 
 export interface IVerticalTagItemProps {
     tag: ITag;
