@@ -1,9 +1,12 @@
 import _ from "lodash";
-import { TFPascalVOCJsonExportProvider, ITFPascalVOCJsonExportOptions } from "./tensorFlowPascalVOC";
+import { TFPascalVOCJsonExportProvider } from "./tensorFlowPascalVOC";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IAssetMetadata, AssetState, IRegion, RegionType, IPoint } from "../../models/applicationState";
+import {
+    IAssetMetadata, AssetState, IRegion,
+    RegionType, IPoint, IExportProviderOptions,
+} from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
@@ -53,7 +56,7 @@ describe("TFPascalVOC Json Export Provider", () => {
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: ITFPascalVOCJsonExportOptions = {
+        const options: IExportProviderOptions = {
             assetState: ExportAssetState.All,
         };
         const exportProvider = ExportProviderFactory.create("tensorFlowPascalVOC", baseTestProject, options);
@@ -98,7 +101,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: ITFPascalVOCJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.All,
             };
 
@@ -153,7 +156,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: ITFPascalVOCJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
             };
 
@@ -197,7 +200,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: ITFPascalVOCJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
             };
 

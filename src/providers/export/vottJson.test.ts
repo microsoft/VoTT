@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { VottJsonExportProvider, IVottJsonExportOptions } from "./vottJson";
+import { VottJsonExportProvider } from "./vottJson";
 import registerProviders from "../../registerProviders";
 import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState, IExportProviderOptions } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
@@ -52,7 +52,7 @@ describe("VoTT Json Export Provider", () => {
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: IVottJsonExportOptions = {
+        const options: IExportProviderOptions = {
             assetState: ExportAssetState.All,
         };
         const exportProvider = ExportProviderFactory.create("vottJson", testProject, options);
@@ -78,7 +78,7 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: IVottJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.All,
             };
 
@@ -98,7 +98,7 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: IVottJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
             };
 
@@ -119,7 +119,7 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: IVottJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
             };
 

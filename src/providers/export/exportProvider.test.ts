@@ -1,17 +1,25 @@
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType } from "../../models/applicationState";
+import { IProject, AssetState, AssetType, IExportProviderOptions } from "../../models/applicationState";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
 import registerProviders from "../../registerProviders";
 import _ from "lodash";
 import registerMixins from "../../registerMixins";
+import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
 describe("Export Provider Base", () => {
     let testProject: IProject = null;
+    const testAssets = MockFactory.createTestAssets(10);
 
     beforeAll(() => {
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
+        });
+
         testProject = {
             ...MockFactory.createTestProject("TestProject"),
             assets: {
@@ -90,7 +98,7 @@ describe("Export Provider Base", () => {
     });
 });
 
-class TestExportProvider extends ExportProvider<{}> {
+class TestExportProvider extends ExportProvider {
     public export(): Promise<void> {
         throw new Error("Method not implemented.");
     }

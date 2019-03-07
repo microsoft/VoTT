@@ -1,9 +1,12 @@
 import _ from "lodash";
-import { TFRecordsJsonExportProvider, ITFRecordsJsonExportOptions } from "./tensorFlowRecords";
+import { TFRecordsJsonExportProvider } from "./tensorFlowRecords";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IAssetMetadata, AssetState, IRegion, RegionType, IPoint } from "../../models/applicationState";
+import {
+    IAssetMetadata, AssetState, IRegion,
+    RegionType, IPoint, IExportProviderOptions,
+} from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 import axios, { AxiosResponse } from "axios";
 
@@ -49,7 +52,7 @@ describe("TFRecords Json Export Provider", () => {
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: ITFRecordsJsonExportOptions = {
+        const options: IExportProviderOptions = {
             assetState: ExportAssetState.All,
         };
         const exportProvider = ExportProviderFactory.create("tensorFlowRecords", baseTestProject, options);
@@ -94,7 +97,7 @@ describe("TFRecords Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: ITFRecordsJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.All,
             };
 
@@ -123,7 +126,7 @@ describe("TFRecords Json Export Provider", () => {
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: ITFRecordsJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
             };
 
@@ -151,7 +154,7 @@ describe("TFRecords Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: ITFRecordsJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
             };
 

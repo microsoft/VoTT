@@ -1,20 +1,12 @@
 import _ from "lodash";
 import CryptoJS from "crypto-js";
-import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, IAssetMetadata } from "../../models/applicationState";
+import { ExportProvider } from "./exportProvider";
+import { IProject, IAssetMetadata, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { interpolate } from "../../common/strings";
 import { TFRecordsBuilder, FeatureType } from "./tensorFlowRecords/tensorFlowBuilder";
-
-/**64
- * @name - ITFRecordsJsonExportOptions
- * @description - Defines the configurable options for the Vott JSON Export provider
- */
-export interface ITFRecordsJsonExportOptions {
-    assetState: ExportAssetState;
-}
 
 interface IImageInfo {
     width: number;
@@ -34,8 +26,8 @@ interface IImageInfo {
  * @name - TFRecords Json Export Provider
  * @description - Exports a project into a single JSON file that include all configured assets
  */
-export class TFRecordsJsonExportProvider extends ExportProvider<ITFRecordsJsonExportOptions> {
-    constructor(project: IProject, options: ITFRecordsJsonExportOptions) {
+export class TFRecordsJsonExportProvider extends ExportProvider {
+    constructor(project: IProject, options: IExportProviderOptions) {
         super(project, options);
         Guard.null(options);
     }
