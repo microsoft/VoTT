@@ -184,6 +184,12 @@ export const english: IAppStrings = {
             },
         },
         assetError: "Unable to display asset",
+        canvas: {
+            removeAllRegions: {
+                title: "Remove All Regions",
+                confirmation: "Are you sure you want to remove all regions?",
+            },
+        },
     },
     export: {
         title: "Export",
