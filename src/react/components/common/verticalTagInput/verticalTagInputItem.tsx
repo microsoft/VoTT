@@ -102,5 +102,5 @@ function getColorStyle(item){
 function getDisplayIndex(item){
     const index = item.index;
     const displayIndex = (index === 9) ? 0 : index + 1;
-    return (index < 10) ? displayIndex : " ";
+    return (index < 10) ? displayIndex : "-";
 }

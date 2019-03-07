@@ -31,7 +31,7 @@
             display: flex;
             flex-grow: 1;
             background-color: $darker-5;
-            flex-direction: column;
+            flex-direction: row;
         }
 
         &-footer {
@@ -130,6 +130,10 @@
             }
         }
     }
+}
+
+.vertical-tag-input {
+    max-width: 175px;
 }
 
 .locked-tag {
@@ -247,4 +251,8 @@ canvas {
             font-size: 1.2em !important;
         }
     }
+}
+
+td {
+    word-wrap: break-word;
 }

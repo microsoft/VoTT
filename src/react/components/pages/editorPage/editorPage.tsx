@@ -306,16 +306,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
     }
 
-    private onFooterChange = (footerState) => {
-        const project = {
-            ...this.props.project,
-            tags: footerState.tags,
-        };
-        this.setState({ project }, async () => {
-            await this.props.actions.saveProject(project);
-        });
-    }
-
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
         switch (toolbarItem.props.name) {
             case ToolbarItemName.DrawRectangle:

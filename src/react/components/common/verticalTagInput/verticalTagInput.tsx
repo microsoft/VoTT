@@ -4,6 +4,9 @@ import { ITag } from "../../../../models/applicationState";
 import CondensedList from "../condensedList/condensedList";
 import "./verticalTagInput.scss";
 import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
+import { randomIntInRange } from "../../../../common/utils";
+const tagColors = require("./tagColors.json");
+
 
 export interface IVerticalTagInputProps {
     /** Current list of tags */
@@ -50,7 +53,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
 
     render() {
         return (
-            <div>
+            <div className="vertical-tag-input">
                 <CondensedList
                     title={strings.tags.title}
                     Component={VerticalTagInputItem}
@@ -122,7 +125,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             //validate and add
             const newTag: ITag = {
                 name: event.target.value,
-                color: "#ffffff",
+                color: this.getNextColor(),
             }
             if (!this.state.tags.find((t) => t.name === newTag.name)) {
                 this.addTag(newTag);
@@ -130,6 +133,23 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             } else {
                 // toast that tells them to pick another name
             }
+        }
+    }
+
+    private getNextColor = () => {
+        const tags = this.state.tags;
+        if (tags.length > 0) {
+            const lastColor = tags[tags.length - 1].color;
+            const lastIndex = tagColors.findIndex((color) => color === lastColor);
+            let newIndex;
+            if (lastIndex > -1) {
+                newIndex = (lastIndex + 1) % tagColors.length;
+            } else {
+                newIndex = randomIntInRange(0, tagColors.length - 1);
+            }
+            return tagColors[newIndex]
+        } else {
+            return tagColors[0];
         }
     }
 
