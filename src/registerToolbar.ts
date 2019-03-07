@@ -58,6 +58,15 @@ export default function registerToolbar() {
     });
 
     ToolbarItemFactory.register({
+        name: ToolbarItemName.CopyRectangle,
+        tooltip: "Copy Rectangle",
+        icon: "far fa-clone",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.State,
+        accelerators: ["Ctrl + w", "Ctrl + W"],
+    });
+
+    ToolbarItemFactory.register({
         name: ToolbarItemName.CopyRegions,
         tooltip: "Copy Regions",
         icon: "fa-copy",

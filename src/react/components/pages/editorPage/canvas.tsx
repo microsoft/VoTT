@@ -8,12 +8,13 @@ import {
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import Clipboard from "../../../../common/clipboard";
 import Confirm from "../../common/confirm/confirm";
 import { strings } from "../../../../common/strings";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
+import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -59,7 +60,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
-        this.editor.AS.setSelectionMode(this.props.selectionMode, null);
+        this.editor.AS.setSelectionMode({mode: this.props.selectionMode});
 
         window.addEventListener("resize", this.onWindowResize);
     }
@@ -80,7 +81,19 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         if (this.props.selectionMode !== prevProps.selectionMode) {
-            this.editor.AS.setSelectionMode(this.props.selectionMode, null);
+            let  options = null;
+            if (this.props.selectionMode === SelectionMode.COPYRECT) {
+                const selectedRegion = this.getSelectedRegions();
+                if (selectedRegion) {
+                    options = new Rect(selectedRegion[0].boundingBox.width,
+                                                selectedRegion[0].boundingBox.height);
+                } else {
+                    // default size if no region selected
+                    options = new Rect(20,
+                                    20);
+                }
+            }
+            this.editor.AS.setSelectionMode({mode: this.props.selectionMode, template: options});
         }
     }
 
@@ -489,6 +502,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private editorModeToType = (editorMode: EditorMode) => {
         let type;
         switch (editorMode) {
+            case EditorMode.CopyRect:
             case EditorMode.Rectangle:
                 type = RegionType.Rectangle;
                 break;
