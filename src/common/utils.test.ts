@@ -1,4 +1,4 @@
-import { randomIntInRange, createQueryString, encryptProject, decryptProject, replaceExtension } from "./utils";
+import { randomIntInRange, createQueryString, encryptProject, decryptProject } from "./utils";
 import MockFactory from "./mockFactory";
 
 describe("Helper functions", () => {

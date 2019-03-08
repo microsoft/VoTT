@@ -109,7 +109,7 @@ export default class HtmlFileReader {
      * @param asset The asset video frame to retrieve from the parent video
      */
     public static async getAssetFrameImage(asset: IAsset): Promise<Blob> {
-        return new Promise((resolve, reject) => {
+        return new Promise<Blob>((resolve, reject) => {
             const cachingEnabled = false;
             let refresh = !cachingEnabled;
             let video: HTMLVideoElement = this.videoAssetFiles[asset.parent.name];
