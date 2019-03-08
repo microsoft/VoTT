@@ -50,12 +50,5 @@ describe("Helper functions", () => {
 
             expect(decryptedProject).toEqual(testProject);
         });
-
-        it("Replaces an extension with new extension", () => {
-            expect(replaceExtension("filename.badext", ".jpg")).toEqual("filename.jpg");
-            expect(replaceExtension("filename.this.is.bad", ".jpg")).toEqual("filename.this.is.jpg");
-            expect(replaceExtension("filename", ".jpg")).toEqual("filename");
-            expect(replaceExtension("filename.jpg", ".jpg")).toEqual("filename.jpg");
-        });
     });
 });
