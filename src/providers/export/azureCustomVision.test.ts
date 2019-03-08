@@ -57,13 +57,12 @@ describe("Azure Custom Vision Export Provider", () => {
                 "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
                 "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
                 "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
-                "asset-5": MockFactory.createTestAsset("5", AssetState.Tagged, null, AssetType.VideoFrame),
             },
             exportFormat: {
                 providerType: "azureCustomVision",
                 providerOptions: {
                     assetState: ExportAssetState.All,
-                    projectdId: "azure-custom-vision-project-1",
+                    projectId: "azure-custom-vision-project-1",
                     apiKey: "ABC123",
                 },
             },
@@ -279,12 +278,11 @@ describe("Azure Custom Vision Export Provider", () => {
 
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
 
-            const allAssets = _.values(testProject.assets);
             const provider = createProvider(testProject);
             const results = await provider.export();
 
-            expect(results.count).toEqual(allAssets.length);
-            expect(results.completed.length).toEqual(allAssets.length - 1);
+            expect(results.count).toEqual(testAssets.length);
+            expect(results.completed.length).toEqual(testAssets.length - 1);
             expect(results.errors.length).toEqual(1);
         });
     });

@@ -17,10 +17,12 @@ jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import registerMixins from "../../registerMixins";
 import { appInfo } from "../../common/appInfo";
+import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
 describe("TFRecords Json Export Provider", () => {
+    const testAssets = MockFactory.createTestAssets(10, 1);
     const baseTestProject = MockFactory.createTestProject("Test Project");
     baseTestProject.assets = {
         "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
@@ -40,6 +42,14 @@ describe("TFRecords Json Export Provider", () => {
             status: 200,
             statusText: "OK",
             data: [1, 2, 3],
+        });
+    });
+
+    beforeAll(() => {
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
         });
     });
 
@@ -112,7 +122,7 @@ describe("TFRecords Json Export Provider", () => {
             expect(createContainerCalls.length).toEqual(1);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
-            expect(writeBinaryCalls.length).toEqual(4);
+            expect(writeBinaryCalls.length).toEqual(testAssets.length);
             expect(writeBinaryCalls[0][0].endsWith("Asset 1.tfrecord")).toEqual(true);
             expect(writeBinaryCalls[1][0].endsWith("Asset 2.tfrecord")).toEqual(true);
             expect(writeBinaryCalls[2][0].endsWith("Asset 3.tfrecord")).toEqual(true);

@@ -15,10 +15,12 @@ import { constants } from "../../common/constants";
 import registerMixins from "../../registerMixins";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { appInfo } from "../../common/appInfo";
+import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
 describe("VoTT Json Export Provider", () => {
+    const testAssets = MockFactory.createTestAssets(10, 1);
     const testProject: IProject = {
         ...MockFactory.createTestProject(),
         assets: {
@@ -40,6 +42,12 @@ describe("VoTT Json Export Provider", () => {
     beforeAll(() => {
         HtmlFileReader.getAssetBlob = jest.fn(() => {
             return Promise.resolve(new Blob(["Some binary data"]));
+        });
+
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
         });
     });
 
@@ -90,9 +98,8 @@ describe("VoTT Json Export Provider", () => {
             const exportObject = JSON.parse(exportJson);
 
             const exportedAssets = _.values(exportObject.assets);
-            const expectedAssets = _.values(testProject.assets);
 
-            expect(exportedAssets.length).toEqual(expectedAssets.length);
+            expect(exportedAssets.length).toEqual(testAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
                 .toBeCalledWith(expectedFileName, expect.any(String));
         });

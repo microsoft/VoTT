@@ -17,6 +17,7 @@ import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import registerMixins from "../../registerMixins";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { appInfo } from "../../common/appInfo";
+import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
@@ -31,6 +32,7 @@ function _base64ToArrayBuffer(base64: string) {
 }
 
 describe("TFPascalVOC Json Export Provider", () => {
+    const testAssets = MockFactory.createTestAssets(10, 1);
     const baseTestProject = MockFactory.createTestProject("Test Project");
     baseTestProject.assets = {
         "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
@@ -45,6 +47,14 @@ describe("TFPascalVOC Json Export Provider", () => {
 
     HtmlFileReader.getAssetArray = jest.fn(() => {
         return Promise.resolve(new Uint8Array([1, 2, 3]).buffer);
+    });
+
+    beforeAll(() => {
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
+        });
     });
 
     beforeEach(() => {
@@ -121,14 +131,14 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
-            expect(writeBinaryCalls.length).toEqual(4);
+            expect(writeBinaryCalls.length).toEqual(testAssets.length);
             expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1.jpg")).toEqual(true);
             expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2.jpg")).toEqual(true);
             expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3.jpg")).toEqual(true);
             expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4.jpg")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
-            expect(writeTextFileCalls.length).toEqual(11);
+            expect(writeTextFileCalls.length).toEqual(17);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length));
