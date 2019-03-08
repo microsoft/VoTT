@@ -114,7 +114,7 @@ export default class HtmlFileReader {
             let refresh = !cachingEnabled;
             let video: HTMLVideoElement = this.videoAssetFiles[asset.parent.name];
 
-            // Ensure the asset
+            // Ensure the asset name includes jpg file extension
             if (!asset.name.toLowerCase().endsWith(".jpg")) {
                 asset.name += ".jpg";
             }
