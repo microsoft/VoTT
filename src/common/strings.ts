@@ -57,6 +57,7 @@ export interface IAppStrings {
         version: {
             description: string;
         },
+        commit: string,
         devTools: {
             description: string;
             button: string;

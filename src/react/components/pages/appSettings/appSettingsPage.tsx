@@ -65,6 +65,9 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps> 
                         <p>{`${strings.appSettings.version.description} ${appInfo.version}`}</p>
                     </div>
                     <div className="my-3">
+                        <p>{`${strings.appSettings.commit}: `} {process.env.REACT_APP_COMMIT_SHA}</p>
+                    </div>
+                    <div className="my-3">
                         <p>{strings.appSettings.devTools.description}</p>
                         <button id="toggleDevTools" className="btn btn-primary btn-sm"
                             onClick={this.toggleDevTools}>{strings.appSettings.devTools.button}
