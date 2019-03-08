@@ -20,10 +20,12 @@ import { AssetService } from "../../services/assetService";
 import HtmlFileReader from "../../common/htmlFileReader";
 import registerMixins from "../../registerMixins";
 import { appInfo } from "../../common/appInfo";
+import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
 describe("Azure Custom Vision Export Provider", () => {
+    const testAssets = MockFactory.createTestAssets(10, 1);
     let testProject: IProject = null;
     const defaultOptions: IAzureCustomVisionExportOptions = {
         apiKey: expect.any(String),
@@ -33,7 +35,6 @@ describe("Azure Custom Vision Export Provider", () => {
     };
 
     function createProvider(project: IProject): AzureCustomVisionProvider {
-
         return new AzureCustomVisionProvider(
             project,
             project.exportFormat.providerOptions as IAzureCustomVisionExportOptions,
@@ -42,6 +43,13 @@ describe("Azure Custom Vision Export Provider", () => {
 
     beforeEach(() => {
         jest.resetAllMocks();
+
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
+        });
+
         testProject = {
             ...MockFactory.createTestProject("TestProject"),
             assets: {
@@ -185,9 +193,9 @@ describe("Azure Custom Vision Export Provider", () => {
 
         it("Uploads binaries, regions & tags for all assets", async () => {
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
-            const allAssets = _.values(testProject.assets);
-            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
             const provider = createProvider(testProject);
+            const allAssets = await provider.getAssetsForExport();
+            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
             const results = await provider.export();
 
             expect(results).not.toBeNull();
@@ -249,8 +257,8 @@ describe("Azure Custom Vision Export Provider", () => {
 
         it("Returns export results", async () => {
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
-            const allAssets = _.values(testProject.assets);
             const provider = createProvider(testProject);
+            const allAssets = await provider.getAssetsForExport();
             const results = await provider.export();
 
             expect(results.count).toEqual(allAssets.length);
