@@ -104,11 +104,20 @@ export default class HtmlFileReader {
         return await new Response(blob).arrayBuffer();
     }
 
-    public static async getAssetFrameImage(asset: IAsset) {
-        return new Promise((resolve, reject) => {
+    /**
+     * Extracts the specified image frame from a video asset
+     * @param asset The asset video frame to retrieve from the parent video
+     */
+    public static async getAssetFrameImage(asset: IAsset): Promise<Blob> {
+        return new Promise<Blob>((resolve, reject) => {
             const cachingEnabled = false;
             let refresh = !cachingEnabled;
             let video: HTMLVideoElement = this.videoAssetFiles[asset.parent.name];
+
+            // Ensure the asset name includes jpg file extension
+            if (!asset.name.toLowerCase().endsWith(".jpg")) {
+                asset.name += ".jpg";
+            }
 
             if (!video) {
                 video = document.createElement("video");
