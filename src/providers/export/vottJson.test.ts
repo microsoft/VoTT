@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { VottJsonExportProvider, IVottJsonExportOptions } from "./vottJson";
+import { VottJsonExportProvider } from "./vottJson";
 import registerProviders from "../../registerProviders";
 import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState, IExportProviderOptions } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
@@ -15,10 +15,12 @@ import { constants } from "../../common/constants";
 import registerMixins from "../../registerMixins";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { appInfo } from "../../common/appInfo";
+import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
 describe("VoTT Json Export Provider", () => {
+    const testAssets = MockFactory.createTestAssets(10, 1);
     const testProject: IProject = {
         ...MockFactory.createTestProject(),
         assets: {
@@ -41,6 +43,12 @@ describe("VoTT Json Export Provider", () => {
         HtmlFileReader.getAssetBlob = jest.fn(() => {
             return Promise.resolve(new Blob(["Some binary data"]));
         });
+
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
+        });
     });
 
     beforeEach(() => {
@@ -52,7 +60,7 @@ describe("VoTT Json Export Provider", () => {
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: IVottJsonExportOptions = {
+        const options: IExportProviderOptions = {
             assetState: ExportAssetState.All,
         };
         const exportProvider = ExportProviderFactory.create("vottJson", testProject, options);
@@ -78,7 +86,7 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: IVottJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.All,
             };
 
@@ -90,15 +98,14 @@ describe("VoTT Json Export Provider", () => {
             const exportObject = JSON.parse(exportJson);
 
             const exportedAssets = _.values(exportObject.assets);
-            const expectedAssets = _.values(testProject.assets);
 
-            expect(exportedAssets.length).toEqual(expectedAssets.length);
+            expect(exportedAssets.length).toEqual(testAssets.length);
             expect(LocalFileSystemProxy.prototype.writeText)
                 .toBeCalledWith(expectedFileName, expect.any(String));
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: IVottJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
             };
 
@@ -119,7 +126,7 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: IVottJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
             };
 
