@@ -166,10 +166,17 @@ export const spanish: IAppStrings = {
         toolbar: {
             select: "Seleccionar",
             pan: "Pan",
-            drawRectangle: "Dibujar Rectángulo",
-            drawPolygon: "Dibujar Polígono",
-            saveProject: "Guardar Proyecto",
-            exportProject: "Exprtar Proyecto",
+            drawRectangle: "Dibujar Rectángulo (R)",
+            drawPolygon: "Dibujar Polígono (P)",
+            copyRectangle: "Copia rectángulo (Ctrl + W)",
+            copy: "Copiar regiones (Ctrl + C)",
+            cut: "Cortar regiones (Ctrl + X)",
+            paste: "Pegar regiones (Ctrl + V)",
+            removeAllRegions: "Eliminar Todas Las Regiones (Ctrl + Delete)",
+            previousAsset: "Activo anterior (W)",
+            nextAsset: "Siguiente activo (S)",
+            saveProject: "Guardar Proyecto (Ctrl + S)",
+            exportProject: "Exprtar Proyecto (Ctrl + E)",
         },
         videoPlayer: {
             previousTaggedFrame: {

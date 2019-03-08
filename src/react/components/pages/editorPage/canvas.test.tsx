@@ -212,16 +212,20 @@ describe("Editor Canvas", () => {
         wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
         expect(wrapper.instance().editor.AS.getSelectorSettings()).toEqual({
             mode: SelectionMode.COPYRECT,
-            template: new Rect(testRegion.boundingBox.width, testRegion.boundingBox.height),
+            template: new Rect(testRegionData.width, testRegionData.height),
         });
     });
 
     it("throws error when no selected region for copyRect", () => {
         const wrapper = createComponent();
+        const defaultTemplate = new Rect(20, 20);
         mockSelectedRegions([]);
-        expect(() => {
-            wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
-        }).toThrowError();
+
+        wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
+        expect(wrapper.instance().editor.AS.getSelectorSettings()).toEqual({
+            mode: SelectionMode.COPYRECT,
+            template: defaultTemplate,
+        });
     });
 
     it("canvas updates regions when a new asset is loaded", async () => {

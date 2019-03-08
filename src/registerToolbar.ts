@@ -32,7 +32,7 @@ export enum ToolbarItemGroup {
 export default function registerToolbar() {
     ToolbarItemFactory.register({
         name: ToolbarItemName.SelectCanvas,
-        tooltip: "Select (V)",
+        tooltip: strings.editorPage.toolbar.select,
         icon: "fa-mouse-pointer",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
@@ -41,7 +41,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawRectangle,
-        tooltip: "Draw Rectangle (R)",
+        tooltip: strings.editorPage.toolbar.drawRectangle,
         icon: "fa-vector-square",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
@@ -50,7 +50,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawPolygon,
-        tooltip: "Draw Polygon (P)",
+        tooltip: strings.editorPage.toolbar.drawPolygon,
         icon: "fa-draw-polygon",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
@@ -59,7 +59,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.CopyRectangle,
-        tooltip: "Copy Rectangle",
+        tooltip: strings.editorPage.toolbar.copyRectangle,
         icon: "far fa-clone",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
@@ -68,7 +68,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.CopyRegions,
-        tooltip: "Copy Regions",
+        tooltip: strings.editorPage.toolbar.copy,
         icon: "fa-copy",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
@@ -77,7 +77,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.CutRegions,
-        tooltip: "Cut Regions",
+        tooltip: strings.editorPage.toolbar.cut,
         icon: "fa-cut",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
@@ -86,7 +86,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.PasteRegions,
-        tooltip: "Paste Regions",
+        tooltip: strings.editorPage.toolbar.paste,
         icon: "fa-paste",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
@@ -95,7 +95,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.RemoveAllRegions,
-        tooltip: strings.editorPage.canvas.removeAllRegions.title,
+        tooltip: strings.editorPage.toolbar.removeAllRegions,
         icon: "fa-ban",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
@@ -104,7 +104,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.PreviousAsset,
-        tooltip: "Previous Asset (W)",
+        tooltip: strings.editorPage.toolbar.previousAsset,
         icon: "fas fa-arrow-circle-up",
         group: ToolbarItemGroup.Navigation,
         type: ToolbarItemType.Action,
@@ -113,7 +113,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.NextAsset,
-        tooltip: "Next Asset (S)",
+        tooltip: strings.editorPage.toolbar.nextAsset,
         icon: "fas fa-arrow-circle-down",
         group: ToolbarItemGroup.Navigation,
         type: ToolbarItemType.Action,
@@ -122,18 +122,19 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.SaveProject,
-        tooltip: "Save Project (Ctrl+S)",
+        tooltip: strings.editorPage.toolbar.saveProject,
         icon: "fa-save",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
+        accelerators: ["Ctrl+s"],
     }, SaveProject);
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.ExportProject,
-        tooltip: "Export Project (Ctrl+E)",
+        tooltip: strings.editorPage.toolbar.exportProject,
         icon: "fa-external-link-square-alt",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+e", "Ctrl+E"],
+        accelerators: ["Ctrl+e"],
     }, ExportProject);
 }
