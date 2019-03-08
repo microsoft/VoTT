@@ -61,7 +61,7 @@ describe("Export Provider Factory", () => {
     });
 });
 
-class TestExportProvider extends ExportProvider<{}> {
+class TestExportProvider extends ExportProvider {
     public project: IProject;
 
     public export(): Promise<void> {
