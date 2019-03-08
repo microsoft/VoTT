@@ -138,7 +138,8 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4.jpg")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
-            expect(writeTextFileCalls.length).toEqual(17);
+            // We write an annotation XML file per asset, 2 files per tag + 1 label map file
+            expect(writeTextFileCalls.length).toEqual(testAssets.length + (testProject.tags.length * 2) + 1);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length));
