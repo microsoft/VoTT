@@ -32,7 +32,7 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOption
         await results.forEachAsync(async (assetMetadata) => {
             return new Promise<void>(async (resolve) => {
                 const blob = await HtmlFileReader.getAssetBlob(assetMetadata.asset);
-                const assetFilePath = `vott-json-export/${assetMetadata.asset.id}.jpg`;
+                const assetFilePath = `vott-json-export/${assetMetadata.asset.name}`;
                 const fileReader = new FileReader();
                 fileReader.onload = async () => {
                     const buffer = Buffer.from(fileReader.result as ArrayBuffer);
