@@ -56,6 +56,7 @@ export const spanish: IAppStrings = {
         version: {
             description: "Versión:",
         },
+        commit: "Cometer SHA",
         devTools: {
             description: "Abrir herramientas de desarrollo de aplicaciones para ayudar a diagnosticar problemas.",
             button: "Alternar Herramientas de Desarrollo",
