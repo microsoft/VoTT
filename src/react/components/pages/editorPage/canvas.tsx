@@ -43,8 +43,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public editor: Editor;
 
-    public template: Rect = new Rect(20, 20);
-
     public state: ICanvasState = {
         currentAsset: this.props.selectedAsset,
         contentSource: null,
@@ -53,6 +51,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private intervalTimer: number = null;
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
     private clearConfirm: React.RefObject<Confirm> = React.createRef();
+
+    private template: Rect = new Rect(20, 20);
 
     public componentDidMount = () => {
         const sz = document.getElementById("editor-zone") as HTMLDivElement;
@@ -337,8 +337,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
         const selectedRegions = this.getSelectedRegions();
-        // const selectedRegion = selectedRegions.find((region) => region.id === id);
-        // this.template = new Rect(selectedRegion.boundingBox.width, selectedRegion.boundingBox.height);
+        const selectedRegionsData = this.editor.RM.getSelectedRegionsBounds().find((region) => region.id === id);
+        if (selectedRegionsData) {
+            this.template = new Rect(selectedRegionsData.width, selectedRegionsData.height);
+        }
         if (this.props.lockedTags && this.props.lockedTags.length) {
             for (const selectedRegion of selectedRegions) {
                 selectedRegion.tags = CanvasHelpers.addAllIfMissing(selectedRegion.tags, this.props.lockedTags);
