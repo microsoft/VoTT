@@ -1,24 +1,16 @@
 import _ from "lodash";
-import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject } from "../../models/applicationState";
+import { ExportProvider } from "./exportProvider";
+import { IProject, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import { constants } from "../../common/constants";
 import HtmlFileReader from "../../common/htmlFileReader";
 
 /**
- * @name - IVottJsonExportOptions
- * @description - Defines the configurable options for the Vott JSON Export provider
- */
-export interface IVottJsonExportOptions {
-    assetState: ExportAssetState;
-}
-
-/**
  * @name - Vott Json Export Provider
  * @description - Exports a project into a single JSON file that include all configured assets
  */
-export class VottJsonExportProvider extends ExportProvider<IVottJsonExportOptions> {
-    constructor(project: IProject, options: IVottJsonExportOptions) {
+export class VottJsonExportProvider extends ExportProvider {
+    constructor(project: IProject, options: IExportProviderOptions) {
         super(project, options);
         Guard.null(options);
     }

@@ -1,18 +1,10 @@
 import _ from "lodash";
-import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, IAssetMetadata, RegionType, ITag } from "../../models/applicationState";
+import { ExportProvider } from "./exportProvider";
+import { IProject, IAssetMetadata, RegionType, ITag, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { interpolate } from "../../common/strings";
-
-/**
- * @name - ITFPascalVOCJsonExportOptions
- * @description - Defines the configurable options for the Vott JSON Export provider
- */
-export interface ITFPascalVOCJsonExportOptions {
-    assetState: ExportAssetState;
-}
 
 interface IObjectInfo {
     name: string;
@@ -32,10 +24,10 @@ interface IImageInfo {
  * @name - TFPascalVOC Json Export Provider
  * @description - Exports a project into a single JSON file that include all configured assets
  */
-export class TFPascalVOCJsonExportProvider extends ExportProvider<ITFPascalVOCJsonExportOptions> {
+export class TFPascalVOCJsonExportProvider extends ExportProvider {
     private imagesInfo = new Map<string, IImageInfo>();
 
-    constructor(project: IProject, options: ITFPascalVOCJsonExportOptions) {
+    constructor(project: IProject, options: IExportProviderOptions) {
         super(project, options);
         Guard.null(options);
     }
