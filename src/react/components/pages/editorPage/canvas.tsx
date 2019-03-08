@@ -43,6 +43,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public editor: Editor;
 
+    public template: Rect = new Rect(20, 20);
+
     public state: ICanvasState = {
         currentAsset: this.props.selectedAsset,
         contentSource: null,
@@ -60,7 +62,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.editor.onRegionMoveEnd = this.onRegionMoveEnd;
         this.editor.onRegionDelete = this.onRegionDelete;
         this.editor.onRegionSelected = this.onRegionSelected;
-        this.editor.AS.setSelectionMode({mode: this.props.selectionMode});
+        this.editor.AS.setSelectionMode({ mode: this.props.selectionMode });
 
         window.addEventListener("resize", this.onWindowResize);
     }
@@ -81,19 +83,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         if (this.props.selectionMode !== prevProps.selectionMode) {
-            let  options = null;
-            if (this.props.selectionMode === SelectionMode.COPYRECT) {
-                const selectedRegion = this.getSelectedRegions();
-                if (selectedRegion) {
-                    options = new Rect(selectedRegion[0].boundingBox.width,
-                                                selectedRegion[0].boundingBox.height);
-                } else {
-                    // default size if no region selected
-                    options = new Rect(20,
-                                    20);
-                }
-            }
-            this.editor.AS.setSelectionMode({mode: this.props.selectionMode, template: options});
+            const options = (this.props.selectionMode === SelectionMode.COPYRECT) ? this.template : null;
+            this.editor.AS.setSelectionMode({ mode: this.props.selectionMode, template: options });
         }
     }
 
@@ -247,6 +238,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         this.editor.RM.addRegion(id, regionData, null);
 
+        this.template = new Rect(regionData.width, regionData.height);
+
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.editor.scaleRegionToSourceSize(
             regionData,
@@ -338,13 +331,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     /**
      * Method called when deleting a region from the editor
-     * @param {string} id the id of the deleted region
+     * @param {string} id the id of the selected region
      * @param {boolean} multiselect boolean whether region was selected with multiselection
      * @returns {void}
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
+        const selectedRegions = this.getSelectedRegions();
+        // const selectedRegion = selectedRegions.find((region) => region.id === id);
+        // this.template = new Rect(selectedRegion.boundingBox.width, selectedRegion.boundingBox.height);
         if (this.props.lockedTags && this.props.lockedTags.length) {
-            const selectedRegions = this.getSelectedRegions();
             for (const selectedRegion of selectedRegions) {
                 selectedRegion.tags = CanvasHelpers.addAllIfMissing(selectedRegion.tags, this.props.lockedTags);
             }
