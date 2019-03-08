@@ -58,44 +58,45 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
         try {
-            await allAssets.mapAsync(async (element) => {
-                await this.exportSingleImage(jpegImagesFolderName, element);
+            await allAssets.mapAsync(async (assetMetadata) => {
+                await this.exportSingleImage(jpegImagesFolderName, assetMetadata);
             });
         } catch (err) {
             console.log(err);
         }
     }
 
-    private async exportSingleImage(jpegImagesFolderName: string, element: IAssetMetadata): Promise<void> {
-        const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
-
+    private async exportSingleImage(jpegImagesFolderName: string, assetMetadata: IAssetMetadata): Promise<void> {
         try {
-            const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset);
+            const arrayBuffer = await HtmlFileReader.getAssetArray(assetMetadata.asset);
             const buffer = Buffer.from(arrayBuffer);
+            const imageFileName = `${jpegImagesFolderName}/${assetMetadata.asset.name}`;
 
             // Write Binary
             await this.storageProvider.writeBinary(imageFileName, buffer);
 
             // Get Array of all Box shaped tag for the Asset
-            const tagObjects = this.getAssetTagArray(element);
+            const tagObjects = this.getAssetTagArray(assetMetadata);
 
             const imageInfo: IImageInfo = {
-                width: element.asset.size ? element.asset.size.width : 0,
-                height: element.asset.size ? element.asset.size.height : 0,
+                width: assetMetadata.asset.size ? assetMetadata.asset.size.width : 0,
+                height: assetMetadata.asset.size ? assetMetadata.asset.size.height : 0,
                 objects: tagObjects,
             };
 
-            this.imagesInfo.set(element.asset.name, imageInfo);
+            this.imagesInfo.set(assetMetadata.asset.name, imageInfo);
 
-            if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
-                await this.updateImageSizeInfo(arrayBuffer, imageFileName, element.asset.name);
+            if (!assetMetadata.asset.size ||
+                assetMetadata.asset.size.width === 0 ||
+                assetMetadata.asset.size.height === 0) {
+                await this.updateImageSizeInfo(arrayBuffer, imageFileName, assetMetadata.asset.name);
             }
         } catch (err) {
             // Ignore the error at the moment
             // TODO: Refactor ExportProvider abstract class export() method
             //       to return Promise<object> with an object containing
             //       the number of files successfully exported out of total
-            console.log(`Error downloading ${imageFileName} - ${err}`);
+            console.log(`Error downloading asset ${assetMetadata.asset.path} - ${err}`);
         }
     }
 
