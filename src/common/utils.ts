@@ -126,6 +126,27 @@ function decryptProviderOptions<T = IProviderOptions>(providerOptions: IProvider
     return decryptObject(providerOptions.encrypted, secret) as T;
 }
 
+export function idealTextColor(background: string) {
+    const rgb = getRGB(background);
+    const bgDelta = (rgb.red * 0.299) + (rgb.green * 0.587) + (rgb.blue * 0.114);
+   return ((255 - bgDelta) < 105) ? "#000000" : "#ffffff"; 
+}
+
+export function fadedColor(color: string) {
+    return color;
+}
+
+export function getRGB(background: string) {
+    const red = parseInt(background.substr(1, 2), 16);
+    const green = parseInt(background.substr(3, 2), 16);
+    const blue = parseInt(background.substr(5, 2), 16);
+    return {
+        red,
+        green,
+        blue,
+    }
+}
+
 export function invertColor(hex: string): string {
     if (hex.indexOf('#') === 0) {
         hex = hex.slice(1);

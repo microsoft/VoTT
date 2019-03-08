@@ -5,6 +5,7 @@ import CondensedList from "../condensedList/condensedList";
 import "./verticalTagInput.scss";
 import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
+import VerticalTagInputToolbar from "./verticalTagInputToolbar";
 const tagColors = require("../../common/tagColors.json");
 
 export interface IVerticalTagInputProps {
@@ -13,9 +14,9 @@ export interface IVerticalTagInputProps {
     /** Tags that are currently locked for editing experience */
     lockedTags: string[];
     onChange: (tags: ITag[]) => void;
-    /** Place holder for input text box.
-     * @default New Tag
-     */
+    /** Updates to locked tags */
+    onLockedTagsChange: (locked: string[]) => void;
+    /** Place holder for input text box */
     placeHolder?: string;
     /** Key code delimiters for creating a new tag */
     delimiters?: number[];
@@ -43,12 +44,10 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
 
     state = {
         tags: this.props.tags || [],
-        lockedTags: [],
         selectedTag: null,
         editingTag: null,
         tagEditMode: null,
     }
-
 
     render() {
         return (
@@ -56,14 +55,64 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                 <CondensedList
                     title={strings.tags.title}
                     Component={VerticalTagInputItem}
+                    displayEmptyMessage={false}
+                    Toolbar={VerticalTagInputToolbar}
+                    ToolbarProps={{
+                        tags: this.state.tags,
+                        selectedTag: this.state.selectedTag,
+                        onEditTag: this.onEditTag,
+                        onLockTag: this.onLockTag,
+                        onDelete: this.deleteTag,
+                        onReorder: this.onReOrder,
+                    }}
                     items={this.getListItems()}
                     onClick={this.handleClick}
                     onChange={this.updateTag}
-                    onDelete={this.handleDelete}
+                    onDelete={(item) => this.deleteTag(item.tag)}
                 />
                 <input type="text" onKeyPress={this.handleKeyPress} placeholder="Add new tag"/>
             </div>
         )
+    }
+
+    private onEditTag = (tag: ITag) => {
+        if (!tag) {
+            return;
+        }
+        const editingTag = this.state.editingTag;
+        this.setState({
+            editingTag: (editingTag && editingTag.name === tag.name) ? null : tag,
+        });
+    }
+
+    private onLockTag = (tag: ITag) => {
+        if (!tag) {
+            return;
+        }
+        let lockedTags = [...this.props.lockedTags]
+        if (lockedTags.find((t) => t === tag.name)) {
+            lockedTags = lockedTags.filter((t) => t !== tag.name)
+        } else {
+            lockedTags.push(tag.name);
+        }
+        this.props.onLockedTagsChange(lockedTags);
+    }
+
+    private onReOrder = (tag: ITag, displacement: number) => {
+        if (!tag) {
+            return;
+        }
+        const tags = [...this.state.tags];
+        const currentIndex = tags.indexOf(tag);
+        let newIndex = currentIndex + displacement;
+        if (newIndex < 0) {
+            newIndex = 0;
+        } else if (newIndex >= tags.length) {
+            newIndex = tags.length - 1;
+        }
+        tags.splice(currentIndex, 1);
+        tags.splice(newIndex, 0, tag);
+        this.setState({tags});
     }
 
     private updateTag = (oldTag: ITag, newTag: ITag) => {
@@ -84,6 +133,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                 tag,
                 index: tags.findIndex((t) => t.name === tag.name),
                 isLocked: this.props.lockedTags.findIndex((t) => t === tag.name) > -1,
+                isSelected: this.state.selectedTag && this.state.selectedTag.name === tag.name,
                 isBeingEdited: this.state.editingTag && this.state.editingTag.name === tag.name,
                 tagEditMode: this.state.tagEditMode,
             }
@@ -92,31 +142,55 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
     }
 
     private handleClick = (item: IVerticalTagItemProps, e, props) => {
-        const tag = item.tag;
-        if (e.altKey) {
+        const tag = item && item.tag;
+        if (e.ctrlKey && this.props.onCtrlTagClick) {
+            this.props.onCtrlTagClick(tag);
+        }
+        else if (e.altKey) {
+            // Open edit mode
             this.setState({
                 editingTag: tag,
                 selectedTag: null,
-                tagEditMode: props.clickTarget,
+                tagEditMode: props.clickTarget
             });
-        } else if (e.ctrlKey && this.props.onCtrlTagClick) {
-            this.props.onCtrlTagClick(tag);
         }
         else {
-            if (this.state.editingTag && item && tag.name !== this.state.editingTag.name) {
-                this.setState({
-                    selectedTag: tag,
-                    editingTag: null,
-                });
-            }
-            if (this.props.onTagClick) {
+            const editingTag = this.state.editingTag;
+            const selectedTag = this.state.selectedTag;
+
+            const switchingEditMode = props.clickTarget !== this.state.tagEditMode;
+
+            this.setState({
+                editingTag: (editingTag && tag && tag.name !== editingTag.name) ? null : editingTag,
+                selectedTag: (selectedTag && selectedTag.name === tag.name && !switchingEditMode) ? null : tag,
+                tagEditMode: props.clickTarget,
+            });
+                        
+            if (this.props.onTagClick && !switchingEditMode) {
                 this.props.onTagClick(tag);
             }
         }
     }
 
-    private handleDelete = (tag) => {
-        debugger;
+    private deleteTag = (tag: ITag) => {
+        if (!tag) {
+            return;
+        }
+        let index = this.state.tags.indexOf(tag);
+        const tags = this.state.tags.filter((t) => t.name !== tag.name);
+        this.setState({
+            tags,
+            selectedTag: this.getNewSelectedTag(tags, index),
+        }, () => this.props.onChange(tags));
+        if (this.props.lockedTags.find((l) => l === tag.name)) {
+            this.props.onLockedTagsChange(
+                this.props.lockedTags.filter((lockedTag) => lockedTag !== tag.name)
+            );
+        }
+    }
+
+    private getNewSelectedTag = (tags: ITag[], previouIndex: number): ITag => {
+        return (tags.length) ? tags[Math.max(0, previouIndex - 1)] : null;
     }
 
     private handleKeyPress = (event) => {

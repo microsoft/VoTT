@@ -16,6 +16,15 @@
         }
     }
 
+    &-canvas {
+        flex: 1;
+    }
+
+    &-right-sidebar {
+        min-width: 175px;
+        background: $lighter-1;
+    }
+
     &-content {
         flex-grow: 1;
         display: flex;
@@ -32,10 +41,6 @@
             flex-grow: 1;
             background-color: $darker-5;
             flex-direction: row;
-        }
-
-        &-footer {
-            flex-basis: 100px;
         }
 
         .video-react {
@@ -134,11 +139,6 @@
 
 .vertical-tag-input {
     max-width: 175px;
-}
-
-.locked-tag {
-    font-weight: bolder;
-    color: white;
 }
 
 

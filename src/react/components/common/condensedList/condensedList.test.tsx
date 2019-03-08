@@ -30,6 +30,7 @@ describe("Condensed List Component", () => {
                     onClick={options.onClick}
                     onDelete={options.onDelete}
                     newLinkTo={options.newLinkTo}
+                    displayEmptyMessage={true}
                 />
             </Router>,
         );

@@ -145,6 +145,7 @@ export class CloudFilePicker extends React.Component<ICloudFilePickerProps, IClo
             items={items}
             Component={ListItem}
             onClick={onClick}
+            displayEmptyMessage={true}
         />;
     }
 

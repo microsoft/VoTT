@@ -86,7 +86,9 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                         newLinkTo={"/connections/create"}
                         onDelete={(connection) => this.confirmDelete.current.open(connection)}
                         Component={ConnectionItem}
-                        items={this.props.connections} />
+                        items={this.props.connections} 
+                        displayEmptyMessage={true}
+                    />
                 </div>
 
                 <Confirm ref={this.confirmDelete}

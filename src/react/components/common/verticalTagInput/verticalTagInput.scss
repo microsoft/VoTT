@@ -1,7 +1,42 @@
 @import "../../../../index.scss";
 
+.vertical-tag-input {
+    background: $darker-4;
+}
+
+.tag-item-block {
+    padding: 1px 0;
+}
+
 .tag-item {
-     margin: 0 0 3px 0;
+    display: flex;
+    flex-direction: row;    
+    &-selected {
+        border: solid;
+        border-width: 1px;
+        font-weight: bolder;
+        color: white;
+    }
+}
+
+.condensed-list-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.condensed-list-title {
+    flex: 1;
+}
+
+.tag-content {
+    flex: 1;
+    background: $darker-15;
+}
+
+.tag-index {
+    background: $darker-15;
+    padding: 0 5px;
+    font-weight: bold;
 }
 
 .tag-item:hover {
@@ -15,9 +50,22 @@
 }
 
 .tag-color {
-    width: 20px;
+    width: 15px;
 }
 
 .tag-lock-icon {
     margin-left: 5px
+}
+
+.delete-tag-icon:hover {
+    color: white;
+}
+
+.tag-input-toolbar-icon {
+    padding: 0 5px;
+}
+
+.tag-input-toolbar-icon:hover {
+    color: white;
+    cursor: pointer;
 }

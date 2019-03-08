@@ -15,6 +15,9 @@ interface ICondensedListProps {
     title: string;
     Component: any;
     items: any[];
+    displayEmptyMessage: boolean;
+    Toolbar?: any;
+    ToolbarProps?: any;
     newLinkTo?: string;
     onClick?: (item, e, properties: any) => void;
     onChange?: (oldItem, newItem) => void;
@@ -34,12 +37,16 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
     }
 
     public render() {
-        const { title, items, newLinkTo, Component } = this.props;
+        const { title, items, newLinkTo, Component, Toolbar, ToolbarProps, displayEmptyMessage } = this.props;
 
         return (
             <div className="condensed-list">
                 <h6 className="condensed-list-header bg-darker-2 p-2">
-                    <span>{title}</span>
+                    <span className="condensed-list-title">{title}</span>
+                    {Toolbar && 
+                        <div className="condensed-list-toolbar">
+                            <Toolbar {...ToolbarProps}/>
+                        </div>}
                     {newLinkTo &&
                         <Link to={newLinkTo} className="float-right">
                             <i className="fas fa-plus-square" />
@@ -51,7 +58,7 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
                         <i className="fas fa-circle-notch fa-spin" />
                     </div>
                 }
-                {(items && items.length === 0) &&
+                {(items && items.length === 0) && displayEmptyMessage &&
                     <div className="p-3 text-center">No items found</div>
                 }
                 {(items && items.length > 0) &&

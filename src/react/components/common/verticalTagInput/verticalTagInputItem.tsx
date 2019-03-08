@@ -1,7 +1,7 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
-import { invertColor } from "../../../../common/utils";
-import { CirclePicker } from 'react-color'
+import { invertColor, idealTextColor } from "../../../../common/utils";
+import { GithubPicker } from 'react-color'
 import { TagEditMode } from "./verticalTagInput";
 const tagColors = require("../../common/tagColors.json");
 
@@ -9,53 +9,77 @@ export interface IVerticalTagItemProps {
     tag: ITag;
     index: number;
     isLocked: boolean;
+    isSelected: boolean;
     isBeingEdited: boolean;
     tagEditMode: TagEditMode;
 }
 
-export default function VerticalTagInputItem({item, onClick, onChange}) {
+export default function VerticalTagInputItem({item, onClick, onChange, onDelete}) {
+    const displayIndex = getDisplayIndex(item);
     return (
-        <li className="tag-item">
-            <table><tr>
-                <td onClick={(e) => onClick(e, {clickTarget: TagEditMode.Color})} className={"tag-color"} style={getColorStyle(item)}>
-                    {getDisplayIndex(item)}
-                </td>
-                <td onClick={(e) => onClick(e, {clickTarget: TagEditMode.Name})} className={"tag-content"}>                        
-                    {getTagContent(item, onChange)}
-                </td>
-            </tr></table>
-        </li>
+        <div className={"tag-item-block"}>
+            <li className={getItemClassName(item)} style={{
+                borderColor: item.tag.color,
+                background: item.tag.color,
+            }}>
+                <div className={"tag-color"} onClick={(e) => onClick(e, {clickTarget: TagEditMode.Color})} style={getColorStyle(item)}>
+                </div>
+                <div className={"tag-content"} onClick={(e) => onClick(e, {clickTarget: TagEditMode.Name})}>                        
+                    {getTagContent(item, onChange, onDelete)}
+                </div>
+                {
+                    displayIndex &&
+                    <div className={"tag-index"}>
+                        [{displayIndex}]
+                    </div>
+                }
+
+            </li>
+            {
+                (item.isBeingEdited && item.tagEditMode === TagEditMode.Color) ? getColorPicker(item, onChange) : ""
+            }
+        </div>
     )
 }
 
-function getTagContent(item: IVerticalTagItemProps, onChange){
+function getItemClassName(item) {
+    let className = "tag-item";
+    if (item.isSelected) {
+        className += " tag-item-selected";
+    }
+    return className;
+}
+
+function getColorPicker(item, onChange) {
+    return (
+        <div className="tag-color-picker">
+            <GithubPicker
+                color={item.tag.color}
+                onChangeComplete={(color) => handleColorEdit(item.tag, color, onChange)}
+                colors={tagColors}
+                width={165}
+                styles={{
+                    card: {
+                        background: "#000",
+                    }
+                }}
+            />
+        </div>
+    )
+}
+
+function getTagContent(item: IVerticalTagItemProps, onChange, onDelete){
     const tag = item.tag;
-    if (item.isBeingEdited) {
-        if (item.tagEditMode === TagEditMode.Name) {
-            return (
-                <input className="tag-editor" type="text" defaultValue={tag.name} onKeyPress={(e) => handleTagEdit(tag, e, onChange)}/>
-            )
-        } else if (item.tagEditMode === TagEditMode.Color) {
-            return (
-                <div>
-                    {getDefaultTagContent(item)}
-                    <CirclePicker
-                        color={tag.color}
-                        onChangeComplete={(color) => handleColorEdit(tag, color, onChange)}
-                        colors={tagColors}
-                        width={175}
-                        circleSize={22}
-                        circleSpacing={10}
-                    />
-                </div>
-            )
-        }
+    if (item.isBeingEdited && item.tagEditMode === TagEditMode.Name) {
+        return (
+            <input className="tag-editor" type="text" defaultValue={tag.name} onKeyPress={(e) => handleNameEdit(e, tag, onChange)}/>
+        )
     } else {
-        return getDefaultTagContent(item);
+        return getDefaultTagContent(item, onDelete);
     }
 }
 
-function getDefaultTagContent(item, additionalClassNames?) {
+function getDefaultTagContent(item, onDelete) {
     return (
         <div>
             {
@@ -66,28 +90,29 @@ function getDefaultTagContent(item, additionalClassNames?) {
     )
 }
 
-function handleTagEdit(item: ITag, e, onChange){
+function handleNameEdit(e, tag: ITag, onChange){
     if(e.key === "Enter") {
         const newTagName = e.target.value;
-        onChange(item, {
-            ...item, 
+        onChange(tag, {
+            ...tag, 
             name: newTagName,
         })
     }
 }
 
-function handleColorEdit(item: ITag, color, onChange) {
-    onChange(item, {
-        ...item,
+function handleColorEdit(tag: ITag, color, onChange) {
+    onChange(tag, {
+        ...tag,
         color: color.hex
     })
 }
 
-function getContentClassName(item){
+function handleTagDelete(e, tag: ITag, onDelete) {
+    onDelete(e, tag);
+}
+
+function getContentClassName(item: IVerticalTagItemProps){
     let className = "px-2";
-    if(item.isLocked) {
-        className += " locked-tag";
-    }
     if(item.isBeingEdited && item.tagEditMode === TagEditMode.Color) {
         className += " tag-color-edit";
     }
@@ -97,7 +122,7 @@ function getContentClassName(item){
 function getColorStyle(item){
     const style = {
         backgroundColor: item.tag.color,
-        color: invertColor(item.tag.color),
+        color: idealTextColor(item.tag.color),
         display: "flex",
         justifyContent: "center",
     };
@@ -107,5 +132,5 @@ function getColorStyle(item){
 function getDisplayIndex(item){
     const index = item.index;
     const displayIndex = (index === 9) ? 0 : index + 1;
-    return (index < 10) ? displayIndex : "-";
+    return (index < 10) ? displayIndex : null;
 }
