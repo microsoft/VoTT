@@ -24,6 +24,7 @@ import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/a
 import CanvasHelpers from "./canvasHelpers";
 import { tagColors } from "../../../../common/tagColors";
 import { ToolbarItemName } from "../../../../registerToolbar";
+import { strings } from "../../../../common/strings";
 
 /**
  * Properties for Editor Page
@@ -144,6 +145,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         assets={rootAssets}
                         selectedAsset={selectedAsset ? selectedAsset.asset : null}
                         onAssetSelected={this.selectAsset}
+                        onAssetError={this.onAssetError}
                     />
                 </div>
                 <div className="editor-page-content">
@@ -154,7 +156,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             onToolbarItemSelected={this.onToolbarItemSelected} />
                     </div>
                     <div className="editor-page-content-body">
-                        {selectedAsset &&
+                        {selectedAsset && !selectedAsset.asset.hasError &&
                             <Canvas
                                 ref={this.canvas}
                                 selectedAsset={this.state.selectedAsset}
@@ -170,6 +172,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     asset={this.state.selectedAsset.asset}
                                     childAssets={this.state.childAssets} />
                             </Canvas>
+                        }
+                        {selectedAsset && selectedAsset.asset.hasError &&
+                            <div className="asset-error">{strings.editorPage.assetError}</div>
                         }
                     </div>
                     <div>
@@ -366,6 +371,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         } else {
             await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
         }
+    }
+
+    private onAssetError = () => {
+        const falseAsset = {...this.state.selectedAsset};
+        falseAsset.asset.hasError = true;
+        this.onAssetMetadataChanged(falseAsset);
     }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {

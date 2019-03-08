@@ -13,6 +13,7 @@ export interface IEditorSideBarProps {
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
     selectedAsset?: IAsset;
+    onAssetError?: () => void;
 }
 
 /**
@@ -20,7 +21,6 @@ export interface IEditorSideBarProps {
  * @member selectedAsset - Asset selected from side bar
  */
 export interface IEditorSideBarState {
-    selectedAsset: IAsset;
     scrollToIndex: number;
 }
 
@@ -40,7 +40,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             : 0;
 
         this.state = {
-            selectedAsset,
             scrollToIndex,
         };
 
@@ -86,7 +85,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         const scrollToIndex = this.props.assets.findIndex((asset) => asset.id === selectedAsset.id);
 
         this.setState({
-            selectedAsset,
             scrollToIndex,
         }, () => {
             this.listRef.current.forceUpdateGrid();
@@ -100,14 +98,15 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     private rowRenderer({ key, index, style }) {
         const asset = this.props.assets[index];
-        const { selectedAsset } = this.state;
+        const selectedAsset = this.props.selectedAsset;
 
         return (
             <div key={key} style={style}
                 className={this.getAssetCssClassNames(asset, selectedAsset)}
                 onClick={() => this.onAssetClicked(asset)}>
                 <div className="asset-item-image">
-                    <AssetPreview asset={asset} />
+                    <AssetPreview asset={asset}
+                        onAssetError={this.props.onAssetError} />
                 </div>
                 <div className="asset-item-metadata">
                     <span className="asset-filename" title={asset.name}>{asset.name}</span>

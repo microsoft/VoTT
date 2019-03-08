@@ -59,8 +59,10 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      * @param evt Error Event
      */
     private onWindowError(evt: ErrorEvent) {
-        this.handleError(evt.error);
-        evt.preventDefault();
+        if (evt.error) {
+            this.handleError(evt.error);
+            evt.preventDefault();
+        }
     }
 
     /**
