@@ -181,6 +181,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 lockedTags={this.state.lockedTags}
                                 onChange={this.onTagsChanged}
                                 onLockedTagsChange={this.onLockedTagsChanged}
+                                onTagNameChange={this.canvas.current.updateTagName}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
                             />

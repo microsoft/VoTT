@@ -16,6 +16,8 @@ export interface IVerticalTagInputProps {
     onChange: (tags: ITag[]) => void;
     /** Updates to locked tags */
     onLockedTagsChange: (locked: string[]) => void;
+    
+    onTagNameChange: (oldTag: string, newTag: string) => void;    
     /** Place holder for input text box */
     placeHolder?: string;
     /** Key code delimiters for creating a new tag */
@@ -123,7 +125,12 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             tags,
             editingTag: null,
             selectedTag: newTag,
-        }, () => this.props.onChange(tags));
+        }, () => {
+            this.props.onChange(tags);
+            if (oldTag.name !== newTag.name) {
+                this.props.onTagNameChange(oldTag.name, newTag.name);
+            }
+        });
     }
 
     private getListItems = (): IVerticalTagItemProps[] => {
@@ -157,16 +164,17 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         else {
             const editingTag = this.state.editingTag;
             const selectedTag = this.state.selectedTag;
-
-            const switchingEditMode = props.clickTarget !== this.state.tagEditMode;
+            
+            const inEditMode = editingTag && tag && tag.name === editingTag.name
+            // const switchingEditMode = props.clickTarget !== this.state.tagEditMode;
 
             this.setState({
                 editingTag: (editingTag && tag && tag.name !== editingTag.name) ? null : editingTag,
-                selectedTag: (selectedTag && selectedTag.name === tag.name && !switchingEditMode) ? null : tag,
+                selectedTag: (selectedTag && selectedTag.name === tag.name && !inEditMode) ? null : tag,
                 tagEditMode: props.clickTarget,
             });
                         
-            if (this.props.onTagClick && !switchingEditMode) {
+            if (this.props.onTagClick && !inEditMode) {
                 this.props.onTagClick(tag);
             }
         }
@@ -190,7 +198,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
     }
 
     private getNewSelectedTag = (tags: ITag[], previouIndex: number): ITag => {
-        return (tags.length) ? tags[Math.max(0, previouIndex - 1)] : null;
+        return (tags.length) ? tags[Math.min(tags.length - 1, previouIndex)] : null;
     }
 
     private handleKeyPress = (event) => {

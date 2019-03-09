@@ -3,7 +3,7 @@ import { ITag } from "../../../../models/applicationState";
 import { invertColor, idealTextColor } from "../../../../common/utils";
 import { GithubPicker } from 'react-color'
 import { TagEditMode } from "./verticalTagInput";
-const tagColors = require("../../common/tagColors.json");
+const tagColors = require("../tagColors.json");
 
 export interface IVerticalTagItemProps {
     tag: ITag;
@@ -16,6 +16,7 @@ export interface IVerticalTagItemProps {
 
 export default function VerticalTagInputItem({item, onClick, onChange, onDelete}) {
     const displayIndex = getDisplayIndex(item);
+
     return (
         <div className={"tag-item-block"}>
             <li className={getItemClassName(item)} style={{
@@ -28,7 +29,7 @@ export default function VerticalTagInputItem({item, onClick, onChange, onDelete}
                     {getTagContent(item, onChange, onDelete)}
                 </div>
                 {
-                    displayIndex &&
+                    (displayIndex !== null) &&
                     <div className={"tag-index"}>
                         [{displayIndex}]
                     </div>
@@ -132,5 +133,5 @@ function getColorStyle(item){
 function getDisplayIndex(item){
     const index = item.index;
     const displayIndex = (index === 9) ? 0 : index + 1;
-    return (index < 10) ? displayIndex : null;
+    return (displayIndex < 10) ? displayIndex : null;
 }
