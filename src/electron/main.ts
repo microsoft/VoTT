@@ -14,7 +14,7 @@ function createWindow() {
     const windowOptions: BrowserWindowConstructorOptions = {
         width: 1024,
         height: 768,
-        frame: false,
+        frame: process.platform === "linux",
         titleBarStyle: "hidden",
     };
 

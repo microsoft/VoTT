@@ -21,6 +21,12 @@ export enum HostProcessType {
     All = 3,      // bits: 11
 }
 
+export enum PlatformType {
+    Windows = "win32",
+    Linux = "linux",
+    MacOS = "darwin",
+}
+
 function getHostProcess(): IHostProcess {
     const osRelease = os.release().toLowerCase();
     let hostProcessType: HostProcessType;

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
+import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
@@ -9,6 +10,7 @@ export interface ITitleBarProps extends React.Props<TitleBar> {
 
 export interface ITitleBarState {
     isElectron: boolean;
+    platform: string;
     maximized: boolean;
     fullscreen: boolean;
     menu: Electron.Menu;
@@ -17,6 +19,7 @@ export interface ITitleBarState {
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     public state: ITitleBarState = {
         isElectron: false,
+        platform: global.process.platform,
         maximized: false,
         fullscreen: false,
         menu: null,
@@ -40,6 +43,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
 
             this.setState({
                 isElectron: true,
+                platform: global.process.platform,
                 maximized: this.currentWindow.isMaximized(),
                 fullscreen: this.currentWindow.isFullScreen(),
                 menu: this.remote.Menu.getApplicationMenu(),
@@ -60,25 +64,27 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
 
         return (
             <div className="title-bar bg-lighter-3">
-                <div className="title-bar-icon">
-                    {typeof (this.props.icon) === "string" && <i className={`${this.props.icon}`}></i>}
-                    {typeof (this.props.icon) !== "string" && this.props.icon}
-                </div>
-                {this.state.isElectron &&
-                    <div className="title-bar-menu">
-                        <Menu ref={this.menu}
-                            mode="horizontal"
-                            selectable={false}
-                            triggerSubMenuAction="click"
-                            onClick={this.onMenuItemSelected}>
-                            {this.renderMenu(this.state.menu)}
-                        </Menu>
-                    </div>
+                {this.state.isElectron && this.state.platform === PlatformType.Windows &&
+                    <Fragment>
+                        <div className="title-bar-icon">
+                            {typeof (this.props.icon) === "string" && <i className={`${this.props.icon}`}></i>}
+                            {typeof (this.props.icon) !== "string" && this.props.icon}
+                        </div>
+                        <div className="title-bar-menu">
+                            <Menu ref={this.menu}
+                                mode="horizontal"
+                                selectable={false}
+                                triggerSubMenuAction="click"
+                                onClick={this.onMenuItemSelected}>
+                                {this.renderMenu(this.state.menu)}
+                            </Menu>
+                        </div>
+                    </Fragment>
                 }
                 <div className="title-bar-main">{this.props.title || "Welcome"} - VoTT</div>
                 <div className="title-bar-controls">
                     {this.props.children}
-                    {this.state.isElectron &&
+                    {this.state.isElectron && this.state.platform === PlatformType.Windows &&
                         <ul className="ml-3">
                             <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
