@@ -61,6 +61,8 @@ export default class App extends React.Component<IAppProps> {
     }
 
     public render() {
+        const platform = global && global.process ? global.process.platform : "web";
+
         return (
             <Fragment>
                 <ErrorHandler
@@ -71,7 +73,7 @@ export default class App extends React.Component<IAppProps> {
                 {(!this.props.appError || this.props.appError.errorCode !== ErrorCode.GenericRenderError) &&
                     <KeyboardManager>
                         <Router>
-                            <div className={`app-shell platform-${global.process.platform || "web"}`}>
+                            <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}>
                                     <ul>
@@ -90,16 +92,24 @@ export default class App extends React.Component<IAppProps> {
                                 <StatusBar>
                                     {
                                         this.props.currentProject &&
-                                        <Fragment>
-                                            <div>
-                                                <strong>Source</strong>:
-                                                <span>{this.props.currentProject.sourceConnection.name}</span>
-                                            </div>
-                                            <div>
-                                                <strong>Target</strong>:
-                                                <span>{this.props.currentProject.targetConnection.name}</span>
-                                            </div>
-                                        </Fragment>
+                                        <ul>
+                                            <li>
+                                                <i className="fas fa-plug"></i>
+                                                <span>(Source) {this.props.currentProject.sourceConnection.name}</span>
+                                            </li>
+                                            <li>
+                                                <i className="fas fa-plug"></i>
+                                                <span>(Target) {this.props.currentProject.targetConnection.name}</span>
+                                            </li>
+                                            <li>
+                                                <i className="fas fa-tag"></i>
+                                                <span>12</span>
+                                            </li>
+                                            <li>
+                                                <i className="fas fa-eye"></i>
+                                                <span>24</span>
+                                            </li>
+                                        </ul>
                                     }
                                 </StatusBar>
                                 <ToastContainer />

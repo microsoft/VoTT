@@ -6,23 +6,29 @@
     display: flex;
     flex-direction: row;
     padding: 0.25em 0.8em;
-
     background-color: rgba($color-blue, 0.50);
+
+    ul {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        list-style: none;
+        display: inline-block;
+        margin: 0 0.75em;
+    }
+
+    li:first-child {
+        margin: 0 0.25em;
+    }
+
+    span {
+        padding-left: 0.4em;
+    }
 
     &-main {
         flex: 1;
-
-        div {
-            display: inline-block;
-            margin-left: 0.8em;
-        }
-
-        span {
-            padding-left: 0.4em;
-        }
-    }
-
-    &-version {
-        text-align: right;
     }
 }

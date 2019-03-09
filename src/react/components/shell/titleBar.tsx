@@ -19,7 +19,7 @@ export interface ITitleBarState {
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     public state: ITitleBarState = {
         isElectron: false,
-        platform: global.process.platform,
+        platform: global && global.process ? global.process.platform : "web",
         maximized: false,
         fullscreen: false,
         menu: null,
