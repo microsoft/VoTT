@@ -1,12 +1,30 @@
 @import '../../../assets/sass/theme.scss';
 
+.platform-win32 {
+  .title-bar {
+    min-height: 34px;
+    height: 34px;
+
+    &-controls li {
+      padding: 0.4em 0.8em;
+    }
+  }
+}
+
+.platform-darwin {
+  .title-bar {
+    &-controls li {
+      font-size: 0.9em;
+      padding: 0 0.8em;
+    }
+  }
+}
+
 .title-bar {
     color: #ccc;
     display: flex;
     flex-direction: row;
     align-items: center;
-    min-height: 34px;
-    height: 34px;
 
     &-main {
         -webkit-app-region: drag;
@@ -37,7 +55,6 @@
         li {
             color: #ccc;
             list-style: none;
-            padding: 0.4em 0.8em;
             display: inline-block;
 
             &:hover {
