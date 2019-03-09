@@ -71,7 +71,7 @@ export default class App extends React.Component<IAppProps> {
                 {(!this.props.appError || this.props.appError.errorCode !== ErrorCode.GenericRenderError) &&
                     <KeyboardManager>
                         <Router>
-                            <div className={`app-shell platform-${process.platform}`}>
+                            <div className={`app-shell platform-${global.process.platform || "web"}`}>
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}>
                                     <ul>

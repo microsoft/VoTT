@@ -10,7 +10,6 @@ export interface ITitleBarProps extends React.Props<TitleBar> {
 export interface ITitleBarState {
     isElectron: boolean;
     maximized: boolean;
-    minimized: boolean;
     fullscreen: boolean;
     menu: Electron.Menu;
 }
@@ -19,7 +18,6 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     public state: ITitleBarState = {
         isElectron: false,
         maximized: false,
-        minimized: false,
         fullscreen: false,
         menu: null,
     };
@@ -35,22 +33,15 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
             this.remote = (window as any).require("electron").remote as Electron.Remote;
             this.currentWindow = this.remote.getCurrentWindow();
 
-            this.currentWindow.on("maximize", this.onMaximize);
-            this.currentWindow.on("minimize", this.onMinimize);
-            this.currentWindow.on("restore", this.onRestore);
-
-            this.currentWindow.on("enter-full-screen", () => {
-                this.setState({ fullscreen: true });
-            });
-
-            this.currentWindow.on("leave-full-screen", () => {
-                this.setState({ fullscreen: false });
-            });
+            this.currentWindow.on("maximize", () => this.onMaximize(true));
+            this.currentWindow.on("unmaximize", () => this.onMaximize(false));
+            this.currentWindow.on("enter-full-screen", () => this.onFullScreen(true));
+            this.currentWindow.on("leave-full-screen", () => this.onFullScreen(false));
 
             this.setState({
                 isElectron: true,
-                minimized: this.currentWindow.isMinimized(),
                 maximized: this.currentWindow.isMaximized(),
+                fullscreen: this.currentWindow.isFullScreen(),
                 menu: this.remote.Menu.getApplicationMenu(),
             });
         }
@@ -73,8 +64,8 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     {typeof (this.props.icon) === "string" && <i className={`${this.props.icon}`}></i>}
                     {typeof (this.props.icon) !== "string" && this.props.icon}
                 </div>
-                <div className="title-bar-menu">
-                    {this.state.isElectron &&
+                {this.state.isElectron &&
+                    <div className="title-bar-menu">
                         <Menu ref={this.menu}
                             mode="horizontal"
                             selectable={false}
@@ -82,8 +73,8 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                             onClick={this.onMenuItemSelected}>
                             {this.renderMenu(this.state.menu)}
                         </Menu>
-                    }
-                </div>
+                    </div>
+                }
                 <div className="title-bar-main">{this.props.title || "Welcome"} - VoTT</div>
                 <div className="title-bar-controls">
                     {this.props.children}
@@ -112,24 +103,15 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         );
     }
 
-    private onMaximize = () => {
+    private onMaximize = (isMaximized: boolean) => {
         this.setState({
-            minimized: false,
-            maximized: true,
+            maximized: isMaximized,
         });
     }
 
-    private onMinimize = () => {
+    private onFullScreen = (isFullScreen: boolean) => {
         this.setState({
-            minimized: true,
-            maximized: false,
-        });
-    }
-
-    private onRestore = () => {
-        this.setState({
-            maximized: false,
-            minimized: false,
+            fullscreen: isFullScreen,
         });
     }
 
