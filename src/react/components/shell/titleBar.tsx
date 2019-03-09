@@ -113,11 +113,17 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private onMaximize = () => {
-        this.setState({ maximized: true });
+        this.setState({
+            minimized: false,
+            maximized: true,
+        });
     }
 
     private onMinimize = () => {
-        this.setState({ minimized: true });
+        this.setState({
+            minimized: true,
+            maximized: false,
+        });
     }
 
     private onRestore = () => {
