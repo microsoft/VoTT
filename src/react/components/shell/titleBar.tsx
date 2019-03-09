@@ -11,6 +11,7 @@ export interface ITitleBarState {
     isElectron: boolean;
     maximized: boolean;
     minimized: boolean;
+    fullscreen: boolean;
     menu: Electron.Menu;
 }
 
@@ -19,6 +20,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         isElectron: false,
         maximized: false,
         minimized: false,
+        fullscreen: false,
         menu: null,
     };
 
@@ -32,6 +34,18 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         if (isElectron) {
             this.remote = (window as any).require("electron").remote as Electron.Remote;
             this.currentWindow = this.remote.getCurrentWindow();
+
+            this.currentWindow.on("maximize", this.onMaximize);
+            this.currentWindow.on("minimize", this.onMinimize);
+            this.currentWindow.on("restore", this.onRestore);
+
+            this.currentWindow.on("enter-full-screen", () => {
+                this.setState({ fullscreen: true });
+            });
+
+            this.currentWindow.on("leave-full-screen", () => {
+                this.setState({ fullscreen: false });
+            });
 
             this.setState({
                 isElectron: true,
@@ -49,6 +63,10 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     public render() {
+        if (this.state.fullscreen) {
+            return null;
+        }
+
         return (
             <div className="title-bar bg-lighter-3">
                 <div className="title-bar-icon">
@@ -92,6 +110,21 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 </div>
             </div>
         );
+    }
+
+    private onMaximize = () => {
+        this.setState({ maximized: true });
+    }
+
+    private onMinimize = () => {
+        this.setState({ minimized: true });
+    }
+
+    private onRestore = () => {
+        this.setState({
+            maximized: false,
+            minimized: false,
+        });
     }
 
     private renderMenu = (menu: Electron.Menu) => {
@@ -163,17 +196,14 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
 
     private minimizeWindow = () => {
         this.currentWindow.minimize();
-        this.setState({ minimized: true });
     }
 
     private maximizeWindow = () => {
         this.currentWindow.maximize();
-        this.setState({ maximized: true, minimized: false });
     }
 
     private restoreWindow = () => {
         this.currentWindow.restore();
-        this.setState({ maximized: false, minimized: false });
     }
 
     private closeWindow = () => {
