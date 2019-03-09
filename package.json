@@ -60,7 +60,7 @@
         "eject": "react-scripts eject",
         "release-pr": "./scripts/release-pr.sh",
         "release-web": "npm run build && npm run webpack:prod",
-        "release": "npm run build && npm run webpack:prod && electron-builder",
+        "release": "REACT_APP_VERSION=$(node -pe \"require('./package.json').version\") REACT_APP_COMMIT_SHA=$(git rev-parse --short HEAD) npm run build && npm run webpack:prod && electron-builder",
         "pretest": "./node_modules/.bin/tslint 'src/**/*.ts*'",
         "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
         "test": "react-scripts test --env=jsdom --silent",
