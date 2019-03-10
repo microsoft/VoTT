@@ -1,6 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { IProject, AssetState } from "../../../models/applicationState";
+import { strings } from "../../../common/strings";
 
 export interface IStatusBarMetricsProps {
     project: IProject;
@@ -15,26 +16,28 @@ export class StatusBarMetrics extends React.Component<IStatusBarMetricsProps> {
         }
 
         const projectAssets = _.values(project.assets);
-        const visitedAssets = projectAssets.filter((asset) => asset.state === AssetState.Visited);
-        const taggedAssets = projectAssets.filter((asset) => asset.state === AssetState.Tagged);
+        const visitedAssets = projectAssets
+            .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+        const taggedAssets = projectAssets
+            .filter((asset) => asset.state === AssetState.Tagged);
 
         return (
             <ul>
-                <li title="Source Connection">
+                <li title={strings.projectSettings.sourceConnection.title}>
                     <i className="fas fa-upload"></i>
-                    <span>{project.sourceConnection.name}</span>
+                    <span className="metric-source-connection-name">{project.sourceConnection.name}</span>
                 </li>
-                <li title="Target Connection">
+                <li title={strings.projectSettings.targetConnection.title}>
                     <i className="fas fa-download"></i>
-                    <span>{project.targetConnection.name}</span>
+                    <span className="metric-target-connection-name">{project.targetConnection.name}</span>
                 </li>
-                <li title="Tagged Assets">
+                <li title={strings.projectMetrics.taggedAssetsCount}>
                     <i className="fas fa-tag"></i>
-                    <span>{taggedAssets.length}</span>
+                    <span className="metric-tagged-asset-count">{taggedAssets.length}</span>
                 </li>
-                <li title="Visited Assets">
+                <li title={strings.projectMetrics.visitedAssetsCount}>
                     <i className="fas fa-eye"></i>
-                    <span>{visitedAssets.length}</span>
+                    <span className="metric-visited-asset-count">{visitedAssets.length}</span>
                 </li>
             </ul>
         );
