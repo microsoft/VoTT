@@ -85,7 +85,6 @@ export default class App extends React.Component<IAppProps> {
                                         </li>
                                     </ul>
                                 </TitleBar>
-                                {/* <Navbar /> */}
                                 <div className="app-main">
                                     <Sidebar project={this.props.currentProject} />
                                     <MainContentRouter />

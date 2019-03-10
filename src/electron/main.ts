@@ -1,6 +1,6 @@
 import {
     app, ipcMain, BrowserWindow, BrowserWindowConstructorOptions,
-    Menu, MenuItemConstructorOptions, dialog, MenuItem, OpenDialogOptions,
+    Menu, MenuItemConstructorOptions,
 } from "electron";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
@@ -54,15 +54,6 @@ function onReloadApp() {
 
 function onToggleDevTools() {
     mainWindow.webContents.toggleDevTools();
-}
-
-function onFileOpen(menuItem: MenuItem, browserWindow: BrowserWindow) {
-    const options: OpenDialogOptions = {
-        title: "Open VoTT Project",
-        filters: [{ name: "VoTT Project", extensions: ["json", "vott"] }],
-    };
-
-    dialog.showOpenDialog(browserWindow, options);
 }
 
 /**
