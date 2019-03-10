@@ -22,6 +22,7 @@ export enum HostProcessType {
 }
 
 export enum PlatformType {
+    Web = "web",
     Windows = "win32",
     Linux = "linux",
     MacOS = "darwin",

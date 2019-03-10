@@ -103,22 +103,16 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
     const menuItems: MenuItemConstructorOptions[] = [
         {
             label: "File", submenu: [
-                { label: "Open", accelerator: "CmdOrCtrl+O", click: onFileOpen },
-                { type: "separator" },
-                { label: "Save", accelerator: "CmdOrCtrl+S" },
-                { label: "Auto Save", type: "checkbox", checked: true },
-                { label: "Export" },
-                { type: "separator" },
                 { role: "quit" },
             ],
         },
         { role: "editMenu" },
         {
             label: "View", submenu: [
-                { label: "Reload", role: "reload" },
+                { role: "reload" },
                 { type: "separator" },
-                { label: "Toggle Developer Tools", role: "toggleDevTools" },
-                { label: "Toggle Fullscreen", role: "toggleFullScreen" },
+                { role: "toggleDevTools" },
+                { role: "toggleFullScreen" },
                 { type: "separator" },
                 { role: "resetZoom" },
                 { role: "zoomIn" },
@@ -126,13 +120,6 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
             ],
         },
         { role: "windowMenu" },
-        {
-            label: "Help", submenu: [
-                { label: "About" },
-                { label: "Disabled", enabled: false },
-                { label: "Invisible", visible: false },
-            ],
-        },
     ];
     const menu = Menu.buildFromTemplate(menuItems);
     Menu.setApplicationMenu(menu);

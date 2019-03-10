@@ -19,7 +19,7 @@ export interface ITitleBarState {
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     public state: ITitleBarState = {
         isElectron: false,
-        platform: global && global.process ? global.process.platform : "web",
+        platform: global && global.process && global.process.platform ? global.process.platform : "web",
         maximized: false,
         fullscreen: false,
         menu: null,
@@ -43,7 +43,6 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
 
             this.setState({
                 isElectron: true,
-                platform: global.process.platform,
                 maximized: this.currentWindow.isMaximized(),
                 fullscreen: this.currentWindow.isFullScreen(),
                 menu: this.remote.Menu.getApplicationMenu(),
@@ -64,27 +63,27 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
 
         return (
             <div className="title-bar bg-lighter-3">
-                {this.state.isElectron && this.state.platform === PlatformType.Windows &&
-                    <Fragment>
-                        <div className="title-bar-icon">
-                            {typeof (this.props.icon) === "string" && <i className={`${this.props.icon}`}></i>}
-                            {typeof (this.props.icon) !== "string" && this.props.icon}
-                        </div>
-                        <div className="title-bar-menu">
-                            <Menu ref={this.menu}
-                                mode="horizontal"
-                                selectable={false}
-                                triggerSubMenuAction="click"
-                                onClick={this.onMenuItemSelected}>
-                                {this.renderMenu(this.state.menu)}
-                            </Menu>
-                        </div>
-                    </Fragment>
+                {(this.state.platform === PlatformType.Windows || this.state.platform === PlatformType.Web) &&
+                    <div className="title-bar-icon">
+                        {typeof (this.props.icon) === "string" && <i className={`${this.props.icon}`}></i>}
+                        {typeof (this.props.icon) !== "string" && this.props.icon}
+                    </div>
+                }
+                {this.state.platform === PlatformType.Windows &&
+                    <div className="title-bar-menu">
+                        <Menu ref={this.menu}
+                            mode="horizontal"
+                            selectable={false}
+                            triggerSubMenuAction="click"
+                            onClick={this.onMenuItemSelected}>
+                            {this.renderMenu(this.state.menu)}
+                        </Menu>
+                    </div>
                 }
                 <div className="title-bar-main">{this.props.title || "Welcome"} - VoTT</div>
                 <div className="title-bar-controls">
                     {this.props.children}
-                    {this.state.isElectron && this.state.platform === PlatformType.Windows &&
+                    {this.state.platform === PlatformType.Windows &&
                         <ul className="ml-3">
                             <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
@@ -201,7 +200,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private closeWindow = () => {
-        this.remote.getCurrentWindow().close();
+        this.currentWindow.close();
     }
 
     private onMenuItemSelected = (key: string, item: React.Component) => {
