@@ -14,6 +14,7 @@ import { KeyboardManager } from "./react/components/common/keyboardManager/keybo
 import { TitleBar } from "./react/components/shell/titleBar";
 import { StatusBar } from "./react/components/shell/statusBar";
 import { strings } from "./common/strings";
+import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -90,27 +91,7 @@ export default class App extends React.Component<IAppProps> {
                                     <MainContentRouter />
                                 </div>
                                 <StatusBar>
-                                    {
-                                        this.props.currentProject &&
-                                        <ul>
-                                            <li>
-                                                <i className="fas fa-plug"></i>
-                                                <span>(Source) {this.props.currentProject.sourceConnection.name}</span>
-                                            </li>
-                                            <li>
-                                                <i className="fas fa-plug"></i>
-                                                <span>(Target) {this.props.currentProject.targetConnection.name}</span>
-                                            </li>
-                                            <li>
-                                                <i className="fas fa-tag"></i>
-                                                <span>12</span>
-                                            </li>
-                                            <li>
-                                                <i className="fas fa-eye"></i>
-                                                <span>24</span>
-                                            </li>
-                                        </ul>
-                                    }
+                                    <StatusBarMetrics project={this.props.currentProject} />
                                 </StatusBar>
                                 <ToastContainer />
                             </div>
