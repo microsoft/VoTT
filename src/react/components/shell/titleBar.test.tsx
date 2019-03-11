@@ -12,7 +12,7 @@ describe("TileBar Component", () => {
 
     let handlerMapping = {};
 
-    const mockMenu = {
+    const mockMenu: any = {
         items: [{
             label: "Top Level Menu",
             type: "submenu",
@@ -43,7 +43,7 @@ describe("TileBar Component", () => {
         setTitle: jest.fn(),
         minimize: jest.fn(),
         maximize: jest.fn(),
-        restore: jest.fn(),
+        unmaximize: jest.fn(),
         close: jest.fn(),
     };
 
@@ -128,12 +128,21 @@ describe("TileBar Component", () => {
                 expect(wrapper.find(MenuItem).exists()).toBe(true);
             });
 
+            it("calls menu item click method when selected", () => {
+                const expectedMenuItem = mockMenu.items[0].submenu.items[0];
+
+                wrapper.find(".rc-menu-submenu-title").at(1).simulate("click");
+                wrapper.update();
+
+                wrapper.find(".rc-menu-item").first().simulate("click");
+                expect(expectedMenuItem.click).toBeCalledWith(expectedMenuItem, electronCurrentWindow);
+            });
+
             it("does not render when in full screen mode", () => {
                 expect(wrapper.find(".title-bar").exists()).toBe(true);
 
                 // Trigger full screen
-                handlerMapping["enter-full-screen"]();
-                wrapper.update();
+                wrapper.setState({ fullscreen: true });
 
                 expect(wrapper.find(".title-bar").exists()).toBe(false);
             });
@@ -143,18 +152,24 @@ describe("TileBar Component", () => {
                 expect(wrapper.find(".btn-window-restore").exists()).toBe(false);
 
                 // Maximize Window
-                handlerMapping["maximize"]();
-                wrapper.update();
+                wrapper.setState({ maximized: true });
 
                 expect(wrapper.find(".btn-window-maximize").exists()).toBe(false);
                 expect(wrapper.find(".btn-window-restore").exists()).toBe(true);
 
                 // Restore Window
-                handlerMapping["unmaximize"]();
-                wrapper.update();
+                wrapper.setState({ maximized: false });
 
                 expect(wrapper.find(".btn-window-maximize").exists()).toBe(true);
                 expect(wrapper.find(".btn-window-restore").exists()).toBe(false);
+            });
+
+            it("Updates title when props change", () => {
+                const updatedTitle = "Updated Title";
+                const expectedTitleString = `${updatedTitle} - VoTT`;
+                wrapper.setProps({ title: updatedTitle });
+                expect(wrapper.find(".title-bar-main").text()).toEqual(expectedTitleString);
+                expect(electronCurrentWindow.setTitle).toBeCalledWith(expectedTitleString);
             });
 
             it("clicking minimize button minimizes window", () => {
@@ -165,6 +180,13 @@ describe("TileBar Component", () => {
             it("clicking maximize button maximizes window", () => {
                 wrapper.find(".btn-window-maximize").simulate("click");
                 expect(electronCurrentWindow.maximize).toBeCalled();
+            });
+
+            it("clicking restore button restores window to previous size", () => {
+                wrapper.setState({ maximized: true });
+
+                wrapper.find(".btn-window-restore").simulate("click");
+                expect(electronCurrentWindow.unmaximize).toBeCalled();
             });
 
             it("clicking close button closes window", () => {

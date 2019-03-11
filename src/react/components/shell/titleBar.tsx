@@ -94,7 +94,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                                 </li>
                             }
                             {this.state.maximized &&
-                                <li title="Restore" className="btn-window-restore" onClick={this.restoreWindow}>
+                                <li title="Restore" className="btn-window-restore" onClick={this.unmaximizeWindow}>
                                     <i className="far fa-window-restore" />
                                 </li>
                             }
@@ -195,8 +195,8 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         this.currentWindow.maximize();
     }
 
-    private restoreWindow = () => {
-        this.currentWindow.restore();
+    private unmaximizeWindow = () => {
+        this.currentWindow.unmaximize();
     }
 
     private closeWindow = () => {
@@ -204,6 +204,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private onMenuItemSelected = (key: string, item: React.Component) => {
+        // Required to auto-close the menu after user selects an item.
         this.menu.current.store.setState({
             openKeys: [],
             selectedKeys: [],
