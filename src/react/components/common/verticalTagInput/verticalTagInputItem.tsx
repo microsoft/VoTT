@@ -1,6 +1,6 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
-import { invertColor, idealTextColor } from "../../../../common/utils";
+import { idealTextColor } from "../../../../common/utils";
 import { GithubPicker } from "react-color";
 import { TagEditMode } from "./verticalTagInput";
 // tslint:disable-next-line:no-var-requires
@@ -68,7 +68,7 @@ function getColorPicker(item, onChange) {
                 width={165}
                 styles={{
                     card: {
-                        background: "#000",
+                        background: "#fff",
                     },
                 }}
             />

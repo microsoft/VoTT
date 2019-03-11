@@ -6,6 +6,8 @@ import { ITag } from "../../../../models/applicationState";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../tagColors.json");
 
+import { GithubPicker } from "react-color";
+
 describe("Vertical Tag Input Component", () => {
 
     function createComponent(props?: IVerticalTagInputProps):
@@ -110,8 +112,7 @@ describe("Vertical Tag Input Component", () => {
             } : t;
         });
         expect(wrapper.state().tags).toEqual(expectedTags);
-        expect(onTagNameChange).toBeCalledWith(firstTag.name, newTagName);
-        expect(onChange).not.toBeCalled();
+        expect(onChange).toBeCalledWith(expectedTags);
     });
 
     it("Edits a tag color", () => {
@@ -122,12 +123,13 @@ describe("Vertical Tag Input Component", () => {
         const firstTag = tags[0];
         wrapper.find(".tag-color").first().simulate("click");
         wrapper.find("i.tag-input-toolbar-icon.fas.fa-edit").simulate("click");
-        const color = tagColors[3];
-        wrapper.find(`[title="${color}"]`).simulate("click");
+        const colorPicker = wrapper.find(GithubPicker);
+        const color = {hex: tagColors[3]};
+        (colorPicker.prop("onChangeComplete") as any)(color);
         const expectedTags = tags.map((t) => {
             return (t.name === firstTag.name) ? {
                 name: firstTag.name,
-                color,
+                color: color.hex,
             } : t;
         });
         expect(wrapper.state().tags).toEqual(expectedTags);

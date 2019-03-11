@@ -128,11 +128,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             editingTag: null,
             selectedTag: newTag,
         }, () => {
-            if (oldTag.name !== newTag.name) {
-                this.props.onTagNameChange(oldTag.name, newTag.name);
-            } else {
-                this.props.onChange(tags);
-            }
+            this.props.onChange(tags);
         });
     }
 
