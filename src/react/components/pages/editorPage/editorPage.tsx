@@ -310,7 +310,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         };
         this.setState({ project }, async () => {
             await this.props.actions.saveProject(project);
-            this.canvas.current.updateCanvasToolsRegions();
+            if (this.canvas.current) {
+                this.canvas.current.updateCanvasToolsRegions();
+            }
         });
     }
 

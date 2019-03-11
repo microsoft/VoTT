@@ -16,7 +16,7 @@ import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyb
 import Canvas from "./canvas";
 import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 // tslint:disable-next-line:no-var-requires
-const tagColors = require("../../common/tagColors.json")
+const tagColors = require("../../common/tagColors.json");
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -235,7 +235,7 @@ describe("Editor Page Component", () => {
 
     describe("Editor Page Component Forcing Tag Scenario", () => {
         it("Detect new Tag from asset metadata when selecting the Asset", async () => {
-            
+
             const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
             getAssetMetadataMock.mockImplementationOnce((asset) => {
                 const assetMetadata: IAssetMetadata = {
@@ -254,7 +254,7 @@ describe("Editor Page Component", () => {
             const props = MockFactory.editorPageProps(testProject.id);
 
             const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
-            
+
             // create mock editor page
             createComponent(store, props);
 
@@ -523,97 +523,94 @@ describe("Editor Page Component", () => {
         });
     });
 
-    // describe("Basic tag interaction tests", () => {
-    //     it("tags are initialized correctly", () => {
-    //         const project = MockFactory.createTestProject();
-    //         const store = createReduxStore({
-    //             ...MockFactory.initialState(),
-    //             currentProject: project,
-    //         });
+    describe("Basic tag interaction tests", () => {
 
-    //         const wrapper = createComponent(store, MockFactory.editorPageProps());
-    //         expect(getState(wrapper).project.tags).toEqual(project.tags);
-    //     });
+        it("tags are initialized correctly", () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
 
-    //     it("create a new tag from text box", async () => {
-    //         const project = MockFactory.createTestProject();
-    //         const store = createReduxStore({
-    //             ...MockFactory.initialState(),
-    //             currentProject: project,
-    //         });
-    //         const wrapper = createComponent(store, MockFactory.editorPageProps());
-    //         expect(getState(wrapper).project.tags).toEqual(project.tags);
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            expect(getState(wrapper).project.tags).toEqual(project.tags);
+        });
 
-    //         const newTagName = "My new tag";
-    //         wrapper.find("input.tag-input-box").simulate("change", {target: {value: newTagName}});
+        it("create a new tag from text box", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            expect(getState(wrapper).project.tags).toEqual(project.tags);
 
-    //         wrapper.find("input.tag-input-box").simulate("keyPress", { keyCode: 13 });
+            const newTagName = "My new tag";
+            wrapper.find(".tag-input-box").simulate("keypress", {key: "Enter", target: {value: newTagName}});
 
-    //         const stateTags = getState(wrapper).project.tags;
+            const stateTags = getState(wrapper).project.tags;
 
-    //         expect(stateTags).toHaveLength(project.tags.length + 1);
-    //         expect(stateTags[stateTags.length - 1].name).toEqual(newTagName);
-    //     });
+            expect(stateTags).toHaveLength(project.tags.length + 1);
+            expect(stateTags[stateTags.length - 1].name).toEqual(newTagName);
+        });
 
-    //     it("remove a tag", () => {
-    //         const project = MockFactory.createTestProject();
-    //         const store = createReduxStore({
-    //             ...MockFactory.initialState(),
-    //             currentProject: project,
-    //         });
+        it("remove a tag", async () => {
+            const testProject = MockFactory.createTestProject("TestProject");
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+            const wrapper = createComponent(store, props);
+            await waitForSelectedAsset(wrapper);
+            wrapper.update();
 
-    //         const wrapper = createComponent(store, MockFactory.editorPageProps());
-    //         expect(getState(wrapper).project.tags).toEqual(project.tags);
-    //         wrapper.find("a.ReactTags__remove")
-    //             .last().simulate("click");
+            wrapper.find(".tag-content").first().simulate("click");
+            await MockFactory.flushUi();
+            wrapper.update();
+            wrapper.find("i.tag-input-toolbar-icon.fas.fa-trash").simulate("click");
+            const expectedTags = testProject.tags.filter((t) => t.name !== testProject.tags[0].name);
 
-    //         const stateTags = getState(wrapper).project.tags;
-    //         expect(stateTags).toHaveLength(project.tags.length - 1);
-    //     });
+            const stateTags = getState(wrapper).project.tags;
+            expect(stateTags).toEqual(expectedTags);
+        });
 
-    //     it("Adds tag to locked tags when ctrl clicked", async () => {
-    //         const project = MockFactory.createTestProject();
-    //         const store = createReduxStore({
-    //             ...MockFactory.initialState(),
-    //             currentProject: project,
-    //         });
+        it("Adds tag to locked tags when ctrl clicked", async () => {
+            const testProject = MockFactory.createTestProject("TestProject");
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+            const wrapper = createComponent(store, props);
+            await waitForSelectedAsset(wrapper);
+            wrapper.update();
+            wrapper.find(".tag-content")
+                .first()
+                .simulate("click", { target: { innerText: testProject.tags[0].name }, ctrlKey: true });
+            const newEditorPage = wrapper.find(EditorPage).childAt(0);
+            expect(newEditorPage.state().lockedTags).toEqual([testProject.tags[0].name]);
+        });
 
-    //         const wrapper = createComponent(store, MockFactory.editorPageProps());
-    //         await waitForSelectedAsset(wrapper);
+        it("Removes tag from locked tags when ctrl clicked", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
 
-    //         wrapper.update();
-    //         wrapper.find("div.tag")
-    //             .first()
-    //             .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-    //         const newEditorPage = wrapper.find(EditorPage).childAt(0);
-    //         expect(newEditorPage.state().lockedTags).toEqual([project.tags[0].name]);
-    //     });
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
 
-    //     it("Removes tag from locked tags when ctrl clicked", async () => {
-    //         const project = MockFactory.createTestProject();
-    //         const store = createReduxStore({
-    //             ...MockFactory.initialState(),
-    //             currentProject: project,
-    //         });
+            wrapper.update();
+            wrapper.find(".tag-content")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
+            let editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
 
-    //         const wrapper = createComponent(store, MockFactory.editorPageProps());
-    //         await waitForSelectedAsset(wrapper);
-
-    //         wrapper.update();
-    //         wrapper.find("div.tag")
-    //             .first()
-    //             .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-    //         let editorPage = wrapper.find(EditorPage).childAt(0);
-    //         expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
-
-    //         wrapper.update();
-    //         wrapper.find("div.tag")
-    //             .first()
-    //             .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-    //         editorPage = wrapper.find(EditorPage).childAt(0);
-    //         expect(editorPage.state().lockedTags).toEqual([]);
-    //     });
-    // });
+            wrapper.update();
+            wrapper.find(".tag-content")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
+            editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([]);
+        });
+    });
 });
 
 function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
