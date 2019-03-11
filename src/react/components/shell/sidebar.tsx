@@ -17,6 +17,11 @@ export default function Sidebar({ project }) {
         <div className="bg-lighter-2 app-sidebar">
             <ul>
                 <li>
+                    <NavLink title={"Home"} to={`/`}>
+                        <i className="fas fa-home"></i>
+                    </NavLink>
+                </li>
+                <li>
                     <ConditionalNavLink disabled={!projectId}
                         title={strings.tags.editor}
                         to={`/projects/${projectId}/edit`}>
@@ -44,13 +49,13 @@ export default function Sidebar({ project }) {
                 </li>
                 <li>
                     <NavLink title={strings.connections.title}
-                            to={`/connections`}><i className="fas fa-plug"></i></NavLink>
+                        to={`/connections`}><i className="fas fa-plug"></i></NavLink>
                 </li>
             </ul>
             <div className="app-sidebar-fill"></div>
             <ul>
                 <li><NavLink title={strings.appSettings.title}
-                            to={`/settings`}><i className="fas fa-cog"></i></NavLink></li>
+                    to={`/settings`}><i className="fas fa-cog"></i></NavLink></li>
             </ul>
         </div>
     );

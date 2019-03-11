@@ -48,7 +48,7 @@
                     .fas {
                         color: #fff;
                     }
-                    
+
                     background-color: #666;
                 }
             }
@@ -90,12 +90,12 @@
                 display: inline-block;
                 width: 45px;
                 padding: 5px 10px;
-                
+
                 &.active, &:hover {
                     .fas {
                         color: #fff;
                     }
-                    
+
                     background-color: $lighter-3;
                 }
 

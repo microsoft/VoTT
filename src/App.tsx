@@ -1,8 +1,7 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { HashRouter as Router } from "react-router-dom";
+import { HashRouter as Router, NavLink, Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Navbar from "./react/components/shell/navbar";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
 import { IAppError, IApplicationState, IProject, ErrorCode } from "./models/applicationState";
@@ -12,6 +11,10 @@ import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActi
 import { bindActionCreators } from "redux";
 import { ErrorHandler } from "./react/components/common/errorHandler/errorHandler";
 import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
+import { TitleBar } from "./react/components/shell/titleBar";
+import { StatusBar } from "./react/components/shell/statusBar";
+import { strings } from "./common/strings";
+import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -54,7 +57,13 @@ export default class App extends React.Component<IAppProps> {
         });
     }
 
+    public componentDidMount() {
+        console.log(process.platform);
+    }
+
     public render() {
+        const platform = global && global.process ? global.process.platform : "web";
+
         return (
             <Fragment>
                 <ErrorHandler
@@ -65,12 +74,24 @@ export default class App extends React.Component<IAppProps> {
                 {(!this.props.appError || this.props.appError.errorCode !== ErrorCode.GenericRenderError) &&
                     <KeyboardManager>
                         <Router>
-                            <div className="app-shell">
-                                <Navbar />
+                            <div className={`app-shell platform-${platform}`}>
+                                <TitleBar icon="fas fa-tags"
+                                    title={this.props.currentProject ? this.props.currentProject.name : ""}>
+                                    <ul>
+                                        <li>
+                                            <Link title={strings.profile.settings} to={`/profile`}>
+                                                <i className="fas fa-user-circle"></i>
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </TitleBar>
                                 <div className="app-main">
                                     <Sidebar project={this.props.currentProject} />
                                     <MainContentRouter />
                                 </div>
+                                <StatusBar>
+                                    <StatusBarMetrics project={this.props.currentProject} />
+                                </StatusBar>
                                 <ToastContainer />
                             </div>
                         </Router >
