@@ -4,11 +4,17 @@
     height: 100%;
 
     &-settings {
-        flex-grow: 1;
+        flex-grow: 2;
     }
 
     &-metrics {
-        align-content: center;
-        align-items: center;
+        flex: 2 1 400px;
+
+        .loading {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+        }
     }
 }
