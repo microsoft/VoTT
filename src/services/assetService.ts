@@ -129,8 +129,7 @@ export class AssetService {
             if (!normalizedPath.startsWith("http://") &&
                 !normalizedPath.startsWith("https://") &&
                 !normalizedPath.startsWith("file:")) {
-                let path = encodeURI("file:" + asset.path);
-                path = path.replace(/\\/g, "/");
+                let path = encodeURI("file:" + asset.path.replace(/\\/g, "/"));
                 path = path.replace(/#/g, "%23");
                 asset.path = path;
             }
