@@ -79,14 +79,14 @@ describe("Condensed List Component", () => {
         const options = { onClick: jest.fn() };
         const wrapper = createList("Testing Component", items, options);
         wrapper.find(".test-component").first().simulate("click");
-        expect(options.onClick).toBeCalledWith(items[0]);
+        expect(options.onClick).toBeCalledWith(items[0], expect.anything());
     });
 
     it("Call onClick handler when the specified item is clicked on", () => {
         const options = { onClick: jest.fn() };
         const wrapper = createList("Testing Component", items, options);
         wrapper.find(".test-component").at(1).simulate("click");
-        expect(options.onClick).toBeCalledWith(items[1]);
+        expect(options.onClick).toBeCalledWith(items[1], expect.anything());
     });
 
     it("Calls onDelete handler when the first item is deleted", () => {

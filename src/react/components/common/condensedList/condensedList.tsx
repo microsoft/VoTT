@@ -19,7 +19,7 @@ interface ICondensedListProps {
     Toolbar?: any;
     ToolbarProps?: any;
     newLinkTo?: string;
-    onClick?: (item, e, properties: any) => void;
+    onClick?: (item, e, properties?: any) => void;
     onChange?: (oldItem, newItem) => void;
     onDelete?: (item) => void;
 }
@@ -76,7 +76,11 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
 
     private onItemClick = (item, e, props: any) => {
         if (this.props.onClick) {
-            this.props.onClick(item, e, props);
+            if (props) {
+                this.props.onClick(item, e, props);
+            } else {
+                this.props.onClick(item, e);
+            }
         }
     }
 
