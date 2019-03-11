@@ -89,7 +89,6 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         if (this.isReactDnDError(error)) {
             return;
         }
-
         let appError: IAppError = null;
         // Promise rejection with reason
         if (typeof (error) === "string") {
