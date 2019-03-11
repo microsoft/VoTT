@@ -179,7 +179,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 lockedTags={this.state.lockedTags}
                                 onChange={this.onTagsChanged}
                                 onLockedTagsChange={this.onLockedTagsChanged}
-                                onTagNameChange={this.onTagNameChange}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
                             />
@@ -188,10 +187,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
             </div>
         );
-    }
-
-    private onTagNameChange = (oldTag: string, newTag: string) => {
-        this.canvas.current.updateTagName(oldTag, newTag);
     }
 
     /**

@@ -17,8 +17,6 @@ export interface IVerticalTagInputProps {
     onChange: (tags: ITag[]) => void;
     /** Updates to locked tags */
     onLockedTagsChange: (locked: string[]) => void;
-    /** Function called when tag name is changed */
-    onTagNameChange: (oldTag: string, newTag: string) => void;
     /** Place holder for input text box */
     placeHolder?: string;
     /** Colors for tags */
@@ -163,7 +161,6 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             const selectedTag = this.state.selectedTag;
 
             const inEditMode = editingTag && tag && tag.name === editingTag.name;
-            // const switchingEditMode = props.clickTarget !== this.state.tagEditMode;
 
             this.setState({
                 editingTag: (editingTag && tag && tag.name !== editingTag.name) ? null : editingTag,

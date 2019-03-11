@@ -132,14 +132,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.updateRegions(selectedRegions);
     }
 
-    public updateTagName = (oldTag: string, newTag: string) => {
-        const regions = this.state.currentAsset.regions;
-        for (const region of regions) {
-            region.tags.map((t) => (t === oldTag) ? newTag : t);
-        }
-        this.updateCanvasToolsRegions();
-    }
-
     public copyRegions = async () => {
         await Clipboard.writeObject(this.getSelectedRegions());
     }
