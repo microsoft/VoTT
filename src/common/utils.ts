@@ -129,7 +129,7 @@ function decryptProviderOptions<T = IProviderOptions>(providerOptions: IProvider
 export function idealTextColor(background: string) {
     const rgb = getRGB(background);
     const bgDelta = (rgb.red * 0.299) + (rgb.green * 0.587) + (rgb.blue * 0.114);
-   return ((255 - bgDelta) < 105) ? "#000000" : "#ffffff"; 
+    return ((255 - bgDelta) < 105) ? "#000000" : "#ffffff";
 }
 
 export function fadedColor(color: string) {
@@ -144,11 +144,11 @@ export function getRGB(background: string) {
         red,
         green,
         blue,
-    }
+    };
 }
 
 export function invertColor(hex: string): string {
-    if (hex.indexOf('#') === 0) {
+    if (hex.indexOf("#") === 0) {
         hex = hex.slice(1);
     }
     // convert 3-digit hex to 6-digits.
@@ -156,18 +156,18 @@ export function invertColor(hex: string): string {
         hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
     if (hex.length !== 6) {
-        throw new Error('Invalid HEX color.');
+        throw new Error("Invalid HEX color.");
     }
     // invert color components
-    var r = (255 - parseInt(hex.slice(0, 2), 16)).toString(16),
-        g = (255 - parseInt(hex.slice(2, 4), 16)).toString(16),
-        b = (255 - parseInt(hex.slice(4, 6), 16)).toString(16);
+    const r = (255 - parseInt(hex.slice(0, 2), 16)).toString(16);
+    const g = (255 - parseInt(hex.slice(2, 4), 16)).toString(16);
+    const b = (255 - parseInt(hex.slice(4, 6), 16)).toString(16);
     // pad each with zeros and return
-    return '#' + padZero(r) + padZero(g) + padZero(b);
+    return "#" + padZero(r) + padZero(g) + padZero(b);
 }
 
 function padZero(str, len?) {
     len = len || 2;
-    var zeros = new Array(len).join('0');
+    const zeros = new Array(len).join("0");
     return (zeros + str).slice(-len);
 }

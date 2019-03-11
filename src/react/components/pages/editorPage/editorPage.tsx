@@ -24,6 +24,7 @@ import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/a
 import CanvasHelpers from "./canvasHelpers";
 import { ToolbarItemName } from "../../../../registerToolbar";
 import { VerticalTagInput } from "../../common/verticalTagInput/verticalTagInput";
+// tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
 /**
@@ -146,7 +147,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         selectedAsset={selectedAsset ? selectedAsset.asset : null}
                         onAssetSelected={this.selectAsset}
                     />
-                    
+
                 </div>
                 <div className="editor-page-content">
                     <div className="editor-page-content-header">
@@ -304,7 +305,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onTagsChanged = (tags) => {
         const project = {
             ...this.props.project,
-            tags: tags,
+            tags,
         };
         this.setState({ project }, async () => {
             await this.props.actions.saveProject(project);

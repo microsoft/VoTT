@@ -1,20 +1,20 @@
-import React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import _ from "lodash";
+import React from "react";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
-import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
+import { appInfo } from "../../../../common/appInfo";
 import MockFactory from "../../../../common/mockFactory";
-import {
-    IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState,
-} from "../../../../models/applicationState";
+import { AssetState, EditorMode, IApplicationState,
+    IAsset, IAssetMetadata, IProject } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
-import { AssetService } from "../../../../services/assetService";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
+import { AssetService } from "../../../../services/assetService";
 import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyboardManager";
+import Canvas from "./canvas";
+import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -24,11 +24,6 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
-import EditorFooter from "./editorFooter";
-import { AssetPreview } from "../../common/assetPreview/assetPreview";
-import Canvas from "./canvas";
-import { appInfo } from "../../../../common/appInfo";
-import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(

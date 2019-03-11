@@ -6,6 +6,7 @@ import "./verticalTagInput.scss";
 import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
 import VerticalTagInputToolbar from "./verticalTagInputToolbar";
+// tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
 export interface IVerticalTagInputProps {
@@ -16,8 +17,8 @@ export interface IVerticalTagInputProps {
     onChange: (tags: ITag[]) => void;
     /** Updates to locked tags */
     onLockedTagsChange: (locked: string[]) => void;
-    
-    onTagNameChange: (oldTag: string, newTag: string) => void;    
+
+    onTagNameChange: (oldTag: string, newTag: string) => void;
     /** Place holder for input text box */
     placeHolder?: string;
     /** Key code delimiters for creating a new tag */
@@ -44,14 +45,14 @@ export enum TagEditMode {
 
 export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IVerticalTagInputState> {
 
-    state = {
+    public state = {
         tags: this.props.tags || [],
         selectedTag: null,
         editingTag: null,
         tagEditMode: null,
-    }
+    };
 
-    render() {
+    public render() {
         return (
             <div className="vertical-tag-input">
                 <CondensedList
@@ -74,7 +75,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                 />
                 <input type="text" onKeyPress={this.handleKeyPress} placeholder="Add new tag"/>
             </div>
-        )
+        );
     }
 
     private onEditTag = (tag: ITag) => {
@@ -91,9 +92,9 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         if (!tag) {
             return;
         }
-        let lockedTags = [...this.props.lockedTags]
+        let lockedTags = [...this.props.lockedTags];
         if (lockedTags.find((t) => t === tag.name)) {
-            lockedTags = lockedTags.filter((t) => t !== tag.name)
+            lockedTags = lockedTags.filter((t) => t !== tag.name);
         } else {
             lockedTags.push(tag.name);
         }
@@ -143,29 +144,27 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                 isSelected: this.state.selectedTag && this.state.selectedTag.name === tag.name,
                 isBeingEdited: this.state.editingTag && this.state.editingTag.name === tag.name,
                 tagEditMode: this.state.tagEditMode,
-            }
+            };
             return item;
-        })
+        });
     }
 
     private handleClick = (item: IVerticalTagItemProps, e, props) => {
         const tag = item && item.tag;
         if (e.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
-        }
-        else if (e.altKey) {
+        } else if (e.altKey) {
             // Open edit mode
             this.setState({
                 editingTag: tag,
                 selectedTag: null,
-                tagEditMode: props.clickTarget
+                tagEditMode: props.clickTarget,
             });
-        }
-        else {
+        } else {
             const editingTag = this.state.editingTag;
             const selectedTag = this.state.selectedTag;
-            
-            const inEditMode = editingTag && tag && tag.name === editingTag.name
+
+            const inEditMode = editingTag && tag && tag.name === editingTag.name;
             // const switchingEditMode = props.clickTarget !== this.state.tagEditMode;
 
             this.setState({
@@ -173,7 +172,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                 selectedTag: (selectedTag && selectedTag.name === tag.name && !inEditMode) ? null : tag,
                 tagEditMode: props.clickTarget,
             });
-                        
+
             if (this.props.onTagClick && !inEditMode) {
                 this.props.onTagClick(tag);
             }
@@ -184,7 +183,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         if (!tag) {
             return;
         }
-        let index = this.state.tags.indexOf(tag);
+        const index = this.state.tags.indexOf(tag);
         const tags = this.state.tags.filter((t) => t.name !== tag.name);
         this.setState({
             tags,
@@ -192,7 +191,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         }, () => this.props.onChange(tags));
         if (this.props.lockedTags.find((l) => l === tag.name)) {
             this.props.onLockedTagsChange(
-                this.props.lockedTags.filter((lockedTag) => lockedTag !== tag.name)
+                this.props.lockedTags.filter((lockedTag) => lockedTag !== tag.name),
             );
         }
     }
@@ -203,11 +202,11 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
 
     private handleKeyPress = (event) => {
         if (event.key === "Enter") {
-            //validate and add
+            // validate and add
             const newTag: ITag = {
                 name: event.target.value,
                 color: this.getNextColor(),
-            }
+            };
             if (!this.state.tags.find((t) => t.name === newTag.name)) {
                 this.addTag(newTag);
                 event.target.value = "";
@@ -228,7 +227,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             } else {
                 newIndex = randomIntInRange(0, tagColors.length - 1);
             }
-            return tagColors[newIndex]
+            return tagColors[newIndex];
         } else {
             return tagColors[0];
         }
@@ -236,9 +235,9 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
 
     private addTag = (tag: ITag) => {
         if (!this.state.tags.find((t) => t.name === tag.name)) {
-            const tags = [...this.state.tags, tag]
+            const tags = [...this.state.tags, tag];
             this.setState({
-                tags
+                tags,
             }, () => this.props.onChange(tags));
         }
     }

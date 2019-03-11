@@ -43,7 +43,7 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
             <div className="condensed-list">
                 <h6 className="condensed-list-header bg-darker-2 p-2">
                     <span className="condensed-list-title">{title}</span>
-                    {Toolbar && 
+                    {Toolbar &&
                         <div className="condensed-list-toolbar">
                             <Toolbar {...ToolbarProps}/>
                         </div>}

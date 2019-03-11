@@ -1,8 +1,9 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
 import { invertColor, idealTextColor } from "../../../../common/utils";
-import { GithubPicker } from 'react-color'
+import { GithubPicker } from "react-color";
 import { TagEditMode } from "./verticalTagInput";
+// tslint:disable-next-line:no-var-requires
 const tagColors = require("../tagColors.json");
 
 export interface IVerticalTagItemProps {
@@ -23,9 +24,15 @@ export default function VerticalTagInputItem({item, onClick, onChange, onDelete}
                 borderColor: item.tag.color,
                 background: item.tag.color,
             }}>
-                <div className={"tag-color"} onClick={(e) => onClick(e, {clickTarget: TagEditMode.Color})} style={getColorStyle(item)}>
-                </div>
-                <div className={"tag-content"} onClick={(e) => onClick(e, {clickTarget: TagEditMode.Name})}>                        
+                <div
+                    className={"tag-color"}
+                    onClick={(e) => onClick(e, {clickTarget: TagEditMode.Color})}
+                    style={getColorStyle(item)}
+                ></div>
+                <div
+                    className={"tag-content"}
+                    onClick={(e) => onClick(e, {clickTarget: TagEditMode.Name})}
+                >
                     {getTagContent(item, onChange, onDelete)}
                 </div>
                 {
@@ -40,7 +47,7 @@ export default function VerticalTagInputItem({item, onClick, onChange, onDelete}
                 (item.isBeingEdited && item.tagEditMode === TagEditMode.Color) ? getColorPicker(item, onChange) : ""
             }
         </div>
-    )
+    );
 }
 
 function getItemClassName(item) {
@@ -62,19 +69,24 @@ function getColorPicker(item, onChange) {
                 styles={{
                     card: {
                         background: "#000",
-                    }
+                    },
                 }}
             />
         </div>
-    )
+    );
 }
 
-function getTagContent(item: IVerticalTagItemProps, onChange, onDelete){
+function getTagContent(item: IVerticalTagItemProps, onChange, onDelete) {
     const tag = item.tag;
     if (item.isBeingEdited && item.tagEditMode === TagEditMode.Name) {
         return (
-            <input className="tag-editor" type="text" defaultValue={tag.name} onKeyPress={(e) => handleNameEdit(e, tag, onChange)}/>
-        )
+            <input
+                className="tag-editor"
+                type="text"
+                defaultValue={tag.name}
+                onKeyPress={(e) => handleNameEdit(e, tag, onChange)}
+            />
+        );
     } else {
         return getDefaultTagContent(item, onDelete);
     }
@@ -88,39 +100,39 @@ function getDefaultTagContent(item, onDelete) {
             }
             <span className={getContentClassName(item)}>{item.tag.name}</span>
         </div>
-    )
+    );
 }
 
-function handleNameEdit(e, tag: ITag, onChange){
-    if(e.key === "Enter") {
+function handleNameEdit(e, tag: ITag, onChange) {
+    if (e.key === "Enter") {
         const newTagName = e.target.value;
         onChange(tag, {
-            ...tag, 
+            ...tag,
             name: newTagName,
-        })
+        });
     }
 }
 
 function handleColorEdit(tag: ITag, color, onChange) {
     onChange(tag, {
         ...tag,
-        color: color.hex
-    })
+        color: color.hex,
+    });
 }
 
 function handleTagDelete(e, tag: ITag, onDelete) {
     onDelete(e, tag);
 }
 
-function getContentClassName(item: IVerticalTagItemProps){
+function getContentClassName(item: IVerticalTagItemProps) {
     let className = "px-2";
-    if(item.isBeingEdited && item.tagEditMode === TagEditMode.Color) {
+    if (item.isBeingEdited && item.tagEditMode === TagEditMode.Color) {
         className += " tag-color-edit";
     }
     return className;
 }
 
-function getColorStyle(item){
+function getColorStyle(item) {
     const style = {
         backgroundColor: item.tag.color,
         color: idealTextColor(item.tag.color),
@@ -130,7 +142,7 @@ function getColorStyle(item){
     return style;
 }
 
-function getDisplayIndex(item){
+function getDisplayIndex(item) {
     const index = item.index;
     const displayIndex = (index === 9) ? 0 : index + 1;
     return (displayIndex < 10) ? displayIndex : null;
