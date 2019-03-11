@@ -17,12 +17,10 @@ export interface IVerticalTagInputProps {
     onChange: (tags: ITag[]) => void;
     /** Updates to locked tags */
     onLockedTagsChange: (locked: string[]) => void;
-
+    /** Function called when tag name is changed */
     onTagNameChange: (oldTag: string, newTag: string) => void;
     /** Place holder for input text box */
     placeHolder?: string;
-    /** Key code delimiters for creating a new tag */
-    delimiters?: number[];
     /** Colors for tags */
     tagColors?: { [id: string]: string };
     /** Function to call on clicking individual tag */
@@ -73,7 +71,8 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                     onChange={this.updateTag}
                     onDelete={(item) => this.deleteTag(item.tag)}
                 />
-                <input type="text" onKeyPress={this.handleKeyPress} placeholder="Add new tag"/>
+                <input className="tag-input-box" type="text"
+                    onKeyPress={this.handleKeyPress} placeholder="Add new tag"/>
             </div>
         );
     }
@@ -115,7 +114,9 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         }
         tags.splice(currentIndex, 1);
         tags.splice(newIndex, 0, tag);
-        this.setState({tags});
+        this.setState({
+            tags,
+        }, () => this.props.onChange(tags));
     }
 
     private updateTag = (oldTag: ITag, newTag: ITag) => {
@@ -127,9 +128,10 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
             editingTag: null,
             selectedTag: newTag,
         }, () => {
-            this.props.onChange(tags);
             if (oldTag.name !== newTag.name) {
                 this.props.onTagNameChange(oldTag.name, newTag.name);
+            } else {
+                this.props.onChange(tags);
             }
         });
     }
@@ -207,7 +209,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                 name: event.target.value,
                 color: this.getNextColor(),
             };
-            if (!this.state.tags.find((t) => t.name === newTag.name)) {
+            if (newTag.name.length && !this.state.tags.find((t) => t.name === newTag.name)) {
                 this.addTag(newTag);
                 event.target.value = "";
             } else {

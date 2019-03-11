@@ -4,21 +4,6 @@
     background: $darker-4;
 }
 
-.tag-item-block {
-    padding: 1px 0;
-}
-
-.tag-item {
-    display: flex;
-    flex-direction: row;    
-    &-selected {
-        border: solid;
-        border-width: 1px;
-        font-weight: bolder;
-        color: white;
-    }
-}
-
 .condensed-list-header {
     display: flex;
     flex-direction: row;
@@ -28,44 +13,57 @@
     flex: 1;
 }
 
-.tag-content {
-    flex: 1;
-    background: $darker-15;
-}
+.tag {
+    &-item-block {
+        padding: 1px 0;
+    }
+    
+    &-item {
+        display: flex;
+        flex-direction: row;    
+        &-selected {
+            border: solid;
+            border-width: 1px;
+            font-weight: bolder;
+            color: white;
+        }
+    }
 
-.tag-index {
-    background: $darker-15;
-    padding: 0 5px;
-    font-weight: bold;
-}
+    &-content {
+        flex: 1;
+        background: $darker-15;
+    }
+    
+    &-index {
+        background: $darker-15;
+        padding: 0 5px;
+        font-weight: bold;
+    }
+    
+    &-item:hover {
+        background:$lighter-4;
+        cursor: pointer;
+    }
+    
+    &-color-edit:hover {
+        background: $darker-1;
+        cursor: pointer;
+    }
+    
+    &-color {
+        width: 18px;
+    }
+    
+    &-lock-icon {
+        margin-left: 5px
+    }
 
-.tag-item:hover {
-    background:$lighter-4;
-    cursor: pointer;
-}
-
-.tag-color-edit:hover {
-    background: $darker-1;
-    cursor: pointer;
-}
-
-.tag-color {
-    width: 15px;
-}
-
-.tag-lock-icon {
-    margin-left: 5px
-}
-
-.delete-tag-icon:hover {
-    color: white;
-}
-
-.tag-input-toolbar-icon {
-    padding: 0 5px;
-}
-
-.tag-input-toolbar-icon:hover {
-    color: white;
-    cursor: pointer;
+    &-input-toolbar-icon {
+        padding: 0 5px;
+    }
+    
+    &-input-toolbar-icon:hover {
+        color: white;
+        cursor: pointer;
+    }
 }

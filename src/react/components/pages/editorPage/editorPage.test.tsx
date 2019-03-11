@@ -532,7 +532,7 @@ describe("Editor Page Component", () => {
             expect(getState(wrapper).project.tags).toEqual(project.tags);
         });
 
-        it("create a new tag from text box", () => {
+        it("create a new tag from text box", async () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
                 ...MockFactory.initialState(),
@@ -542,8 +542,9 @@ describe("Editor Page Component", () => {
             expect(getState(wrapper).project.tags).toEqual(project.tags);
 
             const newTagName = "My new tag";
-            wrapper.find("input.ReactTags__tagInputField").simulate("change", { target: { value: newTagName } });
-            wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", { keyCode: 13 });
+            wrapper.find("input.tag-input-box").simulate("change", {target: {value: newTagName}});
+
+            wrapper.find("input.tag-input-box").simulate("keyPress", { keyCode: 13 });
 
             const stateTags = getState(wrapper).project.tags;
 

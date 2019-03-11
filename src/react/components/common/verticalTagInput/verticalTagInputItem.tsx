@@ -81,7 +81,7 @@ function getTagContent(item: IVerticalTagItemProps, onChange, onDelete) {
     if (item.isBeingEdited && item.tagEditMode === TagEditMode.Name) {
         return (
             <input
-                className="tag-editor"
+                className="tag-name-editor"
                 type="text"
                 defaultValue={tag.name}
                 onKeyPress={(e) => handleNameEdit(e, tag, onChange)}
