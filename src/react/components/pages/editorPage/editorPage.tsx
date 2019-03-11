@@ -240,7 +240,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Returns a value indicating whether the current asset is taggable
      */
     private isTaggableAssetType = (asset: IAsset): boolean => {
-        return asset.type === AssetType.Image || asset.type === AssetType.VideoFrame;
+        return asset.type !== AssetType.Unknown && asset.type !== AssetType.Video;
     }
 
     /**
