@@ -140,7 +140,6 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
     }
 
     private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
-
         // If no provider type was specified on bind, pick the default provider
         const providerType = (exportFormat && exportFormat.providerType) ?
             exportFormat.providerType : ExportProviderFactory.defaultProvider.name;
@@ -162,6 +161,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         if (resetProviderOptions) {
             formData.providerOptions = { assetState: ExportAssetState.Visited };
         }
+
         formData.providerType = providerType;
 
         this.setState({
