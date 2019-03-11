@@ -1,4 +1,7 @@
-import { app, ipcMain, BrowserWindow, BrowserWindowConstructorOptions, Menu } from "electron";
+import {
+    app, ipcMain, BrowserWindow, BrowserWindowConstructorOptions,
+    Menu, MenuItemConstructorOptions,
+} from "electron";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
 
@@ -11,6 +14,8 @@ function createWindow() {
     const windowOptions: BrowserWindowConstructorOptions = {
         width: 1024,
         height: 768,
+        frame: process.platform === "linux",
+        titleBarStyle: "hidden",
     };
 
     const staticUrl = process.env.ELECTRON_START_URL || `file:///${__dirname}/index.html`;
@@ -22,6 +27,7 @@ function createWindow() {
 
     mainWindow = new BrowserWindow(windowOptions);
     mainWindow.loadURL(staticUrl);
+    mainWindow.maximize();
 
     // Emitted when the window is closed.
     mainWindow.on("closed", () => {
@@ -84,6 +90,30 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
             });
         }
     });
+
+    const menuItems: MenuItemConstructorOptions[] = [
+        {
+            label: "File", submenu: [
+                { role: "quit" },
+            ],
+        },
+        { role: "editMenu" },
+        {
+            label: "View", submenu: [
+                { role: "reload" },
+                { type: "separator" },
+                { role: "toggleDevTools" },
+                { role: "toggleFullScreen" },
+                { type: "separator" },
+                { role: "resetZoom" },
+                { role: "zoomIn" },
+                { role: "zoomOut" },
+            ],
+        },
+        { role: "windowMenu" },
+    ];
+    const menu = Menu.buildFromTemplate(menuItems);
+    Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished
