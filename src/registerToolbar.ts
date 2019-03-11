@@ -63,7 +63,7 @@ export default function registerToolbar() {
         icon: "far fa-clone",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
-        accelerators: ["Ctrl + w", "Ctrl + W"],
+        accelerators: ["Ctrl+w", "Ctrl+W"],
     });
 
     ToolbarItemFactory.register({
@@ -72,7 +72,7 @@ export default function registerToolbar() {
         icon: "fa-copy",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+c"],
+        accelerators: ["Ctrl+c", "Ctrl+C"],
     });
 
     ToolbarItemFactory.register({
@@ -81,7 +81,7 @@ export default function registerToolbar() {
         icon: "fa-cut",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+x"],
+        accelerators: ["Ctrl+x", "Ctrl+X"],
     });
 
     ToolbarItemFactory.register({
@@ -90,7 +90,7 @@ export default function registerToolbar() {
         icon: "fa-paste",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+v"],
+        accelerators: ["Ctrl+v", "Ctrl+V"],
     });
 
     ToolbarItemFactory.register({
@@ -126,7 +126,7 @@ export default function registerToolbar() {
         icon: "fa-save",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+s"],
+        accelerators: ["Ctrl+s", "Ctrl+S"],
     }, SaveProject);
 
     ToolbarItemFactory.register({
@@ -135,6 +135,6 @@ export default function registerToolbar() {
         icon: "fa-external-link-square-alt",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+e"],
+        accelerators: ["Ctrl+e", "Ctrl+E"],
     }, ExportProject);
 }
