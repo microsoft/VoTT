@@ -337,10 +337,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
         const selectedRegions = this.getSelectedRegions();
+        // Gets the scaled region data
         const selectedRegionsData = this.editor.RM.getSelectedRegionsBounds().find((region) => region.id === id);
+
         if (selectedRegionsData) {
             this.template = new Rect(selectedRegionsData.width, selectedRegionsData.height);
         }
+
         if (this.props.lockedTags && this.props.lockedTags.length) {
             for (const selectedRegion of selectedRegions) {
                 selectedRegion.tags = CanvasHelpers.addAllIfMissing(selectedRegion.tags, this.props.lockedTags);
