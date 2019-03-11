@@ -15,6 +15,8 @@ import { AssetService } from "../../../../services/assetService";
 import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import Canvas from "./canvas";
 import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
+// tslint:disable-next-line:no-var-requires
+const tagColors = require("../../common/tagColors.json")
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -233,6 +235,7 @@ describe("Editor Page Component", () => {
 
     describe("Editor Page Component Forcing Tag Scenario", () => {
         it("Detect new Tag from asset metadata when selecting the Asset", async () => {
+            
             const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
             getAssetMetadataMock.mockImplementationOnce((asset) => {
                 const assetMetadata: IAssetMetadata = {
@@ -251,7 +254,7 @@ describe("Editor Page Component", () => {
             const props = MockFactory.editorPageProps(testProject.id);
 
             const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
-
+            
             // create mock editor page
             createComponent(store, props);
 
@@ -260,7 +263,7 @@ describe("Editor Page Component", () => {
                 name: testProject.name,
                 tags: expect.arrayContaining([{
                     name: "NEWTAG",
-                    color: "#008000",
+                    color: expect.stringMatching(new RegExp(tagColors.join("|"))),
                 }]),
             };
 
