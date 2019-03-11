@@ -2,32 +2,31 @@ import React from "react";
 import { strings } from "../../../../common/strings";
 import { ITag } from "../../../../models/applicationState";
 import CondensedList from "../condensedList/condensedList";
-import "./verticalTagInput.scss";
-import VerticalTagInputItem, { IVerticalTagItemProps } from "./verticalTagInputItem";
+import "./tagInput.scss";
+import VerticalTagInputItem, { IVerticalTagItemProps as ITagItemProps } from "./tagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
-import VerticalTagInputToolbar from "./verticalTagInputToolbar";
+import TagInputToolbar from "./tagInputToolbar";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
-export interface IVerticalTagInputProps {
+export interface ITagInputProps {
     /** Current list of tags */
     tags: ITag[];
-    /** Tags that are currently locked for editing experience */
-    lockedTags: string[];
+    /** Function called on tags change */
     onChange: (tags: ITag[]) => void;
+    /** Tags that are currently locked for editing experience */
+    lockedTags?: string[];
     /** Updates to locked tags */
-    onLockedTagsChange: (locked: string[]) => void;
+    onLockedTagsChange?: (locked: string[]) => void;
     /** Place holder for input text box */
     placeHolder?: string;
-    /** Colors for tags */
-    tagColors?: { [id: string]: string };
     /** Function to call on clicking individual tag */
     onTagClick?: (tag: ITag) => void;
     /** Function to call on clicking individual tag while holding CTRL key */
     onCtrlTagClick?: (tag: ITag) => void;
 }
 
-export interface IVerticalTagInputState {
+export interface ITagInputState {
     tags: ITag[];
     selectedTag: ITag;
     editingTag: ITag;
@@ -39,7 +38,7 @@ export enum TagEditMode {
     Name = "name",
 }
 
-export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IVerticalTagInputState> {
+export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     public state = {
         tags: this.props.tags || [],
@@ -55,7 +54,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
                     title={strings.tags.title}
                     Component={VerticalTagInputItem}
                     displayEmptyMessage={false}
-                    Toolbar={VerticalTagInputToolbar}
+                    Toolbar={TagInputToolbar}
                     ToolbarProps={{
                         tags: this.state.tags,
                         selectedTag: this.state.selectedTag,
@@ -130,13 +129,13 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         });
     }
 
-    private getListItems = (): IVerticalTagItemProps[] => {
+    private getListItems = (): ITagItemProps[] => {
         const tags = this.state.tags;
         return tags.map((tag) => {
-            const item: IVerticalTagItemProps = {
+            const item: ITagItemProps = {
                 tag,
                 index: tags.findIndex((t) => t.name === tag.name),
-                isLocked: this.props.lockedTags.findIndex((t) => t === tag.name) > -1,
+                isLocked: this.props.lockedTags && this.props.lockedTags.findIndex((t) => t === tag.name) > -1,
                 isSelected: this.state.selectedTag && this.state.selectedTag.name === tag.name,
                 isBeingEdited: this.state.editingTag && this.state.editingTag.name === tag.name,
                 tagEditMode: this.state.tagEditMode,
@@ -145,7 +144,7 @@ export class VerticalTagInput extends React.Component<IVerticalTagInputProps, IV
         });
     }
 
-    private handleClick = (item: IVerticalTagItemProps, e, props) => {
+    private handleClick = (item: ITagItemProps, e, props) => {
         const tag = item && item.tag;
         if (e.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);

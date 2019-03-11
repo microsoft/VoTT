@@ -1,4 +1,4 @@
-import { randomIntInRange, createQueryString, encryptProject, decryptProject } from "./utils";
+import { randomIntInRange, createQueryString, encryptProject, decryptProject, elipsify } from "./utils";
 import MockFactory from "./mockFactory";
 
 describe("Helper functions", () => {
@@ -49,6 +49,13 @@ describe("Helper functions", () => {
             const decryptedProject = decryptProject(testProject, securityToken);
 
             expect(decryptedProject).toEqual(testProject);
+        });
+    });
+
+    describe("String utils", () => {
+        it("Elipsifies a string", () => {
+            expect(elipsify("This is a string", 4)).toEqual("This...");
+            expect(elipsify("This is a string", 400)).toEqual("This is a string");
         });
     });
 });

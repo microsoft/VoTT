@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactWrapper, mount } from "enzyme";
-import { VerticalTagInput, IVerticalTagInputProps, IVerticalTagInputState } from "./verticalTagInput";
+import { TagInput, ITagInputProps, ITagInputState } from "./tagInput";
 import MockFactory from "../../../../common/mockFactory";
 import { ITag } from "../../../../models/applicationState";
 // tslint:disable-next-line:no-var-requires
@@ -10,18 +10,17 @@ import { GithubPicker } from "react-color";
 
 describe("Vertical Tag Input Component", () => {
 
-    function createComponent(props?: IVerticalTagInputProps):
-            ReactWrapper<IVerticalTagInputProps, IVerticalTagInputState> {
-        return mount(<VerticalTagInput {...(props || createProps())}/>);
+    function createComponent(props?: ITagInputProps):
+            ReactWrapper<ITagInputProps, ITagInputState> {
+        return mount(<TagInput {...(props || createProps())}/>);
     }
 
-    function createProps(tags?: ITag[], onChange?): IVerticalTagInputProps {
+    function createProps(tags?: ITag[], onChange?): ITagInputProps {
         return {
             tags: tags || MockFactory.createTestTags(),
             lockedTags: [],
             onChange: onChange || jest.fn(),
             onLockedTagsChange: jest.fn(),
-            onTagNameChange: jest.fn(),
             onTagClick: jest.fn(),
             onCtrlTagClick: jest.fn(),
         };

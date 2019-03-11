@@ -1,8 +1,8 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
-import "./verticalTagInput.scss";
+import "./tagInput.scss";
 
-export interface IVerticalTagInputToolbarProps {
+export interface ITagInputToolbarProps {
     selectedTag: ITag;
     onLockTag: (tag: ITag) => void;
     onEditTag: (tag: ITag) => void;
@@ -10,7 +10,7 @@ export interface IVerticalTagInputToolbarProps {
     onReorder: (tag: ITag, displacement: number) => void;
 }
 
-export default function VerticalTagInputToolbar(props: IVerticalTagInputToolbarProps) {
+export default function TagInputToolbar(props: ITagInputToolbarProps) {
     const {selectedTag, onLockTag, onEditTag, onDelete, onReorder} = props;
     return (
         <div className="tag-input-toolbar">

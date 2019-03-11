@@ -1,8 +1,9 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
-import { idealTextColor } from "../../../../common/utils";
+import { idealTextColor, elipsify } from "../../../../common/utils";
 import { GithubPicker } from "react-color";
-import { TagEditMode } from "./verticalTagInput";
+import { TagEditMode } from "./tagInput";
+import { constants } from "../../../../common/constants";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../tagColors.json");
 
@@ -98,7 +99,7 @@ function getDefaultTagContent(item, onDelete) {
             {
                 (item.isLocked) ? <i className="fas fa-lock tag-lock-icon"></i> : ""
             }
-            <span className={getContentClassName(item)}>{item.tag.name}</span>
+            <span className={getContentClassName(item)}>{elipsify(item.tag.name, constants.tagNameLength)}</span>
         </div>
     );
 }

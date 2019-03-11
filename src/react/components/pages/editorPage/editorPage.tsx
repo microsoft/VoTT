@@ -14,7 +14,7 @@ import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
-import { VerticalTagInput } from "../../common/verticalTagInput/verticalTagInput";
+import { TagInput } from "../../common/tagInput/tagInput";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import Canvas from "./canvas";
 import CanvasHelpers from "./canvasHelpers";
@@ -174,7 +174,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 }
                             </div>
                         <div className="editor-page-right-sidebar">
-                            <VerticalTagInput
+                            <TagInput
                                 tags={this.props.project.tags}
                                 lockedTags={this.state.lockedTags}
                                 onChange={this.onTagsChanged}

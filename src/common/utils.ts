@@ -142,3 +142,10 @@ export function getRGB(background: string) {
         blue,
     };
 }
+
+export function elipsify(s: string, n: number) {
+    if (s.length > n) {
+        return s.substr(0, n) + "...";
+    }
+    return s;
+}
