@@ -8,7 +8,11 @@ export class ImageAsset extends React.Component<IAssetProps> {
     private image: React.RefObject<HTMLImageElement> = React.createRef();
 
     public render() {
-        return (<img ref={this.image} src={this.props.asset.path} onLoad={this.onLoad} />);
+        return (
+            <img ref={this.image}
+                src={this.props.asset.path}
+                onLoad={this.onLoad}
+                onError={this.props.onError} />);
     }
 
     private onLoad = () => {
