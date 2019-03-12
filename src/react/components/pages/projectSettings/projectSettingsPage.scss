@@ -8,7 +8,15 @@
     }
 
     &-metrics {
-        align-content: center;
-        align-items: center;
+        flex-grow: 1;
+        min-width: 20vw;
+        max-width: 40vw;
+
+        .loading {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+        }
     }
 }
