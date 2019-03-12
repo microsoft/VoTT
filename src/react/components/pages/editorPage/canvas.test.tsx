@@ -84,7 +84,7 @@ describe("Editor Canvas", () => {
         editorMock.prototype.RM = {
             ...new RegionsManager(null, null),
             getSelectedRegionsBounds: jest.fn(() => ids.map((id) => {
-                return {id};
+                return { id };
             })),
         };
     }
@@ -96,6 +96,23 @@ describe("Editor Canvas", () => {
         expect(wrapper.find(".canvas-enabled").exists()).toBe(true);
         expect(wrapper.state()).toEqual({
             contentSource: null,
+            assetLoadError: false,
+            currentAsset: canvas.props.selectedAsset,
+        });
+    });
+
+    it("renders in a disabled state when asset fails to load", () => {
+        const wrapper = createComponent();
+        const canvas = wrapper.instance();
+
+        // Simulate an error loading asset preview
+        wrapper.find(AssetPreview).props().onError(new Event("error") as any);
+        wrapper.update();
+
+        expect(wrapper.find(".canvas-disabled").exists()).toBe(true);
+        expect(wrapper.state()).toEqual({
+            contentSource: null,
+            assetLoadError: true,
             currentAsset: canvas.props.selectedAsset,
         });
     });
@@ -486,7 +503,7 @@ describe("Editor Canvas", () => {
             ...copiedRegion,
             id: expect.any(String),
             boundingBox: {
-              ...copiedRegion.boundingBox,
+                ...copiedRegion.boundingBox,
                 left: copiedRegion.boundingBox.left + CanvasHelpers.pasteMargin,
                 top: copiedRegion.boundingBox.top + CanvasHelpers.pasteMargin,
             },

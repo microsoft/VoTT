@@ -11,6 +11,7 @@ describe("Asset Preview Component", () => {
     // tslint:disable-next-line:max-line-length
     const dataUri = "data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
     const onLoadedHandler = jest.fn();
+    const onErrorHandler = jest.fn();
     const onActivatedHandler = jest.fn();
     const onDeactivatedHandler = jest.fn();
     const onChildAssetSelectedHandler = jest.fn();
@@ -22,6 +23,7 @@ describe("Asset Preview Component", () => {
         },
         autoPlay: false,
         onLoaded: onLoadedHandler,
+        onError: onErrorHandler,
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
         onChildAssetSelected: onChildAssetSelectedHandler,
@@ -65,6 +67,16 @@ describe("Asset Preview Component", () => {
         expect(wrapper.find(".asset-error").exists()).toBe(true);
     });
 
+    it("renders asset error when there is an error loading an asset", () => {
+        wrapper = createComponent();
+        const errorEvent = new Event("error");
+
+        wrapper.find(ImageAsset).props().onError(errorEvent as any);
+        wrapper.update();
+
+        expect(wrapper.find(".asset-error").exists()).toBe(true);
+    });
+
     it("raises asset loaded handler when image asset loading is complete", () => {
         wrapper = createComponent();
         wrapper.find(ImageAsset).props().onLoaded(document.createElement("img"));
@@ -73,6 +85,30 @@ describe("Asset Preview Component", () => {
         expect(onLoadedHandler).toBeCalledWith(expect.any(HTMLImageElement));
         expect(wrapper.state().loaded).toBe(true);
         expect(wrapper.find(".asset-loading").exists()).toBe(false);
+    });
+
+    it("raises asset error handler when an image asset fails to load successfully", () => {
+        wrapper = createComponent();
+        const errorEvent = new Event("error");
+        wrapper.find(ImageAsset).props().onError(errorEvent as any);
+
+        expect(wrapper.state().hasError).toBe(true);
+        expect(wrapper.state().loaded).toBe(true);
+        expect(onErrorHandler).toBeCalledWith(errorEvent);
+    });
+
+    it("raises asset error handler when a video asset fails to load successfully", () => {
+        const props: IAssetPreviewProps = {
+            ...defaultProps,
+            asset: MockFactory.createVideoTestAsset("test-video-asset"),
+        };
+        wrapper = createComponent(props);
+        const errorEvent = new Event("error");
+        wrapper.find(VideoAsset).props().onError(errorEvent as any);
+
+        expect(wrapper.state().hasError).toBe(true);
+        expect(wrapper.state().loaded).toBe(true);
+        expect(onErrorHandler).toBeCalledWith(errorEvent);
     });
 
     it("raises asset loaded handler when image asset loading is complete", () => {
