@@ -1,5 +1,6 @@
 trigger:
-- v2
+  - v2
+pr: none
 
 pool:
   vmImage: 'Ubuntu-16.04'
