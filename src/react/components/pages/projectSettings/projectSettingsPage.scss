@@ -4,11 +4,13 @@
     height: 100%;
 
     &-settings {
-        flex-grow: 2;
+        flex-grow: 1;
     }
 
     &-metrics {
-        flex: 2 1 400px;
+        flex-grow: 1;
+        min-width: 20vw;
+        max-width: 40vw;
 
         .loading {
             display: flex;

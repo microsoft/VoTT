@@ -41,7 +41,6 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
     public render() {
         if (this.state.loading) {
-            console.log("Waiting for data");
             return (
                 <div className="project-settings-page-metrics p-3 bg-lighter-1">
                     <h3>
@@ -51,7 +50,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                         </span>
                     </h3>
                     <div className="loading">
-                        <i className="fas fa-spinner fa-6x"/>
+                        <i className="fas fa-circle-notch fa-spin fa-6x"/>
                     </div>
                 </div>
             );
