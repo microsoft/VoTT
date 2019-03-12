@@ -34,7 +34,7 @@ describe("Project metrics page", () => {
 
         it ("display a spinner icon", () => {
             expect(wrapper.state().loading).toBeTruthy();
-            expect(wrapper.find(".fa-spinner")).toHaveLength(1);
+            expect(wrapper.find(".fa-circle-notch")).toHaveLength(1);
         });
     });
 
