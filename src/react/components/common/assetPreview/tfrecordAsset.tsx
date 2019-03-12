@@ -28,7 +28,7 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
             <img ref={this.image}
                 src={this.state.tfRecordImage64}
                 onLoad={this.onLoad}
-                onError={this.onError} />
+                onError={this.props.onError} />
         );
     }
 
@@ -51,12 +51,6 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
     private onLoad = () => {
         if (this.props.onLoaded) {
             this.props.onLoaded(this.image.current);
-        }
-    }
-
-    private onError = (e: SyntheticEvent) => {
-        if (this.props.onError) {
-            this.props.onError(e);
         }
     }
 

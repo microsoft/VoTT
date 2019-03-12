@@ -447,6 +447,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Resizes and re-renders the canvas when the application window size changes
      */
     private onWindowResize = () => {
+        if (!this.state.contentSource) {
+            return;
+        }
+
         this.positionCanvas(this.state.contentSource);
         if (!this.intervalTimer) {
             this.setContentSource(this.state.contentSource);

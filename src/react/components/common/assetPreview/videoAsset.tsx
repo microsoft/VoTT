@@ -72,7 +72,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 height="100%"
                 autoPlay={autoPlay}
                 src={videoPath}
-                onError={this.onError}>
+                onError={this.props.onError}>
                 <BigPlayButton position="center" />
                 {autoPlay &&
                     <ControlBar autoHide={false}>
@@ -366,11 +366,5 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private getVideoPlayerState = (): Readonly<IVideoPlayerState> => {
         return this.videoPlayer.current.getState().player;
-    }
-
-    private onError = (e: SyntheticEvent) => {
-        if (this.props.onError) {
-            this.props.onError(e);
-        }
     }
 }
