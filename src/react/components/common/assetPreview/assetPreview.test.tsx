@@ -178,4 +178,23 @@ describe("Asset Preview Component", () => {
         expect(assetPreview.exists()).toBe(true);
         expect(assetPreview.props().className).toContain("portrait");
     });
+
+    it("updates loaded/error flags when asset changes", () => {
+        wrapper = createComponent();
+        wrapper.find(ImageAsset).props().onLoaded(document.createElement("img"));
+
+        expect(wrapper.state()).toEqual({
+            loaded: true,
+            hasError: false,
+        });
+
+        wrapper.setProps({
+            asset: MockFactory.createTestAsset("AnotherImageAsset"),
+        });
+
+        expect(wrapper.state()).toEqual({
+            loaded: false,
+            hasError: false,
+        });
+    });
 });
