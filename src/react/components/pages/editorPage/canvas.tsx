@@ -3,13 +3,12 @@ import * as shortid from "shortid";
 import { CanvasTools } from "vott-ct";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
-    AssetState, EditorMode, IAssetMetadata,
-    IProject, IRegion, ITag, RegionType,
+    EditorMode, IAssetMetadata,
+    IProject, IRegion, RegionType,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import Clipboard from "../../../../common/clipboard";
 import Confirm from "../../common/confirm/confirm";
 import { strings } from "../../../../common/strings";
@@ -85,6 +84,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (this.props.selectionMode !== prevProps.selectionMode) {
             const options = (this.props.selectionMode === SelectionMode.COPYRECT) ? this.template : null;
             this.editor.AS.setSelectionMode({ mode: this.props.selectionMode, template: options });
+        }
+
+        // When the project tags change re-apply tags to regions
+        if (this.props.project.tags !== prevProps.project.tags) {
+            this.updateCanvasToolsRegions();
         }
     }
 

@@ -227,7 +227,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     /**
-     * Raised when a child asset is selected on the Asset Prview
+     * Raised when a child asset is selected on the Asset Preview
      * ex) When a video is paused/seeked to on a video
      */
     private onChildAssetSelected = async (childAsset: IAsset) => {

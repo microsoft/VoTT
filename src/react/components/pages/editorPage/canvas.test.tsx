@@ -16,9 +16,9 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
+import { wrap } from "module";
 
 describe("Editor Canvas", () => {
-
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
         : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
         const props = createProps();
@@ -76,8 +76,9 @@ describe("Editor Canvas", () => {
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
         editorMock.prototype.AS = {
-            setSelectionMode: jest.fn(({mode, template = null}) => {selectionMode = {mode, template}; }),
-            getSelectorSettings: jest.fn(() => selectionMode) };
+            setSelectionMode: jest.fn(({ mode, template = null }) => { selectionMode = { mode, template }; }),
+            getSelectorSettings: jest.fn(() => selectionMode),
+        };
 
         const clipboard = (navigator as any).clipboard;
         if (!(clipboard && clipboard.writeText)) {
@@ -92,7 +93,7 @@ describe("Editor Canvas", () => {
         editorMock.prototype.RM = {
             ...new RegionsManager(null, null),
             getSelectedRegionsBounds: jest.fn(() => ids.map((id) => {
-                return {id};
+                return { id };
             })),
         };
     }
@@ -489,7 +490,7 @@ describe("Editor Canvas", () => {
     });
 
     it("Copies currently selected regions to clipboard", () => {
-        const wrapper = createComponent().find(Canvas);
+        const wrapper = createComponent();
         const canvas = wrapper.instance() as Canvas;
         mockSelectedRegions(["test1"]);
 
@@ -512,7 +513,7 @@ describe("Editor Canvas", () => {
                 ...cProps.selectedAsset,
                 regions: [copiedRegion],
             },
-        }).find(Canvas);
+        });
 
         const canvas = wrapper.instance() as Canvas;
 
@@ -525,7 +526,7 @@ describe("Editor Canvas", () => {
             ...copiedRegion,
             id: expect.any(String),
             boundingBox: {
-              ...copiedRegion.boundingBox,
+                ...copiedRegion.boundingBox,
                 left: copiedRegion.boundingBox.left + CanvasHelpers.pasteMargin,
                 top: copiedRegion.boundingBox.top + CanvasHelpers.pasteMargin,
             },
@@ -546,7 +547,7 @@ describe("Editor Canvas", () => {
     });
 
     it("Cuts currently selected regions to clipboard", async () => {
-        const wrapper = createComponent().find(Canvas);
+        const wrapper = createComponent();
         const original: IAssetMetadata = {
             ...wrapper.prop("selectedAsset"),
         };
@@ -568,11 +569,26 @@ describe("Editor Canvas", () => {
     });
 
     it("Clears all regions from asset", async () => {
-        const wrapper = createComponent().find(Canvas);
+        const wrapper = createComponent();
         const clearConfirm = wrapper.find(Confirm) as ReactWrapper<IConfirmProps>;
         clearConfirm.props().onConfirm();
 
         await MockFactory.flushUi();
         expect(wrapper.state().currentAsset.regions).toEqual([]);
+    });
+
+    it("Tags are re-applied when the project tags are updated", () => {
+        const wrapper = createComponent();
+        const assetMetadata = wrapper.props().selectedAsset;
+        const project = { ...wrapper.props().project };
+        const tags = [...project.tags];
+        tags[0].color = "#FFCCFF";
+        project.tags = tags;
+
+        const editor = wrapper.instance().editor;
+        const updateTagsSpy = jest.spyOn(editor.RM, "updateTagsById");
+
+        wrapper.setProps({ project });
+        expect(updateTagsSpy).toBeCalledTimes(assetMetadata.regions.length);
     });
 });
