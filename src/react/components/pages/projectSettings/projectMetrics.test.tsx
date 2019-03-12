@@ -23,6 +23,21 @@ describe("Project metrics page", () => {
         assets: _.keyBy(testAssets, (asset) => asset.id),
     };
 
+    describe("still loading data", () => {
+        beforeEach(async () => {
+            setUpMockAssetService(testAssets);
+
+            wrapper = createComponent({
+                project: defaultProject,
+            });
+        });
+
+        it ("display a spinner icon", () => {
+            expect(wrapper.state().loading).toBeTruthy();
+            expect(wrapper.find(".fa-circle-notch")).toHaveLength(1);
+        });
+    });
+
     describe("regular project", () => {
         beforeEach(async () => {
             setUpMockAssetService(testAssets);

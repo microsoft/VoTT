@@ -41,8 +41,19 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
     public render() {
         if (this.state.loading) {
-            console.log("Waiting for data");
-            return <h2> Loading...</h2>;
+            return (
+                <div className="project-settings-page-metrics p-3 bg-lighter-1">
+                    <h3>
+                        <i className="fas fa-chart-bar fa-1x"/>
+                        <span className="px-2">
+                            {strings.projectMetrics.title}
+                        </span>
+                    </h3>
+                    <div className="loading">
+                        <i className="fas fa-circle-notch fa-spin fa-6x"/>
+                    </div>
+                </div>
+            );
         }
 
         const badgeCSS = "badge badge-light badge-pill float-center";
