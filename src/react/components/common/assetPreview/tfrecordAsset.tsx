@@ -1,6 +1,6 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType } from "../../../../models/applicationState";
+import { IAsset } from "../../../../models/applicationState";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { TFRecordsReader } from "../../../../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../../../../providers/export/tensorFlowRecords/tensorFlowBuilder";
@@ -24,21 +24,12 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
     private image: React.RefObject<HTMLImageElement> = React.createRef();
 
     public render() {
-        const size = this.props.asset.size;
-        let className = "";
-        if (size) {
-            className = size.width > size.height ? "landscape" : "portrait";
-        }
-
-        if (this.state.tfRecordImage64 !== "") {
-            return (
-                <img ref={this.image} className={className} src={this.state.tfRecordImage64} onLoad={this.onLoad} />
-            );
-        } else {
-            return (
-                <img ref={this.image} className={className} />
-            );
-        }
+        return (
+            <img ref={this.image}
+                src={this.state.tfRecordImage64}
+                onLoad={this.onLoad}
+                onError={this.onError} />
+        );
     }
 
     public async componentDidMount() {
@@ -60,6 +51,12 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
     private onLoad = () => {
         if (this.props.onLoaded) {
             this.props.onLoaded(this.image.current);
+        }
+    }
+
+    private onError = (e: SyntheticEvent) => {
+        if (this.props.onError) {
+            this.props.onError(e);
         }
     }
 

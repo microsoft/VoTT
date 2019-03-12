@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 import {
@@ -71,7 +71,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 width="100%"
                 height="100%"
                 autoPlay={autoPlay}
-                src={videoPath}>
+                src={videoPath}
+                onError={this.onError}>
                 <BigPlayButton position="center" />
                 {autoPlay &&
                     <ControlBar autoHide={false}>
@@ -365,5 +366,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      */
     private getVideoPlayerState = (): Readonly<IVideoPlayerState> => {
         return this.videoPlayer.current.getState().player;
+    }
+
+    private onError = (e: SyntheticEvent) => {
+        if (this.props.onError) {
+            this.props.onError(e);
+        }
     }
 }

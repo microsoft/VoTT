@@ -110,12 +110,6 @@
                     z-index: 1;
                 }
             }
-
-            .asset-loading {
-                position: absolute;
-                top: 45%;
-                left: 50%;
-            }
         }
 
         &-metadata {
@@ -137,9 +131,6 @@
     color: white;
 }
 
-.asset-error {
-    margin: auto;
-}
 
 .asset-preview {
     display: flex;
@@ -151,6 +142,12 @@
         flex-direction: column;
         width: 100%;
         text-align: center;
+    }
+
+    .asset-loading {
+        position: absolute;
+        top: 45%;
+        left: 50%;
     }
 
     img {
@@ -203,7 +200,8 @@
         z-index: 1;
     }
 
-    *.canvas-disabled {
+    &.canvas-disabled {
+        display: none;
         z-index: 0;
     }
 }
@@ -250,4 +248,8 @@ canvas {
             font-size: 1.2em !important;
         }
     }
+}
+
+.asset-error {
+    margin: auto;
 }

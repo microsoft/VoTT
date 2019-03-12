@@ -28,6 +28,7 @@ export interface ICanvasProps extends React.Props<Canvas> {
 export interface ICanvasState {
     currentAsset: IAssetMetadata;
     contentSource: ContentSource;
+    assetLoadError: boolean;
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
@@ -45,6 +46,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public state: ICanvasState = {
         currentAsset: this.props.selectedAsset,
         contentSource: null,
+        assetLoadError: false,
     };
 
     private intervalTimer: number = null;
@@ -85,6 +87,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public render = () => {
+        const className = this.state.assetLoadError ? "canvas-disabled" : "canvas-enabled";
+
         return (
             <Fragment>
                 <Confirm title={strings.editorPage.canvas.removeAllRegions.title}
@@ -93,7 +97,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     confirmButtonColor="danger"
                     onConfirm={this.removeAllRegions}
                 />
-                <div id="ct-zone" ref={this.canvasZone} className="canvas-enabled">
+                <div id="ct-zone" ref={this.canvasZone} className={className}>
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
                     </div>
@@ -342,6 +346,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private renderChildren = () => {
         return React.cloneElement(this.props.children, {
             onLoaded: this.onAssetLoaded,
+            onError: this.onAssetError,
             onActivated: this.onAssetActivated,
             onDeactivated: this.onAssetDeactivated,
         });
@@ -379,11 +384,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Raised when the underlying asset has completed loading
      */
     private onAssetLoaded = (contentSource: ContentSource) => {
-        this.setState({ contentSource }, async () => {
+        this.setState({ contentSource, assetLoadError: false }, async () => {
             this.positionCanvas(this.state.contentSource);
             await this.setContentSource(this.state.contentSource);
             this.refreshCanvasToolsRegions();
         });
+    }
+
+    private onAssetError = () => {
+        this.setState({ assetLoadError: true });
     }
 
     /**

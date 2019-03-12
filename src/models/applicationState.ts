@@ -229,7 +229,6 @@ export interface IAsset {
     format?: string;
     timestamp?: number;
     parent?: IAsset;
-    hasError?: boolean;
 }
 
 /**
