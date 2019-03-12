@@ -16,7 +16,6 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
-import { wrap } from "module";
 
 describe("Editor Canvas", () => {
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
