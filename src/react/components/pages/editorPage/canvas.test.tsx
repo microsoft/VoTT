@@ -1,6 +1,5 @@
 import { mount, ReactWrapper } from "enzyme";
 import React from "react";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { RegionType } from "vott-react";
 import MockFactory from "../../../../common/mockFactory";
 import { EditorMode, IAssetMetadata, IRegion, IAsset } from "../../../../models/applicationState";
@@ -15,6 +14,8 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
+import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 
 describe("Editor Canvas", () => {
 
@@ -66,10 +67,17 @@ describe("Editor Canvas", () => {
     const editorMock = Editor as any;
 
     beforeAll(() => {
+        let selectionMode = {
+            mode: SelectionMode.NONE,
+            template: null,
+        };
+
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
-        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
+        editorMock.prototype.AS = {
+            setSelectionMode: jest.fn(({mode, template = null}) => {selectionMode = {mode, template}; }),
+            getSelectorSettings: jest.fn(() => selectionMode) };
 
         const clipboard = (navigator as any).clipboard;
         if (!(clipboard && clipboard.writeText)) {
@@ -187,6 +195,37 @@ describe("Editor Canvas", () => {
             ...original.regions,
             { ...expectedRegion, id: expect.any(String) },
         ]);
+    });
+
+    it("copies correct rectangle for copyRect", () => {
+        const wrapper = createComponent();
+        const onAssetMetadataChanged = jest.fn();
+        wrapper.setProps({ onAssetMetadataChanged });
+
+        const testRegionData = MockFactory.createTestRegionData();
+        wrapper.instance().editor.onSelectionEnd(testRegionData);
+
+        const testRegion = wrapper.state().currentAsset.regions[0];
+        mockSelectedRegions([testRegion.id]);
+        expect(wrapper.instance().getSelectedRegions()).toEqual([testRegion]);
+
+        wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
+        expect(wrapper.instance().editor.AS.getSelectorSettings()).toEqual({
+            mode: SelectionMode.COPYRECT,
+            template: new Rect(testRegionData.width, testRegionData.height),
+        });
+    });
+
+    it("throws error when no selected region for copyRect", () => {
+        const wrapper = createComponent();
+        const defaultTemplate = new Rect(20, 20);
+        mockSelectedRegions([]);
+
+        wrapper.setProps({ selectionMode: SelectionMode.COPYRECT });
+        expect(wrapper.instance().editor.AS.getSelectorSettings()).toEqual({
+            mode: SelectionMode.COPYRECT,
+            template: defaultTemplate,
+        });
     });
 
     it("canvas updates regions when a new asset is loaded", async () => {

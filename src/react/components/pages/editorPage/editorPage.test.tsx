@@ -24,11 +24,8 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
-import EditorFooter from "./editorFooter";
-import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import Canvas from "./canvas";
 import { appInfo } from "../../../../common/appInfo";
-import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
     return mount(

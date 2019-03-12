@@ -169,6 +169,13 @@ export interface IAppStrings {
             pan: string;
             drawRectangle: string;
             drawPolygon: string;
+            copyRectangle: string;
+            copy: string;
+            cut: string;
+            paste: string;
+            removeAllRegions: string;
+            previousAsset: string;
+            nextAsset: string;
             saveProject: string;
             exportProject: string;
         }
