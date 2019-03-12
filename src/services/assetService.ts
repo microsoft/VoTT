@@ -120,8 +120,9 @@ export class AssetService {
      */
     public async getAssets(): Promise<IAsset[]> {
         // encodeURI() will not encode: ~!@#$&*()=:/,;?+'
-        // extend it to support all of these except : and /
-        const natchString = "/#/g";
+        // extend it to support all of these except # and ?
+        // all other non encoded characters are implicitly supported with no reason to encoding them
+        const matchString = /#/g;
         const encodings = {
             "\#": "%23",
           };
@@ -136,9 +137,9 @@ export class AssetService {
             if (!normalizedPath.startsWith("http://") &&
                 !normalizedPath.startsWith("https://") &&
                 !normalizedPath.startsWith("file:")) {
-                // First replace \ character with / the do the standard url encoding then support unsupported characters
+                // First replace \ character with / the do the standard url encoding then encode unsupported characters
                 asset.path = "file:" + encodeURI(asset.path.replace(/\\/g, "/"))
-                    .replace(natchString, (match) => encodings[match]);
+                    .replace(matchString, (match) => encodings[match]);
             }
 
             return asset;
