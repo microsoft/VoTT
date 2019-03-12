@@ -22,7 +22,6 @@ import { toast } from "react-toastify";
 import MessageBox from "../../common/messageBox/messageBox";
 import getHostProcess, { HostProcessType } from "../../../../common/hostProcess";
 
-
 export interface IHomePageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
     connections: IConnection[];
