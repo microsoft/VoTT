@@ -122,9 +122,10 @@ export class AssetService {
         // encodeURI() will not encode: ~!@#$&*()=:/,;?+'
         // extend it to support all of these except # and ?
         // all other non encoded characters are implicitly supported with no reason to encoding them
-        const matchString = /#/g;
+        const matchString = /(#|\?)/g;
         const encodings = {
             "\#": "%23",
+            "\?": "%3F",
           };
 
         const assets = await this.assetProvider.getAssets();
