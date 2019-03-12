@@ -22,7 +22,7 @@ export default interface IApplicationActions {
  * Open or close dev tools
  * @param show - Dev tools is open
  */
-export function toggleDevTools(show: boolean): (dipatch: Dispatch) => Promise<void> {
+export function toggleDevTools(show: boolean): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
         return IpcRendererProxy.send("TOGGLE_DEV_TOOLS", show)
             .then(() => {
@@ -34,7 +34,7 @@ export function toggleDevTools(show: boolean): (dipatch: Dispatch) => Promise<vo
 /**
  * Reload application
  */
-export function reloadApplication(): (dipatch: Dispatch) => Promise<void> {
+export function reloadApplication(): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
         return IpcRendererProxy.send("RELOAD_APP")
             .then(() => {
