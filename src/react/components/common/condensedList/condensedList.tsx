@@ -45,22 +45,24 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
                         </Link>
                     }
                 </h6>
-                {(!items) &&
-                    <div className="p-3 text-center">
-                        <i className="fas fa-circle-notch fa-spin" />
-                    </div>
-                }
-                {(items && items.length === 0) &&
-                    <div className="p-3 text-center">No items found</div>
-                }
-                {(items && items.length > 0) &&
-                    <ul className="condensed-list-items">
-                        {items.map((item) => <Component key={item.id}
-                            item={item}
-                            onClick={(e) => this.onItemClick(e, item)}
-                            onDelete={(e) => this.onItemDelete(e, item)} />)}
-                    </ul>
-                }
+                <div className="condensed-list-body">
+                    {(!items) &&
+                        <div className="p-3 text-center">
+                            <i className="fas fa-circle-notch fa-spin" />
+                        </div>
+                    }
+                    {(items && items.length === 0) &&
+                        <div className="p-3 text-center">No items found</div>
+                    }
+                    {(items && items.length > 0) &&
+                        <ul className="condensed-list-items">
+                            {items.map((item) => <Component key={item.id}
+                                item={item}
+                                onClick={(e) => this.onItemClick(e, item)}
+                                onDelete={(e) => this.onItemDelete(e, item)} />)}
+                        </ul>
+                    }
+                </div>
             </div>
         );
     }

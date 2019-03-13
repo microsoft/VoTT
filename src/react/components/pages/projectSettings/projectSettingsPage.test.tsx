@@ -9,6 +9,7 @@ import ProjectSettingsPage, { IProjectSettingsPageProps } from "./projectSetting
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 import { IAppSettings } from "../../../../models/applicationState";
+import ProjectMetrics from "./projectMetrics";
 
 jest.mock("./projectMetrics", () => () => {
         return (
@@ -126,7 +127,7 @@ describe("Project settings page", () => {
         const props = MockFactory.projectSettingsProps();
 
         const wrapper = createComponent(store, props);
-        const projectMetrics = wrapper.find(".project-settings-page-metrics");
+        const projectMetrics = wrapper.find(ProjectMetrics);
         expect(projectMetrics).toHaveLength(1);
     });
 
