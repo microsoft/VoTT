@@ -491,7 +491,60 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.canvas.current.confirmRemoveAllRegions();
                 break;
             case ToolbarItemName.ActiveLearning:
-                console.log("Active Learning !!");
+                const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
+                const buffer = Buffer.from(imageBuffer);
+                const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+                const image = document.createElement("img") as HTMLImageElement;
+                image.onload = async () => {
+                    const predictions = await this.model.detect(image);
+                    console.log(image.x, image.y, image.width, image.height);
+                    console.log(predictions);
+
+                    const regions = [...this.state.selectedAsset.regions];
+                    predictions.forEach((prediction) => {
+                        regions.push({
+                            id: shortid.generate(),
+                            type: RegionType.Rectangle,
+                            tags: [prediction.class],
+                            boundingBox: {
+                                left: Math.max(0, prediction.bbox[0]),
+                                top: Math.max(0, prediction.bbox[1]),
+                                width: Math.max(0, prediction.bbox[2]),
+                                height: Math.max(0, prediction.bbox[3]),
+                            },
+                            points: [{
+                                x: Math.max(0, prediction.bbox[0]),
+                                y: Math.max(0, prediction.bbox[1]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                y: Math.max(0, prediction.bbox[1]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]),
+                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                            }],
+                        });
+                    });
+
+                    const newAsset = {...this.state.selectedAsset, regions};
+                    console.log(newAsset);
+
+                    this.onAssetMetadataChanged(newAsset);
+
+                    this.setState({
+                        selectedAsset: newAsset,
+                    });
+
+                    // Save
+                    await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
+                    await this.props.actions.saveProject(this.props.project);
+                };
+                image.src = "data:image;base64," + image64;
                 break;
         }
     }
