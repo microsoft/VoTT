@@ -16,6 +16,8 @@
     "main": "build/main.js",
     "dependencies": {
         "@azure/storage-blob": "^10.3.0",
+        "@tensorflow-models/coco-ssd": "^1.0.0",
+        "@tensorflow/tfjs": "^1.0.1",
         "@types/snapsvg": "^0.4.35",
         "axios": "^0.18.0",
         "bootstrap": "^4.1.3",
