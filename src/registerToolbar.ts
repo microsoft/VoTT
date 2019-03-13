@@ -2,7 +2,6 @@ import { ToolbarItemFactory } from "./providers/toolbar/toolbarItemFactory";
 import { ExportProject } from "./react/components/toolbar/exportProject";
 import { SaveProject } from "./react/components/toolbar/saveProject";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
-import { ActiveLearning } from "./react/components/toolbar/activeLearning";
 import { strings } from "./common/strings";
 
 export enum ToolbarItemName {
@@ -110,7 +109,7 @@ export default function registerToolbar() {
         icon: "fas fa-graduation-cap",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.Action,
-    }, ActiveLearning);
+    });
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.PreviousAsset,
