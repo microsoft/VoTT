@@ -2,6 +2,7 @@ import { ToolbarItemFactory } from "./providers/toolbar/toolbarItemFactory";
 import { ExportProject } from "./react/components/toolbar/exportProject";
 import { SaveProject } from "./react/components/toolbar/saveProject";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
+import { ActiveLearning } from "./react/components/toolbar/activeLearning";
 import { strings } from "./common/strings";
 
 export enum ToolbarItemName {
@@ -17,6 +18,7 @@ export enum ToolbarItemName {
     NextAsset = "navigateNextAsset",
     SaveProject = "saveProject",
     ExportProject = "exportProject",
+    ActiveLearning = "activeLearning",
 }
 
 export enum ToolbarItemGroup {
@@ -101,6 +103,14 @@ export default function registerToolbar() {
         type: ToolbarItemType.Action,
         accelerators: ["CmdOrCtrl+Delete", "CmdOrCtrl+Backspace"],
     });
+
+    ToolbarItemFactory.register({
+        name: ToolbarItemName.ActiveLearning,
+        tooltip: strings.editorPage.toolbar.activeLearning,
+        icon: "fas fa-graduation-cap",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.Action,
+    }, ActiveLearning);
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.PreviousAsset,
