@@ -68,7 +68,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
             <div className="project-settings-page">
                 <div className="project-settings-page-settings m-3 text-light">
                     <h3>
-                        <i className="fas fa-sliders-h fa-1x"/>
+                        <i className="fas fa-sliders-h" />
                         <span className="px-2">
                             {strings.projectSettings.title}
                         </span>
@@ -78,10 +78,13 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                         connections={this.props.connections}
                         appSettings={this.props.appSettings}
                         onSubmit={this.onFormSubmit}
-                        onCancel={this.onFormCancel}/>
+                        onCancel={this.onFormCancel} />
                 </div>
                 {this.props.project &&
-                <ProjectMetrics project={this.props.project}/>}
+                    <div className="project-settings-page-metrics bg-lighter-1">
+                        <ProjectMetrics project={this.props.project} />
+                    </div>
+                }
             </div>
         );
     }
@@ -92,7 +95,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         await this.props.applicationActions.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
 
-        toast.success(interpolate(strings.projectSettings.messages.saveSuccess, {project}));
+        toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }));
 
         if (isNew) {
             this.props.history.push(`/projects/${this.props.project.id}/edit`);

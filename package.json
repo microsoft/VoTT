@@ -35,6 +35,7 @@
         "react-tag-input": "^6.1.0",
         "react-toastify": "^4.5.2",
         "react-virtualized": "^9.21.0",
+        "react-vis": "^1.11.6",
         "reactstrap": "^6.5.0",
         "redux": "^4.0.1",
         "redux-immutable-state-invariant": "^2.1.0",
