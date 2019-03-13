@@ -1,3 +1,5 @@
+@import "../../../../assets/sass/theme.scss";
+
 .project-settings-page {
     display: flex;
     flex-direction: row;
@@ -9,14 +11,43 @@
 
     &-metrics {
         flex-grow: 1;
-        min-width: 20vw;
-        max-width: 40vw;
+        min-width: 325px;
+        max-width: 400px;
+        color: #fff;
 
         .loading {
             display: flex;
             height: 100%;
             align-items: center;
             justify-content: center;
+        }
+
+        p {
+            font-size: 90%;
+        }
+    }
+
+    svg {
+        margin-top: 1em;
+        text {
+            fill: #fff;
+            font-weight: 500;
+        }
+    }
+
+    .asset-chart {
+        margin: 0 auto;
+
+        text {
+            font-size: 80%;
+        }
+    }
+
+    .tag-chart {
+        margin: 0 auto;
+
+        line {
+            stroke: $lighter-5;
         }
     }
 }

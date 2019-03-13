@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { IProject, AssetState } from "../../../models/applicationState";
-import { strings } from "../../../common/strings";
+import { strings, interpolate } from "../../../common/strings";
 
 export interface IStatusBarMetricsProps {
     project: IProject;
@@ -31,11 +31,11 @@ export class StatusBarMetrics extends React.Component<IStatusBarMetricsProps> {
                     <i className="fas fa-download"></i>
                     <span className="metric-target-connection-name">{project.targetConnection.name}</span>
                 </li>
-                <li title={strings.projectMetrics.taggedAssetsCount}>
+                <li title={interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssets.length })}>
                     <i className="fas fa-tag"></i>
                     <span className="metric-tagged-asset-count">{taggedAssets.length}</span>
                 </li>
-                <li title={strings.projectMetrics.visitedAssetsCount}>
+                <li title={interpolate(strings.projectMetrics.visitedAssets, { count: visitedAssets.length })}>
                     <i className="fas fa-eye"></i>
                     <span className="metric-visited-asset-count">{visitedAssets.length}</span>
                 </li>
