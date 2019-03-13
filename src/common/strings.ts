@@ -230,6 +230,7 @@ export interface IAppStrings {
             nextAsset: string;
             saveProject: string;
             exportProject: string;
+            activeLearning: string;
         }
         videoPlayer: {
             nextTaggedFrame: {
