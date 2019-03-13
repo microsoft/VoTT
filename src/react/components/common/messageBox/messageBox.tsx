@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from "react";
+import React, { SyntheticEvent, ReactElement } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 /**
@@ -16,11 +16,12 @@ export type MessageFormatHandler = (...params: any[]) => string;
  */
 export interface IMessageBoxProps {
     title: string;
-    message: string | Element | MessageFormatHandler;
+    message: string | ReactElement<any> | MessageFormatHandler;
     params?: any[];
     onButtonSelect?: (button: HTMLButtonElement) => void;
     onCancel?: () => void;
     show?: boolean;
+    hideFooter?: boolean;
 }
 
 /**
@@ -66,9 +67,9 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
                 onClosed={this.onClosed}>
                 <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader>
                 <ModalBody>{this.getMessage(this.props.message)}</ModalBody>
-                <ModalFooter onClick={this.onFooterClick}>
+                {!this.props.hideFooter && <ModalFooter onClick={this.onFooterClick}>
                     {this.props.children}
-                </ModalFooter>
+                </ModalFooter>}
             </Modal>
         );
     }
@@ -100,7 +101,7 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
         }
     }
 
-    private getMessage = (message: string | MessageFormatHandler | Element) => {
+    private getMessage = (message: string | MessageFormatHandler | ReactElement<any>) => {
         if (typeof message === "function") {
             return message.apply(this, this.props.params);
         } else {

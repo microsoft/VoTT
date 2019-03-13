@@ -13,9 +13,10 @@ describe("Keyboard Binding Component", () => {
 
     const accelerators = ["Ctrl+1"];
     const defaultProps: IKeyboardBindingProps = {
+        name: "Keyboard binding",
         keyEventType: KeyEventType.KeyDown,
         accelerators,
-        onKeyEvent: onKeyDownHandler,
+        handler: onKeyDownHandler,
     };
 
     const registrationMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
@@ -44,7 +45,7 @@ describe("Keyboard Binding Component", () => {
     it("registered the keydown key code and event handler", () => {
         wrapper = createComponent();
         expect(registrationMock.prototype.addHandler).toBeCalledWith(
-            KeyEventType.KeyDown, defaultProps.accelerators, defaultProps.onKeyEvent);
+            KeyEventType.KeyDown, defaultProps.accelerators, defaultProps.handler);
     });
 
     it("registered the keyup key code and event handler", () => {
@@ -53,7 +54,7 @@ describe("Keyboard Binding Component", () => {
             keyEventType: KeyEventType.KeyUp,
         });
         expect(registrationMock.prototype.addHandler).toBeCalledWith(
-            KeyEventType.KeyUp, defaultProps.accelerators, defaultProps.onKeyEvent);
+            KeyEventType.KeyUp, defaultProps.accelerators, defaultProps.handler);
     });
 
     it("registered the keypress key code and event handler", () => {
@@ -62,7 +63,7 @@ describe("Keyboard Binding Component", () => {
             keyEventType: KeyEventType.KeyPress,
         });
         expect(registrationMock.prototype.addHandler).toBeCalledWith(
-            KeyEventType.KeyPress, defaultProps.accelerators, defaultProps.onKeyEvent);
+            KeyEventType.KeyPress, defaultProps.accelerators, defaultProps.handler);
     });
 
     it("deregisters the event handler", () => {

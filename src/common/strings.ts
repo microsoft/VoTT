@@ -18,6 +18,13 @@ export interface IAppStrings {
         provider: string;
         homePage: string;
     };
+    titleBar: {
+        help: string;
+        minimize: string;
+        maximize: string;
+        restore: string;
+        close: string;
+    }
     homePage: {
         newProject: string;
         openLocalProject: {

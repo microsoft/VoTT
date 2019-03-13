@@ -15,6 +15,13 @@ export const spanish: IAppStrings = {
         provider: "Proveedor",
         homePage: "Página de Inicio",
     },
+    titleBar: {
+        help: "Ayuda",
+        minimize: "Minimizar",
+        maximize: "Maximizar",
+        restore: "Restaurar",
+        close: "Cerrar",
+    },
     homePage: {
         newProject: "Nuevo Proyecto",
         recentProjects: "Proyectos Recientes",

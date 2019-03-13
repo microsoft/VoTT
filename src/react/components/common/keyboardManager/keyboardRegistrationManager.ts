@@ -86,4 +86,8 @@ export class KeyboardRegistrationManager {
         const handlers = this.getHandlers(keyEventType, keyCode);
         handlers.forEach((handler) => handler(evt));
     }
+
+    public getRegistrations = () => {
+        return this.registrations;
+    }
 }

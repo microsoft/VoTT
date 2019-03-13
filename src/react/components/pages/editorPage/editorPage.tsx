@@ -134,10 +134,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
                     return (<KeyboardBinding
+                        name={this.getTagNameAtDisplayIndex(index)}
                         key={index}
                         keyEventType={KeyEventType.KeyDown}
                         accelerators={[`${index}`]}
-                        onKeyEvent={this.handleTagHotKey} />);
+                        icon={"fa-tag"}
+                        handler={this.handleTagHotKey} />);
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
@@ -214,16 +216,25 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (isNaN(key)) {
             return;
         }
+        this.onTagClicked(this.getTagAtDisplayIndex(key));
+    }
+
+    private getTagNameAtDisplayIndex = (displayIndex: number): string => {
+        const tag = this.getTagAtDisplayIndex(displayIndex);
+        return (tag) ? tag.name : null;
+    }
+
+    private getTagAtDisplayIndex = (displayIndex: number): ITag => {
         let tag: ITag;
         const tags = this.props.project.tags;
-        if (key === 0) {
-            if (tags.length >= 10) {
+        if (displayIndex === 0) {
+            if (tags && tags.length >= 10) {
                 tag = tags[9];
             }
-        } else if (tags.length >= key) {
-            tag = tags[key - 1];
+        } else if (tags && tags.length >= displayIndex) {
+            tag = tags[displayIndex - 1];
         }
-        this.onTagClicked(tag);
+        return tag;
     }
 
     /**

@@ -15,6 +15,13 @@ export const english: IAppStrings = {
         provider: "Provider",
         homePage: "Home Page",
     },
+    titleBar: {
+        help: "Help",
+        minimize: "Minimize",
+        maximize: "Maximize",
+        restore: "Restore",
+        close: "Close",
+    },
     homePage: {
         newProject: "New Project",
         openLocalProject: {

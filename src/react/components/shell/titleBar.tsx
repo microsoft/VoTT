@@ -2,6 +2,8 @@ import React, { Fragment } from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
+import { HelpMenu } from "./helpMenu";
+import { strings } from "../../../common/strings";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
@@ -14,6 +16,7 @@ export interface ITitleBarState {
     maximized: boolean;
     fullscreen: boolean;
     menu: Electron.Menu;
+    showHelpMenu: boolean;
 }
 
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
@@ -23,6 +26,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         maximized: false,
         fullscreen: false,
         menu: null,
+        showHelpMenu: false,
     };
 
     private menu: Menu = React.createRef();
@@ -85,25 +89,32 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     {this.props.children}
                     {this.state.platform === PlatformType.Windows &&
                         <ul className="ml-3">
-                            <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
+                            <li title={strings.titleBar.help} className="btn-window-help" onClick={this.openHelpMenu}>
+                                <i className="fas fa-question-circle"/>
+                            </li>
+                            <li title={strings.titleBar.minimize} className="btn-window-minimize" onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
                             </li>
                             {!this.state.maximized &&
-                                <li title="Maximize" className="btn-window-maximize" onClick={this.maximizeWindow}>
+                                <li title={strings.titleBar.maximize} className="btn-window-maximize" onClick={this.maximizeWindow}>
                                     <i className="far fa-window-maximize" />
                                 </li>
                             }
                             {this.state.maximized &&
-                                <li title="Restore" className="btn-window-restore" onClick={this.unmaximizeWindow}>
+                                <li title={strings.titleBar.restore} className="btn-window-restore" onClick={this.unmaximizeWindow}>
                                     <i className="far fa-window-restore" />
                                 </li>
                             }
-                            <li title="Close" className="btn-window-close" onClick={this.closeWindow}>
+                            <li title={strings.titleBar.close} className={strings.titleBar.close} onClick={this.closeWindow}>
                                 <i className="fas fa-times" />
                             </li>
                         </ul>
                     }
                 </div>
+                <HelpMenu
+                    show={this.state.showHelpMenu}
+                    onClose={() => this.setState({showHelpMenu: true})}
+                />
             </div>
         );
     }
@@ -185,6 +196,10 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         if (this.state.isElectron) {
             this.currentWindow.setTitle(`${this.props.title} - VoTT`);
         }
+    }
+
+    private openHelpMenu = () => {
+        this.setState({showHelpMenu: true});
     }
 
     private minimizeWindow = () => {
