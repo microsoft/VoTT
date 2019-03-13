@@ -2,6 +2,7 @@ import React from "react";
 import MessageBox from "../common/messageBox/messageBox";
 import { strings } from "../../../common/strings";
 import { KeyboardContext, IKeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
+import { IKeyboardBindingProps } from "../common/keyboardBinding/keyboardBinding";
 
 export interface IHelpMenuProps {
     show: boolean;
@@ -44,11 +45,17 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
         );
     }
 
-    private getRegistrationRow = (key, registrations) => {
-        const r = registrations[key]
+    private getRegistrationRow = (key: string, registrations: {[key: string]: IKeyboardBindingProps[]}) => {
+        debugger;
+        const keyRegistrations = registrations[key]
         return (
-            <div className={"help-row"}>
-                {key}
+            
+            <div className={"help-key"}>
+                {
+                    keyRegistrations && keyRegistrations.map((r) => {
+                        <div>{r.name || "no name"}</div>
+                    })
+                }
             </div>
         )
     }

@@ -1,12 +1,13 @@
 import Guard from "../../../../common/guard";
 import { KeyboardManager, KeyEventType } from "./keyboardManager";
+import { IKeyboardBindingProps } from "../keyboardBinding/keyboardBinding";
 
 /**
  * A map of keyboard event registrations
  */
 export interface IKeyboardRegistrations {
     [keyEventType: string]: {
-        [key: string]: KeyboardEventHandler[],
+        [key: string]: IKeyboardBindingProps[],
     };
 }
 
@@ -21,40 +22,31 @@ export type KeyboardEventHandler = (evt?: KeyboardEvent) => void;
 export class KeyboardRegistrationManager {
     private registrations: IKeyboardRegistrations = {};
 
-    /**
-     * Registers a keyboard event handler for the specified key code
-     * @param keyEventType Type of key event (keydown, keyup, keypress)
-     * @param keyCodes a list of key code and key code combinations, ex) Ctrl+1
-     * @param handler The keyboard event handler
-     *
-     * @returns a function for deregistering the handler
-     */
-    public addHandler(keyEventType: KeyEventType, keyCodes: string[], handler: KeyboardEventHandler): () => void {
-        Guard.null(keyEventType);
-        Guard.expression(keyCodes, (keyCodes) => keyCodes.length > 0);
-        Guard.null(handler);
+    public registerBinding = (binding: IKeyboardBindingProps) => {
+        Guard.null(binding.keyEventType);
+        Guard.expression(binding.accelerators, (keyCodes) => keyCodes.length > 0);
+        Guard.null(binding.handler);
 
-        let eventTypeRegistrations = this.registrations[keyEventType];
+        let eventTypeRegistrations = this.registrations[binding.keyEventType];
         if (!eventTypeRegistrations) {
             eventTypeRegistrations = {};
-            this.registrations[keyEventType] = eventTypeRegistrations;
+            this.registrations[binding.keyEventType] = eventTypeRegistrations;
         }
 
-        keyCodes.forEach((keyCode) => {
-            let keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
+        binding.accelerators.forEach((keyCode) => {
+            let keyRegistrations: IKeyboardBindingProps[] = this.registrations[binding.keyEventType][keyCode];
             if (!keyRegistrations) {
                 keyRegistrations = [];
-                this.registrations[keyEventType][keyCode] = keyRegistrations;
+                this.registrations[binding.keyEventType][keyCode] = keyRegistrations;
             }
 
-            keyRegistrations.push(handler);
+            keyRegistrations.push(binding);
         });
 
         return () => {
-            keyCodes.forEach((keyCode) => {
-                const keyRegistrations: KeyboardEventHandler[] = this.registrations[keyEventType][keyCode];
-                const index = keyRegistrations.findIndex((h) => h === handler);
-
+            binding.accelerators.forEach((keyCode) => {
+                const keyRegistrations: IKeyboardBindingProps[] = this.registrations[binding.keyEventType][keyCode];
+                const index = keyRegistrations.findIndex((b) => b === binding);
                 keyRegistrations.splice(index, 1);
             });
         };
@@ -70,7 +62,7 @@ export class KeyboardRegistrationManager {
         Guard.null(keyCode);
 
         const keyEventTypeRegs = this.registrations[keyEventType];
-        return (keyEventTypeRegs && keyEventTypeRegs[keyCode]) ? [...keyEventTypeRegs[keyCode]] : [];
+        return (keyEventTypeRegs && keyEventTypeRegs[keyCode]) ? [...keyEventTypeRegs[keyCode].map((binding) => binding.handler)] : [];
     }
 
     /**
