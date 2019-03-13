@@ -23,7 +23,7 @@ export default function createReduxStore(
         middlewares.push(createLocalStorage({paths}));
     }
 
-    if (Env.isDevelopment()) {
+    if (Env.get() === "development") {
         middlewares.push(reduxImmutableStateInvariant(), createLogger());
     }
 
