@@ -1,5 +1,7 @@
 import _ from "lodash";
 import React, { RefObject } from "react";
+import "@tensorflow/tfjs";
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
@@ -91,6 +93,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
     };
 
+    // TensorFlow model used for Active Learning
+    private model: any;
+
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
@@ -103,6 +108,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             const project = this.props.recentProjects.find((project) => project.id === projectId);
             await this.props.actions.loadProject(project);
         }
+
+        // Load standard TensorFlow.js SSD Model trained on COCO dataset
+        this.model = await cocoSsd.load("mobilenet_v2"); // Use V2 version
     }
 
     public async componentDidUpdate() {

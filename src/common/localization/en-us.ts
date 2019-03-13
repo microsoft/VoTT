@@ -178,6 +178,7 @@ export const english: IAppStrings = {
             nextAsset: "Next Asset (S)",
             saveProject: "Save Project (Ctrl + S)",
             exportProject: "Export Project (Ctrl + E)",
+            activeLearning: "Auto Detect Regions",
         },
         videoPlayer: {
             previousTaggedFrame: {

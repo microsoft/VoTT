@@ -179,6 +179,7 @@ export const spanish: IAppStrings = {
             nextAsset: "Siguiente activo (S)",
             saveProject: "Guardar Proyecto (Ctrl + S)",
             exportProject: "Exprtar Proyecto (Ctrl + E)",
+            activeLearning: "Regiones detección automática",
         },
         videoPlayer: {
             previousTaggedFrame: {
