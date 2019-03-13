@@ -100,6 +100,20 @@ describe("Project Redux Actions", () => {
         });
     });
 
+    it("Save Project action on new project correctly set tags to empty if none created", async () => {
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
+
+        const skeletonProject = MockFactory.createTestProject("TestProject");
+        const project = {
+            ...skeletonProject,
+            tags: null,
+        };
+
+        const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
+
+        expect(result.tags).toEqual([]);
+    });
+
     it("Save Project action does not override existing export format", async () => {
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 

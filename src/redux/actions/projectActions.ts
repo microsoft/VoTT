@@ -88,6 +88,7 @@ export function saveProject(project: IProject)
             ...project,
             version: appInfo.version,
             exportFormat: project.exportFormat || defaultExportFormat,
+            tags: project.tags || [],
         };
 
         const savedProject = await projectService.save(newProject, projectToken);
