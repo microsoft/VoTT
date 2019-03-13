@@ -546,6 +546,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             case ToolbarItemName.RemoveAllRegions:
                 this.canvas.current.confirmRemoveAllRegions();
                 break;
+            case ToolbarItemName.ActiveLearning:
+                console.log("Active Learning !!");
+                break;
         }
     }
 
