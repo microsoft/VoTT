@@ -188,6 +188,24 @@ describe("Asset Service", () => {
 
             expect(result[10].path).toEqual("file:C:/Desktop/asset%2011.jpg");
         });
+
+        it("Test encoding special characters # and ?", async () => {
+            const testAsset = MockFactory.createTestAsset("#test?");
+            testAssets.push(testAsset);
+
+            const result = await assetService.getAssets();
+
+            expect(result[11].path).toEqual("file:C:/Desktop/asset%23test%3F.jpg");
+        });
+
+        it("Test encoding special characters # and ? and other chars not to be encoded", async () => {
+            const testAsset = MockFactory.createTestAsset("~!@#$&*()=:,;?+'");
+            testAssets.push(testAsset);
+
+            const result = await assetService.getAssets();
+
+            expect(result[12].path).toEqual("file:C:/Desktop/asset~!@%23$&*()=:,;%3F+'.jpg");
+        });
     });
 
     describe("Assets Protocol Tests", () => {
