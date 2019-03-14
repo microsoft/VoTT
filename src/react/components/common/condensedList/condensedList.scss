@@ -2,8 +2,8 @@
 
 .condensed-list {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
-    height: 100%;
 
     &-header {
         font-size: 80%;
@@ -17,7 +17,11 @@
     }
 
     &-body {
+        flex-grow: 1;
+        display: flex;
         overflow: auto;
+        flex-direction: column;
+        position: relative;
     }
 }
 
