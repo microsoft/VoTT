@@ -1,25 +1,27 @@
 @import "../../../../assets/sass/theme.scss";
 
 .project-settings-page {
+    flex-grow: 1;
     display: flex;
     flex-direction: row;
-    height: 100%;
+    min-height: fit-content;
 
     &-settings {
         flex-grow: 1;
     }
 
     &-metrics {
+        display: flex;
+        flex-direction: column;
         flex-grow: 1;
         min-width: 325px;
         max-width: 400px;
         color: #fff;
 
         .loading {
-            display: flex;
-            height: 100%;
-            align-items: center;
-            justify-content: center;
+            position: absolute;
+            left: 50%;
+            top: 25%;
         }
 
         p {

@@ -84,7 +84,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 <div className="title-bar-controls">
                     {this.props.children}
                     {this.state.platform === PlatformType.Windows &&
-                        <ul className="ml-3">
+                        <ul>
                             <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
                             </li>

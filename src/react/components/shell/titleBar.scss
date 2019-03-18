@@ -24,13 +24,16 @@
     color: #ccc;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
 
     &-main {
         -webkit-app-region: drag;
         -webkit-user-select: none;
 
-        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-grow: 1;
         text-align: center;
         font-size: 0.80em;
     }
@@ -80,7 +83,7 @@
     }
 
     &-label {
-        flex: 1;
+        flex-grow: 1;
     }
 
     &-accelerator {
