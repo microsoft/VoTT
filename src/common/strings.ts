@@ -202,6 +202,9 @@ export interface IAppStrings {
                 tooltip: string,
             },
         }
+        help: {
+            title: string;
+        }
         assetError: string;
         tags: {
             hotKey: {

@@ -3,6 +3,7 @@ import MessageBox from "../common/messageBox/messageBox";
 import { strings } from "../../../common/strings";
 import { KeyboardContext, IKeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
 import { IKeyboardBindingProps } from "../common/keyboardBinding/keyboardBinding";
+import "./helpMenu.scss";
 
 export interface IHelpMenuProps {
     show: boolean;
@@ -37,7 +38,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
         const groupKeys = this.groupKeys(registrations);
 
         return (
-            <div className="help-body">
+            <div className="help-body container">
                 {
                     groupKeys.map((group) => group.length ? this.getRegistrationRow(group, registrations) : null)
                 }
@@ -84,8 +85,10 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
         const keyRegistration = registrations[group[0]][0];
         return (
 
-            <div className={"help-key"}>
-                {this.stringifyGroup(group)} - {keyRegistration.displayName}
+            <div className={"help-key row"}>
+                <div className={`col-1 keybinding-icon ${(keyRegistration.icon) ? `fas ${keyRegistration.icon}` : ""}`}></div>
+                <div className="col-4 keybinding">{this.stringifyGroup(group)}</div>
+                <div className="col-6">{keyRegistration.displayName}</div>
             </div>
         );
     }

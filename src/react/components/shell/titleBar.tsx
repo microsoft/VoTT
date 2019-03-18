@@ -4,6 +4,8 @@ import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
 import { HelpMenu } from "./helpMenu";
 import { strings } from "../../../common/strings";
+import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
+import { KeyEventType } from "../common/keyboardManager/keyboardManager";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
@@ -115,9 +117,16 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                         </ul>
                     }
                 </div>
+                <KeyboardBinding
+                    displayName={strings.editorPage.help.title}
+                    accelerators={["Ctrl+H", "Ctrl+h"]}
+                    handler={() => this.setState({showHelpMenu: !this.state.showHelpMenu})}
+                    icon={"fa-question-circle"}
+                    keyEventType={KeyEventType.KeyDown}
+                />
                 <HelpMenu
                     show={this.state.showHelpMenu}
-                    onClose={() => this.setState({showHelpMenu: true})}
+                    onClose={() => this.setState({showHelpMenu: false})}
                 />
             </div>
         );

@@ -201,6 +201,9 @@ export const spanish: IAppStrings = {
                 tooltip: "Siguiente marco",
             },
         },
+        help: {
+            title: "Abrir/cerrar el menú de ayuda",
+        },
         assetError: "No se puede mostrar el activo",
         tags: {
             hotKey: {

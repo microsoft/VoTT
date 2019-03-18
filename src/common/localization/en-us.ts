@@ -200,6 +200,9 @@ export const english: IAppStrings = {
                 tooltip: "Next Frame",
             },
         },
+        help: {
+            title: "Toggle Help Menu",
+        },
         assetError: "Unable to load asset",
         tags: {
             hotKey: {
