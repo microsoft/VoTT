@@ -20,7 +20,7 @@ describe("Keyboard Binding Component", () => {
     };
 
     const registrationMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
-    registrationMock.prototype.addHandler = jest.fn(() => deregisterFunc);
+    registrationMock.prototype.registerBinding = jest.fn(() => deregisterFunc);
 
     function createComponent(props?: IKeyboardBindingProps): ReactWrapper {
         props = props || defaultProps;
@@ -44,8 +44,13 @@ describe("Keyboard Binding Component", () => {
 
     it("registered the keydown key code and event handler", () => {
         wrapper = createComponent();
-        expect(registrationMock.prototype.addHandler).toBeCalledWith(
-            KeyEventType.KeyDown, defaultProps.accelerators, defaultProps.handler);
+        const expectedBindingProps: IKeyboardBindingProps = {
+            accelerators: defaultProps.accelerators,
+            keyEventType: KeyEventType.KeyDown,
+            handler: defaultProps.handler,
+            name: expect.any(String),
+        }
+        expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
 
     it("registered the keyup key code and event handler", () => {
@@ -53,8 +58,13 @@ describe("Keyboard Binding Component", () => {
             ...defaultProps,
             keyEventType: KeyEventType.KeyUp,
         });
-        expect(registrationMock.prototype.addHandler).toBeCalledWith(
-            KeyEventType.KeyUp, defaultProps.accelerators, defaultProps.handler);
+        const expectedBindingProps: IKeyboardBindingProps = {
+            accelerators: defaultProps.accelerators,
+            keyEventType: KeyEventType.KeyUp,
+            handler: defaultProps.handler,
+            name: expect.any(String),
+        }
+        expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
 
     it("registered the keypress key code and event handler", () => {
@@ -62,8 +72,13 @@ describe("Keyboard Binding Component", () => {
             ...defaultProps,
             keyEventType: KeyEventType.KeyPress,
         });
-        expect(registrationMock.prototype.addHandler).toBeCalledWith(
-            KeyEventType.KeyPress, defaultProps.accelerators, defaultProps.handler);
+        const expectedBindingProps: IKeyboardBindingProps = {
+            accelerators: defaultProps.accelerators,
+            keyEventType: KeyEventType.KeyPress,
+            handler: defaultProps.handler,
+            name: expect.any(String),
+        }
+        expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
 
     it("deregisters the event handler", () => {

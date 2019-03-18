@@ -92,20 +92,24 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                             <li title={strings.titleBar.help} className="btn-window-help" onClick={this.openHelpMenu}>
                                 <i className="fas fa-question-circle"/>
                             </li>
-                            <li title={strings.titleBar.minimize} className="btn-window-minimize" onClick={this.minimizeWindow}>
+                            <li title={strings.titleBar.minimize} className="btn-window-minimize"
+                                onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
                             </li>
                             {!this.state.maximized &&
-                                <li title={strings.titleBar.maximize} className="btn-window-maximize" onClick={this.maximizeWindow}>
+                                <li title={strings.titleBar.maximize} className="btn-window-maximize"
+                                    onClick={this.maximizeWindow}>
                                     <i className="far fa-window-maximize" />
                                 </li>
                             }
                             {this.state.maximized &&
-                                <li title={strings.titleBar.restore} className="btn-window-restore" onClick={this.unmaximizeWindow}>
+                                <li title={strings.titleBar.restore} className="btn-window-restore"
+                                    onClick={this.unmaximizeWindow}>
                                     <i className="far fa-window-restore" />
                                 </li>
                             }
-                            <li title={strings.titleBar.close} className={strings.titleBar.close} onClick={this.closeWindow}>
+                            <li title={strings.titleBar.close} className={strings.titleBar.close}
+                                onClick={this.closeWindow}>
                                 <i className="fas fa-times" />
                             </li>
                         </ul>

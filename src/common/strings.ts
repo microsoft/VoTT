@@ -24,7 +24,7 @@ export interface IAppStrings {
         maximize: string;
         restore: string;
         close: string;
-    }
+    };
     homePage: {
         newProject: string;
         openLocalProject: {

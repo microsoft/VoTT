@@ -12,8 +12,8 @@ export interface IHelpMenuProps {
 export class HelpMenu extends React.Component<IHelpMenuProps> {
     public static contextType = KeyboardContext;
     public context!: IKeyboardContext;
-    
-    render() {
+
+    public render() {
         return (
             <div className={"help-modal"}>
                 <MessageBox
@@ -30,7 +30,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
     private getHelpBody = () => {
 
         const registrations = this.context.keyboard.getRegistrations()[KeyEventType.KeyDown];
-        if (!registrations){
+        if (!registrations) {
             return;
         }
 
@@ -46,17 +46,17 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
     }
 
     private getRegistrationRow = (key: string, registrations: {[key: string]: IKeyboardBindingProps[]}) => {
-        debugger;
-        const keyRegistrations = registrations[key]
+        const keyRegistrations = registrations[key];
         return (
-            
+
             <div className={"help-key"}>
                 {
-                    keyRegistrations && keyRegistrations.map((r) => {
-                        <div>{r.name || "no name"}</div>
-                    })
+                    // keyRegistrations && keyRegistrations.map((r) => {
+                    //     <div>{r.name || "no name"}</div>;
+                    // })
+                    key
                 }
             </div>
-        )
+        );
     }
 }

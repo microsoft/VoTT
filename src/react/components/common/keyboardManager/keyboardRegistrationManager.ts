@@ -62,7 +62,11 @@ export class KeyboardRegistrationManager {
         Guard.null(keyCode);
 
         const keyEventTypeRegs = this.registrations[keyEventType];
-        return (keyEventTypeRegs && keyEventTypeRegs[keyCode]) ? [...keyEventTypeRegs[keyCode].map((binding) => binding.handler)] : [];
+        return (keyEventTypeRegs && keyEventTypeRegs[keyCode])
+            ?
+            [...keyEventTypeRegs[keyCode].map((binding) => binding.handler)]
+            :
+            [];
     }
 
     /**
