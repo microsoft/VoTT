@@ -13,7 +13,7 @@ describe("Keyboard Binding Component", () => {
 
     const accelerators = ["Ctrl+1"];
     const defaultProps: IKeyboardBindingProps = {
-        name: "Keyboard binding",
+        displayName: "Keyboard binding",
         keyEventType: KeyEventType.KeyDown,
         accelerators,
         handler: onKeyDownHandler,
@@ -48,7 +48,7 @@ describe("Keyboard Binding Component", () => {
             accelerators: defaultProps.accelerators,
             keyEventType: KeyEventType.KeyDown,
             handler: defaultProps.handler,
-            name: expect.any(String),
+            displayName: expect.any(String),
         }
         expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
@@ -62,7 +62,7 @@ describe("Keyboard Binding Component", () => {
             accelerators: defaultProps.accelerators,
             keyEventType: KeyEventType.KeyUp,
             handler: defaultProps.handler,
-            name: expect.any(String),
+            displayName: expect.any(String),
         }
         expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
@@ -76,7 +76,7 @@ describe("Keyboard Binding Component", () => {
             accelerators: defaultProps.accelerators,
             keyEventType: KeyEventType.KeyPress,
             handler: defaultProps.handler,
-            name: expect.any(String),
+            displayName: expect.any(String),
         }
         expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });

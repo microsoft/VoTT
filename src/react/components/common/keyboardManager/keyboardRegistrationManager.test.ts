@@ -8,7 +8,7 @@ describe("Keyboard Registration Manager", () => {
     function addHandler(keyboardManager: KeyboardRegistrationManager, keyEventType: KeyEventType, accelerators: string[], handler){
         const bindingProps: IKeyboardBindingProps = {
             accelerators,
-            name: "test binding",
+            displayName: "test binding",
             handler,
             keyEventType
         }

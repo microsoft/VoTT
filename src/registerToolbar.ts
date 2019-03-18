@@ -36,7 +36,7 @@ export default function registerToolbar() {
         icon: "fa-mouse-pointer",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
-        accelerators: ["v", "V"],
+        accelerators: ["V", "v"],
     });
 
     ToolbarItemFactory.register({
@@ -45,7 +45,7 @@ export default function registerToolbar() {
         icon: "fa-vector-square",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
-        accelerators: ["r", "R"],
+        accelerators: ["R", "r"],
     });
 
     ToolbarItemFactory.register({
@@ -54,7 +54,7 @@ export default function registerToolbar() {
         icon: "fa-draw-polygon",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
-        accelerators: ["p", "P"],
+        accelerators: ["P", "p"],
     });
 
     ToolbarItemFactory.register({
@@ -63,7 +63,7 @@ export default function registerToolbar() {
         icon: "far fa-clone",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
-        accelerators: ["Ctrl+w", "Ctrl+W"],
+        accelerators: ["Ctrl+W", "Ctrl+w"],
     });
 
     ToolbarItemFactory.register({
@@ -72,7 +72,7 @@ export default function registerToolbar() {
         icon: "fa-copy",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+c", "Ctrl+C"],
+        accelerators: ["Ctrl+C", "Ctrl+c"],
     });
 
     ToolbarItemFactory.register({
@@ -81,7 +81,7 @@ export default function registerToolbar() {
         icon: "fa-cut",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+x", "Ctrl+X"],
+        accelerators: ["Ctrl+X", "Ctrl+x"],
     });
 
     ToolbarItemFactory.register({
@@ -90,7 +90,7 @@ export default function registerToolbar() {
         icon: "fa-paste",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+v", "Ctrl+V"],
+        accelerators: ["Ctrl+V", "Ctrl+v"],
     });
 
     ToolbarItemFactory.register({
@@ -108,7 +108,7 @@ export default function registerToolbar() {
         icon: "fas fa-arrow-circle-up",
         group: ToolbarItemGroup.Navigation,
         type: ToolbarItemType.Action,
-        accelerators: ["ArrowUp", "w", "W"],
+        accelerators: ["ArrowUp", "W", "w"],
     });
 
     ToolbarItemFactory.register({
@@ -117,7 +117,7 @@ export default function registerToolbar() {
         icon: "fas fa-arrow-circle-down",
         group: ToolbarItemGroup.Navigation,
         type: ToolbarItemType.Action,
-        accelerators: ["ArrowDown", "s", "S"],
+        accelerators: ["ArrowDown", "S", "s"],
     });
 
     ToolbarItemFactory.register({
@@ -126,7 +126,7 @@ export default function registerToolbar() {
         icon: "fa-save",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+s", "Ctrl+S"],
+        accelerators: ["Ctrl+S", "Ctrl+s"],
     }, SaveProject);
 
     ToolbarItemFactory.register({
@@ -135,6 +135,6 @@ export default function registerToolbar() {
         icon: "fa-external-link-square-alt",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+e", "Ctrl+E"],
+        accelerators: ["Ctrl+E", "Ctrl+e"],
     }, ExportProject);
 }

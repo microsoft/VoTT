@@ -3,7 +3,7 @@ import React from "react";
 
 export interface IKeyboardBindingProps {
     accelerators: string[];
-    name: string;
+    displayName: string;
     handler: (evt?: KeyboardEvent) => void;
     keyEventType?: KeyEventType;
     icon?: string;

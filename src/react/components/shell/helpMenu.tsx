@@ -34,29 +34,63 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
             return;
         }
 
-        const keys = Object.keys(registrations);
+        const groupKeys = this.groupKeys(registrations);
 
         return (
             <div className="help-body">
                 {
-                    keys.map((key) => this.getRegistrationRow(key, registrations))
+                    groupKeys.map((group) => group.length ? this.getRegistrationRow(group, registrations) : null)
                 }
             </div>
         );
     }
 
-    private getRegistrationRow = (key: string, registrations: {[key: string]: IKeyboardBindingProps[]}) => {
-        const keyRegistrations = registrations[key];
+    private groupKeys = (registrations: {[key: string]: IKeyboardBindingProps[]}) => {
+        const keys = this.consolidateKeyCasings(registrations);
+
+        const groups = []
+        const alreadyGrouped = new Set();
+
+        for (const key of keys){
+            const group = [key];
+            if (!alreadyGrouped.has(key)){
+                alreadyGrouped.add(key);
+                for (const otherKey of keys){
+                    if (!alreadyGrouped.has(otherKey) && registrations[key][0].handler === registrations[otherKey][0].handler){
+                        group.push(otherKey);
+                        alreadyGrouped.add(otherKey);
+                    }
+                }
+                groups.push(group)
+            }
+        }
+        return groups;
+    }
+
+    private consolidateKeyCasings = (registrations: {[key: string]: IKeyboardBindingProps[]}): string[] => {
+        const allKeys = Object.keys(registrations);
+        const lowerRegistrations = {};
+        for (const key of allKeys){
+            const lowerKey = key.toLowerCase();
+            if (!lowerRegistrations[lowerKey]) {
+                lowerRegistrations[lowerKey] = key;
+            }
+        }
+        return Object.keys(lowerRegistrations).map((lowerKey) => lowerRegistrations[lowerKey]);
+    }
+
+    private getRegistrationRow = (group: string[], registrations: {[key: string]: IKeyboardBindingProps[]}) => {
+        // At the moment, there are no keys "doubled up". We are getting the first registration for the key
+        const keyRegistration = registrations[group[0]][0];
         return (
 
             <div className={"help-key"}>
-                {
-                    // keyRegistrations && keyRegistrations.map((r) => {
-                    //     <div>{r.name || "no name"}</div>;
-                    // })
-                    key
-                }
+                {this.stringifyGroup(group)} - {keyRegistration.displayName}
             </div>
         );
+    }
+
+    private stringifyGroup(group: string[]): string{
+        return (group.length < 3) ? group.join(", ") : `${group[0]}-${group[group.length - 1]}`
     }
 }

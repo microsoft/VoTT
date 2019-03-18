@@ -75,7 +75,7 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
                 {
                     accelerators &&
                     <KeyboardBinding
-                        name={this.props.name}
+                        displayName={this.props.tooltip}
                         accelerators={accelerators}
                         handler={this.onClick}
                         icon={this.props.icon}
@@ -84,7 +84,7 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
                 }
                 <button type="button"
                     className={className.join(" ")}
-                    title={this.props.tooltip}
+                    title={this.getTitle()}
                     onClick={this.onClick}>
                     <i className={"fas " + this.props.icon} />
                 </button>
@@ -93,6 +93,24 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
     }
 
     protected abstract onItemClick();
+
+    private getTitle = () => {
+        return `${this.props.tooltip}${this.getShortcut()}`;
+    }
+
+    private getShortcut = () => {
+        return ` (${this.consolidateKeyCasings(this.props.accelerators).join(", ")})`;
+    }
+
+    private consolidateKeyCasings = (accelerators: string[]): string[] => {
+        const consolidated: string[] = []
+        for (const a of accelerators){
+            if (!consolidated.find((item) => item.toLowerCase() === a.toLowerCase())){
+                consolidated.push(a);
+            }
+        }
+        return consolidated;
+    }
 
     private onClick = () => {
         if (this.onItemClick) {

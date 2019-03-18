@@ -18,7 +18,7 @@ export class CustomVideoPlayerButton extends React.Component<ICustomVideoPlayerB
             <Fragment>
                 {this.props.accelerators &&
                     <KeyboardBinding keyEventType={KeyEventType.KeyDown}
-                        name={this.props.tooltip}
+                        displayName={this.props.tooltip}
                         accelerators={this.props.accelerators}
                         handler={this.props.onClick} />
                 }

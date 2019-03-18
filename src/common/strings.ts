@@ -203,6 +203,11 @@ export interface IAppStrings {
             },
         }
         assetError: string;
+        tags: {
+            hotKey: {
+                help: string;
+            }
+        }
         canvas: {
             removeAllRegions: {
                 title: string;

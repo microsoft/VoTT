@@ -175,17 +175,17 @@ export const spanish: IAppStrings = {
         toolbar: {
             select: "Seleccionar",
             pan: "Pan",
-            drawRectangle: "Dibujar Rectángulo (R)",
-            drawPolygon: "Dibujar Polígono (P)",
-            copyRectangle: "Copia rectángulo (Ctrl + W)",
-            copy: "Copiar regiones (Ctrl + C)",
-            cut: "Cortar regiones (Ctrl + X)",
-            paste: "Pegar regiones (Ctrl + V)",
-            removeAllRegions: "Eliminar Todas Las Regiones (Ctrl + Delete)",
-            previousAsset: "Activo anterior (W)",
-            nextAsset: "Siguiente activo (S)",
-            saveProject: "Guardar Proyecto (Ctrl + S)",
-            exportProject: "Exprtar Proyecto (Ctrl + E)",
+            drawRectangle: "Dibujar Rectángulo",
+            drawPolygon: "Dibujar Polígono",
+            copyRectangle: "Copia rectángulo",
+            copy: "Copiar regiones",
+            cut: "Cortar regiones",
+            paste: "Pegar regiones",
+            removeAllRegions: "Eliminar Todas Las Regiones",
+            previousAsset: "Activo anterior",
+            nextAsset: "Siguiente activo",
+            saveProject: "Guardar Proyecto",
+            exportProject: "Exprtar Proyecto",
         },
         videoPlayer: {
             previousTaggedFrame: {
@@ -202,6 +202,11 @@ export const spanish: IAppStrings = {
             },
         },
         assetError: "No se puede mostrar el activo",
+        tags: {
+            hotKey: {
+                help: "Aplicar etiqueta con tecla de acceso rápido"
+            }
+        },
         canvas: {
             removeAllRegions: {
                 title: "Borrar Regiones",
