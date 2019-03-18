@@ -50,14 +50,16 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     <i className="fas fa-chart-bar" />
                     <span>{strings.projectMetrics.title}</span>
                 </h6>
-                {this.state.loading &&
-                    <div className="loading">
-                        <i className="fas fa-circle-notch fa-spin fa-2x" />
-                    </div>
-                }
-                {!this.state.loading &&
-                    this.renderMetrics()
-                }
+                <div className="condensed-list-body">
+                    {this.state.loading &&
+                        <div className="loading">
+                            <i className="fas fa-circle-notch fa-spin fa-2x" />
+                        </div>
+                    }
+                    {!this.state.loading &&
+                        this.renderMetrics()
+                    }
+                </div>
             </div>
         );
     }
