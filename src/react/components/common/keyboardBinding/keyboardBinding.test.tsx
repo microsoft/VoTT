@@ -49,7 +49,7 @@ describe("Keyboard Binding Component", () => {
             keyEventType: KeyEventType.KeyDown,
             handler: defaultProps.handler,
             displayName: expect.any(String),
-        }
+        };
         expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
 
@@ -63,7 +63,7 @@ describe("Keyboard Binding Component", () => {
             keyEventType: KeyEventType.KeyUp,
             handler: defaultProps.handler,
             displayName: expect.any(String),
-        }
+        };
         expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
 
@@ -77,7 +77,7 @@ describe("Keyboard Binding Component", () => {
             keyEventType: KeyEventType.KeyPress,
             handler: defaultProps.handler,
             displayName: expect.any(String),
-        }
+        };
         expect(registrationMock.prototype.registerBinding).toBeCalledWith(expectedBindingProps);
     });
 

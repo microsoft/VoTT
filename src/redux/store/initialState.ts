@@ -12,6 +12,7 @@ const initialState: IApplicationState = {
         devToolsEnabled: false,
         securityTokens: [],
     },
+    showHelpMenu: false,
     connections: [],
     recentProjects: [],
     currentProject: null,

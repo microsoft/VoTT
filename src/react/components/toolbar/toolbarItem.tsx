@@ -103,10 +103,12 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
     }
 
     private consolidateKeyCasings = (accelerators: string[]): string[] => {
-        const consolidated: string[] = []
-        for (const a of accelerators){
-            if (!consolidated.find((item) => item.toLowerCase() === a.toLowerCase())){
-                consolidated.push(a);
+        const consolidated: string[] = [];
+        if (accelerators) {
+            for (const a of accelerators) {
+                if (!consolidated.find((item) => item.toLowerCase() === a.toLowerCase())) {
+                    consolidated.push(a);
+                }
             }
         }
         return consolidated;

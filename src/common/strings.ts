@@ -209,7 +209,7 @@ export interface IAppStrings {
         tags: {
             hotKey: {
                 help: string;
-            }
+            },
         }
         canvas: {
             removeAllRegions: {

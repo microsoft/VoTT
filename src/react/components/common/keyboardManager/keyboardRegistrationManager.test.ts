@@ -5,13 +5,14 @@ import { IKeyboardBindingProps } from "../keyboardBinding/keyboardBinding";
 describe("Keyboard Registration Manager", () => {
     let keyboardManager: KeyboardRegistrationManager = null;
 
-    function addHandler(keyboardManager: KeyboardRegistrationManager, keyEventType: KeyEventType, accelerators: string[], handler){
+    function addHandler(keyboardManager: KeyboardRegistrationManager,
+                        keyEventType: KeyEventType, accelerators: string[], handler) {
         const bindingProps: IKeyboardBindingProps = {
             accelerators,
             displayName: "test binding",
             handler,
-            keyEventType
-        }
+            keyEventType,
+        };
         return keyboardManager.registerBinding(bindingProps);
     }
 

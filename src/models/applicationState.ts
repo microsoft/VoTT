@@ -14,6 +14,7 @@ export interface IApplicationState {
     connections: IConnection[];
     recentProjects: IProject[];
     currentProject: IProject;
+    showHelpMenu: boolean;
     appError?: IAppError;
 }
 

@@ -207,8 +207,8 @@ export const spanish: IAppStrings = {
         assetError: "No se puede mostrar el activo",
         tags: {
             hotKey: {
-                help: "Aplicar etiqueta con tecla de acceso rápido"
-            }
+                help: "Aplicar etiqueta con tecla de acceso rápido",
+            },
         },
         canvas: {
             removeAllRegions: {

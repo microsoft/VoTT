@@ -110,20 +110,13 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                                     <i className="far fa-window-restore" />
                                 </li>
                             }
-                            <li title={strings.titleBar.close} className={strings.titleBar.close}
+                            <li title={strings.titleBar.close} className="btn-window-close"
                                 onClick={this.closeWindow}>
                                 <i className="fas fa-times" />
                             </li>
                         </ul>
                     }
                 </div>
-                <KeyboardBinding
-                    displayName={strings.editorPage.help.title}
-                    accelerators={["Ctrl+H", "Ctrl+h"]}
-                    handler={() => this.setState({showHelpMenu: !this.state.showHelpMenu})}
-                    icon={"fa-question-circle"}
-                    keyEventType={KeyEventType.KeyDown}
-                />
                 <HelpMenu
                     show={this.state.showHelpMenu}
                     onClose={() => this.setState({showHelpMenu: false})}
