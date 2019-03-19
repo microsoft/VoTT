@@ -20,7 +20,6 @@ import { HelpMenu } from "./react/components/shell/helpMenu";
 
 interface IAppProps {
     currentProject?: IProject;
-    showHelpMenu?: boolean;
     appError?: IAppError;
     actions?: IAppErrorActions;
 }
@@ -49,7 +48,6 @@ export default class App extends React.Component<IAppProps> {
 
         this.state = {
             currentProject: this.props.currentProject,
-            showHelpMenu: false,
         };
     }
 
