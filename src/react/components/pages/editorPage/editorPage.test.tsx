@@ -501,7 +501,7 @@ describe("Editor Page Component", () => {
         });
 
         it("sets selected tag and locked tags when hot key is pressed", async () => {
-            const project = MockFactory.createTestProject();
+            const project = MockFactory.createTestProject("test", 5);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
@@ -510,18 +510,16 @@ describe("Editor Page Component", () => {
             const wrapper = createComponent(store, MockFactory.editorPageProps());
             await waitForSelectedAsset(wrapper);
 
-            wrapper.update();
-
-            const editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().selectedTag).toBeNull();
 
             dispatchKeyEvent("1");
 
-            expect(editorPage.state().lockedTags).toEqual([]);
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
         });
 
-        it("Does not set selected tag or locked tags when invalid hot key is pressed", async () => {
-            const project = MockFactory.createTestProject();
+        it("does not set selected tag or locked tags when hot key is pressed", async () => {
+            const tagLength = 5;
+            const project = MockFactory.createTestProject("test", tagLength);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
@@ -530,19 +528,11 @@ describe("Editor Page Component", () => {
             const wrapper = createComponent(store, MockFactory.editorPageProps());
             await waitForSelectedAsset(wrapper);
 
-            wrapper.update();
+            expect(editorPage.state().selectedTag).toBeNull();
 
-            const editorPage = wrapper.find(EditorPage).childAt(0);
+            dispatchKeyEvent((tagLength + 1).toString());
 
-            dispatchKeyEvent("1");
-
-            expect(editorPage.state().lockedTags).toEqual([]);
-            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
-
-            dispatchKeyEvent("9");
-
-            expect(editorPage.state().lockedTags).toEqual([]);
-            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+            expect(editorPage.state().selectedTag).toBeNull();
         });
     });
 

@@ -206,7 +206,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     /**
-     * Listens for CTRL+{number key} and calls `onTagClicked` with tag corresponding to that number
+     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
      * @param event KeyDown event
      */
     private handleTagHotKey = (event: KeyboardEvent): void => {
