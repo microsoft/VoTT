@@ -18,3 +18,4 @@ coverage:
   ignore:
     - "src/electron/start.js"
     - "src/providers/export/tensorFlowRecords/tensorFlowRecordsProtoBuf_pb.js"
+    - "src/redux/store/store.ts"
