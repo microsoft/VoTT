@@ -16,6 +16,7 @@ import { StatusBar } from "./react/components/shell/statusBar";
 import { strings } from "./common/strings";
 import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
 import { KeyboardBinding } from "./react/components/common/keyboardBinding/keyboardBinding";
+import { HelpMenu } from "./react/components/shell/helpMenu";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -28,7 +29,6 @@ function mapStateToProps(state: IApplicationState) {
     return {
         currentProject: state.currentProject,
         appError: state.appError,
-        showHelpMenu: state.showHelpMenu,
     };
 }
 
@@ -81,13 +81,7 @@ export default class App extends React.Component<IAppProps> {
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}>
-                                    <KeyboardBinding
-                                        displayName={strings.editorPage.help.title}
-                                        accelerators={["Ctrl+H", "Ctrl+h"]}
-                                        handler={this.toggleHelpMenu}
-                                        icon={"fa-question-circle"}
-                                        keyEventType={KeyEventType.KeyDown}
-                                    />
+                                    <HelpMenu/>
                                 </TitleBar>
                                 <div className="app-main">
                                     <Sidebar project={this.props.currentProject} />

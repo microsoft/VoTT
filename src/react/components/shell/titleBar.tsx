@@ -89,15 +89,6 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     {this.props.children}
                     {this.state.platform === PlatformType.Windows &&
                         <ul>
-                            {/* <li title={strings.titleBar.help} className="btn-window-help"
-                                    onClick={this.showHelpMenu}>
-                                <i className="fas fa-question-circle" />
-                                <HelpMenu
-                                    keyRegistrations={{}}
-                                    show={this.state.showHelpMenu}
-                                    onClose={this.onHelpMenuClose}
-                                />
-                            </li> */}
                             <li title={strings.titleBar.minimize} className="btn-window-minimize"
                                     onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />

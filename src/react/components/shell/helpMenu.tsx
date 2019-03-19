@@ -1,38 +1,59 @@
 import React from "react";
 import MessageBox from "../common/messageBox/messageBox";
 import { strings } from "../../../common/strings";
-// import { KeyboardContext, IKeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
-import { IKeyboardBindingProps } from "../common/keyboardBinding/keyboardBinding";
+import { KeyboardContext, IKeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
+import { IKeyboardBindingProps, KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
 import "./helpMenu.scss";
 
 export interface IHelpMenuProps {
-    show: boolean;
-    keyRegistrations: {[key: string]: IKeyboardBindingProps[]};
     onClose?: () => void;
 }
 
-export class HelpMenu extends React.Component<IHelpMenuProps> {
-    // public static contextType = KeyboardContext;
-    // public context!: IKeyboardContext;
+export interface IHelpMenuState {
+    show: boolean;
+}
+
+export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
+    public static contextType = KeyboardContext;
+    public context!: IKeyboardContext;
+
+    public state = {
+        show: false,
+    };
+    private icon: string = "fa-question-circle";
 
     public render() {
         return (
-            <div className={"help-modal"}>
+            <div className={"help-menu-button"} onClick={() => this.setState({show: true})}>
+                <i className={`fas ${this.icon}`}/>
+                <KeyboardBinding
+                    displayName={strings.editorPage.help.title}
+                    accelerators={["Ctrl+H", "Ctrl+h"]}
+                    handler={() => this.setState({show: !this.state.show})}
+                    icon={this.icon}
+                    keyEventType={KeyEventType.KeyDown}
+                />
                 <MessageBox
                     title={strings.titleBar.help}
                     message={this.getHelpBody()}
-                    show={this.props.show}
-                    onCancel={this.props.onClose}
+                    show={this.state.show}
+                    onCancel={this.onClose}
                     hideFooter={true}
                 />
             </div>
         );
     }
 
+    private onClose = () => {
+        this.setState({show: false});
+        if (this.props.onClose) {
+            this.props.onClose();
+        }
+    }
+
     private getHelpBody = () => {
 
-        // const registrations = this.context.keyboard.getRegistrations()[KeyEventType.KeyDown];
-        const registrations = this.props.keyRegistrations;
+        const registrations = this.context.keyboard.getRegistrations()[KeyEventType.KeyDown];
         if (!registrations) {
             return;
         }
@@ -95,8 +116,8 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
                 <div className={"help-key row"}>
                     <div className={`col-1 keybinding-icon ${(keyRegistration.icon)
                         ? `fas ${keyRegistration.icon}` : ""}`}/>
-                    <div className="col-4 keybinding">{this.stringifyGroup(group)}</div>
-                    <div className="col-6">{keyRegistration.displayName}</div>
+                    <div className="col-4 keybinding-accelerator">{this.stringifyGroup(group)}</div>
+                    <div className="col-6 keybinding-name">{keyRegistration.displayName}</div>
                 </div>
             );
         }
