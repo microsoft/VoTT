@@ -1,10 +1,8 @@
 import { applyMiddleware, createStore, Store } from "redux";
-import reduxImmutableStateInvariant from "redux-immutable-state-invariant";
-import { createLogger } from "redux-logger";
 import thunk from "redux-thunk";
 import rootReducer from "../reducers";
 import { IApplicationState } from "../../models/applicationState";
-import { createLocalStorage, mergeInitialState } from "../middleware/localStorage";
+import { mergeInitialState } from "../middleware/localStorage";
 import { Env } from "../../common/environment";
 
 /**
@@ -17,17 +15,26 @@ export default function createReduxStore(
     useLocalStorage: boolean = false): Store {
     const paths: string[] = ["appSettings", "connections", "recentProjects"];
 
-    const middlewares = [];
+    let middlewares = [thunk];
 
     if (useLocalStorage) {
-        middlewares.push(createLocalStorage({paths}));
+        const localStorage = require("../middleware/localStorage");
+        const storage = localStorage.createLocalStorage({paths});
+        middlewares = [
+            ...middlewares,
+            storage,
+        ];
     }
 
     if (Env.get() === "development") {
-        middlewares.push(reduxImmutableStateInvariant(), createLogger());
+        const logger = require("redux-logger");
+        const reduxImmutableStateInvariant = require("redux-immutable-state-invariant");
+        middlewares = [
+            ...middlewares,
+            reduxImmutableStateInvariant.default(),
+            logger.createLogger(),
+        ];
     }
-
-    middlewares.push(thunk);
 
     return createStore(
         rootReducer,
