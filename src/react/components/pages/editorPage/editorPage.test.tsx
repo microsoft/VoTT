@@ -500,7 +500,7 @@ describe("Editor Page Component", () => {
             expect(removeAllRegionsConfirm).toBeCalled();
         });
 
-        it("sets selected tag and locked tags when hot key is pressed", async () => {
+        it("sets selected tag when hot key is pressed", async () => {
             const project = MockFactory.createTestProject("test", 5);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
@@ -517,7 +517,7 @@ describe("Editor Page Component", () => {
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
         });
 
-        it("does not set selected tag or locked tags when hot key is pressed", async () => {
+        it("does not set selected tag when invalid hot key is pressed", async () => {
             const tagLength = 5;
             const project = MockFactory.createTestProject("test", tagLength);
             const store = createReduxStore({
