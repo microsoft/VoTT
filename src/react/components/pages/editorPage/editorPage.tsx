@@ -214,16 +214,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (isNaN(key)) {
             return;
         }
-        let tag: ITag;
+        let index: number;
         const tags = this.props.project.tags;
-        if (key === 0) {
-            if (tags.length >= 10) {
-                tag = tags[9];
-            }
-        } else if (tags.length >= key) {
-            tag = tags[key - 1];
+        if (key === 0 && tags.length >= 10) {
+            index = 9;
+        } else if (key < 10) {
+            index = key - 1;
         }
-        this.onTagClicked(tag);
+        if (index < tags.length) {
+            this.onTagClicked(tags[index]);
+        }
     }
 
     /**

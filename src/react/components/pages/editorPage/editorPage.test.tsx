@@ -518,7 +518,31 @@ describe("Editor Page Component", () => {
 
             expect(editorPage.state().lockedTags).toEqual([]);
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+        });
 
+        it("Does not set selected tag or locked tags when invalid hot key is pressed", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            wrapper.update();
+
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+
+            dispatchKeyEvent("1");
+
+            expect(editorPage.state().lockedTags).toEqual([]);
+            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+
+            dispatchKeyEvent("9");
+
+            expect(editorPage.state().lockedTags).toEqual([]);
+            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
         });
     });
 
