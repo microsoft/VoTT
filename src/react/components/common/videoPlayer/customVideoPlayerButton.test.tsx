@@ -51,7 +51,7 @@ describe("Custom Video Player Button Component", () => {
             displayName: defaultProps.tooltip,
             keyEventType: KeyEventType.KeyDown,
             accelerators: props.accelerators,
-            onKeyEvent: props.onClick,
+            handler: props.onClick,
         });
     });
 
