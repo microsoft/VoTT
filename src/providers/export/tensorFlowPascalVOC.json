@@ -17,6 +17,21 @@
                 "${strings.export.providers.common.properties.assetState.options.visited}",
                 "${strings.export.providers.common.properties.assetState.options.tagged}"
             ]
+        },
+        "testTrainSplit": {
+            "title": "Test/Train split",
+            "type": "number",
+            "default": 80
+        },
+        "shuffle": {
+            "title": "Shuffle",
+            "type": "boolean",
+            "default": true
+        },
+        "exportUnassigned": {
+            "title": "Export Unassigned",
+            "type": "boolean",
+            "default": true
         }
     }
 }

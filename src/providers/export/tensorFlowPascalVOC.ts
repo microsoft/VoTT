@@ -48,8 +48,13 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
         await this.exportPBTXT(exportFolderName, this.project);
         await this.exportAnnotations(exportFolderName, allAssets);
 
-        // TODO: Make testSplit && exportUnassignedTags optional parameter in the UI Exporter configuration
-        await this.exportImageSets(exportFolderName, allAssets, this.project.tags, 0.2, true);
+        // TestSplit && exportUnassignedTags are optional parameter in the UI Exporter configuration
+        const testSplit = this.options.testTrainSplit ? (100 - this.options.testTrainSplit) / 100 : 0.2;
+        await this.exportImageSets(exportFolderName,
+                                    allAssets,
+                                    this.project.tags,
+                                    testSplit,
+                                    this.options.exportUnassigned);
     }
 
     private async exportImages(exportFolderName: string, allAssets: IAssetMetadata[]) {
@@ -246,9 +251,11 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
             tags.forEach(async (tag) => {
                 if (testSplit > 0 && testSplit <= 1) {
                     // Shuffle tagsDict sets
-                    tagsDict.forEach((value, key) => {
-                        value = this.shuffle(value);
-                    });
+                    if (this.options.shuffle) {
+                        tagsDict.forEach((value, key) => {
+                            value = this.shuffle(value);
+                        });
+                    }
 
                     const array = tagsDict.get(tag.name);
 

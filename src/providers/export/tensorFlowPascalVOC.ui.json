@@ -1,1 +1,5 @@
-{}
+{
+    "testTrainSplit": {
+        "ui:widget": "range"
+    }
+}
