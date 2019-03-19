@@ -1,18 +1,19 @@
 import React from "react";
 import MessageBox from "../common/messageBox/messageBox";
 import { strings } from "../../../common/strings";
-import { KeyboardContext, IKeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
+// import { KeyboardContext, IKeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
 import { IKeyboardBindingProps } from "../common/keyboardBinding/keyboardBinding";
 import "./helpMenu.scss";
 
 export interface IHelpMenuProps {
     show: boolean;
+    keyRegistrations: {[key: string]: IKeyboardBindingProps[]};
     onClose?: () => void;
 }
 
 export class HelpMenu extends React.Component<IHelpMenuProps> {
-    public static contextType = KeyboardContext;
-    public context!: IKeyboardContext;
+    // public static contextType = KeyboardContext;
+    // public context!: IKeyboardContext;
 
     public render() {
         return (
@@ -30,7 +31,8 @@ export class HelpMenu extends React.Component<IHelpMenuProps> {
 
     private getHelpBody = () => {
 
-        const registrations = this.context.keyboard.getRegistrations()[KeyEventType.KeyDown];
+        // const registrations = this.context.keyboard.getRegistrations()[KeyEventType.KeyDown];
+        const registrations = this.props.keyRegistrations;
         if (!registrations) {
             return;
         }

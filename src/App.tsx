@@ -80,8 +80,7 @@ export default class App extends React.Component<IAppProps> {
                         <Router>
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
-                                    title={this.props.currentProject ? this.props.currentProject.name : ""}
-                                >
+                                    title={this.props.currentProject ? this.props.currentProject.name : ""}>
                                     <KeyboardBinding
                                         displayName={strings.editorPage.help.title}
                                         accelerators={["Ctrl+H", "Ctrl+h"]}
