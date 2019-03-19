@@ -9,7 +9,7 @@
 
     &-sidebar {
         display: flex;
-        min-width: 290px;
+        min-width: 189px;
 
         &-nav {
             width: 100%;
@@ -51,12 +51,8 @@
         }
     }
 
-    .asset-item:first-child {
-        padding: 1em;
-    }
-
     .asset-item {
-        padding: 0.5em 1em;
+        padding: 0.25em 0.25em;
         border-bottom: 1px solid $lighter-3;
 
         &:hover {
@@ -91,8 +87,8 @@
         }
 
         &-image {
-            width: 260px;
-            height: 195px;
+            width: 175px;
+            height: 131px;
             overflow: hidden;
             display: flex;
             outline: 1px solid $lighter-2;
@@ -116,11 +112,12 @@
             font-size: 80%;
 
             .asset-filename {
-                max-width: 175px;
+                max-width: 110px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 display: inline-block;
                 white-space: nowrap;
+                text-align: end;
             }
         }
     }
