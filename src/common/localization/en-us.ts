@@ -206,7 +206,7 @@ export const english: IAppStrings = {
         assetError: "Unable to load asset",
         tags: {
             hotKey: {
-                help: "Apply tag with hot key",
+                help: "Apply Tag with Hot Key",
             },
         },
         canvas: {

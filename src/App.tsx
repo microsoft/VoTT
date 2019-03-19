@@ -10,12 +10,10 @@ import "react-toastify/dist/ReactToastify.css";
 import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActions";
 import { bindActionCreators } from "redux";
 import { ErrorHandler } from "./react/components/common/errorHandler/errorHandler";
-import { KeyboardManager, KeyEventType } from "./react/components/common/keyboardManager/keyboardManager";
+import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
 import { TitleBar } from "./react/components/shell/titleBar";
 import { StatusBar } from "./react/components/shell/statusBar";
-import { strings } from "./common/strings";
 import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
-import { KeyboardBinding } from "./react/components/common/keyboardBinding/keyboardBinding";
 import { HelpMenu } from "./react/components/shell/helpMenu";
 
 interface IAppProps {
@@ -95,9 +93,5 @@ export default class App extends React.Component<IAppProps> {
                 }
             </Fragment>
         );
-    }
-
-    private toggleHelpMenu = () => {
-        this.setState({showHelpMenu: !this.props.showHelpMenu});
     }
 }

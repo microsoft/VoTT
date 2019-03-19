@@ -116,18 +116,6 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         );
     }
 
-    private showHelpMenu = () => {
-        this.setState({
-            showHelpMenu: true,
-        });
-    }
-
-    private onHelpMenuClose = () => {
-        this.setState({
-            showHelpMenu: false,
-        });
-    }
-
     private onMaximize = (isMaximized: boolean) => {
         this.setState({
             maximized: isMaximized,
