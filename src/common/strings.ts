@@ -97,13 +97,15 @@ export interface IAppStrings {
     };
     projectMetrics: {
         title: string;
-        sourceAssetsCount: string;
-        visitedAssetsCount: string;
-        taggedAssetsCount: string;
-        regionsCount: string;
-        tagCategories: string;
-        tagCount: string;
-        averageTagPerTaggedAsset: string;
+        assetsSectionTitle: string
+        totalAssetCount: string;
+        visitedAssets: string;
+        taggedAssets: string;
+        nonVisitedAssets: string;
+        tagsSectionTitle: string;
+        totalRegionCount: string;
+        totalTagCount: string;
+        avgTagCountPerAsset: string;
     };
     tags: {
         title: string;
@@ -169,6 +171,13 @@ export interface IAppStrings {
             pan: string;
             drawRectangle: string;
             drawPolygon: string;
+            copyRectangle: string;
+            copy: string;
+            cut: string;
+            paste: string;
+            removeAllRegions: string;
+            previousAsset: string;
+            nextAsset: string;
             saveProject: string;
             exportProject: string;
         }

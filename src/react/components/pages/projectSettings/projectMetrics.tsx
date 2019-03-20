@@ -1,10 +1,14 @@
 import React from "react";
-import { FormValidation } from "react-jsonschema-form";
-import { AssetState, IAsset, IAssetMetadata, IProject, IRegion } from "../../../../models/applicationState";
-import "vott-react/dist/css/tagsInput.css";
 import _ from "lodash";
+import { AssetState, IAsset, IAssetMetadata, IProject, IRegion, ITag } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
-import { strings } from "../../../../common/strings";
+import { strings, interpolate } from "../../../../common/strings";
+import {
+    RadialChart, XYPlot, VerticalGridLines,
+    HorizontalGridLines, XAxis, YAxis, VerticalBarSeries,
+} from "react-vis";
+import "react-vis/dist/styles/radial-chart.scss";
+import "react-vis/dist/styles/plot.scss";
 
 /**
  * Required properties for Project Metrics
@@ -40,91 +44,99 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     }
 
     public render() {
-        if (this.state.loading) {
-            console.log("Waiting for data");
-            return <h2> Loading...</h2>;
-        }
+        return (
+            <div className="condensed-list">
+                <h6 className="condensed-list-header bg-darker-2 p-2">
+                    <i className="fas fa-chart-bar" />
+                    <span>{strings.projectMetrics.title}</span>
+                </h6>
+                <div className="condensed-list-body">
+                    {this.state.loading &&
+                        <div className="loading">
+                            <i className="fas fa-circle-notch fa-spin fa-2x" />
+                        </div>
+                    }
+                    {!this.state.loading &&
+                        this.renderMetrics()
+                    }
+                </div>
+            </div>
+        );
+    }
 
-        const badgeCSS = "badge badge-light badge-pill float-center";
+    private renderMetrics() {
+        const sourceAssetCount = this.getSourceAssetCount();
+        const visitedAssetCount = this.getVisitedAssetsCount();
+        const taggedAssetCount = this.getTaggedAssetCount();
+        const nonVistedAssetCount = sourceAssetCount - this.state.projectAssetsMetadata.length;
 
-        const tags = this.props.project.tags || [];
-        const renderTagCategories = tags.map((item) => {
-            return (<li>{item.name}</li>);
-        });
+        const assetChartData = [
+            {
+                angle: visitedAssetCount,
+                label: interpolate(strings.projectMetrics.visitedAssets, { count: visitedAssetCount }),
+            },
+            {
+                angle: taggedAssetCount,
+                label: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
+            },
+            {
+                angle: nonVistedAssetCount,
+                label: interpolate(strings.projectMetrics.nonVisitedAssets, { count: nonVistedAssetCount }),
+            },
+        ];
 
-        const tagsMap = this.getTagsCount();
-        const renderTagCount = tags.map((tag) => {
-            const tagName = tag.name;
-            const normalizedTagName = tagName.split(" ").join("-");
-            return (
-                <li>
-                    <b>{tagName}: </b>
-                    <span className={normalizedTagName + " " + badgeCSS}>
-                        {tagsMap.get(tagName) || 0}
-                    </span>
-                </li>
-            );
+        const tagChartData = [];
+        this.getTagsCounts().forEach((value) => {
+            tagChartData.push({
+                x: value.tag.name,
+                y: value.count,
+                color: value.tag.color,
+            });
         });
 
         return (
-            <div className="project-settings-page-metrics p-3 bg-lighter-1">
-                <h3>
-                    <i className="fas fa-chart-bar fa-1x"/>
-                    <span className="px-2">
-                        {strings.projectMetrics.title}
-                    </span>
-                </h3>
-                <ul className="list-group list-group-flush m-3">
-                    <li className="list-group-item">
-                        <h5>{strings.projectMetrics.sourceAssetsCount}
-                            <span className={"source-asset-count " + badgeCSS}>
-                                {this.getSourceAssetCount()}
-                            </span>
-                        </h5>
-                    </li>
-                    <li className="list-group-item">
-                        <h5>{strings.projectMetrics.visitedAssetsCount}
-                            <span className={"visited-asset-count " + badgeCSS}>
-                                {this.getVisitedAssetsCount()}
-                            </span>
-                        </h5>
-                    </li>
-                    <li className="list-group-item">
-                        <h5>{strings.projectMetrics.taggedAssetsCount}
-                            <span className={"tagged-asset-count " + badgeCSS}>
-                                {this.getTaggedAssetCount()}
-                            </span>
-                        </h5>
-                    </li>
-                    <li className="list-group-item">
-                        <h5>{strings.projectMetrics.regionsCount}
-                            <span className={"regions-count " + badgeCSS}>
-                                {this.getRegionsCount()}
-                            </span>
-                        </h5>
-                    </li>
-                    <li className="list-group-item tag-categories">
-                        <h5>{strings.projectMetrics.tagCategories}
-                            <span className={"count " + badgeCSS}>
-                                {this.getTagCategoriesCount()}
-                            </span>
-                        </h5>
-                        <ul className="list">{renderTagCategories}</ul>
-                    </li>
-                    <li className="list-group-item">
-                        <h5>{strings.projectMetrics.tagCount}   </h5>
-                        <span className="tags-map">
-                            <ul>{renderTagCount}</ul>
-                        </span>
-                    </li>
-                    <li className="list-group-item">
-                        <h5>{strings.projectMetrics.averageTagPerTaggedAsset}
-                            <span className={"average-tag-count " + badgeCSS}>
-                                {this.getAverageTagCount()}
-                            </span>
-                        </h5>
-                    </li>
-                </ul>
+            <div className="m-3">
+                <div>
+                    <h4>{strings.projectMetrics.assetsSectionTitle}</h4>
+                    <p className="my-1">
+                        {strings.projectMetrics.totalAssetCount}:
+                        <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong>
+                    </p>
+                    <RadialChart
+                        className="asset-chart"
+                        showLabels={true}
+                        data={assetChartData}
+                        width={300}
+                        height={300} />
+                </div>
+                <div className="my-3">
+                    <h4>{strings.projectMetrics.tagsSectionTitle}</h4>
+                    <p className="my-1">
+                        {strings.projectMetrics.totalTagCount}:
+                        <strong className="px-1 metric-total-tag-count">{this.props.project.tags.length}</strong>
+                    </p>
+                    <p className="my-1">
+                        {strings.projectMetrics.totalRegionCount}:
+                        <strong className="px-1 metric-total-region-count">{this.getRegionsCount()}</strong>
+                    </p>
+                    <p className="my-1">
+                        {strings.projectMetrics.avgTagCountPerAsset}:
+                        <strong className="px-1 metric-avg-tag-count">{this.getAverageTagCount()}</strong>
+                    </p>
+                    <XYPlot className="tag-chart"
+                        margin={{ bottom: 150 }}
+                        xType="ordinal"
+                        colorType="literal"
+                        width={300}
+                        height={400}>
+                        <HorizontalGridLines />
+                        <XAxis tickLabelAngle={-45} />
+                        <YAxis />
+                        <VerticalBarSeries
+                            data={tagChartData}
+                        />
+                    </XYPlot>
+                </div>
             </div>
         );
     }
@@ -134,12 +146,8 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         const sourceAssets = await assetService.getAssets();
 
         const assetsMap = this.props.project.assets;
-        let projectAssetsMetadata = [];
-        if (assetsMap) {
-            const assets = _.values(assetsMap);
-            const temp = assets.map((a) => assetService.getAssetMetadata(a));
-            projectAssetsMetadata = await Promise.all(temp);
-        }
+        const assets = _.values(assetsMap);
+        const projectAssetsMetadata = await assets.mapAsync((asset) => assetService.getAssetMetadata(asset));
 
         this.setState({
             loading: false,
@@ -173,8 +181,8 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
             return 0;
         }
 
-        const tags = this.getAllTags();
-        return tags.length / taggedAssetCount;
+        const tags = this.getAllTagReferences();
+        return (tags.length / taggedAssetCount).toFixed(2);
     }
 
     /**
@@ -182,9 +190,8 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
      */
     private getVisitedAssetsCount = () => {
         const metadata = this.state.projectAssetsMetadata;
-
         const visitedAssets = _.filter(metadata, (m) => {
-            return m.asset.state === AssetState.Visited;
+            return m.asset.state === AssetState.Visited || m.asset.state === AssetState.Tagged;
         });
 
         return visitedAssets.length;
@@ -208,23 +215,28 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     }
 
     /**
-     * The number of tag categories in the project
-     */
-    private getTagCategoriesCount = (): number => {
-        const tags = this.props.project.tags;
-        return tags ? tags.length : 0;
-    }
-
-    /**
      * a map of asset count per tag
      */
-    private getTagsCount = () => {
-        const tags = this.getAllTags();
+    private getTagsCounts = (): Map<string, { tag: ITag, count: number }> => {
+        const projectTags = _.keyBy(this.props.project.tags, (tag) => tag.name);
+        const tagReferences = this.getAllTagReferences();
 
-        const map = new Map();
-        tags.forEach((t) => {
-            const cur = map.get(t) || 0;
-            map.set(t, cur + 1);
+        const map = new Map<string, { tag: ITag, count: number }>();
+        tagReferences.forEach((t) => {
+            const projectTag = projectTags[t];
+            if (!projectTag) {
+                return;
+            }
+
+            const tagMetric = map.get(t) || { tag: projectTag, count: 0 };
+            tagMetric.count++;
+            map.set(t, tagMetric);
+        });
+
+        this.props.project.tags.forEach((tag) => {
+            if (!map.get(tag.name)) {
+                map.set(tag.name, { tag, count: 0 });
+            }
         });
 
         return map;
@@ -250,7 +262,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * retrieve the list of tags assigned
      */
-    private getAllTags = () => {
+    private getAllTagReferences = (): string[] => {
         const regions = this.getRegions();
 
         const tags = [];
@@ -258,6 +270,6 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
             tags.push(r.tags);
         });
 
-        return _.flatten(tags);
+        return _.flatten<string>(tags);
     }
 }

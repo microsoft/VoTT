@@ -15,7 +15,7 @@
                 "visited",
                 "tagged"
             ],
-            "default": "all",
+            "default": "visited",
             "enumNames": [
                 "${strings.export.providers.common.properties.assetState.options.all}",
                 "${strings.export.providers.common.properties.assetState.options.visited}",

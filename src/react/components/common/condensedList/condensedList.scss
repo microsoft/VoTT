@@ -1,17 +1,31 @@
 @import './../../../../assets/sass/theme.scss';
 
 .condensed-list {
-    
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+
+    &-header {
+        font-size: 80%;
+        color: #f1f1f1;
+        margin: 0;
+        text-transform: uppercase;
+
+        i {
+            margin-right: 0.5em;
+        }
+    }
+
+    &-body {
+        flex-grow: 1;
+        display: flex;
+        overflow: auto;
+        flex-direction: column;
+        position: relative;
+    }
 }
 
-.condensed-list-header {
-    font-size: 80%;
-    color: #f1f1f1;
-    margin: 0;
-    text-transform: uppercase;
-}
-
-ul.condensed-list-items {    
+ul.condensed-list-items {
     margin: 0;
     padding: 0;
 
@@ -29,7 +43,7 @@ ul.condensed-list-items {
 
             &.active, &:hover {
                 background-color: $lighter-2;
-            }    
+            }
         }
-    }    
+    }
 }

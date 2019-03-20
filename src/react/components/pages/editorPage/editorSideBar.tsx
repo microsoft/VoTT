@@ -20,7 +20,6 @@ export interface IEditorSideBarProps {
  * @member selectedAsset - Asset selected from side bar
  */
 export interface IEditorSideBarState {
-    selectedAsset: IAsset;
     scrollToIndex: number;
 }
 
@@ -40,7 +39,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             : 0;
 
         this.state = {
-            selectedAsset,
             scrollToIndex,
         };
 
@@ -86,7 +84,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         const scrollToIndex = this.props.assets.findIndex((asset) => asset.id === selectedAsset.id);
 
         this.setState({
-            selectedAsset,
             scrollToIndex,
         }, () => {
             this.listRef.current.forceUpdateGrid();
@@ -100,7 +97,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     private rowRenderer({ key, index, style }) {
         const asset = this.props.assets[index];
-        const { selectedAsset } = this.state;
+        const selectedAsset = this.props.selectedAsset;
 
         return (
             <div key={key} style={style}

@@ -1,31 +1,52 @@
 import { mount, ReactWrapper } from "enzyme";
 import React from "react";
-import { Provider } from "react-redux";
+import _ from "lodash";
 import MockFactory from "../../../../common/mockFactory";
 import ProjectMetrics, { IProjectMetricsProps, IProjectMetricsState } from "./projectMetrics";
-import _ from "lodash";
-
-import { AssetState } from "../../../../models/applicationState";
+import { AssetState, IProject, IAsset } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import * as packageJson from "../../../../../package.json";
+import registerMixins from "../../../../registerMixins";
+
+registerMixins();
 
 describe("Project metrics page", () => {
 
     let wrapper: ReactWrapper<IProjectMetricsProps, IProjectMetricsState> = null;
 
-    const testAssetCount = 10;
-    const testAssets = MockFactory.createTestAssets(testAssetCount);
+    const testProjectAssetCount = 10;
+    const testSourceAssetCount = 50;
+    const testAssetsWithRegion = 5;
+    const regionsPerAsset = 2;
+    const defaultTagCount = 5;
 
-    const defaultTagCount = 4;
+    const testProjectAssets = MockFactory.createTestAssets(testProjectAssetCount);
+    const testSourceAssets = MockFactory.createTestAssets(testSourceAssetCount);
+
     const skeletonProject = MockFactory.createTestProject("TestProject", defaultTagCount);
     const defaultProject = {
         ...skeletonProject,
-        assets: _.keyBy(testAssets, (asset) => asset.id),
+        assets: _.keyBy(testProjectAssets, (asset) => asset.id),
     };
+
+    describe("still loading data", () => {
+        beforeEach(async () => {
+            setUpMockAssetService(defaultProject, testProjectAssets);
+
+            wrapper = createComponent({
+                project: defaultProject,
+            });
+        });
+
+        it("display a spinner icon", () => {
+            expect(wrapper.state().loading).toBeTruthy();
+            expect(wrapper.find(".fa-circle-notch")).toHaveLength(1);
+        });
+    });
 
     describe("regular project", () => {
         beforeEach(async () => {
-            setUpMockAssetService(testAssets);
+            setUpMockAssetService(defaultProject, testProjectAssets);
 
             wrapper = createComponent({
                 project: defaultProject,
@@ -35,82 +56,42 @@ describe("Project metrics page", () => {
             wrapper.update();
         });
 
-        it("calculates categories count", async () => {
-            const root = wrapper.find(".tag-categories");
+        it("verify project metrics", () => {
+            const expectedRegionCount = testAssetsWithRegion * regionsPerAsset;
+            const expectedNonVisitedAssetCount = testSourceAssetCount - (testProjectAssetCount);
+            const expectedTaggedAssets = testAssetsWithRegion;
+            const expectedVistedAssets = testProjectAssetCount;
+            const expectedTagCount = wrapper.props().project.tags.length;
 
-            const tagCategoriesCount = root.find(".count");
-            expect(tagCategoriesCount.text()).toEqual(defaultTagCount.toString());
+            expect(wrapper.find(".metric-total-asset-count").text())
+                .toEqual(testSourceAssetCount.toString());
+            expect(wrapper.find(".metric-total-tag-count").text())
+                .toEqual(expectedTagCount.toString());
+            expect(wrapper.find(".metric-total-region-count").text())
+                .toEqual(expectedRegionCount.toString());
+            expect(wrapper.find(".metric-avg-tag-count").text())
+                .toEqual(regionsPerAsset.toFixed(2));
 
-            const tagList = root.find(".list").find("li");
-            expect(tagList).toHaveLength(defaultTagCount);
-        });
+            // Assets graph
+            const pieSegments = wrapper.find(".rv-xy-plot__series--label-text");
+            expect(pieSegments.at(0).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
+            expect(pieSegments.at(1).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
+            expect(pieSegments.at(2).text()).toEqual(`Visited Assets (${expectedVistedAssets})`);
 
-        it("calculates source asset count", async () => {
-            const sourceAssetCount = wrapper.find(".source-asset-count");
-            expect(sourceAssetCount.text()).toEqual(testAssetCount.toString());
-        });
-
-        it("calculate tagged asset count", async () => {
-            const taggedAssetCount = wrapper.find(".tagged-asset-count");
-            expect(taggedAssetCount.text()).toEqual("8");
-        });
-
-        it("calculate per tag total", async () => {
-            // 4 tag categories, 8 tagged asset
-            const assetCountPerTag = 2;
-
-            const tagCount = wrapper.find(".Tag-0");
-            expect(tagCount.text()).toEqual(assetCountPerTag.toString());
-        });
-
-        it("correctly calculate average tags count", async () => {
-            // 8 tagged asset, each one has one tag
-            const avgTagCount = wrapper.find(".average-tag-count");
-            expect(avgTagCount.text()).toEqual("1");
-        });
-
-        it("correctly calculate visited asset count", async () => {
-            const visitedAssetCount = wrapper.find(".visited-asset-count");
-            expect(visitedAssetCount.text()).toEqual("2");
-        });
-    });
-
-    describe("tag name has dash", () => {
-        beforeEach(async () => {
-            setUpMockAssetService(testAssets);
-
-            const project = {
-                ...defaultProject,
-                tags: [
-                    {
-                        ...defaultProject.tags[0],
-                        name: `Tag-0`,
-                    },
-                ],
-            };
-
-            wrapper = createComponent({
-                project,
-            });
-
-            await MockFactory.flushUi();
-            wrapper.update();
-        });
-
-        it("generate the right span class name ", async () => {
-            const tagCount = wrapper.find(".Tag-0");
-            expect(tagCount).toHaveLength(1);
+            // Tag graph
+            const barBlocks = wrapper.find(".rv-xy-plot__series--bar");
+            expect(barBlocks.children()).toHaveLength(expectedTagCount);
         });
     });
 
     describe("project has no tags", () => {
         beforeEach(async () => {
-            setUpMockAssetService(testAssets);
-
             const project = {
                 ...defaultProject,
                 tags: [],
             };
+
+            setUpMockAssetService(project, testProjectAssets);
 
             wrapper = createComponent({
                 project,
@@ -120,28 +101,56 @@ describe("Project metrics page", () => {
             wrapper.update();
         });
 
-        it("tag categories count is 0", async () => {
-            const root = wrapper.find(".tag-categories");
+        it("verify project metrics", () => {
+            const expectedRegionCount = 0;
+            const expectedNonVisitedAssetCount = testSourceAssetCount - (testProjectAssetCount);
+            const expectedTaggedAssets = 0;
+            const expectedVistedAssets = testAssetsWithRegion;
+            const expectedTagCount = wrapper.props().project.tags.length;
 
-            const tagCategoriesCount = root.find(".count");
-            expect(tagCategoriesCount.text()).toEqual("0");
+            expect(wrapper.find(".metric-total-asset-count").text())
+                .toEqual(testSourceAssetCount.toString());
+            expect(wrapper.find(".metric-total-tag-count").text())
+                .toEqual(expectedTagCount.toString());
+            expect(wrapper.find(".metric-total-region-count").text())
+                .toEqual(expectedRegionCount.toString());
+            expect(wrapper.find(".metric-avg-tag-count").text())
+                .toEqual("0");
 
-            const tagList = root.find(".list").find("#li");
-            expect(tagList).toHaveLength(0);
+            // Assets graph
+            const pieSegments = wrapper.find(".rv-xy-plot__series--label-text");
+            expect(pieSegments.at(0).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
+            expect(pieSegments.at(1).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
+            expect(pieSegments.at(2).text()).toEqual(`Visited Assets (${expectedVistedAssets})`);
+
+            // Tag graph
+            const barBlocks = wrapper.find(".rv-xy-plot__series--bar");
+            expect(barBlocks.children()).toHaveLength(expectedTagCount);
         });
     });
 
-    const setUpMockAssetService = (testAssets = []) => {
+    const setUpMockAssetService = (project: IProject, testAssets: IAsset[]) => {
         const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
-        mockAssetService.prototype.getAssets = jest.fn(() => Promise.resolve(testAssets));
+        mockAssetService.prototype.getAssets = jest.fn(() => Promise.resolve(testSourceAssets));
 
         const testAssetsMetadata = _.map(testAssets, (asset, index: number) => {
-            const tagIndex = index % defaultTagCount;
-            console.log(tagIndex);
-            const tags = [defaultProject.tags[tagIndex].name];
+            let state: AssetState = AssetState.NotVisited;
 
-            const state = index % 5 === 0 ? AssetState.Visited : AssetState.Tagged;
-            const regions = state === AssetState.Visited ? [] : [MockFactory.createTestRegion(asset.id, tags)];
+            if (project.tags.length > 0) {
+                state = index < testAssetsWithRegion ? AssetState.Tagged : AssetState.Visited;
+            } else {
+                state = index < testAssetsWithRegion ? AssetState.Visited : AssetState.NotVisited;
+            }
+
+            const regions = [];
+            if (state === AssetState.Tagged) {
+                const tagIndex = index % project.tags.length;
+                const tags = [project.tags[tagIndex].name];
+                for (let i = 0; i < regionsPerAsset; i++) {
+                    regions.push(MockFactory.createTestRegion(asset.id, tags));
+                }
+            }
+
             return {
                 asset: {
                     ...asset,
@@ -169,5 +178,4 @@ describe("Project metrics page", () => {
             />,
         );
     };
-})
-;
+});

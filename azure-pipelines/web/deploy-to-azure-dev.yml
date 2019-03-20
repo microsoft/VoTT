@@ -1,5 +1,7 @@
 trigger:
-- dev
+  - dev
+pr: none # disable CI build for PR
+
 
 pool:
   vmImage: 'Ubuntu-16.04'

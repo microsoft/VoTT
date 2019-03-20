@@ -31,7 +31,7 @@ describe("Editor SideBar", () => {
         };
 
         const wrapper = createComponent(props);
-        expect(wrapper.state().selectedAsset).not.toBeDefined();
+        expect(wrapper.props().selectedAsset).not.toBeDefined();
         expect(wrapper.state().scrollToIndex).toBe(0);
     });
 
@@ -45,7 +45,7 @@ describe("Editor SideBar", () => {
         };
 
         const wrapper = createComponent(props);
-        expect(wrapper.state().selectedAsset).toEqual(props.selectedAsset);
+        expect(wrapper.props().selectedAsset).toEqual(props.selectedAsset);
         expect(wrapper.state().scrollToIndex).toBe(selectedAssetIndex);
     });
 
@@ -65,7 +65,7 @@ describe("Editor SideBar", () => {
 
         setImmediate(() => {
             const state = wrapper.state();
-            expect(state.selectedAsset).toEqual(testAssets[selectedAssetIndex]);
+            expect(wrapper.props().selectedAsset).toEqual(testAssets[selectedAssetIndex]);
             expect(state.scrollToIndex).toEqual(selectedAssetIndex);
 
             done();
@@ -90,7 +90,7 @@ describe("Editor SideBar", () => {
         await MockFactory.flushUi();
 
         let state = wrapper.state();
-        expect(state.selectedAsset).toEqual(firstUpdate);
+        expect(wrapper.props().selectedAsset).toEqual(firstUpdate);
         expect(state.scrollToIndex).toEqual(6);
 
         // second props update
@@ -102,7 +102,7 @@ describe("Editor SideBar", () => {
         await MockFactory.flushUi();
 
         state = wrapper.state();
-        expect(state.selectedAsset).toEqual(secondUpdate);
+        expect(wrapper.props().selectedAsset).toEqual(secondUpdate);
         expect(state.scrollToIndex).toEqual(3);
     });
 });

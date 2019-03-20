@@ -1,14 +1,55 @@
+@import "../../../../assets/sass/theme.scss";
+
 .project-settings-page {
+    flex-grow: 1;
     display: flex;
     flex-direction: row;
-    height: 100%;
+    min-height: fit-content;
 
     &-settings {
         flex-grow: 1;
     }
 
     &-metrics {
-        align-content: center;
-        align-items: center;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        min-width: 325px;
+        max-width: 400px;
+        color: #fff;
+
+        .loading {
+            position: absolute;
+            left: 50%;
+            top: 25%;
+        }
+
+        p {
+            font-size: 90%;
+        }
+    }
+
+    svg {
+        margin-top: 1em;
+        text {
+            fill: #fff;
+            font-weight: 500;
+        }
+    }
+
+    .asset-chart {
+        margin: 0 auto;
+
+        text {
+            font-size: 80%;
+        }
+    }
+
+    .tag-chart {
+        margin: 0 auto;
+
+        line {
+            stroke: $lighter-5;
+        }
     }
 }

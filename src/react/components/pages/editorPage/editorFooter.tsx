@@ -58,7 +58,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
                     tags={this.state.tags}
                     ref={this.tagsInput}
                     onChange={this.onTagsChanged}
-                    onTagClick={this.props.onTagClicked}
+                    onTagClick={this.onTagClicked}
                     onCtrlTagClick={this.props.onCtrlTagClicked}
                     onShiftTagClick={this.onShiftTagClicked}
                     onCtrlShiftTagClick={this.props.onCtrlShiftTagClicked}
@@ -74,6 +74,11 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
                 />
             </div>
         );
+    }
+
+    private onTagClicked = (tag: ITag) => {
+        this.props.onTagClicked(tag);
+        this.blurTagsInput();
     }
 
     private onShiftTagClicked = (tag: ITag) => {
@@ -92,7 +97,10 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     private onTagsChanged = (tags) => {
         this.setState({
             tags,
-        }, () => this.props.onTagsChanged(this.state));
+        }, () => {
+            this.props.onTagsChanged(this.state);
+            this.blurTagsInput();
+        });
     }
 
     /**
@@ -115,5 +123,12 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         return (
             <span className={className}>{displayName}</span>
         );
+    }
+
+    private blurTagsInput() {
+        const inputElement: HTMLElement = document.querySelector(".ReactTags__tagInputField");
+        if (inputElement) {
+            setImmediate(() => inputElement.blur());
+        }
     }
 }
