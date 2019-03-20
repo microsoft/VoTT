@@ -21,7 +21,7 @@ describe("Keyboard Manager Component", () => {
     }
 
     beforeEach(() => {
-        (registrationManagerMock.prototype.invokeHandlers as any).mockClear();
+        (registrationManagerMock.prototype.invokeHandler as any).mockClear();
         addEventListenerSpy = jest.spyOn(window, "addEventListener");
         removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
         wrapper = createComponent();
@@ -53,7 +53,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyDown, "Ctrl+1", keyboardEvent);
     });
 
@@ -66,7 +66,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyUp, "Ctrl+1", keyboardEvent);
     });
 
@@ -79,7 +79,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyPress, "Ctrl+1", keyboardEvent);
     });
 
@@ -93,7 +93,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyDown, "Alt+1", keyboardEvent);
     });
 
@@ -107,7 +107,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyUp, "Alt+1", keyboardEvent);
     });
 
@@ -121,7 +121,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyPress, "Alt+1", keyboardEvent);
     });
 
@@ -135,7 +135,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyDown, "F1", keyboardEvent);
     });
 
@@ -149,7 +149,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyUp, "F1", keyboardEvent);
     });
 
@@ -163,7 +163,7 @@ describe("Keyboard Manager Component", () => {
 
         window.dispatchEvent(keyboardEvent);
 
-        expect(registrationManagerMock.prototype.invokeHandlers)
+        expect(registrationManagerMock.prototype.invokeHandler)
             .toBeCalledWith(KeyEventType.KeyPress, "F1", keyboardEvent);
     });
 
@@ -183,7 +183,7 @@ describe("Keyboard Manager Component", () => {
 
             window.dispatchEvent(keyboardEvent);
 
-            expect(registrationManagerMock.prototype.invokeHandlers).not.toBeCalled();
+            expect(registrationManagerMock.prototype.invokeHandler).not.toBeCalled();
         });
 
         it("ignores keyboard events when UI is focused on an textarea element", () => {
@@ -201,7 +201,7 @@ describe("Keyboard Manager Component", () => {
 
             window.dispatchEvent(keyboardEvent);
 
-            expect(registrationManagerMock.prototype.invokeHandlers).not.toBeCalled();
+            expect(registrationManagerMock.prototype.invokeHandler).not.toBeCalled();
         });
 
         it("ignores keyboard events when UI is focused on select elements", () => {
@@ -219,7 +219,7 @@ describe("Keyboard Manager Component", () => {
 
             window.dispatchEvent(keyboardEvent);
 
-            expect(registrationManagerMock.prototype.invokeHandlers).not.toBeCalled();
+            expect(registrationManagerMock.prototype.invokeHandler).not.toBeCalled();
         });
 
         it("does not ignore keyboard events when UI is focused on other form elements", () => {
@@ -237,7 +237,7 @@ describe("Keyboard Manager Component", () => {
 
             window.dispatchEvent(keyboardEvent);
 
-            expect(registrationManagerMock.prototype.invokeHandlers).toBeCalled();
+            expect(registrationManagerMock.prototype.invokeHandler).toBeCalled();
         });
     });
 });

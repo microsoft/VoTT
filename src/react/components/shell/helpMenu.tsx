@@ -33,13 +33,6 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
                     icon={this.icon}
                     keyEventType={KeyEventType.KeyDown}
                 />
-                {/* <KeyboardBinding
-                    displayName={strings.editorPage.help.escape}
-                    accelerators={["Esc"]}
-                    handler={() => this.setState({show: false})}
-                    icon={"fa-sign-out"}
-                    keyEventType={KeyEventType.KeyDown}
-                /> */}
                 <MessageBox
                     title={strings.titleBar.help}
                     message={this.getHelpBody()}
@@ -77,17 +70,18 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
         );
     }
 
-    private groupKeys = (registrations: {[key: string]: IKeyboardBindingProps[]}) => {
-        const keys = this.consolidateKeyCasings(registrations);
+    private groupKeys = (registrations: {[key: string]: IKeyboardBindingProps}) => {
+        const allKeys = Object.keys(registrations);
+        const caseConsolidatedKeys = this.consolidateKeyCasings(allKeys);
 
         const groups = [];
         const alreadyGrouped = new Set();
 
-        for (const key of keys) {
+        for (const key of caseConsolidatedKeys) {
             const group = [key];
             if (!alreadyGrouped.has(key)) {
                 alreadyGrouped.add(key);
-                for (const otherKey of keys) {
+                for (const otherKey of caseConsolidatedKeys) {
                     if (!alreadyGrouped.has(otherKey) &&
                             this.handlerEquals(registrations[key], registrations[otherKey])) {
                         group.push(otherKey);
@@ -100,12 +94,11 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
         return groups;
     }
 
-    private handlerEquals(reg1: IKeyboardBindingProps[], reg2: IKeyboardBindingProps[]) {
-        return reg1[0] && reg2[0] && reg1[0].handler === reg2[0].handler;
+    private handlerEquals(reg1: IKeyboardBindingProps, reg2: IKeyboardBindingProps) {
+        return reg1 && reg2 && reg1.handler === reg2.handler;
     }
 
-    private consolidateKeyCasings = (registrations: {[key: string]: IKeyboardBindingProps[]}): string[] => {
-        const allKeys = Object.keys(registrations);
+    private consolidateKeyCasings = (allKeys: string[]): string[] => {
         const lowerRegistrations = {};
         for (const key of allKeys) {
             const lowerKey = key.toLowerCase();
@@ -116,7 +109,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
         return Object.keys(lowerRegistrations).map((lowerKey) => lowerRegistrations[lowerKey]);
     }
 
-    private getRegistrationRow = (group: string[], registrations: {[key: string]: IKeyboardBindingProps[]}) => {
+    private getRegistrationRow = (group: string[], registrations: {[key: string]: IKeyboardBindingProps}) => {
         // At the moment, there are no keys "doubled up". We are getting the first registration for the key
         const keyRegistration = registrations[group[0]][0];
         if (keyRegistration) {

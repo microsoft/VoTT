@@ -34,8 +34,8 @@ describe("Keyboard Registration Manager", () => {
         addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode1], handler1);
         addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode2], handler2);
 
-        const handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
-        const handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
+        const handlers1 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode1);
+        const handlers2 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode2);
 
         expect(handlers1.length).toEqual(1);
         expect(handlers2.length).toEqual(1);
@@ -60,13 +60,13 @@ describe("Keyboard Registration Manager", () => {
         addHandler(keyboardManager, KeyEventType.KeyPress, keyCodes, handler2);
         addHandler(keyboardManager, KeyEventType.KeyPress, keyCodes, handler3);
 
-        const keyDownHandlers = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCodeString);
+        const keyDownHandlers = keyboardManager.getHandler(KeyEventType.KeyDown, keyCodeString);
         expect(keyDownHandlers.length).toEqual(1);
 
-        const keyUpHandlers = keyboardManager.getHandlers(KeyEventType.KeyUp, keyCodeString);
+        const keyUpHandlers = keyboardManager.getHandler(KeyEventType.KeyUp, keyCodeString);
         expect(keyUpHandlers.length).toEqual(2);
 
-        const keyPressHandlers = keyboardManager.getHandlers(KeyEventType.KeyPress, keyCodeString);
+        const keyPressHandlers = keyboardManager.getHandler(KeyEventType.KeyPress, keyCodeString);
         expect(keyPressHandlers.length).toEqual(3);
     });
 
@@ -78,23 +78,8 @@ describe("Keyboard Registration Manager", () => {
         addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode], handler1);
         addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode], handler2);
 
-        const handlers = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode);
+        const handlers = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode);
         expect(handlers.length).toEqual(2);
-    });
-
-    it("list of handlers cannot be mutated outside of API", () => {
-        const keyCode = "Ctrl+K";
-        const handler = (evt: KeyboardEvent) => null;
-
-        addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode], handler);
-        const handlers = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode);
-        const handlerCount = handlers.length;
-
-        // Attempt to add more handlers
-        handlers.push(handler, handler, handler);
-
-        const newHandlers = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode);
-        expect(newHandlers.length).toEqual(handlerCount);
     });
 
     it("can remove keyboard event handlers", () => {
@@ -105,19 +90,19 @@ describe("Keyboard Registration Manager", () => {
         const deregister = addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode], handler);
 
         // Get registered handlers
-        let handlers = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode);
+        let handlers = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode);
         expect(handlers.length).toEqual(1);
 
         // Invoke deregister functions
         deregister();
 
         // Get registered handlers after deregistered
-        handlers = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode);
+        handlers = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode);
         expect(handlers.length).toEqual(0);
     });
 
     it("get handlers for unregistered key code returns empty array", () => {
-        const handlers = keyboardManager.getHandlers(KeyEventType.KeyDown, "Alt+1");
+        const handlers = keyboardManager.getHandler(KeyEventType.KeyDown, "Alt+1");
         expect(handlers.length).toEqual(0);
     });
 
@@ -134,7 +119,7 @@ describe("Keyboard Registration Manager", () => {
             code: "1",
         });
 
-        keyboardManager.invokeHandlers(KeyEventType.KeyDown, keyCode, keyboardEvent);
+        keyboardManager.invokeHandler(KeyEventType.KeyDown, keyCode, keyboardEvent);
 
         expect(handler1).toBeCalledWith(keyboardEvent);
         expect(handler2).toBeCalledWith(keyboardEvent);
@@ -149,11 +134,11 @@ describe("Keyboard Registration Manager", () => {
 
             addHandler(keyboardManager, KeyEventType.KeyDown, keyCodes, handler);
 
-            const handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
+            const handlers1 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode1);
             expect(handlers1.length).toEqual(1);
             expect(handlers1[0]).toEqual(handler);
 
-            const handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
+            const handlers2 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode2);
             expect(handlers2.length).toEqual(1);
             expect(handlers2[0]).toEqual(handler);
         });
@@ -171,14 +156,14 @@ describe("Keyboard Registration Manager", () => {
                 code: "1",
             });
 
-            keyboardManager.invokeHandlers(KeyEventType.KeyDown, keyCode1, keyboardEvent1);
+            keyboardManager.invokeHandler(KeyEventType.KeyDown, keyCode1, keyboardEvent1);
             expect(handler).toBeCalledWith(keyboardEvent1);
 
             const keyboardEvent2 = new KeyboardEvent("keydown", {
                 code: "ArrowUp",
             });
 
-            keyboardManager.invokeHandlers(KeyEventType.KeyDown, keyCode1, keyboardEvent2);
+            keyboardManager.invokeHandler(KeyEventType.KeyDown, keyCode1, keyboardEvent2);
             expect(handler).toBeCalledWith(keyboardEvent2);
         });
 
@@ -192,20 +177,20 @@ describe("Keyboard Registration Manager", () => {
             const deregister = addHandler(keyboardManager, KeyEventType.KeyDown, keyCodes, handler);
 
             // Get registered handlers
-            let handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
+            let handlers1 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode1);
             expect(handlers1.length).toEqual(1);
 
-            let handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
+            let handlers2 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode2);
             expect(handlers2.length).toEqual(1);
 
             // Invoke deregister function
             deregister();
 
             // Get registered handlers after deregistered
-            handlers1 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode1);
+            handlers1 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode1);
             expect(handlers1.length).toEqual(0);
 
-            handlers2 = keyboardManager.getHandlers(KeyEventType.KeyDown, keyCode2);
+            handlers2 = keyboardManager.getHandler(KeyEventType.KeyDown, keyCode2);
             expect(handlers2.length).toEqual(0);
         });
     });

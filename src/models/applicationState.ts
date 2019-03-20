@@ -48,6 +48,7 @@ export enum ErrorCode {
     CanvasError = "canvasError",
     V1ImportError = "v1ImportError",
     PasteRegionTooBigError = "pasteRegionTooBigError",
+    OverloadedKeyBinding = "overloadedKeyBinding",
 }
 
 /**
