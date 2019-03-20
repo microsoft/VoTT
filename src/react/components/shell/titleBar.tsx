@@ -16,7 +16,6 @@ export interface ITitleBarState {
     maximized: boolean;
     fullscreen: boolean;
     menu: Electron.Menu;
-    showHelpMenu: boolean;
 }
 
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
@@ -26,7 +25,6 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         maximized: false,
         fullscreen: false,
         menu: null,
-        showHelpMenu: false,
     };
 
     private menu: Menu = React.createRef();
