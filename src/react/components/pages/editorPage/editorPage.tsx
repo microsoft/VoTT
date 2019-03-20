@@ -209,7 +209,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     /**
-     * Listens for CTRL+{number key} and calls `onTagClicked` with tag corresponding to that number
+     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
      * @param event KeyDown event
      */
     private handleTagHotKey = (event: KeyboardEvent): void => {
@@ -217,25 +217,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (isNaN(key)) {
             return;
         }
-        this.onTagClicked(this.getTagAtDisplayIndex(key));
-    }
-
-    private getTagNameAtDisplayIndex = (displayIndex: number): string => {
-        const tag = this.getTagAtDisplayIndex(displayIndex);
-        return (tag) ? tag.name : null;
-    }
-
-    private getTagAtDisplayIndex = (displayIndex: number): ITag => {
-        let tag: ITag;
+        let index: number;
         const tags = this.props.project.tags;
-        if (displayIndex === 0) {
-            if (tags && tags.length >= 10) {
-                tag = tags[9];
-            }
-        } else if (tags && tags.length >= displayIndex) {
-            tag = tags[displayIndex - 1];
+        if (key === 0 && tags.length >= 10) {
+            index = 9;
+        } else if (key < 10) {
+            index = key - 1;
         }
-        return tag;
+        if (index < tags.length) {
+            this.onTagClicked(tags[index]);
+        }
     }
 
     /**
