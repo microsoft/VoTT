@@ -9,7 +9,7 @@
 
     &-sidebar {
         display: flex;
-        min-width: 189px;
+        width: 144px;
 
         &-nav {
             width: 100%;
@@ -52,7 +52,7 @@
     }
 
     .asset-item {
-        padding: 0.25em 0.25em;
+        margin: 1px 1px;
         border-bottom: 1px solid $lighter-3;
 
         &:hover {
@@ -87,14 +87,15 @@
         }
 
         &-image {
-            width: 175px;
-            height: 131px;
+            width: 125px;
+            height: 98px;
             overflow: hidden;
             display: flex;
-            outline: 1px solid $lighter-2;
-            background-color: $darker-5;
+            // outline: 1px solid $lighter-2;
+            background-color: $darker-6;
             text-align: center;
             position: relative;
+            padding: 12px 8px;
 
             &:hover {
                 &::after {
@@ -109,10 +110,10 @@
         }
 
         &-metadata {
-            font-size: 80%;
+            font-size: 60%;
 
             .asset-filename {
-                max-width: 110px;
+                max-width: 75px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 display: inline-block;
