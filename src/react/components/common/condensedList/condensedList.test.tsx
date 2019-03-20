@@ -3,10 +3,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import CondensedList from "./condensedList";
 import { mount } from "enzyme";
 
-const TestComponent = ({ item, onClick, onDelete }) => {
+const TestComponent = ({ name, onClick, onDelete }) => {
     return (
         <li className="test-component" onClick={onClick}>
-            <span>{item.name}</span>
+            <span>{name}</span>
             <button onClick={onDelete}>Delete</button>
         </li>
     );

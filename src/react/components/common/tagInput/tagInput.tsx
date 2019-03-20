@@ -3,7 +3,7 @@ import { strings } from "../../../../common/strings";
 import { ITag } from "../../../../models/applicationState";
 import CondensedList from "../condensedList/condensedList";
 import "./tagInput.scss";
-import VerticalTagInputItem, { IVerticalTagItemProps as ITagItemProps } from "./tagInputItem";
+import TagInputItem, { ITagItemProps } from "./tagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
 import TagInputToolbar from "./tagInputToolbar";
 // tslint:disable-next-line:no-var-requires
@@ -52,7 +52,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             <div className="vertical-tag-input">
                 <CondensedList
                     title={strings.tags.title}
-                    Component={VerticalTagInputItem}
+                    Component={TagInputItem}
                     displayEmptyMessage={false}
                     Toolbar={TagInputToolbar}
                     ToolbarProps={{
@@ -64,8 +64,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                         onReorder: this.onReOrder,
                     }}
                     items={this.getListItems()}
-                    onClick={this.handleClick}
-                    onChange={this.updateTag}
                     onDelete={(item) => this.deleteTag(item.tag)}
                 />
                 <input className="tag-input-box" type="text"
@@ -139,13 +137,14 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 isSelected: this.state.selectedTag && this.state.selectedTag.name === tag.name,
                 isBeingEdited: this.state.editingTag && this.state.editingTag.name === tag.name,
                 tagEditMode: this.state.tagEditMode,
+                onClick: this.handleClick,
+                onChange: this.updateTag,
             };
             return item;
         });
     }
 
-    private handleClick = (item: ITagItemProps, e, props) => {
-        const tag = item && item.tag;
+    private handleClick = (e, tag: ITag, clickTarget: TagEditMode) => {
         if (e.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
         } else if (e.altKey) {
@@ -153,7 +152,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             this.setState({
                 editingTag: tag,
                 selectedTag: null,
-                tagEditMode: props.clickTarget,
+                tagEditMode: clickTarget,
             });
         } else {
             const editingTag = this.state.editingTag;
@@ -164,7 +163,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             this.setState({
                 editingTag: (editingTag && tag && tag.name !== editingTag.name) ? null : editingTag,
                 selectedTag: (selectedTag && selectedTag.name === tag.name && !inEditMode) ? null : tag,
-                tagEditMode: props.clickTarget,
+                tagEditMode: clickTarget,
             });
 
             if (this.props.onTagClick && !inEditMode) {
