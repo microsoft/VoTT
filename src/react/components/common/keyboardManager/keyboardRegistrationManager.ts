@@ -22,6 +22,11 @@ export type KeyboardEventHandler = (evt?: KeyboardEvent) => void;
 export class KeyboardRegistrationManager {
     private registrations: IKeyboardRegistrations = {};
 
+    /**
+     * Registers a keyboard binding and returns a function to deregister that binding
+     * @param binding Properties for keyboard binding (type of key event, keyCodes, handler, etc.)
+     * @returns a function for deregistering the keyboard binding
+     */
     public registerBinding = (binding: IKeyboardBindingProps) => {
         Guard.null(binding.keyEventType);
         Guard.expression(binding.accelerators, (keyCodes) => keyCodes.length > 0);
