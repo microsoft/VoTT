@@ -2,6 +2,30 @@
 
 <!-- cl-start -->
 
+# [2.0.0-preview.3](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.2...2.0.0-preview.3) (03-20-2019)
+[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/2.0.0-preview.3)
+
+- ci: Clean up sonar cloud issues
+- Remove height from root style (#694)
+- fix: Don't call tag click with invalid hot key (#690)
+- refactor: remove redux-invariant & redux-logging from production (#680)
+- fix: Cleans up some of the flexbox styling overflow content heights (#683)
+- Blurring tag input on click and change (#679)
+- fix: metrics page throw error if project has no tags (#681)
+- feat: Updated UX of project metrics to include charts (#678)
+- fix: open file containing special characters in the name [AB#17533] (#671)
+- fix: Re-apply tags in editor when project tags are updated (#673)
+- fix: remove profile settings and active learning (#677)
+- fix: misspelling in applicationActions.ts [AB#17157]
+- fix: display spinner icon on metrics panel when loading (#669)
+- fix: standardize default export option to "visited" (#667)
+- fix: Display asset load error when an asset fails to load (#654)
+- Fix saving asset metadata for all valid asset type (#668)
+- ci: disable web vott deploy for PR (#670)
+- feat: Enable copy rectangle functionality in editor (#651)
+- ci: Merge v2 into dev (#666)
+- feat: Added Custom TitleBar & Status Bar (#664)
+
 # [v2.0.0-preview.2](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.1...v2.0.0-preview.2) (03-08-2019)
 [GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/v2.0.0-preview.2)
 
