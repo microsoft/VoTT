@@ -204,6 +204,7 @@ export interface IAppStrings {
         }
         help: {
             title: string;
+            escape: string;
         }
         assetError: string;
         tags: {

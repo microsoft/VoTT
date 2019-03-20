@@ -202,6 +202,7 @@ export const english: IAppStrings = {
         },
         help: {
             title: "Toggle Help Menu",
+            escape: "Escape Help Menu",
         },
         assetError: "Unable to load asset",
         tags: {

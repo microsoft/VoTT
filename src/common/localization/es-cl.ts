@@ -203,6 +203,7 @@ export const spanish: IAppStrings = {
         },
         help: {
             title: "Abrir/cerrar el menú de ayuda",
+            escape: "Escapar el menú de ayuda",
         },
         assetError: "No se puede mostrar el activo",
         tags: {

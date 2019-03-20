@@ -33,12 +33,20 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
                     icon={this.icon}
                     keyEventType={KeyEventType.KeyDown}
                 />
+                {/* <KeyboardBinding
+                    displayName={strings.editorPage.help.escape}
+                    accelerators={["Esc"]}
+                    handler={() => this.setState({show: false})}
+                    icon={"fa-sign-out"}
+                    keyEventType={KeyEventType.KeyDown}
+                /> */}
                 <MessageBox
                     title={strings.titleBar.help}
                     message={this.getHelpBody()}
                     show={this.state.show}
                     onCancel={this.onClose}
                     hideFooter={true}
+                    closeOnOutsideClick={true}
                 />
             </div>
         );
