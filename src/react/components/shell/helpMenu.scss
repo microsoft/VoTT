@@ -1,7 +1,20 @@
+@import '../../../assets/sass/theme.scss';
+
 .keybinding {
     font-weight: bolder;
 }
 
 .keybinding-icon {
     vertical-align: bottom;
+    padding: 4px 15px;
+}
+
+.help-key.row {
+    color: #ccc;
+    padding: 2px;
+
+    &:hover {
+        color: #fff;
+        background-color: $lighter-2;
+    }
 }
