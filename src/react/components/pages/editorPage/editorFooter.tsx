@@ -126,7 +126,7 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
     }
 
     private blurTagsInput() {
-        const inputElement = document.querySelector(".ReactTags__tagInputField") as HTMLElement;
+        const inputElement: HTMLElement = document.querySelector(".ReactTags__tagInputField");
         if (inputElement) {
             setImmediate(() => inputElement.blur());
         }

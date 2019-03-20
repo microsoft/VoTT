@@ -211,18 +211,9 @@
     white-space: nowrap;
     overflow: hidden;
 
-    & > .rc-menu-item, & > .rc-menu-submenu > .rc-menu-submenu-title {
-
-    }
-
     & > .rc-menu-submenu, & > .rc-menu-item {
       display: inline-block;
       vertical-align: bottom;
-
-      &-active {
-
-
-      }
     }
 
     &:after {
@@ -243,7 +234,7 @@
     }
     .rc-menu-submenu-arrow {
       display: inline-block;
-      font: normal normal normal 14px/1 FontAwesome;
+      font: normal normal normal 14px/1 FontAwesome, sans-serif;
       font-size: inherit;
       vertical-align: baseline;
       text-align: center;
