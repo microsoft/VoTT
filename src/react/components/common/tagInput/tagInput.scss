@@ -33,6 +33,10 @@
         flex: 1;
         background: $darker-15;
     }
+
+    &-name {
+        text-overflow: ellipsis;
+    }
     
     &-index {
         background: $darker-15;

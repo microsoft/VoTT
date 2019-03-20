@@ -54,15 +54,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                     title={strings.tags.title}
                     Component={TagInputItem}
                     displayEmptyMessage={false}
-                    Toolbar={TagInputToolbar}
-                    ToolbarProps={{
-                        tags: this.state.tags,
-                        selectedTag: this.state.selectedTag,
-                        onEditTag: this.onEditTag,
-                        onLockTag: this.onLockTag,
-                        onDelete: this.deleteTag,
-                        onReorder: this.onReOrder,
-                    }}
+                    Toolbar={<TagInputToolbar
+                        selectedTag={this.state.selectedTag}
+                        onEditTag={this.onEditTag}
+                        onLockTag={this.onLockTag}
+                        onDelete={this.deleteTag}
+                        onReorder={this.onReOrder}/>}
                     items={this.getListItems()}
                     onDelete={(item) => this.deleteTag(item.tag)}
                 />

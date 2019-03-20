@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from "react";
+import React, { SyntheticEvent, ReactElement } from "react";
 import "./condensedList.scss";
 import { Link } from "react-router-dom";
 
@@ -16,8 +16,7 @@ interface ICondensedListProps {
     Component: any;
     items: any[];
     displayEmptyMessage: boolean;
-    Toolbar?: any;
-    ToolbarProps?: any;
+    Toolbar?: ReactElement<any>;
     newLinkTo?: string;
     onClick?: (item, e, properties?: any) => void;
     onChange?: (oldItem, newItem) => void;
@@ -37,7 +36,7 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
     }
 
     public render() {
-        const { title, items, newLinkTo, Component, Toolbar, ToolbarProps, displayEmptyMessage } = this.props;
+        const { title, items, newLinkTo, Component, Toolbar, displayEmptyMessage } = this.props;
 
         return (
             <div className="condensed-list">
@@ -45,7 +44,7 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
                     <span className="condensed-list-title">{title}</span>
                     {Toolbar &&
                         <div className="condensed-list-toolbar">
-                            <Toolbar {...ToolbarProps}/>
+                            {Toolbar}
                         </div>}
                     {newLinkTo &&
                         <Link to={newLinkTo} className="float-right">
@@ -67,11 +66,11 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
                             items.map((item) => {
                                 return (
                                     <Component
-                                        {...item}
                                         key={item.id}
-                                        onClick={(e, props: any) => this.onItemClick(item, e, props)}
+                                        onClick={(e) => this.onItemClick(item, e)}
                                         onChange={(oldItem, newItem) => this.onItemChange(oldItem, newItem)}
-                                        onDelete={(e) => this.onItemDelete(e, item)} 
+                                        onDelete={(e) => this.onItemDelete(e, item)}
+                                        {...item}
                                     />
                                 )
                             })
@@ -82,13 +81,9 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
         );
     }
 
-    private onItemClick = (item, e, props: any) => {
+    private onItemClick = (item, e) => {
         if (this.props.onClick) {
-            if (props) {
-                this.props.onClick(item, e, props);
-            } else {
-                this.props.onClick(item, e);
-            }
+            this.props.onClick(item, e);
         }
     }
 

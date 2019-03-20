@@ -10,40 +10,42 @@ export interface ITagInputToolbarProps {
     onReorder: (tag: ITag, displacement: number) => void;
 }
 
-export default function TagInputToolbar(props: ITagInputToolbarProps) {
-    const {selectedTag, onLockTag, onEditTag, onDelete, onReorder} = props;
-    return (
-        <div className="tag-input-toolbar">
-            <i className="tag-input-toolbar-icon fas fa-lock"
-                onClick={(e) => handleLock(selectedTag, onLockTag)}></i>
-            <i className="tag-input-toolbar-icon fas fa-edit"
-                onClick={(e) => handleEdit(selectedTag, onEditTag)}></i>
-            <i className="tag-input-toolbar-icon fas fa-arrow-circle-up"
-                onClick={(e) => handleArrowUp(selectedTag, onReorder)}></i>
-            <i className="tag-input-toolbar-icon fas fa-arrow-circle-down"
-                onClick={(e) => handleArrowDown(selectedTag, onReorder)}></i>
-            <i className="tag-input-toolbar-icon fas fa-trash"
-                onClick={(e) => handleDelete(selectedTag, onDelete)}></i>
-        </div>
-    );
+export default class TagInputToolbar extends React.Component<ITagInputToolbarProps> {
+    render() {
+        return (
+            <div className="tag-input-toolbar">
+                <i className="tag-input-toolbar-icon fas fa-lock"
+                    onClick={this.handleLock}></i>
+                <i className="tag-input-toolbar-icon fas fa-edit"
+                    onClick={this.handleEdit}></i>
+                <i className="tag-input-toolbar-icon fas fa-arrow-circle-up"
+                    onClick={this.handleArrowUp}></i>
+                <i className="tag-input-toolbar-icon fas fa-arrow-circle-down"
+                    onClick={this.handleArrowDown}></i>
+                <i className="tag-input-toolbar-icon fas fa-trash"
+                    onClick={this.handleDelete}></i>
+            </div>
+        );
+    }
+    private handleLock = () => {
+        this.props.onLockTag(this.props.selectedTag);
+    }
+    
+    private handleEdit = () => {
+        this.props.onEditTag(this.props.selectedTag);
+    }
+    
+    private handleArrowUp = () => {
+        this.props.onReorder(this.props.selectedTag, -1);
+    }
+    
+    private handleArrowDown = () => {
+        this.props.onReorder(this.props.selectedTag, 1);
+    }
+    
+    private handleDelete = () => {
+        this.props.onDelete(this.props.selectedTag);
+    }
 }
 
-function handleLock(selectedTag: ITag, onLockTag) {
-    onLockTag(selectedTag);
-}
 
-function handleEdit(selectedTag: ITag, onEditTag) {
-    onEditTag(selectedTag);
-}
-
-function handleArrowUp(selectedTag: ITag, onReorder) {
-    onReorder(selectedTag, -1);
-}
-
-function handleArrowDown(selectedTag: ITag, onReorder) {
-    onReorder(selectedTag, 1);
-}
-
-function handleDelete(selectedTag: ITag, onDelete) {
-    onDelete(selectedTag);
-}

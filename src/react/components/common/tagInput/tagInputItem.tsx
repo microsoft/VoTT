@@ -30,27 +30,22 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
                     <li className={this.getItemClassName()} style={{
                         borderColor: this.props.tag.color,
                         background: this.props.tag.color,
-                    }
-                }>
-                    <div
-                        className={"tag-color"}
-                        onClick={(e) => this.props.onClick(e, this.props.tag, TagEditMode.Color)}
-                        style={this.getColorStyle()}
-                    ></div>
-                    <div
-                        className={"tag-content"}
-                        onClick={(e) => this.props.onClick(e, this.props.tag, TagEditMode.Name)}
-                    >
-                        {this.getTagContent()}
-                    </div>
-                    {
-                        (displayIndex !== null) &&
-                        <div className={"tag-index"}>
-                            [{displayIndex}]
-                        </div>
-                    }
-
-                </li>
+                    }}>
+                        <div
+                            className={"tag-color"}
+                            onClick={(e) => this.props.onClick(e, this.props.tag, TagEditMode.Color)}
+                            style={this.getColorStyle()}></div>
+                        <div
+                            className={"tag-content"}
+                            onClick={(e) => this.props.onClick(e, this.props.tag, TagEditMode.Name)}>
+                            {this.getTagContent()}</div>
+                        {
+                            (displayIndex !== null) &&
+                            <div className={"tag-index"}>
+                                [{displayIndex}]
+                            </div>
+                        }
+                    </li>
                 }
                 {
                     (this.props.isBeingEdited && this.props.tagEditMode === TagEditMode.Color)
@@ -110,9 +105,7 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
                 {
                     (this.props.isLocked) ? <i className="fas fa-lock tag-lock-icon"></i> : ""
                 }
-                <span className={this.getContentClassName()}>
-                    {elipsify(this.props.tag.name, constants.tagNameLength)}
-                </span>
+                <span className={this.getContentClassName()}>{this.props.tag.name}</span>
             </div>
         );
     }
@@ -135,7 +128,7 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
     }
 
     private getContentClassName = () => {
-        let className = "px-2";
+        let className = "tag-name px-2";
         if (this.props.isBeingEdited && this.props.tagEditMode === TagEditMode.Color) {
             className += " tag-color-edit";
         }
