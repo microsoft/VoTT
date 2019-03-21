@@ -9,7 +9,7 @@
 
     &-sidebar {
         display: flex;
-        width: 144px;
+        min-width: 144px;
 
         &-nav {
             width: 100%;
@@ -52,7 +52,7 @@
     }
 
     .asset-item {
-        margin: 1px 1px;
+        // margin: 2px 4px 2px 4px;
         border-bottom: 1px solid $lighter-3;
 
         &:hover {
@@ -95,7 +95,9 @@
             background-color: $darker-6;
             text-align: center;
             position: relative;
-            padding: 12px 8px;
+            padding: 12px 8px 12px 7px;
+            // margin-top: 8px;
+            margin: auto;
 
             &:hover {
                 &::after {
@@ -113,12 +115,16 @@
             font-size: 60%;
 
             .asset-filename {
-                max-width: 75px;
+                max-width: 70px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 display: inline-block;
                 white-space: nowrap;
-                text-align: end;
+                margin: 0 0 0 8px;
+            }
+
+            .float-right {
+                margin: 0 7px 0 0;   
             }
         }
     }
