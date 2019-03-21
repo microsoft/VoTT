@@ -42,7 +42,7 @@ export class KeyboardRegistrationManager {
         binding.accelerators.forEach((keyCode) => {
             const currentBinding = this.registrations[binding.keyEventType][keyCode];
             if (currentBinding) {
-                let error = `Key code ${keyCode} on key event "${binding.keyEventType}" `
+                let error = `Key code ${keyCode} on key event "${binding.keyEventType}" `;
                 error += `already has binding registered: "${currentBinding.displayName}." `;
                 error += `Cannot register binding "${binding.displayName}" with the same key code and key event type`;
                 throw new AppError(ErrorCode.OverloadedKeyBinding, error);

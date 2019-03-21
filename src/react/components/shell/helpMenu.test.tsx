@@ -1,12 +1,11 @@
-import React from "react";
-import { IHelpMenuProps, HelpMenu } from "./helpMenu";
 import { mount } from "enzyme";
-import { KeyboardManager } from "../common/keyboardManager/keyboardManager";
-jest.mock("../common/keyboardManager/keyboardRegistrationManager");
-import { KeyboardRegistrationManager,
-    IKeyboardRegistrations } from "../common/keyboardManager/keyboardRegistrationManager";
+import React from "react";
 import MockFactory from "../../../common/mockFactory";
-import { IKeyboardBindingProps } from "../common/keyboardBinding/keyboardBinding";
+import { KeyboardManager } from "../common/keyboardManager/keyboardManager";
+import { IKeyboardRegistrations,
+    KeyboardRegistrationManager } from "../common/keyboardManager/keyboardRegistrationManager";
+import { HelpMenu, IHelpMenuProps } from "./helpMenu";
+jest.mock("../common/keyboardManager/keyboardRegistrationManager");
 
 describe("Help Menu", () => {
     function createComponent(props?: IHelpMenuProps) {
@@ -16,8 +15,8 @@ describe("Help Menu", () => {
             </KeyboardManager>,
         );
     }
-
-    const keyboardRegistrations: IKeyboardRegistrations = MockFactory.createKeyboardRegistrations(5);
+    const numberRegistrations = 5;
+    const keyboardRegistrations: IKeyboardRegistrations = MockFactory.createKeyboardRegistrations(numberRegistrations);
     const registrationMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
 
     registrationMock.prototype.getRegistrations = jest.fn(() => keyboardRegistrations);
@@ -38,7 +37,7 @@ describe("Help Menu", () => {
         expect(wrapper.exists("div.modal-content")).toBe(true);
         expect(registrationMock.prototype.getRegistrations).toBeCalled();
         await MockFactory.flushUi();
-        expect(wrapper.find("div.help-key.row")).toHaveLength(5);
+        expect(wrapper.find("div.help-key.row")).toHaveLength(numberRegistrations);
     });
 
     it("Renders keyboard bindings with icon, key binding and display name", async () => {

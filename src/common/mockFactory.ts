@@ -963,8 +963,8 @@ export default class MockFactory {
                 icon: `test-icon-${i + 1}`,
                 keyEventType: KeyEventType.KeyDown,
             };
-            keyDownRegs[upper] = [binding];
-            keyDownRegs[lower] = [binding];
+            keyDownRegs[upper] = binding;
+            keyDownRegs[lower] = binding;
         }
         return {
             keydown: keyDownRegs,

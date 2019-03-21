@@ -83,7 +83,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
                 alreadyGrouped.add(key);
                 for (const otherKey of caseConsolidatedKeys) {
                     if (!alreadyGrouped.has(otherKey) &&
-                            this.handlerEquals(registrations[key], registrations[otherKey])) {
+                            this.bindingEquals(registrations[key], registrations[otherKey])) {
                         group.push(otherKey);
                         alreadyGrouped.add(otherKey);
                     }
@@ -94,8 +94,10 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
         return groups;
     }
 
-    private handlerEquals(reg1: IKeyboardBindingProps, reg2: IKeyboardBindingProps) {
-        return reg1 && reg2 && reg1.handler === reg2.handler;
+    private bindingEquals(binding1: IKeyboardBindingProps, binding2: IKeyboardBindingProps) {
+        return binding1 && binding2
+                && binding1.displayName === binding2.displayName 
+                && binding1.handler === binding2.handler;
     }
 
     private consolidateKeyCasings = (allKeys: string[]): string[] => {
