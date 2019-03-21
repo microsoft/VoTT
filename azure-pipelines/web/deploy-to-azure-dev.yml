@@ -1,5 +1,5 @@
 trigger:
-  - dev
+  - dev*  # trigger on all branch with dev prefix
 pr: none # disable CI build for PR
 
 
