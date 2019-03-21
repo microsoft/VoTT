@@ -1051,4 +1051,5 @@ export default class MockFactory {
                 return StorageType.Other;
         }
     }
+
 }

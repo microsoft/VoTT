@@ -67,6 +67,15 @@ export default function registerToolbar() {
     });
 
     ToolbarItemFactory.register({
+        name: ToolbarItemName.CopyRectangle,
+        tooltip: strings.editorPage.toolbar.copyRectangle,
+        icon: "far fa-clone",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.State,
+        accelerators: ["Ctrl+w", "Ctrl+W"],
+    });
+
+    ToolbarItemFactory.register({
         name: ToolbarItemName.CopyRegions,
         tooltip: strings.editorPage.toolbar.copy,
         icon: "fa-copy",

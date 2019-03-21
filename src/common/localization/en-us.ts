@@ -172,7 +172,7 @@ export const english: IAppStrings = {
         width: "Width",
         height: "Height",
         toolbar: {
-            select: "Select",
+            select: "Select (V)",
             pan: "Pan",
             drawRectangle: "Draw Rectangle",
             drawPolygon: "Draw Polygon",
