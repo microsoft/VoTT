@@ -96,7 +96,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
 
     private bindingEquals(binding1: IKeyboardBindingProps, binding2: IKeyboardBindingProps) {
         return binding1 && binding2
-                && binding1.displayName === binding2.displayName 
+                && binding1.displayName === binding2.displayName
                 && binding1.handler === binding2.handler;
     }
 
