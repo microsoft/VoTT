@@ -385,6 +385,28 @@ describe("Editor Page Component", () => {
             expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
         });
     });
+
+    describe("Editing Video Assets", () => {
+        let wrapper: ReactWrapper;
+        let tfRecordAsset: IAsset;
+
+        beforeEach(async () => {
+            const testProject = MockFactory.createTestProject("TestProject");
+            tfRecordAsset = MockFactory.createTestAsset("TestRecord");
+            // videoFrames = MockFactory.createChildVideoAssets(videoAsset);
+            const projectAssets = [tfRecordAsset]; // [videoAsset].concat(videoFrames);
+            testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
+
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+
+            wrapper = createComponent(store, props);
+
+            await MockFactory.flushUi();
+            wrapper.update();
+        });
+    });
+
     describe("Basic toolbar test and hotkey tests", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
