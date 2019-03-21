@@ -9,7 +9,7 @@
 
     &-sidebar {
         display: flex;
-        min-width: 290px;
+        min-width: 144px;
 
         &-nav {
             width: 100%;
@@ -51,12 +51,7 @@
         }
     }
 
-    .asset-item:first-child {
-        padding: 1em;
-    }
-
     .asset-item {
-        padding: 0.5em 1em;
         border-bottom: 1px solid $lighter-3;
 
         &:hover {
@@ -91,14 +86,15 @@
         }
 
         &-image {
-            width: 260px;
-            height: 195px;
+            width: 125px;
+            height: 98px;
             overflow: hidden;
             display: flex;
-            outline: 1px solid $lighter-2;
-            background-color: $darker-5;
+            background-color: $darker-6;
             text-align: center;
             position: relative;
+            padding: 12px 8px 12px 7px;
+            margin: auto;
 
             &:hover {
                 &::after {
@@ -113,14 +109,19 @@
         }
 
         &-metadata {
-            font-size: 80%;
+            font-size: 60%;
 
             .asset-filename {
-                max-width: 175px;
+                max-width: 70px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 display: inline-block;
                 white-space: nowrap;
+                margin: 0 0 0 8px;
+            }
+
+            .float-right {
+                margin: 0 7px 0 0;   
             }
         }
     }
