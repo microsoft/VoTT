@@ -2,17 +2,17 @@
 @import "~video-react/styles/scss/video-react";
 
 .editor-page {
+    flex-grow: 1;
     display: flex;
     flex-direction: row;
     overflow: hidden;
-    height: 100%;
 
     &-sidebar {
+        display: flex;
         min-width: 290px;
 
         &-nav {
             width: 100%;
-            height: 100%;
         }
     }
 
@@ -115,12 +115,6 @@
                     z-index: 1;
                 }
             }
-
-            .asset-loading {
-                position: absolute;
-                top: 45%;
-                left: 50%;
-            }
         }
 
         &-metadata {
@@ -144,14 +138,19 @@
 
 .asset-preview {
     display: flex;
-    flex: 1;
-    height: 100%;
+    flex-grow: 1;
 
     &-container {
         display: flex;
         flex-direction: column;
         width: 100%;
         text-align: center;
+    }
+
+    .asset-loading {
+        position: absolute;
+        top: 45%;
+        left: 50%;
     }
 
     img {
@@ -204,7 +203,8 @@
         z-index: 1;
     }
 
-    *.canvas-disabled {
+    &.canvas-disabled {
+        display: none;
         z-index: 0;
     }
 }
@@ -253,6 +253,6 @@ canvas {
     }
 }
 
-td {
-    word-wrap: break-word;
+.asset-error {
+    margin: auto;
 }

@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { addLocValues, strings } from "../../../../common/strings";
-import { IExportFormat } from "../../../../models/applicationState";
+import { IExportFormat, IExportProviderOptions } from "../../../../models/applicationState";
 import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
 import ExportProviderPicker from "../../common/exportProviderPicker/exportProviderPicker";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
@@ -140,7 +140,6 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
     }
 
     private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
-
         // If no provider type was specified on bind, pick the default provider
         const providerType = (exportFormat && exportFormat.providerType) ?
             exportFormat.providerType : ExportProviderFactory.defaultProvider.name;
@@ -160,8 +159,9 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
 
         const formData = { ...exportFormat };
         if (resetProviderOptions) {
-            formData.providerOptions = { assetState: ExportAssetState.Visited };
+            formData.providerOptions = {} as IExportProviderOptions;
         }
+
         formData.providerType = providerType;
 
         this.setState({

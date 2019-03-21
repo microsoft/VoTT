@@ -1,8 +1,15 @@
 @import './assets/sass/theme.scss';
 
+body {
+    user-select: none;
+}
+
 #root {
-    height: 100vh;
     overflow: hidden;
+}
+
+#appInfo {
+    display: none;
 }
 
 input[type=file] {

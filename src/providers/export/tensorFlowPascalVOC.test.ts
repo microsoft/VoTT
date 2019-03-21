@@ -1,9 +1,12 @@
 import _ from "lodash";
-import { TFPascalVOCJsonExportProvider, ITFPascalVOCJsonExportOptions } from "./tensorFlowPascalVOC";
+import { TFPascalVOCJsonExportProvider } from "./tensorFlowPascalVOC";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IAssetMetadata, AssetState, IRegion, RegionType, IPoint } from "../../models/applicationState";
+import {
+    IAssetMetadata, AssetState, IRegion,
+    RegionType, IPoint, IExportProviderOptions,
+} from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
@@ -14,6 +17,7 @@ import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import registerMixins from "../../registerMixins";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { appInfo } from "../../common/appInfo";
+import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
@@ -28,6 +32,7 @@ function _base64ToArrayBuffer(base64: string) {
 }
 
 describe("TFPascalVOC Json Export Provider", () => {
+    const testAssets = MockFactory.createTestAssets(10, 1);
     const baseTestProject = MockFactory.createTestProject("Test Project");
     baseTestProject.assets = {
         "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
@@ -44,6 +49,14 @@ describe("TFPascalVOC Json Export Provider", () => {
         return Promise.resolve(new Uint8Array([1, 2, 3]).buffer);
     });
 
+    beforeAll(() => {
+        AssetProviderFactory.create = jest.fn(() => {
+            return {
+                getAssets: jest.fn(() => Promise.resolve(testAssets)),
+            };
+        });
+    });
+
     beforeEach(() => {
         registerProviders();
     });
@@ -53,7 +66,7 @@ describe("TFPascalVOC Json Export Provider", () => {
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: ITFPascalVOCJsonExportOptions = {
+        const options: IExportProviderOptions = {
             assetState: ExportAssetState.All,
         };
         const exportProvider = ExportProviderFactory.create("tensorFlowPascalVOC", baseTestProject, options);
@@ -98,7 +111,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: ITFPascalVOCJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.All,
             };
 
@@ -118,14 +131,15 @@ describe("TFPascalVOC Json Export Provider", () => {
             expect(createContainerCalls[4][0].endsWith("/ImageSets/Main")).toEqual(true);
 
             const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
-            expect(writeBinaryCalls.length).toEqual(4);
+            expect(writeBinaryCalls.length).toEqual(testAssets.length);
             expect(writeBinaryCalls[0][0].endsWith("/JPEGImages/Asset 1.jpg")).toEqual(true);
             expect(writeBinaryCalls[1][0].endsWith("/JPEGImages/Asset 2.jpg")).toEqual(true);
             expect(writeBinaryCalls[2][0].endsWith("/JPEGImages/Asset 3.jpg")).toEqual(true);
             expect(writeBinaryCalls[3][0].endsWith("/JPEGImages/Asset 4.jpg")).toEqual(true);
 
             const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
-            expect(writeTextFileCalls.length).toEqual(11);
+            // We write an annotation XML file per asset, 2 files per tag + 1 label map file
+            expect(writeTextFileCalls.length).toEqual(testAssets.length + (testProject.tags.length * 2) + 1);
             expect(writeTextFileCalls[0][0].endsWith("pascal_label_map.pbtxt")).toEqual(true);
             expect(writeTextFileCalls[0][1].length)
                 .toEqual((tagLengthInPbtxt * testProject.tags.length));
@@ -153,7 +167,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: ITFPascalVOCJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
             };
 
@@ -197,7 +211,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: ITFPascalVOCJsonExportOptions = {
+            const options: IExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
             };
 

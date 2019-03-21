@@ -6,8 +6,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
 import { appInfo } from "../../../../common/appInfo";
 import MockFactory from "../../../../common/mockFactory";
-import { AssetState, EditorMode, IApplicationState,
-    IAsset, IAssetMetadata, IProject } from "../../../../models/applicationState";
+import { AssetState, EditorMode, IApplicationState, IAsset, IAssetMetadata, IProject } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
@@ -501,8 +500,8 @@ describe("Editor Page Component", () => {
             expect(removeAllRegionsConfirm).toBeCalled();
         });
 
-        it("sets selected tag and locked tags when hot key is pressed", async () => {
-            const project = MockFactory.createTestProject();
+        it("sets selected tag when hot key is pressed", async () => {
+            const project = MockFactory.createTestProject("test", 5);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
@@ -511,15 +510,29 @@ describe("Editor Page Component", () => {
             const wrapper = createComponent(store, MockFactory.editorPageProps());
             await waitForSelectedAsset(wrapper);
 
-            wrapper.update();
-
-            const editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().selectedTag).toBeNull();
 
             dispatchKeyEvent("1");
 
-            expect(editorPage.state().lockedTags).toEqual([]);
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+        });
 
+        it("does not set selected tag when invalid hot key is pressed", async () => {
+            const tagLength = 5;
+            const project = MockFactory.createTestProject("test", tagLength);
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            expect(editorPage.state().selectedTag).toBeNull();
+
+            dispatchKeyEvent((tagLength + 1).toString());
+
+            expect(editorPage.state().selectedTag).toBeNull();
         });
     });
 
@@ -608,6 +621,33 @@ describe("Editor Page Component", () => {
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().lockedTags).toEqual([]);
+        });
+
+        it("Clears locked tags when tag is clicked", async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .first()
+                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
+            let editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
+            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+
+            wrapper.update();
+            wrapper.find("div.tag")
+                .last()
+                .simulate("click", { target: { innerText: project.tags[0].name }});
+            editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().selectedTag).toEqual(project.tags[project.tags.length - 1].name);
             expect(editorPage.state().lockedTags).toEqual([]);
         });
     });

@@ -77,6 +77,18 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
      * @param error The error to handle
      */
     private handleError(error: string | Error | AppError) {
+        if (!error) {
+            return;
+        }
+
+        // This is a special case where we don't need to throw an
+        // exception. The error is thrown from within a few layers
+        // of components, so we don't have access to ReactDnD (drag and drop)
+        // directly. The action is performed correctly, so we
+        // don't need to display the error here
+        if (this.isReactDnDError(error)) {
+            return;
+        }
         let appError: IAppError = null;
         // Promise rejection with reason
         if (typeof (error) === "string") {
@@ -136,5 +148,9 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
             message: localizedError.message,
             title: localizedError.title,
         };
+    }
+
+    private isReactDnDError(e) {
+        return e && e.name === "Invariant Violation" && e.message === "Expected to find a valid target.";
     }
 }

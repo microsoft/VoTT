@@ -5,8 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { AssetState, AssetType, EditorMode,
-    IApplicationState, IAsset, IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+import { AssetState, AssetType, EditorMode, IApplicationState, IAsset, IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { ToolbarItemName } from "../../../../registerToolbar";
@@ -209,7 +208,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     /**
-     * Listens for CTRL+{number key} and calls `onTagClicked` with tag corresponding to that number
+     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
      * @param event KeyDown event
      */
     private handleTagHotKey = (event: KeyboardEvent): void => {
@@ -217,20 +216,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (isNaN(key)) {
             return;
         }
-        let tag: ITag;
+        let index: number;
         const tags = this.props.project.tags;
-        if (key === 0) {
-            if (tags.length >= 10) {
-                tag = tags[9];
-            }
-        } else if (tags.length >= key) {
-            tag = tags[key - 1];
+        if (key === 0 && tags.length >= 10) {
+            index = 9;
+        } else if (key < 10) {
+            index = key - 1;
         }
-        this.onTagClicked(tag);
+        if (index < tags.length) {
+            this.onTagClicked(tags[index]);
+        }
     }
 
     /**
-     * Raised when a child asset is selected on the Asset Prview
+     * Raised when a child asset is selected on the Asset Preview
      * ex) When a video is paused/seeked to on a video
      */
     private onChildAssetSelected = async (childAsset: IAsset) => {
@@ -243,7 +242,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Returns a value indicating whether the current asset is taggable
      */
     private isTaggableAssetType = (asset: IAsset): boolean => {
-        return asset.type === AssetType.Image || asset.type === AssetType.VideoFrame;
+        return asset.type !== AssetType.Unknown && asset.type !== AssetType.Video;
     }
 
     /**

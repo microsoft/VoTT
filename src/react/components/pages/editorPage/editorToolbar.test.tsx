@@ -5,7 +5,6 @@ import MockFactory from "../../../../common/mockFactory";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
 import { ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import { ReactWrapper, mount } from "enzyme";
-import { ExportProject } from "../../toolbar/exportProject";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { KeyboardManager } from "../../common/keyboardManager/keyboardManager";
 
@@ -13,11 +12,11 @@ describe("Editor Toolbar", () => {
     let wrapper: ReactWrapper = null;
 
     function createComponent(props: IEditorToolbarProps) {
-        return (mount(
+        return mount(
             <KeyboardManager>
                 <EditorToolbar {...props} />
             </KeyboardManager>,
-        ));
+        );
     }
 
     function createProps(): IEditorToolbarProps {

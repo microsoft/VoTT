@@ -24,11 +24,11 @@ import IApplicationActions, * as applicationActions from "../redux/actions/appli
 import { ILocalFileSystemProxyOptions } from "../providers/storage/localFileSystemProxy";
 import { generateKey } from "./crypto";
 import { AssetService } from "../services/assetService";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import { randomIntInRange } from "./utils";
 import { appInfo } from "./appInfo";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 
 export default class MockFactory {
 

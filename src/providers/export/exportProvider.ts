@@ -1,7 +1,7 @@
 import Guard from "../../common/guard";
 import {
     IProject, IExportFormat, IAssetMetadata, IAsset,
-    AssetState, AssetType,
+    AssetState, AssetType, IExportProviderOptions,
 } from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
@@ -54,7 +54,8 @@ export interface IExportProvider {
  * Base class implementation for all VoTT export providers
  * Provides quick access to the configured projects asset & storage providers
  */
-export abstract class ExportProvider<TOptions> implements IExportProvider {
+export abstract class ExportProvider
+    <TOptions extends IExportProviderOptions = IExportProviderOptions> implements IExportProvider {
     private storageProviderInstance: IStorageProvider;
     private assetProviderInstance: IAssetProvider;
     private assetService: AssetService;
@@ -72,7 +73,18 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
     public async getAssetsForExport(): Promise<IAssetMetadata[]> {
         let predicate: (asset: IAsset) => boolean = null;
 
-        // @ts-ignore
+        const getProjectAssets = () => Promise.resolve(_.values(this.project.assets));
+        const getAllAssets = async () => {
+            const projectAssets = await getProjectAssets();
+
+            return _(projectAssets)
+                .concat((await this.assetProvider.getAssets()))
+                .uniqBy((asset) => asset.id)
+                .value();
+        };
+
+        let getAssetsFunc: () => Promise<IAsset[]> = getProjectAssets;
+
         switch (this.options.assetState) {
             case ExportAssetState.Visited:
                 predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
@@ -82,11 +94,12 @@ export abstract class ExportProvider<TOptions> implements IExportProvider {
                 break;
             case ExportAssetState.All:
             default:
+                getAssetsFunc = getAllAssets;
                 predicate = () => true;
                 break;
         }
 
-        return await _.values(this.project.assets)
+        return (await getAssetsFunc())
             .filter((asset) => asset.type !== AssetType.Video)
             .filter(predicate)
             .mapAsync(async (asset) => await this.assetService.getAssetMetadata(asset));
