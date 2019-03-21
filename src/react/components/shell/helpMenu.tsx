@@ -110,8 +110,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
     }
 
     private getRegistrationRow = (group: string[], registrations: {[key: string]: IKeyboardBindingProps}) => {
-        // At the moment, there are no keys "doubled up". We are getting the first registration for the key
-        const keyRegistration = registrations[group[0]][0];
+        const keyRegistration = registrations[group[0]];
         if (keyRegistration) {
             return (
                 <div className={"help-key row"}>
