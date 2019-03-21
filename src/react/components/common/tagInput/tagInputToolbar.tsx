@@ -14,16 +14,21 @@ export default class TagInputToolbar extends React.Component<ITagInputToolbarPro
     render() {
         return (
             <div className="tag-input-toolbar">
-                <i className="tag-input-toolbar-icon fas fa-lock"
-                    onClick={this.handleLock}></i>
-                <i className="tag-input-toolbar-icon fas fa-edit"
-                    onClick={this.handleEdit}></i>
-                <i className="tag-input-toolbar-icon fas fa-arrow-circle-up"
-                    onClick={this.handleArrowUp}></i>
-                <i className="tag-input-toolbar-icon fas fa-arrow-circle-down"
-                    onClick={this.handleArrowDown}></i>
-                <i className="tag-input-toolbar-icon fas fa-trash"
-                    onClick={this.handleDelete}></i>
+                <div className="tag-input-toolbar-item" onClick={this.handleLock}>
+                    <i className="tag-input-toolbar-icon fas fa-lock" />
+                </div>
+                <div className="tag-input-toolbar-item" onClick={this.handleEdit}>
+                    <i className="tag-input-toolbar-icon fas fa-edit"/>
+                </div>
+                <div className="tag-input-toolbar-item" onClick={this.handleArrowUp}>
+                    <i className="tag-input-toolbar-icon fas fa-arrow-circle-up"/>
+                </div>
+                <div className="tag-input-toolbar-item" onClick={this.handleArrowDown}>
+                    <i className="tag-input-toolbar-icon fas fa-arrow-circle-down"/>
+                </div>
+                <div className="tag-input-toolbar-item" onClick={this.handleDelete}>
+                    <i className="tag-input-toolbar-icon fas fa-trash"/>
+                </div>
             </div>
         );
     }

@@ -3,7 +3,7 @@ import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Selection/AreaSelector";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { AssetState, AssetType, EditorMode, IApplicationState, IAsset, IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";

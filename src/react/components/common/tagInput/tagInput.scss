@@ -62,12 +62,17 @@
         margin-left: 5px
     }
 
-    &-input-toolbar-icon {
-        padding: 0 5px;
-    }
-    
-    &-input-toolbar-icon:hover {
-        color: white;
-        cursor: pointer;
+    &-input-toolbar {
+        display: flex;
+        flex-direction: row;
+
+        &-item {
+            color: #ccc;
+        }
+
+        &-item:hover {
+            color: white;
+            cursor: pointer;
+        }
     }
 }
