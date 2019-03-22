@@ -15,6 +15,13 @@ export const english: IAppStrings = {
         provider: "Provider",
         homePage: "Home Page",
     },
+    titleBar: {
+        help: "Help",
+        minimize: "Minimize",
+        maximize: "Maximize",
+        restore: "Restore",
+        close: "Close",
+    },
     homePage: {
         newProject: "New Project",
         openLocalProject: {
@@ -167,17 +174,17 @@ export const english: IAppStrings = {
         toolbar: {
             select: "Select (V)",
             pan: "Pan",
-            drawRectangle: "Draw Rectangle (R)",
-            drawPolygon: "Draw Polygon (P)",
-            copyRectangle: "Copy Rectangle (Ctrl + W)",
-            copy: "Copy Regions (Ctrl + C)",
-            cut: "Cut Regions (Ctrl + X)",
-            paste: "Paste Regions (Ctrl + V)",
-            removeAllRegions: "Remove All Regions (Ctrl + Delete)",
-            previousAsset: "Previous Asset (W)",
-            nextAsset: "Next Asset (S)",
-            saveProject: "Save Project (Ctrl + S)",
-            exportProject: "Export Project (Ctrl + E)",
+            drawRectangle: "Draw Rectangle",
+            drawPolygon: "Draw Polygon",
+            copyRectangle: "Copy Rectangle",
+            copy: "Copy Regions",
+            cut: "Cut Regions",
+            paste: "Paste Regions",
+            removeAllRegions: "Remove All Regions",
+            previousAsset: "Previous Asset",
+            nextAsset: "Next Asset",
+            saveProject: "Save Project",
+            exportProject: "Export Project",
         },
         videoPlayer: {
             previousTaggedFrame: {
@@ -193,7 +200,16 @@ export const english: IAppStrings = {
                 tooltip: "Next Frame",
             },
         },
+        help: {
+            title: "Toggle Help Menu",
+            escape: "Escape Help Menu",
+        },
         assetError: "Unable to load asset",
+        tags: {
+            hotKey: {
+                help: "Apply Tag with Hot Key",
+            },
+        },
         canvas: {
             removeAllRegions: {
                 title: "Remove All Regions",

@@ -13,8 +13,8 @@ import { ErrorHandler } from "./react/components/common/errorHandler/errorHandle
 import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
 import { TitleBar } from "./react/components/shell/titleBar";
 import { StatusBar } from "./react/components/shell/statusBar";
-import { strings } from "./common/strings";
 import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
+import { HelpMenu } from "./react/components/shell/helpMenu";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -77,6 +77,7 @@ export default class App extends React.Component<IAppProps> {
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}>
+                                    <div className="app-help-menu-icon"><HelpMenu/></div>
                                 </TitleBar>
                                 <div className="app-main">
                                     <Sidebar project={this.props.currentProject} />

@@ -480,22 +480,22 @@ describe("Editor Page Component", () => {
             expect(removeAllRegionsConfirm).toBeCalled();
         });
 
-        it("Calls copy regions with hot key", async () => {
+        it("Calls copy regions with hot key", () => {
             dispatchKeyEvent("Ctrl+c");
             expect(copyRegions).toBeCalled();
         });
 
-        it("Calls cut regions with hot key", async () => {
+        it("Calls cut regions with hot key", () => {
             dispatchKeyEvent("Ctrl+x");
             expect(cutRegions).toBeCalled();
         });
 
-        it("Calls paste regions with hot key", async () => {
+        it("Calls paste regions with hot key", () => {
             dispatchKeyEvent("Ctrl+v");
             expect(pasteRegions).toBeCalled();
         });
 
-        it("Calls remove all regions confirmation with hot key", async () => {
+        it("Calls remove all regions confirmation with hot key", () => {
             dispatchKeyEvent("Ctrl+Delete");
             expect(removeAllRegionsConfirm).toBeCalled();
         });
