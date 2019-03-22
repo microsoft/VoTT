@@ -253,7 +253,7 @@ export default class CanvasHelpers {
         const defaultTargetY = 0;
 
         if (boundingBox.height > height || boundingBox.width > width) {
-            throw new AppError(ErrorCode.PasteRegionTooBigError, strings.errors.pasteRegionTooBigError.message);
+            throw new AppError(ErrorCode.PasteRegionTooBig, strings.errors.pasteRegionTooBigError.message);
         }
 
         if (!CanvasHelpers.boundingBoxWithin(boundingBox, width, height)) {

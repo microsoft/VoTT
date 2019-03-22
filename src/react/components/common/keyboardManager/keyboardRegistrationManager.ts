@@ -29,25 +29,26 @@ export class KeyboardRegistrationManager {
      * @returns a function for deregistering the keyboard binding
      */
     public registerBinding = (binding: IKeyboardBindingProps) => {
-        Guard.null(binding.keyEventType);
-        Guard.expression(binding.accelerators, (keyCodes) => keyCodes.length > 0);
-        Guard.null(binding.handler);
+        const {keyEventType, accelerators, handler, displayName} = binding
+        Guard.null(keyEventType);
+        Guard.expression(accelerators, (keyCodes) => keyCodes.length > 0);
+        Guard.null(handler);
 
-        let eventTypeRegistrations = this.registrations[binding.keyEventType];
+        let eventTypeRegistrations = this.registrations[keyEventType];
         if (!eventTypeRegistrations) {
             eventTypeRegistrations = {};
-            this.registrations[binding.keyEventType] = eventTypeRegistrations;
+            this.registrations[keyEventType] = eventTypeRegistrations;
         }
 
-        binding.accelerators.forEach((keyCode) => {
-            const currentBinding = this.registrations[binding.keyEventType][keyCode];
+        accelerators.forEach((keyCode) => {
+            const currentBinding = this.registrations[keyEventType][keyCode];
             if (currentBinding) {
-                let error = `Key code ${keyCode} on key event "${binding.keyEventType}" `;
+                let error = `Key code ${keyCode} on key event "${keyEventType}" `;
                 error += `already has binding registered: "${currentBinding.displayName}." `;
-                error += `Cannot register binding "${binding.displayName}" with the same key code and key event type`;
+                error += `Cannot register binding "${displayName}" with the same key code and key event type`;
                 throw new AppError(ErrorCode.OverloadedKeyBinding, error);
             }
-            this.registrations[binding.keyEventType][keyCode] = binding;
+            this.registrations[keyEventType][keyCode] = binding;
         });
 
         return () => {
