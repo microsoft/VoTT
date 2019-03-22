@@ -5,7 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { AssetState, AssetType, EditorMode, IApplicationState, IAsset, IAssetMetadata, IProject, ITag } from "../../../../models/applicationState";
+import { AssetState, AssetType, EditorMode, IApplicationState, IAsset, IAssetMetadata, IProject, ITag, IRegion } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { ToolbarItemName } from "../../../../registerToolbar";
@@ -49,6 +49,8 @@ export interface IEditorPageState {
     selectionMode: SelectionMode;
     /** The selected asset for the primary editing experience */
     selectedAsset?: IAssetMetadata;
+    /** Maintains currently selected regions in current asset */
+    selectedRegions?: IRegion[];
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
     /** Additional settings for asset previews */
@@ -159,6 +161,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     ref={this.canvas}
                                     selectedAsset={this.state.selectedAsset}
                                     onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                    onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                     editorMode={this.state.editorMode}
                                     selectionMode={this.state.selectionMode}
                                     project={this.props.project}
@@ -176,7 +179,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             <TagInput
                                 tags={this.props.project.tags}
                                 lockedTags={this.state.lockedTags}
-                                selectedRegions={this.getSelectedRegions()}
+                                selectedRegions={this.state.selectedRegions}
                                 onChange={this.onTagsChanged}
                                 onLockedTagsChange={this.onLockedTagsChanged}
                                 onTagClick={this.onTagClicked}
@@ -249,6 +252,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private isTaggableAssetType = (asset: IAsset): boolean => {
         return asset.type !== AssetType.Unknown && asset.type !== AssetType.Video;
+    }
+
+    private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
+        this.setState({selectedRegions});
     }
 
     /**

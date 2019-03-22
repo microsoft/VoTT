@@ -23,6 +23,7 @@ export interface ICanvasProps extends React.Props<Canvas> {
     lockedTags: string[];
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
+    onSelectedRegionsChanged?: (regions: IRegion[]) => void;
 }
 
 export interface ICanvasState {
@@ -255,7 +256,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.props.selectedAsset.asset.size.height,
         );
         const lockedTags = this.props.lockedTags;
-        const newRegion = {
+        const newRegion: IRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
             tags: lockedTags || [],
@@ -267,6 +268,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             },
             points: scaledRegionData.points,
         };
+        this.props.onSelectedRegionsChanged([newRegion]);
         if (lockedTags && lockedTags.length) {
             this.editor.RM.updateTagsById(id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, newRegion));
         }
@@ -328,6 +330,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private onRegionDelete = (id: string) => {
         // Remove from Canvas Tools
         this.editor.RM.deleteRegionById(id);
+        this.props.onSelectedRegionsChanged([])
 
         // Remove from project
         const currentRegions = this.state.currentAsset.regions;
@@ -345,6 +348,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
         const selectedRegions = this.getSelectedRegions();
+        if(this.props.onSelectedRegionsChanged) {
+            this.props.onSelectedRegionsChanged(selectedRegions);
+        }
         // Gets the scaled region data
         const selectedRegionsData = this.editor.RM.getSelectedRegionsBounds().find((region) => region.id === id);
 
