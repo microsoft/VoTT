@@ -68,7 +68,7 @@ describe("Editor Toolbar", () => {
         const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
         const select = toolbar.props().items[0];
         const toolbarRegistry = ToolbarItemFactory.getToolbarItems();
-        expect(select.config).toHaveProperty("accelerators", ["v", "V" ]);
+        expect(select.config).toHaveProperty("accelerators", ["V", "v" ]);
         expect(select.config).toEqual(toolbarRegistry[0].config);
     });
 });

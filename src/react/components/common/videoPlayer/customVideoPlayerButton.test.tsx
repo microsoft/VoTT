@@ -48,9 +48,10 @@ describe("Custom Video Player Button Component", () => {
 
         expect(keyboardBinding.exists()).toBe(true);
         expect(keyboardBinding.props()).toEqual({
+            displayName: defaultProps.tooltip,
             keyEventType: KeyEventType.KeyDown,
             accelerators: props.accelerators,
-            onKeyEvent: props.onClick,
+            handler: props.onClick,
         });
     });
 

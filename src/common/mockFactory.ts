@@ -29,6 +29,9 @@ import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/Regi
 import { randomIntInRange } from "./utils";
 import { appInfo } from "./appInfo";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
+import { IKeyboardBindingProps } from "../react/components/common/keyboardBinding/keyboardBinding";
+import { KeyEventType } from "../react/components/common/keyboardManager/keyboardManager";
+import { IKeyboardRegistrations } from "../react/components/common/keyboardManager/keyboardRegistrationManager";
 
 export default class MockFactory {
 
@@ -939,6 +942,32 @@ export default class MockFactory {
             top: 0,
             width: 1,
             height: 1,
+        };
+    }
+
+    public static createKeyboardRegistrations(count = 5, handlers?): IKeyboardRegistrations {
+        const keyDownRegs = {};
+        if (!handlers) {
+            handlers = [];
+            for (let i = 0; i < count; i++) {
+                handlers.push(jest.fn(() => i));
+            }
+        }
+        for (let i = 0; i < count; i++) {
+            const upper = String.fromCharCode(65 + i);
+            const lower = String.fromCharCode(97 + i);
+            const binding: IKeyboardBindingProps = {
+                displayName: `Binding ${i + 1}`,
+                accelerators: [upper, lower],
+                handler: handlers[i],
+                icon: `test-icon-${i + 1}`,
+                keyEventType: KeyEventType.KeyDown,
+            };
+            keyDownRegs[upper] = binding;
+            keyDownRegs[lower] = binding;
+        }
+        return {
+            keydown: keyDownRegs,
         };
     }
 

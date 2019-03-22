@@ -24,6 +24,7 @@ import CanvasHelpers from "./canvasHelpers";
 import { tagColors } from "../../../../common/tagColors";
 import { ToolbarItemName } from "../../../../registerToolbar";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
+import { strings } from "../../../../common/strings";
 
 /**
  * Properties for Editor Page
@@ -134,10 +135,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
                     return (<KeyboardBinding
+                        displayName={strings.editorPage.tags.hotKey.help}
                         key={index}
                         keyEventType={KeyEventType.KeyDown}
                         accelerators={[`${index}`]}
-                        onKeyEvent={this.handleTagHotKey} />);
+                        icon={"fa-tag"}
+                        handler={this.handleTagHotKey} />);
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar

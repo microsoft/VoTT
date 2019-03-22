@@ -18,6 +18,13 @@ export interface IAppStrings {
         provider: string;
         homePage: string;
     };
+    titleBar: {
+        help: string;
+        minimize: string;
+        maximize: string;
+        restore: string;
+        close: string;
+    };
     homePage: {
         newProject: string;
         openLocalProject: {
@@ -195,7 +202,16 @@ export interface IAppStrings {
                 tooltip: string,
             },
         }
+        help: {
+            title: string;
+            escape: string;
+        }
         assetError: string;
+        tags: {
+            hotKey: {
+                help: string;
+            },
+        }
         canvas: {
             removeAllRegions: {
                 title: string;

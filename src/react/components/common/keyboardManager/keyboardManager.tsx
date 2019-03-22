@@ -63,7 +63,7 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
             return;
         }
 
-        this.state.keyboard.invokeHandlers(evt.type as KeyEventType, this.getKeyParts(evt), evt);
+        this.state.keyboard.invokeHandler(evt.type as KeyEventType, this.getKeyParts(evt), evt);
     }
 
     private isDisabled(): boolean {

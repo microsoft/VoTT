@@ -79,13 +79,17 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                         <CustomVideoPlayerButton order={1.1}
                             accelerators={["ArrowLeft", "a", "A"]}
                             tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
-                            onClick={this.movePreviousExpectedFrame}>
+                            onClick={this.movePreviousExpectedFrame}
+                            icon={"fa-caret-left fa-lg"}
+                        >
                             <i className="fas fa-caret-left fa-lg" />
                         </CustomVideoPlayerButton>
                         <CustomVideoPlayerButton order={1.2}
                             accelerators={["ArrowRight", "d", "D"]}
                             tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
-                            onClick={this.moveNextExpectedFrame}>
+                            onClick={this.moveNextExpectedFrame}
+                            icon={"fa-caret-right fa-lg"}
+                        >
                             <i className="fas fa-caret-right fa-lg" />
                         </CustomVideoPlayerButton>
                         <CurrentTimeDisplay order={1.3} />
@@ -95,13 +99,17 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                         <CustomVideoPlayerButton order={8.1}
                             accelerators={["q", "Q"]}
                             tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
-                            onClick={this.movePreviousTaggedFrame}>
+                            onClick={this.movePreviousTaggedFrame}
+                            icon={"fas fa-step-backward"}
+                        >
                             <i className="fas fa-step-backward"></i>
                         </CustomVideoPlayerButton>
                         <CustomVideoPlayerButton order={8.2}
                             accelerators={["e", "E"]}
                             tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
-                            onClick={this.moveNextTaggedFrame}>
+                            onClick={this.moveNextTaggedFrame}
+                            icon={"fa-step-forward"}
+                        >
                             <i className="fas fa-step-forward"></i>
                         </CustomVideoPlayerButton>
                     </ControlBar>

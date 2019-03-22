@@ -2,6 +2,8 @@ import React, { Fragment } from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
+import { strings } from "../../../common/strings";
+import { HelpMenu } from "./helpMenu";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
@@ -85,20 +87,24 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     {this.props.children}
                     {this.state.platform === PlatformType.Windows &&
                         <ul>
-                            <li title="Minimize" className="btn-window-minimize" onClick={this.minimizeWindow}>
+                            <li title={strings.titleBar.minimize} className="btn-window-minimize"
+                                    onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
                             </li>
                             {!this.state.maximized &&
-                                <li title="Maximize" className="btn-window-maximize" onClick={this.maximizeWindow}>
+                                <li title={strings.titleBar.maximize} className="btn-window-maximize"
+                                        onClick={this.maximizeWindow}>
                                     <i className="far fa-window-maximize" />
                                 </li>
                             }
                             {this.state.maximized &&
-                                <li title="Restore" className="btn-window-restore" onClick={this.unmaximizeWindow}>
+                                <li title={strings.titleBar.restore} className="btn-window-restore"
+                                        onClick={this.unmaximizeWindow}>
                                     <i className="far fa-window-restore" />
                                 </li>
                             }
-                            <li title="Close" className="btn-window-close" onClick={this.closeWindow}>
+                            <li title={strings.titleBar.close} className="btn-window-close"
+                                    onClick={this.closeWindow}>
                                 <i className="fas fa-times" />
                             </li>
                         </ul>

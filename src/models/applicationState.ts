@@ -38,16 +38,17 @@ export enum ErrorCode {
     // the enum key is in Pascal casing
     Unknown = "unknown",
     GenericRenderError = "genericRenderError",
+    CanvasError = "canvasError",
+    V1ImportError = "v1ImportError",
+    ProjectUploadError = "projectUploadError",
+    ProjectDeleteError = "projectDeleteError",
     ProjectInvalidJson = "projectInvalidJson",
     ProjectInvalidSecurityToken = "projectInvalidSecurityToken",
     ProjectDuplicateName = "projectDuplicateName",
-    ProjectUploadError = "projectUploadError",
-    ProjectDeleteError = "projectDeleteError",
     SecurityTokenNotFound = "securityTokenNotFound",
     ExportFormatNotFound = "exportFormatNotFound",
-    CanvasError = "canvasError",
-    V1ImportError = "v1ImportError",
-    PasteRegionTooBigError = "pasteRegionTooBigError",
+    PasteRegionTooBig = "pasteRegionTooBig",
+    OverloadedKeyBinding = "overloadedKeyBinding",
 }
 
 /**
