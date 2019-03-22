@@ -39,7 +39,6 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
                     show={this.state.show}
                     onCancel={this.onClose}
                     hideFooter={true}
-                    closeOnOutsideClick={true}
                 />
             </div>
         );

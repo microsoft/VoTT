@@ -29,7 +29,7 @@ export class KeyboardRegistrationManager {
      * @returns a function for deregistering the keyboard binding
      */
     public registerBinding = (binding: IKeyboardBindingProps) => {
-        const {keyEventType, accelerators, handler, displayName} = binding
+        const {keyEventType, accelerators, handler, displayName} = binding;
         Guard.null(keyEventType);
         Guard.expression(accelerators, (keyCodes) => keyCodes.length > 0);
         Guard.null(handler);
