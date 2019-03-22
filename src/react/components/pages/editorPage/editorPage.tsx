@@ -411,6 +411,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     // Save
                     await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
                     await this.props.actions.saveProject(this.props.project);
+                    this.canvas.current.addRegionsToAsset(regions);
+                    this.canvas.current.addRegionsToCanvasTools(regions);
                 };
                 image.src = "data:image;base64," + image64;
                 break;

@@ -183,27 +183,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             );
         }
     }
-
-    private removeAllRegions = () => {
-        const ids = this.state.currentAsset.regions.map((r) => r.id);
-        for (const id of ids) {
-            this.editor.RM.deleteRegionById(id);
-        }
-        this.deleteRegionsFromAsset(this.state.currentAsset.regions);
-    }
-
-    private addRegions = (regions: IRegion[]) => {
-        this.addRegionsToCanvasTools(regions);
-        this.addRegionsToAsset(regions);
-    }
-
-    private addRegionsToAsset = (regions: IRegion[]) => {
+    public addRegionsToAsset = (regions: IRegion[]) => {
         this.updateAssetRegions(
             this.state.currentAsset.regions.concat(regions),
         );
     }
 
-    private addRegionsToCanvasTools = (regions: IRegion[]) => {
+    public addRegionsToCanvasTools = (regions: IRegion[]) => {
         for (const region of regions) {
             const regionData = CanvasHelpers.getRegionData(region);
             const scaledRegionData = this.editor.scaleRegionToFrameSize(
@@ -216,6 +202,19 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 CanvasHelpers.getTagsDescriptor(this.props.project.tags, region),
             );
         }
+    }
+
+    private removeAllRegions = () => {
+        const ids = this.state.currentAsset.regions.map((r) => r.id);
+        for (const id of ids) {
+            this.editor.RM.deleteRegionById(id);
+        }
+        this.deleteRegionsFromAsset(this.state.currentAsset.regions);
+    }
+
+    private addRegions = (regions: IRegion[]) => {
+        this.addRegionsToCanvasTools(regions);
+        this.addRegionsToAsset(regions);
     }
 
     private deleteRegions = (regions: IRegion[]) => {
