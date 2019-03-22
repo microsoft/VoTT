@@ -20,10 +20,14 @@
     
     &-item {
         display: flex;
-        flex-direction: row;    
-        &-selected {
+        flex-direction: row;
+        
+        &-applied {
             border: solid;
             border-width: 1px;
+        }
+
+        &-selected {
             font-weight: bolder;
             color: white;
         }

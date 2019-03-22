@@ -176,6 +176,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             <TagInput
                                 tags={this.props.project.tags}
                                 lockedTags={this.state.lockedTags}
+                                selectedRegions={this.getSelectedRegions()}
                                 onChange={this.onTagsChanged}
                                 onLockedTagsChange={this.onLockedTagsChanged}
                                 onTagClick={this.onTagClicked}
@@ -186,6 +187,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </div>
             </div>
         );
+    }
+
+    private getSelectedRegions = () => {
+        const current = this.canvas.current;
+        return (current) ? current.getSelectedRegions() : []
     }
 
     /**

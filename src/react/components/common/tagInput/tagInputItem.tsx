@@ -2,23 +2,40 @@ import React from "react";
 import { ITag } from "../../../../models/applicationState";
 import { idealTextColor, elipsify } from "../../../../common/utils";
 import { GithubPicker } from "react-color";
-import { TagEditMode } from "./tagInput";
 import { constants } from "../../../../common/constants";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../tagColors.json");
 
-export interface ITagItemProps {
+export enum TagEditMode {
+    Color = "color",
+    Name = "name",
+}
+
+export interface ITagInputItemProps {
     tag: ITag;
     index: number;
     isLocked: boolean;
     isSelected: boolean;
-    isBeingEdited: boolean;
-    tagEditMode: TagEditMode;
-    onClick: (event, tag: ITag, clickTarget: TagEditMode) => void;
+    appliedToSelectedRegions: boolean;
+    onClick: (event, tag: ITag) => void;
     onChange: (oldTag: ITag, newTag: ITag) => void;
 }
 
-export default class TagInputItem extends React.Component<ITagItemProps> {
+export interface ITagInputItemState {
+    isBeingEdited: boolean;
+    tagEditMode: TagEditMode;
+    preventSingleClick: boolean;
+}
+
+const delay = 200;
+
+export default class TagInputItem extends React.Component<ITagInputItemProps, ITagInputItemState> {
+
+    state = {
+        isBeingEdited: false,
+        tagEditMode: null,
+        preventSingleClick: false,
+    }
 
     public render() {
         const displayIndex = this.getDisplayIndex();
@@ -33,12 +50,16 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
                     }}>
                         <div
                             className={"tag-color"}
-                            onClick={(e) => this.props.onClick(e, this.props.tag, TagEditMode.Color)}
-                            style={this.getColorStyle()}></div>
+                            onClick={this.onClick}
+                            // onDoubleClick={this.onColorDoubleClick}
+                            style={this.getColorStyle()}>
+                        </div>
                         <div
                             className={"tag-content"}
-                            onClick={(e) => this.props.onClick(e, this.props.tag, TagEditMode.Name)}>
-                            {this.getTagContent()}</div>
+                            onClick={this.onClick}>
+                            {/* onDoubleClick={this.onTextDoubleClick}> */}
+                            {this.getTagContent()}
+                        </div>
                         {
                             (displayIndex !== null) &&
                             <div className={"tag-index"}>
@@ -48,7 +69,7 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
                     </li>
                 }
                 {
-                    (this.props.isBeingEdited && this.props.tagEditMode === TagEditMode.Color)
+                    (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Color)
                     ?
                     this.getColorPicker()
                     :
@@ -58,10 +79,35 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
         );
     }
 
+    private onClick = (e) => {
+        this.props.onClick(e, this.props.tag);
+    }
+
+    // private onColorDoubleClick = (e) => {
+    //     this.setState({
+    //         preventSingleClick: true
+    //     });
+    //     setTimeout(() => {
+    //         this.setState({preventSingleClick: false})
+    //     }, delay * 2);
+    // }
+
+    // private onTextDoubleClick = (e) => {
+    //     this.setState({
+    //         preventSingleClick: true
+    //     });
+    //     setTimeout(() => {
+    //         this.setState({preventSingleClick: false})
+    //     }, delay * 2);
+    // }
+
     private getItemClassName = () => {
         let className = "tag-item";
         if (this.props.isSelected) {
             className += " tag-item-selected";
+        }
+        if (this.props.appliedToSelectedRegions) {
+            className += " tag-item-applied";
         }
         return className;
     }
@@ -85,7 +131,7 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
     }
 
     private getTagContent = () => {
-        if (this.props.isBeingEdited && this.props.tagEditMode === TagEditMode.Name) {
+        if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name) {
             return (
                 <input
                     className="tag-name-editor"
@@ -129,7 +175,7 @@ export default class TagInputItem extends React.Component<ITagItemProps> {
 
     private getContentClassName = () => {
         let className = "tag-name px-2";
-        if (this.props.isBeingEdited && this.props.tagEditMode === TagEditMode.Color) {
+        if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Color) {
             className += " tag-color-edit";
         }
         return className;
