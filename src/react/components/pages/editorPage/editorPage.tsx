@@ -46,6 +46,10 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
     applicationActions: IApplicationActions;
 }
 
+interface IExportPageSettings extends IAssetPreviewSettings {
+    activeLearningSettings: IProjectActiveLearningSettings;
+}
+
 /**
  * State for Editor Page
  */
@@ -65,7 +69,7 @@ export interface IEditorPageState {
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
     /** Additional settings for asset previews */
-    additionalSettings?: IAssetPreviewSettings;
+    additionalSettings?: IExportPageSettings;
     /** Most recently selected tag */
     selectedTag: string;
     /** Tags locked for region labeling */
@@ -148,8 +152,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (!this.state.project && this.props.project) {
             this.setState({
                 project: this.props.project,
-                additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+                additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
+                    activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null },
             });
+        }
+
+        if (this.state.project &&
+            this.state.project.activeLearningSettings.autolabel &&
+            this.state.selectedAsset &&
+            !this.state.selectedAsset.asset.predicted) {
+            this.predict();
         }
     }
 
@@ -491,61 +503,71 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.canvas.current.confirmRemoveAllRegions();
                 break;
             case ToolbarItemName.ActiveLearning:
-                const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
-                const buffer = Buffer.from(imageBuffer);
-                const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
-                const image = document.createElement("img") as HTMLImageElement;
-                image.onload = async () => {
-                    const predictions = await this.model.detect(image);
-                    console.log(image.x, image.y, image.width, image.height);
-                    console.log(predictions);
-
-                    const regions = [...this.state.selectedAsset.regions];
-                    predictions.forEach((prediction) => {
-                        regions.push({
-                            id: shortid.generate(),
-                            type: RegionType.Rectangle,
-                            tags: [prediction.class],
-                            boundingBox: {
-                                left: Math.max(0, prediction.bbox[0]),
-                                top: Math.max(0, prediction.bbox[1]),
-                                width: Math.max(0, prediction.bbox[2]),
-                                height: Math.max(0, prediction.bbox[3]),
-                            },
-                            points: [{
-                                x: Math.max(0, prediction.bbox[0]),
-                                y: Math.max(0, prediction.bbox[1]),
-                            },
-                            {
-                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                                y: Math.max(0, prediction.bbox[1]),
-                            },
-                            {
-                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                            },
-                            {
-                                x: Math.max(0, prediction.bbox[0]),
-                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                            }],
-                        });
-                    });
-
-                    const newAsset = {...this.state.selectedAsset, regions};
-                    console.log(newAsset);
-
-                    this.onAssetMetadataChanged(newAsset);
-
-                    this.setState({
-                        selectedAsset: newAsset,
-                    });
-
-                    // Save
-                    await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
-                    await this.props.actions.saveProject(this.props.project);
-                };
-                image.src = "data:image;base64," + image64;
+                await this.predict();
                 break;
+        }
+    }
+
+    private predict = async () => {
+        if (this.model) {
+            const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
+            const buffer = Buffer.from(imageBuffer);
+            const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+            const image = document.createElement("img") as HTMLImageElement;
+            image.onload = async () => {
+                const predictions = await this.model.detect(image);
+                console.log(image.x, image.y, image.width, image.height);
+                console.log(predictions);
+
+                const regions = [...this.state.selectedAsset.regions];
+                predictions.forEach((prediction) => {
+                    regions.push({
+                        id: shortid.generate(),
+                        type: RegionType.Rectangle,
+                        tags: this.state.project.activeLearningSettings.predictClass ? [prediction.class] : [],
+                        boundingBox: {
+                            left: Math.max(0, prediction.bbox[0]),
+                            top: Math.max(0, prediction.bbox[1]),
+                            width: Math.max(0, prediction.bbox[2]),
+                            height: Math.max(0, prediction.bbox[3]),
+                        },
+                        points: [{
+                            x: Math.max(0, prediction.bbox[0]),
+                            y: Math.max(0, prediction.bbox[1]),
+                        },
+                        {
+                            x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                            y: Math.max(0, prediction.bbox[1]),
+                        },
+                        {
+                            x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                            y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                        },
+                        {
+                            x: Math.max(0, prediction.bbox[0]),
+                            y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                        }],
+                    });
+                });
+
+                this.canvas.current.addRegionsToAsset(regions);
+                this.canvas.current.addRegionsToCanvasTools(regions);
+
+                const newAsset = { ...this.state.selectedAsset, regions };
+                newAsset.asset.predicted = true;
+                console.log(newAsset);
+
+                this.onAssetMetadataChanged(newAsset);
+
+                this.setState({
+                    selectedAsset: newAsset,
+                });
+
+                // Save
+                await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
+                await this.props.actions.saveProject(this.props.project);
+            };
+            image.src = "data:image;base64," + image64;
         }
     }
 
