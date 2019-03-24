@@ -283,6 +283,7 @@ export default class MockFactory {
             targetConnection: connection,
             tags: MockFactory.createTestTags(tagCount),
             videoSettings: MockFactory.createVideoSettings(),
+            activeLearningSettings: {autolabel: false, predictClass: false},
             autoSave: true,
         };
     }

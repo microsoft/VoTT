@@ -112,6 +112,7 @@ export interface IProject {
     targetConnection: IConnection;
     exportFormat: IExportFormat;
     videoSettings: IProjectVideoSettings;
+    activeLearningSettings: IProjectActiveLearningSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
     lastVisitedAssetId?: string;
@@ -199,6 +200,17 @@ export interface IProjectVideoSettings {
 }
 
 /**
+ * @name - Video Tagging Settings for the project
+ * @description - Defines the video settings within a VoTT project
+ * @member autolabel
+ * @member predictClass
+ */
+export interface IProjectActiveLearningSettings {
+    autolabel: boolean;
+    predictClass: boolean;
+}
+
+/**
  * @name - Asset Video Settings
  * @description - Defines the settings for video assets
  * @member shouldAutoPlayVideo - true if the video should auto play when loaded, false otherwise
@@ -231,6 +243,7 @@ export interface IAsset {
     format?: string;
     timestamp?: number;
     parent?: IAsset;
+    predicted?: boolean;
 }
 
 /**

@@ -41,6 +41,20 @@
                 "frameExtractionRate"
             ]
         },
+        "activeLearningSettings": {
+            "title": "Active Learning ",
+            "type": "object",
+            "properties": {
+                "autolabel": {
+                    "title": "Auto-label:",
+                    "type": "boolean"
+                },
+                "predictClass": {
+                    "title": "Predict Class:",
+                    "type": "boolean"
+                }
+            }
+        },
         "tags": {
             "title": "${strings.tags.title}",
             "type": "array"
