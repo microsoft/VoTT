@@ -42,7 +42,7 @@ steps:
     versionSpec: 10.x
 
 - task: Npm@1
-  displayName: 'npm custom'
+  displayName: 'Run `npm ci`'
   inputs:
     command: custom
     verbose: false
