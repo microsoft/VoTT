@@ -46,6 +46,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         editingTag: null,
     };
 
+    private textInput: any;
+
     public render() {
         return (
             <div className="vertical-tag-input">
@@ -67,8 +69,13 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 />
                 {
                     this.state.addTags && 
-                    <input className="tag-input-box" type="text"
-                        onKeyPress={this.handleKeyPress} placeholder="Add new tag"/>
+                    <input
+                        className="tag-input-box"
+                        type="text"
+                        onKeyPress={this.handleKeyPress}
+                        placeholder="Add new tag"
+                        autoFocus={true}
+                    />
                 }
             </div>
         );
@@ -82,7 +89,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     private onAddTags = () => {
         this.setState({
             addTags: !this.state.addTags,
-        })
+        });
     }
 
     private onSearchTags = () => {        
@@ -121,10 +128,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         const tags = [...this.state.tags];
         const currentIndex = tags.indexOf(tag);
         let newIndex = currentIndex + displacement;
-        if (newIndex < 0) {
-            newIndex = 0;
-        } else if (newIndex >= tags.length) {
-            newIndex = tags.length - 1;
+        if (newIndex < 0 || newIndex >= tags.length) {
+            return;
         }
         tags.splice(currentIndex, 1);
         tags.splice(newIndex, 0, tag);

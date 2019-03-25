@@ -123,6 +123,10 @@ export default class CanvasHelpers {
         };
     }
 
+    public static isEmpty(regionData: RegionData): boolean {
+        return regionData.area === 0 && regionData.x === 0 && regionData.y === 0;
+    }
+
     /**
      * Create TagsDescriptor (CanvasTools) from IRegion
      * @param region IRegion from Canvas

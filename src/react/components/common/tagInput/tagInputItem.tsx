@@ -23,6 +23,7 @@ export interface ITagInputItemProps {
 
 export interface ITagInputItemState {
     isBeingEdited: boolean;
+    isLocked: boolean;
     tagEditMode: TagEditMode;
     preventSingleClick: boolean;
 }
@@ -33,6 +34,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
 
     public state = {
         isBeingEdited: false,
+        isLocked: false,
         tagEditMode: null,
         preventSingleClick: false,
     };
@@ -59,6 +61,10 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                             {this.getTagContent()}
                         </div>
                         {
+                            this.state.isLocked && 
+                            <div></div>
+                        }
+                        {
                             (displayIndex !== null) &&
                             <div className={"tag-index"}>
                                 [{displayIndex}]
@@ -81,6 +87,12 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         if (prevProps.isBeingEdited !== this.props.isBeingEdited) {
             this.setState({
                 isBeingEdited: this.props.isBeingEdited
+            });
+        }
+
+        if (prevProps.isLocked !== this.props.isLocked) {
+            this.setState({
+                isLocked: this.props.isLocked
             });
         }
     }
@@ -136,7 +148,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                     width={165}
                     styles={{
                         card: {
-                            background: "#fff",
+                            background: "#000",
                         },
                     }}
                 />
@@ -146,13 +158,12 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
 
     private getTagContent = () => {
         if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name) {
-
             return (
                 <input
                     className="tag-name-editor"
                     type="text"
                     defaultValue={this.props.tag.name}
-                    onKeyPress={(e) => this.handleNameEdit(e)}
+                    onKeyDown={(e) => this.handleNameEdit(e)}
                     autoFocus={true}
                 />
             );
@@ -164,10 +175,10 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     private getDefaultTagContent = () => {
         return (
             <div>
+                <span className={this.getContentClassName()}>{this.props.tag.name}</span>
                 {
                     (this.props.isLocked) ? <i className="fas fa-lock tag-lock-icon"></i> : ""
                 }
-                <span className={this.getContentClassName()}>{this.props.tag.name}</span>
             </div>
         );
     }
@@ -178,6 +189,11 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
             this.props.onChange(this.props.tag, {
                 ...this.props.tag,
                 name: newTagName,
+            });
+        }
+        else if (e.key === "Escape") {
+            this.setState({
+                isBeingEdited: false
             });
         }
     }
