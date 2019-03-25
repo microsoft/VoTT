@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from "react";
+import React, { SyntheticEvent, ReactElement } from "react";
 import "./condensedList.scss";
 import { Link } from "react-router-dom";
 
@@ -15,9 +15,16 @@ interface ICondensedListProps {
     title: string;
     Component: any;
     items: any[];
+    Toolbar?: ReactElement<any>;
+    hideEmptyMessage?: boolean;
+    search?: (item, query: string) => boolean;
     newLinkTo?: string;
     onClick?: (item) => void;
     onDelete?: (item) => void;
+}
+
+interface ICondensedListState {
+    searchQuery: string;
 }
 
 /**
@@ -25,20 +32,24 @@ interface ICondensedListProps {
  * @description - Clickable, deletable and linkable list of items
  */
 export default class CondensedList extends React.Component<ICondensedListProps> {
-    constructor(props, context) {
-        super(props, context);
 
-        this.onItemClick = this.onItemClick.bind(this);
-        this.onItemDelete = this.onItemDelete.bind(this);
+    state = {
+        searchQuery: "",
     }
 
     public render() {
-        const { title, items, newLinkTo, Component } = this.props;
+        const { title, items, newLinkTo, Component, Toolbar, hideEmptyMessage, search } = this.props;
 
         return (
             <div className="condensed-list">
                 <h6 className="condensed-list-header bg-darker-2 p-2">
-                    <span>{title}</span>
+                    <span className="condensed-list-title">{title}</span>
+                    {
+                        Toolbar &&
+                        <div className="condensed-list-toolbar">
+                            {Toolbar}
+                        </div>
+                    }
                     {newLinkTo &&
                         <Link to={newLinkTo} className="float-right">
                             <i className="fas fa-plus-square" />
@@ -46,25 +57,43 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
                     }
                 </h6>
                 <div className="condensed-list-body">
+                    {
+                        search &&
+                        <div className="search-input">
+                            <input type="text" onChange={this.handleSearch} placeholder="Search tags"/>
+                        </div>
+                    }
                     {(!items) &&
                         <div className="p-3 text-center">
                             <i className="fas fa-circle-notch fa-spin" />
                         </div>
                     }
-                    {(items && items.length === 0) &&
+                    {(items && items.length === 0) && !hideEmptyMessage &&
                         <div className="p-3 text-center">No items found</div>
                     }
                     {(items && items.length > 0) &&
                         <ul className="condensed-list-items">
-                            {items.map((item) => <Component key={item.id}
-                                item={item}
-                                onClick={(e) => this.onItemClick(e, item)}
-                                onDelete={(e) => this.onItemDelete(e, item)} />)}
+                            {((this.state.searchQuery === "") ? 
+                                items
+                                :
+                                items.filter((item) => this.props.search(item, this.state.searchQuery)))
+                                    .map((item) => 
+                                        <Component key={item.id}
+                                            onClick={(e) => this.onItemClick(e, item)}
+                                            onDelete={(e) => this.onItemDelete(e, item)}
+                                            {...item}
+                                        />)}
                         </ul>
                     }
                 </div>
             </div>
         );
+    }
+
+    private handleSearch = (event) => {
+        this.setState({
+            searchQuery: event.target.value
+        });
     }
 
     private onItemClick = (e, item) => {
@@ -87,11 +116,11 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
  * Generic list item with an onClick function and a name
  * @param param0 - {item: {name: ""}, onClick: (item) => void;}
  */
-export function ListItem({ item, onClick }) {
+export function ListItem({ name, onClick }) {
     return (
         <li>
             <a onClick={onClick}>
-                <span className="px-2">{item.name}</span>
+                <span className="px-2">{name}</span>
             </a>
         </li>
     );

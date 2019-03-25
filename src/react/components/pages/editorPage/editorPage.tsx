@@ -6,7 +6,7 @@ import { bindActionCreators } from "redux";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag, AssetType,
+    IAssetMetadata, IProject, ITag, AssetType, IRegion,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -21,10 +21,12 @@ import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { AssetService } from "../../../../services/assetService";
 import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
 import CanvasHelpers from "./canvasHelpers";
-import { tagColors } from "../../../../common/tagColors";
 import { ToolbarItemName } from "../../../../registerToolbar";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import { strings } from "../../../../common/strings";
+import { TagInput } from "../../common/tagInput/tagInput";
+// tslint:disable-next-line:no-var-requires
+const tagColors = require("../../common/tagColors.json");
 
 /**
  * Properties for Editor Page
@@ -52,6 +54,8 @@ export interface IEditorPageState {
     selectionMode: SelectionMode;
     /** The selected asset for the primary editing experience */
     selectedAsset?: IAssetMetadata;
+    /** Currently selected region on current asset */
+    selectedRegions?: IRegion[];
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
     /** Additional settings for asset previews */
@@ -157,25 +161,39 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             onToolbarItemSelected={this.onToolbarItemSelected} />
                     </div>
                     <div className="editor-page-content-body">
-                        {selectedAsset &&
-                            <Canvas
-                                ref={this.canvas}
-                                selectedAsset={this.state.selectedAsset}
-                                onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                editorMode={this.state.editorMode}
-                                selectionMode={this.state.selectionMode}
-                                project={this.props.project}
-                                lockedTags={this.state.lockedTags}>
-                                <AssetPreview
-                                    additionalSettings={this.state.additionalSettings}
-                                    autoPlay={true}
-                                    onChildAssetSelected={this.onChildAssetSelected}
-                                    asset={this.state.selectedAsset.asset}
-                                    childAssets={this.state.childAssets} />
-                            </Canvas>
-                        }
+                        <div className="editor-page-canvas">
+                            {selectedAsset &&
+                                <Canvas
+                                    ref={this.canvas}
+                                    selectedAsset={this.state.selectedAsset}
+                                    onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                    editorMode={this.state.editorMode}
+                                    selectionMode={this.state.selectionMode}
+                                    project={this.props.project}
+                                    lockedTags={this.state.lockedTags}>
+                                    <AssetPreview
+                                        additionalSettings={this.state.additionalSettings}
+                                        autoPlay={true}
+                                        onChildAssetSelected={this.onChildAssetSelected}
+                                        asset={this.state.selectedAsset.asset}
+                                        childAssets={this.state.childAssets} />
+                                </Canvas>
+                            }
+                        </div>
+                        <div className="editor-page-right-sidebar">
+                            <TagInput
+                                tags={this.props.project.tags}
+                                lockedTags={this.state.lockedTags}
+                                selectedRegions={this.state.selectedRegions}
+                                onChange={this.onTagsChanged}
+                                onLockedTagsChange={this.onLockedTagsChanged}
+                                onTagClick={this.onTagClicked}
+                                onCtrlTagClick={this.onCtrlTagClicked}
+                            />
+                        </div>
+
                     </div>
-                    <div>
+                    {/* <div>
                         <EditorFooter
                             tags={this.props.project.tags}
                             lockedTags={this.state.lockedTags}
@@ -183,7 +201,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             onTagClicked={this.onTagClicked}
                             onCtrlTagClicked={this.onCtrlTagClicked}
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
         );
@@ -298,14 +316,25 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({ childAssets, assets });
     }
 
-    private onFooterChange = (footerState) => {
+    private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
+        this.setState({selectedRegions});
+    }
+
+    private onTagsChanged = (tags) => {
         const project = {
             ...this.props.project,
-            tags: footerState.tags,
+            tags,
         };
         this.setState({ project }, async () => {
             await this.props.actions.saveProject(project);
+            if (this.canvas.current) {
+                this.canvas.current.updateCanvasToolsRegions();
+            }
         });
+    }
+
+    private onLockedTagsChanged = (lockedTags: string[]) => {
+        this.setState({lockedTags});
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
@@ -404,7 +433,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 const tagKeys = Object.keys(tagColors);
                 newTags.push({
                     name: tag,
-                    color: tagColors[tagKeys[newTags.length % tagKeys.length]],
+                    color: tagColors[newTags.length % tagColors.length],
                 });
                 updateTags = true;
             }
