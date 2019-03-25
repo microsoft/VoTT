@@ -386,7 +386,7 @@ describe("Editor Page Component", () => {
         });
     });
 
-    describe("Editing Video Assets", () => {
+    describe("Editing TFRecord Assets", () => {
         let wrapper: ReactWrapper;
         let tfRecordAsset: IAsset;
 
@@ -404,6 +404,16 @@ describe("Editor Page Component", () => {
 
             await MockFactory.flushUi();
             wrapper.update();
+        });
+
+        it("Child assets are not included within editor page state", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+            expect(editorPage.state().assets.length).toEqual(1);
+            // expect(editorPage.state().selectedAsset.asset).toEqual({
+            //     ...tfRecordAsset,
+            //     state: AssetState.Visited,
+            // });
         });
     });
 
