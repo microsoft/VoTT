@@ -167,6 +167,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     ref={this.canvas}
                                     selectedAsset={this.state.selectedAsset}
                                     onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                    onSelectedRegionsChanged={(selectedRegions) => this.setState({selectedRegions})}
                                     editorMode={this.state.editorMode}
                                     selectionMode={this.state.selectionMode}
                                     project={this.props.project}
