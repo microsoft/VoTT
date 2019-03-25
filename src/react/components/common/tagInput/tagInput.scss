@@ -1,0 +1,82 @@
+@import "../../../../index.scss";
+
+.vertical-tag-input {
+    background: $darker-4;
+}
+
+.condensed-list-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.condensed-list-title {
+    flex: 1;
+}
+
+.tag {
+    &-item-block {
+        padding: 1px 0;
+    }
+
+    &-item {
+        display: flex;
+        flex-direction: row;
+
+        &-applied {
+            border: solid;
+            border-width: 1px;
+        }
+
+        &-selected {
+            font-weight: bolder;
+            color: white;
+        }
+    }
+
+    &-content {
+        flex: 1;
+        background: $darker-15;
+    }
+
+    &-name {
+        text-overflow: ellipsis;
+    }
+
+    &-index {
+        background: $darker-15;
+        padding: 0 5px;
+        font-weight: bold;
+    }
+
+    &-item:hover {
+        background:$lighter-4;
+        cursor: pointer;
+    }
+
+    &-color-edit:hover {
+        background: $darker-1;
+        cursor: pointer;
+    }
+
+    &-color {
+        width: 18px;
+    }
+
+    &-lock-icon {
+        margin-left: 5px
+    }
+
+    &-input-toolbar {
+        display: flex;
+        flex-direction: row;
+
+        &-item {
+            color: #ccc;
+        }
+
+        &-item:hover {
+            color: white;
+            cursor: pointer;
+        }
+    }
+}
