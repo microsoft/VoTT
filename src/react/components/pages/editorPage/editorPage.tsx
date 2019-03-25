@@ -521,33 +521,40 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
                 const regions = [...this.state.selectedAsset.regions];
                 predictions.forEach((prediction) => {
-                    regions.push({
-                        id: shortid.generate(),
-                        type: RegionType.Rectangle,
-                        tags: this.state.project.activeLearningSettings.predictClass ? [prediction.class] : [],
-                        boundingBox: {
-                            left: Math.max(0, prediction.bbox[0]),
-                            top: Math.max(0, prediction.bbox[1]),
-                            width: Math.max(0, prediction.bbox[2]),
-                            height: Math.max(0, prediction.bbox[3]),
-                        },
-                        points: [{
-                            x: Math.max(0, prediction.bbox[0]),
-                            y: Math.max(0, prediction.bbox[1]),
-                        },
-                        {
-                            x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                            y: Math.max(0, prediction.bbox[1]),
-                        },
-                        {
-                            x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                            y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                        },
-                        {
-                            x: Math.max(0, prediction.bbox[0]),
-                            y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                        }],
-                    });
+                    // check if it is a new region
+                    if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
+                            region.boundingBox.left === Math.max(0, prediction.bbox[0]) &&
+                            region.boundingBox.top === Math.max(0, prediction.bbox[1]) &&
+                            region.boundingBox.width === Math.max(0, prediction.bbox[2]) &&
+                            region.boundingBox.height === Math.max(0, prediction.bbox[3]))) {
+                        regions.push({
+                            id: shortid.generate(),
+                            type: RegionType.Rectangle,
+                            tags: this.state.project.activeLearningSettings.predictClass ? [prediction.class] : [],
+                            boundingBox: {
+                                left: Math.max(0, prediction.bbox[0]),
+                                top: Math.max(0, prediction.bbox[1]),
+                                width: Math.max(0, prediction.bbox[2]),
+                                height: Math.max(0, prediction.bbox[3]),
+                            },
+                            points: [{
+                                x: Math.max(0, prediction.bbox[0]),
+                                y: Math.max(0, prediction.bbox[1]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                y: Math.max(0, prediction.bbox[1]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]),
+                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                            }],
+                        });
+                    }
                 });
 
                 this.canvas.current.addRegionsToAsset(regions);
