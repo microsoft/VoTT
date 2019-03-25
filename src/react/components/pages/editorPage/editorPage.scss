@@ -6,10 +6,11 @@
     display: flex;
     flex-direction: row;
     overflow: hidden;
+    position: relative;
 
     &-sidebar {
         display: flex;
-        min-width: 144px;
+        height: 100%;
 
         &-nav {
             width: 100%;
@@ -20,7 +21,6 @@
         flex-grow: 1;
         display: flex;
         flex-direction: column;
-        min-width: 290px;
 
         &-header {
             flex-basis: 50px;
@@ -53,6 +53,8 @@
 
     .asset-item {
         border-bottom: 1px solid $lighter-3;
+        padding: 0.5em;
+        border: solid 1px $lighter-2;
 
         &:hover {
             position: relative;
@@ -66,34 +68,13 @@
             font-weight: 600;
         }
 
-        &.visited::after, &.tagged::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
-
-        &.visited::after {
-            background-color: rgba(255,255,0,0.10);
-            border: 1px solid rgba(255,255,0,0.25);
-        }
-
-        &.tagged::after {
-            background-color: rgba(0,128,0, 0.10);
-            border: 1px solid rgba(0,128,0,0.25);
-        }
-
         &-image {
-            width: 125px;
-            height: 98px;
+            height: 125px;
             overflow: hidden;
             display: flex;
             background-color: $darker-6;
             text-align: center;
             position: relative;
-            padding: 12px 8px 12px 7px;
             margin: auto;
 
             &:hover {
@@ -109,19 +90,17 @@
         }
 
         &-metadata {
-            font-size: 60%;
+            display: flex;
+            flex-direction: row;
+            font-size: 70%;
+
+            white-space: nowrap;
 
             .asset-filename {
-                max-width: 70px;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                display: inline-block;
                 white-space: nowrap;
-                margin: 0 0 0 8px;
-            }
-
-            .float-right {
-                margin: 0 7px 0 0;   
+                flex-grow: 1;
             }
         }
     }
@@ -251,5 +230,76 @@ canvas {
 }
 
 .asset-error {
+    font-size: 85%;
+    font-weight: 500;
     margin: auto;
+}
+
+.badge-visited, .badge-tagged {
+    color: #fff;
+    position: absolute;
+    z-index: 2;
+    right: 0.5em;
+    top: 0.5em;
+    text-shadow: 0px 0px 4px #000
+}
+
+.badge-tagged {
+    background-color: rgba(green, 0.9);
+    border: 1px solid $lighter-2;
+}
+
+.badge-visited {
+    background-color: rgba(darkorange, 0.9);
+    border: 1px solid $lighter-3;
+}
+
+.Resizer {
+    background: #000;
+    opacity: .2;
+    z-index: 1;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-background-clip: padding;
+    -webkit-background-clip: padding;
+    background-clip: padding-box;
+}
+
+ .Resizer:hover {
+    -webkit-transition: all 2s ease;
+    transition: all 2s ease;
+}
+
+ .Resizer.horizontal {
+    height: 11px;
+    margin: -5px 0;
+    border-top: 5px solid rgba(255, 255, 255, 0);
+    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    cursor: row-resize;
+    width: 100%;
+}
+
+.Resizer.horizontal:hover {
+    border-top: 5px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 5px solid rgba(0, 0, 0, 0.5);
+}
+
+.Resizer.vertical {
+    width: 11px;
+    margin: 0 -5px;
+    border-left: 5px solid rgba(255, 255, 255, 0);
+    border-right: 5px solid rgba(255, 255, 255, 0);
+    cursor: col-resize;
+}
+
+.Resizer.vertical:hover {
+    border-left: 5px solid rgba(0, 0, 0, 0.5);
+    border-right: 5px solid rgba(0, 0, 0, 0.5);
+}
+.Resizer.disabled {
+  cursor: not-allowed;
+}
+.Resizer.disabled:hover {
+  border-color: transparent;
 }

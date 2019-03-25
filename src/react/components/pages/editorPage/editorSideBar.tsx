@@ -58,7 +58,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                             height={height}
                             width={width}
                             rowCount={this.props.assets.length}
-                            rowHeight={122}
+                            rowHeight={155}
                             rowRenderer={this.rowRenderer}
                             overscanRowCount={2}
                             scrollToIndex={this.state.scrollToIndex}
@@ -104,18 +104,30 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                 className={this.getAssetCssClassNames(asset, selectedAsset)}
                 onClick={() => this.onAssetClicked(asset)}>
                 <div className="asset-item-image">
+                    {this.renderBadges(asset)}
                     <AssetPreview asset={asset} />
                 </div>
                 <div className="asset-item-metadata">
                     <span className="asset-filename" title={asset.name}>{asset.name}</span>
                     {asset.size &&
-                        <span className="float-right">
+                        <span>
                             {asset.size.width} x {asset.size.height}
                         </span>
                     }
                 </div>
             </div>
         );
+    }
+
+    private renderBadges(asset: IAsset) {
+        switch (asset.state) {
+            case AssetState.Tagged:
+                return (<span title="Tagged" className="badge badge-tagged"><i className="fas fa-tag"></i></span>);
+            case AssetState.Visited:
+                return (<span title="Visited" className="badge badge-visited"><i className="fas fa-eye"></i></span>);
+            default:
+                return null;
+        }
     }
 
     private getAssetCssClassNames(asset: IAsset, selectedAsset: IAsset = null): string {

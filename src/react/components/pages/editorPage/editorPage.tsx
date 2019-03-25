@@ -25,6 +25,7 @@ import { tagColors } from "../../../../common/tagColors";
 import { ToolbarItemName } from "../../../../registerToolbar";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import { strings } from "../../../../common/strings";
+import SplitPane from "react-split-pane";
 
 /**
  * Properties for Editor Page
@@ -142,49 +143,51 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         icon={"fa-tag"}
                         handler={this.handleTagHotKey} />);
                 })}
-                <div className="editor-page-sidebar bg-lighter-1">
-                    <EditorSideBar
-                        assets={rootAssets}
-                        selectedAsset={selectedAsset ? selectedAsset.asset : null}
-                        onAssetSelected={this.selectAsset}
-                    />
-                </div>
-                <div className="editor-page-content">
-                    <div className="editor-page-content-header">
-                        <EditorToolbar project={this.props.project}
-                            items={this.toolbarItems}
-                            actions={this.props.actions}
-                            onToolbarItemSelected={this.onToolbarItemSelected} />
-                    </div>
-                    <div className="editor-page-content-body">
-                        {selectedAsset &&
-                            <Canvas
-                                ref={this.canvas}
-                                selectedAsset={this.state.selectedAsset}
-                                onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                editorMode={this.state.editorMode}
-                                selectionMode={this.state.selectionMode}
-                                project={this.props.project}
-                                lockedTags={this.state.lockedTags}>
-                                <AssetPreview
-                                    additionalSettings={this.state.additionalSettings}
-                                    autoPlay={true}
-                                    onChildAssetSelected={this.onChildAssetSelected}
-                                    asset={this.state.selectedAsset.asset}
-                                    childAssets={this.state.childAssets} />
-                            </Canvas>
-                        }
-                    </div>
-                    <div>
-                        <EditorFooter
-                            tags={this.props.project.tags}
-                            lockedTags={this.state.lockedTags}
-                            onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked}
-                            onCtrlTagClicked={this.onCtrlTagClicked}
+                <SplitPane split="vertical" defaultSize={175} minSize={100} maxSize={300}>
+                    <div className="editor-page-sidebar bg-lighter-1">
+                        <EditorSideBar
+                            assets={rootAssets}
+                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                            onAssetSelected={this.selectAsset}
                         />
                     </div>
-                </div>
+                    <div className="editor-page-content">
+                        <div className="editor-page-content-header">
+                            <EditorToolbar project={this.props.project}
+                                items={this.toolbarItems}
+                                actions={this.props.actions}
+                                onToolbarItemSelected={this.onToolbarItemSelected} />
+                        </div>
+                        <div className="editor-page-content-body">
+                            {selectedAsset &&
+                                <Canvas
+                                    ref={this.canvas}
+                                    selectedAsset={this.state.selectedAsset}
+                                    onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                    editorMode={this.state.editorMode}
+                                    selectionMode={this.state.selectionMode}
+                                    project={this.props.project}
+                                    lockedTags={this.state.lockedTags}>
+                                    <AssetPreview
+                                        additionalSettings={this.state.additionalSettings}
+                                        autoPlay={true}
+                                        onChildAssetSelected={this.onChildAssetSelected}
+                                        asset={this.state.selectedAsset.asset}
+                                        childAssets={this.state.childAssets} />
+                                </Canvas>
+                            }
+                        </div>
+                        <div>
+                            <EditorFooter
+                                tags={this.props.project.tags}
+                                lockedTags={this.state.lockedTags}
+                                onTagsChanged={this.onFooterChange}
+                                onTagClicked={this.onTagClicked}
+                                onCtrlTagClicked={this.onCtrlTagClicked}
+                            />
+                        </div>
+                    </div>
+                </SplitPane>
             </div>
         );
     }
@@ -400,7 +403,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         assetTags.forEach((tag) => {
             if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
+                !this.props.project.tags.find((projectTag) => tag === projectTag.name)) {
                 const tagKeys = Object.keys(tagColors);
                 newTags.push({
                     name: tag,
@@ -412,7 +415,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         if (updateTags) {
             asset.asset.state = AssetState.Tagged;
-            const newProject = {...this.props.project, tags: newTags};
+            const newProject = { ...this.props.project, tags: newTags };
             await this.props.actions.saveAssetMetadata(newProject, asset);
             await this.props.actions.saveProject(newProject);
         }
