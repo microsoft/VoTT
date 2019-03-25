@@ -20,6 +20,6 @@ rm -rf ${REPORT_DIR}
 mkdir -p ${REPORT_DIR}
 
 #NOTE: be sure to set AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY environment variables
-az storage blob download-batch -d report -s '$web' > /tmp/download.log
+az storage blob download-batch --no-progress -d report -s '$web' > /tmp/download.log
 
 ${BASEDIR}/generate-report.sh -o ${REPORT_DIR} -v ${VERSION} -c ${COMMIT_SHA}
