@@ -8,7 +8,7 @@ import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState, ISize,
+    EditorMode, IAsset, AssetState, AssetType, ISize,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -383,37 +383,6 @@ describe("Editor Page Component", () => {
 
             const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === videoAsset.id);
             expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
-        });
-    });
-
-    describe("Editing TFRecord Assets", () => {
-        let wrapper: ReactWrapper;
-        let tfRecordAsset: IAsset;
-
-        beforeEach(async () => {
-            const testProject = MockFactory.createTestProject("TestProject");
-            tfRecordAsset = MockFactory.createTestAsset("TestRecord");
-            // videoFrames = MockFactory.createChildVideoAssets(videoAsset);
-            const projectAssets = [tfRecordAsset]; // [videoAsset].concat(videoFrames);
-            testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
-
-            const store = createStore(testProject, true);
-            const props = MockFactory.editorPageProps(testProject.id);
-
-            wrapper = createComponent(store, props);
-
-            await MockFactory.flushUi();
-            wrapper.update();
-        });
-
-        it("Child assets are not included within editor page state", () => {
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
-
-            expect(editorPage.state().assets.length).toEqual(1);
-            // expect(editorPage.state().selectedAsset.asset).toEqual({
-            //     ...tfRecordAsset,
-            //     state: AssetState.Visited,
-            // });
         });
     });
 
