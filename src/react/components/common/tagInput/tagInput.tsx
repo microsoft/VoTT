@@ -1,8 +1,8 @@
 import React from "react";
 import { strings } from "../../../../common/strings";
 import { ITag, IRegion } from "../../../../models/applicationState";
-import CondensedList from "../condensedList/condensedList";
 import "./tagInput.scss";
+
 import TagInputItem, { ITagInputItemProps } from "./tagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
 import TagInputToolbar from "./tagInputToolbar";
@@ -26,76 +26,82 @@ export interface ITagInputProps {
     onTagClick?: (tag: ITag) => void;
     /** Function to call on clicking individual tag while holding CTRL key */
     onCtrlTagClick?: (tag: ITag) => void;
+    /** Function to call when tag is renamed */
+    onTagRenamed?: (oldTag: string, newTag: string) => void;
+    /** Function to call when tag is deleted */
+    onTagDeleted?: (tag: ITag) => void;
+    /** Always show tag input box */
+    showTagInputBox?: boolean;
+    /** Always show tag search box */
+    showSearchBox?: boolean;
 }
 
 export interface ITagInputState {
     tags: ITag[];
     addTags: boolean;
     searchTags: boolean;
+    searchQuery: string;
     selectedTag: ITag;
     editingTag: ITag;
 }
 
 export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
-    public state = {
+    public state: ITagInputState = {
         tags: this.props.tags || [],
         addTags: false,
         searchTags: false,
+        searchQuery: "",
         selectedTag: null,
         editingTag: null,
     };
 
-    private textInput: any;
-
     public render() {
         return (
-            <div className="vertical-tag-input">
-                <CondensedList
-                    title={strings.tags.title}
-                    Component={TagInputItem}
-                    hideEmptyMessage={true}
-                    Toolbar={<TagInputToolbar
+            <div className="tag-input condensed-list">
+                <h6 className="condensed-list-header p-2">
+                    <span className="condensed-list-title">Tags</span>
+                    <TagInputToolbar
                         selectedTag={this.state.selectedTag}
-                        onAddTags={this.onAddTags}
-                        onSearchTags={this.onSearchTags}
+                        onAddTags={() => this.setState({addTags: !this.state.addTags})}
+                        onSearchTags={() => this.setState({
+                            searchTags: !this.state.searchTags,
+                            searchQuery: "",
+                        })}
                         onEditTag={this.onEditTag}
                         onLockTag={this.onLockTag}
                         onDelete={this.deleteTag}
-                        onReorder={this.onReOrder}/>}
-                    search={this.state.searchTags ? this.search : null}
-                    items={this.getTagListItems()}
-                    onDelete={(item) => this.deleteTag(item.tag)}
-                />
-                {
-                    this.state.addTags && 
-                    <input
-                        className="tag-input-box"
-                        type="text"
-                        onKeyPress={this.handleKeyPress}
-                        placeholder="Add new tag"
-                        autoFocus={true}
+                        onReorder={this.onReOrder}
                     />
-                }
+                </h6>
+                <div className="condensed-list-body">
+                    {
+                        this.state.searchTags &&
+                        <div className="search-input">
+                            <input 
+                                type="text"
+                                onChange={(e) => this.setState({searchQuery: e.target.value})}
+                                placeholder="Search tags"
+                                autoFocus={true}
+                            />
+                        </div>
+                    }
+                    <div className="tag-input-items">
+                        {this.getTagItems()}
+                    </div>
+                    {
+                        this.state.addTags &&
+                        <input
+                            className="tag-input-box"
+                            type="text"
+                            onKeyDown={this.handleKeyDown}
+                            placeholder="Add new tag"
+                            autoFocus={true}
+                        />
+                    }
+                </div>                
             </div>
         );
-    }
-
-    private search = (item: ITagInputItemProps, query: string): boolean => {
-        const result = item.tag.name.includes(query);
-        return result;
-    }
-
-    private onAddTags = () => {
-        this.setState({
-            addTags: !this.state.addTags,
-        });
-    }
-
-    private onSearchTags = () => {        
-        this.setState({
-            searchTags: !this.state.searchTags,
-        });
     }
 
     private onEditTag = (tag: ITag) => {
@@ -127,7 +133,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }
         const tags = [...this.state.tags];
         const currentIndex = tags.indexOf(tag);
-        let newIndex = currentIndex + displacement;
+        const newIndex = currentIndex + displacement;
         if (newIndex < 0 || newIndex >= tags.length) {
             return;
         }
@@ -142,7 +148,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (oldTag === newTag) {
             return;
         }
-        if (newTag.name !== oldTag.name && this.state.tags.some((t) => t.name === newTag.name)){
+        if (newTag.name !== oldTag.name && this.state.tags.some((t) => t.name === newTag.name)) {
             return;
         }
         const tags = this.state.tags.map((t) => {
@@ -157,7 +163,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         });
     }
 
-    private getTagListItems = (): ITagInputItemProps[] => {
+    private getTagItems = () => {
+        let props = this.getTagItemProps();
+        const query = this.state.searchQuery;
+        if (query.length) {
+            props = props.filter((prop) => prop.tag.name.includes(query))
+        }
+        return props.map((prop) => <TagInputItem {...prop}/>)
+    }
+
+    private getTagItemProps = (): ITagInputItemProps[] => {
         const tags = this.state.tags;
         const selectedRegionTagSet = this.getSelectedRegionTagSet();
         return tags.map((tag) => {
@@ -187,10 +202,10 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         return result;
     }
 
-    private handleClick = (e, tag: ITag) => {
-        if (e.ctrlKey && this.props.onCtrlTagClick) {
+    private handleClick = (tag: ITag, ctrlKey, altKey) => {
+        if (ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
-        } else if (e.altKey) {
+        } else if (altKey) {
             // Open edit mode
             this.setState({
                 editingTag: tag,
@@ -234,7 +249,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         return (tags.length) ? tags[Math.min(tags.length - 1, previouIndex)] : null;
     }
 
-    private handleKeyPress = (event) => {
+    private handleKeyDown = (event) => {
         if (event.key === "Enter") {
             // validate and add
             const newTag: ITag = {

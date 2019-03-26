@@ -8,7 +8,7 @@ const tagColors = require("../tagColors.json");
 
 import { GithubPicker } from "react-color";
 
-describe("Vertical Tag Input Component", () => {
+describe("Tag Input Component", () => {
 
     function createComponent(props?: ITagInputProps):
             ReactWrapper<ITagInputProps, ITagInputState> {
@@ -29,28 +29,106 @@ describe("Vertical Tag Input Component", () => {
     it("Renders correctly", () => {
         const tags = MockFactory.createTestTags();
         const wrapper = createComponent(createProps(tags));
-        expect(wrapper.exists(".tag-input-box")).toBe(true);
         expect(wrapper.exists(".tag-input-toolbar")).toBe(true);
         expect(wrapper.find(".tag-item-block").length).toBe(tags.length);
     });
 
     it("Adds a tag", () => {
-        const tags = MockFactory.createTestTags();
-        const onChange = jest.fn();
-        const props = createProps(tags, onChange);
+        const props: ITagInputProps = {
+            ...createProps(),
+            showTagInputBox: true,
+        };
         const wrapper = createComponent(props);
         const newTagName = "New Tag";
-        wrapper.find(".tag-input-box").simulate("keypress", {key: "Enter", target: {value: newTagName}});
-        expect(onChange).toBeCalled();
+        wrapper.find(".tag-input-box").simulate("keydown", {key: "Enter", target: {value: newTagName}});
+        expect(props.onChange).toBeCalled();
+    });
+
+    describe("Toolbar", () => {
+        it("Tag input box can be shown on click of toolbar button", () => {
+            const wrapper = createComponent();
+            expect(wrapper.exists(".tag-input-box")).toBe(false);
+            expect(wrapper.state().addTags).toBe(false);
+            wrapper.find("div.tag-input-toolbar-item.plus").simulate("click");
+            expect(wrapper.exists(".tag-input-box")).toBe(true);
+            expect(wrapper.state().addTags).toBe(true);
+        });
+
+        it("Tag search box can be shown on click of search button", () => {
+            const wrapper = createComponent();
+            expect(wrapper.exists(".search-box")).toBe(false);
+            expect(wrapper.state().searchTags).toBe(false);
+            wrapper.find("div.tag-input-toolbar-item.search").simulate("click");
+            expect(wrapper.exists(".search-box")).toBe(true);
+            expect(wrapper.state().searchTags).toBe(true);
+        });
+
+        it("Tag can be locked from toolbar", () => {
+            const tags = MockFactory.createTestTags();
+            const props = createProps(tags);
+            const wrapper = createComponent(props);
+            wrapper.find("div.tag-name-container").first().simulate("click");
+            wrapper.find("div.tag-input-toolbar-item.lock").simulate("click");
+            expect(props.onLockedTagsChange).toBeCalledWith([tags[0].name]);
+        });
+
+        it("Tag can be edited from toolbar", () => {
+            const tags = MockFactory.createTestTags();
+            const props = createProps(tags);
+            const wrapper = createComponent(props);
+            wrapper.find("div.tag-name-container").first().simulate("click");
+            wrapper.find("div.tag-input-toolbar-item.edit").simulate("click");
+            expect(wrapper.state().editingTag).toEqual(tags[0]);
+            expect(wrapper.exists("input.tag-name-editor")).toBe(true);
+        });
+
+        it("Tag can be moved up from toolbar", () => {
+            const tags = MockFactory.createTestTags();
+            const lastTag = tags[tags.length - 1];
+            const secondToLastTag = tags[tags.length - 2];
+            const props = createProps(tags);
+            const wrapper = createComponent(props);
+            wrapper.find("div.tag-name-container").last().simulate("click");
+            wrapper.find("div.tag-input-toolbar-item.up").simulate("click");
+            const stateTags = wrapper.state().tags;
+            expect(stateTags[stateTags.length - 2]).toEqual(lastTag);
+            expect(stateTags[stateTags.length - 1]).toEqual(secondToLastTag);
+        });
+
+        it("Tag can be moved down from toolbar", () => {
+            const tags = MockFactory.createTestTags();
+            const firstTag = tags[0];
+            const secondTag = tags[1];
+            const props = createProps(tags);
+            const wrapper = createComponent(props);
+            wrapper.find("div.tag-name-container").first().simulate("click");
+            wrapper.find("div.tag-input-toolbar-item.down").simulate("click");
+            const stateTags = wrapper.state().tags;
+            expect(stateTags[1]).toEqual(firstTag);
+            expect(stateTags[0]).toEqual(secondTag);
+        });
+
+        it("Tag can be deleted from toolbar", () => {
+            const tags = MockFactory.createTestTags();
+            const firstTag = tags[0];
+            const props = createProps(tags);
+            const wrapper = createComponent(props);
+            wrapper.find("div.tag-name-container").first().simulate("click");
+            wrapper.find("div.tag-input-toolbar-item.delete").simulate("click");
+            const stateTags = wrapper.state().tags;
+            expect(stateTags.length).toEqual(tags.length - 1);
+            expect(stateTags[0]).not.toEqual(firstTag);
+        });
     });
 
     it("Does not try to add empty tag", () => {
-        const tags = MockFactory.createTestTags();
-        const onChange = jest.fn();
-        const props = createProps(tags, onChange);
+        const props: ITagInputProps = {
+            ...createProps(),
+            showTagInputBox: true,
+        };
         const wrapper = createComponent(props);
-        wrapper.find(".tag-input-box").simulate("keypress", {key: "Enter", target: {value: ""}});
-        expect(onChange).not.toBeCalled();
+        wrapper.find(".tag-input-box").simulate("keydown", {key: "Enter", target: {value: ""}});
+        expect(props.onChange).not.toBeCalled();
     });
 
     it("Selects a tag", () => {
@@ -103,7 +181,7 @@ describe("Vertical Tag Input Component", () => {
         const firstTag = tags[0];
         wrapper.find(".tag-content").first().simulate("click");
         wrapper.find("i.tag-input-toolbar-icon.fas.fa-edit").simulate("click");
-        wrapper.find("input.tag-name-editor").simulate("keypress", {key: "Enter", target: {value: newTagName}});
+        wrapper.find("input.tag-name-editor").simulate("keydown", {key: "Enter", target: {value: newTagName}});
         const expectedTags = tags.map((t) => {
             return (t.name === firstTag.name) ? {
                 name: newTagName,

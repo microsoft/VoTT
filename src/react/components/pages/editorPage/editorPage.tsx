@@ -161,7 +161,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             onToolbarItemSelected={this.onToolbarItemSelected} />
                     </div>
                     <div className="editor-page-content-body">
-                        <div className="editor-page-canvas">
+                        <div className="editor-page-content-body-canvas">
                             {selectedAsset &&
                                 <Canvas
                                     ref={this.canvas}
@@ -190,19 +190,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onLockedTagsChange={this.onLockedTagsChanged}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
+                                onTagRenamed={this.onTagRenamed}
+                                onTagDeleted={this.onTagDeleted}
                             />
                         </div>
-
                     </div>
-                    {/* <div>
-                        <EditorFooter
-                            tags={this.props.project.tags}
-                            lockedTags={this.state.lockedTags}
-                            onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked}
-                            onCtrlTagClicked={this.onCtrlTagClicked}
-                        />
-                    </div> */}
                 </div>
             </div>
         );
@@ -225,6 +217,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedTag: tag.name,
             lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
         }, () => this.canvas.current.applyTag(tag.name));
+    }
+
+    private onTagRenamed = (oldTag: string, newTag: string) => {
+
+    }
+
+
+    private onTagDeleted = (tag: ITag) => {
+        const { assets } = this.props.project;
+        
     }
 
     /**

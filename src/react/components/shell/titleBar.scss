@@ -183,6 +183,7 @@
   &-submenu {
     &-popup {
       position: absolute;
+      z-index: 1;
       background-color: #272B30;
       border: 1px solid $darker-1;
       box-shadow: 0px 2px 10px $darker-5;
