@@ -6,10 +6,11 @@ import { bindActionCreators } from "redux";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
     AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag, AssetType,
+    IAssetMetadata, IProject, ITag, AssetType, ISize, IAppSettings,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import Canvas from "./canvas";
 import EditorFooter from "./editorFooter";
 import "./editorPage.scss";
@@ -36,7 +37,9 @@ import SplitPane from "react-split-pane";
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
     recentProjects: IProject[];
+    appSettings: IAppSettings;
     actions: IProjectActions;
+    applicationActions: IApplicationActions;
 }
 
 /**
@@ -61,18 +64,21 @@ export interface IEditorPageState {
     selectedTag: string;
     /** Tags locked for region labeling */
     lockedTags: string[];
+    thumbnailSize: ISize;
 }
 
 function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
         project: state.currentProject,
+        appSettings: state.appSettings,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        applicationActions: bindActionCreators(applicationActions, dispatch),
     };
 }
 
@@ -91,6 +97,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         childAssets: [],
         editorMode: EditorMode.Rectangle,
         additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+        thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
     };
 
     private loadingProjectAssets: boolean = false;
@@ -143,12 +150,19 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         icon={"fa-tag"}
                         handler={this.handleTagHotKey} />);
                 })}
-                <SplitPane split="vertical" defaultSize={175} minSize={100} maxSize={300}>
+                <SplitPane split="vertical"
+                    defaultSize={this.state.thumbnailSize.width}
+                    minSize={100}
+                    maxSize={400}
+                    paneStyle={{ display: "flex" }}
+                    onChange={this.onSideBarResize}
+                    onDragFinished={this.onSideBarResizeComplete}>
                     <div className="editor-page-sidebar bg-lighter-1">
                         <EditorSideBar
                             assets={rootAssets}
                             selectedAsset={selectedAsset ? selectedAsset.asset : null}
                             onAssetSelected={this.selectAsset}
+                            thumbnailSize={this.state.thumbnailSize}
                         />
                     </div>
                     <div className="editor-page-content">
@@ -190,6 +204,31 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </SplitPane>
             </div>
         );
+    }
+
+    /**
+     * Called when the asset side bar is resized
+     * @param newWidth The new sidebar width
+     */
+    private onSideBarResize = (newWidth: number) => {
+        this.setState({
+            thumbnailSize: {
+                width: newWidth,
+                height: (newWidth / (4 / 3)) + 16,
+            },
+        }, () => this.canvas.current.forceResize());
+    }
+
+    /**
+     * Called when the asset sidebar has been completed
+     */
+    private onSideBarResizeComplete = () => {
+        const appSettings = {
+            ...this.props.appSettings,
+            thumbnailSize: this.state.thumbnailSize,
+        };
+
+        this.props.applicationActions.saveAppSettings(appSettings);
     }
 
     /**

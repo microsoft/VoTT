@@ -10,7 +10,7 @@
 
     &-sidebar {
         display: flex;
-        height: 100%;
+        flex-grow: 1;
 
         &-nav {
             width: 100%;
@@ -52,6 +52,8 @@
     }
 
     .asset-item {
+        display: flex;
+        flex-direction: column;
         border-bottom: 1px solid $lighter-3;
         padding: 0.5em;
         border: solid 1px $lighter-2;
@@ -69,13 +71,14 @@
         }
 
         &-image {
-            height: 125px;
+            flex-grow: 1;
             overflow: hidden;
             display: flex;
             background-color: $darker-6;
             text-align: center;
             position: relative;
             margin: auto;
+            width: 100%;
 
             &:hover {
                 &::after {

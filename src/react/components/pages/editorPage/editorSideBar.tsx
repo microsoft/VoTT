@@ -1,6 +1,6 @@
 import React from "react";
 import { AutoSizer, List } from "react-virtualized";
-import { IAsset, AssetState } from "../../../../models/applicationState";
+import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 
 /**
@@ -13,6 +13,7 @@ export interface IEditorSideBarProps {
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
     selectedAsset?: IAsset;
+    thumbnailSize?: ISize;
 }
 
 /**
@@ -28,7 +29,7 @@ export interface IEditorSideBarState {
  * @description - Side bar for editor page
  */
 export default class EditorSideBar extends React.Component<IEditorSideBarProps, IEditorSideBarState> {
-    private listRef: React.RefObject<List>;
+    private listRef: React.RefObject<List> = React.createRef();
 
     constructor(props, context) {
         super(props, context);
@@ -44,7 +45,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
         this.rowRenderer = this.rowRenderer.bind(this);
         this.onAssetClicked = this.onAssetClicked.bind(this);
-        this.listRef = React.createRef<List>();
+        this.getRowHeight = this.getRowHeight.bind(this);
     }
 
     public render() {
@@ -58,7 +59,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                             height={height}
                             width={width}
                             rowCount={this.props.assets.length}
-                            rowHeight={155}
+                            rowHeight={() => this.getRowHeight(width)}
                             rowRenderer={this.rowRenderer}
                             overscanRowCount={2}
                             scrollToIndex={this.state.scrollToIndex}
@@ -70,6 +71,10 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     }
 
     public componentDidUpdate(prevProps: IEditorSideBarProps) {
+        if (prevProps.thumbnailSize !== this.props.thumbnailSize) {
+            this.listRef.current.recomputeRowHeights();
+        }
+
         if (!prevProps.selectedAsset && !this.props.selectedAsset) {
             return;
         }
@@ -78,6 +83,10 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             prevProps.selectedAsset.id !== this.props.selectedAsset.id) {
             this.selectAsset(this.props.selectedAsset);
         }
+    }
+
+    private getRowHeight = (width: number) => {
+        return width / (4 / 3) + 16;
     }
 
     private selectAsset(selectedAsset: IAsset) {
