@@ -29,24 +29,13 @@ export interface IEditorSideBarState {
  * @description - Side bar for editor page
  */
 export default class EditorSideBar extends React.Component<IEditorSideBarProps, IEditorSideBarState> {
+    public state: IEditorSideBarState = {
+        scrollToIndex: this.props.selectedAsset
+            ? this.props.assets.findIndex((asset) => asset.id === this.props.selectedAsset.id)
+            : 0,
+    };
+
     private listRef: React.RefObject<List> = React.createRef();
-
-    constructor(props, context) {
-        super(props, context);
-
-        const selectedAsset = this.props.selectedAsset;
-        const scrollToIndex = selectedAsset
-            ? this.props.assets.findIndex((asset) => asset.id === selectedAsset.id)
-            : 0;
-
-        this.state = {
-            scrollToIndex,
-        };
-
-        this.rowRenderer = this.rowRenderer.bind(this);
-        this.onAssetClicked = this.onAssetClicked.bind(this);
-        this.getRowHeight = this.getRowHeight.bind(this);
-    }
 
     public render() {
         return (
@@ -89,7 +78,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         return width / (4 / 3) + 16;
     }
 
-    private selectAsset(selectedAsset: IAsset) {
+    private selectAsset = (selectedAsset: IAsset): void => {
         const scrollToIndex = this.props.assets.findIndex((asset) => asset.id === selectedAsset.id);
 
         this.setState({
@@ -99,12 +88,12 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         });
     }
 
-    private onAssetClicked(asset: IAsset) {
+    private onAssetClicked = (asset: IAsset): void => {
         this.selectAsset(asset);
         this.props.onAssetSelected(asset);
     }
 
-    private rowRenderer({ key, index, style }) {
+    private rowRenderer = ({ key, index, style }): JSX.Element => {
         const asset = this.props.assets[index];
         const selectedAsset = this.props.selectedAsset;
 
@@ -128,7 +117,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         );
     }
 
-    private renderBadges(asset: IAsset) {
+    private renderBadges = (asset: IAsset): JSX.Element => {
         switch (asset.state) {
             case AssetState.Tagged:
                 return (<span title="Tagged" className="badge badge-tagged"><i className="fas fa-tag"></i></span>);
@@ -139,7 +128,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         }
     }
 
-    private getAssetCssClassNames(asset: IAsset, selectedAsset: IAsset = null): string {
+    private getAssetCssClassNames = (asset: IAsset, selectedAsset: IAsset = null): string => {
         const cssClasses = ["asset-item"];
         if (selectedAsset && selectedAsset.id === asset.id) {
             cssClasses.push("selected");
