@@ -36,11 +36,33 @@ describe("Tag Input Component", () => {
     it("Calls onClick handler when clicking color box", () => {
         const props: ITagInputProps = createProps();
         const wrapper = createComponent(props);
-        wrapper.find
+        wrapper.find(".tag-color").first().simulate("click");
+        expect(props.onTagClick).toBeCalledWith(props.tags[0]);
+        expect(props.onCtrlTagClick).not.toBeCalled();
     });
 
     it("Calls onClick handler when clicking text", () => {
+        const props: ITagInputProps = createProps();
+        const wrapper = createComponent(props);
+        wrapper.find(".tag-name-text").first().simulate("click");
+        expect(props.onTagClick).toBeCalledWith(props.tags[0]);
+        expect(props.onCtrlTagClick).not.toBeCalled();
+    });
 
+    it("Calls onCtrlClick handler when clicking color box", () => {
+        const props: ITagInputProps = createProps();
+        const wrapper = createComponent(props);
+        wrapper.find(".tag-color").first().simulate("click", {ctrlKey: true});
+        expect(props.onCtrlTagClick).toBeCalledWith(props.tags[0]);
+        expect(props.onTagClick).not.toBeCalled();
+    });
+
+    it("Calls onClick handler when clicking text", () => {
+        const props: ITagInputProps = createProps();
+        const wrapper = createComponent(props);
+        wrapper.find(".tag-name-text").first().simulate("click", {ctrlKey: true});
+        expect(props.onCtrlTagClick).toBeCalledWith(props.tags[0]);
+        expect(props.onTagClick).not.toBeCalled();
     });
 
     it("Adds a tag", () => {

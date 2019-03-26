@@ -263,7 +263,7 @@ describe("Editor Page Component", () => {
                 name: testProject.name,
                 tags: expect.arrayContaining([{
                     name: "NEWTAG",
-                    color: "#008000",
+                    color: expect.any(String),
                 }]),
             };
 
@@ -519,6 +519,25 @@ describe("Editor Page Component", () => {
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
         });
 
+        it("sets selected tag and locked tags when ctrl + hot key is pressed", async () => {
+            const project = MockFactory.createTestProject("test", 5);
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            expect(editorPage.state().selectedTag).toBeNull();
+
+            dispatchKeyEvent("Ctrl+1");
+
+            const firstTag = project.tags[0].name;
+            expect(editorPage.state().selectedTag).toEqual(firstTag);
+            expect(editorPage.state().lockedTags).toEqual([firstTag]);
+        });
+
         it("does not set selected tag when invalid hot key is pressed", async () => {
             const tagLength = 5;
             const project = MockFactory.createTestProject("test", tagLength);
@@ -560,8 +579,8 @@ describe("Editor Page Component", () => {
             expect(getState(wrapper).project.tags).toEqual(project.tags);
 
             const newTagName = "My new tag";
-            wrapper.find("input.ReactTags__tagInputField").simulate("change", { target: { value: newTagName } });
-            wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", { keyCode: 13 });
+            wrapper.find("div.tag-input-toolbar-item.plus").simulate("click");
+            wrapper.find(".tag-input-box").simulate("keydown", {key: "Enter", target: {value: newTagName}});
 
             const stateTags = getState(wrapper).project.tags;
 
@@ -569,17 +588,19 @@ describe("Editor Page Component", () => {
             expect(stateTags[stateTags.length - 1].name).toEqual(newTagName);
         });
 
-        it("remove a tag", () => {
-            const project = MockFactory.createTestProject();
+        it("Remove a tag", async () => {
+            const project = MockFactory.createTestProject("test", 5);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
             });
 
             const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
             expect(getState(wrapper).project.tags).toEqual(project.tags);
-            wrapper.find("a.ReactTags__remove")
-                .last().simulate("click");
+            wrapper.find(".tag-content").last().simulate("click");
+            wrapper.find("i.tag-input-toolbar-icon.fas.fa-trash").simulate("click");
 
             const stateTags = getState(wrapper).project.tags;
             expect(stateTags).toHaveLength(project.tags.length - 1);
@@ -596,7 +617,7 @@ describe("Editor Page Component", () => {
             await waitForSelectedAsset(wrapper);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             const newEditorPage = wrapper.find(EditorPage).childAt(0);
@@ -614,14 +635,14 @@ describe("Editor Page Component", () => {
             await waitForSelectedAsset(wrapper);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             let editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             editorPage = wrapper.find(EditorPage).childAt(0);
@@ -639,7 +660,7 @@ describe("Editor Page Component", () => {
             await waitForSelectedAsset(wrapper);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             let editorPage = wrapper.find(EditorPage).childAt(0);
@@ -647,7 +668,7 @@ describe("Editor Page Component", () => {
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .last()
                 .simulate("click", { target: { innerText: project.tags[0].name } });
             editorPage = wrapper.find(EditorPage).childAt(0);
