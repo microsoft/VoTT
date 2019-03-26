@@ -5,7 +5,7 @@ $tagInputWidth: 250px;
 .condensed-list-header {
     display: flex;
     flex-direction: row;
-    background: $darker-4;
+    background: $darker-2;
 }
 
 .condensed-list-title {
@@ -14,7 +14,7 @@ $tagInputWidth: 250px;
 
 .tag {
     &-input {
-        background: $darker-2;
+        background: $lighter-1;
         min-width: $tagInputWidth;
         
         &-text-input-row {

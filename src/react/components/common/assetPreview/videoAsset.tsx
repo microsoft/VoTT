@@ -77,7 +77,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 {autoPlay &&
                     <ControlBar autoHide={false}>
                         <CustomVideoPlayerButton order={1.1}
-                            accelerators={["ArrowLeft", "a", "A"]}
+                            accelerators={["ArrowLeft", "A", "a"]}
                             tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
                             onClick={this.movePreviousExpectedFrame}
                             icon={"fa-caret-left fa-lg"}
@@ -85,7 +85,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                             <i className="fas fa-caret-left fa-lg" />
                         </CustomVideoPlayerButton>
                         <CustomVideoPlayerButton order={1.2}
-                            accelerators={["ArrowRight", "d", "D"]}
+                            accelerators={["ArrowRight", "D", "d"]}
                             tooltip={strings.editorPage.videoPlayer.nextExpectedFrame.tooltip}
                             onClick={this.moveNextExpectedFrame}
                             icon={"fa-caret-right fa-lg"}
@@ -105,7 +105,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                             <i className="fas fa-step-backward"></i>
                         </CustomVideoPlayerButton>
                         <CustomVideoPlayerButton order={8.2}
-                            accelerators={["e", "E"]}
+                            accelerators={["E", "e"]}
                             tooltip={strings.editorPage.videoPlayer.nextTaggedFrame.tooltip}
                             onClick={this.moveNextTaggedFrame}
                             icon={"fa-step-forward"}
