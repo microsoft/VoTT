@@ -41,10 +41,10 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
 
     public render() {
         const style: any = {
-            background: this.props.tag.color
+            background: this.props.tag.color,
         };
         if (this.props.appliedToSelectedRegions) {
-            style.borderColor = this.props.tag.color
+            style.borderColor = this.props.tag.color;
         }
         return (
             <div className={"tag-item-block"}>

@@ -49,8 +49,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     public state: ITagInputState = {
         tags: this.props.tags || [],
-        addTags: false,
-        searchTags: false,
+        addTags: this.props.showTagInputBox,
+        searchTags: this.props.showSearchBox,
         searchQuery: "",
         selectedTag: null,
         editingTag: null,
@@ -77,8 +77,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 <div className="condensed-list-body">
                     {
                         this.state.searchTags &&
-                        <div className="search-input">
-                            <input 
+                        <div className="tag-input-text-input-row search-input">
+                            <input
                                 type="text"
                                 onChange={(e) => this.setState({searchQuery: e.target.value})}
                                 placeholder="Search tags"
@@ -91,15 +91,18 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                     </div>
                     {
                         this.state.addTags &&
-                        <input
-                            className="tag-input-box"
-                            type="text"
-                            onKeyDown={this.handleKeyDown}
-                            placeholder="Add new tag"
-                            autoFocus={true}
-                        />
+                        <div className="tag-input-text-input-row new-tag-input">
+                            <input
+                                className="tag-input-box"
+                                type="text"
+                                onKeyDown={this.handleKeyDown}
+                                placeholder="Add new tag"
+                                autoFocus={true}
+                            />
+                        </div>
+
                     }
-                </div>                
+                </div>
             </div>
         );
     }
@@ -167,9 +170,9 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         let props = this.getTagItemProps();
         const query = this.state.searchQuery;
         if (query.length) {
-            props = props.filter((prop) => prop.tag.name.includes(query))
+            props = props.filter((prop) => prop.tag.name.includes(query));
         }
-        return props.map((prop) => <TagInputItem {...prop}/>)
+        return props.map((prop) => <TagInputItem {...prop}/>);
     }
 
     private getTagItemProps = (): ITagInputItemProps[] => {

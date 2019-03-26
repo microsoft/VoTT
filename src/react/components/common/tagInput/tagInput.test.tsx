@@ -48,7 +48,7 @@ describe("Tag Input Component", () => {
         it("Tag input box can be shown on click of toolbar button", () => {
             const wrapper = createComponent();
             expect(wrapper.exists(".tag-input-box")).toBe(false);
-            expect(wrapper.state().addTags).toBe(false);
+            expect(wrapper.state().addTags).toBeFalsy();
             wrapper.find("div.tag-input-toolbar-item.plus").simulate("click");
             expect(wrapper.exists(".tag-input-box")).toBe(true);
             expect(wrapper.state().addTags).toBe(true);
@@ -56,10 +56,10 @@ describe("Tag Input Component", () => {
 
         it("Tag search box can be shown on click of search button", () => {
             const wrapper = createComponent();
-            expect(wrapper.exists(".search-box")).toBe(false);
-            expect(wrapper.state().searchTags).toBe(false);
+            expect(wrapper.exists(".search-input")).toBe(false);
+            expect(wrapper.state().searchTags).toBeFalsy();
             wrapper.find("div.tag-input-toolbar-item.search").simulate("click");
-            expect(wrapper.exists(".search-box")).toBe(true);
+            expect(wrapper.exists(".search-input")).toBe(true);
             expect(wrapper.state().searchTags).toBe(true);
         });
 
