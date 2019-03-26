@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eo pipefail
+set -eou pipefail
 
 # NOTE: this script should be ran from the root of the repository; the CWD should reflect this
 BASEDIR=$(dirname "$0")
