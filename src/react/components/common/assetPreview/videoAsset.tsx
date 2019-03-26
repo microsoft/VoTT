@@ -97,7 +97,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                         <PlaybackRateMenuButton rates={[5, 2, 1, 0.5, 0.25]} order={7.1} />
                         <VolumeMenuButton enabled order={7.2} />
                         <CustomVideoPlayerButton order={8.1}
-                            accelerators={["q", "Q"]}
+                            accelerators={["Q", "q"]}
                             tooltip={strings.editorPage.videoPlayer.previousTaggedFrame.tooltip}
                             onClick={this.movePreviousTaggedFrame}
                             icon={"fas fa-step-backward"}
