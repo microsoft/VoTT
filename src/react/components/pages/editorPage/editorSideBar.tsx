@@ -134,18 +134,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             cssClasses.push("selected");
         }
 
-        switch (asset.state) {
-            case AssetState.NotVisited:
-                cssClasses.push("not-visited");
-                break;
-            case AssetState.Visited:
-                cssClasses.push("visited");
-                break;
-            case AssetState.Tagged:
-                cssClasses.push("tagged");
-                break;
-        }
-
         return cssClasses.join(" ");
     }
 }
