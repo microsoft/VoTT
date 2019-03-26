@@ -17,7 +17,7 @@ export interface ITagInputItemProps {
     isLocked: boolean;
     isSelected: boolean;
     appliedToSelectedRegions: boolean;
-    onClick: (event, tag: ITag) => void;
+    onClick: (tag: ITag, ctrlKey: boolean, altKey: boolean) => void;
     onChange: (oldTag: ITag, newTag: ITag) => void;
 }
 
@@ -40,16 +40,17 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     };
 
     public render() {
-        const displayIndex = this.getDisplayIndex();
-
+        const style: any = {
+            background: this.props.tag.color
+        };
+        if (this.props.appliedToSelectedRegions) {
+            style.borderColor = this.props.tag.color
+        }
         return (
             <div className={"tag-item-block"}>
                 {
                     this.props.tag &&
-                    <li className={this.getItemClassName()} style={{
-                        borderColor: this.props.tag.color,
-                        background: this.props.tag.color,
-                    }}>
+                    <li className={this.getItemClassName()} style={style}>
                         <div
                             className={"tag-color"}
                             onClick={this.onColorClick}
@@ -61,52 +62,50 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                             {this.getTagContent()}
                         </div>
                         {
-                            this.state.isLocked && 
+                            this.state.isLocked &&
                             <div></div>
-                        }
-                        {
-                            (displayIndex !== null) &&
-                            <div className={"tag-index"}>
-                                [{displayIndex}]
-                            </div>
                         }
                     </li>
                 }
                 {
                     (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Color)
-                    ?
-                    this.getColorPicker()
-                    :
-                    ""
+                        ?
+                        this.getColorPicker()
+                        :
+                        ""
                 }
             </div>
         );
     }
 
-    public componentDidUpdate(prevProps: ITagInputItemProps){
+    public componentDidUpdate(prevProps: ITagInputItemProps) {
         if (prevProps.isBeingEdited !== this.props.isBeingEdited) {
             this.setState({
-                isBeingEdited: this.props.isBeingEdited
+                isBeingEdited: this.props.isBeingEdited,
             });
         }
 
         if (prevProps.isLocked !== this.props.isLocked) {
             this.setState({
-                isLocked: this.props.isLocked
+                isLocked: this.props.isLocked,
             });
         }
     }
 
     private onColorClick = (e) => {
+        const ctrlKey = e.ctrlKey;
+        const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Color,
-        }, () => this.props.onClick(e, this.props.tag));
+        }, () => this.props.onClick(this.props.tag, ctrlKey, altKey));
     }
 
     private onNameClick = (e) => {
+        const ctrlKey = e.ctrlKey;
+        const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Name,
-        }, () => this.props.onClick(e, this.props.tag));
+        }, () => this.props.onClick(this.props.tag, ctrlKey, altKey));
     }
 
     // private onColorDoubleClick = (e) => {
@@ -173,12 +172,19 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     }
 
     private getDefaultTagContent = () => {
+        const displayIndex = this.getDisplayIndex();
         return (
-            <div>
+            <div className={"tag-name-container"}>
                 <span className={this.getContentClassName()}>{this.props.tag.name}</span>
                 {
-                    (this.props.isLocked) ? <i className="fas fa-lock tag-lock-icon"></i> : ""
+                    this.props.isLocked &&
+                    <div className="tag-lock-icon">
+                        <i className="fas fa-lock" />
+                    </div>
                 }
+                <div className={"tag-index"}>
+                    {(displayIndex !== null) && <span>[{displayIndex}]</span>}
+                </div>
             </div>
         );
     }
@@ -190,10 +196,9 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                 ...this.props.tag,
                 name: newTagName,
             });
-        }
-        else if (e.key === "Escape") {
+        } else if (e.key === "Escape") {
             this.setState({
-                isBeingEdited: false
+                isBeingEdited: false,
             });
         }
     }
@@ -206,7 +211,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     }
 
     private getContentClassName = () => {
-        let className = "tag-name px-2";
+        let className = "tag-name-text px-2";
         if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Color) {
             className += " tag-color-edit";
         }

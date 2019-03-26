@@ -17,6 +17,11 @@
         }
     }
 
+    &-right-sidebar {
+        display: flex;
+        margin-left: auto;
+    }
+
     &-content {
         flex-grow: 1;
         display: flex;
@@ -27,15 +32,17 @@
         }
 
         &-body {
-            position: relative;
             display: flex;
             flex-grow: 1;
-            background-color: $darker-5;
-            flex-direction: column;
-        }
+            flex-direction: row;
 
-        &-footer {
-            flex-basis: 100px;
+            &-canvas {
+                position: relative;
+                display: flex;
+                flex-grow: 1;
+                background-color: $darker-5;
+                flex-direction: row;
+            }
         }
 
         .video-react {

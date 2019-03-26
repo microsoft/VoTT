@@ -1,12 +1,11 @@
 @import "../../../../index.scss";
 
-.vertical-tag-input {
-    background: $darker-4;
-}
+$tagInputWidth: 250px;
 
 .condensed-list-header {
     display: flex;
     flex-direction: row;
+    background: $darker-4;
 }
 
 .condensed-list-title {
@@ -14,6 +13,11 @@
 }
 
 .tag {
+    &-input {
+        background: $darker-2;
+        min-width: $tagInputWidth;
+    }
+
     &-item-block {
         padding: 1px 0;
     }
@@ -22,10 +26,8 @@
         display: flex;
         flex-direction: row;
 
-        &-applied {
-            border: solid;
-            border-width: 1px;
-        }
+        border: 1px solid $darker-12;
+        border-left: none;
 
         &-selected {
             font-weight: bolder;
@@ -38,14 +40,32 @@
         background: $darker-15;
     }
 
+    &-content:hover {
+        background: $darker-10;
+    }
+
     &-name {
-        text-overflow: ellipsis;
+
+        &-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        &-text {
+            text-overflow: ellipsis;
+            flex-grow: 1;
+        }
+    }
+
+    &-input-box {
+        min-width: $tagInputWidth;
     }
 
     &-index {
-        background: $darker-15;
+        flex-basis: 30px;
         padding: 0 5px;
         font-weight: bold;
+
     }
 
     &-item:hover {
@@ -59,11 +79,11 @@
     }
 
     &-color {
-        width: 18px;
+        width: 10px;
     }
 
     &-lock-icon {
-        margin-left: 5px
+        margin-left: 5px;
     }
 
     &-input-toolbar {
@@ -72,11 +92,18 @@
 
         &-item {
             color: #ccc;
+            padding: 1px;
         }
 
         &-item:hover {
             color: white;
             cursor: pointer;
         }
+    }
+}
+
+.search-input {
+    input {
+        min-width: $tagInputWidth;
     }
 }

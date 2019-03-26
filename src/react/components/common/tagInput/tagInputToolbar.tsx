@@ -16,25 +16,25 @@ export default class TagInputToolbar extends React.Component<ITagInputToolbarPro
     public render() {
         return (
             <div className="tag-input-toolbar">
-                <div className="tag-input-toolbar-item" onClick={this.handleAdd}>
-                    <i className="tag-input-toolbar-icon fas fa-plus" />
+                <div className="tag-input-toolbar-item plus" onClick={this.handleAdd}>
+                    <i className="tag-input-toolbar-icon fas fa-plus-circle" />
                 </div>
-                <div className="tag-input-toolbar-item" onClick={this.handleSearch}>
+                <div className="tag-input-toolbar-item search" onClick={this.handleSearch}>
                     <i className="tag-input-toolbar-icon fas fa-search" />
                 </div>
-                <div className="tag-input-toolbar-item" onClick={this.handleLock}>
+                <div className="tag-input-toolbar-item lock" onClick={this.handleLock}>
                     <i className="tag-input-toolbar-icon fas fa-lock" />
                 </div>
-                <div className="tag-input-toolbar-item" onClick={this.handleEdit}>
+                <div className="tag-input-toolbar-item edit" onClick={this.handleEdit}>
                     <i className="tag-input-toolbar-icon fas fa-edit"/>
                 </div>
-                <div className="tag-input-toolbar-item" onClick={this.handleArrowUp}>
+                <div className="tag-input-toolbar-item up" onClick={this.handleArrowUp}>
                     <i className="tag-input-toolbar-icon fas fa-arrow-circle-up"/>
                 </div>
-                <div className="tag-input-toolbar-item" onClick={this.handleArrowDown}>
+                <div className="tag-input-toolbar-item down" onClick={this.handleArrowDown}>
                     <i className="tag-input-toolbar-icon fas fa-arrow-circle-down"/>
                 </div>
-                <div className="tag-input-toolbar-item" onClick={this.handleDelete}>
+                <div className="tag-input-toolbar-item delete" onClick={this.handleDelete}>
                     <i className="tag-input-toolbar-icon fas fa-trash"/>
                 </div>
             </div>

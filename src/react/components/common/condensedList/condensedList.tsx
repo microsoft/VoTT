@@ -33,9 +33,9 @@ interface ICondensedListState {
  */
 export default class CondensedList extends React.Component<ICondensedListProps> {
 
-    state = {
+    public state = {
         searchQuery: "",
-    }
+    };
 
     public render() {
         const { title, items, newLinkTo, Component, Toolbar, hideEmptyMessage, search } = this.props;
@@ -73,11 +73,11 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
                     }
                     {(items && items.length > 0) &&
                         <ul className="condensed-list-items">
-                            {((this.state.searchQuery === "") ? 
+                            {((this.state.searchQuery === "") ?
                                 items
                                 :
                                 items.filter((item) => this.props.search(item, this.state.searchQuery)))
-                                    .map((item) => 
+                                    .map((item) =>
                                         <Component key={item.id}
                                             onClick={(e) => this.onItemClick(e, item)}
                                             onDelete={(e) => this.onItemDelete(e, item)}
@@ -92,7 +92,7 @@ export default class CondensedList extends React.Component<ICondensedListProps> 
 
     private handleSearch = (event) => {
         this.setState({
-            searchQuery: event.target.value
+            searchQuery: event.target.value,
         });
     }
 
