@@ -20,7 +20,8 @@ export class CustomVideoPlayerButton extends React.Component<ICustomVideoPlayerB
                     <KeyboardBinding keyEventType={KeyEventType.KeyDown}
                         displayName={this.props.tooltip}
                         accelerators={this.props.accelerators}
-                        handler={this.props.onClick} />
+                        handler={this.props.onClick} 
+                        icon={this.props.icon}/>
                 }
                 <button
                     type="button"
