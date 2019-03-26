@@ -1,6 +1,6 @@
 {
     "source": 2,
-    "revision": 6,
+    "revision": 7,
     "description": "copy artifact to azure blob hosting plato report for VoTT",
     "createdBy": {
         "displayName": "My Ho 🥓🥐🍚",
@@ -29,7 +29,7 @@
         "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
         "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
     },
-    "modifiedOn": "2019-03-26T18:29:56.527Z",
+    "modifiedOn": "2019-03-26T19:04:10.900Z",
     "isDeleted": false,
     "variables": {
         "STORAGE_ACCOUNT": {
@@ -285,7 +285,26 @@
     "triggers": [
         {
             "artifactAlias": "_VoTT - Generate latest plato report",
-            "triggerConditions": [],
+            "triggerConditions": [
+                {
+                    "sourceBranch": "v2",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                },
+                {
+                    "sourceBranch": "dev*",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                },
+                {
+                    "sourceBranch": "master",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                }
+            ],
             "triggerType": 1
         }
     ],
