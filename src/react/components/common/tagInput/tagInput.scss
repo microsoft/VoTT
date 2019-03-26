@@ -16,6 +16,14 @@ $tagInputWidth: 250px;
     &-input {
         background: $darker-2;
         min-width: $tagInputWidth;
+        
+        &-text-input-row {
+            padding: 2px 0;
+
+            input {
+                min-width: $tagInputWidth;
+            }
+        }
     }
 
     &-item-block {
@@ -55,10 +63,6 @@ $tagInputWidth: 250px;
             text-overflow: ellipsis;
             flex-grow: 1;
         }
-    }
-
-    &-input-box {
-        min-width: $tagInputWidth;
     }
 
     &-index {
@@ -102,8 +106,3 @@ $tagInputWidth: 250px;
     }
 }
 
-.search-input {
-    input {
-        min-width: $tagInputWidth;
-    }
-}

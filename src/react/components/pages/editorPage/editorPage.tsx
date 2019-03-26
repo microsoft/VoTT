@@ -220,13 +220,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onTagRenamed = (oldTag: string, newTag: string) => {
-
+        const { assets } = this.props.project;
     }
-
 
     private onTagDeleted = (tag: ITag) => {
         const { assets } = this.props.project;
-        
     }
 
     /**
