@@ -214,7 +214,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             thumbnailSize: {
                 width: newWidth,
-                height: (newWidth / (4 / 3)) + 16,
+                height: newWidth / (4 / 3),
             },
         }, () => this.canvas.current.forceResize());
     }
