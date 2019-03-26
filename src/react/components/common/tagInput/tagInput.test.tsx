@@ -33,6 +33,16 @@ describe("Tag Input Component", () => {
         expect(wrapper.find(".tag-item-block").length).toBe(tags.length);
     });
 
+    it("Calls onClick handler when clicking color box", () => {
+        const props: ITagInputProps = createProps();
+        const wrapper = createComponent(props);
+        wrapper.find
+    });
+
+    it("Calls onClick handler when clicking text", () => {
+
+    });
+
     it("Adds a tag", () => {
         const props: ITagInputProps = {
             ...createProps(),
