@@ -209,7 +209,8 @@ export interface IAppStrings {
         assetError: string;
         tags: {
             hotKey: {
-                help: string;
+                apply: string;
+                lock: string;
             },
         }
         canvas: {

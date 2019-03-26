@@ -139,12 +139,21 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
                     return (<KeyboardBinding
-                        displayName={strings.editorPage.tags.hotKey.help}
+                        displayName={strings.editorPage.tags.hotKey.apply}
                         key={index}
                         keyEventType={KeyEventType.KeyDown}
                         accelerators={[`${index}`]}
                         icon={"fa-tag"}
                         handler={this.handleTagHotKey} />);
+                })}
+                {[...Array(10).keys()].map((index) => {
+                    return (<KeyboardBinding
+                        displayName={strings.editorPage.tags.hotKey.lock}
+                        key={index}
+                        keyEventType={KeyEventType.KeyDown}
+                        accelerators={[`Ctrl+${index}`]}
+                        icon={"fa-lock"}
+                        handler={this.handleCtrlTagHotKey} />);
                 })}
                 <div className="editor-page-sidebar bg-lighter-1">
                     <EditorSideBar
@@ -227,14 +236,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const { assets } = this.props.project;
     }
 
-    /**
-     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
-     * @param event KeyDown event
-     */
-    private handleTagHotKey = (event: KeyboardEvent): void => {
-        const key = parseInt(event.key, 10);
+    private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
+        let key = parseInt(event.key, 10);
         if (isNaN(key)) {
-            return;
+            try {
+                key = parseInt(event.key.split("+")[1], 10);
+            } catch (e) {
+                return;
+            }
         }
         let index: number;
         const tags = this.props.project.tags;
@@ -244,7 +253,26 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             index = key - 1;
         }
         if (index < tags.length) {
-            this.onTagClicked(tags[index]);
+            return tags[index];
+        }
+        return null;
+    }
+
+    /**
+     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
+     * @param event KeyDown event
+     */
+    private handleTagHotKey = (event: KeyboardEvent): void => {
+        const tag = this.getTagFromKeyboardEvent(event);
+        if (tag) {
+            this.onTagClicked(tag);
+        }
+    }
+
+    private handleCtrlTagHotKey = (event: KeyboardEvent): void => {
+        const tag = this.getTagFromKeyboardEvent(event);
+        if (tag) {
+            this.onCtrlTagClicked(tag);
         }
     }
 
@@ -431,7 +459,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assetTags.forEach((tag) => {
             if (!this.props.project.tags || this.props.project.tags.length === 0 ||
                 !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
-                const tagKeys = Object.keys(tagColors);
                 newTags.push({
                     name: tag,
                     color: tagColors[newTags.length % tagColors.length],
