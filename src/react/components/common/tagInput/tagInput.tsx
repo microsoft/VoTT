@@ -38,6 +38,7 @@ export interface ITagInputProps {
 
 export interface ITagInputState {
     tags: ITag[];
+    showColorPicker: boolean;
     clickedColor: boolean;
     addTags: boolean;
     searchTags: boolean;
@@ -50,6 +51,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     public state: ITagInputState = {
         tags: this.props.tags || [],
+        showColorPicker: false,
         clickedColor: false,
         addTags: this.props.showTagInputBox,
         searchTags: this.props.showSearchBox,
@@ -102,7 +104,10 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                                 autoFocus={true}
                             />
                         </div>
-
+                    }
+                    {
+                        this.state.showColorPicker &&
+                        this.getColorPicker()
                     }
                 </div>
             </div>
@@ -116,6 +121,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         const editingTag = this.state.editingTag;
         this.setState({
             editingTag: (editingTag && editingTag.name === tag.name) ? null : tag,
+            showColorPicker: !this.state.showColorPicker && this.state.clickedColor,
         });
     }
 
@@ -271,6 +277,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 // toast that tells them to pick another name
             }
         }
+    }
+
+    private getColorPicker = () => {
+        return (
+            <div>Color Picker</div>
+        )
     }
 
     private getNextColor = () => {
