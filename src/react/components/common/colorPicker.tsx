@@ -20,13 +20,12 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
                 position: "absolute",
                 top: `${top}px`,
                 left: `${left}px`,
-                zIndex: 1,
+                zIndex: 100,
             }}>
                 <GithubPicker
                     color={{hex: this.props.color}}
                     onChangeComplete={(color) => this.props.onEditColor(color.hex)}
                     colors={this.props.colors}
-                    triangle={"top-right"}
                     width={this.props.width}
                     styles={{
                         default: {
@@ -38,6 +37,7 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
                             }
                         }
                     }}
+                    triangle={"top-right"}
                 />
             </div>
         );
