@@ -2,7 +2,7 @@ import React from "react";
 import { strings } from "../../../../common/strings";
 import { ITag, IRegion } from "../../../../models/applicationState";
 import "./tagInput.scss";
-
+import { GithubPicker } from "react-color";
 import TagInputItem, { ITagInputItemProps, TagEditMode } from "./tagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
 import TagInputToolbar from "./tagInputToolbar";
@@ -20,12 +20,18 @@ export interface ITagInputProps {
     lockedTags?: string[];
     /** Updates to locked tags */
     onLockedTagsChange?: (locked: string[]) => void;
+    /** Indicates whether color picker is currently visible */
+    colorPickerShown?: boolean;
+    /** Function to call to show color picker */
+    showColorPicker?: (showColorPicker: boolean) => void;
     /** Place holder for input text box */
     placeHolder?: string;
     /** Function to call on clicking individual tag */
     onTagClick?: (tag: ITag) => void;
     /** Function to call on clicking individual tag while holding CTRL key */
     onCtrlTagClick?: (tag: ITag) => void;
+    /** Function to call on clicking individual tag while holding Alt key */
+    onAltTagClick?: (tag: ITag) => void;
     /** Function to call when tag is renamed */
     onTagRenamed?: (oldTag: string, newTag: string) => void;
     /** Function to call when tag is deleted */
@@ -38,7 +44,6 @@ export interface ITagInputProps {
 
 export interface ITagInputState {
     tags: ITag[];
-    showColorPicker: boolean;
     clickedColor: boolean;
     addTags: boolean;
     searchTags: boolean;
@@ -51,7 +56,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     public state: ITagInputState = {
         tags: this.props.tags || [],
-        showColorPicker: false,
         clickedColor: false,
         addTags: this.props.showTagInputBox,
         searchTags: this.props.showSearchBox,
@@ -90,6 +94,10 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                             />
                         </div>
                     }
+                    {/* {
+                        this.state.showColorPicker &&
+                        this.getColorPicker()
+                    } */}
                     <div className="tag-input-items">
                         {this.getTagItems()}
                     </div>
@@ -105,24 +113,29 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                             />
                         </div>
                     }
-                    {
-                        this.state.showColorPicker &&
-                        this.getColorPicker()
-                    }
                 </div>
             </div>
         );
     }
 
+    public componentDidUpdate(prevProps: ITagInputProps) {
+        if (prevProps.tags !== this.props.tags) {
+            this.setState({
+                tags: this.props.tags,
+            })
+        }
+    }
+
     private onEditTag = (tag: ITag) => {
+        debugger;
         if (!tag) {
             return;
         }
         const editingTag = this.state.editingTag;
         this.setState({
             editingTag: (editingTag && editingTag.name === tag.name) ? null : tag,
-            showColorPicker: !this.state.showColorPicker && this.state.clickedColor,
-        });
+        }, () => this.props.showColorPicker(!this.props.colorPickerShown && this.state.clickedColor));
+        
     }
 
     private onLockTag = (tag: ITag) => {
@@ -224,10 +237,14 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 selectedTag: null,
                 clickedColor,
             });
+            if (clickedColor) {
+                this.props.showColorPicker(!this.props.colorPickerShown);
+            }
+            if (this.props.onAltTagClick) {
+                this.props.onAltTagClick(tag);
+            }
         } else {
-            const editingTag = this.state.editingTag;
-            const selectedTag = this.state.selectedTag;
-
+            const { editingTag, selectedTag } = this.state;
             const inEditMode = editingTag && tag && tag.name === editingTag.name;
 
             this.setState({
@@ -277,12 +294,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 // toast that tells them to pick another name
             }
         }
-    }
-
-    private getColorPicker = () => {
-        return (
-            <div>Color Picker</div>
-        )
     }
 
     private getNextColor = () => {
