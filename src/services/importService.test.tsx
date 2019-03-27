@@ -77,30 +77,26 @@ describe("Import Service", () => {
     });
 
     // Following test won't work if creating parent asset doesn't work
-    // it("generates assetMetadata given a v1 Video Project FileInfo and an assetService", async () => {
-    //     const readAssetAttributesMock = HtmlFileReader.readAssetAttributes as jest.Mock;
-    //     HtmlFileReader.readAssetAttributes = readAssetAttributesMock
-    //         .mockImplementationOnce((asset: IAsset) => {
-    //             return Promise.resolve({ width: 820, height: 460, duration: 5.8 });
-    //         });
-    //     const arrayOfBlob = new Array<Blob>();
-    //     const file = new File(arrayOfBlob, "TestV1VideoProject.mp4", { type: "application/json" });
-    //     file.path = "/Users/user/path/to/TestV1VideoProject.mp4";
-    //     const project = MockFactory.createTestV1VideoProject();
-    //     const content = JSON.stringify(project);
-    //     const fileInfo = {
-    //         content,
-    //         file,
-    //     };
-    //     const v2Project = await importService.convertProject({file, content});
-    //     const result = await importService.generateAssets(fileInfo, v2Project);
+    it("generates assetMetadata given a v1 Video Project FileInfo and an assetService", async () => {
+        const arrayOfBlob = new Array<Blob>();
+        const file = new File(arrayOfBlob, "TestV1VideoProject.mp4.json", { type: "application/json" });
+        file.path = "/Users/user/path/to/TestV1VideoProject.mp4.json";
+        const project = MockFactory.createTestV1VideoProject();
+        const content = JSON.stringify(project);
+        const fileInfo = {
+            content,
+            file,
+        };
+        const parent = MockFactory.createTestAsset();
+        const v2Project = await importService.convertProject({file, content});
+        const result = await importService.generateAssets(fileInfo, v2Project, parent);
 
-    //     expect(result[0].asset.name).toEqual("TestV1VideoProject.mp4#t=0");
-    //     expect(result[0].asset.state).toEqual(AssetState.Tagged);
-    //     expect(result[0].regions).toHaveLength(3);
-    //     expect(result[2].asset.state).toEqual(AssetState.NotVisited);
-    //     expect(result[0].regions[0].id).toEqual("0");
-    // });
+        expect(result[0].asset.name).toEqual("TestV1VideoProject.mp4#t=0");
+        expect(result[0].asset.state).toEqual(AssetState.Tagged);
+        expect(result[0].regions).toHaveLength(3);
+        expect(result[2].asset.state).toEqual(AssetState.NotVisited);
+        expect(result[0].regions[0].id).toEqual("0");
+    });
 
     it("generates a parent asset given a v1 Video Project FileInfo", async () => {
         const readAssetAttributesMock = HtmlFileReader.readAssetAttributes as jest.Mock;

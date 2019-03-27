@@ -301,7 +301,7 @@ export default class MockFactory {
     public static createTestV1VideoProject(frameCount: number = 10): IV1Project {
         const frames: { [frameName: string]: IV1Region[]; } = {};
         for (let i = 0; i < frameCount; i++) {
-            const name = `${i}`;
+            const name = `${i + 1}`;
             frames[name] = MockFactory.createTestV1Regions();
         }
 
