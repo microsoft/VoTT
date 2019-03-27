@@ -18,7 +18,7 @@ interface ITagInputToolbarItemProps {
     className: string;
     icon: string;
     handler: () => void;
-    accelerators?: string[]
+    accelerators?: string[];
 }
 
 export default class TagInputToolbar extends React.Component<ITagInputToolbarProps> {
