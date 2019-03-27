@@ -1,4 +1,5 @@
 import _ from "lodash";
+import ReactDOM from "react-dom";
 import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
@@ -26,6 +27,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSet
 import { strings } from "../../../../common/strings";
 import SplitPane from "react-split-pane";
 import { TagInput } from "../../common/tagInput/tagInput";
+import { ColorPicker } from "../../common/colorPicker";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -65,11 +67,13 @@ export interface IEditorPageState {
     /** Additional settings for asset previews */
     additionalSettings?: IAssetPreviewSettings;
     /** Most recently selected tag */
-    selectedTag: string;
+    selectedTag: ITag;
     /** Tags locked for region labeling */
     lockedTags: string[];
     /** Size of the asset thumbnails to display in the side bar */
     thumbnailSize: ISize;
+    /** Show color picker for editing tags */
+    showColorPicker: boolean;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -93,9 +97,13 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
+    
+    private tagInput: TagInput;
+    
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
+        showColorPicker: false,
         lockedTags: [],
         selectionMode: SelectionMode.RECT,
         assets: [],
@@ -207,15 +215,28 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     </Canvas>
                                 }
                             </div>
+                        <div className="editor-page-color-picker">
+                            <ColorPicker
+                                show={this.state.showColorPicker}
+                                coordinates={this.getColorPickerCoordinates()}
+                                colors={tagColors}
+                                color={this.state.selectedTag ? this.state.selectedTag.color : null}
+                                onEditColor={this.onTagColorChange}
+                            />
+                        </div>
                             <div className="editor-page-right-sidebar">
                                 <TagInput
+                                ref={(tagInput) => this.tagInput = tagInput}
                                     tags={this.props.project.tags}
                                     lockedTags={this.state.lockedTags}
+                                colorPickerShown={this.state.showColorPicker}
+                                showColorPicker={this.showColorPicker}
                                     selectedRegions={this.state.selectedRegions}
                                     onChange={this.onTagsChanged}
                                     onLockedTagsChange={this.onLockedTagsChanged}
                                     onTagClick={this.onTagClicked}
                                     onCtrlTagClick={this.onCtrlTagClicked}
+                                onAltTagClick={this.onAltTagClicked}
                                     onTagRenamed={this.onTagRenamed}
                                     onTagDeleted={this.onTagDeleted}
                                 />
@@ -258,7 +279,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private onTagClicked = (tag: ITag): void => {
         this.setState({
-            selectedTag: tag.name,
+            selectedTag: tag,
             lockedTags: [],
         }, () => this.canvas.current.applyTag(tag.name));
     }
@@ -266,13 +287,43 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onCtrlTagClicked = (tag: ITag): void => {
         const locked = this.state.lockedTags;
         this.setState({
-            selectedTag: tag.name,
+            selectedTag: tag,
             lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
         }, () => this.canvas.current.applyTag(tag.name));
     }
 
+    private onAltTagClicked = (tag: ITag): void => {
+        this.setState({selectedTag: tag});
+    }
+
     private onTagRenamed = (oldTag: string, newTag: string) => {
         const { assets } = this.props.project;
+    }
+
+    private getColorPickerCoordinates = () => {
+        if (this.tagInput) {
+            const node = (ReactDOM.findDOMNode(this.tagInput) as Element);
+            if (node) {
+                const rect = node.getBoundingClientRect();
+                return {
+                    top: rect.top + 50,
+                    left: rect.left - 50,
+                }
+            }
+        }
+        return {
+            top: 0,
+            left: 0,
+        }
+    }
+
+    private onTagColorChange = (color: string) => {
+        const { selectedTag } = this.state;
+        const tags = this.props.project.tags.map((t) => {
+            return (t.name === selectedTag.name) ? { ...t, color } : t;
+        });
+        this.onTagsChanged(tags);
+        this.setState({showColorPicker: false})
     }
 
     private onTagDeleted = (tag: ITag) => {
@@ -407,6 +458,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onLockedTagsChanged = (lockedTags: string[]) => {
         this.setState({ lockedTags });
+    }
+
+    private showColorPicker = (showColorPicker: boolean) => {
+        this.setState({showColorPicker})
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {

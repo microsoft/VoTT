@@ -1,6 +1,5 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
-import { GithubPicker } from "react-color";
 import { constants } from "../../../../common/constants";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../tagColors.json");
@@ -67,13 +66,6 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                         }
                     </li>
                 }
-                {
-                    (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Color)
-                        ?
-                        this.getColorPicker()
-                        :
-                        ""
-                }
             </div>
         );
     }
@@ -119,23 +111,6 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         return classNames.join(" ");
     }
 
-    private getColorPicker = () => {
-        return (
-            <div className="tag-color-picker">
-                <GithubPicker
-                    color={this.props.tag.color}
-                    onChangeComplete={(color) => this.handleColorEdit(color)}
-                    colors={tagColors}
-                    width={165}
-                    styles={{
-                        card: {
-                            background: "#000",
-                        },
-                    }}
-                />
-            </div>
-        );
-    }
 
     private getTagContent = () => {
         if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name) {
