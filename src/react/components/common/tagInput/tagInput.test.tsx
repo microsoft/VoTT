@@ -226,27 +226,6 @@ describe("Tag Input Component", () => {
         expect(onChange).toBeCalledWith(expectedTags);
     });
 
-    it("Edits a tag color", () => {
-        const tags = MockFactory.createTestTags();
-        const onChange = jest.fn();
-        const props = createProps(tags, onChange);
-        const wrapper = createComponent(props);
-        const firstTag = tags[0];
-        wrapper.find(".tag-color").first().simulate("click");
-        wrapper.find("i.tag-input-toolbar-icon.fas.fa-edit").simulate("click");
-        const colorPicker = wrapper.find(GithubPicker);
-        const color = {hex: tagColors[3]};
-        (colorPicker.prop("onChangeComplete") as any)(color);
-        const expectedTags = tags.map((t) => {
-            return (t.name === firstTag.name) ? {
-                name: firstTag.name,
-                color: color.hex,
-            } : t;
-        });
-        expect(wrapper.state().tags).toEqual(expectedTags);
-        expect(onChange).toBeCalledWith(expectedTags);
-    });
-
     it("Reorders a tag", () => {
         const tags = MockFactory.createTestTags();
         const onChange = jest.fn();

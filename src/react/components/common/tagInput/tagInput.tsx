@@ -226,7 +226,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getColorPicker = () => {
-        return ReactDOM.createPortal(
+        return this.props.containerRef && ReactDOM.createPortal(
             <ColorPicker
                 color={this.state.editingTag && this.state.editingTag.color}
                 colors={tagColors}
