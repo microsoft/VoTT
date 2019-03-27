@@ -89,9 +89,7 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
-    
-    private tagInput: TagInput;
-    
+        
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
@@ -198,30 +196,15 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 </Canvas>
                             }
                         </div>
-                        <div className="editor-page-color-picker">
-                            <ColorPicker
-                                show={this.state.showColorPicker}
-                                coordinates={this.getColorPickerCoordinates()}
-                                colors={tagColors}
-                                color={this.state.selectedTag ? this.state.selectedTag.color : null}
-                                onEditColor={this.onTagColorChange}
-                            />
-                        </div>
                         <div className="editor-page-right-sidebar">
                             <TagInput
-                                ref={(tagInput) => this.tagInput = tagInput}
                                 tags={this.props.project.tags}
                                 lockedTags={this.state.lockedTags}
-                                colorPickerShown={this.state.showColorPicker}
-                                showColorPicker={this.showColorPicker}
                                 selectedRegions={this.state.selectedRegions}
                                 onChange={this.onTagsChanged}
                                 onLockedTagsChange={this.onLockedTagsChanged}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
-                                onAltTagClick={this.onAltTagClicked}
-                                onTagRenamed={this.onTagRenamed}
-                                onTagDeleted={this.onTagDeleted}
                             />
                         </div>
                     </div>
@@ -255,32 +238,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onTagRenamed = (oldTag: string, newTag: string) => {
         const { assets } = this.props.project;
-    }
-
-    private getColorPickerCoordinates = () => {
-        if (this.tagInput) {
-            const node = (ReactDOM.findDOMNode(this.tagInput) as Element);
-            if (node) {
-                const rect = node.getBoundingClientRect();
-                return {
-                    top: rect.top + 50,
-                    left: rect.left - 50,
-                }
-            }
-        }
-        return {
-            top: 0,
-            left: 0,
-        }
-    }
-
-    private onTagColorChange = (color: string) => {
-        const { selectedTag } = this.state;
-        const tags = this.props.project.tags.map((t) => {
-            return (t.name === selectedTag.name) ? { ...t, color } : t;
-        });
-        this.onTagsChanged(tags);
-        this.setState({showColorPicker: false})
     }
 
     private onTagDeleted = (tag: ITag) => {
