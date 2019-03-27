@@ -295,6 +295,28 @@ export default class MockFactory {
     }
 
     /**
+     * Creates fake IV1Project
+     * @param name Name of project.
+     */
+    public static createTestV1VideoProject(frameCount: number = 10): IV1Project {
+        const frames: { [frameName: string]: IV1Region[]; } = {};
+        for (let i = 0; i < frameCount; i++) {
+            const name = `${i}`;
+            frames[name] = MockFactory.createTestV1Regions();
+        }
+
+        return {
+            frames,
+            framerate: "1",
+            inputTags: "testTag1,testTag2",
+            suggestiontype: "suggestiontype",
+            scd: true,
+            visitedFrames: [1, 2],
+            tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
+        };
+    }
+
+    /**
      * Creates fake IV1Region
      */
     public static createTestV1Regions(count: number = 3): IV1Region[] {

@@ -204,7 +204,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
             throw new Error(`Error importing project information - ${e.message}`);
         }
         if (project.lastVisitedAssetId !== undefined) {
-            project.lastVisitedAssetId == generatedAssetMetadata[generatedAssetMetadata.length - 1].asset.id;
+            project.lastVisitedAssetId = generatedAssetMetadata[generatedAssetMetadata.length - 1].asset.id;
         }
 
         // const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };

@@ -19,6 +19,7 @@ export interface IV1Project {
     scd: boolean;
     visitedFrames: any[];
     tag_colors: string[];
+    lastVistedAssetId?: string;
 }
 
 /**

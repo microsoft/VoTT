@@ -1,12 +1,13 @@
 import shortid from "shortid";
 import MD5 from "md5.js";
 import { IProject, ITag, IConnection, AppError, ErrorCode, IPoint,
-        IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo, IAsset, AssetType } from "../models/applicationState";
+        IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo,
+        IAsset, AssetType } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import packageJson from "../../package.json";
 import { AssetService } from "./assetService";
 import IProjectActions from "../redux/actions/projectActions";
-import HtmlFileReader from "../common/htmlFileReader"
+import HtmlFileReader from "../common/htmlFileReader";
 
 /**
  * Functions required for an import service
@@ -65,7 +66,7 @@ export default class ImportService implements IImportService {
             autoSave: true,
         };
 
-        if (originalProject.visitedFrames.every(item => typeof item === "number")) {
+        if (originalProject.visitedFrames.every((item) => typeof item === "number")) {
             // then this is a video project
             convertedProject.lastVisitedAssetId = "dummyId";
         }
@@ -91,11 +92,10 @@ export default class ImportService implements IImportService {
                 const frameRegions = originalProject.frames[frameName];
                 let asset: IAsset;
                 // if video:
-                // if (originalProject.visitedFrames.every(item => typeof item === "number")) {
-                if (parent !== null) {
+                if (originalProject.visitedFrames.every((item) => typeof item === "number") && parent !== null) {
                     isVideo = true;
                     const frameInt = Number(frameName);
-                    const timestamp = frameInt/Number(originalProject.framerate) - 1;
+                    const timestamp = frameInt / Number(originalProject.framerate) - 1;
                     const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
                     asset = AssetService.createAssetFromFilePath(
                         `file:${pathToUse}#t=${timestamp}`);
@@ -137,12 +137,12 @@ export default class ImportService implements IImportService {
         // parentAsset = AssetService.createAssetFromFilePath(v1Project.file.path);
         parentAsset = {
             format: "mp4",
-            id: new MD5().update(v1Project.file.path.replace(/\.[^/.]+$/,"")).digest("hex"),
+            id: new MD5().update(v1Project.file.path.replace(/\.[^/.]+$/, "")).digest("hex"),
             name: v1Project.file.path.replace(/\.[^/.]+$/, "").replace(/^.*[\\\/]/, ""),
-            path: `file:${v1Project.file.path.replace(/\.[^/.]+$/,"")}`,
+            path: `file:${v1Project.file.path.replace(/\.[^/.]+$/, "")}`,
             size: {
                 width: 854,
-                height: 480
+                height: 480,
             },
             state: 1,
             type: AssetType.Video,
