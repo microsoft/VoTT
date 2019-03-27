@@ -172,6 +172,8 @@ export const spanish: IAppStrings = {
     editorPage: {
         width: "Anchura",
         height: "Altura",
+        tagged: "Etiquetado",
+        visited: "Visitado",
         toolbar: {
             select: "Seleccionar",
             pan: "Pan",
