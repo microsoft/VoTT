@@ -84,6 +84,7 @@ export interface IProviderOptions {
 export interface IAppSettings {
     devToolsEnabled: boolean;
     securityTokens: ISecurityToken[];
+    thumbnailSize?: ISize;
 }
 
 /**

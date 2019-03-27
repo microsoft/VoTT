@@ -206,8 +206,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         const tagCoords = this.getTagCoordinates();
         return tagCoords ?
             {
-                top: tagCoords.top + 28,
-                left: tagCoords.left - this.colorPickerWidth + 23,
+                top: tagCoords.top - 10,
+                left: tagCoords.left - this.colorPickerWidth - 22,
             } : {top: 0, left: 0};
     }
 
@@ -226,16 +226,22 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getColorPicker = () => {
-        return this.props.containerRef && ReactDOM.createPortal(
-            <ColorPicker
-                color={this.state.editingTag && this.state.editingTag.color}
-                colors={tagColors}
-                onEditColor={this.handleColorChange}
-                show={this.state.showColorPicker}
-                coordinates={this.getColorPickerCoordinates()}
-                width={this.colorPickerWidth}
-            />
-        , (ReactDOM.findDOMNode(this.props.containerRef) as Element));
+        return (
+            <div>
+                {
+                    this.props.containerRef && ReactDOM.createPortal(
+                        <ColorPicker
+                            color={this.state.editingTag && this.state.editingTag.color}
+                            colors={tagColors}
+                            onEditColor={this.handleColorChange}
+                            show={this.state.showColorPicker}
+                            coordinates={this.getColorPickerCoordinates()}
+                            width={this.colorPickerWidth}
+                        />
+                    , (ReactDOM.findDOMNode(this.props.containerRef) as Element))
+                }
+            </div>
+        );
     }
 
     private getTagItems = () => {

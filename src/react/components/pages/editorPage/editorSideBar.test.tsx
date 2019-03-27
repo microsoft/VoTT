@@ -105,4 +105,28 @@ describe("Editor SideBar", () => {
         expect(wrapper.props().selectedAsset).toEqual(secondUpdate);
         expect(state.scrollToIndex).toEqual(3);
     });
+
+    it("Updates row sizes when thumbnail size is changed", () => {
+        const props: IEditorSideBarProps = {
+            assets: testAssets,
+            onAssetSelected: onSelectAssetHandler,
+            thumbnailSize: {
+                width: 175,
+                height: 155,
+            },
+        };
+
+        const wrapper = createComponent(props);
+        const list = wrapper.find(List).instance() as List;
+        const recomputeRowHeightsSpy = jest.spyOn(list, "recomputeRowHeights");
+
+        wrapper.setProps({
+            thumbnailSize: {
+                width: 300,
+                height: 200,
+            },
+        });
+
+        expect(recomputeRowHeightsSpy).toBeCalled();
+    });
 });

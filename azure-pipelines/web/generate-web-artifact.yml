@@ -1,0 +1,35 @@
+trigger:
+  branches:
+    include:
+      - dev*
+      - v2
+pr: none # disable CI build for PR
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+  - task: NodeTool@0
+    displayName: 'Use Node 10.x'
+    inputs:
+      versionSpec: 10.x
+
+  - task: Npm@1
+    displayName: 'npm ci'
+    inputs:
+      command: custom
+      workingDir: .
+      verbose: false
+      customCommand: ci
+
+  - task: Bash@3
+    displayName: 'Create artifact'
+    inputs:
+      targetType: filePath
+      filePath: './scripts/generate-web-artifact.sh'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: build'
+    inputs:
+      PathtoPublish: ./build
+      ArtifactName: build

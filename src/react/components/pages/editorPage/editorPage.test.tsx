@@ -8,7 +8,7 @@ import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState,
+    EditorMode, IAsset, AssetState, ISize,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -26,8 +26,9 @@ jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 import Canvas from "./canvas";
 import { appInfo } from "../../../../common/appInfo";
+import SplitPane from "react-split-pane";
 
-function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
+function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(
         <Provider store={store}>
             <KeyboardManager>
@@ -65,7 +66,7 @@ describe("Editor Page Component", () => {
             ...new RegionsManager(null, null),
             getSelectedRegionsBounds: jest.fn(() => MockFactory.createTestRegions()),
         };
-        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
+        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
     });
 
     beforeEach(() => {
@@ -668,10 +669,69 @@ describe("Editor Page Component", () => {
             wrapper.update();
             wrapper.find("span.tag-name-text")
                 .last()
-                .simulate("click", { target: { innerText: project.tags[0].name }});
+                .simulate("click", { target: { innerText: project.tags[0].name } });
             editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().selectedTag).toEqual(project.tags[project.tags.length - 1].name);
             expect(editorPage.state().lockedTags).toEqual([]);
+        });
+    });
+
+    describe("Resizing editor page", () => {
+        let wrapper: ReactWrapper;
+        const defaultThumbnailSize: ISize = {
+            width: 400,
+            height: 300,
+        };
+
+        beforeEach(async () => {
+            const project = MockFactory.createTestProject();
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+                appSettings: {
+                    ...MockFactory.appSettings(),
+                    thumbnailSize: defaultThumbnailSize,
+                },
+            });
+
+            wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+            wrapper.update();
+        });
+
+        it("loads default thumbnail size from app settings", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().thumbnailSize).toEqual(defaultThumbnailSize);
+        });
+
+        it("resizes child components", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            const canvas = editorPage.find(Canvas).instance() as Canvas;
+            const resizeSpy = jest.spyOn(canvas, "forceResize");
+            const newThumbnailWidth = 300;
+            wrapper.find(SplitPane).props().onChange(newThumbnailWidth);
+
+            expect(resizeSpy).toBeCalled();
+            expect(editorPage.state().thumbnailSize).toEqual({
+                width: newThumbnailWidth,
+                height: newThumbnailWidth / (4 / 3),
+            });
+        });
+
+        it("Saves thumbnail size to app settings", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const saveSettingsSpy = jest.spyOn(editorPage.props().applicationActions, "saveAppSettings");
+            const newThumbnailWidth = 300;
+
+            wrapper.find(SplitPane).props().onChange(newThumbnailWidth);
+            wrapper.find(SplitPane).props().onDragFinished(newThumbnailWidth);
+
+            expect(saveSettingsSpy).toBeCalledWith(expect.objectContaining({
+                thumbnailSize: {
+                    width: newThumbnailWidth,
+                    height: newThumbnailWidth / (4 / 3),
+                },
+            }));
         });
     });
 });

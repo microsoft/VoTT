@@ -171,6 +171,8 @@ export const english: IAppStrings = {
     editorPage: {
         width: "Width",
         height: "Height",
+        tagged: "Tagged",
+        visited: "Visited",
         toolbar: {
             select: "Select (V)",
             pan: "Pan",

@@ -188,6 +188,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
     }
 
+    public forceResize = (): void => {
+        this.onWindowResize();
+    }
+
     private removeAllRegions = () => {
         const ids = this.state.currentAsset.regions.map((r) => r.id);
         for (const id of ids) {

@@ -173,6 +173,8 @@ export interface IAppStrings {
     editorPage: {
         width: string;
         height: string;
+        tagged: string;
+        visited: string;
         toolbar: {
             select: string;
             pan: string;

@@ -6,11 +6,12 @@ import { RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import {
-    AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag, AssetType, IRegion,
+    AssetState, EditorMode, IApplicationState, IAsset, IRegion,
+    IAssetMetadata, IProject, ITag, AssetType, ISize, IAppSettings,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import Canvas from "./canvas";
 import EditorFooter from "./editorFooter";
 import "./editorPage.scss";
@@ -29,17 +30,21 @@ import { TagInput } from "../../common/tagInput/tagInput";
 import { ColorPicker } from "../../common/colorPicker";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
+import SplitPane from "react-split-pane";
 
 /**
  * Properties for Editor Page
  * @member project - Project being edited
  * @member recentProjects - Array of projects recently viewed/edited
  * @member actions - Project actions
+ * @member applicationActions - Application setting actions
  */
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
     recentProjects: IProject[];
+    appSettings: IAppSettings;
     actions: IProjectActions;
+    applicationActions: IApplicationActions;
 }
 
 /**
@@ -68,18 +73,22 @@ export interface IEditorPageState {
     lockedTags: string[];
     /** Show color picker for editing tags */
     showColorPicker: boolean;
+    /** Size of the asset thumbnails to display in the side bar */
+    thumbnailSize: ISize;
 }
 
 function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
         project: state.currentProject,
+        appSettings: state.appSettings,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        applicationActions: bindActionCreators(applicationActions, dispatch),
     };
 }
 
@@ -100,6 +109,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         childAssets: [],
         editorMode: EditorMode.Rectangle,
         additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+        thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
     };
 
     private loadingProjectAssets: boolean = false;
@@ -161,58 +171,92 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         icon={"fa-lock"}
                         handler={this.handleCtrlTagHotKey} />);
                 })}
-                <div className="editor-page-sidebar bg-lighter-1">
-                    <EditorSideBar
-                        assets={rootAssets}
-                        selectedAsset={selectedAsset ? selectedAsset.asset : null}
-                        onAssetSelected={this.selectAsset}
-                    />
-                </div>
-                <div className="editor-page-content">
-                    <div className="editor-page-content-header">
-                        <EditorToolbar project={this.props.project}
-                            items={this.toolbarItems}
-                            actions={this.props.actions}
-                            onToolbarItemSelected={this.onToolbarItemSelected} />
+                <SplitPane split="vertical"
+                    defaultSize={this.state.thumbnailSize.width}
+                    minSize={100}
+                    maxSize={400}
+                    paneStyle={{ display: "flex" }}
+                    onChange={this.onSideBarResize}
+                    onDragFinished={this.onSideBarResizeComplete}>
+                    <div className="editor-page-sidebar bg-lighter-1">
+                        <EditorSideBar
+                            assets={rootAssets}
+                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                            onAssetSelected={this.selectAsset}
+                            thumbnailSize={this.state.thumbnailSize}
+                        />
                     </div>
-                    <div className="editor-page-content-body">
-                        <div className="editor-page-content-body-canvas">
-                            {selectedAsset &&
-                                <Canvas
-                                    ref={this.canvas}
-                                    selectedAsset={this.state.selectedAsset}
-                                    onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                    onSelectedRegionsChanged={(selectedRegions) => this.setState({selectedRegions})}
-                                    editorMode={this.state.editorMode}
-                                    selectionMode={this.state.selectionMode}
-                                    project={this.props.project}
-                                    lockedTags={this.state.lockedTags}>
-                                    <AssetPreview
-                                        additionalSettings={this.state.additionalSettings}
-                                        autoPlay={true}
-                                        onChildAssetSelected={this.onChildAssetSelected}
-                                        asset={this.state.selectedAsset.asset}
-                                        childAssets={this.state.childAssets} />
-                                </Canvas>
-                            }
+                    <div className="editor-page-content">
+                        <div className="editor-page-content-header">
+                            <EditorToolbar project={this.props.project}
+                                items={this.toolbarItems}
+                                actions={this.props.actions}
+                                onToolbarItemSelected={this.onToolbarItemSelected} />
                         </div>
-                        <div id="color-picker-portal"></div>
-                        <div className="editor-page-right-sidebar">
-                            <TagInput
-                                tags={this.props.project.tags}
-                                containerRef={this}
-                                lockedTags={this.state.lockedTags}
-                                selectedRegions={this.state.selectedRegions}
-                                onChange={this.onTagsChanged}
-                                onLockedTagsChange={this.onLockedTagsChanged}
-                                onTagClick={this.onTagClicked}
-                                onCtrlTagClick={this.onCtrlTagClicked}
-                            />
+                        <div className="editor-page-content-body">
+                            <div className="editor-page-content-body-canvas">
+                                {selectedAsset &&
+                                    <Canvas
+                                        ref={this.canvas}
+                                        selectedAsset={this.state.selectedAsset}
+                                        onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                        onSelectedRegionsChanged={(selectedRegions) => this.setState({selectedRegions})}
+                                        editorMode={this.state.editorMode}
+                                        selectionMode={this.state.selectionMode}
+                                        project={this.props.project}
+                                        lockedTags={this.state.lockedTags}>
+                                        <AssetPreview
+                                            additionalSettings={this.state.additionalSettings}
+                                            autoPlay={true}
+                                            onChildAssetSelected={this.onChildAssetSelected}
+                                            asset={this.state.selectedAsset.asset}
+                                            childAssets={this.state.childAssets} />
+                                    </Canvas>
+                                }
+                            </div>
+                            <div id="color-picker-portal"></div>
+                            <div className="editor-page-right-sidebar">
+                                <TagInput
+                                    tags={this.props.project.tags}
+                                    containerRef={this}
+                                    lockedTags={this.state.lockedTags}
+                                    selectedRegions={this.state.selectedRegions}
+                                    onChange={this.onTagsChanged}
+                                    onLockedTagsChange={this.onLockedTagsChanged}
+                                    onTagClick={this.onTagClicked}
+                                    onCtrlTagClick={this.onCtrlTagClicked}
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
+                </SplitPane>
             </div>
         );
+    }
+
+    /**
+     * Called when the asset side bar is resized
+     * @param newWidth The new sidebar width
+     */
+    private onSideBarResize = (newWidth: number) => {
+        this.setState({
+            thumbnailSize: {
+                width: newWidth,
+                height: newWidth / (4 / 3),
+            },
+        }, () => this.canvas.current.forceResize());
+    }
+
+    /**
+     * Called when the asset sidebar has been completed
+     */
+    private onSideBarResizeComplete = () => {
+        const appSettings = {
+            ...this.props.appSettings,
+            thumbnailSize: this.state.thumbnailSize,
+        };
+
+        this.props.applicationActions.saveAppSettings(appSettings);
     }
 
     /**
@@ -483,7 +527,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         if (updateTags) {
             asset.asset.state = AssetState.Tagged;
-            const newProject = {...this.props.project, tags: newTags};
+            const newProject = { ...this.props.project, tags: newTags };
             await this.props.actions.saveAssetMetadata(newProject, asset);
             await this.props.actions.saveProject(newProject);
         }

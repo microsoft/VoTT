@@ -1,0 +1,335 @@
+{
+    "source": 2,
+    "revision": 7,
+    "description": "copy artifact to azure blob hosting plato report for VoTT",
+    "createdBy": {
+        "displayName": "My Ho 🥓🥐🍚",
+        "url": "https://app.vssps.visualstudio.com/Af945f528-1155-48f8-b08b-b6529166b9f0/_apis/Identities/1077cc21-332d-415a-8e93-e6277da44f6d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+            }
+        },
+        "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
+        "uniqueName": "myho@microsoft.com",
+        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+    },
+    "createdOn": "2019-03-25T22:52:29.780Z",
+    "modifiedBy": {
+        "displayName": "My Ho 🥓🥐🍚",
+        "url": "https://app.vssps.visualstudio.com/Af945f528-1155-48f8-b08b-b6529166b9f0/_apis/Identities/1077cc21-332d-415a-8e93-e6277da44f6d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+            }
+        },
+        "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
+        "uniqueName": "myho@microsoft.com",
+        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+    },
+    "modifiedOn": "2019-03-26T19:04:10.900Z",
+    "isDeleted": false,
+    "variables": {
+        "STORAGE_ACCOUNT": {
+            "value": "vottv2",
+            "allowOverride": true
+        }
+    },
+    "variableGroups": [],
+    "environments": [
+        {
+            "id": 6,
+            "name": "Upload Report",
+            "rank": 1,
+            "owner": {
+                "displayName": "My Ho 🥓🥐🍚",
+                "url": "https://app.vssps.visualstudio.com/Af945f528-1155-48f8-b08b-b6529166b9f0/_apis/Identities/1077cc21-332d-415a-8e93-e6277da44f6d",
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+                    }
+                },
+                "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
+                "uniqueName": "myho@microsoft.com",
+                "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+                "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+            },
+            "variables": {},
+            "variableGroups": [],
+            "preDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 16
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 1
+                }
+            },
+            "deployStep": {
+                "id": 17
+            },
+            "postDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 18
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 2
+                }
+            },
+            "deployPhases": [
+                {
+                    "deploymentInput": {
+                        "parallelExecution": {
+                            "parallelExecutionType": 0
+                        },
+                        "skipArtifactsDownload": false,
+                        "artifactsDownloadInput": {
+                            "downloadInputs": [
+                                {
+                                    "alias": "_VoTT - Generate latest plato report",
+                                    "artifactType": "Build",
+                                    "artifactDownloadMode": "All",
+                                    "artifactItems": []
+                                }
+                            ]
+                        },
+                        "queueId": 3,
+                        "demands": [],
+                        "enableAccessToken": false,
+                        "timeoutInMinutes": 0,
+                        "jobCancelTimeoutInMinutes": 1,
+                        "condition": "succeeded()",
+                        "overrideInputs": {}
+                    },
+                    "rank": 1,
+                    "phaseType": 1,
+                    "name": "Upload Report",
+                    "refName": null,
+                    "workflowTasks": [
+                        {
+                            "environment": {},
+                            "taskId": "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43",
+                            "version": "2.*",
+                            "name": "AzureBlob File Copy To $(STORAGE_ACCOUNT)",
+                            "refName": "",
+                            "enabled": true,
+                            "alwaysRun": false,
+                            "continueOnError": false,
+                            "timeoutInMinutes": 0,
+                            "definitionType": "task",
+                            "overrideInputs": {},
+                            "condition": "succeeded()",
+                            "inputs": {
+                                "SourcePath": "$(System.DefaultWorkingDirectory)/_VoTT - Generate latest plato report/report",
+                                "ConnectedServiceNameSelector": "ConnectedServiceNameARM",
+                                "ConnectedServiceName": "",
+                                "ConnectedServiceNameARM": "28e5058e-d34a-48f3-978b-4bb47ea9e227",
+                                "Destination": "AzureBlob",
+                                "StorageAccount": "",
+                                "StorageAccountRM": "$(STORAGE_ACCOUNT)",
+                                "ContainerName": "$web",
+                                "BlobPrefix": "",
+                                "EnvironmentName": "",
+                                "EnvironmentNameRM": "",
+                                "ResourceFilteringMethod": "machineNames",
+                                "MachineNames": "",
+                                "vmsAdminUserName": "",
+                                "vmsAdminPassword": "",
+                                "TargetPath": "",
+                                "AdditionalArgumentsForBlobCopy": "",
+                                "AdditionalArgumentsForVMCopy": "",
+                                "enableCopyPrerequisites": "false",
+                                "CopyFilesInParallel": "true",
+                                "CleanTargetBeforeCopy": "false",
+                                "skipCACheck": "true",
+                                "outputStorageUri": "",
+                                "outputStorageContainerSasToken": ""
+                            }
+                        }
+                    ]
+                }
+            ],
+            "environmentOptions": {
+                "emailNotificationType": "OnlyOnFailure",
+                "emailRecipients": "release.environment.owner;release.creator",
+                "skipArtifactsDownload": false,
+                "timeoutInMinutes": 0,
+                "enableAccessToken": false,
+                "publishDeploymentStatus": true,
+                "badgeEnabled": false,
+                "autoLinkWorkItems": false,
+                "pullRequestDeploymentEnabled": false
+            },
+            "demands": [],
+            "conditions": [
+                {
+                    "name": "ReleaseStarted",
+                    "conditionType": 1,
+                    "value": ""
+                }
+            ],
+            "executionPolicy": {
+                "concurrencyCount": 1,
+                "queueDepthCount": 0
+            },
+            "schedules": [],
+            "currentRelease": {
+                "id": 170,
+                "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/releases/170",
+                "_links": {}
+            },
+            "retentionPolicy": {
+                "daysToKeep": 30,
+                "releasesToKeep": 3,
+                "retainBuild": true
+            },
+            "processParameters": {
+                "dataSourceBindings": [
+                    {
+                        "dataSourceName": "AzureRMWebAppNamesByAppType",
+                        "parameters": {
+                            "WebAppKind": "$(WebAppKind)"
+                        },
+                        "endpointId": "$(ConnectedServiceName)",
+                        "target": "WebAppName"
+                    }
+                ]
+            },
+            "properties": {},
+            "preDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "postDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "environmentTriggers": [],
+            "badgeUrl": "https://vsrm.dev.azure.com/msft-vott/_apis/public/Release/badge/4e739af6-f85e-44b9-a3f3-75eb893a6223/6/6"
+        }
+    ],
+    "artifacts": [
+        {
+            "sourceId": "4e739af6-f85e-44b9-a3f3-75eb893a6223:41",
+            "type": "Build",
+            "alias": "_VoTT - Generate latest plato report",
+            "definitionReference": {
+                "artifactSourceDefinitionUrl": {
+                    "id": "https://dev.azure.com/msft-vott/_permalink/_build/index?collectionId=2f887b33-5e65-447a-a189-049f04641d6d&projectId=4e739af6-f85e-44b9-a3f3-75eb893a6223&definitionId=41",
+                    "name": ""
+                },
+                "defaultVersionBranch": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionSpecific": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionTags": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionType": {
+                    "id": "latestType",
+                    "name": "Latest"
+                },
+                "definition": {
+                    "id": "41",
+                    "name": "VoTT - Generate latest plato report"
+                },
+                "definitions": {
+                    "id": "",
+                    "name": ""
+                },
+                "IsMultiDefinitionType": {
+                    "id": "False",
+                    "name": "False"
+                },
+                "project": {
+                    "id": "4e739af6-f85e-44b9-a3f3-75eb893a6223",
+                    "name": "VoTT"
+                },
+                "repository": {
+                    "id": "",
+                    "name": ""
+                }
+            },
+            "isPrimary": true,
+            "isRetained": false
+        }
+    ],
+    "triggers": [
+        {
+            "artifactAlias": "_VoTT - Generate latest plato report",
+            "triggerConditions": [
+                {
+                    "sourceBranch": "v2",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                },
+                {
+                    "sourceBranch": "dev*",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                },
+                {
+                    "sourceBranch": "master",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                }
+            ],
+            "triggerType": 1
+        }
+    ],
+    "releaseNameFormat": "Release-$(Date:MMddyy).$(Date:hhmm)-$(rev:r)",
+    "tags": [],
+    "pipelineProcess": {
+        "type": 1
+    },
+    "properties": {
+        "DefinitionCreationSource": {
+            "$type": "System.String",
+            "$value": "ReleaseClone"
+        }
+    },
+    "id": 6,
+    "name": "VoTT - Upload Plato Report",
+    "path": "\\",
+    "projectReference": null,
+    "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/definitions/6",
+    "_links": {
+        "self": {
+            "href": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/definitions/6"
+        },
+        "web": {
+            "href": "https://dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_release?definitionId=6"
+        }
+    }
+}
