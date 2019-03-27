@@ -27,7 +27,6 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSet
 import { strings } from "../../../../common/strings";
 import { TagInput } from "../../common/tagInput/tagInput";
 import { ColorPicker } from "../../common/colorPicker";
-import { Portal } from "../../common/portal/portal";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
