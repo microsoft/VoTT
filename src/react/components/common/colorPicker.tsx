@@ -20,7 +20,8 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
                 position: "absolute",
                 top: `${top}px`,
                 left: `${left}px`,
-                zIndex: 100,
+                zIndex: 1,
+                overflow: "visible",
             }}>
                 <GithubPicker
                     color={{hex: this.props.color}}
@@ -30,10 +31,10 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
                     styles={{
                         default: {
                             card: {
-                                background: "#123"
+                                background: "#00f"
                             },
                             triangle: {
-                                borderBottomColor: "#123",
+                                borderBottomColor: "#00f",
                             }
                         }
                     }}
