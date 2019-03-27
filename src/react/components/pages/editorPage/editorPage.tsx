@@ -33,6 +33,7 @@ import SplitPane from "react-split-pane";
  * @member project - Project being edited
  * @member recentProjects - Array of projects recently viewed/edited
  * @member actions - Project actions
+ * @member applicationActions - Application setting actions
  */
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -64,6 +65,7 @@ export interface IEditorPageState {
     selectedTag: string;
     /** Tags locked for region labeling */
     lockedTags: string[];
+    /** Size of the asset thumbnails to display in the side bar */
     thumbnailSize: ISize;
 }
 

@@ -2,12 +2,14 @@ import React from "react";
 import { AutoSizer, List } from "react-virtualized";
 import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
+import { strings } from "../../../../common/strings";
 
 /**
  * Properties for Editor Side Bar
  * @member assets - Array of assets to be previewed
  * @member onAssetSelected - Function to call when asset from side bar is selected
  * @member selectedAsset - Asset initially selected
+ * @member thumbnailSize - The size of the asset thumbnails
  */
 export interface IEditorSideBarProps {
     assets: IAsset[];
@@ -120,9 +122,19 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     private renderBadges = (asset: IAsset): JSX.Element => {
         switch (asset.state) {
             case AssetState.Tagged:
-                return (<span title="Tagged" className="badge badge-tagged"><i className="fas fa-tag"></i></span>);
+                return (
+                    <span title={strings.editorPage.tagged}
+                        className="badge badge-tagged">
+                        <i className="fas fa-tag"></i>
+                    </span>
+                );
             case AssetState.Visited:
-                return (<span title="Visited" className="badge badge-visited"><i className="fas fa-eye"></i></span>);
+                return (
+                    <span title={strings.editorPage.visited}
+                        className="badge badge-visited">
+                        <i className="fas fa-eye"></i>
+                    </span>
+                );
             default:
                 return null;
         }
