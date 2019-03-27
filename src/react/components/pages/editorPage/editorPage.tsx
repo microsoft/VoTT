@@ -27,6 +27,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSet
 import { strings } from "../../../../common/strings";
 import { TagInput } from "../../common/tagInput/tagInput";
 import { ColorPicker } from "../../common/colorPicker";
+import { Portal } from "../../common/portal/portal";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -89,7 +90,7 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
-        
+
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
@@ -196,9 +197,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 </Canvas>
                             }
                         </div>
+                        <div id="color-picker-portal"></div>
                         <div className="editor-page-right-sidebar">
                             <TagInput
                                 tags={this.props.project.tags}
+                                containerRef={this}
                                 lockedTags={this.state.lockedTags}
                                 selectedRegions={this.state.selectedRegions}
                                 onChange={this.onTagsChanged}
@@ -375,7 +378,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private showColorPicker = (showColorPicker: boolean) => {
-        this.setState({showColorPicker})
+        this.setState({showColorPicker});
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {

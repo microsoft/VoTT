@@ -111,7 +111,6 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         return classNames.join(" ");
     }
 
-
     private getTagContent = () => {
         if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name) {
             return (

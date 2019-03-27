@@ -1,9 +1,9 @@
 import React from "react";
-import { GithubPicker } from "react-color"
+import { GithubPicker } from "react-color";
 
 export interface IColorPickerProps {
     show: boolean;
-    coordinates: {top: number, left: number}
+    coordinates: {top: number, left: number};
     color: string;
     colors: string[];
     onEditColor: (color: string) => void;
@@ -12,10 +12,10 @@ export interface IColorPickerProps {
 
 export class ColorPicker extends React.Component<IColorPickerProps> {
 
-    render() {
-        const {top, left} = this.props.coordinates
+    public render() {
+        const {top, left} = this.props.coordinates;
         return (
-            this.props.show && 
+            this.props.show &&
             <div className="tag-color-picker" style={{
                 position: "absolute",
                 top: `${top}px`,
@@ -31,12 +31,12 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
                     styles={{
                         default: {
                             card: {
-                                background: "#00f"
+                                background: "#000",
                             },
                             triangle: {
-                                borderBottomColor: "#00f",
-                            }
-                        }
+                                borderBottomColor: "#000",
+                            },
+                        },
                     }}
                     triangle={"top-right"}
                 />

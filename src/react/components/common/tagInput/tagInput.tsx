@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement, ReactInstance } from "react";
 import ReactDOM from "react-dom";
 import { randomIntInRange } from "../../../../common/utils";
 import { IRegion, ITag } from "../../../../models/applicationState";
@@ -14,6 +14,8 @@ export interface ITagInputProps {
     tags: ITag[];
     /** Function called on tags change */
     onChange: (tags: ITag[]) => void;
+    /** Containing component ref */
+    containerRef?: ReactInstance;
     /** Currently selected regions in canvas */
     selectedRegions?: IRegion[];
     /** Tags that are currently locked for editing experience */
@@ -60,7 +62,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         editingTag: null,
     };
 
-    private tagItemRefs: {[id: string]: TagInputItem} = {}
+    private tagItemRefs: {[id: string]: TagInputItem} = {};
+    private colorPickerWidth: number = 137;
 
     public render() {
         return (
@@ -119,7 +122,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (prevProps.tags !== this.props.tags) {
             this.setState({
                 tags: this.props.tags,
-            })
+            });
         }
     }
 
@@ -133,8 +136,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         });
         if (this.state.clickedColor) {
             this.setState({
-                showColorPicker: !this.state.showColorPicker
-            })
+                showColorPicker: !this.state.showColorPicker,
+            });
         }
     }
 
@@ -171,7 +174,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     private handleColorChange = (color: string) => {
         const tag = this.state.editingTag;
         const tags = this.state.tags.map((t) => {
-            return (t.name === tag.name) ? {name: t.name, color: color} : t;
+            return (t.name === tag.name) ? {name: t.name, color} : t;
         });
         this.setState({
             tags,
@@ -200,8 +203,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getColorPickerCoordinates = () => {
-        const tagCoords = this.getTagCoordinates()
-        return tagCoords ? {top: tagCoords.top, left: 0} : {top:0, left: 0};
+        const tagCoords = this.getTagCoordinates();
+        return tagCoords ?
+            {
+                top: tagCoords.top + 28,
+                left: tagCoords.left - this.colorPickerWidth + 23,
+            } : {top: 0, left: 0};
     }
 
     private getTagCoordinates = () => {
@@ -213,21 +220,22 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 return {
                     top: rect.top,
                     left: rect.left,
-                }
+                };
             }
         }
     }
 
     private getColorPicker = () => {
-        return (
+        return ReactDOM.createPortal(
             <ColorPicker
                 color={this.state.editingTag && this.state.editingTag.color}
                 colors={tagColors}
                 onEditColor={this.handleColorChange}
-                show={this.state.showColorPicker} 
-                coordinates={this.getColorPickerCoordinates()}              
+                show={this.state.showColorPicker}
+                coordinates={this.getColorPickerCoordinates()}
+                width={this.colorPickerWidth}
             />
-        )
+        , (ReactDOM.findDOMNode(this.props.containerRef) as Element));
     }
 
     private getTagItems = () => {
@@ -236,7 +244,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (query.length) {
             props = props.filter((prop) => prop.tag.name.includes(query));
         }
-        return props.map((prop) => 
+        return props.map((prop) =>
             <TagInputItem
                 ref={(item) => this.tagItemRefs[prop.tag.name] = item}
                 {...prop}
@@ -277,7 +285,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         this.setState({
             editingTag: tag,
             clickedColor,
-            showColorPicker: !this.state.showColorPicker
+            showColorPicker: !this.state.showColorPicker,
         });
     }
 
