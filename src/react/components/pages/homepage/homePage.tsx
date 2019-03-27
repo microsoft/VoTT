@@ -14,10 +14,11 @@ import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
     IApplicationState, IConnection, IProject, IFileInfo,
-    ErrorCode, AppError, IAppError, IAppSettings,
+    ErrorCode, AppError, IAppError, IAppSettings, IAsset,
 } from "../../../../models/applicationState";
 import ImportService from "../../../../services/importService";
 import { IAssetMetadata } from "../../../../models/applicationState";
+import { AssetService } from "../../../../services/assetService";
 import { toast } from "react-toastify";
 import MessageBox from "../../common/messageBox/messageBox";
 
@@ -176,7 +177,9 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     private convertProject = async (projectInfo: IFileInfo) => {
         const importService = new ImportService(this.props.actions);
         let generatedAssetMetadata: IAssetMetadata[];
-        let project;
+        let project: IProject;
+        let parent: IAsset;
+
         try {
             project = await importService.convertProject(projectInfo);
         } catch (e) {
@@ -185,8 +188,11 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
 
         this.props.applicationActions.ensureSecurityToken(project);
 
+        if (project.lastVisitedAssetId !== undefined) {
+            parent = await importService.createParentVideoAsset(projectInfo);
+        }
         try {
-            generatedAssetMetadata = await importService.generateAssets(projectInfo, project);
+            generatedAssetMetadata = await importService.generateAssets(projectInfo, project, parent ? parent : null);
             await this.props.actions.saveProject(project);
             await this.props.actions.loadProject(project);
             const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
@@ -197,7 +203,21 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
         } catch (e) {
             throw new Error(`Error importing project information - ${e.message}`);
         }
+        if (project.lastVisitedAssetId !== undefined) {
+            project.lastVisitedAssetId == generatedAssetMetadata[generatedAssetMetadata.length - 1].asset.id;
+        }
+
+        // const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
+
         await this.props.actions.saveProject(this.props.project);
+
+        if (parent) {
+            const assetService = new AssetService(this.props.project);
+            const childAssets = assetService.getChildAssets(parent);
+
+            console.log(childAssets);
+        }
+
         await this.loadSelectedProject(this.props.project);
     }
 }
