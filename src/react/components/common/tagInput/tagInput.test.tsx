@@ -38,6 +38,7 @@ describe("Tag Input Component", () => {
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").first().simulate("click");
         expect(props.onTagClick).toBeCalledWith(props.tags[0]);
+        expect(wrapper.state().clickedColor).toBe(true);
         expect(props.onCtrlTagClick).not.toBeCalled();
     });
 
@@ -54,6 +55,7 @@ describe("Tag Input Component", () => {
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").first().simulate("click", {ctrlKey: true});
         expect(props.onCtrlTagClick).toBeCalledWith(props.tags[0]);
+        expect(wrapper.state().clickedColor).toBe(true);
         expect(props.onTagClick).not.toBeCalled();
     });
 

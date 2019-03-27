@@ -1,6 +1,7 @@
 import React from "react";
 import { ITag } from "../../../../models/applicationState";
 import "./tagInput.scss";
+import { KeyboardBinding } from "../keyboardBinding/keyboardBinding";
 
 export interface ITagInputToolbarProps {
     selectedTag: ITag;
@@ -12,33 +13,74 @@ export interface ITagInputToolbarProps {
     onReorder: (tag: ITag, displacement: number) => void;
 }
 
+interface ITagInputToolbarItemProps {
+    displayName: string;
+    className: string;
+    icon: string;
+    handler: () => void;
+    accelerators?: string[]
+}
+
 export default class TagInputToolbar extends React.Component<ITagInputToolbarProps> {
     public render() {
         return (
             <div className="tag-input-toolbar">
-                <div className="tag-input-toolbar-item plus" onClick={this.handleAdd}>
-                    <i className="tag-input-toolbar-icon fas fa-plus-circle" />
-                </div>
-                <div className="tag-input-toolbar-item search" onClick={this.handleSearch}>
-                    <i className="tag-input-toolbar-icon fas fa-search" />
-                </div>
-                <div className="tag-input-toolbar-item lock" onClick={this.handleLock}>
-                    <i className="tag-input-toolbar-icon fas fa-lock" />
-                </div>
-                <div className="tag-input-toolbar-item edit" onClick={this.handleEdit}>
-                    <i className="tag-input-toolbar-icon fas fa-edit"/>
-                </div>
-                <div className="tag-input-toolbar-item up" onClick={this.handleArrowUp}>
-                    <i className="tag-input-toolbar-icon fas fa-arrow-circle-up"/>
-                </div>
-                <div className="tag-input-toolbar-item down" onClick={this.handleArrowDown}>
-                    <i className="tag-input-toolbar-icon fas fa-arrow-circle-down"/>
-                </div>
-                <div className="tag-input-toolbar-item delete" onClick={this.handleDelete}>
-                    <i className="tag-input-toolbar-icon fas fa-trash"/>
-                </div>
+                {
+                    this.getButtonProps().map((prop) =>
+                        <div className={`tag-input-toolbar-item ${prop.className}`} onClick={prop.handler}>
+                            <i className={`tag-input-toolbar-icon fas ${prop.icon}`} />
+                        </div>,
+                    )
+                }
             </div>
         );
+    }
+
+    private getButtonProps = (): ITagInputToolbarItemProps[] => {
+        return [
+            {
+                displayName: "Add tag",
+                className: "plus",
+                icon: "fa-plus-circle",
+                handler: this.handleAdd,
+            },
+            {
+                displayName: "Search tags",
+                className: "search",
+                icon: "fa-search",
+                handler: this.handleSearch,
+            },
+            {
+                displayName: "Lock selected tag",
+                className: "lock",
+                icon: "fa-lock",
+                handler: this.handleLock,
+            },
+            {
+                displayName: "Edit selected tag",
+                className: "edit",
+                icon: "fa-edit",
+                handler: this.handleEdit,
+            },
+            {
+                displayName: "Move selected tag up",
+                className: "up",
+                icon: "fa-arrow-circle-up",
+                handler: this.handleArrowUp,
+            },
+            {
+                displayName: "Move selected tag down",
+                className: "down",
+                icon: "fa-arrow-circle-down",
+                handler: this.handleArrowDown,
+            },
+            {
+                displayName: "Delete selected tag",
+                className: "delete",
+                icon: "fa-trash",
+                handler: this.handleDelete,
+            },
+        ];
     }
 
     private handleAdd = () => {

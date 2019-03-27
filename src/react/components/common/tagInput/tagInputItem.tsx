@@ -17,7 +17,7 @@ export interface ITagInputItemProps {
     isLocked: boolean;
     isSelected: boolean;
     appliedToSelectedRegions: boolean;
-    onClick: (tag: ITag, ctrlKey: boolean, altKey: boolean) => void;
+    onClick: (tag: ITag, ctrlKey: boolean, altKey: boolean, clickedColor?: boolean) => void;
     onChange: (oldTag: ITag, newTag: ITag) => void;
 }
 
@@ -97,7 +97,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Color,
-        }, () => this.props.onClick(this.props.tag, ctrlKey, altKey));
+        }, () => this.props.onClick(this.props.tag, ctrlKey, altKey, true));
     }
 
     private onNameClick = (e) => {
@@ -108,33 +108,15 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         }, () => this.props.onClick(this.props.tag, ctrlKey, altKey));
     }
 
-    // private onColorDoubleClick = (e) => {
-    //     this.setState({
-    //         preventSingleClick: true
-    //     });
-    //     setTimeout(() => {
-    //         this.setState({preventSingleClick: false})
-    //     }, delay * 2);
-    // }
-
-    // private onTextDoubleClick = (e) => {
-    //     this.setState({
-    //         preventSingleClick: true
-    //     });
-    //     setTimeout(() => {
-    //         this.setState({preventSingleClick: false})
-    //     }, delay * 2);
-    // }
-
     private getItemClassName = () => {
-        let className = "tag-item";
+        const classNames = ["tag-item"];
         if (this.props.isSelected) {
-            className += " tag-item-selected";
+            classNames.push("tag-item-selected");
         }
         if (this.props.appliedToSelectedRegions) {
-            className += " tag-item-applied";
+            classNames.push("tag-item-applied");
         }
-        return className;
+        return classNames.join(" ");
     }
 
     private getColorPicker = () => {
@@ -211,11 +193,11 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     }
 
     private getContentClassName = () => {
-        let className = "tag-name-text px-2";
+        const classNames = ["tag-name-text px-2"];
         if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Color) {
-            className += " tag-color-edit";
+            classNames.push(" tag-color-edit");
         }
-        return className;
+        return classNames.join(" ");
     }
 
     private getColorStyle = () => {

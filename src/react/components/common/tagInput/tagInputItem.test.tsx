@@ -38,21 +38,21 @@ describe("Tag Input Item", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").simulate("click");
-        expect(props.onClick).toBeCalledWith(props.tag, undefined, undefined);
+        expect(props.onClick).toBeCalledWith(props.tag, undefined, undefined, true);
     });
 
     it("Ctrl Clicking color calls onClickHandler", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").simulate("click", {ctrlKey: true});
-        expect(props.onClick).toBeCalledWith(props.tag, true, undefined);
+        expect(props.onClick).toBeCalledWith(props.tag, true, undefined, true);
     });
 
     it("Alt Clicking color calls onClickHandler", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").simulate("click", {altKey: true});
-        expect(props.onClick).toBeCalledWith(props.tag, undefined, true);
+        expect(props.onClick).toBeCalledWith(props.tag, undefined, true, true);
     });
 
     it("Clicking text calls onClickHandler", () => {
