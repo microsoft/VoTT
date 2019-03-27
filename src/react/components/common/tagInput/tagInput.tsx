@@ -3,7 +3,7 @@ import { strings } from "../../../../common/strings";
 import { ITag, IRegion } from "../../../../models/applicationState";
 import "./tagInput.scss";
 
-import TagInputItem, { ITagInputItemProps } from "./tagInputItem";
+import TagInputItem, { ITagInputItemProps, TagEditMode } from "./tagInputItem";
 import { randomIntInRange } from "../../../../common/utils";
 import TagInputToolbar from "./tagInputToolbar";
 // tslint:disable-next-line:no-var-requires
@@ -38,6 +38,7 @@ export interface ITagInputProps {
 
 export interface ITagInputState {
     tags: ITag[];
+    clickedColor: boolean;
     addTags: boolean;
     searchTags: boolean;
     searchQuery: string;
@@ -49,6 +50,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     public state: ITagInputState = {
         tags: this.props.tags || [],
+        clickedColor: false,
         addTags: this.props.showTagInputBox,
         searchTags: this.props.showSearchBox,
         searchQuery: "",
@@ -59,7 +61,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     public render() {
         return (
             <div className="tag-input condensed-list">
-                <h6 className="condensed-list-header p-2">
+                <h6 className="condensed-list-header bg-darker-2 p-2">
                     <span className="condensed-list-title">Tags</span>
                     <TagInputToolbar
                         selectedTag={this.state.selectedTag}
@@ -205,14 +207,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         return result;
     }
 
-    private handleClick = (tag: ITag, ctrlKey, altKey) => {
+    private handleClick = (tag: ITag, ctrlKey, altKey, clickedColor?: boolean) => {
         if (ctrlKey && this.props.onCtrlTagClick) {
+            this.setState({clickedColor});
             this.props.onCtrlTagClick(tag);
         } else if (altKey) {
             // Open edit mode
             this.setState({
                 editingTag: tag,
                 selectedTag: null,
+                clickedColor,
             });
         } else {
             const editingTag = this.state.editingTag;
@@ -223,6 +227,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             this.setState({
                 editingTag: (editingTag && tag && tag.name !== editingTag.name) ? null : editingTag,
                 selectedTag: (selectedTag && selectedTag.name === tag.name && !inEditMode) ? null : tag,
+                clickedColor,
             });
 
             if (this.props.onTagClick && !inEditMode) {
