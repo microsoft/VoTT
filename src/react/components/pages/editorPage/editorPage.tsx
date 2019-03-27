@@ -28,7 +28,6 @@ import { strings } from "../../../../common/strings";
 import SplitPane from "react-split-pane";
 import { TagInput } from "../../common/tagInput/tagInput";
 import { ColorPicker } from "../../common/colorPicker";
-import { Portal } from "../../common/portal/portal";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
