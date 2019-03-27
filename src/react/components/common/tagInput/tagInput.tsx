@@ -1,14 +1,11 @@
 import React from "react";
-import ReactDOM from "react-dom"
-import Align from "rc-align";
-import { strings } from "../../../../common/strings";
-import { ITag, IRegion } from "../../../../models/applicationState";
-import "./tagInput.scss";
-import { GithubPicker } from "react-color";
-import TagInputItem, { ITagInputItemProps, TagEditMode } from "./tagInputItem";
+import ReactDOM from "react-dom";
 import { randomIntInRange } from "../../../../common/utils";
-import TagInputToolbar from "./tagInputToolbar";
+import { IRegion, ITag } from "../../../../models/applicationState";
 import { ColorPicker } from "../colorPicker";
+import "./tagInput.scss";
+import TagInputItem, { ITagInputItemProps } from "./tagInputItem";
+import TagInputToolbar from "./tagInputToolbar";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -64,7 +61,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     };
 
     private tagItemRefs: {[id: string]: TagInputItem} = {}
-    private alignRef: Align
 
     public render() {
         return (
@@ -127,12 +123,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }
     }
 
-    private getTarget = () => {
-        const { editingTag } = this.state;
-        const node = ReactDOM.findDOMNode(this.tagItemRefs[editingTag.name]);
-        return {pageX: 0, pageY: 0}
-    }
-
     private onEditTag = (tag: ITag) => {
         if (!tag) {
             return;
@@ -140,7 +130,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         const editingTag = this.state.editingTag;
         this.setState({
             editingTag: (editingTag && editingTag.name === tag.name) ? null : tag,
-        });        
+        });
+        if (this.state.clickedColor) {
+            this.setState({
+                showColorPicker: !this.state.showColorPicker
+            })
+        }
     }
 
     private onLockTag = (tag: ITag) => {
@@ -174,7 +169,15 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private handleColorChange = (color: string) => {
-
+        const tag = this.state.editingTag;
+        const tags = this.state.tags.map((t) => {
+            return (t.name === tag.name) ? {name: t.name, color: color} : t;
+        });
+        this.setState({
+            tags,
+            editingTag: null,
+            showColorPicker: false,
+        }, () => this.props.onChange(tags));
     }
 
     private updateTag = (oldTag: ITag, newTag: ITag) => {
@@ -198,7 +201,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     private getColorPickerCoordinates = () => {
         const tagCoords = this.getTagCoordinates()
-        return {top: 0, left: -50};
+        return tagCoords ? {top: tagCoords.top, left: 0} : {top:0, left: 0};
     }
 
     private getTagCoordinates = () => {
@@ -270,26 +273,30 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         return result;
     }
 
+    private onAltClick = (tag: ITag, clickedColor: boolean) => {
+        this.setState({
+            editingTag: tag,
+            clickedColor,
+            showColorPicker: !this.state.showColorPicker
+        });
+    }
+
     private handleClick = (tag: ITag, ctrlKey, altKey, clickedColor?: boolean) => {
         if (ctrlKey && this.props.onCtrlTagClick) {
-            this.setState({clickedColor});
             this.props.onCtrlTagClick(tag);
+            this.setState({clickedColor});
         } else if (altKey) {
-            // Open edit mode
-            this.setState({
-                editingTag: tag,
-                selectedTag: null,
-                clickedColor,
-                showColorPicker: !this.state.showColorPicker
-            });
+            this.onAltClick(tag, clickedColor);
         } else {
             const { editingTag, selectedTag } = this.state;
-            const inEditMode = editingTag && tag && tag.name === editingTag.name;
+            const inEditMode = editingTag && tag.name === editingTag.name;
+            const alreadySelected = selectedTag && selectedTag.name === tag.name;
 
             this.setState({
-                editingTag: (editingTag && tag && tag.name !== editingTag.name) ? null : editingTag,
-                selectedTag: (selectedTag && selectedTag.name === tag.name && !inEditMode) ? null : tag,
+                editingTag: inEditMode ? null : editingTag,
+                selectedTag: (alreadySelected && !inEditMode) ? null : tag,
                 clickedColor,
+                showColorPicker: false,
             });
 
             if (this.props.onTagClick && !inEditMode) {
