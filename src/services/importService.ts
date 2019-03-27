@@ -95,7 +95,7 @@ export default class ImportService implements IImportService {
                 if (parent !== null) {
                     isVideo = true;
                     const frameInt = Number(frameName);
-                    const timestamp = frameInt/Number(originalProject.framerate);
+                    const timestamp = frameInt/Number(originalProject.framerate) - 1;
                     const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
                     asset = AssetService.createAssetFromFilePath(
                         `file:${pathToUse}#t=${timestamp}`);

@@ -8,7 +8,7 @@ import { IPoint } from "./applicationState";
  * @member inputTags - Comma delimited list of all tags in the project
  * @member suggestiontype - Setting to suggest regions for the next frame
  * @member scd - Boolean to describe whether scene-change detection is enabled
- * @member visitedFrames - List of names of the frames in the project that have been visited
+ * @member visitedFrames - List of frames in the project that have been visited--string for image, number for video
  * @member tag_colors - List of all tag colors corresponding to the tags in "tags"
  */
 export interface IV1Project {
@@ -17,7 +17,7 @@ export interface IV1Project {
     inputTags: string;
     suggestiontype: string;
     scd: boolean;
-    visitedFrames: string[];
+    visitedFrames: any[];
     tag_colors: string[];
 }
 
