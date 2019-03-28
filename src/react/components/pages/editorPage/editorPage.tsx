@@ -114,7 +114,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
     };
 
-    private portalRef: any;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
@@ -217,14 +216,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     </Canvas>
                                 }
                             </div>
-                            <Align align={this.getAlignConfig()} target={this.getTarget}>
-                                <div className="tag-input-portal" ref={(element) => this.portalRef = element}></div>
-                            </Align>
                             <div className="editor-page-right-sidebar">
                                 <TagInput
                                     tags={this.props.project.tags}
-                                    containerRef={this.portalRef}
-                                    setEditingTagRef={this.setEditingTagRef}
                                     lockedTags={this.state.lockedTags}
                                     selectedRegions={this.state.selectedRegions}
                                     onChange={this.onTagsChanged}
@@ -252,19 +246,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             editingTagRef: ref,
         });
-    }
-
-    private getAlignConfig = () => {
-        return {
-            // Align top right of source node (color picker) with top left of target node (tag row)
-            points: ["tr", "tl"],
-            // Offset source node by 10px in x and 20px in y
-            // offset: [10, 20],
-            // Offset targetNode by 30% of target node width in x and 40% of target node height
-            // targetOffset: ["30%", "40%"],
-            // Auto adjust position when source node is overflowed
-            // overflow: {adjustX: true, adjustY: true}
-        }
     }
 
 

@@ -89,18 +89,24 @@ $tagInputWidth: 250px;
         margin-left: 5px;
     }
 
-    &-input-toolbar {
-        display: flex;
-        flex-direction: row;
-
-        &-item {
-            color: #ccc;
-            padding: 1px;
+    &-input {
+        &-color-picker {
+            position: absolute;
         }
 
-        &-item:hover {
-            color: white;
-            cursor: pointer;
+        &-toolbar {
+            display: flex;
+            flex-direction: row;
+    
+            &-item {
+                color: #ccc;
+                padding: 1px;
+            }
+    
+            &-item:hover {
+                color: white;
+                cursor: pointer;
+            }
         }
     }
 }
