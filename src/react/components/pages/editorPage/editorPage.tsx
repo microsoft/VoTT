@@ -1,36 +1,35 @@
 import _ from "lodash";
-import ReactDOM from "react-dom";
+import Align from "rc-align";
 import React, { RefObject } from "react";
+import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
+import SplitPane from "react-split-pane";
 import { bindActionCreators } from "redux";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import {
-    AssetState, EditorMode, IApplicationState, IAsset, IRegion,
-    IAssetMetadata, IProject, ITag, AssetType, ISize, IAppSettings,
-} from "../../../../models/applicationState";
+import { strings } from "../../../../common/strings";
+import { AssetState, AssetType, EditorMode, IApplicationState,
+    IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
+    ISize, ITag } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
+import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import { ToolbarItemName } from "../../../../registerToolbar";
+import { AssetService } from "../../../../services/assetService";
+import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
+import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
+import { TagInput } from "../../common/tagInput/tagInput";
+import { ToolbarItem } from "../../toolbar/toolbarItem";
 import Canvas from "./canvas";
-import EditorFooter from "./editorFooter";
+import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import { ToolbarItem } from "../../toolbar/toolbarItem";
-import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
-import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
-import { AssetService } from "../../../../services/assetService";
-import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
-import CanvasHelpers from "./canvasHelpers";
-import { ToolbarItemName } from "../../../../registerToolbar";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
-import { strings } from "../../../../common/strings";
-import { TagInput } from "../../common/tagInput/tagInput";
-import { ColorPicker } from "../../common/colorPicker";
+import TagInputItem from "../../common/tagInput/tagInputItem";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
-import SplitPane from "react-split-pane";
 
 /**
  * Properties for Editor Page
@@ -69,6 +68,8 @@ export interface IEditorPageState {
     additionalSettings?: IAssetPreviewSettings;
     /** Most recently selected tag */
     selectedTag: ITag;
+    /** Editing tag ref */
+    editingTagRef: TagInputItem;
     /** Tags locked for region labeling */
     lockedTags: string[];
     /** Show color picker for editing tags */
@@ -102,6 +103,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
+        editingTagRef: null,
         showColorPicker: false,
         lockedTags: [],
         selectionMode: SelectionMode.RECT,
@@ -112,6 +114,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
     };
 
+    private portalRef: any;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
@@ -214,11 +217,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     </Canvas>
                                 }
                             </div>
-                            <div id="color-picker-portal"></div>
+                            <Align align={this.getAlignConfig()} target={this.getTarget}>
+                                <div className="tag-input-portal" ref={(element) => this.portalRef = element}></div>
+                            </Align>
                             <div className="editor-page-right-sidebar">
                                 <TagInput
                                     tags={this.props.project.tags}
-                                    containerRef={this}
+                                    containerRef={this.portalRef}
+                                    setEditingTagRef={this.setEditingTagRef}
                                     lockedTags={this.state.lockedTags}
                                     selectedRegions={this.state.selectedRegions}
                                     onChange={this.onTagsChanged}
@@ -233,6 +239,34 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             </div>
         );
     }
+
+    private getTarget = () => {
+        const node = ReactDOM.findDOMNode(this.state.editingTagRef) as Element;
+        if (node) {
+            return node;
+        }
+        return document;
+    }
+
+    private setEditingTagRef = (ref: TagInputItem) => {
+        this.setState({
+            editingTagRef: ref,
+        });
+    }
+
+    private getAlignConfig = () => {
+        return {
+            // Align top right of source node (color picker) with top left of target node (tag row)
+            points: ["tr", "tl"],
+            // Offset source node by 10px in x and 20px in y
+            // offset: [10, 20],
+            // Offset targetNode by 30% of target node width in x and 40% of target node height
+            // targetOffset: ["30%", "40%"],
+            // Auto adjust position when source node is overflowed
+            // overflow: {adjustX: true, adjustY: true}
+        }
+    }
+
 
     /**
      * Called when the asset side bar is resized
