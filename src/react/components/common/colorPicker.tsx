@@ -1,5 +1,5 @@
 import React from "react";
-import { GithubPicker } from "react-color";
+import { GithubPicker, CirclePicker } from "react-color";
 
 export interface IColorPickerProps {
     show: boolean;
@@ -15,27 +15,47 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
     private pickerBackground = "#252526";
 
     public render() {
-        // const {top, left} = this.props.coordinates;
         return (
             this.props.show &&
             this.GithubPicker()
         );
     }
 
+    private onChange = (color) => {
+        this.props.onEditColor(color.hex);
+    }
+
     private GithubPicker = () => {
-        return <GithubPicker
-            color={{hex: this.props.color}}
-            onChangeComplete={(color) => this.props.onEditColor(color.hex)}
-            colors={this.props.colors}
-            width={this.props.width}
-            styles={{
-                default: {
-                    card: {
-                        background: this.pickerBackground,
+        return (
+            <GithubPicker
+                color={{hex: this.props.color}}
+                onChangeComplete={this.onChange}
+                colors={this.props.colors}
+                width={this.props.width}
+                styles={{
+                    default: {
+                        card: {
+                            background: this.pickerBackground,
+                        },
                     },
-                },
-            }}
-            triangle={"hide"}
-        />;
+                }}
+                triangle={"hide"}
+            />
+        );
+    }
+
+    private CirclePicker = () => {
+        return (
+            <div className="circle-picker-container">
+                <CirclePicker
+                    width={200}
+                    onChange={this.onChange}
+                    colors={this.props.colors}
+                    hex={this.props.color}
+                    circleSize={25}
+                />
+            </div>
+
+        );
     }
 }
