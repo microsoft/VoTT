@@ -16,29 +16,23 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
         // const {top, left} = this.props.coordinates;
         return (
             this.props.show &&
-            <div className="tag-color-picker" 
-                style={{
-                    zIndex: 100,
-                }}
-            >
-                <GithubPicker
-                    color={{hex: this.props.color}}
-                    onChangeComplete={(color) => this.props.onEditColor(color.hex)}
-                    colors={this.props.colors}
-                    width={this.props.width}
-                    styles={{
-                        default: {
-                            card: {
-                                background: "#000",
-                            },
-                            triangle: {
-                                borderBottomColor: "#000",
-                            },
+            <GithubPicker
+                color={{hex: this.props.color}}
+                onChangeComplete={(color) => this.props.onEditColor(color.hex)}
+                colors={this.props.colors}
+                width={this.props.width}
+                styles={{
+                    default: {
+                        card: {
+                            background: "#000",
                         },
-                    }}
-                    triangle={"top-right"}
-                />
-            </div>
+                        triangle: {
+                            borderBottomColor: "#000",
+                        },
+                    },
+                }}
+                triangle={"hide"}
+            />
         );
     }
 }

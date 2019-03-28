@@ -15,8 +15,6 @@ export interface ITagInputProps {
     tags: ITag[];
     /** Function called on tags change */
     onChange: (tags: ITag[]) => void;
-    /** Containing component ref */
-    containerRef?: ReactInstance;
     /** Currently selected regions in canvas */
     selectedRegions?: IRegion[];
     /** Tags that are currently locked for editing experience */
@@ -25,8 +23,6 @@ export interface ITagInputProps {
     onLockedTagsChange?: (locked: string[]) => void;
     /** Place holder for input text box */
     placeHolder?: string;
-    /** Set editing tag ref in parent component */
-    setEditingTagRef?: (ref: TagInputItem) => void;
     /** Function to call on clicking individual tag */
     onTagClick?: (tag: ITag) => void;
     /** Function to call on clicking individual tag while holding CTRL key */
@@ -65,8 +61,19 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         editingTag: null,
     };
 
+    private alignConfig = {
+        // Align top right of source node (color picker) with top left of target node (tag row)
+        points: ["tr", "tl"],
+        // Offset source node by 10px in x and 20px in y
+        offset: [0, -4],
+        // Offset targetNode by 30% of target node width in x and 40% of target node height
+        // targetOffset: ["30%", "40%"],
+        // Auto adjust position when source node is overflowed
+        // overflow: {adjustX: true, adjustY: true}
+    }
     private tagItemRefs: {[id: string]: TagInputItem} = {};
     private colorPickerWidth: number = 137;
+    private portalDiv = document.createElement("div");
 
     public render() {
         return (
@@ -98,9 +105,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                             />
                         </div>
                     }
-                    <div className="tag-input-color-picker">
-                        {this.getColorPickerPortal()}
-                    </div>
+                    {this.getColorPickerPortal()}
                     <div className="tag-input-items">
                         {this.getTagItems()}
                     </div>
@@ -121,6 +126,14 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         );
     }
 
+    public componentDidMount() {
+        document.body.appendChild(this.portalDiv);
+    }
+
+    public componentWillUnmount() {
+        document.body.removeChild(this.portalDiv);
+    }
+
     public componentDidUpdate(prevProps: ITagInputProps) {
         if (prevProps.tags !== this.props.tags) {
             this.setState({
@@ -135,7 +148,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }
         const { editingTag } = this.state;
         const newEditingTag = (editingTag && editingTag.name === tag.name) ? null : tag;
-        this.props.setEditingTagRef(this.tagItemRefs[newEditingTag.name]);
         this.setState({
             editingTag: newEditingTag,
         });
@@ -207,62 +219,77 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         });
     }
 
-    private getColorPickerCoordinates = () => {
-        const tagCoords = this.getTagCoordinates();
-        return tagCoords ?
-            {
-                top: tagCoords.top + 28,
-                left: tagCoords.left - this.colorPickerWidth + 23,
-            } : {top: 0, left: 0};
+    private getColorPickerPortal = () => {
+                    ReactDOM.createPortal(
+                        <Align align={this.getAlignConfig()} target={this.getTarget}>
+                            <div className="tag-input-color-picker">
+                                {
+                                    this.state.showColorPicker && 
+                                    <ColorPicker
+                                        color={this.state.editingTag && this.state.editingTag.color}
+                                        colors={tagColors}
+                                        onEditColor={this.handleColorChange}
+                                        show={this.state.showColorPicker}
+                coordinates={this.getColorPickerCoordinates()}
+                                        width={this.colorPickerWidth}
+                                    />
+                                }
+                            </div>
+                        </Align>
+                    , (ReactDOM.findDOMNode(this.portalDiv) as Element))
     }
 
-    private getTagCoordinates = () => {
-        const tag = this.state.editingTag;
-        if (tag) {
-            const node = ReactDOM.findDOMNode(this.tagItemRefs[tag.name]) as Element;
-            if (node) {
-                const rect = node.getBoundingClientRect();
-                return {
-                    top: rect.top,
-                    left: rect.left,
-                };
-            }
+    private getAlignConfig = () => {
+        const coords = this.getEditingTagCoords();
+        const isNearBottom = coords && coords.top > (window.innerHeight / 2);
+        const alignCorner = isNearBottom ? "b" : "t";
+        const verticalOffset = isNearBottom ? 4 : -4;
+        return {
+            // Align top right of source node (color picker) with top left of target node (tag row)
+            points: [`${alignCorner}r`, `${alignCorner}l`],
+            // Offset source node by 10px in x and 20px in y
+            offset: [0, verticalOffset],
+            // Offset targetNode by 30% of target node width in x and 40% of target node height
+            // targetOffset: ["30%", "40%"],
+            // Auto adjust position when source node is overflowed
+            // overflow: {adjustX: true, adjustY: true}
         }
     }
 
-    private getColorPickerPortal = () => {
-                        <div className="aligned-tag-input-color-picker">
-                            {
-                                <div className="tag-input-color-picker">
-                                    {
-                                        this.state.showColorPicker && 
-                                        <ColorPicker
-                                            color={this.state.editingTag && this.state.editingTag.color}
-                                            colors={tagColors}
-                                            onEditColor={this.handleColorChange}
-                                            show={this.state.showColorPicker}
-                coordinates={this.getColorPickerCoordinates()}
-                                            width={this.colorPickerWidth}
-                                        />
-                                    }
-                                </div>
-                            }
-                        </div>
+    private getEditingTagCoords = () => {
+        const node = this.getEditingTagNode();
+        return (node) ? node.getBoundingClientRect() : null;
     }
 
-    
+    private getEditingTagNode = () => {
+        const { editingTag } = this.state;
+        if (editingTag) {
+            return ReactDOM.findDOMNode(this.tagItemRefs[editingTag.name]) as Element
+        }
+    }
+
+    private getTarget = () => {
+        return this.getEditingTagNode() || document;
+    }
 
     private getTagItems = () => {
         let props = this.getTagItemProps();
         const query = this.state.searchQuery;
         if (query.length) {
-            props = props.filter((prop) => prop.tag.name.includes(query));
+            props = props.filter((prop) => prop.tag.name.toLowerCase().includes(query.toLowerCase()));
         }
         return props.map((prop) =>
             <TagInputItem
-                ref={(item) => this.tagItemRefs[prop.tag.name] = item}
+                key={prop.tag.name}
+                ref={(item) => this.setTagItemRef(item, prop.tag)}
                 {...prop}
             />);
+    }
+
+    private setTagItemRef = (item, tag) => {
+        if (item) {
+            this.tagItemRefs[tag.name] = item;
+        }
     }
 
     private getTagItemProps = (): ITagInputItemProps[] => {
@@ -296,7 +323,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private onAltClick = (tag: ITag, clickedColor: boolean) => {
-        this.props.setEditingTagRef(this.tagItemRefs[tag.name]);
         this.setState({
             editingTag: tag,
             clickedColor,
