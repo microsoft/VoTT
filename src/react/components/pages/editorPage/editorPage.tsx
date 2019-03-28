@@ -121,6 +121,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         showInvalidRegionWarning: false,
     };
 
+    // Use Electron Remote to load and use TF.js model from main electron process
+    private remote: Electron.Remote;
+
     // TensorFlow model used for Active Learning
     private model: ObjectDetection.ObjectDetection;
 
@@ -139,6 +142,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Load standard TensorFlow.js SSD Model trained on COCO dataset
         this.model = await ObjectDetection.load("mobilenet_v2");
+
+        // this.remote = (window as any).require("electron").remote as Electron.Remote;
+        // this.model = await this.remote.require("electron/activelearning/objectDetection")
+        //     .ObjectDetection.load("mobilenet_v2");
     }
 
     public async componentDidUpdate() {
