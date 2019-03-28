@@ -7,16 +7,18 @@ import { isElectron } from "./common/hostProcess";
 import { Action } from "redux";
 import { ErrorCode } from "./models/applicationState";
 import { Error } from "tslint/lib/error";
+import { config } from "dotenv";
 
 // vott-app-insights
-let INSTRUMENTATION_KEY = "0b9e5117-c78d-40c9-9338-921092cde49a";
+config();
+const instrumentationKey = process.env.REACT_APP_INSTRUMENTATION_KEY;
+
 let debug = false;
 let maxBatchSize = 250;
 
 if (Env.get() !== "production") {
     // for development/testing
     // myho-appinsights
-    INSTRUMENTATION_KEY = "40a80c0c-b913-45b7-afc9-c7eb3ed62900";
     debug = true;
     maxBatchSize = 0;  // send telemetry as soon as it's collected
 }
@@ -33,7 +35,7 @@ export function setUpAppInsights() {
     });
 
     const config = {
-        instrumentationKey: INSTRUMENTATION_KEY,
+        instrumentationKey,
         maxBatchSize,
         extensions: [reactAI],
         extensionConfig: {
