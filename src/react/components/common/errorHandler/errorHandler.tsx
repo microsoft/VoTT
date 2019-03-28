@@ -123,7 +123,7 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         }
 
         // appInsights: track error event
-        trackError(appError.errorCode, appError.message);
+        trackError(appError);
 
         this.props.onError(appError);
     }

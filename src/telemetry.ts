@@ -5,7 +5,7 @@ import { ApplicationInsights, SeverityLevel } from "@microsoft/applicationinsigh
 import { version } from "../package.json";
 import { isElectron } from "./common/hostProcess";
 import { Action } from "redux";
-import { ErrorCode } from "./models/applicationState";
+import { IAppError } from "./models/applicationState";
 import { Error } from "tslint/lib/error";
 import { config } from "dotenv";
 
@@ -46,19 +46,20 @@ export function setUpAppInsights() {
         },
     };
 
-    appInsights = new ApplicationInsights({config}).loadAppInsights();
+    appInsights = new ApplicationInsights({config});
+    appInsights.loadAppInsights();
 }
 
-export function trackError(errorCode: ErrorCode, errorMessage: string): void {
+export function trackError(appError: IAppError): void {
     if (isElectron()) {
         return;
     }
 
-    const error = new Error(errorCode.toString());
+    const error = new Error(appError.errorCode.toString());
     appInsights.trackException({
         error,
         properties: {
-            message: errorMessage,
+            message: appError.message,
         },
         severityLevel: SeverityLevel.Error,
     });
