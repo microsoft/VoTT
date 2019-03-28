@@ -6,7 +6,6 @@ import { version } from "../package.json";
 import { isElectron } from "./common/hostProcess";
 import { Action } from "redux";
 import { IAppError } from "./models/applicationState";
-import { Error } from "tslint/lib/error";
 import { config } from "dotenv";
 
 // vott-app-insights

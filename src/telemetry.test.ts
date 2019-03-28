@@ -2,41 +2,50 @@ import { setUpAppInsights, trackError, trackReduxAction } from "./telemetry";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import { Action } from "redux";
 import { ErrorCode } from "./models/applicationState";
+import { isElectron } from "./common/hostProcess";
 
 jest.mock("./common/hostProcess");
-import { isElectron } from "./common/hostProcess";
 
 jest.mock("@microsoft/applicationinsights-web");
 
 describe("appInsights telemetry", () => {
     const isElectronMock = isElectron as jest.Mock;
-    isElectronMock.mockImplementation(() => false);
 
-    it("setUpAppInsights load an appInsights object", () => {
-        const spy = jest.spyOn(ApplicationInsights.prototype, "loadAppInsights");
-        setUpAppInsights();
-        expect(spy).toHaveBeenCalled();
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
-    it("trackReduxAction call trackEvent", () => {
-        const spy = jest.spyOn(ApplicationInsights.prototype, "trackEvent");
-        setUpAppInsights();
+    describe("browser mode", () => {
+        beforeEach(() => {
+            isElectronMock.mockImplementation(() => false);
+        });
 
-        const action: Action = {type: "test"};
-        trackReduxAction(action);
-        expect(spy).toBeCalled();
-    });
+        it("setUpAppInsights load an appInsights object", () => {
+            const spy = jest.spyOn(ApplicationInsights.prototype, "loadAppInsights");
+            setUpAppInsights();
+            expect(spy).toHaveBeenCalled();
+        });
 
-    it("trackError call trackException", () => {
-        const spy = jest.spyOn(ApplicationInsights.prototype, "trackException");
-        setUpAppInsights();
+        it("trackReduxAction call trackEvent", () => {
+            const spy = jest.spyOn(ApplicationInsights.prototype, "trackEvent");
+            setUpAppInsights();
 
-        const appError = {
-            errorCode: ErrorCode.Unknown,
-            message: "test message",
-        };
-        trackError(appError);
-        expect(spy).toBeCalled();
+            const action: Action = {type: "test"};
+            trackReduxAction(action);
+            expect(spy).toBeCalled();
+        });
+
+        it("trackError call trackException", () => {
+            const spy = jest.spyOn(ApplicationInsights.prototype, "trackException");
+            setUpAppInsights();
+
+            const appError = {
+                errorCode: ErrorCode.Unknown,
+                message: "test message",
+            };
+            trackError(appError);
+            expect(spy).toBeCalled();
+        });
     });
 
     describe("electron mode", () => {
