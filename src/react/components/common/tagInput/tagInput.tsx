@@ -313,10 +313,11 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private onAltClick = (tag: ITag, clickedColor: boolean) => {
+        const { editingTag } = this.state;
         this.setState({
-            editingTag: tag,
+            editingTag: editingTag && editingTag.name === tag.name ? null : tag,
             clickedColor,
-            showColorPicker: !this.state.showColorPicker,
+            showColorPicker: !this.state.showColorPicker && clickedColor,
         });
     }
 

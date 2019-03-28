@@ -112,26 +112,22 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     }
 
     private getTagContent = () => {
-        if (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name) {
-            return (
-                <input
-                    className="tag-name-editor"
-                    type="text"
-                    defaultValue={this.props.tag.name}
-                    onKeyDown={(e) => this.handleNameEdit(e)}
-                    autoFocus={true}
-                />
-            );
-        } else {
-            return this.getDefaultTagContent();
-        }
-    }
-
-    private getDefaultTagContent = () => {
         const displayIndex = this.getDisplayIndex();
         return (
             <div className={"tag-name-container"}>
-                <span className={this.getContentClassName()}>{this.props.tag.name}</span>
+                {
+                    (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name) 
+                    ?
+                    <input
+                        className={`tag-name-editor ${this.getContentClassName()}`}
+                        type="text"
+                        defaultValue={this.props.tag.name}
+                        onKeyDown={(e) => this.handleNameEdit(e)}
+                        autoFocus={true}
+                    />
+                    :
+                    <span className={this.getContentClassName()}>{this.props.tag.name}</span>
+                }
                 {
                     this.props.isLocked &&
                     <div className="tag-lock-icon">
@@ -157,13 +153,6 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                 isBeingEdited: false,
             });
         }
-    }
-
-    private handleColorEdit = (color) => {
-        this.props.onChange(this.props.tag, {
-            ...this.props.tag,
-            color: color.hex,
-        });
     }
 
     private getContentClassName = () => {

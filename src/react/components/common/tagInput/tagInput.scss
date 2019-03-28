@@ -53,6 +53,10 @@ $tagInputWidth: 250px;
 
     &-name {
 
+        &-editor {
+            font-size: 11px;
+        }
+
         &-container {
             display: flex;
             flex-direction: row;
