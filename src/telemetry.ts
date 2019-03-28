@@ -16,7 +16,7 @@ if (Env.get() !== "production") {
     // myho-appinsights
     INSTRUMENTATION_KEY = "40a80c0c-b913-45b7-afc9-c7eb3ed62900";
     debug = true;
-    maxBatchSize = 0;
+    maxBatchSize = 0;  // send telemetry as soon as it's collected
 }
 
 let appInsights;
@@ -25,6 +25,10 @@ export function setUpAppInsights() {
     if (isElectron()) {
         return;
     }
+
+    reactAI.setContext({
+        AppVersion: version,
+    });
 
     const config = {
         instrumentationKey: INSTRUMENTATION_KEY,
@@ -39,9 +43,6 @@ export function setUpAppInsights() {
     };
 
     appInsights = new ApplicationInsights({config}).loadAppInsights();
-    reactAI.setContext({
-        AppVersion: version,
-    });
 }
 
 export function trackError(errorCode, errorMessage) {
