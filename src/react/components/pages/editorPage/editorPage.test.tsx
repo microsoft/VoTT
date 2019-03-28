@@ -8,7 +8,7 @@ import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState, ISize,
+    EditorMode, IAsset, AssetState, AssetType, ISize,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -385,6 +385,7 @@ describe("Editor Page Component", () => {
             expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
         });
     });
+
     describe("Basic toolbar test and hotkey tests", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;

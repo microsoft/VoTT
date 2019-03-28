@@ -123,6 +123,20 @@ export default class MockFactory {
                     },
                 };
                 break;
+            case AssetType.TFRecord:
+                testAsset = {
+                    id: `tfrecordasset-${name}`,
+                    format: "tfrecord",
+                    name: `tfrecordasset-${name}.tfrecord`,
+                    path: `${path}.tfrecord`,
+                    state: assetState,
+                    type: assetType,
+                    size: {
+                        width: 800,
+                        height: 600,
+                    },
+                };
+                break;
             default:
                 testAsset = {
                     id: `asset-${name}`,

@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from "react";
+import React from "react";
 import { IAssetProps } from "./assetPreview";
 import { IAsset } from "../../../../models/applicationState";
 import HtmlFileReader from "../../../../common/htmlFileReader";
@@ -8,9 +8,11 @@ import { FeatureType } from "../../../../providers/export/tensorFlowRecords/tens
 /**
  * State for TFRecord Asset Image component
  * @member tfRecordImage64 - base64 representation of the image data
+ * @member hasError - Whether or not there was an error loading the image data from the tf record
  */
 export interface ITFRecordState {
     tfRecordImage64: string;
+    hasError: boolean;
 }
 
 /**
@@ -19,6 +21,7 @@ export interface ITFRecordState {
 export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> {
     public state: ITFRecordState = {
         tfRecordImage64: "",
+        hasError: false,
     };
 
     private image: React.RefObject<HTMLImageElement> = React.createRef();
@@ -28,7 +31,7 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
             <img ref={this.image}
                 src={this.state.tfRecordImage64}
                 onLoad={this.onLoad}
-                onError={this.props.onError} />
+                onError={this.onError} />
         );
     }
 
@@ -42,15 +45,31 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
         }
     }
 
-    private async updateImage() {
-        this.setState({
-            tfRecordImage64: await this.getTFRecordBase64Image(this.props.asset),
-        });
+    private updateImage = async (): Promise<void> => {
+        try {
+            const base64ImageData = await this.getTFRecordBase64Image(this.props.asset);
+            this.setState({
+                tfRecordImage64: base64ImageData,
+                hasError: !(!!base64ImageData),
+            });
+        } catch (e) {
+            this.setState({
+                hasError: true,
+            });
+
+            this.onError(e);
+        }
     }
 
     private onLoad = () => {
         if (this.props.onLoaded) {
             this.props.onLoaded(this.image.current);
+        }
+    }
+
+    private onError = (e: React.SyntheticEvent<Element>) => {
+        if (this.props.onError && (this.state.tfRecordImage64 || this.state.hasError)) {
+            this.props.onError(e);
         }
     }
 
