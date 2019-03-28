@@ -86,7 +86,7 @@ export default class App extends React.Component<IAppProps> {
                                 <StatusBar>
                                     <StatusBarMetrics project={this.props.currentProject} />
                                 </StatusBar>
-                                <ToastContainer />
+                                <ToastContainer className="vott-toast-container" />
                             </div>
                         </Router >
                     </KeyboardManager>

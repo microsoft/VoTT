@@ -4,7 +4,8 @@ import { AssetPreview, IAssetPreviewProps, IAssetPreviewState } from "./assetPre
 import MockFactory from "../../../../common/mockFactory";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
-import { AssetType } from "../../../../models/applicationState";
+import { AssetType, AssetState } from "../../../../models/applicationState";
+import { TFRecordAsset } from "./tfrecordAsset";
 
 describe("Asset Preview Component", () => {
     let wrapper: ReactWrapper<IAssetPreviewProps, IAssetPreviewState> = null;
@@ -46,6 +47,19 @@ describe("Asset Preview Component", () => {
         };
         wrapper = createComponent(props);
         expect(wrapper.find(VideoAsset).exists()).toBe(true);
+    });
+
+    it("renders a tfrecord asset when asset type is tfrecord", () => {
+        const props: IAssetPreviewProps = {
+            ...defaultProps,
+            asset: MockFactory.createTestAsset("test-record-asset",
+                                                AssetState.Visited,
+                                                dataUri,
+                                                AssetType.TFRecord),
+        };
+        wrapper = createComponent(props);
+        expect(wrapper.find(TFRecordAsset).exists()).toBe(true);
+        expect(wrapper.instance().state).toMatchObject({hasError: false});
     });
 
     it("renders loading indicator if asset isn't fully loaded", () => {
