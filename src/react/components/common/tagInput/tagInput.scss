@@ -92,6 +92,7 @@ $tagInputWidth: 250px;
     &-input {
         &-color-picker {
             position: absolute;
+            z-index: 1;
         }
 
         &-toolbar {

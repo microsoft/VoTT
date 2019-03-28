@@ -61,7 +61,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         editingTag: null,
     };
 
-
     private tagItemRefs: {[id: string]: TagInputItem} = {};
     private colorPickerWidth: number = 137;
     private portalDiv = document.createElement("div");
@@ -218,7 +217,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                         <Align align={this.getAlignConfig()} target={this.getTarget}>
                             <div className="tag-input-color-picker">
                                 {
-                                    this.state.showColorPicker && 
+                                    this.state.showColorPicker &&
                                     <ColorPicker
                                         color={this.state.editingTag && this.state.editingTag.color}
                                         colors={tagColors}
@@ -249,7 +248,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             // targetOffset: ["30%", "40%"],
             // Auto adjust position when source node is overflowed
             // overflow: {adjustX: true, adjustY: true}
-        }
+        };
     }
 
     private getEditingTagCoords = () => {
@@ -260,7 +259,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     private getEditingTagNode = () => {
         const { editingTag } = this.state;
         if (editingTag) {
-            return ReactDOM.findDOMNode(this.tagItemRefs[editingTag.name]) as Element
+            return ReactDOM.findDOMNode(this.tagItemRefs[editingTag.name]) as Element;
         }
     }
 

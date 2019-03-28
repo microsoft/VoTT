@@ -67,7 +67,7 @@ export interface IEditorPageState {
     /** Additional settings for asset previews */
     additionalSettings?: IAssetPreviewSettings;
     /** Most recently selected tag */
-    selectedTag: ITag;
+    selectedTag: string;
     /** Editing tag ref */
     editingTagRef: TagInputItem;
     /** Tags locked for region labeling */
@@ -248,7 +248,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
     }
 
-
     /**
      * Called when the asset side bar is resized
      * @param newWidth The new sidebar width
@@ -280,7 +279,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private onTagClicked = (tag: ITag): void => {
         this.setState({
-            selectedTag: tag,
+            selectedTag: tag.name,
             lockedTags: [],
         }, () => this.canvas.current.applyTag(tag.name));
     }
@@ -288,13 +287,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onCtrlTagClicked = (tag: ITag): void => {
         const locked = this.state.lockedTags;
         this.setState({
-            selectedTag: tag,
+            selectedTag: tag.name,
             lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
         }, () => this.canvas.current.applyTag(tag.name));
-    }
-
-    private onAltTagClicked = (tag: ITag): void => {
-        this.setState({selectedTag: tag});
     }
 
     private onTagRenamed = (oldTag: string, newTag: string) => {
