@@ -238,23 +238,34 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getColorPickerPortal = () => {
-                        <Align align={this.getAlignConfig()} target={this.getTagTarget}>
-            <ColorPicker
-                color={this.state.editingTag && this.state.editingTag.color}
-                colors={tagColors}
-                onEditColor={this.handleColorChange}
-                show={this.state.showColorPicker}
+                        <div className="aligned-tag-input-color-picker">
+                            {
+                                this.state.showColorPicker && 
+                                <Align align={this.getAlignConfig()} target={this.getTagTarget}>
+                                    <div className="tag-input-color-picker">
+                                        <ColorPicker
+                                            color={this.state.editingTag && this.state.editingTag.color}
+                                            colors={tagColors}
+                                            onEditColor={this.handleColorChange}
+                                            show={this.state.showColorPicker}
                 coordinates={this.getColorPickerCoordinates()}
-                width={this.colorPickerWidth}
-            />
-                        </Align>
+                                            width={this.colorPickerWidth}
+                                        />
+                                    </div>
+                                </Align>
+                            }
+                        </div>
     }
 
     private getAlignConfig = () => {
         return {
-            points: ["tl", "tr"],
+            // Align top right of source node (color picker) with top left of target node (tag row)
+            points: ["tr", "tl"],
+            // Offset source node by 10px in x and 20px in y
             offset: [10, 20],
+            // Offset targetNode by 30% of target node width in x and 40% of target node height
             targetOffset: ["30%", "40%"],
+            // Auto adjust position when source node is overflowed
             overflow: {adjustX: true, adjustY: true}
         }
     }
