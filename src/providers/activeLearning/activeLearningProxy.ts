@@ -1,7 +1,6 @@
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
-import { IAsset, StorageType } from "../../models/applicationState";
 
-const PROXY_NAME = "LocalActiveLearningDomain";
+const PROXY_NAME = "LocalActiveLearning";
 
 /**
  * Interface for VoTT Active Learning Proxy
