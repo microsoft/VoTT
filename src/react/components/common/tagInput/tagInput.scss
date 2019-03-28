@@ -116,10 +116,8 @@ $tagInputWidth: 250px;
     }
 }
 
-div.github-picker {
-    div {
-        // padding: 1px;
-    }
+div.github-picker > span > div {
+    margin: 2px;
 }
 
 div.circle-picker-container {
