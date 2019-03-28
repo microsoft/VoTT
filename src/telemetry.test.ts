@@ -5,7 +5,6 @@ import { ErrorCode } from "./models/applicationState";
 import { isElectron } from "./common/hostProcess";
 
 jest.mock("./common/hostProcess");
-
 jest.mock("@microsoft/applicationinsights-web");
 
 describe("appInsights telemetry", () => {
