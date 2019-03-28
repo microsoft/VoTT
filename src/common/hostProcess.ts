@@ -43,4 +43,12 @@ function getHostProcess(): IHostProcess {
     };
 }
 
+export function isBrowser(): boolean {
+    return getHostProcess().type === HostProcessType.Browser;
+}
+
+export function isElectron(): boolean {
+    return getHostProcess().type === HostProcessType.Electron;
+}
+
 export default getHostProcess;

@@ -5,7 +5,7 @@ import createReduxStore from "./redux/store/store";
 import initialState from "./redux/store/initialState";
 import { IApplicationState } from "./models//applicationState";
 import { mount } from "enzyme";
-import { HashRouter } from "react-router-dom";
+import { HashRouter, Router } from "react-router-dom";
 import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
 import { ErrorHandler } from "./react/components/common/errorHandler/errorHandler";
 
@@ -27,7 +27,7 @@ describe("App Component", () => {
 
     it("renders required top level components", () => {
         const wrapper = createComponent();
-        expect(wrapper.find(HashRouter).exists()).toBe(true);
+        expect(wrapper.find(Router).exists()).toBe(true);
         expect(wrapper.find(KeyboardManager).exists()).toEqual(true);
         expect(wrapper.find(ErrorHandler).exists()).toEqual(true);
     });
