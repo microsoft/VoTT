@@ -62,7 +62,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     };
 
     private tagItemRefs: {[id: string]: TagInputItem} = {};
-    private colorPickerWidth: number = 137;
     private portalDiv = document.createElement("div");
 
     public render() {
@@ -221,7 +220,6 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                                         onEditColor={this.handleColorChange}
                                         show={this.state.showColorPicker}
                 coordinates={this.getColorPickerCoordinates()}
-                                        width={this.colorPickerWidth}
                                     />
                                 }
                             </div>
@@ -233,7 +231,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         const coords = this.getEditingTagCoords();
         const isNearBottom = coords && coords.top > (window.innerHeight / 2);
         const alignCorner = isNearBottom ? "b" : "t";
-        const verticalOffset = isNearBottom ? 4 : -4;
+        const verticalOffset = isNearBottom ? 6 : -6;
         return {
             // Align top right of source node (color picker) with top left of target node (tag row)
             points: [`${alignCorner}r`, `${alignCorner}l`],

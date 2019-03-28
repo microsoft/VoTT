@@ -7,7 +7,6 @@ export interface IColorPickerProps {
     color: string;
     colors: string[];
     onEditColor: (color: string) => void;
-    width?: number;
 }
 
 export class ColorPicker extends React.Component<IColorPickerProps> {
@@ -31,7 +30,7 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
                 color={{hex: this.props.color}}
                 onChangeComplete={this.onChange}
                 colors={this.props.colors}
-                width={this.props.width}
+                width={160}
                 styles={{
                     default: {
                         card: {
