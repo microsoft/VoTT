@@ -281,19 +281,17 @@ canvas {
   margin: auto;
 }
 
-.badge-visited,
-.badge-tagged {
-  color: #fff;
-  position: absolute;
-  z-index: 2;
-  right: 0.5em;
-  top: 0.5em;
-  text-shadow: 0px 0px 4px #000;
+.badge-visited, .badge-tagged {
+    color: #fff;
+    position: absolute;
+    z-index: 2;
+    right: 0em;
+    text-shadow: 0px 0px 2px #000
 }
 
 .badge-tagged {
-  background-color: rgba(green, 0.9);
-  border: 1px solid $lighter-2;
+    background-color: rgba(#7cbb00, 0.9);
+    border: 1px solid $lighter-2;
 }
 
 .badge-visited {

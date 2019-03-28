@@ -177,21 +177,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         handler={this.handleCtrlTagHotKey} />);
                 })}
                 <SplitPane split="vertical"
-                    defaultSize={this.state.thumbnailSize.width}
+                    primary="second"
+                    defaultSize={this.state.thumbnailSize.height}
                     minSize={100}
                     maxSize={400}
                     paneStyle={{ display: "flex" }}
+                    style={{ overflow: "scroll" }}
                     onChange={this.onSideBarResize}
                     onDragFinished={this.onSideBarResizeComplete}>
-                    <div className="editor-page-sidebar bg-lighter-1">
-                        <EditorSideBar
-                            assets={rootAssets}
-                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
-                            onBeforeAssetSelected={this.onBeforeAssetSelected}
-                            onAssetSelected={this.selectAsset}
-                            thumbnailSize={this.state.thumbnailSize}
-                        />
-                    </div>
                     <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-header">
@@ -222,8 +215,19 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     </Canvas>
                                 }
                             </div>
+                            <div className="editor-page-right-sidebar">
+                                <TagInput
+                                    tags={this.props.project.tags}
+                                    lockedTags={this.state.lockedTags}
+                                    selectedRegions={this.state.selectedRegions}
+                                    onChange={this.onTagsChanged}
+                                    onLockedTagsChange={this.onLockedTagsChanged}
+                                    onTagClick={this.onTagClicked}
+                                    onCtrlTagClick={this.onCtrlTagClicked}
+                                />
+                            </div>
                         </div>
-                        <div className="editor-page-right-sidebar">
+                        {/* <div className="editor-page-right-sidebar">
                             <TagInput
                                 tags={this.props.project.tags}
                                 lockedTags={this.state.lockedTags}
@@ -233,8 +237,50 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
                             />
-                        </div>
+                        </div> */}
                     </div>
+                    {/* <div className="editor-page-content">
+                        <div className="editor-page-content-header">
+                            <EditorToolbar project={this.props.project}
+                                items={this.toolbarItems}
+                                actions={this.props.actions}
+                                onToolbarItemSelected={this.onToolbarItemSelected} />
+                        </div>
+                        <div className="editor-page-content-body">
+                            {selectedAsset &&
+                                <Canvas
+                                    ref={this.canvas}
+                                    selectedAsset={this.state.selectedAsset}
+                                    onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                    editorMode={this.state.editorMode}
+                                    selectionMode={this.state.selectionMode}
+                                    project={this.props.project}
+                                    lockedTags={this.state.lockedTags}>
+                                    <AssetPreview
+                                        additionalSettings={this.state.additionalSettings}
+                                        autoPlay={true}
+                                        onChildAssetSelected={this.onChildAssetSelected}
+                                        asset={this.state.selectedAsset.asset}
+                                        childAssets={this.state.childAssets} />
+                                </Canvas>
+                            }
+                        </div>
+                    </div> */}
+                    <div className="editor-page-sidebar bg-lighter-1">
+                            <EditorSideBar
+                                assets={rootAssets}
+                                selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                                onAssetSelected={this.selectAsset}
+                                thumbnailSize={this.state.thumbnailSize}
+                            />
+                    </div>
+                            {/* <EditorFooter
+                                tags={this.props.project.tags}
+                                lockedTags={this.state.lockedTags}
+                                onTagsChanged={this.onFooterChange}
+                                onTagClicked={this.onTagClicked}
+                                onCtrlTagClicked={this.onCtrlTagClicked}
+                            /> */}
                 </SplitPane>
                 <Alert show={this.state.showInvalidRegionWarning}
                     title={strings.editorPage.messages.enforceTaggedRegions.title}
