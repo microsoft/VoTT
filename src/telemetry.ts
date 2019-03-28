@@ -5,6 +5,8 @@ import { ApplicationInsights, SeverityLevel } from "@microsoft/applicationinsigh
 import { version } from "../package.json";
 import { isElectron } from "./common/hostProcess";
 import { Action } from "redux";
+import { ErrorCode } from "./models/applicationState";
+import { Error } from "tslint/lib/error";
 
 // vott-app-insights
 let INSTRUMENTATION_KEY = "0b9e5117-c78d-40c9-9338-921092cde49a";
@@ -45,7 +47,7 @@ export function setUpAppInsights() {
     appInsights = new ApplicationInsights({config}).loadAppInsights();
 }
 
-export function trackError(errorCode, errorMessage) {
+export function trackError(errorCode: ErrorCode, errorMessage: string): void {
     if (isElectron()) {
         return;
     }
@@ -60,7 +62,7 @@ export function trackError(errorCode, errorMessage) {
     });
 }
 
-export function trackReduxAction(action: Action) {
+export function trackReduxAction(action: Action): void {
     if (isElectron()) {
         return;
     }
@@ -68,5 +70,4 @@ export function trackReduxAction(action: Action) {
     appInsights.trackEvent({
         name: action.type,
     });
-
 }
