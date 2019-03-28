@@ -12,27 +12,30 @@ export interface IColorPickerProps {
 
 export class ColorPicker extends React.Component<IColorPickerProps> {
 
+    private pickerBackground = "#252526";
+
     public render() {
         // const {top, left} = this.props.coordinates;
         return (
             this.props.show &&
-            <GithubPicker
-                color={{hex: this.props.color}}
-                onChangeComplete={(color) => this.props.onEditColor(color.hex)}
-                colors={this.props.colors}
-                width={this.props.width}
-                styles={{
-                    default: {
-                        card: {
-                            background: "#000",
-                        },
-                        triangle: {
-                            borderBottomColor: "#000",
-                        },
-                    },
-                }}
-                triangle={"hide"}
-            />
+            this.GithubPicker()
         );
+    }
+
+    private GithubPicker = () => {
+        return <GithubPicker
+            color={{hex: this.props.color}}
+            onChangeComplete={(color) => this.props.onEditColor(color.hex)}
+            colors={this.props.colors}
+            width={this.props.width}
+            styles={{
+                default: {
+                    card: {
+                        background: this.pickerBackground,
+                    },
+                },
+            }}
+            triangle={"hide"}
+        />;
     }
 }

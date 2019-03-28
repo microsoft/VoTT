@@ -116,7 +116,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         return (
             <div className={"tag-name-container"}>
                 {
-                    (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name) 
+                    (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name)
                     ?
                     <input
                         className={`tag-name-editor ${this.getContentClassName()}`}
