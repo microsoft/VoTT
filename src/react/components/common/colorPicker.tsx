@@ -17,13 +17,9 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
         return (
             this.props.show &&
             <div className="tag-color-picker" 
-                // style={{
-                //     position: "absolute",
-                //     top: `${top}px`,
-                //     left: `${left}px`,
-                //     zIndex: 1,
-                //     overflow: "visible",
-                // }}
+                style={{
+                    zIndex: 100,
+                }}
             >
                 <GithubPicker
                     color={{hex: this.props.color}}
