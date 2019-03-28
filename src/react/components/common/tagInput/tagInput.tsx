@@ -1,5 +1,6 @@
 import React, { ReactElement, ReactInstance } from "react";
 import ReactDOM from "react-dom";
+import Align from "rc-align";
 import { randomIntInRange } from "../../../../common/utils";
 import { IRegion, ITag } from "../../../../models/applicationState";
 import { ColorPicker } from "../colorPicker";
@@ -96,7 +97,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                         </div>
                     }
                     <div className="tag-input-color-picker">
-                        {this.getColorPicker()}
+                        {this.getColorPickerPortal()}
                     </div>
                     <div className="tag-input-items">
                         {this.getTagItems()}
@@ -225,8 +226,19 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }
     }
 
-    private getColorPicker = () => {
-        return this.props.containerRef && ReactDOM.createPortal(
+    private getTagTarget = () => {
+        const tag = this.state.editingTag;
+        if (tag) {
+            const node = ReactDOM.findDOMNode(this.tagItemRefs[tag.name]) as Element;
+            if (node) {
+                return node;
+            }
+        }
+        return document;
+    }
+
+    private getColorPickerPortal = () => {
+                        <Align align={this.getAlignConfig()} target={this.getTagTarget}>
             <ColorPicker
                 color={this.state.editingTag && this.state.editingTag.color}
                 colors={tagColors}
@@ -235,7 +247,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 coordinates={this.getColorPickerCoordinates()}
                 width={this.colorPickerWidth}
             />
-        , (ReactDOM.findDOMNode(this.props.containerRef) as Element));
+                        </Align>
+    }
+
+    private getAlignConfig = () => {
+        return {
+            points: ["tl", "tr"],
+            offset: [10, 20],
+            targetOffset: ["30%", "40%"],
+            overflow: {adjustX: true, adjustY: true}
+        }
     }
 
     private getTagItems = () => {

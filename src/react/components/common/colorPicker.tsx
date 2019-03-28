@@ -3,7 +3,7 @@ import { GithubPicker } from "react-color";
 
 export interface IColorPickerProps {
     show: boolean;
-    coordinates: {top: number, left: number};
+    // coordinates: {top: number, left: number};
     color: string;
     colors: string[];
     onEditColor: (color: string) => void;
@@ -13,16 +13,18 @@ export interface IColorPickerProps {
 export class ColorPicker extends React.Component<IColorPickerProps> {
 
     public render() {
-        const {top, left} = this.props.coordinates;
+        // const {top, left} = this.props.coordinates;
         return (
             this.props.show &&
-            <div className="tag-color-picker" style={{
-                position: "absolute",
-                top: `${top}px`,
-                left: `${left}px`,
-                zIndex: 1,
-                overflow: "visible",
-            }}>
+            <div className="tag-color-picker" 
+                // style={{
+                //     position: "absolute",
+                //     top: `${top}px`,
+                //     left: `${left}px`,
+                //     zIndex: 1,
+                //     overflow: "visible",
+                // }}
+            >
                 <GithubPicker
                     color={{hex: this.props.color}}
                     onChangeComplete={(color) => this.props.onEditColor(color.hex)}
