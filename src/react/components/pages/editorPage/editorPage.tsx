@@ -178,7 +178,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 })}
                 <SplitPane split="vertical"
                     primary="second"
-                    defaultSize={this.state.thumbnailSize.height}
+                    defaultSize={this.state.thumbnailSize.height + 18}
                     minSize={100}
                     maxSize={400}
                     paneStyle={{ display: "flex" }}
@@ -302,11 +302,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Called when the asset side bar is resized
      * @param newWidth The new sidebar width
      */
-    private onSideBarResize = (newWidth: number) => {
+    private onSideBarResize = (newSize: number) => {
         this.setState({
             thumbnailSize: {
-                width: newWidth,
-                height: newWidth / (4 / 3),
+                height: newSize,
+                width: newSize * (4 / 3),
             },
         }, () => this.canvas.current.forceResize());
     }

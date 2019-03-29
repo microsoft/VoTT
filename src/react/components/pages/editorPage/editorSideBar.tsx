@@ -50,10 +50,10 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                             className="asset-list"
                             height={height}
                             width={width}
-                            columnWidth={100}
+                            columnWidth={this.props.thumbnailSize.width}
                             columnCount={this.props.assets.length}
                             rowCount={1}
-                            rowHeight={() => this.getRowHeight(width)}
+                            rowHeight={this.props.thumbnailSize.height}
                             cellRenderer={this.cellRenderer}
                             overscanRowCount={2}
                             scrollToIndex={this.state.scrollToIndex}
@@ -65,9 +65,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     }
 
     public componentDidUpdate(prevProps: IEditorSideBarProps) {
-        if (prevProps.thumbnailSize !== this.props.thumbnailSize) {
-            this.listRef.current.recomputeRowHeights();
-        }
 
         if (!prevProps.selectedAsset && !this.props.selectedAsset) {
             return;
@@ -77,11 +74,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             prevProps.selectedAsset.id !== this.props.selectedAsset.id) {
             this.selectAsset(this.props.selectedAsset);
         }
-    }
-
-    private getRowHeight = (width: number) => {
-        // return width / (3 / 4) + 16;
-        return 100;
     }
 
     private selectAsset = (selectedAsset: IAsset): void => {
