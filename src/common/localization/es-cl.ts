@@ -287,6 +287,14 @@ export const spanish: IAppStrings = {
             },
             tfPascalVoc: {
                 displayName: "Tensorflow Pascal VOC",
+                testTrainSplit: {
+                    title: "Prueba/tren Split",
+                    description: "La división del tren de prueba que se utilizará para los datos exportados",
+                },
+                exportUnassigned: {
+                    title: "Exportar sin asignar",
+                    description: "Si se incluyen o no etiquetas no asignadas en los datos exportados",
+                },
             },
         },
         messages: {

@@ -250,13 +250,6 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
             // Save ImageSets
             tags.forEach(async (tag) => {
                 if (testSplit > 0 && testSplit <= 1) {
-                    // Shuffle tagsDict sets
-                    if (this.options.shuffle) {
-                        tagsDict.forEach((value, key) => {
-                            value = this.shuffle(value);
-                        });
-                    }
-
                     const array = tagsDict.get(tag.name);
 
                     // Split in Test and Train sets
@@ -278,13 +271,5 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
                 }
             });
         }
-    }
-
-    private shuffle(a: any[]) {
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
     }
 }
