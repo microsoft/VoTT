@@ -5,6 +5,7 @@ import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { interpolate } from "../../common/strings";
+import { string } from "prop-types";
 
 interface IObjectInfo {
     name: string;
@@ -37,7 +38,7 @@ export interface ITFPascalVOCExportProviderOptions extends IExportProviderOption
 export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExportProviderOptions> {
     private imagesInfo = new Map<string, IImageInfo>();
 
-    constructor(project: IProject, options: IExportProviderOptions) {
+    constructor(project: IProject, options: ITFPascalVOCExportProviderOptions) {
         super(project, options);
         Guard.null(options);
     }
@@ -236,9 +237,11 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
         await this.storageProvider.createContainer(imageSetsMainFolderName);
 
         const tagsDict = new Map<string, string[]>();
+        const tagUsage = new Map<string, number>();
 
         tags.forEach((tag) => {
             tagsDict.set(tag.name, []);
+            tagUsage.set(tag.name, 0);
         });
 
         allAssets.forEach((asset) => {
@@ -246,8 +249,10 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
                 asset.regions.forEach((region) => {
                     tags.forEach((tag) => {
                         const array = tagsDict.get(tag.name);
+                        let usage = tagUsage.get(tag.name);
                         if (region.tags.filter((tagName) => tagName === tag.name).length > 0) {
                             array.push(`${asset.asset.name} 1`);
+                            tagUsage.set(tag.name, usage += 1);
                         } else {
                             array.push(`${asset.asset.name} -1`);
                         }
@@ -262,9 +267,14 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
         });
 
         // Save ImageSets
-        tags.forEach(async (tag) => {
+        await tags.forEachAsync(async (tag) => {
             if (testSplit > 0 && testSplit <= 1) {
                 const array = tagsDict.get(tag.name);
+
+                const usage = tagUsage.get(tag.name);
+                if (usage === 0 && !this.options.exportUnassigned) {
+                    return;
+                }
 
                 // Split in Test and Train sets
                 const totalAssets = array.length;
