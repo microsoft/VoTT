@@ -1,7 +1,7 @@
 import { Env } from "./common/environment";
 import { reactAI } from "react-appinsights";
 import history from "./history";
-import { ApplicationInsights, SeverityLevel } from "@microsoft/applicationinsights-web";
+import { ApplicationInsights, IExceptionTelemetry, SeverityLevel } from "@microsoft/applicationinsights-web";
 import { version } from "../package.json";
 import { isElectron } from "./common/hostProcess";
 import { Action } from "redux";
@@ -49,7 +49,7 @@ export function setUpAppInsights() {
         },
     };
 
-    appInsights = new ApplicationInsights({ config });
+    appInsights = new ApplicationInsights({config});
     appInsights.loadAppInsights();
 }
 
@@ -62,14 +62,16 @@ export function trackError(appError: IAppError): void {
         return;
     }
 
-    const error = new Error(appError.errorCode.toString());
-    appInsights.trackException({
+    const error = new Error(appError.errorCode);
+    const exceptionTelemetry: IExceptionTelemetry = {
         error,
         properties: {
             message: appError.message,
         },
         severityLevel: SeverityLevel.Error,
-    });
+    };
+
+    appInsights.trackException(exceptionTelemetry);
 }
 
 /**

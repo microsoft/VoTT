@@ -1,5 +1,5 @@
 import { setUpAppInsights, trackError, trackReduxAction } from "./telemetry";
-import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import { ApplicationInsights, SeverityLevel, IExceptionTelemetry } from "@microsoft/applicationinsights-web";
 import { Action } from "redux";
 import { ErrorCode } from "./models/applicationState";
 import { isElectron } from "./common/hostProcess";
@@ -31,7 +31,10 @@ describe("appInsights telemetry", () => {
 
             const action: Action = {type: "test"};
             trackReduxAction(action);
-            expect(spy).toBeCalled();
+
+            expect(spy).toBeCalledWith({
+                name: "test",
+            });
         });
 
         it("trackError call trackException", () => {
@@ -43,7 +46,16 @@ describe("appInsights telemetry", () => {
                 message: "test message",
             };
             trackError(appError);
-            expect(spy).toBeCalled();
+
+            const expectedExceptionTelemetry: IExceptionTelemetry = {
+                error: new Error(ErrorCode.Unknown),
+                properties: {
+                    message: appError.message,
+                },
+                severityLevel: SeverityLevel.Error,
+            };
+
+            expect(spy).toBeCalledWith(expectedExceptionTelemetry);
         });
     });
 
