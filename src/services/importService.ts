@@ -65,8 +65,6 @@ export default class ImportService implements IImportService {
             autoSave: true,
         };
 
-        // if (originalProject.visitedFrames.every((item) => typeof item === "number")) then video
-
         return convertedProject;
     }
 
@@ -155,7 +153,7 @@ export default class ImportService implements IImportService {
     }
 
     /**
-     * Generate assets based on V1 Project frames and regions
+     * Generate regions based on V1 Project asset metadata
      * @param metadata - Asset Metadata from asset created from filepath
      * @param frameRegions - V1 Regions within the V1 Frame
      */
@@ -181,6 +179,12 @@ export default class ImportService implements IImportService {
         return metadata;
     }
 
+    /**
+     * Generate assets for V1 Image Project frames and regions
+     * @param v1Project - v1 Project content and file information
+     * @param frameList - Dictionary of frames:regions in v1 project
+     * @param assetService - assetService corresponding to v2 project
+     */
     private async generateImageAssets(v1Project: IFileInfo, frameList: {[frameName: string]: IV1Region[]},
                                       assetService: AssetService): Promise<IAssetMetadata[]> {
         const generatedAssetMetadata: IAssetMetadata[] = [];
@@ -206,6 +210,12 @@ export default class ImportService implements IImportService {
         return generatedAssetMetadata;
     }
 
+    /**
+     * Generate assets for V1 Video Project frames and regions
+     * @param v1Project - v1 Project content and file information
+     * @param frameList - Dictionary of frames:regions in v1 project
+     * @param assetService - assetService corresponding to v2 project
+     */
     private async generateVideoAssets(v1Project: IFileInfo, frameList: {[frameName: string]: IV1Region[]},
                                       assetService: AssetService): Promise<IAssetMetadata[]> {
         const generatedAssetMetadata: IAssetMetadata[] = [];
