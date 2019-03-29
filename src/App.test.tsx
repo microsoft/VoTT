@@ -5,7 +5,7 @@ import createReduxStore from "./redux/store/store";
 import initialState from "./redux/store/initialState";
 import { IApplicationState } from "./models//applicationState";
 import { mount } from "enzyme";
-import { HashRouter, Router } from "react-router-dom";
+import { Router } from "react-router-dom";
 import { KeyboardManager } from "./react/components/common/keyboardManager/keyboardManager";
 import { ErrorHandler } from "./react/components/common/errorHandler/errorHandler";
 

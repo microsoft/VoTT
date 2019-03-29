@@ -24,6 +24,10 @@ if (Env.get() !== "production") {
 
 let appInsights;
 
+/**
+ * create an app insights connection for web version
+ * do nothing for electron mode
+ */
 export function setUpAppInsights() {
     if (isElectron()) {
         return;
@@ -45,10 +49,14 @@ export function setUpAppInsights() {
         },
     };
 
-    appInsights = new ApplicationInsights({config});
+    appInsights = new ApplicationInsights({ config });
     appInsights.loadAppInsights();
 }
 
+/**
+ * send exception event to AppInsights
+ * @param appError object containing the error type and error message
+ */
 export function trackError(appError: IAppError): void {
     if (isElectron()) {
         return;
@@ -64,6 +72,10 @@ export function trackError(appError: IAppError): void {
     });
 }
 
+/**
+ * send custom event tracking redux action
+ * @param action a redux action
+ */
 export function trackReduxAction(action: Action): void {
     if (isElectron()) {
         return;
