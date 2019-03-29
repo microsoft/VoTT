@@ -124,8 +124,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     // Use Electron Remote to load and use TF.js model from main electron process
     private remote: Electron.Remote;
 
-    // TensorFlow model used for Active Learning
-    private model: ObjectDetection.ObjectDetection;
+    private activeLearningProxy: LocalActiveLearningProxy;
 
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
@@ -140,15 +139,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             await this.props.actions.loadProject(project);
         }
 
-        // Load standard TensorFlow.js SSD Model trained on COCO dataset
-        this.model = await ObjectDetection.load("mobilenet_v2");
-
-        const activeLearningProxy = new LocalActiveLearningProxy();
-        console.log(await activeLearningProxy.testMethod("Jacopo"));
-
-        // this.remote = (window as any).require("electron").remote as Electron.Remote;
-        // this.model = await this.remote.require("electron/activelearning/objectDetection")
-        //     .ObjectDetection.load("mobilenet_v2");
+        this.activeLearningProxy = new LocalActiveLearningProxy();
     }
 
     public async componentDidUpdate() {
@@ -519,14 +510,26 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private predict = async () => {
-        if (this.model) {
+        if (this.activeLearningProxy) {
             const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
             const buffer = Buffer.from(imageBuffer);
             const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
             const image = document.createElement("img") as HTMLImageElement;
             image.onload = async () => {
-                const predictions = await this.model.detect(image);
                 console.log(image.x, image.y, image.width, image.height);
+
+                // create ImageData object
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                canvas.width = image.width;
+                canvas.height = image.height;
+                const idata: ImageData = ctx.createImageData(image.width, image.height);
+                idata.data.set(buffer);
+                ctx.putImageData(idata, 0, 0);
+
+                console.log(idata);
+
+                const predictions = await this.activeLearningProxy.detect(idata);
                 console.log(predictions);
 
                 const regions = [...this.state.selectedAsset.regions];

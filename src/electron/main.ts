@@ -11,7 +11,7 @@ import LocalActiveLearning from "./providers/storage/localActiveLearning";
 let mainWindow: BrowserWindow;
 let ipcMainProxy: IpcMainProxy;
 
-function createWindow() {
+async function createWindow() {
     const windowOptions: BrowserWindowConstructorOptions = {
         width: 1024,
         height: 768,
@@ -56,7 +56,7 @@ function createWindow() {
     ipcMainProxy.registerProxy("LocalFileSystem", localFileSystem);
 
     const localActiveLearning = new LocalActiveLearning(mainWindow);
-    localActiveLearning.setup();
+    await localActiveLearning.setup();
     ipcMainProxy.registerProxy("LocalActiveLearning", localActiveLearning);
 }
 
@@ -132,7 +132,10 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+// app.on("ready", createWindow);
+app.on("ready", async () => {
+    await createWindow();
+});
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
@@ -143,11 +146,11 @@ app.on("window-all-closed", () => {
     }
 });
 
-app.on("activate", () => {
+app.on("activate", async () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
-        createWindow();
+        await createWindow();
     }
 });
 

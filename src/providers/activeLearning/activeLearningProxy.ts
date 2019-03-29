@@ -1,13 +1,15 @@
+import "@tensorflow/tfjs";
+import { DetectedObject } from "../../electron/activelearning/objectDetection";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 
 const PROXY_NAME = "LocalActiveLearning";
 
 /**
  * Interface for VoTT Active Learning Proxy
- * @member testMethod - Test Method
+ * @member detect - Detect Method
  */
 export interface IActiveLearningProvider {
-    testMethod(input: string): Promise<string>;
+    detect(image: ImageData): Promise<DetectedObject[]>;
 }
 
 /**
@@ -32,9 +34,9 @@ export class LocalActiveLearningProxy implements IActiveLearningProvider {
     }
 
     /**
-     * Test Remote API
+     * Detect Remote API
      */
-    public testMethod(input: string): Promise<string> {
-        return IpcRendererProxy.send(`${PROXY_NAME}:testMethod`, [input]);
+    public detect(image: ImageData): Promise<DetectedObject[]> {
+        return IpcRendererProxy.send(`${PROXY_NAME}:detect`, [image]);
     }
 }

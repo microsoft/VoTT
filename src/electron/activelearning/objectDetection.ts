@@ -15,7 +15,8 @@
  * =============================================================================
  */
 
-import * as tf from "@tensorflow/tfjs";
+import * as tf from "@tensorflow/tfjs-node";
+
 import {CLASSES} from "./classes";
 
 const BASE_PATH = "https://storage.googleapis.com/tfjs-models/savedmodel/";
@@ -70,7 +71,12 @@ export class ObjectDetection {
   }
 
   public async load() {
-    this.model = await tf.loadGraphModel(this.modelPath);
+    // this.model = await tf.loadGraphModel(this.modelPath);
+    try {
+        this.model = await tf.loadGraphModel("file:///Users/jacopo/CocoSSDLite/model.json");
+    } catch (error) {
+        console.log(error);
+    }
 
     // Warmup the model.
     const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
