@@ -56,6 +56,7 @@ function createWindow() {
     ipcMainProxy.registerProxy("LocalFileSystem", localFileSystem);
 
     const localActiveLearning = new LocalActiveLearning(mainWindow);
+    localActiveLearning.setup();
     ipcMainProxy.registerProxy("LocalActiveLearning", localActiveLearning);
 }
 
