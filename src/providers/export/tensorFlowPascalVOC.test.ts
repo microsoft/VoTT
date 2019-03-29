@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { TFPascalVOCJsonExportProvider } from "./tensorFlowPascalVOC";
+import { TFPascalVOCExportProvider } from "./tensorFlowPascalVOC";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
@@ -20,16 +20,6 @@ import { appInfo } from "../../common/appInfo";
 import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
-
-function _base64ToArrayBuffer(base64: string) {
-    const binaryString = window.atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
 
 describe("TFPascalVOC Json Export Provider", () => {
     const testAssets = MockFactory.createTestAssets(10, 1);
@@ -62,7 +52,7 @@ describe("TFPascalVOC Json Export Provider", () => {
     });
 
     it("Is defined", () => {
-        expect(TFPascalVOCJsonExportProvider).toBeDefined();
+        expect(TFPascalVOCExportProvider).toBeDefined();
     });
 
     it("Can be instantiated through the factory", () => {
@@ -71,7 +61,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         };
         const exportProvider = ExportProviderFactory.create("tensorFlowPascalVOC", baseTestProject, options);
         expect(exportProvider).not.toBeNull();
-        expect(exportProvider).toBeInstanceOf(TFPascalVOCJsonExportProvider);
+        expect(exportProvider).toBeInstanceOf(TFPascalVOCExportProvider);
     });
 
     describe("Export variations", () => {
@@ -118,7 +108,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -174,7 +164,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(1);
 
-            const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -218,7 +208,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;

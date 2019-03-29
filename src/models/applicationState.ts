@@ -174,8 +174,6 @@ export interface IConnection {
  */
 export interface IExportProviderOptions extends IProviderOptions {
     assetState: ExportAssetState;
-    testTrainSplit?: number;
-    exportUnassigned?: boolean;
 }
 
 /**

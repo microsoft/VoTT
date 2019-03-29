@@ -21,10 +21,20 @@ interface IImageInfo {
 }
 
 /**
+ * Export options for TensorFlow Pascal VOC Export Provider
+ */
+export interface ITFPascalVOCExportProviderOptions extends IExportProviderOptions {
+    /** The test / train split ratio for exporting data */
+    testTrainSplit?: number;
+    /** Whether or not to include unassigned tags in exported data */
+    exportUnassigned?: boolean;
+}
+
+/**
  * @name - TFPascalVOC Json Export Provider
  * @description - Exports a project into a single JSON file that include all configured assets
  */
-export class TFPascalVOCJsonExportProvider extends ExportProvider {
+export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExportProviderOptions> {
     private imagesInfo = new Map<string, IImageInfo>();
 
     constructor(project: IProject, options: IExportProviderOptions) {
@@ -49,12 +59,12 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
         await this.exportAnnotations(exportFolderName, allAssets);
 
         // TestSplit && exportUnassignedTags are optional parameter in the UI Exporter configuration
-        const testSplit = this.options.testTrainSplit ? (100 - this.options.testTrainSplit) / 100 : 0.2;
+        const testSplit = (100 - (this.options.testTrainSplit || 80)) / 100;
         await this.exportImageSets(exportFolderName,
-                                    allAssets,
-                                    this.project.tags,
-                                    testSplit,
-                                    this.options.exportUnassigned);
+            allAssets,
+            this.project.tags,
+            testSplit,
+            this.options.exportUnassigned);
     }
 
     private async exportImages(exportFolderName: string, allAssets: IAssetMetadata[]) {
@@ -214,6 +224,10 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
         tags: ITag[],
         testSplit: number,
         exportUnassignedTags: boolean) {
+        if (!tags) {
+            return;
+        }
+
         // Create ImageSets Sub Folder (Main ?)
         const imageSetsFolderName = `${exportFolderName}/ImageSets`;
         await this.storageProvider.createContainer(imageSetsFolderName);
@@ -222,54 +236,53 @@ export class TFPascalVOCJsonExportProvider extends ExportProvider {
         await this.storageProvider.createContainer(imageSetsMainFolderName);
 
         const tagsDict = new Map<string, string[]>();
-        if (tags) {
-            tags.forEach((tag) => {
-                tagsDict.set(tag.name, []);
-            });
 
-            allAssets.forEach((asset) => {
-                if (asset.regions.length > 0) {
-                    asset.regions.forEach((region) => {
-                        tags.forEach((tag) => {
-                            const array = tagsDict.get(tag.name);
-                            if (region.tags.filter((tagName) => tagName === tag.name).length > 0) {
-                                array.push(`${asset.asset.name} 1`);
-                            } else {
-                                array.push(`${asset.asset.name} -1`);
-                            }
-                        });
-                    });
-                } else if (exportUnassignedTags) {
+        tags.forEach((tag) => {
+            tagsDict.set(tag.name, []);
+        });
+
+        allAssets.forEach((asset) => {
+            if (asset.regions.length > 0) {
+                asset.regions.forEach((region) => {
                     tags.forEach((tag) => {
                         const array = tagsDict.get(tag.name);
-                        array.push(`${asset.asset.name} -1`);
+                        if (region.tags.filter((tagName) => tagName === tag.name).length > 0) {
+                            array.push(`${asset.asset.name} 1`);
+                        } else {
+                            array.push(`${asset.asset.name} -1`);
+                        }
                     });
-                }
-            });
-
-            // Save ImageSets
-            tags.forEach(async (tag) => {
-                if (testSplit > 0 && testSplit <= 1) {
+                });
+            } else if (exportUnassignedTags) {
+                tags.forEach((tag) => {
                     const array = tagsDict.get(tag.name);
+                    array.push(`${asset.asset.name} -1`);
+                });
+            }
+        });
 
-                    // Split in Test and Train sets
-                    const totalAssets = array.length;
-                    const testCount = Math.ceil(totalAssets * testSplit);
+        // Save ImageSets
+        tags.forEach(async (tag) => {
+            if (testSplit > 0 && testSplit <= 1) {
+                const array = tagsDict.get(tag.name);
 
-                    const testArray = array.slice(0, testCount);
-                    const trainArray = array.slice(testCount, totalAssets);
+                // Split in Test and Train sets
+                const totalAssets = array.length;
+                const testCount = Math.ceil(totalAssets * testSplit);
 
-                    const testImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_val.txt`;
-                    await this.storageProvider.writeText(testImageSetFileName, testArray.join("\n"));
+                const testArray = array.slice(0, testCount);
+                const trainArray = array.slice(testCount, totalAssets);
 
-                    const trainImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_train.txt`;
-                    await this.storageProvider.writeText(trainImageSetFileName, trainArray.join("\n"));
+                const testImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_val.txt`;
+                await this.storageProvider.writeText(testImageSetFileName, testArray.join("\n"));
 
-                } else {
-                    const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
-                    await this.storageProvider.writeText(imageSetFileName, tagsDict.get(tag.name).join("\n"));
-                }
-            });
-        }
+                const trainImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_train.txt`;
+                await this.storageProvider.writeText(trainImageSetFileName, trainArray.join("\n"));
+
+            } else {
+                const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
+                await this.storageProvider.writeText(imageSetFileName, tagsDict.get(tag.name).join("\n"));
+            }
+        });
     }
 }

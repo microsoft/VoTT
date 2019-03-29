@@ -293,7 +293,7 @@ describe("Asset Service", () => {
         });
 
         HtmlFileReader.getAssetArray = jest.fn((asset) => {
-            return Promise.resolve<Uint8Array>(new Uint8Array(tfrecords));
+            return Promise.resolve<ArrayBuffer>(new Uint8Array(tfrecords).buffer);
         });
 
         it("Loads the asset metadata from the tfrecord file", async () => {
