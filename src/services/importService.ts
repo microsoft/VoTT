@@ -16,7 +16,6 @@ import HtmlFileReader from "../common/htmlFileReader";
 interface IImportService {
     convertProject(project: IFileInfo): Promise<IProject>;
     generateAssets(v1Project: IFileInfo, v2Project: IProject, parent?: IAsset): Promise<IAssetMetadata[]>;
-    createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset>;
 }
 
 /**
@@ -66,10 +65,7 @@ export default class ImportService implements IImportService {
             autoSave: true,
         };
 
-        if (originalProject.visitedFrames.every((item) => typeof item === "number")) {
-            // then this is a video project
-            convertedProject.lastVisitedAssetId = "dummyId";
-        }
+        // if (originalProject.visitedFrames.every((item) => typeof item === "number")) then video
 
         return convertedProject;
     }
@@ -78,52 +74,22 @@ export default class ImportService implements IImportService {
      * Generate assets based on V1 Project frames and regions
      * @param project - V1 Project Content and File Information
      */
-    public async generateAssets(v1Project: IFileInfo, v2Project: IProject, parent?: IAsset): Promise<IAssetMetadata[]> {
+    public async generateAssets(v1Project: IFileInfo, v2Project: IProject): Promise<IAssetMetadata[]> {
         let originalProject: IV1Project;
-        const generatedAssetMetadata: IAssetMetadata[] = [];
-        let assetState: AssetState;
+        let generatedAssetMetadata: IAssetMetadata[] = [];
         const assetService = new AssetService(v2Project);
-        let isVideo = false;
 
         originalProject = JSON.parse(v1Project.content as string);
 
-        for (const frameName in originalProject.frames) {
-            if (originalProject.frames.hasOwnProperty(frameName)) {
-                const frameRegions = originalProject.frames[frameName];
-                let asset: IAsset;
-                // if video:
-                if (originalProject.visitedFrames.every((item) => typeof item === "number") && parent !== null) {
-                    isVideo = true;
-                    const frameInt = Number(frameName);
-                    const timestamp = frameInt / Number(originalProject.framerate) - 1;
-                    const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
-                    asset = AssetService.createAssetFromFilePath(
-                        `file:${pathToUse}#t=${timestamp}`);
-                    assetState = originalProject.visitedFrames.indexOf(frameInt) > -1 && frameRegions.length > 0
-                        ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameInt) > -1
-                        ? AssetState.Visited : AssetState.NotVisited);
-                    asset.timestamp = timestamp;
-                    asset.type = AssetType.VideoFrame;
-                    asset.parent = parent;
-                    asset.size = asset.parent.size;
-                } else {
-                    asset = AssetService.createAssetFromFilePath(
-                        `${v1Project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                    assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
-                        ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
-                        ? AssetState.Visited : AssetState.NotVisited);
-                }
-                const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
-                    const taggedMetadata = this.addRegions(metadata, frameRegions);
-                    taggedMetadata.asset.state = assetState;
-                    taggedMetadata.asset.path = `file:${taggedMetadata.asset.path}`;
-                    if (isVideo) {
-                        taggedMetadata.asset.parent = parent;
-                    }
-                    return taggedMetadata;
-                });
-                generatedAssetMetadata.push(populatedMetadata);
-            }
+        const pathParts = v1Project.file.path.split(/[\\\/]/);
+        const fileName = pathParts[pathParts.length - 1];
+        const fileNameParts = fileName.split(".");
+
+        if (fileNameParts[1] && AssetService.getAssetType(fileNameParts[1]) === AssetType.Video) {
+            generatedAssetMetadata = await this.generateVideoAssets(v1Project, originalProject.frames, assetService);
+            v2Project.lastVisitedAssetId = generatedAssetMetadata[generatedAssetMetadata.length - 1].asset.id;
+        } else {
+            generatedAssetMetadata = await this.generateImageAssets(v1Project, originalProject.frames, assetService);
         }
         return generatedAssetMetadata;
     }
@@ -132,23 +98,23 @@ export default class ImportService implements IImportService {
      * Generate parent asset based on V1 Project video assets
      * @param project - V1 Project Content and File Information
      */
-    public async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
+    private async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
         let parentAsset: IAsset;
-        // parentAsset = AssetService.createAssetFromFilePath(v1Project.file.path);
+
         parentAsset = {
             format: "mp4",
             id: new MD5().update(v1Project.file.path.replace(/\.[^/.]+$/, "")).digest("hex"),
             name: v1Project.file.path.replace(/\.[^/.]+$/, "").replace(/^.*[\\\/]/, ""),
             path: `file:${v1Project.file.path.replace(/\.[^/.]+$/, "")}`,
             size: {
-                width: 854,
-                height: 480,
+                height: 0,
+                width: 0,
             },
             state: 1,
             type: AssetType.Video,
         };
         const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
-        parentAsset.size = { width: assetProps.width, height: assetProps.height };
+        parentAsset.size = { height: assetProps.height, width: assetProps.width };
         return parentAsset;
     }
 
@@ -213,5 +179,64 @@ export default class ImportService implements IImportService {
             metadata.regions.push(generatedRegion);
         }
         return metadata;
+    }
+
+    private async generateImageAssets(v1Project: IFileInfo, frameList: {[frameName: string]: IV1Region[]},
+                                      assetService: AssetService): Promise<IAssetMetadata[]> {
+        const generatedAssetMetadata: IAssetMetadata[] = [];
+        const originalProject = JSON.parse(v1Project.content as string);
+
+        for (const frameName in frameList) {
+            if (frameList.hasOwnProperty(frameName)) {
+                const frameRegions = frameList[frameName];
+                const asset = AssetService.createAssetFromFilePath(
+                    `${v1Project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
+                const assetState = originalProject.visitedFrames.indexOf(frameName) > -1 && frameRegions.length > 0
+                    ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameName) > -1
+                    ? AssetState.Visited : AssetState.NotVisited);
+                const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
+                    const taggedMetadata = this.addRegions(metadata, frameRegions);
+                    taggedMetadata.asset.state = assetState;
+                    taggedMetadata.asset.path = `file:${taggedMetadata.asset.path}`;
+                    return taggedMetadata;
+                });
+                generatedAssetMetadata.push(populatedMetadata);
+            }
+        }
+        return generatedAssetMetadata;
+    }
+
+    private async generateVideoAssets(v1Project: IFileInfo, frameList: {[frameName: string]: IV1Region[]},
+                                      assetService: AssetService): Promise<IAssetMetadata[]> {
+        const generatedAssetMetadata: IAssetMetadata[] = [];
+        const parent = await this.createParentVideoAsset(v1Project);
+        const originalProject = JSON.parse(v1Project.content as string);
+
+        for (const frameName in frameList) {
+            if (frameList.hasOwnProperty(frameName)) {
+                const frameRegions = frameList[frameName];
+                const frameInt = Number(frameName);
+                const timestamp = frameInt / Number(originalProject.framerate) - 1;
+                const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
+                const asset = AssetService.createAssetFromFilePath(
+                    `file:${pathToUse}#t=${timestamp}`);
+                const assetState = originalProject.visitedFrames.indexOf(frameInt) > -1 && frameRegions.length > 0
+                    ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameInt) > -1
+                    ? AssetState.Visited : AssetState.NotVisited);
+                asset.timestamp = timestamp;
+                asset.type = AssetType.VideoFrame;
+                asset.parent = parent;
+                asset.size = asset.parent.size;
+                const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
+                    const taggedMetadata = this.addRegions(metadata, frameRegions);
+                    taggedMetadata.asset.state = assetState;
+                    taggedMetadata.asset.path = `file:${taggedMetadata.asset.path}`;
+                    taggedMetadata.asset.parent = parent;
+                    return taggedMetadata;
+                });
+                generatedAssetMetadata.push(populatedMetadata);
+            }
+        }
+        return generatedAssetMetadata;
     }
 }
