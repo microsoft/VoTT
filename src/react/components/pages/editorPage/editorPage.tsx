@@ -512,9 +512,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private predict = async () => {
         if (this.activeLearningProxy) {
             const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
-            const buffer = Buffer.from(imageBuffer);
 
-            const predictions = await this.activeLearningProxy.detect(buffer,
+            const predictions = await this.activeLearningProxy.detect(imageBuffer,
                 this.state.selectedAsset.asset.size.width,
                 this.state.selectedAsset.asset.size.height);
 
