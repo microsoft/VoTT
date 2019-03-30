@@ -1,5 +1,6 @@
 import "@tensorflow/tfjs";
 import * as tf from "@tensorflow/tfjs-node";
+import { decode } from "jpeg-js";
 import fetch from "node-fetch";
 import { load, ObjectDetection, DetectedObject } from "../../activelearning/objectDetection";
 import { BrowserWindow, dialog } from "electron";
@@ -21,9 +22,9 @@ export default class LocalActiveLearning implements IActiveLearningProvider {
     }
 
     public async detect(buffer: ArrayBuffer, width: number, height: number): Promise<DetectedObject[]> {
-        const pixels = buffer["data"];
         try {
-            const input = this.imageToInput(pixels, width, height, 3);
+            const image = decode(buffer["data"], true);
+            const input = this.imageToInput(image, 3);
             const detected = await this.model.detect(input);
 
             console.log(detected);
@@ -38,24 +39,22 @@ export default class LocalActiveLearning implements IActiveLearningProvider {
         });
     }
 
-    private imageToInput = (buffer: ArrayBuffer, width: number, height: number, numChannels: number) => {
-        const values = this.imageByteArray(buffer, width, height, numChannels);
-        const outShape: [number, number, number] = [height, width, numChannels];
+    private imageToInput = (image, numChannels: number) => {
+        const values = this.imageByteArray(image, numChannels);
+        const outShape: [number, number, number] = [image.height, image.width, numChannels];
         const input = tf.tensor3d(values, outShape, "int32");
 
         return input;
     }
 
-    private imageByteArray = (buffer: ArrayBuffer, width: number, height: number, numChannels: number) => {
-        const numPixels = width * height;
+    private imageByteArray = (image, numChannels: number) => {
+        const pixels = image.data;
+        const numPixels = image.width * image.height;
         const values = new Int32Array(numPixels * numChannels);
-
-        console.log(buffer.byteLength);
-        console.log(values.byteLength);
 
         for (let i = 0; i < numPixels; i++) {
           for (let channel = 0; channel < numChannels; ++channel) {
-            values[i * numChannels + channel] = buffer[i * 4 + channel];
+            values[i * numChannels + channel] = pixels[i * 4 + channel];
           }
         }
 
