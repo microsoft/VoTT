@@ -262,9 +262,8 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
 
         // Save ImageSets
         await tags.forEachAsync(async (tag) => {
+            const array = [...tagsDict.get(tag.name)];
             if (testSplit > 0 && testSplit <= 1) {
-                const array = [...tagsDict.get(tag.name)];
-
                 const usage = tagUsage.get(tag.name);
                 if (usage === 0 && !this.options.exportUnassigned) {
                     return;
@@ -285,7 +284,7 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
 
             } else {
                 const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
-                await this.storageProvider.writeText(imageSetFileName, tagsDict.get(tag.name).join("\n"));
+                await this.storageProvider.writeText(imageSetFileName, array.join("\n"));
             }
         });
     }
