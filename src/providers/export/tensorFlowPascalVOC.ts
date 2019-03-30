@@ -5,8 +5,8 @@ import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { interpolate } from "../../common/strings";
-import { string } from "prop-types";
 import { PlatformType } from "../../common/hostProcess";
+import os from "os";
 
 interface IObjectInfo {
     name: string;
@@ -254,8 +254,6 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
             }
         });
 
-        const newLine = process.platform === PlatformType.Windows ? "\r\n" : "\n";
-
         // Save ImageSets
         await tags.forEachAsync(async (tag) => {
             const tagInstances = tagUsage.get(tag.name) || 0;
@@ -281,14 +279,14 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
                 const trainArray = assetList.slice(testCount, totalAssets);
 
                 const testImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_val.txt`;
-                await this.storageProvider.writeText(testImageSetFileName, testArray.join(newLine));
+                await this.storageProvider.writeText(testImageSetFileName, testArray.join(os.EOL));
 
                 const trainImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_train.txt`;
-                await this.storageProvider.writeText(trainImageSetFileName, trainArray.join(newLine));
+                await this.storageProvider.writeText(trainImageSetFileName, trainArray.join(os.EOL));
 
             } else {
                 const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
-                await this.storageProvider.writeText(imageSetFileName, assetList.join(newLine));
+                await this.storageProvider.writeText(imageSetFileName, assetList.join(os.EOL));
             }
         });
     }
