@@ -73,13 +73,9 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
         const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
-        try {
-            await allAssets.mapAsync(async (assetMetadata) => {
-                await this.exportSingleImage(jpegImagesFolderName, assetMetadata);
-            });
-        } catch (err) {
-            console.log(err);
-        }
+        await allAssets.mapAsync(async (assetMetadata) => {
+            await this.exportSingleImage(jpegImagesFolderName, assetMetadata);
+        });
     }
 
     private async exportSingleImage(jpegImagesFolderName: string, assetMetadata: IAssetMetadata): Promise<void> {
@@ -118,22 +114,20 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
 
     private getAssetTagArray(element: IAssetMetadata): IObjectInfo[] {
         const tagObjects = [];
-        element.regions.filter((region) => (region.type === RegionType.Rectangle ||
-            region.type === RegionType.Square) &&
-            region.points.length === 2)
-            .forEach((region) => {
-                region.tags.forEach((tagName) => {
-                    const objectInfo: IObjectInfo = {
-                        name: tagName,
-                        xmin: region.points[0].x,
-                        ymin: region.points[0].y,
-                        xmax: region.points[1].x,
-                        ymax: region.points[1].y,
-                    };
+        element.regions.forEach((region) => {
+            region.tags.forEach((tagName) => {
+                const objectInfo: IObjectInfo = {
+                    name: tagName,
+                    xmin: region.boundingBox.left,
+                    ymin: region.boundingBox.top,
+                    xmax: region.boundingBox.left + region.boundingBox.width,
+                    ymax: region.boundingBox.top + region.boundingBox.height,
+                };
 
-                    tagObjects.push(objectInfo);
-                });
+                tagObjects.push(objectInfo);
             });
+        });
+
         return tagObjects;
     }
 
@@ -215,7 +209,7 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
                 await this.storageProvider.writeText(assetFilePath, interpolate(annotationTemplate, params));
             });
         } catch (err) {
-            console.log(err);
+            console.log("Error writing Pascal VOC annotation file");
         }
     }
 
@@ -236,32 +230,32 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
         const imageSetsMainFolderName = `${exportFolderName}/ImageSets/Main`;
         await this.storageProvider.createContainer(imageSetsMainFolderName);
 
-        const tagsDict = new Map<string, string[]>();
+        const tagsDict = new Map<string, Set<string>>();
         const tagUsage = new Map<string, number>();
 
         tags.forEach((tag) => {
-            tagsDict.set(tag.name, []);
+            tagsDict.set(tag.name, new Set<string>());
             tagUsage.set(tag.name, 0);
         });
 
-        allAssets.forEach((asset) => {
-            if (asset.regions.length > 0) {
-                asset.regions.forEach((region) => {
+        allAssets.forEach((assetMetadata) => {
+            if (assetMetadata.regions.length > 0) {
+                assetMetadata.regions.forEach((region) => {
                     tags.forEach((tag) => {
-                        const array = tagsDict.get(tag.name);
+                        const set = tagsDict.get(tag.name);
                         let usage = tagUsage.get(tag.name);
                         if (region.tags.filter((tagName) => tagName === tag.name).length > 0) {
-                            array.push(`${asset.asset.name} 1`);
+                            set.add(`${assetMetadata.asset.name} 1`);
                             tagUsage.set(tag.name, usage += 1);
                         } else {
-                            array.push(`${asset.asset.name} -1`);
+                            set.add(`${assetMetadata.asset.name} -1`);
                         }
                     });
                 });
             } else if (exportUnassignedTags) {
                 tags.forEach((tag) => {
-                    const array = tagsDict.get(tag.name);
-                    array.push(`${asset.asset.name} -1`);
+                    const set = tagsDict.get(tag.name);
+                    set.add(`${assetMetadata.asset.name} -1`);
                 });
             }
         });
@@ -269,7 +263,7 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
         // Save ImageSets
         await tags.forEachAsync(async (tag) => {
             if (testSplit > 0 && testSplit <= 1) {
-                const array = tagsDict.get(tag.name);
+                const array = [...tagsDict.get(tag.name)];
 
                 const usage = tagUsage.get(tag.name);
                 if (usage === 0 && !this.options.exportUnassigned) {
