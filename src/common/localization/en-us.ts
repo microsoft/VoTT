@@ -41,6 +41,9 @@ export const english: IAppStrings = {
             confirmation: "Are you sure you want to convert project ${project.file.name} project settings" +
                 "to v2 format? We recommend you backup the project file first.",
         },
+        messages: {
+            deleteSuccess: "Successfully deleted ${project.name}",
+        },
     },
     appSettings: {
         title: "Application Settings",
@@ -143,6 +146,10 @@ export const english: IAppStrings = {
         settings: "Connection Settings",
         instructions: "Please select a connection to edit",
         save: "Save Connection",
+        messages: {
+            saveSuccess: "Successfully saved ${connection.name}",
+            deleteSuccess: "Successfully deleted ${connection.name}",
+        },
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
