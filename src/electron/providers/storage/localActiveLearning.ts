@@ -1,10 +1,10 @@
 import "@tensorflow/tfjs";
+import * as tf from "@tensorflow/tfjs-node";
 import fetch from "node-fetch";
-import { createImageData } from "pixel-util";
-
 import { load, ObjectDetection, DetectedObject } from "../../activelearning/objectDetection";
 import { BrowserWindow, dialog } from "electron";
 import { IActiveLearningProvider } from "../../../providers/activeLearning/activeLearningProxy";
+import { reject } from "q";
 
 export default class LocalActiveLearning implements IActiveLearningProvider {
     // TensorFlow model used for Active Learning
@@ -21,19 +21,10 @@ export default class LocalActiveLearning implements IActiveLearningProvider {
     }
 
     public async detect(buffer: ArrayBuffer, width: number, height: number): Promise<DetectedObject[]> {
-        console.log("In detect");
-
-        console.log(buffer);
-        console.log(width);
-        console.log(height);
-
-        const idata = createImageData(new Uint8ClampedArray(buffer), width, height);
-
-        console.log(idata.width);
-        console.log(idata);
-
+        const pixels = buffer["data"];
         try {
-            const detected = await this.model.detect(idata);
+            const input = this.imageToInput(pixels, width, height, 3);
+            const detected = await this.model.detect(input);
 
             console.log(detected);
 
@@ -42,6 +33,32 @@ export default class LocalActiveLearning implements IActiveLearningProvider {
             console.log(error);
         }
 
-        return await this.model.detect(idata);
+        return new Promise<DetectedObject[]>((resolve, reject) => {
+            reject();
+        });
+    }
+
+    private imageToInput = (buffer: ArrayBuffer, width: number, height: number, numChannels: number) => {
+        const values = this.imageByteArray(buffer, width, height, numChannels);
+        const outShape: [number, number, number] = [height, width, numChannels];
+        const input = tf.tensor3d(values, outShape, "int32");
+
+        return input;
+    }
+
+    private imageByteArray = (buffer: ArrayBuffer, width: number, height: number, numChannels: number) => {
+        const numPixels = width * height;
+        const values = new Int32Array(numPixels * numChannels);
+
+        console.log(buffer.byteLength);
+        console.log(values.byteLength);
+
+        for (let i = 0; i < numPixels; i++) {
+          for (let channel = 0; channel < numChannels; ++channel) {
+            values[i * numChannels + channel] = buffer[i * 4 + channel];
+          }
+        }
+
+        return values;
     }
 }
