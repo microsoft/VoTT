@@ -1,5 +1,7 @@
 import "@tensorflow/tfjs";
 import fetch from "node-fetch";
+import { createCanvas } from "canvas";
+
 import { load, ObjectDetection, DetectedObject } from "../../activelearning/objectDetection";
 import { BrowserWindow, dialog } from "electron";
 import { IActiveLearningProvider } from "../../../providers/activeLearning/activeLearningProxy";
@@ -18,12 +20,24 @@ export default class LocalActiveLearning implements IActiveLearningProvider {
         this.model = await load("mobilenet_v2");
     }
 
-    public detect(image: ImageData): Promise<DetectedObject[]> {
+    public detect(buffer: Buffer, width: number, height: number): Promise<DetectedObject[]> {
         console.log("In detect");
-        console.log(image);
-        console.log(this.model);
 
-        const detected = this.model.detect(image);
+        console.log(buffer);
+        console.log(width);
+        console.log(height);
+
+        const canv = createCanvas(width, height);
+        const ct = canv.getContext("2d");
+
+        // create ImageData object
+        const idata: ImageData = ct.createImageData(width, height);
+        idata.data.set(buffer);
+
+        console.log(idata.width);
+        console.log(idata);
+
+        const detected = this.model.detect(idata);
 
         console.log(detected);
 

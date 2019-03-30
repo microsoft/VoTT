@@ -514,16 +514,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
             const buffer = Buffer.from(imageBuffer);
 
-            // create ImageData object
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const idata: ImageData = ctx.createImageData(this.state.selectedAsset.asset.size.width,
+            const predictions = await this.activeLearningProxy.detect(buffer,
+                this.state.selectedAsset.asset.size.width,
                 this.state.selectedAsset.asset.size.height);
-            idata.data.set(buffer);
 
-            console.log(idata);
-
-            const predictions = await this.activeLearningProxy.detect(idata);
             console.log(predictions);
 
             const regions = [...this.state.selectedAsset.regions];
