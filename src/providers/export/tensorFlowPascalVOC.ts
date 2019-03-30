@@ -6,6 +6,7 @@ import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
 import { interpolate } from "../../common/strings";
 import { string } from "prop-types";
+import { PlatformType } from "../../common/hostProcess";
 
 interface IObjectInfo {
     name: string;
@@ -61,11 +62,13 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
 
         // TestSplit && exportUnassignedTags are optional parameter in the UI Exporter configuration
         const testSplit = (100 - (this.options.testTrainSplit || 80)) / 100;
-        await this.exportImageSets(exportFolderName,
+        await this.exportImageSets(
+            exportFolderName,
             allAssets,
             this.project.tags,
             testSplit,
-            this.options.exportUnassigned);
+            this.options.exportUnassigned,
+        );
     }
 
     private async exportImages(exportFolderName: string, allAssets: IAssetMetadata[]) {
@@ -230,61 +233,62 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
         const imageSetsMainFolderName = `${exportFolderName}/ImageSets/Main`;
         await this.storageProvider.createContainer(imageSetsMainFolderName);
 
-        const tagsDict = new Map<string, Set<string>>();
+        const assetUsage = new Map<string, Set<string>>();
         const tagUsage = new Map<string, number>();
 
-        tags.forEach((tag) => {
-            tagsDict.set(tag.name, new Set<string>());
-            tagUsage.set(tag.name, 0);
-        });
-
+        // Generate tag usage per asset
         allAssets.forEach((assetMetadata) => {
+            const appliedTags = new Set<string>();
+            assetUsage.set(assetMetadata.asset.name, appliedTags);
+
             if (assetMetadata.regions.length > 0) {
                 assetMetadata.regions.forEach((region) => {
                     tags.forEach((tag) => {
-                        const set = tagsDict.get(tag.name);
-                        let usage = tagUsage.get(tag.name);
+                        let tagInstances = tagUsage.get(tag.name) || 0;
                         if (region.tags.filter((tagName) => tagName === tag.name).length > 0) {
-                            set.add(`${assetMetadata.asset.name} 1`);
-                            tagUsage.set(tag.name, usage += 1);
-                        } else {
-                            set.add(`${assetMetadata.asset.name} -1`);
+                            appliedTags.add(tag.name);
+                            tagUsage.set(tag.name, tagInstances += 1);
                         }
                     });
-                });
-            } else if (exportUnassignedTags) {
-                tags.forEach((tag) => {
-                    const set = tagsDict.get(tag.name);
-                    set.add(`${assetMetadata.asset.name} -1`);
                 });
             }
         });
 
+        const newLine = process.platform === PlatformType.Windows ? "\r\n" : "\n";
+
         // Save ImageSets
         await tags.forEachAsync(async (tag) => {
-            const array = [...tagsDict.get(tag.name)];
+            const assetList = [];
+            assetUsage.forEach((tags, assetName) => {
+                if (tags.has(tag.name)) {
+                    assetList.push(`${assetName} 1`);
+                } else {
+                    assetList.push(`${assetName} -1`);
+                }
+            });
+
             if (testSplit > 0 && testSplit <= 1) {
-                const usage = tagUsage.get(tag.name);
-                if (usage === 0 && !this.options.exportUnassigned) {
+                const tagInstances = tagUsage.get(tag.name) || 0;
+                if (!exportUnassignedTags && tagInstances === 0) {
                     return;
                 }
 
                 // Split in Test and Train sets
-                const totalAssets = array.length;
+                const totalAssets = assetUsage.size;
                 const testCount = Math.ceil(totalAssets * testSplit);
 
-                const testArray = array.slice(0, testCount);
-                const trainArray = array.slice(testCount, totalAssets);
+                const testArray = assetList.slice(0, testCount);
+                const trainArray = assetList.slice(testCount, totalAssets);
 
                 const testImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_val.txt`;
-                await this.storageProvider.writeText(testImageSetFileName, testArray.join("\n"));
+                await this.storageProvider.writeText(testImageSetFileName, testArray.join(newLine));
 
                 const trainImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_train.txt`;
-                await this.storageProvider.writeText(trainImageSetFileName, trainArray.join("\n"));
+                await this.storageProvider.writeText(trainImageSetFileName, trainArray.join(newLine));
 
             } else {
                 const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
-                await this.storageProvider.writeText(imageSetFileName, array.join("\n"));
+                await this.storageProvider.writeText(imageSetFileName, assetList.join(newLine));
             }
         });
     }
