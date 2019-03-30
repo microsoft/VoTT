@@ -21,7 +21,7 @@ export default class LocalActiveLearning implements IActiveLearningProvider {
         this.model = await load("mobilenet_v2");
     }
 
-    public async detect(buffer: ArrayBuffer, width: number, height: number): Promise<DetectedObject[]> {
+    public async detect(buffer: ArrayBuffer): Promise<DetectedObject[]> {
         try {
             const image = decode(buffer["data"], true);
             const input = this.imageToInput(image, 3);
