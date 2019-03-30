@@ -258,6 +258,11 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
 
         // Save ImageSets
         await tags.forEachAsync(async (tag) => {
+            const tagInstances = tagUsage.get(tag.name) || 0;
+            if (!exportUnassignedTags && tagInstances === 0) {
+                return;
+            }
+
             const assetList = [];
             assetUsage.forEach((tags, assetName) => {
                 if (tags.has(tag.name)) {
@@ -268,11 +273,6 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
             });
 
             if (testSplit > 0 && testSplit <= 1) {
-                const tagInstances = tagUsage.get(tag.name) || 0;
-                if (!exportUnassignedTags && tagInstances === 0) {
-                    return;
-                }
-
                 // Split in Test and Train sets
                 const totalAssets = assetUsage.size;
                 const testCount = Math.ceil(totalAssets * testSplit);
