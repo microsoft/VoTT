@@ -36,8 +36,8 @@ export class LocalActiveLearningProxy implements IActiveLearningProvider {
     /**
      * Detect Remote API
      */
-    public detect(buffer: ArrayBuffer, width: number, height: number): Promise<DetectedObject[]> {
-        return IpcRendererProxy.send(`${PROXY_NAME}:detect`,
+    public async detect(buffer: ArrayBuffer, width: number, height: number): Promise<DetectedObject[]> {
+        return await IpcRendererProxy.send(`${PROXY_NAME}:detect`,
             [{data: new Uint8Array(buffer)}, width, height]);
     }
 }

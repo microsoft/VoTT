@@ -73,7 +73,7 @@ export class ObjectDetection {
   public async load() {
     // this.model = await tf.loadGraphModel(this.modelPath);
     try {
-        this.model = await tf.loadGraphModel("file:///Users/jacopo/CocoSSDLite/model.json");
+        this.model = await tf.loadGraphModel("file:///Users/jacopo/CocoSSD/model.json");
     } catch (error) {
         console.log(error);
     }
