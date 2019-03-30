@@ -9,7 +9,7 @@ const PROXY_NAME = "LocalActiveLearning";
  * @member detect - Detect Method
  */
 export interface IActiveLearningProvider {
-    detect(buffer: Buffer, width: number, height: number): Promise<DetectedObject[]>;
+    detect(buffer: ArrayBuffer, width: number, height: number): Promise<DetectedObject[]>;
 }
 
 /**
@@ -36,7 +36,8 @@ export class LocalActiveLearningProxy implements IActiveLearningProvider {
     /**
      * Detect Remote API
      */
-    public detect(buffer: Buffer, width: number, height: number): Promise<DetectedObject[]> {
-        return IpcRendererProxy.send(`${PROXY_NAME}:detect`, [buffer, width, height]);
+    public detect(buffer: ArrayBuffer, width: number, height: number): Promise<DetectedObject[]> {
+        return IpcRendererProxy.send(`${PROXY_NAME}:detect`,
+            [{data: new Uint8Array(buffer)}, width, height]);
     }
 }
