@@ -2,15 +2,6 @@
 
 $tagInputWidth: 250px;
 
-.condensed-list-header {
-    display: flex;
-    flex-direction: row;
-}
-
-.condensed-list-title {
-    flex: 1;
-}
-
 .tag {
     &-input {
         background: $lighter-1;
@@ -52,7 +43,6 @@ $tagInputWidth: 250px;
     }
 
     &-name {
-
         &-editor {
             font-size: 11px;
         }
@@ -72,7 +62,6 @@ $tagInputWidth: 250px;
         flex-basis: 30px;
         padding: 0 5px;
         font-weight: bold;
-
     }
 
     &-item:hover {
@@ -123,4 +112,3 @@ div.github-picker > span > div {
 div.circle-picker-container {
     background: #252526;
 }
-

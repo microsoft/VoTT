@@ -9,6 +9,12 @@ export enum TagEditMode {
     Name = "name",
 }
 
+export interface TagClickProps {
+    ctrlKey?: boolean;
+    altKey?: boolean;
+    clickedColor?: boolean;
+}
+
 export interface ITagInputItemProps {
     tag: ITag;
     index: number;
@@ -16,7 +22,7 @@ export interface ITagInputItemProps {
     isLocked: boolean;
     isSelected: boolean;
     appliedToSelectedRegions: boolean;
-    onClick: (tag: ITag, ctrlKey: boolean, altKey: boolean, clickedColor?: boolean) => void;
+    onClick: (tag: ITag, props: TagClickProps) => void;
     onChange: (oldTag: ITag, newTag: ITag) => void;
 }
 
@@ -89,7 +95,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Color,
-        }, () => this.props.onClick(this.props.tag, ctrlKey, altKey, true));
+        }, () => this.props.onClick(this.props.tag, {ctrlKey, altKey, clickedColor: true}));
     }
 
     private onNameClick = (e) => {
@@ -97,7 +103,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Name,
-        }, () => this.props.onClick(this.props.tag, ctrlKey, altKey));
+        }, () => this.props.onClick(this.props.tag, {ctrlKey, altKey}));
     }
 
     private getItemClassName = () => {

@@ -5,7 +5,8 @@ import { randomIntInRange } from "../../../../common/utils";
 import { IRegion, ITag } from "../../../../models/applicationState";
 import { ColorPicker } from "../colorPicker";
 import "./tagInput.scss";
-import TagInputItem, { ITagInputItemProps } from "./tagInputItem";
+import "../condensedList/condensedList.scss";
+import TagInputItem, { ITagInputItemProps, TagClickProps } from "./tagInputItem";
 import TagInputToolbar from "./tagInputToolbar";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
@@ -319,12 +320,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         });
     }
 
-    private handleClick = (tag: ITag, ctrlKey, altKey, clickedColor?: boolean) => {
-        if (ctrlKey && this.props.onCtrlTagClick) {
+    private handleClick = (tag: ITag, props: TagClickProps) => {
+        if (props.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
-            this.setState({clickedColor});
-        } else if (altKey) {
-            this.onAltClick(tag, clickedColor);
+            this.setState({clickedColor: props.clickedColor});
+        } else if (props.altKey) {
+            this.onAltClick(tag, props.clickedColor);
         } else {
             const { editingTag, selectedTag } = this.state;
             const inEditMode = editingTag && tag.name === editingTag.name;
@@ -333,7 +334,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             this.setState({
                 editingTag: inEditMode ? null : editingTag,
                 selectedTag: (alreadySelected && !inEditMode) ? null : tag,
-                clickedColor,
+                clickedColor: props.clickedColor,
                 showColorPicker: false,
             });
 
