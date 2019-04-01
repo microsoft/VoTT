@@ -6,7 +6,7 @@ import { IRegion, ITag } from "../../../../models/applicationState";
 import { ColorPicker } from "../colorPicker";
 import "./tagInput.scss";
 import "../condensedList/condensedList.scss";
-import TagInputItem, { ITagInputItemProps, TagClickProps } from "./tagInputItem";
+import TagInputItem, { ITagInputItemProps, ITagClickProps } from "./tagInputItem";
 import TagInputToolbar from "./tagInputToolbar";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
@@ -325,7 +325,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         });
     }
 
-    private handleClick = (tag: ITag, props: TagClickProps) => {
+    private handleClick = (tag: ITag, props: ITagClickProps) => {
         if (props.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
             this.setState({clickedColor: props.clickedColor});
