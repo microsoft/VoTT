@@ -163,6 +163,12 @@ export const english: IAppStrings = {
             saveSuccess: "Successfully saved ${connection.name}",
             deleteSuccess: "Successfully deleted ${connection.name}",
         },
+        imageCorsWarning: "Warning: When using VoTT in a Web browser, some assets from Bing Image \
+                          Search may not export correctly due to CORS (cross origin resource sharing) restrictions.",
+        blobCorsWarning: "Warning: When using VoTT in a Web browser, assets in Azure Blob Storage will not export  \
+                         if CORS is not enabled. For more information on enabling CORS can be found \
+                         in the {0}",
+        azDocLinkText: "Azure Documentation.",
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",

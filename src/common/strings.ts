@@ -165,6 +165,9 @@ export interface IAppStrings {
             saveSuccess: string;
             deleteSuccess: string;
         },
+        imageCorsWarning: string;
+        blobCorsWarning: string;
+        azDocLinkText: string;
         providers: {
             azureBlob: {
                 title: string;
