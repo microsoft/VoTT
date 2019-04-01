@@ -17,7 +17,8 @@ describe("Azure blob functions", () => {
 
     ContainerURL.fromServiceURL = jest.fn(() => new ContainerURL(null, null));
     const containerURL = ContainerURL as jest.Mocked<typeof ContainerURL>;
-    containerURL.prototype.delete = jest.fn(() => Promise.resolve());
+    containerURL.prototype.create = jest.fn(() => Promise.resolve({ statusCode: 201 }));
+    containerURL.prototype.delete = jest.fn(() => Promise.resolve({ statusCode: 204 }));
     containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(ad.blobs));
 
     BlockBlobURL.fromContainerURL = jest.fn(() => new BlockBlobURL(null, null));
@@ -147,9 +148,23 @@ describe("Azure blob functions", () => {
         expect(containers).toEqual(ad.containers.containerItems.map((element) => element.name));
     });
 
-    it("Creates a container in the account", () => {
+    it("Creates a container in the account", async () => {
         const provider: AzureBlobStorage = new AzureBlobStorage(options);
-        const container = provider.createContainer(null);
+        await expect(provider.createContainer(null)).resolves.not.toBeNull();
+        expect(ContainerURL.fromServiceURL).toBeCalledWith(
+            expect.any(ServiceURL),
+            ad.containerName,
+        );
+        expect(containerURL.prototype.create).toBeCalled();
+    });
+
+    it("Creates a container that already exists", async () => {
+        containerURL.prototype.create = jest.fn(() => {
+            return Promise.reject({ statusCode: 409 });
+        });
+
+        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        await expect(provider.createContainer(null)).resolves.not.toBeNull();
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
             ad.containerName,

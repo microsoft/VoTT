@@ -288,6 +288,14 @@ export interface IAppStrings {
             },
             tfPascalVoc: {
                 displayName: string,
+                testTrainSplit: {
+                    title: string,
+                    description: string,
+                },
+                exportUnassigned: {
+                    title: string,
+                    description: string,
+                },
             },
         },
         messages: {

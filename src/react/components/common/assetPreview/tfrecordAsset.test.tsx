@@ -31,7 +31,7 @@ describe("TFRecord Asset Component", () => {
     });
 
     HtmlFileReader.getAssetArray = jest.fn((asset) => {
-        return Promise.resolve<ArrayBuffer>(new Uint8Array(tfrecords));
+        return Promise.resolve<ArrayBuffer>(new Uint8Array(tfrecords).buffer);
     });
 
     const defaultProps: IAssetProps = {

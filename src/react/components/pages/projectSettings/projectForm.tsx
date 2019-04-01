@@ -5,7 +5,7 @@ import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag, IAppSettings } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import { ConnectionPickerWithRouter } from "../../common/connectionPicker/connectionPicker";
-import CustomField from "../../common/customField/customField";
+import { CustomField } from "../../common/customField/customField";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ISecurityTokenPickerProps, SecurityTokenPicker } from "../../common/securityTokenPicker/securityTokenPicker";
 import "vott-react/dist/css/tagsInput.css";

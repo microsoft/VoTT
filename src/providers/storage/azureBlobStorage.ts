@@ -165,7 +165,15 @@ export class AzureBlobStorage implements IStorageProvider {
      */
     public async createContainer(containerName: string): Promise<void> {
         const containerURL = this.getContainerURL();
-        await containerURL.create(Aborter.none);
+        try {
+            await containerURL.create(Aborter.none);
+        } catch (e) {
+            if (e.statusCode === 409) {
+                return;
+            }
+
+            throw e;
+        }
     }
 
     /**
