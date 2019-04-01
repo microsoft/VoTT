@@ -2,6 +2,7 @@ import React from "react";
 import { ITag } from "../../../../models/applicationState";
 import "./tagInput.scss";
 import { KeyboardBinding } from "../keyboardBinding/keyboardBinding";
+import { strings } from "../../../../common/strings";
 
 /** Properties for tag input toolbar */
 export interface ITagInputToolbarProps {
@@ -47,43 +48,43 @@ export default class TagInputToolbar extends React.Component<ITagInputToolbarPro
     private getButtonProps = (): ITagInputToolbarItemProps[] => {
         return [
             {
-                displayName: "Add tag",
+                displayName: strings.tags.toolbar.add,
                 className: "plus",
                 icon: "fa-plus-circle",
                 handler: this.handleAdd,
             },
             {
-                displayName: "Search tags",
+                displayName: strings.tags.toolbar.search,
                 className: "search",
                 icon: "fa-search",
                 handler: this.handleSearch,
             },
             {
-                displayName: "Lock selected tag",
+                displayName: strings.tags.toolbar.lock,
                 className: "lock",
                 icon: "fa-lock",
                 handler: this.handleLock,
             },
             {
-                displayName: "Edit selected tag",
+                displayName: strings.tags.toolbar.edit,
                 className: "edit",
                 icon: "fa-edit",
                 handler: this.handleEdit,
             },
             {
-                displayName: "Move selected tag up",
+                displayName: strings.tags.toolbar.moveUp,
                 className: "up",
                 icon: "fa-arrow-circle-up",
                 handler: this.handleArrowUp,
             },
             {
-                displayName: "Move selected tag down",
+                displayName: strings.tags.toolbar.moveDown,
                 className: "down",
                 icon: "fa-arrow-circle-down",
                 handler: this.handleArrowDown,
             },
             {
-                displayName: "Delete selected tag",
+                displayName: strings.tags.toolbar.delete,
                 className: "delete",
                 icon: "fa-trash",
                 handler: this.handleDelete,
