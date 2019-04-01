@@ -3,7 +3,6 @@ import { GithubPicker, CirclePicker } from "react-color";
 
 export interface IColorPickerProps {
     show: boolean;
-    // coordinates: {top: number, left: number};
     color: string;
     colors: string[];
     onEditColor: (color: string) => void;
