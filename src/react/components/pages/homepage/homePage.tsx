@@ -168,7 +168,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     private deleteProject = async (project: IProject) => {
         try {
             await this.props.actions.deleteProject(project);
-            toast.success(interpolate(strings.homePage.messages.deleteSuccess, { project }));
+            toast.info(interpolate(strings.homePage.messages.deleteSuccess, { project }));
         } catch (error) {
             throw new AppError(ErrorCode.ProjectDeleteError, "Error deleting project file");
         }

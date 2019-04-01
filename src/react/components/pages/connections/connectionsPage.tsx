@@ -125,7 +125,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     private onConnectionDelete = async (connection: IConnection) => {
         await this.props.actions.deleteConnection(connection);
 
-        toast.success(interpolate(strings.connections.messages.deleteSuccess, { connection }));
+        toast.info(interpolate(strings.connections.messages.deleteSuccess, { connection }));
 
         if (this.state.connection === connection) {
             this.props.history.push("/connections");
