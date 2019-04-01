@@ -9,6 +9,7 @@ import { AppSettingsForm } from "./appSettingsForm";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
 import { appInfo } from "../../../../common/appInfo";
+import { isElectron } from "../../../../common/hostProcess";
 
 /**
  * Props for App Settings Page
@@ -67,18 +68,22 @@ export default class AppSettingsPage extends React.Component<IAppSettingsProps> 
                     <div className="my-3">
                         <p>{`${strings.appSettings.commit}: `} {process.env.REACT_APP_COMMIT_SHA}</p>
                     </div>
-                    <div className="my-3">
-                        <p>{strings.appSettings.devTools.description}</p>
-                        <button id="toggleDevTools" className="btn btn-primary btn-sm"
-                            onClick={this.toggleDevTools}>{strings.appSettings.devTools.button}
-                        </button>
-                    </div>
-                    <div className="my-3">
-                        <p>{strings.appSettings.reload.description}</p>
-                        <button id="refreshApp" className="btn btn-primary btn-sm"
-                            onClick={this.reloadApp}>{strings.appSettings.reload.button}
-                        </button>
-                    </div>
+                    { isElectron() &&
+                    <span>
+                        <div className="my-3">
+                            <p>{strings.appSettings.devTools.description}</p>
+                            <button id="toggleDevTools" className="btn btn-primary btn-sm"
+                                onClick={this.toggleDevTools}>{strings.appSettings.devTools.button}
+                            </button>
+                        </div>
+                        <div className="my-3">
+                            <p>{strings.appSettings.reload.description}</p>
+                            <button id="refreshApp" className="btn btn-primary btn-sm"
+                                onClick={this.reloadApp}>{strings.appSettings.reload.button}
+                            </button>
+                        </div>
+                    </span>
+                    }
                 </div>
             </div>
         );
