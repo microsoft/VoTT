@@ -136,6 +136,15 @@ export const english: IAppStrings = {
             fuschia: "Fuschia",
             purple: "Purple",
         },
+        toolbar: {
+            add: "Add new tag",
+            search: "Search tags",
+            edit: "Edit tag",
+            lock: "Lock tag",
+            moveUp: "Move tag up",
+            moveDown: "Move tag down",
+            delete: "Delete tag",
+        },
     },
     connections: {
         title: "Connections",

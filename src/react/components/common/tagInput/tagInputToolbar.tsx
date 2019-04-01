@@ -3,13 +3,21 @@ import { ITag } from "../../../../models/applicationState";
 import "./tagInput.scss";
 import { KeyboardBinding } from "../keyboardBinding/keyboardBinding";
 
+/** Properties for tag input toolbar */
 export interface ITagInputToolbarProps {
+    /** Currently selected tag */
     selectedTag: ITag;
+    /** Function to call when add tags button is clicked */
     onAddTags: () => void;
+    /** Function to call when search tags button is clicked */
     onSearchTags: () => void;
+    /** Function to call when lock tags button is clicked */
     onLockTag: (tag: ITag) => void;
+    /** Function to call when edit tag button is clicked */
     onEditTag: (tag: ITag) => void;
+    /** Function to call when delete button is clicked */
     onDelete: (tag: ITag) => void;
+    /** Function to call when one of the re-order buttons is clicked */
     onReorder: (tag: ITag, displacement: number) => void;
 }
 

@@ -9,7 +9,7 @@ export enum TagEditMode {
     Name = "name",
 }
 
-export interface TagClickProps {
+export interface ITagClickProps {
     ctrlKey?: boolean;
     altKey?: boolean;
     clickedColor?: boolean;
