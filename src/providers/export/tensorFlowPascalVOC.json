@@ -17,6 +17,18 @@
                 "${strings.export.providers.common.properties.assetState.options.visited}",
                 "${strings.export.providers.common.properties.assetState.options.tagged}"
             ]
+        },
+        "testTrainSplit": {
+            "title": "${strings.export.providers.tfPascalVoc.testTrainSplit.title}",
+            "description": "${strings.export.providers.tfPascalVoc.testTrainSplit.description}",
+            "type": "number",
+            "default": 80
+        },
+        "exportUnassigned": {
+            "title": "${strings.export.providers.tfPascalVoc.exportUnassigned.title}",
+            "description": "${strings.export.providers.tfPascalVoc.exportUnassigned.description}",
+            "type": "boolean",
+            "default": true
         }
     }
 }
