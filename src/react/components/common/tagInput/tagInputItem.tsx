@@ -32,7 +32,7 @@ export interface ITagInputItemProps {
     /** Tag is currently applied to one of the selected regions */
     appliedToSelectedRegions: boolean;
     /** Function to call upon clicking item */
-    onClick: (tag: ITag, props: TagClickProps) => void;
+    onClick: (tag: ITag, props: ITagClickProps) => void;
     /** Apply updates to tag */
     onChange: (oldTag: ITag, newTag: ITag) => void;
 }

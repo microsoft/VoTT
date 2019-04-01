@@ -68,8 +68,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     public render() {
         return (
             <div className="tag-input condensed-list">
-                <h6 className="condensed-list-header bg-darker-2 p-2">
-                    <span className="condensed-list-title">Tags</span>
+                <h6 className="condensed-list-header tag-input-header bg-darker-2 p-2">
+                    <span className="condensed-list-title tag-input-title">Tags</span>
                     <TagInputToolbar
                         selectedTag={this.state.selectedTag}
                         onAddTags={() => this.setState({addTags: !this.state.addTags})}
