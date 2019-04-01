@@ -1,8 +1,5 @@
-import React from "react";
+import React, { MouseEvent } from "react";
 import { ITag } from "../../../../models/applicationState";
-import { constants } from "../../../../common/constants";
-// tslint:disable-next-line:no-var-requires
-const tagColors = require("../tagColors.json");
 
 export enum TagEditMode {
     Color = "color",
@@ -57,9 +54,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         const style: any = {
             background: this.props.tag.color,
         };
-        if (this.props.appliedToSelectedRegions) {
-            style.borderColor = this.props.tag.color;
-        }
+
         return (
             <div className={"tag-item-block"}>
                 {
@@ -67,8 +62,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                     <li className={this.getItemClassName()} style={style}>
                         <div
                             className={`tag-color`}
-                            onClick={this.onColorClick}
-                            style={this.getColorStyle()}>
+                            onClick={this.onColorClick}>
                         </div>
                         <div
                             className={"tag-content"}
@@ -99,20 +93,24 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         }
     }
 
-    private onColorClick = (e) => {
+    private onColorClick = (e: MouseEvent) => {
+        e.stopPropagation();
+
         const ctrlKey = e.ctrlKey;
         const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Color,
-        }, () => this.props.onClick(this.props.tag, {ctrlKey, altKey, clickedColor: true}));
+        }, () => this.props.onClick(this.props.tag, { ctrlKey, altKey, clickedColor: true }));
     }
 
-    private onNameClick = (e) => {
+    private onNameClick = (e: MouseEvent) => {
+        e.stopPropagation();
+
         const ctrlKey = e.ctrlKey;
         const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Name,
-        }, () => this.props.onClick(this.props.tag, {ctrlKey, altKey}));
+        }, () => this.props.onClick(this.props.tag, { ctrlKey, altKey }));
     }
 
     private getItemClassName = () => {
@@ -130,25 +128,28 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
         const displayIndex = this.getDisplayIndex();
         return (
             <div className={"tag-name-container"}>
-                {
-                    (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name)
-                    ?
-                    <input
-                        className={`tag-name-editor ${this.getContentClassName()}`}
-                        type="text"
-                        defaultValue={this.props.tag.name}
-                        onKeyDown={(e) => this.handleNameEdit(e)}
-                        autoFocus={true}
-                    />
-                    :
-                    <span className={this.getContentClassName()}>{this.props.tag.name}</span>
-                }
-                {
-                    this.props.isLocked &&
-                    <div className="tag-lock-icon">
+                <div className="tag-name-body">
+                    {
+                        (this.state.isBeingEdited && this.state.tagEditMode === TagEditMode.Name)
+                            ?
+                            <input
+                                className={`tag-name-editor ${this.getContentClassName()}`}
+                                type="text"
+                                defaultValue={this.props.tag.name}
+                                onKeyDown={(e) => this.handleNameEdit(e)}
+                                autoFocus={true}
+                            />
+                            :
+                            <span title={this.props.tag.name} className={this.getContentClassName()}>
+                                {this.props.tag.name}
+                            </span>
+                    }
+                </div>
+                <div className="tag-lock-icon">
+                    {this.props.isLocked &&
                         <i className="fas fa-lock" />
-                    </div>
-                }
+                    }
+                </div>
                 <div className={"tag-index"}>
                     {(displayIndex !== null) && <span>[{displayIndex}]</span>}
                 </div>
@@ -176,16 +177,6 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
             classNames.push(" tag-color-edit");
         }
         return classNames.join(" ");
-    }
-
-    private getColorStyle = () => {
-        const style = {
-            backgroundColor: this.props.tag.color,
-            color: "#fff",
-            display: "flex",
-            justifyContent: "center",
-        };
-        return style;
     }
 
     private getDisplayIndex = () => {

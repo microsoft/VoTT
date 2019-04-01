@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactInstance } from "react";
+import React, { KeyboardEvent } from "react";
 import ReactDOM from "react-dom";
 import Align from "rc-align";
 import { randomIntInRange } from "../../../../common/utils";
@@ -50,7 +50,6 @@ export interface ITagInputState {
 }
 
 export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
-
     public state: ITagInputState = {
         tags: this.props.tags || [],
         clickedColor: false,
@@ -62,7 +61,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         editingTag: null,
     };
 
-    private tagItemRefs: {[id: string]: TagInputItem} = {};
+    private tagItemRefs: { [id: string]: TagInputItem } = {};
     private portalDiv = document.createElement("div");
 
     public render() {
@@ -72,7 +71,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                     <span className="condensed-list-title tag-input-title">Tags</span>
                     <TagInputToolbar
                         selectedTag={this.state.selectedTag}
-                        onAddTags={() => this.setState({addTags: !this.state.addTags})}
+                        onAddTags={() => this.setState({ addTags: !this.state.addTags })}
                         onSearchTags={() => this.setState({
                             searchTags: !this.state.searchTags,
                             searchQuery: "",
@@ -89,10 +88,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                         <div className="tag-input-text-input-row search-input">
                             <input
                                 type="text"
-                                onChange={(e) => this.setState({searchQuery: e.target.value})}
+                                onKeyDown={this.onSearchKeyDown}
+                                onChange={(e) => this.setState({ searchQuery: e.target.value })}
                                 placeholder="Search tags"
                                 autoFocus={true}
                             />
+                            <i className="tag-row-icon fas fa-search" />
                         </div>
                     }
                     {this.getColorPickerPortal()}
@@ -105,10 +106,11 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                             <input
                                 className="tag-input-box"
                                 type="text"
-                                onKeyDown={this.handleKeyDown}
+                                onKeyDown={this.onAddTagKeyDown}
                                 placeholder="Add new tag"
                                 autoFocus={true}
                             />
+                            <i className="tag-input-row-icon fas fa-tag" />
                         </div>
                     }
                 </div>
@@ -128,6 +130,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (prevProps.tags !== this.props.tags) {
             this.setState({
                 tags: this.props.tags,
+            });
+        }
+
+        if (prevProps.selectedRegions !== this.props.selectedRegions && this.props.selectedRegions.length > 0) {
+            this.setState({
+                selectedTag: null,
             });
         }
     }
@@ -181,7 +189,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     private handleColorChange = (color: string) => {
         const tag = this.state.editingTag;
         const tags = this.state.tags.map((t) => {
-            return (t.name === tag.name) ? {name: t.name, color} : t;
+            return (t.name === tag.name) ? { name: t.name, color } : t;
         });
         this.setState({
             tags,
@@ -225,7 +233,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                                 }
                             </div>
                         </Align>
-                    , (ReactDOM.findDOMNode(this.portalDiv) as Element))
+                        , (ReactDOM.findDOMNode(this.portalDiv) as Element))
     }
 
     private getAlignConfig = () => {
@@ -323,7 +331,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     private handleClick = (tag: ITag, props: ITagClickProps) => {
         if (props.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
-            this.setState({clickedColor: props.clickedColor});
+            this.setState({ clickedColor: props.clickedColor });
         } else if (props.altKey) {
             this.onAltClick(tag, props.clickedColor);
         } else {
@@ -338,7 +346,11 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 showColorPicker: false,
             });
 
-            if (this.props.onTagClick && !inEditMode) {
+            // Only fire click event if a region is selected
+            if (this.props.selectedRegions &&
+                this.props.selectedRegions.length > 0 &&
+                this.props.onTagClick &&
+                !inEditMode) {
                 this.props.onTagClick(tag);
             }
         }
@@ -365,7 +377,15 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         return (tags.length) ? tags[Math.min(tags.length - 1, previouIndex)] : null;
     }
 
-    private handleKeyDown = (event) => {
+    private onSearchKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === "Escape") {
+            this.setState({
+                searchTags: false,
+            });
+        }
+    }
+
+    private onAddTagKeyDown = (event) => {
         if (event.key === "Enter") {
             // validate and add
             const newTag: ITag = {
@@ -378,6 +398,11 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             } else {
                 // toast that tells them to pick another name
             }
+        }
+        if (event.key === "Escape") {
+            this.setState({
+                addTags: false,
+            });
         }
     }
 

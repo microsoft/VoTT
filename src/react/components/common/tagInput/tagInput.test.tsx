@@ -3,22 +3,20 @@ import { ReactWrapper, mount } from "enzyme";
 import { TagInput, ITagInputProps, ITagInputState } from "./tagInput";
 import MockFactory from "../../../../common/mockFactory";
 import { ITag } from "../../../../models/applicationState";
-// tslint:disable-next-line:no-var-requires
-const tagColors = require("../tagColors.json");
-
-import { GithubPicker } from "react-color";
+import TagInputItem, { ITagInputItemProps } from "./tagInputItem";
 
 describe("Tag Input Component", () => {
 
     function createComponent(props?: ITagInputProps):
-            ReactWrapper<ITagInputProps, ITagInputState> {
-        return mount(<TagInput {...(props || createProps())}/>);
+        ReactWrapper<ITagInputProps, ITagInputState> {
+        return mount(<TagInput {...(props || createProps())} />);
     }
 
     function createProps(tags?: ITag[], onChange?): ITagInputProps {
         return {
             tags: tags || MockFactory.createTestTags(),
             lockedTags: [],
+            selectedRegions: [MockFactory.createTestRegion()],
             onChange: onChange || jest.fn(),
             onLockedTagsChange: jest.fn(),
             onTagClick: jest.fn(),
@@ -53,7 +51,7 @@ describe("Tag Input Component", () => {
     it("Calls onCtrlClick handler when clicking color box", () => {
         const props: ITagInputProps = createProps();
         const wrapper = createComponent(props);
-        wrapper.find(".tag-color").first().simulate("click", {ctrlKey: true});
+        wrapper.find(".tag-color").first().simulate("click", { ctrlKey: true });
         expect(props.onCtrlTagClick).toBeCalledWith(props.tags[0]);
         expect(wrapper.state().clickedColor).toBe(true);
         expect(props.onTagClick).not.toBeCalled();
@@ -62,7 +60,7 @@ describe("Tag Input Component", () => {
     it("Calls onClick handler when clicking text", () => {
         const props: ITagInputProps = createProps();
         const wrapper = createComponent(props);
-        wrapper.find(".tag-name-text").first().simulate("click", {ctrlKey: true});
+        wrapper.find(".tag-name-text").first().simulate("click", { ctrlKey: true });
         expect(props.onCtrlTagClick).toBeCalledWith(props.tags[0]);
         expect(props.onTagClick).not.toBeCalled();
     });
@@ -74,7 +72,7 @@ describe("Tag Input Component", () => {
         };
         const wrapper = createComponent(props);
         const newTagName = "New Tag";
-        wrapper.find(".tag-input-box").simulate("keydown", {key: "Enter", target: {value: newTagName}});
+        wrapper.find(".tag-input-box").simulate("keydown", { key: "Enter", target: { value: newTagName } });
         expect(props.onChange).toBeCalled();
     });
 
@@ -161,7 +159,7 @@ describe("Tag Input Component", () => {
             showTagInputBox: true,
         };
         const wrapper = createComponent(props);
-        wrapper.find(".tag-input-box").simulate("keydown", {key: "Enter", target: {value: ""}});
+        wrapper.find(".tag-input-box").simulate("keydown", { key: "Enter", target: { value: "" } });
         expect(props.onChange).not.toBeCalled();
     });
 
@@ -215,7 +213,7 @@ describe("Tag Input Component", () => {
         const firstTag = tags[0];
         wrapper.find(".tag-content").first().simulate("click");
         wrapper.find("i.tag-input-toolbar-icon.fas.fa-edit").simulate("click");
-        wrapper.find("input.tag-name-editor").simulate("keydown", {key: "Enter", target: {value: newTagName}});
+        wrapper.find("input.tag-name-editor").simulate("keydown", { key: "Enter", target: { value: newTagName } });
         const expectedTags = tags.map((t) => {
             return (t.name === firstTag.name) ? {
                 name: newTagName,
@@ -241,5 +239,29 @@ describe("Tag Input Component", () => {
         expect(wrapper.state().tags.indexOf(firstTag)).toEqual(1);
         wrapper.find("i.tag-input-toolbar-icon.fas.fa-arrow-circle-up").simulate("click");
         expect(wrapper.state().tags.indexOf(firstTag)).toEqual(0);
+    });
+
+    it("set's applied tags when selected regions are available", () => {
+        const tags = MockFactory.createTestTags();
+        const onChange = jest.fn();
+        const props = createProps(tags, onChange);
+        const wrapper = createComponent(props);
+
+        const selectedRegion = MockFactory.createTestRegion();
+        selectedRegion.tags = [tags[0].name, tags[1].name];
+
+        wrapper.setProps({
+            selectedRegions: [selectedRegion],
+        });
+
+        const selectedTags = wrapper
+            .findWhere((el: ReactWrapper<ITagInputItemProps>) => {
+                return el.type() === TagInputItem && el.props().appliedToSelectedRegions;
+            });
+
+        expect(wrapper.state().selectedTag).toBeNull();
+        expect(selectedTags).toHaveLength(2);
+        expect(selectedTags.at(0).props().tag).toEqual(tags[0]);
+        expect(selectedTags.at(1).props().tag).toEqual(tags[1]);
     });
 });

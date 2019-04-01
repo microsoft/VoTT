@@ -6,12 +6,35 @@ $tagInputWidth: 250px;
     &-input {
         background: $lighter-1;
         min-width: $tagInputWidth;
-        
+
         &-text-input-row {
-            padding: 2px 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin: 2px;
+            background: $darker-2;
+            border: solid 1px $lighter-2;
+            min-height: 2em;
+            padding: 0.25em 0.5em;
+            font-size: 90%;
 
             input {
-                min-width: 100%;
+                color: #fff;
+                flex-grow: 1;
+                background: none;
+                border: none;
+
+                &:focus {
+                    outline: none;
+                }
+            }
+
+            input::placeholder {
+                color: #ccc;
+            }
+
+            .tag-input-input-enter {
+                color: #ccc;
             }
         }
 
@@ -26,19 +49,27 @@ $tagInputWidth: 250px;
     }
 
     &-item-block {
-        padding: 1px 0;
+        margin: 2px 0;
     }
 
     &-item {
         display: flex;
         flex-direction: row;
 
-        border: 1px solid $darker-12;
-        border-left: none;
-
         &-selected {
-            font-weight: bolder;
-            color: white;
+            .tag-content {
+                color: white;
+                margin: 1px 1px 1px 0;
+                background: $darker-10 !important;
+            }
+        }
+
+        &-applied {
+            .tag-content {
+                color: #fff;
+                font-weight: 600;
+                background: $darker-10 !important;
+            }
         }
     }
 
@@ -48,32 +79,48 @@ $tagInputWidth: 250px;
     }
 
     &-content:hover {
-        background: $darker-10;
+        background: $darker-8;
     }
 
     &-name {
+        &-body {
+            flex-grow: 1;
+        }
+
         &-editor {
-            font-size: 11px;
+            background: transparent;
+            border: none;
+            color: #fff;
+
+            &:focus {
+                outline: none;
+            }
         }
 
         &-container {
             display: flex;
             flex-direction: row;
+            min-height: 1.8em;
+            align-items: center;
         }
 
         &-text {
+            max-width: 195px;
+            display: block;
             text-overflow: ellipsis;
-            flex-grow: 1;
+            overflow: hidden;
+            white-space: nowrap;
         }
     }
 
     &-index {
         flex-basis: 30px;
         padding: 0 5px;
-        font-weight: bold;
+        font-weight: 600;
     }
 
     &-item:hover {
+        color: #fff;
         background:$lighter-4;
         cursor: pointer;
     }
@@ -84,11 +131,11 @@ $tagInputWidth: 250px;
     }
 
     &-color {
-        width: 10px;
+        width: 12px;
     }
 
     &-lock-icon {
-        margin-left: 5px;
+        font-size: 90%;
     }
 
     &-input {
@@ -100,12 +147,12 @@ $tagInputWidth: 250px;
         &-toolbar {
             display: flex;
             flex-direction: row;
-    
+
             &-item {
                 color: #ccc;
                 padding: 1px;
             }
-    
+
             &-item:hover {
                 color: white;
                 cursor: pointer;
