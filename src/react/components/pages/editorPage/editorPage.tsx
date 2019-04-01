@@ -68,12 +68,8 @@ export interface IEditorPageState {
     additionalSettings?: IAssetPreviewSettings;
     /** Most recently selected tag */
     selectedTag: string;
-    /** Editing tag ref */
-    editingTagRef: TagInputItem;
     /** Tags locked for region labeling */
     lockedTags: string[];
-    /** Show color picker for editing tags */
-    showColorPicker: boolean;
     /** Size of the asset thumbnails to display in the side bar */
     thumbnailSize: ISize;
 }
@@ -103,8 +99,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
-        editingTagRef: null,
-        showColorPicker: false,
         lockedTags: [],
         selectionMode: SelectionMode.RECT,
         assets: [],
@@ -232,20 +226,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </SplitPane>
             </div>
         );
-    }
-
-    private getTarget = () => {
-        const node = ReactDOM.findDOMNode(this.state.editingTagRef) as Element;
-        if (node) {
-            return node;
-        }
-        return document;
-    }
-
-    private setEditingTagRef = (ref: TagInputItem) => {
-        this.setState({
-            editingTagRef: ref,
-        });
     }
 
     /**
@@ -428,10 +408,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onLockedTagsChanged = (lockedTags: string[]) => {
         this.setState({lockedTags});
-    }
-
-    private showColorPicker = (showColorPicker: boolean) => {
-        this.setState({showColorPicker});
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
