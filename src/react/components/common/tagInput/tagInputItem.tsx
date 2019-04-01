@@ -15,33 +15,42 @@ export interface TagClickProps {
     clickedColor?: boolean;
 }
 
+/**
+ * Properties for tag input item
+ */
 export interface ITagInputItemProps {
+    /** Tag represented by item */
     tag: ITag;
+    /** Index of tag within tags array */
     index: number;
+    /** Tag is currently being edited */
     isBeingEdited: boolean;
+    /** Tag is currently locked for application */
     isLocked: boolean;
+    /** Tag is currently selected */
     isSelected: boolean;
+    /** Tag is currently applied to one of the selected regions */
     appliedToSelectedRegions: boolean;
+    /** Function to call upon clicking item */
     onClick: (tag: ITag, props: TagClickProps) => void;
+    /** Apply updates to tag */
     onChange: (oldTag: ITag, newTag: ITag) => void;
 }
 
 export interface ITagInputItemState {
+    /** Tag is currently being edited */
     isBeingEdited: boolean;
+    /** Tag is currently locked for application */
     isLocked: boolean;
+    /** Mode of tag editing (text or color) */
     tagEditMode: TagEditMode;
-    preventSingleClick: boolean;
 }
 
-const delay = 200;
-
 export default class TagInputItem extends React.Component<ITagInputItemProps, ITagInputItemState> {
-
-    public state = {
+    public state: ITagInputItemState = {
         isBeingEdited: false,
         isLocked: false,
         tagEditMode: null,
-        preventSingleClick: false,
     };
 
     public render() {
