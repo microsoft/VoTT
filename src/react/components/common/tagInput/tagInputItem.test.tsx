@@ -38,41 +38,41 @@ describe("Tag Input Item", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").simulate("click");
-        expect(props.onClick).toBeCalledWith(props.tag, undefined, undefined, true);
+        expect(props.onClick).toBeCalledWith(props.tag, {clickedColor: true});
     });
 
     it("Ctrl Clicking color calls onClickHandler", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").simulate("click", {ctrlKey: true});
-        expect(props.onClick).toBeCalledWith(props.tag, true, undefined, true);
+        expect(props.onClick).toBeCalledWith(props.tag, {ctrlKey: true, clickedColor: true});
     });
 
     it("Alt Clicking color calls onClickHandler", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-color").simulate("click", {altKey: true});
-        expect(props.onClick).toBeCalledWith(props.tag, undefined, true, true);
+        expect(props.onClick).toBeCalledWith(props.tag, {altKey: true, clickedColor: true});
     });
 
     it("Clicking text calls onClickHandler", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-content").simulate("click");
-        expect(props.onClick).toBeCalledWith(props.tag, undefined, undefined);
+        expect(props.onClick).toBeCalledWith(props.tag, {});
     });
 
     it("Ctrl Clicking text calls onClickHandler", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-content").simulate("click", {ctrlKey: true});
-        expect(props.onClick).toBeCalledWith(props.tag, true, undefined);
+        expect(props.onClick).toBeCalledWith(props.tag, {ctrlKey: true, altKey: undefined});
     });
 
     it("Alt Clicking text calls onClickHandler", () => {
         const props = createProps();
         const wrapper = createComponent(props);
         wrapper.find(".tag-content").simulate("click", {altKey: true});
-        expect(props.onClick).toBeCalledWith(props.tag, undefined, true);
+        expect(props.onClick).toBeCalledWith(props.tag, {ctrlKey: undefined, altKey: true});
     });
 });
