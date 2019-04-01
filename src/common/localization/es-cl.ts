@@ -164,6 +164,13 @@ export const spanish: IAppStrings = {
             saveSuccess: "${connection.name} guardado correctamente",
             deleteSuccess: "${connection.name} eliminado correctamente",
         },
+        imageCorsWarning: "Advertencia: Cuando se usa VoTT en un navegador web, es posible que algunos activos de este \
+                          Búsqueda de Imágenes Bing no se exporten correctamente debido a las restricciones de CORS \
+                          (Recursos de Origen Cruzado).",
+        blobCorsWarning: "Advertencia: CORS (Recursos de Origen Cruzado) debe estar habilitado en la \
+                          cuenta de Azure Blob Storage para poder usarlo como una conexión de origen o destino. Puede \
+                          encontrar más información sobre cómo habilitar CORS en la {0}.",
+        azDocLinkText: "documentación de Azure.",
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
