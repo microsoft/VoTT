@@ -7,8 +7,9 @@ import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { strings } from "../../../../common/strings";
-    AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag, AssetType, ISize, IAppSettings, IRegion,
+import {
+    AssetState, AssetType, EditorMode, IApplicationState,
+    IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
     ISize, ITag,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
@@ -26,7 +27,6 @@ import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import SplitPane from "react-split-pane";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -71,8 +71,6 @@ export interface IEditorPageState {
     lockedTags: string[];
     /** Size of the asset thumbnails to display in the side bar */
     thumbnailSize: ISize;
-    /** Show color picker for editing tags */
-    showColorPicker: boolean;
 }
 
 function mapStateToProps(state: IApplicationState) {

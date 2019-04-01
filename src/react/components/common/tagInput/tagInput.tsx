@@ -218,6 +218,9 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getColorPickerPortal = () => {
+        return (
+            <div>
+                {
                     ReactDOM.createPortal(
                         <Align align={this.getAlignConfig()} target={this.getTarget}>
                             <div className="tag-input-color-picker">
@@ -228,12 +231,14 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                                         colors={tagColors}
                                         onEditColor={this.handleColorChange}
                                         show={this.state.showColorPicker}
-                coordinates={this.getColorPickerCoordinates()}
                                     />
                                 }
                             </div>
                         </Align>
                         , (ReactDOM.findDOMNode(this.portalDiv) as Element))
+                }
+            </div>
+        );
     }
 
     private getAlignConfig = () => {

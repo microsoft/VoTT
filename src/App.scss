@@ -122,6 +122,16 @@
     }
 }
 
+.app-help-menu-icon {
+    color: #ccc;
+    display: inline-block;
+
+    &:hover {
+        color: #fff;
+        background-color: $lighter-2;
+        cursor: pointer;
+    }
+}
 
 .Toastify .vott-toast-container {
     top: 3em;
