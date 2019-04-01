@@ -49,7 +49,9 @@ then
     git tag -a ${NEW_VERSION} -m "VoTT v${NEW_VERSION}"
     # update package.json version and the changelog
     npm install json --no-save
+    # NOTE: at some point, we need to move to `npm version` and do all of this via build system
     ./node_modules/.bin/json -I -f package.json -4 -e "this.version=\"${NEW_VERSION}\""
+    ./node_modules/.bin/json -I -f package-lock.json -4 -e "this.version=\"${NEW_VERSION}\""
     ${BASEDIR}/generate-changelog.sh --from ${PREVIOUS_VERSION} --to ${NEW_VERSION}
     git commit -am "ci: update package version and changelog for ${NEW_VERSION} release"
     git push -u origin ${RELEASE_BRANCH}
