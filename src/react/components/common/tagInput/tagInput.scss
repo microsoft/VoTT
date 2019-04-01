@@ -11,8 +11,17 @@ $tagInputWidth: 250px;
             padding: 2px 0;
 
             input {
-                min-width: $tagInputWidth;
+                min-width: 100%;
             }
+        }
+
+        &-header {
+            display: flex;
+            flex-direction: row;
+        }
+
+        &-title {
+            flex: 1;
         }
     }
 
