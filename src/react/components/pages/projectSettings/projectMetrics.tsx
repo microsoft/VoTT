@@ -66,8 +66,8 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
     private renderMetrics() {
         const sourceAssetCount = this.getSourceAssetCount();
-        const visitedAssetCount = this.getVisitedAssetsCount();
         const taggedAssetCount = this.getTaggedAssetCount();
+        const visitedAssetCount = this.getVisitedAssetsCount() - taggedAssetCount;
         const nonVistedAssetCount = sourceAssetCount - this.state.projectAssetsMetadata.length;
 
         const assetChartData = [
@@ -210,7 +210,14 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
      *   Note: video frames are not counted, only the video container
      */
     private getSourceAssetCount = () => {
-        const assets = this.state.sourceAssets;
+        const assets = this.state.projectAssetsMetadata.map((e) => e.asset.name);
+
+        const sourceAssetNames = this.state.sourceAssets.map((e) => e.name);
+        for (const sourceAssetName of sourceAssetNames) {
+            if (assets.indexOf(sourceAssetName) < 0) {
+                assets.push(sourceAssetName);
+            }
+        }
         return assets.length;
     }
 

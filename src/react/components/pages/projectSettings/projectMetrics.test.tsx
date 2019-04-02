@@ -60,7 +60,7 @@ describe("Project metrics page", () => {
             const expectedRegionCount = testAssetsWithRegion * regionsPerAsset;
             const expectedNonVisitedAssetCount = testSourceAssetCount - (testProjectAssetCount);
             const expectedTaggedAssets = testAssetsWithRegion;
-            const expectedVistedAssets = testProjectAssetCount;
+            const expectedVistedAssets = testProjectAssetCount - expectedTaggedAssets;
             const expectedTagCount = wrapper.props().project.tags.length;
 
             expect(wrapper.find(".metric-total-asset-count").text())
