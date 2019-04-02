@@ -136,6 +136,19 @@ export const english: IAppStrings = {
             fuschia: "Fuschia",
             purple: "Purple",
         },
+        warnings: {
+            existingName: "Tag name already exists. Choose another name",
+            emptyName: "Cannot have an empty tag name",
+        },
+        toolbar: {
+            add: "Add new tag",
+            search: "Search tags",
+            edit: "Edit tag",
+            lock: "Lock tag",
+            moveUp: "Move tag up",
+            moveDown: "Move tag down",
+            delete: "Delete tag",
+        },
     },
     connections: {
         title: "Connections",
@@ -209,7 +222,8 @@ export const english: IAppStrings = {
         assetError: "Unable to load asset",
         tags: {
             hotKey: {
-                help: "Apply Tag with Hot Key",
+                apply: "Apply Tag with Hot Key",
+                lock: "Lock Tag with Hot Key",
             },
         },
         canvas: {

@@ -58,10 +58,6 @@ export default class App extends React.Component<IAppProps> {
         });
     }
 
-    public componentDidMount() {
-        console.log(process.platform);
-    }
-
     public render() {
         const platform = global && global.process ? global.process.platform : "web";
 

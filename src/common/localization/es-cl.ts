@@ -11,7 +11,7 @@ export const spanish: IAppStrings = {
         submit: "Enviar",
         cancel: "Cancelar",
         save: "Guardar",
-        delete: "Eliminar",
+        delete: "Borrar",
         provider: "Proveedor",
         homePage: "Página de Inicio",
     },
@@ -137,6 +137,19 @@ export const spanish: IAppStrings = {
             fuschia: "Fuschia",
             purple: "Púrpura",
         },
+        warnings: {
+            existingName: "Nombre de etiqueta ya existe. Elige otro nombre",
+            emptyName: "El nombre de etiqueta no puede ser vacío",
+        },
+        toolbar: {
+            add: "Agregar nueva etiqueta",
+            search: "Buscar entre etiquetas",
+            edit: "Editar etiqueta",
+            lock: "Bloquear etiqueta",
+            moveDown: "Mover etiqueta hacia abajo",
+            moveUp: "Mover etiqueta hacia arriba",
+            delete: "Borrar etiqueta",
+        },
     },
     connections: {
         title: "Conexiones",
@@ -210,7 +223,8 @@ export const spanish: IAppStrings = {
         assetError: "No se puede mostrar el activo",
         tags: {
             hotKey: {
-                help: "Aplicar etiqueta con tecla de acceso rápido",
+                apply: "Aplicar etiqueta con tecla de acceso rápido",
+                lock: "Bloquear etiqueta con tecla de acceso rápido",
             },
         },
         canvas: {
