@@ -14,6 +14,10 @@
 
         &-nav {
             width: 100%;
+
+            .asset-list:focus {
+                outline: none;
+            }
         }
     }
 
@@ -200,6 +204,11 @@
     height: 100%;
     width: 100%;
     z-index: 0;
+}
+
+#editor-zone {
+    width: auto !important;
+    padding: 0 !important;
 }
 
 .full-size {
