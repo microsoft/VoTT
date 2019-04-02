@@ -1,6 +1,6 @@
 import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
-import {CLASSES} from "./classes";
+import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "../../providers/storage/localFileSystemProxy";
 
 // tslint:disable-next-line:interface-name
 export interface DetectedObject {
@@ -11,6 +11,7 @@ export interface DetectedObject {
 
 export class ObjectDetection {
     private model: tf.GraphModel;
+    private jsonClasses: JSON;
 
     /**
      * Dispose the tensors allocated by the model. You should call this when you
@@ -22,14 +23,17 @@ export class ObjectDetection {
         }
     }
 
-    public async load(folderPath: string) {
-        if (folderPath.startsWith("http://") ||
-            folderPath.startsWith("https://")) {
-            this.model = await tf.loadGraphModel(folderPath + "/model.json");
+    public async load(modelFolderPath: string, classesPath: string) {
+        if (modelFolderPath.startsWith("http://") ||
+            modelFolderPath.startsWith("https://")) {
+            this.model = await tf.loadGraphModel(modelFolderPath + "/model.json");
         } else {
-            const handler = new ElectronProxyHandler(folderPath);
+            const handler = new ElectronProxyHandler(modelFolderPath);
             this.model = await tf.loadGraphModel(handler);
         }
+
+        const provider = new LocalFileSystemProxy();
+        this.jsonClasses = JSON.parse(await provider.readText(classesPath));
 
         // Warmup the model.
         const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
@@ -130,7 +134,7 @@ export class ObjectDetection {
             bbox[3] = maxY - minY;
             objects.push({
                 bbox: bbox as [number, number, number, number],
-                class: CLASSES[classes[indexes[i]] + 1].displayName,
+                class: this.jsonClasses[classes[indexes[i]] - 1].displayName,
                 score: scores[indexes[i]],
             });
         }
