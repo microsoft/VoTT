@@ -8,6 +8,8 @@ import "./tagInput.scss";
 import "../condensedList/condensedList.scss";
 import TagInputItem, { ITagInputItemProps, ITagClickProps } from "./tagInputItem";
 import TagInputToolbar from "./tagInputToolbar";
+import { toast } from "react-toastify";
+import { strings } from "../../../../common/strings";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -381,7 +383,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 this.addTag(newTag);
                 event.target.value = "";
             } else {
-                // toast that tells them to pick another name
+                toast.warn(strings.tags.warnings.existingName);
             }
         }
     }

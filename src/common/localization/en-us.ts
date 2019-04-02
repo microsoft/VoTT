@@ -136,6 +136,9 @@ export const english: IAppStrings = {
             fuschia: "Fuschia",
             purple: "Purple",
         },
+        warnings: {
+            existingName: "Tag name already exists. Choose another name",
+        },
         toolbar: {
             add: "Add new tag",
             search: "Search tags",

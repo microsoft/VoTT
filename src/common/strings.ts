@@ -147,6 +147,9 @@ export interface IAppStrings {
             fuschia: string;
             purple: string;
         }
+        warnings: {
+            existingName: string;
+        }
     };
     connections: {
         title: string;

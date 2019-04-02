@@ -75,7 +75,13 @@ describe("Tag Input Component", () => {
         const wrapper = createComponent(props);
         const newTagName = "New Tag";
         wrapper.find(".tag-input-box").simulate("keydown", {key: "Enter", target: {value: newTagName}});
-        expect(props.onChange).toBeCalled();
+        expect(props.onChange).toBeCalledWith([
+            ...props.tags,
+            {
+                name: newTagName,
+                color: expect.any(String),
+            },
+        ]);
     });
 
     describe("Toolbar", () => {

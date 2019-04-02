@@ -137,6 +137,9 @@ export const spanish: IAppStrings = {
             fuschia: "Fuschia",
             purple: "Púrpura",
         },
+        warnings: {
+            existingName: "Nombre de etiqueta ya existe. Elige otro nombre",
+        },
         toolbar: {
             add: "Agregar nueva etiqueta",
             search: "Buscar entre etiquetas",
