@@ -141,7 +141,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         // Load standard TensorFlow.js SSD Model trained on COCO dataset
-        this.model = await load("mobilenet_v2");
+        this.model = new ObjectDetection();
+        await this.model.load("/Users/jacopo/CocoSSD");
     }
 
     public async componentDidUpdate() {
