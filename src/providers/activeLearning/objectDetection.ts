@@ -15,8 +15,8 @@
  * =============================================================================
  */
 
-import * as tf from "@tensorflow/tfjs-node";
-
+import * as tf from "@tensorflow/tfjs";
+import { ElectronProxyHandler } from "./electronProxyHandler";
 import {CLASSES} from "./classes";
 
 const BASE_PATH = "https://storage.googleapis.com/tfjs-models/savedmodel/";
@@ -72,8 +72,12 @@ export class ObjectDetection {
 
   public async load() {
     // this.model = await tf.loadGraphModel(this.modelPath);
+
     try {
-        this.model = await tf.loadGraphModel("file:///Users/jacopo/CocoSSD/model.json");
+        // this.model = await tf.loadGraphModel("file:///Users/jacopo/CocoSSD/model.json");
+
+        const handler = new ElectronProxyHandler("/Users/jacopo/CocoSSD");
+        this.model = await tf.loadGraphModel(handler);
     } catch (error) {
         console.log(error);
     }

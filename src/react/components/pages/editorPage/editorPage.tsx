@@ -124,7 +124,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     // Use Electron Remote to load and use TF.js model from main electron process
     private remote: Electron.Remote;
 
-    private activeLearningProxy: LocalActiveLearningProxy;
+    // TensorFlow model used for Active Learning
+    private model: ObjectDetection;
 
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
@@ -139,7 +140,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             await this.props.actions.loadProject(project);
         }
 
-        this.activeLearningProxy = new LocalActiveLearningProxy();
+        // Load standard TensorFlow.js SSD Model trained on COCO dataset
+        this.model = await load("mobilenet_v2");
     }
 
     public async componentDidUpdate() {
@@ -510,67 +512,72 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private predict = async () => {
-        if (this.activeLearningProxy) {
+        if (this.model) {
             const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
+            const buffer = Buffer.from(imageBuffer);
+            const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+            const image = document.createElement("img") as HTMLImageElement;
+            image.onload = async () => {
+                const predictions = await this.model.detect(image);
+                console.log(image.x, image.y, image.width, image.height);
+                console.log(predictions);
 
-            const predictions = await this.activeLearningProxy.detect(imageBuffer);
+                const regions = [...this.state.selectedAsset.regions];
+                predictions.forEach((prediction) => {
+                    // check if it is a new region
+                    if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
+                            region.boundingBox.left === Math.max(0, prediction.bbox[0]) &&
+                            region.boundingBox.top === Math.max(0, prediction.bbox[1]) &&
+                            region.boundingBox.width === Math.max(0, prediction.bbox[2]) &&
+                            region.boundingBox.height === Math.max(0, prediction.bbox[3]))) {
+                        regions.push({
+                            id: shortid.generate(),
+                            type: RegionType.Rectangle,
+                            tags: this.state.project.activeLearningSettings.predictClass ? [prediction.class] : [],
+                            boundingBox: {
+                                left: Math.max(0, prediction.bbox[0]),
+                                top: Math.max(0, prediction.bbox[1]),
+                                width: Math.max(0, prediction.bbox[2]),
+                                height: Math.max(0, prediction.bbox[3]),
+                            },
+                            points: [{
+                                x: Math.max(0, prediction.bbox[0]),
+                                y: Math.max(0, prediction.bbox[1]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                y: Math.max(0, prediction.bbox[1]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                            },
+                            {
+                                x: Math.max(0, prediction.bbox[0]),
+                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                            }],
+                        });
+                    }
+                });
 
-            console.log(predictions);
+                this.canvas.current.addRegionsToAsset(regions);
+                this.canvas.current.addRegionsToCanvasTools(regions);
 
-            const regions = [...this.state.selectedAsset.regions];
-            predictions.forEach((prediction) => {
-                // check if it is a new region
-                if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
-                        region.boundingBox.left === Math.max(0, prediction.bbox[0]) &&
-                        region.boundingBox.top === Math.max(0, prediction.bbox[1]) &&
-                        region.boundingBox.width === Math.max(0, prediction.bbox[2]) &&
-                        region.boundingBox.height === Math.max(0, prediction.bbox[3]))) {
-                    regions.push({
-                        id: shortid.generate(),
-                        type: RegionType.Rectangle,
-                        tags: this.state.project.activeLearningSettings.predictClass ? [prediction.class] : [],
-                        boundingBox: {
-                            left: Math.max(0, prediction.bbox[0]),
-                            top: Math.max(0, prediction.bbox[1]),
-                            width: Math.max(0, prediction.bbox[2]),
-                            height: Math.max(0, prediction.bbox[3]),
-                        },
-                        points: [{
-                            x: Math.max(0, prediction.bbox[0]),
-                            y: Math.max(0, prediction.bbox[1]),
-                        },
-                        {
-                            x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                            y: Math.max(0, prediction.bbox[1]),
-                        },
-                        {
-                            x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                            y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                        },
-                        {
-                            x: Math.max(0, prediction.bbox[0]),
-                            y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                        }],
-                    });
-                }
-            });
+                const newAsset = { ...this.state.selectedAsset, regions };
+                newAsset.asset.predicted = true;
+                console.log(newAsset);
 
-            this.canvas.current.addRegionsToAsset(regions);
-            this.canvas.current.addRegionsToCanvasTools(regions);
+                this.onAssetMetadataChanged(newAsset);
 
-            const newAsset = { ...this.state.selectedAsset, regions };
-            newAsset.asset.predicted = true;
-            console.log(newAsset);
+                this.setState({
+                    selectedAsset: newAsset,
+                });
 
-            this.onAssetMetadataChanged(newAsset);
-
-            this.setState({
-                selectedAsset: newAsset,
-            });
-
-            // Save
-            await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
-            await this.props.actions.saveProject(this.props.project);
+                // Save
+                await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
+                await this.props.actions.saveProject(this.props.project);
+            };
+            image.src = "data:image;base64," + image64;
         }
     }
 
