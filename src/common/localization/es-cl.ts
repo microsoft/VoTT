@@ -139,6 +139,7 @@ export const spanish: IAppStrings = {
         },
         warnings: {
             existingName: "Nombre de etiqueta ya existe. Elige otro nombre",
+            emptyName: "El nombre de etiqueta no puede ser vacío"
         },
         toolbar: {
             add: "Agregar nueva etiqueta",

@@ -149,6 +149,7 @@ export interface IAppStrings {
         }
         warnings: {
             existingName: string;
+            emptyName: string;
         }
     };
     connections: {

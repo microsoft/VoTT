@@ -205,7 +205,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (oldTag === newTag) {
             return;
         }
+        if (!newTag.name.length) {
+            toast.warn(strings.tags.warnings.emptyName);
+            return;
+        }
         if (newTag.name !== oldTag.name && this.state.tags.some((t) => t.name === newTag.name)) {
+            toast.warn(strings.tags.warnings.existingName);
             return;
         }
         const tags = this.state.tags.map((t) => {
@@ -403,7 +408,9 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             if (newTag.name.length && !this.state.tags.find((t) => t.name === newTag.name)) {
                 this.addTag(newTag);
                 event.target.value = "";
-            } else {
+            } else if (!newTag.name.length) {
+                toast.warn(strings.tags.warnings.emptyName);
+            }else {
                 toast.warn(strings.tags.warnings.existingName);
             }
         }
