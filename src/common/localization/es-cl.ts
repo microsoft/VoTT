@@ -41,6 +41,9 @@ export const spanish: IAppStrings = {
             confirmation: "¿Está seguro que quiere convertir el proyecto ${project.file.name}" +
                 "a formato v2? Le recomendamos que haga una copia de seguridad de su archivo de proyecto.",
         },
+        messages: {
+            deleteSuccess: "${project.name} eliminado correctamente",
+        },
     },
     appSettings: {
         title: "Configuración de Aplicación",
@@ -157,6 +160,10 @@ export const spanish: IAppStrings = {
         details: "Detalles de Conexión",
         settings: "Configuración de Conexión",
         instructions: "Por favor seleccione una conexión para editar",
+        messages: {
+            saveSuccess: "${connection.name} guardado correctamente",
+            deleteSuccess: "${connection.name} eliminado correctamente",
+        },
         providers: {
             azureBlob: {
                 title: "Almacenamiento de Azure Blob",
