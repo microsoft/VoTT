@@ -39,7 +39,6 @@ export class ObjectDetection {
             this.jsonClasses = JSON.parse(await provider.readText(modelFolderPath + "/classes.json"));
         }
 
-
         // Warmup the model.
         const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
             tf.Tensor[];
