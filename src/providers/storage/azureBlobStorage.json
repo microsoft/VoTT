@@ -17,10 +17,12 @@
         },
         "sas": {
             "title": "SAS",
+            "description": "Secure access token used to authentiate to your blob storage account",
             "type": "string"
         },
         "createContainer": {
             "title": "Create Container",
+            "description": "Creates the blob container if it does not already exist",
             "type": "boolean"
         }
     }
