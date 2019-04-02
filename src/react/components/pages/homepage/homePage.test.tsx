@@ -22,6 +22,7 @@ import ProjectService from "../../../../services/projectService";
 
 jest.mock("../../../../services/importService");
 import ImportService from "../../../../services/importService";
+import { toast } from "react-toastify";
 
 describe("Homepage Component", () => {
     let store: Store<IApplicationState> = null;
@@ -45,6 +46,11 @@ describe("Homepage Component", () => {
             </Provider>,
         );
     }
+
+    beforeAll(() => {
+        toast.success = jest.fn(() => 2);
+        toast.info = jest.fn(() => 2);
+    });
 
     beforeEach(() => {
         const projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
@@ -114,6 +120,7 @@ describe("Homepage Component", () => {
 
         expect(deleteProjectSpy).toBeCalledWith(recentProjects[0]);
         expect(homePage.props().recentProjects.length).toEqual(recentProjects.length - 1);
+        expect(toast.info).toBeCalledWith(expect.stringContaining(recentProjects[0].name));
     });
 
     it("should call convert project method if a v1 project is uploaded", async () => {

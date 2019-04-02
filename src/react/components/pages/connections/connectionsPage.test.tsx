@@ -16,6 +16,7 @@ import CondensedList from "../../common/condensedList/condensedList";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
+import { toast } from "react-toastify";
 
 describe("Connections Page", () => {
     const connectionsRoute: string = "/connections";
@@ -38,7 +39,11 @@ describe("Connections Page", () => {
         return createComponent(context, route, store, props);
     }
 
-    beforeAll(registerProviders);
+    beforeAll(() => {
+        registerProviders();
+        toast.success = jest.fn(() => 2);
+        toast.info = jest.fn(() => 2);
+    });
 
     it("mounted the component", () => {
         const wrapper = createWrapper();
@@ -118,7 +123,7 @@ describe("Connections Page", () => {
             expect(form.exists()).toBe(true);
         });
 
-        it("adds connection when submit button is hit", async (done) => {
+        it("adds connection when submit button is hit", async () => {
             const props = createProps(connectionCreateRoute);
             props.match.params = { connectionId: "create" };
 
@@ -164,11 +169,11 @@ describe("Connections Page", () => {
                 .find(Form)
                 .simulate("submit");
 
-            setImmediate(() => {
-                expect(saveConnectionSpy).toBeCalledWith(connection);
-                expect(assetProvider.initialize).toBeCalled();
-                done();
-            });
+            await MockFactory.flushUi();
+
+            expect(saveConnectionSpy).toBeCalledWith(connection);
+            expect(toast.success).toBeCalledWith(expect.stringContaining(connection.name));
+            expect(assetProvider.initialize).toBeCalled();
         });
     });
 
@@ -247,7 +252,7 @@ describe("Connections Page", () => {
             expect(deleteConnection).toBeCalled();
         });
 
-        it("removes a selected connection when delete button is hit", (done) => {
+        it("removes a selected connection when delete button is hit", async () => {
             const route = connectionsRoute + "/connection-1";
             const props = createProps(route);
             props.match.params = { connectionId: "connection-1" };
@@ -273,11 +278,11 @@ describe("Connections Page", () => {
             // Accept the modal delete warning
             wrapper.find(".modal-footer button").first().simulate("click");
 
-            setImmediate(() => {
-                expect(historyPushSpy).toBeCalledWith("/connections");
-                expect(connectionsPage.state().connection).toEqual(undefined);
-                done();
-            });
+            await MockFactory.flushUi();
+
+            expect(historyPushSpy).toBeCalledWith("/connections");
+            expect(connectionsPage.state().connection).toEqual(undefined);
+            expect(toast.info).toBeCalledWith(expect.stringContaining(state.connections[0].name));
         });
     });
 });

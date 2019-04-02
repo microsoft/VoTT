@@ -43,6 +43,9 @@ export interface IAppStrings {
             confirmation: string;
         },
         recentProjects: string,
+        messages: {
+            deleteSuccess: string,
+        },
     };
     appSettings: {
         title: string;
@@ -158,6 +161,10 @@ export interface IAppStrings {
         settings: string;
         instructions: string;
         save: string;
+        messages: {
+            saveSuccess: string;
+            deleteSuccess: string;
+        },
         providers: {
             azureBlob: {
                 title: string;
