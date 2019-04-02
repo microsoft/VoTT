@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
 import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "../../providers/storage/localFileSystemProxy";
@@ -23,17 +24,21 @@ export class ObjectDetection {
         }
     }
 
-    public async load(modelFolderPath: string, classesPath: string) {
+    public async load(modelFolderPath: string, classesPath?: string) {
         if (modelFolderPath.startsWith("http://") ||
             modelFolderPath.startsWith("https://")) {
             this.model = await tf.loadGraphModel(modelFolderPath + "/model.json");
+
+            const response = await axios.get(classesPath);
+            this.jsonClasses = JSON.parse(response.data);
         } else {
             const handler = new ElectronProxyHandler(modelFolderPath);
             this.model = await tf.loadGraphModel(handler);
+
+            const provider = new LocalFileSystemProxy();
+            this.jsonClasses = JSON.parse(await provider.readText(modelFolderPath + "/classes.json"));
         }
 
-        const provider = new LocalFileSystemProxy();
-        this.jsonClasses = JSON.parse(await provider.readText(classesPath));
 
         // Warmup the model.
         const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
