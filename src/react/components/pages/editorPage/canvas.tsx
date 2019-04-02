@@ -23,6 +23,7 @@ export interface ICanvasProps extends React.Props<Canvas> {
     lockedTags: string[];
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
+    onSelectedRegionsChanged?: (regions: IRegion[]) => void;
 }
 
 export interface ICanvasState {
@@ -105,7 +106,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     confirmButtonColor="danger"
                     onConfirm={this.removeAllRegions}
                 />
-                <div id="ct-zone" ref={this.canvasZone} className={className}>
+                <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
                     </div>
@@ -142,6 +143,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             selectedRegion.tags = transformer(selectedRegion.tags, tag);
         }
         this.updateRegions(selectedRegions);
+        if (this.props.onSelectedRegionsChanged) {
+            this.props.onSelectedRegionsChanged(selectedRegions);
+        }
     }
 
     public copyRegions = async () => {
@@ -246,6 +250,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     private onSelectionEnd = (regionData: RegionData) => {
+        if (CanvasHelpers.isEmpty(regionData)) {
+            return;
+        }
         const id = shortid.generate();
 
         this.editor.RM.addRegion(id, regionData, null);
@@ -275,6 +282,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.RM.updateTagsById(id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, newRegion));
         }
         this.updateAssetRegions([...this.state.currentAsset.regions, newRegion]);
+        if (this.props.onSelectedRegionsChanged) {
+            this.props.onSelectedRegionsChanged([newRegion]);
+        }
     }
 
     /**
@@ -339,6 +349,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         currentRegions.splice(deletedRegionIndex, 1);
 
         this.updateAssetRegions(currentRegions);
+        if (this.props.onSelectedRegionsChanged) {
+            this.props.onSelectedRegionsChanged([]);
+        }
     }
 
     /**
@@ -349,6 +362,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private onRegionSelected = (id: string, multiselect: boolean) => {
         const selectedRegions = this.getSelectedRegions();
+        if (this.props.onSelectedRegionsChanged) {
+            this.props.onSelectedRegionsChanged(selectedRegions);
+        }
         // Gets the scaled region data
         const selectedRegionsData = this.editor.RM.getSelectedRegionsBounds().find((region) => region.id === id);
 
@@ -409,6 +425,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.positionCanvas(this.state.contentSource);
             await this.setContentSource(this.state.contentSource);
             this.refreshCanvasToolsRegions();
+            if (this.props.onSelectedRegionsChanged) {
+                this.props.onSelectedRegionsChanged(this.getSelectedRegions());
+            }
         });
     }
 

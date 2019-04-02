@@ -125,6 +125,6 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
     }
 
     private stringifyGroup(group: string[]): string {
-        return (group.length < 3) ? group.join(", ") : `${group[0]}-${group[group.length - 1]}`;
+        return (group.length < 3) ? group.join(", ") : `${group[0]} - ${group[group.length - 1]}`;
     }
 }

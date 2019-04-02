@@ -122,6 +122,15 @@ export interface IAppStrings {
             name: string;
             color: string;
         }
+        toolbar: {
+            add: string;
+            search: string;
+            lock: string;
+            edit: string;
+            moveUp: string;
+            moveDown: string;
+            delete: string;
+        }
         colors: {
             white: string;
             gray: string;
@@ -137,6 +146,10 @@ export interface IAppStrings {
             navy: string;
             fuschia: string;
             purple: string;
+        }
+        warnings: {
+            existingName: string;
+            emptyName: string;
         }
     };
     connections: {
@@ -211,7 +224,8 @@ export interface IAppStrings {
         assetError: string;
         tags: {
             hotKey: {
-                help: string;
+                apply: string;
+                lock: string;
             },
         }
         canvas: {

@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, SyntheticEvent } from "react";
 import { IProject } from "../../../models/applicationState";
 import IProjectActions from "../../../redux/actions/projectActions";
 import { IKeyboardContext, KeyboardContext, KeyEventType } from "../common/keyboardManager/keyboardManager";
@@ -114,7 +114,9 @@ export abstract class ToolbarItem extends React.Component<IToolbarItemProps> {
         return consolidated;
     }
 
-    private onClick = () => {
+    private onClick = (e: SyntheticEvent | KeyboardEvent) => {
+        e.stopPropagation();
+
         if (this.onItemClick) {
             this.onItemClick();
         }

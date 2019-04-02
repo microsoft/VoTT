@@ -39,7 +39,6 @@ export function loadProject(project: IProject):
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         const projectService = new ProjectService();
-        console.log(project);
 
         // Lookup security token used to decrypt project settings
         const projectToken = appState.appSettings.securityTokens
