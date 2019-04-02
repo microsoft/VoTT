@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { TFPascalVOCJsonExportProvider } from "./tensorFlowPascalVOC";
+import { TFPascalVOCExportProvider, ITFPascalVOCExportProviderOptions } from "./tensorFlowPascalVOC";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
@@ -21,16 +21,6 @@ import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
-function _base64ToArrayBuffer(base64: string) {
-    const binaryString = window.atob(base64);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
-
 describe("TFPascalVOC Json Export Provider", () => {
     const testAssets = MockFactory.createTestAssets(10, 1);
     const baseTestProject = MockFactory.createTestProject("Test Project");
@@ -38,7 +28,6 @@ describe("TFPascalVOC Json Export Provider", () => {
         "asset-1": MockFactory.createTestAsset("1", AssetState.Tagged),
         "asset-2": MockFactory.createTestAsset("2", AssetState.Tagged),
         "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
-        "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
     };
     baseTestProject.sourceConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
     baseTestProject.targetConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
@@ -62,16 +51,18 @@ describe("TFPascalVOC Json Export Provider", () => {
     });
 
     it("Is defined", () => {
-        expect(TFPascalVOCJsonExportProvider).toBeDefined();
+        expect(TFPascalVOCExportProvider).toBeDefined();
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: IExportProviderOptions = {
+        const options: ITFPascalVOCExportProviderOptions = {
             assetState: ExportAssetState.All,
+            exportUnassigned: true,
+            testTrainSplit: 80,
         };
         const exportProvider = ExportProviderFactory.create("tensorFlowPascalVOC", baseTestProject, options);
         expect(exportProvider).not.toBeNull();
-        expect(exportProvider).toBeInstanceOf(TFPascalVOCJsonExportProvider);
+        expect(exportProvider).toBeInstanceOf(TFPascalVOCExportProvider);
     });
 
     describe("Export variations", () => {
@@ -79,27 +70,12 @@ describe("TFPascalVOC Json Export Provider", () => {
             const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
             assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
                 const mockTag = MockFactory.createTestTag();
-
-                const mockStartPoint: IPoint = {
-                    x: 1,
-                    y: 2,
-                };
-
-                const mockEndPoint: IPoint = {
-                    x: 3,
-                    y: 4,
-                };
-
-                const mockRegion: IRegion = {
-                    id: "id",
-                    type: RegionType.Rectangle,
-                    tags: [mockTag.name],
-                    points: [mockStartPoint, mockEndPoint],
-                };
+                const mockRegion1 = MockFactory.createTestRegion("region-1", [mockTag.name]);
+                const mockRegion2 = MockFactory.createTestRegion("region-2", [mockTag.name]);
 
                 const assetMetadata: IAssetMetadata = {
                     asset,
-                    regions: [mockRegion],
+                    regions: [mockRegion1, mockRegion2],
                     version: appInfo.version,
                 };
 
@@ -111,14 +87,16 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: IExportProviderOptions = {
+            const options: ITFPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.All,
+                exportUnassigned: true,
+                testTrainSplit: 80,
             };
 
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -167,14 +145,16 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: IExportProviderOptions = {
+            const options: ITFPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
+                exportUnassigned: true,
+                testTrainSplit: 80,
             };
 
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(1);
 
-            const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -211,14 +191,16 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: IExportProviderOptions = {
+            const options: ITFPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
+                exportUnassigned: true,
+                testTrainSplit: 80,
             };
 
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCJsonExportProvider(testProject, options);
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -257,6 +239,157 @@ describe("TFPascalVOC Json Export Provider", () => {
                 .toBeGreaterThanOrEqual(0);
             expect(writeTextFileCalls.findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_train.txt")))
                 .toBeGreaterThanOrEqual(0);
+        });
+
+        it("Export includes unassigned tags", async () => {
+            const options: ITFPascalVOCExportProviderOptions = {
+                assetState: ExportAssetState.Tagged,
+                exportUnassigned: true,
+                testTrainSplit: 80,
+            };
+
+            const testProject = { ...baseTestProject };
+            const testAssets = MockFactory.createTestAssets(10, 0);
+            testAssets.forEach((asset) => asset.state = AssetState.Tagged);
+            testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
+            testProject.tags = MockFactory.createTestTags(3);
+
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+            await exportProvider.export();
+
+            const storageProviderMock = LocalFileSystemProxy as any;
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
+
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt")))
+                .toBeGreaterThanOrEqual(0);
+        });
+
+        it("Export does not include unassigned tags", async () => {
+            const options: ITFPascalVOCExportProviderOptions = {
+                assetState: ExportAssetState.Tagged,
+                exportUnassigned: false,
+                testTrainSplit: 80,
+            };
+
+            const testProject = { ...baseTestProject };
+            const testAssets = MockFactory.createTestAssets(10, 0);
+            testAssets.forEach((asset) => asset.state = AssetState.Tagged);
+            testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
+            testProject.tags = MockFactory.createTestTags(3);
+
+            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+            await exportProvider.export();
+
+            const storageProviderMock = LocalFileSystemProxy as any;
+            const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
+
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_val.txt")))
+                .toEqual(-1);
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 0_train.txt")))
+                .toEqual(-1);
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt")))
+                .toBeGreaterThanOrEqual(0);
+            expect(writeTextFileCalls
+                .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt")))
+                .toBeGreaterThanOrEqual(0);
+        });
+
+        describe("Annotations", () => {
+            it("contains expected XML", async () => {
+                const options: ITFPascalVOCExportProviderOptions = {
+                    assetState: ExportAssetState.Tagged,
+                    exportUnassigned: false,
+                    testTrainSplit: 80,
+                };
+
+                const testProject = { ...baseTestProject };
+                const testAssets = MockFactory.createTestAssets(10, 0);
+                testAssets.forEach((asset) => asset.state = AssetState.Tagged);
+                testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
+                testProject.tags = [MockFactory.createTestTag("1")];
+
+                const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+                await exportProvider.export();
+
+                const storageProviderMock = LocalFileSystemProxy as any;
+                const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
+                const assetIndex = writeTextFileCalls.findIndex((args) => args[0].endsWith("/Annotations/Asset 1.xml"));
+                const assetXml = writeTextFileCalls[assetIndex][1] as string;
+                const objectRegExp = /<object>([\s\S]*?)<\/object>/g;
+                const folderRegExp = new RegExp(/<filename>(.*?)<\/filename>/g);
+                const pathRegExp = new RegExp(/<path>(.*?)<\/path>/g);
+                const widthRegExp = new RegExp(/<width>(.*?)<\/width>/g);
+                const heightRegExp = new RegExp(/<height>(.*?)<\/height>/g);
+                const objectMatches = assetXml.match(objectRegExp);
+
+                expect(objectMatches).toHaveLength(2);
+                expect(folderRegExp.exec(assetXml)[1]).toEqual(testAssets[1].name);
+                expect(pathRegExp.exec(assetXml)[1]).toContain(testAssets[1].name);
+                expect(widthRegExp.exec(assetXml)[1]).toEqual(testAssets[1].size.width.toString());
+                expect(heightRegExp.exec(assetXml)[1]).toEqual(testAssets[1].size.height.toString());
+            });
+        });
+
+        describe("Test Train Splits", () => {
+            async function testTestTrainSplit(testTrainSplit: number): Promise<void> {
+                const options: ITFPascalVOCExportProviderOptions = {
+                    assetState: ExportAssetState.Tagged,
+                    exportUnassigned: true,
+                    testTrainSplit,
+                };
+
+                const testProject = { ...baseTestProject };
+                const testAssets = MockFactory.createTestAssets(10, 0);
+                testAssets.forEach((asset) => asset.state = AssetState.Tagged);
+                testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
+                testProject.tags = [MockFactory.createTestTag("1")];
+
+                const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+                await exportProvider.export();
+
+                const storageProviderMock = LocalFileSystemProxy as any;
+                const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
+
+                const valDataIndex = writeTextFileCalls
+                    .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt"));
+                const trainDataIndex = writeTextFileCalls
+                    .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt"));
+
+                const expectedTrainCount = (testTrainSplit / 100) * testAssets.length;
+                const expectedTestCount = ((100 - testTrainSplit) / 100) * testAssets.length;
+
+                expect(writeTextFileCalls[valDataIndex][1].split("\n")).toHaveLength(expectedTestCount);
+                expect(writeTextFileCalls[trainDataIndex][1].split("\n")).toHaveLength(expectedTrainCount);
+            }
+
+            it("Correctly generated files based on 50/50 test / train split", async () => {
+                await testTestTrainSplit(50);
+            });
+
+            it("Correctly generated files based on 60/40 test / train split", async () => {
+                await testTestTrainSplit(60);
+            });
+
+            it("Correctly generated files based on 80/20 test / train split", async () => {
+                await testTestTrainSplit(80);
+            });
+
+            it("Correctly generated files based on 90/10 test / train split", async () => {
+                await testTestTrainSplit(90);
+            });
         });
     });
 });

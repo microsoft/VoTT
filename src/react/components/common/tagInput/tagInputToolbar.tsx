@@ -1,8 +1,7 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
+import { strings } from "../../../../common/strings";
 import { ITag } from "../../../../models/applicationState";
 import "./tagInput.scss";
-import { KeyboardBinding } from "../keyboardBinding/keyboardBinding";
-import { strings } from "../../../../common/strings";
 
 /** Properties for tag input toolbar */
 export interface ITagInputToolbarProps {
@@ -35,9 +34,10 @@ export default class TagInputToolbar extends React.Component<ITagInputToolbarPro
         return (
             <div className="tag-input-toolbar">
                 {
-                    this.getButtonProps().map((prop) =>
-                        <div className={`tag-input-toolbar-item ${prop.className}`} onClick={prop.handler}>
-                            <i className={`tag-input-toolbar-icon fas ${prop.icon}`} />
+                    this.getToolbarItems().map((itemConfig) =>
+                        <div className={`tag-input-toolbar-item ${itemConfig.className}`}
+                            onClick={(e) => this.onToolbarItemClick(e, itemConfig)}>
+                            <i className={`tag-input-toolbar-icon fas ${itemConfig.icon}`} />
                         </div>,
                     )
                 }
@@ -45,7 +45,12 @@ export default class TagInputToolbar extends React.Component<ITagInputToolbarPro
         );
     }
 
-    private getButtonProps = (): ITagInputToolbarItemProps[] => {
+    private onToolbarItemClick = (e: SyntheticEvent, itemConfig: ITagInputToolbarItemProps): void => {
+        e.stopPropagation();
+        itemConfig.handler();
+    }
+
+    private getToolbarItems = (): ITagInputToolbarItemProps[] => {
         return [
             {
                 displayName: strings.tags.toolbar.add,

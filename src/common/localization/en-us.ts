@@ -299,6 +299,14 @@ export const english: IAppStrings = {
             },
             tfPascalVoc: {
                 displayName: "Tensorflow Pascal VOC",
+                testTrainSplit: {
+                    title: "Test / Train Split",
+                    description: "The test train split to use for exported data",
+                },
+                exportUnassigned: {
+                    title: "Export Unassigned",
+                    description: "Whether or not to include unassigned tags in exported data",
+                },
             },
         },
         messages: {

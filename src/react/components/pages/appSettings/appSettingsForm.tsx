@@ -6,7 +6,7 @@ import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ArrayFieldTemplate } from "../../common/arrayField/arrayFieldTemplate";
 import { IAppSettings } from "../../../../models/applicationState";
 import { ProtectedInput } from "../../common/protectedInput/protectedInput";
-import CustomField from "../../common/customField/customField";
+import { CustomField } from "../../common/customField/customField";
 import { generateKey } from "../../../../common/crypto";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./appSettingsForm.json"));

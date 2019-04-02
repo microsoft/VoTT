@@ -26,7 +26,7 @@ interface IImageInfo {
  * @name - TFRecords Json Export Provider
  * @description - Exports a project into a single JSON file that include all configured assets
  */
-export class TFRecordsJsonExportProvider extends ExportProvider {
+export class TFRecordsExportProvider extends ExportProvider {
     constructor(project: IProject, options: IExportProviderOptions) {
         super(project, options);
         Guard.null(options);

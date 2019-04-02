@@ -1,1 +1,8 @@
-{}
+{
+    "testTrainSplit": {
+        "ui:widget": "slider"
+    },
+    "exportUnassigned": {
+        "ui:widget": "checkbox"
+    }
+}

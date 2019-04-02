@@ -8,13 +8,13 @@ steps:
     inputs:
       versionSpec: 10.x
 
-  - bash: |  
+  - bash: |
       set -ex
-      
+
       # clean install
       npm ci
-      npm run release
-      
+      npm run release-ci
+
       mkdir -p linux
       cp releases/vott*.snap linux/
     displayName: Build

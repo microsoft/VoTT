@@ -9,9 +9,11 @@ import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { strings } from "../../../../common/strings";
-import { AssetState, AssetType, EditorMode, IApplicationState,
+import {
+    AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag } from "../../../../models/applicationState";
+    ISize, ITag,
+} from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -27,7 +29,6 @@ import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import TagInputItem from "../../common/tagInput/tagInputItem";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -54,7 +55,7 @@ export interface IEditorPageState {
     project: IProject;
     /** Array of assets in project */
     assets: IAsset[];
-    /** The editdor mode to set for canvas tools */
+    /** The editor mode to set for canvas tools */
     editorMode: EditorMode;
     /** The selection mode to set for canvas tools */
     selectionMode: SelectionMode;
@@ -182,7 +183,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             thumbnailSize={this.state.thumbnailSize}
                         />
                     </div>
-                    <div className="editor-page-content">
+                    <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-header">
                             <EditorToolbar project={this.props.project}
                                 items={this.toolbarItems}
@@ -196,7 +197,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                        onSelectedRegionsChanged={(selectedRegions) => this.setState({selectedRegions})}
+                                        onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                         editorMode={this.state.editorMode}
                                         selectionMode={this.state.selectionMode}
                                         project={this.props.project}
@@ -226,6 +227,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 </SplitPane>
             </div>
         );
+    }
+
+    private onPageClick = () => {
+        this.setState({
+            selectedRegions: [],
+        });
     }
 
     /**
@@ -270,14 +277,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedTag: tag.name,
             lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
         }, () => this.canvas.current.applyTag(tag.name));
-    }
-
-    private onTagRenamed = (oldTag: string, newTag: string) => {
-        const { assets } = this.props.project;
-    }
-
-    private onTagDeleted = (tag: ITag) => {
-        const { assets } = this.props.project;
     }
 
     private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
@@ -390,7 +389,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
-        this.setState({selectedRegions});
+        this.setState({ selectedRegions });
     }
 
     private onTagsChanged = (tags) => {
@@ -407,7 +406,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onLockedTagsChanged = (lockedTags: string[]) => {
-        this.setState({lockedTags});
+        this.setState({ lockedTags });
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
@@ -502,7 +501,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         assetTags.forEach((tag) => {
             if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
+                !this.props.project.tags.find((projectTag) => tag === projectTag.name)) {
                 newTags.push({
                     name: tag,
                     color: tagColors[newTags.length % tagColors.length],

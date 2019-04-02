@@ -8,7 +8,10 @@ import ExportProviderPicker from "../../common/exportProviderPicker/exportProvid
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ExternalPicker from "../../common/externalPicker/externalPicker";
 import { ProtectedInput } from "../../common/protectedInput/protectedInput";
-import { ExportAssetState } from "../../../../providers/export/exportProvider";
+import Checkbox from "rc-checkbox";
+import "rc-checkbox/assets/index.css";
+import { CustomWidget } from "../../common/customField/customField";
+import { Slider } from "../../common/slider/slider";
 
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./exportForm.json"));
@@ -48,28 +51,25 @@ export interface IExportFormState {
  * @description - Form to view/edit settings for exporting of project
  */
 export default class ExportForm extends React.Component<IExportFormProps, IExportFormState> {
+    public state: IExportFormState = {
+        classNames: ["needs-validation"],
+        providerName: this.props.settings ? this.props.settings.providerType : null,
+        formSchema: { ...formSchema },
+        uiSchema: { ...uiSchema },
+        formData: this.props.settings,
+    };
+
     private widgets = {
         externalPicker: (ExternalPicker as any) as Widget,
         exportProviderPicker: (ExportProviderPicker as any) as Widget,
         protectedInput: (ProtectedInput as any) as Widget,
+        slider: (Slider as any) as Widget,
+        checkbox: CustomWidget(Checkbox, (props) => ({
+            checked: props.value,
+            onChange: (value) => props.onChange(value.target.checked),
+            disabled: props.disabled,
+        })),
     };
-
-    constructor(props, context) {
-        super(props, context);
-
-        this.state = {
-            classNames: ["needs-validation"],
-            providerName: this.props.settings ? this.props.settings.providerType : null,
-            formSchema: { ...formSchema },
-            uiSchema: { ...uiSchema },
-            formData: this.props.settings,
-        };
-
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onFormValidate = this.onFormValidate.bind(this);
-        this.onFormChange = this.onFormChange.bind(this);
-        this.onFormCancel = this.onFormCancel.bind(this);
-    }
 
     public componentDidMount() {
         if (this.props.settings) {
@@ -119,7 +119,7 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         }
     }
 
-    private onFormValidate(exportFormat: IExportFormat, errors: FormValidation) {
+    private onFormValidate = (exportFormat: IExportFormat, errors: FormValidation): FormValidation => {
         if (this.state.classNames.indexOf("was-validated") === -1) {
             this.setState({
                 classNames: [...this.state.classNames, "was-validated"],
@@ -129,20 +129,22 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         return errors;
     }
 
-    private onFormSubmit = (args: ISubmitEvent<IExportFormat>) => {
+    private onFormSubmit = (args: ISubmitEvent<IExportFormat>): void => {
         this.props.onSubmit(args.formData);
     }
 
-    private onFormCancel() {
+    private onFormCancel = (): void => {
         if (this.props.onCancel) {
             this.props.onCancel();
         }
     }
 
-    private bindForm(exportFormat: IExportFormat, resetProviderOptions: boolean = false) {
+    private bindForm = (exportFormat: IExportFormat, resetProviderOptions: boolean = false): void => {
         // If no provider type was specified on bind, pick the default provider
-        const providerType = (exportFormat && exportFormat.providerType) ?
-            exportFormat.providerType : ExportProviderFactory.defaultProvider.name;
+        const providerType = (exportFormat && exportFormat.providerType)
+            ? exportFormat.providerType
+            : ExportProviderFactory.defaultProvider.name;
+
         let newFormSchema: any = this.state.formSchema;
         let newUiSchema: any = this.state.uiSchema;
 

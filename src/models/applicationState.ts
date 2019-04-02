@@ -181,7 +181,7 @@ export interface IExportProviderOptions extends IProviderOptions {
  * @description - Defines the settings for how project data is exported into commonly used format
  * @member id - Unique identifier for export format
  * @member name - Name of export format
- * @member providerType - The export format type (TF Records, YOLO, CVS, etc)
+ * @member providerType - The export format type (TF Records, YOLO, CSV, etc)
  * @member providerOptions - The provider specific option required to export data
  */
 export interface IExportFormat {

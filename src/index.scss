@@ -8,10 +8,6 @@ body {
     overflow: hidden;
 }
 
-#appInfo {
-    display: none;
-}
-
 input[type=file] {
     display: none;
 }
@@ -65,5 +61,14 @@ input[type=file] {
         .form-control {
             border: solid 1px #62c462;
         }
+    }
+
+    .rc-checkbox {
+        margin-left: 0.5em;
+    }
+
+    .slider-value {
+        font-weight: 500;
+        font-size: 90%;
     }
 }

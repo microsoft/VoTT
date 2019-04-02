@@ -106,7 +106,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                     confirmButtonColor="danger"
                     onConfirm={this.removeAllRegions}
                 />
-                <div id="ct-zone" ref={this.canvasZone} className={className}>
+                <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
                     <div id="selection-zone">
                         <div id="editor-zone" className="full-size" />
                     </div>

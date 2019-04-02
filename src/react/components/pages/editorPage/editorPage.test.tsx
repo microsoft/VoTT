@@ -648,33 +648,6 @@ describe("Editor Page Component", () => {
             editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([]);
         });
-
-        it("Clears locked tags when tag is clicked", async () => {
-            const project = MockFactory.createTestProject();
-            const store = createReduxStore({
-                ...MockFactory.initialState(),
-                currentProject: project,
-            });
-
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
-            await waitForSelectedAsset(wrapper);
-
-            wrapper.update();
-            wrapper.find("span.tag-name-text")
-                .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-            let editorPage = wrapper.find(EditorPage).childAt(0);
-            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
-            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
-
-            wrapper.update();
-            wrapper.find("span.tag-name-text")
-                .last()
-                .simulate("click", { target: { innerText: project.tags[0].name } });
-            editorPage = wrapper.find(EditorPage).childAt(0);
-            expect(editorPage.state().selectedTag).toEqual(project.tags[project.tags.length - 1].name);
-            expect(editorPage.state().lockedTags).toEqual([]);
-        });
     });
 
     describe("Resizing editor page", () => {
