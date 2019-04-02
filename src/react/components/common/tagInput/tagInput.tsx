@@ -410,7 +410,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 event.target.value = "";
             } else if (!newTag.name.length) {
                 toast.warn(strings.tags.warnings.emptyName);
-            }else {
+            } else {
                 toast.warn(strings.tags.warnings.existingName);
             }
         }
