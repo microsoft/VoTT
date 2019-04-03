@@ -1,5 +1,6 @@
 {
-    "title": "Azure Blob Storage",
+    "title": "${strings.connections.providers.azureBlob.title}",
+    "description": "${strings.connections.providers.azureBlob.description}",
     "required": [
         "accountName",
         "containerName",
@@ -8,21 +9,21 @@
     "type": "object",
     "properties": {
         "accountName": {
-            "title": "Account Name",
+            "title": "${strings.connections.providers.azureBlob.accountName.title}",
             "type": "string"
         },
         "containerName": {
-            "title": "Container Name",
+            "title": "${strings.connections.providers.azureBlob.containerName.title}",
             "type": "string"
         },
         "sas": {
-            "title": "SAS",
-            "description": "Secure access token used to authentiate to your blob storage account",
+            "title": "${strings.connections.providers.azureBlob.sas.title}",
+            "description": "${strings.connections.providers.azureBlob.sas.description}",
             "type": "string"
         },
         "createContainer": {
-            "title": "Create Container",
-            "description": "Creates the blob container if it does not already exist",
+            "title": "${strings.connections.providers.azureBlob.createContainer.title}",
+            "description": "${strings.connections.providers.azureBlob.createContainer.description}",
             "type": "boolean"
         }
     }

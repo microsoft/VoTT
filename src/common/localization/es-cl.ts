@@ -166,7 +166,24 @@ export const spanish: IAppStrings = {
         },
         providers: {
             azureBlob: {
-                title: "Almacenamiento de Azure Blob",
+                title: "Azure Blob Storage",
+                description: "",
+                accountName: {
+                    title: "Nombre de cuenta",
+                    description: "",
+                },
+                containerName: {
+                    title: "Nombre del contenedor",
+                    description: "",
+                },
+                sas: {
+                    title: "SAS",
+                    description: "Firma de acceso compartido utilizada para autenticarse en la cuenta de BLOB Storage",
+                },
+                createContainer: {
+                    title: "Crear contenedor",
+                    description: "Crea el contenedor de blobs si aún no existe",
+                },
             },
             bing: {
                 title: "Búsqueda de Imágenes Bing",
