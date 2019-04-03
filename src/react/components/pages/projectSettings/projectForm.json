@@ -45,12 +45,17 @@
             "title": "Active Learning ",
             "type": "object",
             "properties": {
+                "modelPath": {
+                    "title": "Model path: ",
+                    "type": "string",
+                    "default": "/Users/jacopo/CocoSSD"
+                },
                 "autolabel": {
-                    "title": "Auto-label:",
+                    "title": " Auto-label",
                     "type": "boolean"
                 },
                 "predictClass": {
-                    "title": "Predict Class:",
+                    "title": " Predict Class",
                     "type": "boolean"
                 }
             }
