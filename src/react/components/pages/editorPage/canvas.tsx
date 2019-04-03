@@ -71,16 +71,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public componentWillUnmount() {
         window.removeEventListener("resize", this.onWindowResize);
-        if (this.intervalTimer) {
-            clearInterval(this.intervalTimer);
-        }
+        this.stopContentSource();
     }
 
     public componentDidUpdate = (prevProps: Readonly<ICanvasProps>) => {
         if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
-            this.clearAllRegions();
+            this.editor.AS.disable();
             this.setState({
                 currentAsset: this.props.selectedAsset,
+                contentSource: null,
             });
         }
 
@@ -96,7 +95,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public render = () => {
-        const className = this.state.assetLoadError ? "canvas-disabled" : "canvas-enabled";
+        const className = this.state.assetLoadError || !this.state.contentSource ? "canvas-disabled" : "canvas-enabled";
 
         return (
             <Fragment>
@@ -357,10 +356,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     /**
      * Method called when deleting a region from the editor
      * @param {string} id the id of the selected region
-     * @param {boolean} multiselect boolean whether region was selected with multiselection
+     * @param {boolean} multiSelect boolean whether region was selected with multi selection
      * @returns {void}
      */
-    private onRegionSelected = (id: string, multiselect: boolean) => {
+    private onRegionSelected = (id: string, multiSelect: boolean) => {
         const selectedRegions = this.getSelectedRegions();
         if (this.props.onSelectedRegionsChanged) {
             this.props.onSelectedRegionsChanged(selectedRegions);
@@ -424,7 +423,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.setState({ contentSource, assetLoadError: false }, async () => {
             this.positionCanvas(this.state.contentSource);
             await this.setContentSource(this.state.contentSource);
+
             this.refreshCanvasToolsRegions();
+
             if (this.props.onSelectedRegionsChanged) {
                 this.props.onSelectedRegionsChanged(this.getSelectedRegions());
             }
@@ -439,8 +440,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Raised when the asset is taking control over the rendering
      */
     private onAssetActivated = () => {
-        this.clearAllRegions();
-
         this.editor.AS.setSelectionMode(SelectionMode.NONE);
         this.syncContentSource();
     }
@@ -455,9 +454,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.setContentSource(this.state.contentSource);
         }
 
-        this.refreshCanvasToolsRegions();
-
         this.editor.AS.setSelectionMode(this.props.selectionMode);
+        this.editor.AS.enable();
     }
 
     /**
@@ -475,25 +473,31 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Positions the canvas tools drawing surface to be exactly over the asset content
      */
     private positionCanvas = (contentSource: ContentSource) => {
+        if (!contentSource) {
+            return;
+        }
+
         const canvas = this.canvasZone.current;
-        canvas.style.top = `${contentSource.offsetTop}px`;
-        canvas.style.left = `${contentSource.offsetLeft}px`;
-        canvas.style.width = `${contentSource.offsetWidth}px`;
-        canvas.style.height = `${contentSource.offsetHeight}px`;
-        this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+        if (canvas) {
+            canvas.style.top = `${contentSource.offsetTop}px`;
+            canvas.style.left = `${contentSource.offsetLeft}px`;
+            canvas.style.width = `${contentSource.offsetWidth}px`;
+            canvas.style.height = `${contentSource.offsetHeight}px`;
+            this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+        }
     }
 
     /**
      * Resizes and re-renders the canvas when the application window size changes
      */
-    private onWindowResize = () => {
+    private onWindowResize = async () => {
         if (!this.state.contentSource) {
             return;
         }
 
         this.positionCanvas(this.state.contentSource);
         if (!this.intervalTimer) {
-            this.setContentSource(this.state.contentSource);
+            await this.setContentSource(this.state.contentSource);
         }
     }
 
@@ -519,11 +523,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     private refreshCanvasToolsRegions = () => {
+        this.clearAllRegions();
+
         if (!this.state.currentAsset.regions || this.state.currentAsset.regions.length === 0) {
             return;
         }
-
-        this.clearAllRegions();
 
         // Add regions to the canvas
         this.state.currentAsset.regions.forEach((region: IRegion) => {

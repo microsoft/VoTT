@@ -98,7 +98,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                     onConfirm={(connection) => this.onConnectionDelete(connection)} />
 
                 <Route exact path="/connections" render={(props) =>
-                    <div className="app-connections-page-detail m-3 text-light">
+                    <div className="app-connections-page-detail m-3">
                         <h6>{strings.connections.instructions}</h6>
                     </div>
                 } />

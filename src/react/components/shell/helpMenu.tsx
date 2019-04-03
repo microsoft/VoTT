@@ -114,7 +114,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
         const keyRegistration = registrations[group[0]];
         if (keyRegistration) {
             return (
-                <div className={"help-key row"}>
+                <div key={keyRegistration.displayName} className={"help-key row"}>
                     <div className={`col-1 keybinding-icon ${(keyRegistration.icon)
                         ? `fas ${keyRegistration.icon}` : ""}`}/>
                     <div className="col-4 keybinding-accelerator">{this.stringifyGroup(group)}</div>

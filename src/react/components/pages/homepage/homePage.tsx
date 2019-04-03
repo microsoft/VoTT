@@ -64,7 +64,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     public render() {
         return (
             <div className="app-homepage">
-                <div className="app-homepage-main text-light">
+                <div className="app-homepage-main">
                     <ul>
                         <li>
                             <a href="#" onClick={this.createNewProject} className="p-5 new-project">

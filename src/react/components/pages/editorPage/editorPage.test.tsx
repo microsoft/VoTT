@@ -66,7 +66,11 @@ describe("Editor Page Component", () => {
             ...new RegionsManager(null, null),
             getSelectedRegionsBounds: jest.fn(() => MockFactory.createTestRegions()),
         };
-        editorMock.prototype.AS = { setSelectionMode: jest.fn() };
+        editorMock.prototype.AS = {
+            setSelectionMode: jest.fn(),
+            enable: jest.fn(),
+            disable: jest.fn(),
+        };
     });
 
     beforeEach(() => {
@@ -580,7 +584,7 @@ describe("Editor Page Component", () => {
 
             const newTagName = "My new tag";
             wrapper.find("div.tag-input-toolbar-item.plus").simulate("click");
-            wrapper.find(".tag-input-box").simulate("keydown", {key: "Enter", target: {value: newTagName}});
+            wrapper.find(".tag-input-box").simulate("keydown", { key: "Enter", target: { value: newTagName } });
 
             const stateTags = getState(wrapper).project.tags;
 
