@@ -162,7 +162,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         if (this.state.project &&
-            this.state.project.activeLearningSettings.autolabel &&
+            this.state.project.activeLearningSettings.autoDetect &&
             this.state.selectedAsset &&
             !this.state.selectedAsset.asset.predicted) {
             this.predict();
@@ -534,7 +534,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         regions.push({
                             id: shortid.generate(),
                             type: RegionType.Rectangle,
-                            tags: this.state.project.activeLearningSettings.predictClass ? [prediction.class] : [],
+                            tags: this.state.project.activeLearningSettings.predictTag ? [prediction.class] : [],
                             boundingBox: {
                                 left: Math.max(0, prediction.bbox[0]),
                                 top: Math.max(0, prediction.bbox[1]),

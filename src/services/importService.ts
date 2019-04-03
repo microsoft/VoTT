@@ -66,7 +66,7 @@ export default class ImportService implements IImportService {
             videoSettings: {
                 frameExtractionRate: originalProject.framerate ? Number(originalProject.framerate) : 15,
             },
-            activeLearningSettings: {modelPath: "", autolabel: false, predictClass: false},
+            activeLearningSettings: {modelPath: "", autoDetect: false, predictTag: false},
             autoSave: true,
         };
     }
