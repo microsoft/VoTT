@@ -25,7 +25,6 @@ describe("Localization tests", () => {
                 const newFormJson = addLocValues(formJson);
                 const formProps = newFormJson.properties;
 
-                expect(newFormJson.title).toEqual(lConn.title);
                 expect(formProps.name.title).toEqual(common.displayName);
                 expect(formProps.description.title).toEqual(common.description);
                 expect(formProps.providerType.title).toEqual(common.provider);

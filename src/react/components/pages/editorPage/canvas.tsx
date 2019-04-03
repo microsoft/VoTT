@@ -76,8 +76,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public componentDidUpdate = (prevProps: Readonly<ICanvasProps>) => {
         if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
+            this.editor.AS.disable();
             this.setState({
                 currentAsset: this.props.selectedAsset,
+                contentSource: null,
             });
         }
 
@@ -93,7 +95,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public render = () => {
-        const className = this.state.assetLoadError ? "canvas-disabled" : "canvas-enabled";
+        const className = this.state.assetLoadError || !this.state.contentSource ? "canvas-disabled" : "canvas-enabled";
 
         return (
             <Fragment>
@@ -418,7 +420,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Raised when the underlying asset has completed loading
      */
     private onAssetLoaded = (contentSource: ContentSource) => {
-        this.setState({ contentSource, assetLoadError: false });
+        this.setState({ contentSource, assetLoadError: false }, async () => {
+            this.positionCanvas(this.state.contentSource);
+            await this.setContentSource(this.state.contentSource);
+
+            this.refreshCanvasToolsRegions();
+
+            if (this.props.onSelectedRegionsChanged) {
+                this.props.onSelectedRegionsChanged(this.getSelectedRegions());
+            }
+        });
     }
 
     private onAssetError = () => {
@@ -436,17 +447,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     /**
      * Raise when the asset is handing off control of rendering
      */
-    private onAssetDeactivated = async () => {
-        this.stopContentSource();
-        this.positionCanvas(this.state.contentSource);
-        await this.setContentSource(this.state.contentSource);
-        this.refreshCanvasToolsRegions();
-
-        if (this.props.onSelectedRegionsChanged) {
-            this.props.onSelectedRegionsChanged(this.getSelectedRegions());
+    private onAssetDeactivated = () => {
+        if (this.intervalTimer) {
+            this.stopContentSource();
+        } else {
+            this.setContentSource(this.state.contentSource);
         }
 
         this.editor.AS.setSelectionMode(this.props.selectionMode);
+        this.editor.AS.enable();
     }
 
     /**
@@ -469,11 +478,13 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         const canvas = this.canvasZone.current;
-        canvas.style.top = `${contentSource.offsetTop}px`;
-        canvas.style.left = `${contentSource.offsetLeft}px`;
-        canvas.style.width = `${contentSource.offsetWidth}px`;
-        canvas.style.height = `${contentSource.offsetHeight}px`;
-        this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+        if (canvas) {
+            canvas.style.top = `${contentSource.offsetTop}px`;
+            canvas.style.left = `${contentSource.offsetLeft}px`;
+            canvas.style.width = `${contentSource.offsetWidth}px`;
+            canvas.style.height = `${contentSource.offsetHeight}px`;
+            this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+        }
     }
 
     /**
