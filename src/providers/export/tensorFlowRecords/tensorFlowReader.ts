@@ -27,7 +27,6 @@ export class TFRecordsReader {
             position += 4;
 
             if (lengthCrc !== expectedLengthCrc) {
-                console.log("Wrong Length CRC");
                 break;
             }
 
@@ -39,7 +38,6 @@ export class TFRecordsReader {
             position += 4;
 
             if (dataCrc !== expectedDataCrc) {
-                console.log("Wrong Data CRC");
                 break;
             }
 

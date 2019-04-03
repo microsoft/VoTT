@@ -111,7 +111,6 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
             // TODO: Refactor ExportProvider abstract class export() method
             //       to return Promise<object> with an object containing
             //       the number of files successfully exported out of total
-            console.log(`Error downloading asset ${assetMetadata.asset.path} - ${err}`);
         }
     }
 
@@ -144,15 +143,12 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
             // TODO: Refactor ExportProvider abstract class export() method
             //       to return Promise<object> with an object containing
             //       the number of files successfully exported out of total
-            console.log(`Image not valid ${imageFileName}`);
         } else {
             const assetProps = await HtmlFileReader.readAssetAttributesWithBuffer(image64);
             const imageInfo = this.imagesInfo.get(assetName);
             if (imageInfo && assetProps) {
                 imageInfo.width = assetProps.width;
                 imageInfo.height = assetProps.height;
-            } else {
-                console.log(`imageInfo for element ${assetName} not found (${assetProps})`);
             }
         }
     }
@@ -211,9 +207,7 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
                 // Save Annotation File
                 await this.storageProvider.writeText(assetFilePath, interpolate(annotationTemplate, params));
             });
-        } catch (err) {
-            console.log("Error writing Pascal VOC annotation file");
-        }
+        } catch (err) {}
     }
 
     private async exportImageSets(

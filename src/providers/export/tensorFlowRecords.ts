@@ -116,7 +116,6 @@ export class TFRecordsExportProvider extends ExportProvider {
                 // TODO: Refactor ExportProvider abstract class export() method
                 //       to return Promise<object> with an object containing
                 //       the number of files succesfully exported out of total
-                console.log(`Error downloading ${element.asset.path} - ${error}`);
                 resolve();
                 // eject(err);
             }
@@ -137,8 +136,6 @@ export class TFRecordsExportProvider extends ExportProvider {
             if (assetProps) {
                 imageInfo.width = assetProps.width;
                 imageInfo.height = assetProps.height;
-            } else {
-                console.log("imageInfo not found");
             }
         }
     }

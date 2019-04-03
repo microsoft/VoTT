@@ -481,9 +481,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 const assetProps = await HtmlFileReader.readAssetAttributes(asset);
                 assetMetadata.asset.size = { width: assetProps.width, height: assetProps.height };
             }
-        } catch (err) {
-            console.warn("Error computing asset size");
-        }
+        } catch (err) {}
 
         await this.onAssetMetadataChanged(assetMetadata);
 

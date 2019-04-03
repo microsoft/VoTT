@@ -29,9 +29,6 @@ export class IpcMainProxy {
     private init() {
         this.ipcMain.on("ipc-main-proxy", (sender: any, message: IpcProxyMessage<any>) => {
             const handler = this.handlers[message.type];
-            if (!handler) {
-                console.log(`No IPC proxy handler defined for event type '${message.type}'`);
-            }
 
             const returnArgs: IpcProxyMessage<any> = {
                 id: message.id,
