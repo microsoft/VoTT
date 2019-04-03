@@ -9,6 +9,10 @@ describe("Image Asset Component", () => {
     const dataUri = "data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
     let wrapper: ReactWrapper<IAssetProps> = null;
     const onLoadHandler = jest.fn();
+    const onActivatedHandler = jest.fn();
+    const onDeactivatedHandler = jest.fn();
+    const onErrorHandler = jest.fn();
+
     MockFactory.createTestAsset("test");
     const defaultProps: IAssetProps = {
         asset: {
@@ -16,6 +20,9 @@ describe("Image Asset Component", () => {
             path: dataUri,
         },
         onLoaded: onLoadHandler,
+        onActivated: onActivatedHandler,
+        onDeactivated: onDeactivatedHandler,
+        onError: onErrorHandler,
     };
 
     function createComponent(props?: IAssetProps): ReactWrapper<IAssetProps> {
@@ -30,5 +37,26 @@ describe("Image Asset Component", () => {
         img.dispatchEvent(new Event("load"));
 
         expect(onLoadHandler).toBeCalledWith(expect.any(HTMLImageElement));
+    });
+
+    it("raises onError handler when image fails to load", () => {
+        wrapper = createComponent();
+
+        const img = wrapper.find("img").getDOMNode() as HTMLImageElement;
+        img.dispatchEvent(new Event("error"));
+
+        expect(onErrorHandler).toBeCalled();
+    });
+
+    it("raises activated & deactivated life cycle events", async () => {
+        wrapper = createComponent();
+
+        const img = wrapper.find("img").getDOMNode() as HTMLImageElement;
+        img.dispatchEvent(new Event("load"));
+
+        await MockFactory.flushUi();
+
+        expect(onActivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
+        expect(onDeactivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
     });
 });

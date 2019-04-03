@@ -15,23 +15,25 @@ describe("TFRecord Asset Component", () => {
     let wrapper: ReactWrapper<IAssetProps> = null;
 
     const onLoadHandler = jest.fn();
+    const onActivatedHandler = jest.fn();
+    const onDeactivatedHandler = jest.fn();
     const onErrorHandler = jest.fn();
 
-    let tfrecords: Buffer;
+    let tfRecords: Buffer;
     beforeEach(() => {
         let builder: TFRecordsBuilder;
         builder = new TFRecordsBuilder();
         builder.addFeature("image/encoded", FeatureType.Binary, dataImage);
 
         const buffer = builder.build();
-        tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
+        tfRecords = TFRecordsBuilder.buildTFRecords([buffer]);
 
         onLoadHandler.mockClear();
         onErrorHandler.mockClear();
     });
 
     HtmlFileReader.getAssetArray = jest.fn((asset) => {
-        return Promise.resolve<ArrayBuffer>(new Uint8Array(tfrecords).buffer);
+        return Promise.resolve<ArrayBuffer>(new Uint8Array(tfRecords).buffer);
     });
 
     const defaultProps: IAssetProps = {
@@ -40,6 +42,8 @@ describe("TFRecord Asset Component", () => {
             path: "abc",
         },
         onLoaded: onLoadHandler,
+        onActivated: onActivatedHandler,
+        onDeactivated: onDeactivatedHandler,
         onError: onErrorHandler,
     };
 
@@ -70,6 +74,17 @@ describe("TFRecord Asset Component", () => {
         img.dispatchEvent(new Event("load"));
 
         expect(onLoadHandler).toBeCalledWith(expect.any(HTMLImageElement));
+    });
+
+    it("raises activated & deactivated life cycle events", async () => {
+        wrapper = createComponent();
+        await MockFactory.flushUi();
+
+        const img = wrapper.find("img").getDOMNode() as HTMLImageElement;
+        img.dispatchEvent(new Event("load"));
+
+        expect(onActivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
+        expect(onDeactivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
     });
 
     it("raises onError handler when the image has an error", async () => {
