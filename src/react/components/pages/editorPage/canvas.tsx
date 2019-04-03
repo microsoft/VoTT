@@ -496,8 +496,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @param updatedSelectedRegions Selected regions with any changes already applied
      */
     private updateRegions = (updates: IRegion[]) => {
-        console.log("updateRegions");
-
         const updatedRegions = CanvasHelpers.updateRegions(this.state.currentAsset.regions, updates);
         for (const update of updates) {
             this.editor.RM.updateTagsById(update.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, update));
@@ -510,12 +508,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * Updates the background of the canvas and draws the asset's regions
      */
     private clearAllRegions = () => {
-        console.log("clearAllRegions");
         this.editor.RM.deleteAllRegions();
     }
 
     private refreshCanvasToolsRegions = () => {
-        console.log("refreshCanvasToolsRegions");
         this.clearAllRegions();
 
         if (!this.state.currentAsset.regions || this.state.currentAsset.regions.length === 0) {
