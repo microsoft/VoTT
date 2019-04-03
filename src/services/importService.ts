@@ -229,7 +229,7 @@ export default class ImportService implements IImportService {
                 const timestamp = frameInt / Number(originalProject.framerate) - 1;
                 const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
                 const asset = AssetService.createAssetFromFilePath(
-                    `${pathToUse}#t=${timestamp}`);
+                    `file:${pathToUse}#t=${timestamp}`);
                 const assetState = originalProject.visitedFrames.indexOf(frameInt) > -1 && frameRegions.length > 0
                     ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameInt) > -1
                     ? AssetState.Visited : AssetState.NotVisited);
@@ -240,7 +240,7 @@ export default class ImportService implements IImportService {
                 const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
                     const taggedMetadata = this.addRegions(metadata, frameRegions);
                     taggedMetadata.asset.state = assetState;
-                    taggedMetadata.asset.path = `file:${taggedMetadata.asset.path}`;
+                    taggedMetadata.asset.path = `${taggedMetadata.asset.path}`;
                     taggedMetadata.asset.parent = parent;
                     return taggedMetadata;
                 });
