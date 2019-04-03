@@ -100,7 +100,9 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     <h4>{strings.projectMetrics.assetsSectionTitle}</h4>
                     <p className="my-1">
                         {strings.projectMetrics.totalAssetCount}:
-                        <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong>
+                        <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong><br/>
+                        Total Visited:
+                        <strong className="px-1 metric-total-visited-count">{this.getVisitedAssetsCount()}</strong>
                     </p>
                     <RadialChart
                         className="asset-chart"

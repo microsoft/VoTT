@@ -107,7 +107,7 @@ export const english: IAppStrings = {
         title: "Project Metrics",
         assetsSectionTitle: "Assets",
         totalAssetCount: "Total Assets",
-        visitedAssets: "Visited Assets (${count})",
+        visitedAssets: "Untagged Visited Assets (${count})",
         taggedAssets: "Tagged Assets (${count})",
         nonVisitedAssets: "Not Visited Assets (${count})",
         tagsSectionTitle: "Tags & Labels",
