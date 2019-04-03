@@ -16,6 +16,8 @@ function createWindow() {
         height: 768,
         frame: process.platform === "linux",
         titleBarStyle: "hidden",
+        backgroundColor: "#272B30",
+        show: false,
     };
 
     const staticUrl = process.env.ELECTRON_START_URL || `file:///${__dirname}/index.html`;
@@ -35,6 +37,12 @@ function createWindow() {
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
         mainWindow = null;
+    });
+
+    // Provides a more graceful experience and eliminates the white screen on load
+    // This event fires after the app first render
+    mainWindow.once("ready-to-show", () => {
+        mainWindow.show();
     });
 
     registerContextMenu(mainWindow);

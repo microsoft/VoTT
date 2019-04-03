@@ -168,7 +168,24 @@ export interface IAppStrings {
         providers: {
             azureBlob: {
                 title: string;
-            }
+                description: string,
+                accountName: {
+                    title: string,
+                    description: string,
+                },
+                containerName: {
+                    title: string,
+                    description: string,
+                },
+                sas: {
+                    title: string,
+                    description: string,
+                },
+                createContainer: {
+                    title: string,
+                    description: string,
+                }
+            },
             bing: {
                 title: string;
                 options: string;

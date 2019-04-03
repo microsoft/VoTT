@@ -36,6 +36,7 @@
         flex-grow: 1;
         text-align: center;
         font-size: 0.80em;
+        white-space: nowrap;
     }
 
     &-icon {
@@ -46,6 +47,12 @@
         color: $color-green;
     }
 
+    @media (max-width: 640px) {
+        &-menu {
+            display: none;
+        }
+    }
+
     &-controls {
         display: flex;
         flex-direction: row;
@@ -53,6 +60,7 @@
         ul {
             margin: 0;
             padding: 0;
+            white-space: nowrap;
         }
 
         li {

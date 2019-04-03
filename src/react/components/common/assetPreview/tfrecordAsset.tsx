@@ -65,6 +65,12 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
         if (this.props.onLoaded) {
             this.props.onLoaded(this.image.current);
         }
+        if (this.props.onActivated) {
+            setImmediate(() => this.props.onActivated(this.image.current));
+        }
+        if (this.props.onDeactivated) {
+            setImmediate(() => this.props.onDeactivated(this.image.current));
+        }
     }
 
     private onError = (e: React.SyntheticEvent<Element>) => {

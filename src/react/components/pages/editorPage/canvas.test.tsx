@@ -75,6 +75,8 @@ describe("Editor Canvas", () => {
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
         editorMock.prototype.RM = new RegionsManager(null, null);
         editorMock.prototype.AS = {
+            enable: jest.fn(),
+            disable: jest.fn(),
             setSelectionMode: jest.fn(({ mode, template = null }) => { selectionMode = { mode, template }; }),
             getSelectorSettings: jest.fn(() => selectionMode),
         };
@@ -97,13 +99,17 @@ describe("Editor Canvas", () => {
         };
     }
 
-    it("renders correctly from default state", () => {
+    it("renders correctly from default state", async () => {
         const wrapper = createComponent();
         const canvas = wrapper.instance();
 
+        // Simulate an image loading asset preview
+        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
+        wrapper.update();
+
         expect(wrapper.find(".canvas-enabled").exists()).toBe(true);
         expect(wrapper.state()).toEqual({
-            contentSource: null,
+            contentSource: expect.any(HTMLImageElement),
             assetLoadError: false,
             currentAsset: canvas.props.selectedAsset,
         });
@@ -125,7 +131,7 @@ describe("Editor Canvas", () => {
         });
     });
 
-    it("regions are cleared and reset when selected asset changes", () => {
+    it("regions are cleared and reset when selected asset changes", async () => {
         const wrapper = createComponent();
         const rmMock = RegionsManager as any;
         rmMock.prototype.deleteAllRegions.mockClear();
@@ -136,6 +142,10 @@ describe("Editor Canvas", () => {
 
         mockSelectedRegions([]);
         wrapper.setProps({ selectedAsset: assetMetadata });
+        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
+
+        await MockFactory.flushUi();
+
         expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
         expect(wrapper.instance().getSelectedRegions()).toEqual([]);
     });
@@ -260,7 +270,11 @@ describe("Editor Canvas", () => {
 
         await MockFactory.flushUi();
 
-        expect(wrapper.instance().editor.RM.addRegion).toBeCalledTimes(assetMetadata.regions.length);
+        const canvasEditor = wrapper.instance().editor;
+
+        expect(canvasEditor.RM.addRegion).toBeCalledTimes(assetMetadata.regions.length);
+        expect(canvasEditor.AS.disable).toBeCalled();
+        expect(canvasEditor.AS.enable).toBeCalled();
     });
 
     it("onRegionMove edits region info in asset", () => {

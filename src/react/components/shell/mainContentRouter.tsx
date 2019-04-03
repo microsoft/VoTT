@@ -15,7 +15,7 @@ import ProfileSettingsPage from "../pages/profileSettingsPage";
  */
 export default function MainContentRouter() {
     return (
-        <div className="app-content">
+        <div className="app-content text-light">
             <Switch>
                 <Route path="/" exact component={HomePage} />
                 <Route path="/settings" component={AppSettingsPage} />

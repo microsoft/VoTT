@@ -166,6 +166,23 @@ export const english: IAppStrings = {
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
+                description: "",
+                accountName: {
+                    title: "Account Name",
+                    description: "",
+                },
+                containerName: {
+                    title: "Container Name",
+                    description: "",
+                },
+                sas: {
+                    title: "SAS",
+                    description: "Shared access signature used to authenticate to the blob storage account",
+                },
+                createContainer: {
+                    title: "Create Container",
+                    description: "Creates the blob container if it does not already exist",
+                },
             },
             bing: {
                 title: "Bing Image Search",
