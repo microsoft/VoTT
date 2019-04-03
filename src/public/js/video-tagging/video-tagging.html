@@ -236,6 +236,8 @@
             this.deleteRegionById(id);
         };
 
+        editor.AS.setSelectionMode(this.CT.Selection.SelectionMode.RECT);
+
         this.editor = editor;
     },
 
@@ -535,12 +537,12 @@
         let secondaryTags = [];
         if (tags.length > 0) {
             let color = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[0])];
-            primaryTag = new this.CT.Core.Tag(tags[0], this.CT.Core.Tag.getHueFromColor(color) * 360);
+            primaryTag = new this.CT.Core.Tag(tags[0], color);
 
             secondaryTags = [];
             for (var i = 1; i < tags.length; i++) {
                 let c = this.optionalTags.colors[this.inputtagsarray.indexOf(tags[i])];
-                let t = new this.CT.Core.Tag(tags[i], this.CT.Core.Tag.getHueFromColor(c) * 360);
+                let t = new this.CT.Core.Tag(tags[i], c);
                 secondaryTags.push(t)
             }                
 
@@ -788,7 +790,7 @@
             this.editor.RM.redrawAllRegions();
         }
         //Clears areaSelector state when moving across frames
-        this.editor.RM.onManipulationEnd();
+        this.editor.AS.enable();
     },
     
     /**
@@ -1224,49 +1226,51 @@
             this.seekStyle.textContent += '.seek::-moz-range-track{background-size:'+perc+'% 100%}';
     },
     updateFrameCanvas: function(source) {
-        return this.editor.addContentSource(source);
+        return this.editor.addContentSource(source).then(() => {
+            this.editor.AS.enable();
+        });
     },
 
     addFilterByName(filterName, params) {
         switch (filterName) {            
             case "invert_filter": {
-                this.editor.FilterPipeline.clearPipeline();
-                this.editor.FilterPipeline.addFilter(this.CT.Filters.InvertFilter);
+                this.editor.FP.clearFilters();
+                this.editor.FP.addFilter(this.CT.Filters.InvertFilter);
                 this.playingCallback();
                 break;
             }
             case "contrast_filter": {
-                this.editor.FilterPipeline.clearPipeline();
-                this.editor.FilterPipeline.addFilter(this.CT.Filters.ContrastFilter(64));
+                this.editor.FP.clearFilters();
+                this.editor.FP.addFilter(this.CT.Filters.ContrastFilter(64));
                 this.playingCallback();
                 break;
             }
             case "brightness_filter": {
-                this.editor.FilterPipeline.clearPipeline();
-                this.editor.FilterPipeline.addFilter(this.CT.Filters.BrightnessFilter(64));
+                this.editor.FP.clearFilters();
+                this.editor.FP.addFilter(this.CT.Filters.BrightnessFilter(64));
                 this.playingCallback();
                 break;
             }
             case "saturation_filter": {
-                this.editor.FilterPipeline.clearPipeline();
-                this.editor.FilterPipeline.addFilter(this.CT.Filters.SaturationFilter(383));
+                this.editor.FP.clearFilters();
+                this.editor.FP.addFilter(this.CT.Filters.SaturationFilter(383));
                 this.playingCallback();
                 break;
             }
             case "blurdiff_filter": {
-                this.editor.FilterPipeline.clearPipeline();
-                this.editor.FilterPipeline.addFilter(this.CT.Filters.BlurDiffFilter(4));
+                this.editor.FP.clearFilters();
+                this.editor.FP.addFilter(this.CT.Filters.BlurDiffFilter(4));
                 this.playingCallback();
                 break;
             }
             case "grayscale_filter": {
-                this.editor.FilterPipeline.clearPipeline();
-                this.editor.FilterPipeline.addFilter(this.CT.Filters.GrayscaleFilter);
+                this.editor.FP.clearFilters();
+                this.editor.FP.addFilter(this.CT.Filters.GrayscaleFilter);
                 this.playingCallback();
                 break;
             }
             case "reset": {
-                this.editor.FilterPipeline.clearPipeline();
+                this.editor.FP.clearFilters();
                 this.playingCallback();
                 break;
             }
