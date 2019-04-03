@@ -466,7 +466,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private setContentSource = async (contentSource: ContentSource) => {
         try {
             await this.editor.addContentSource(contentSource);
-        } catch (e) {}
+        } catch (e) {
+            console.warn(e);
+        }
     }
 
     /**

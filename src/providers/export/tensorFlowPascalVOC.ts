@@ -207,7 +207,9 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
                 // Save Annotation File
                 await this.storageProvider.writeText(assetFilePath, interpolate(annotationTemplate, params));
             });
-        } catch (err) {}
+        } catch (err) {
+            console.log("Error writing Pascal VOC annotation file");
+        }
     }
 
     private async exportImageSets(
