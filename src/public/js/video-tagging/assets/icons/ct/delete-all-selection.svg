@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no"?><!-- Generator: Gravit.io -->
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="0 0 48 48" width="48" height="48">
+    <g>
+        <circle cx="33.5" cy="14.5" r="7.5" fill="rgb(0,0,0)"/>
+        <line x1="31" y1="12" x2="36" y2="17" stroke-width="2" stroke="rgb(255,255,255)"/>
+        <line x1="31" y1="17" x2="36" y2="12" stroke-width="2" stroke="rgb(255,255,255)"/>
+        <line x1="6" y1="42" x2="6" y2="18" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="6" y1="18" x2="23" y2="18" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="6" y1="42" x2="33" y2="42" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="34" y1="42" x2="34" y2="26" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="34" y1="38" x2="40" y2="38" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="40" y1="38" x2="40" y2="23" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="13" y1="14" x2="13" y2="18" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="13" y1="14" x2="23" y2="14" stroke-width="1" stroke="rgb(0,0,0)"/>
+        <line x1="13" y1="18" x2="13" y2="38" stroke-width="1" stroke-dasharray="2,2" stroke="rgb(0,0,0)"/>
+        <line x1="13" y1="38" x2="34" y2="38" stroke-width="1" stroke-dasharray="2,2" stroke="rgb(0,0,0)"/>
+    </g>
+</svg>
