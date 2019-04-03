@@ -137,10 +137,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             await this.props.actions.loadProject(project);
         }
 
-        // Load standard TensorFlow.js SSD Model trained on COCO dataset
-        const infoId = toast.info(`Loading model...`, { autoClose: false });
+        // Load TensorFlow.js Model
+        const infoId = toast.info("Loading model...", { autoClose: false });
+        console.log(this.props.project.activeLearningSettings);
         this.model = new ObjectDetection();
-        await this.model.load("/Users/jacopo/CocoSSD");
+        await this.model.load(this.props.project.activeLearningSettings.modelPath);
         toast.dismiss(infoId);
     }
 
