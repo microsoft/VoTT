@@ -45,6 +45,21 @@
             "title": "Active Learning ",
             "type": "object",
             "properties": {
+                "modelPathType": {
+                    "type": "string",
+                    "title": "Model Type: ",
+                    "enum": [
+                        "coco",
+                        "file",
+                        "url"
+                    ],
+                    "default": "coco",
+                    "enumNames": [
+                        "Pre-trained Coco SSD",
+                        "Custom (File path)",
+                        "Custom (Url)"
+                    ]
+                },
                 "modelPath": {
                     "title": "Model path: ",
                     "type": "string",
