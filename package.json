@@ -1,6 +1,6 @@
 {
   "name": "vott",
-  "version": "1.8.1",
+  "version": "1.7.3",
   "description": "An electron app for building end to end Object Detection Models with CNTK from Sample Videos.",
   "main": "main.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "babel-eslint": "^10.0.1",
     "bower": "^1.7.2",
     "electron": "^3.0.10",
-    "electron-builder": "^20.38.2",
+    "electron-builder": "^20.39.0",
     "electron-packager": "^12.2.0",
     "eslint": "^5.9.0",
     "eslint-config-strongloop": "^2.1.0",
@@ -54,7 +54,7 @@
     "rimraf": "^2.6.2",
     "send": "^0.16.2",
     "tfrecord": "^0.2.0",
-    "vott-ct": "^2.1.17"
+    "vott-ct": "^2.2.0-beta.0"
   },
   "eslintIgnore": [
     "src/lib/detection_algorithms/detectionUtils.js"
