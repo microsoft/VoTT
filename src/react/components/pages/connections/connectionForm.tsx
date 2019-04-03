@@ -85,14 +85,14 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
 
     public render() {
         return (
-            <div className="app-connections-page-detail m-3 text-light">
+            <div className="app-connections-page-detail m-3">
                 <h3>
                     <i className="fas fa-plug fa-1x"></i>
                     <span className="px-2">
                         {strings.connections.settings}
                     </span>
                 </h3>
-                <div className="m-3 text-light">
+                <div className="m-3">
                     <Form
                         className={this.state.classNames.join(" ")}
                         showErrorList={false}

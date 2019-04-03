@@ -64,27 +64,29 @@ export class AppSettingsForm extends React.Component<IAppSettingsFormProps, IApp
                     <i className="fas fa-cog fa-1x"></i>
                     <span className="px-2">{strings.appSettings.title}</span>
                 </h3>
-                <Form
-                    className={this.state.classNames.join(" ")}
-                    showErrorList={false}
-                    liveValidate={true}
-                    noHtml5Validate={true}
-                    fields={this.fields}
-                    ObjectFieldTemplate={ObjectFieldTemplate}
-                    FieldTemplate={CustomFieldTemplate}
-                    ArrayFieldTemplate={ArrayFieldTemplate}
-                    validate={this.onFormValidate}
-                    schema={this.state.formSchema}
-                    uiSchema={this.state.uiSchema}
-                    formData={this.state.appSettings}
-                    onSubmit={(form) => this.props.onSubmit(form.formData)}>
-                    <div>
-                        <button type="submit" className="btn btn-success mr-1">{strings.appSettings.save}</button>
-                        <button type="button"
-                            className="btn btn-secondary btn-cancel"
-                            onClick={this.onFormCancel}>{strings.common.cancel}</button>
-                    </div>
-                </Form>
+                <div className="m-3">
+                    <Form
+                        className={this.state.classNames.join(" ")}
+                        showErrorList={false}
+                        liveValidate={true}
+                        noHtml5Validate={true}
+                        fields={this.fields}
+                        ObjectFieldTemplate={ObjectFieldTemplate}
+                        FieldTemplate={CustomFieldTemplate}
+                        ArrayFieldTemplate={ArrayFieldTemplate}
+                        validate={this.onFormValidate}
+                        schema={this.state.formSchema}
+                        uiSchema={this.state.uiSchema}
+                        formData={this.state.appSettings}
+                        onSubmit={(form) => this.props.onSubmit(form.formData)}>
+                        <div>
+                            <button type="submit" className="btn btn-success mr-1">{strings.appSettings.save}</button>
+                            <button type="button"
+                                className="btn btn-secondary btn-cancel"
+                                onClick={this.onFormCancel}>{strings.common.cancel}</button>
+                        </div>
+                    </Form>
+                </div>
             </div>
         );
     }
