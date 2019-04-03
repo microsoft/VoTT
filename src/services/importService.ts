@@ -60,7 +60,7 @@ export default class ImportService implements IImportService {
             targetConnection: connection,
             exportFormat: null,
             videoSettings: {
-                frameExtractionRate: 15,
+                frameExtractionRate: originalProject.framerate ? Number(originalProject.framerate) : 15,
             },
             autoSave: true,
         };
@@ -229,7 +229,7 @@ export default class ImportService implements IImportService {
                 const timestamp = frameInt / Number(originalProject.framerate) - 1;
                 const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
                 const asset = AssetService.createAssetFromFilePath(
-                    `file:${pathToUse}#t=${timestamp}`);
+                    `${pathToUse}#t=${timestamp}`);
                 const assetState = originalProject.visitedFrames.indexOf(frameInt) > -1 && frameRegions.length > 0
                     ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameInt) > -1
                     ? AssetState.Visited : AssetState.NotVisited);

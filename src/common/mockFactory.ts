@@ -285,7 +285,7 @@ export default class MockFactory {
 
         return {
             frames,
-            framerate: "1",
+            framerate: "5",
             inputTags: "testTag1,testTag2",
             suggestiontype: "suggestiontype",
             scd: true,
@@ -307,7 +307,7 @@ export default class MockFactory {
 
         return {
             frames,
-            framerate: "1",
+            framerate: "5",
             inputTags: "testTag1,testTag2",
             suggestiontype: "suggestiontype",
             scd: true,

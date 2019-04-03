@@ -31,7 +31,7 @@ describe("Import Service", () => {
         expect(result.sourceConnection.name).toEqual("TestV1Project Connection");
         expect(result.targetConnection.name).toEqual("TestV1Project Connection");
         expect(result.exportFormat).toBeNull();
-        expect(result.videoSettings.frameExtractionRate).toBe(15);
+        expect(result.videoSettings.frameExtractionRate).toBe(5);
         expect(result.autoSave).toBeTruthy();
     });
 
@@ -52,7 +52,7 @@ describe("Import Service", () => {
         expect(result.sourceConnection.name).toEqual("TestV1VideoProject Connection");
         expect(result.targetConnection.name).toEqual("TestV1VideoProject Connection");
         expect(result.exportFormat).toBeNull();
-        expect(result.videoSettings.frameExtractionRate).toBe(15);
+        expect(result.videoSettings.frameExtractionRate).toBe(5);
         expect(result.autoSave).toBeTruthy();
     });
 
