@@ -50,12 +50,12 @@
                     "type": "string",
                     "default": "/Users/jacopo/CocoSSD"
                 },
-                "autolabel": {
-                    "title": " Auto-label",
+                "predictTag": {
+                    "title": " Predict Tag",
                     "type": "boolean"
                 },
-                "predictClass": {
-                    "title": " Predict Class",
+                "autoDetect": {
+                    "title": " Auto Detect",
                     "type": "boolean"
                 }
             }
