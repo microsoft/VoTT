@@ -3,6 +3,8 @@ import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import SplitPane from "react-split-pane";
+import * as shortid from "shortid";
+import { toast } from "react-toastify";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
@@ -10,7 +12,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag,
+    ISize, ITag, RegionType, IProjectActiveLearningSettings,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -115,7 +117,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
-        additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+        additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
+            activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null },
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
