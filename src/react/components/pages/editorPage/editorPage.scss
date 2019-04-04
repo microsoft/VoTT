@@ -15,6 +15,10 @@
     &-nav {
       width: 100%;
 
+      .asset-list {
+        user-select: none;
+      }
+
       .asset-list:focus {
         outline: none;
       }
