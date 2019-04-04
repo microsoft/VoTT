@@ -143,7 +143,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         let modelPath = "";
         if (this.props.project.activeLearningSettings.modelPathType === "coco") {
             const remote = (window as any).require("electron").remote as Electron.Remote;
-            modelPath = remote.app.getAppPath() + "/cocoSSDModel";
+            const appPath = remote.app.getAppPath();
+
+            if (Env.get() !== "production") {
+                modelPath = appPath + "/cocoSSDModel";
+            } else {
+                modelPath = appPath + "/../../cocoSSDModel";
+            }
         } else {
             modelPath = this.props.project.activeLearningSettings.modelPath;
         }
