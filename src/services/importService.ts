@@ -15,7 +15,7 @@ import HtmlFileReader from "../common/htmlFileReader";
  */
 interface IImportService {
     convertProject(project: IFileInfo): Promise<IProject>;
-    generateAssets(v1Project: IFileInfo, v2Project: IProject, parent?: IAsset): Promise<IAssetMetadata[]>;
+    generateAssets(v1Project: IFileInfo, v2Project: IProject): Promise<IAssetMetadata[]>;
 }
 
 /**
@@ -98,9 +98,18 @@ export default class ImportService implements IImportService {
      */
     private async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
         let parentAsset: IAsset;
+        let parentFormat: string;
+        const pathParts = v1Project.file.path.split(/[\\\/]/);
+        const fileName = pathParts[pathParts.length - 1];
+        const fileNameParts = fileName.split(".");
+        try {
+            parentFormat = fileNameParts[1]
+        } catch (e) {
+            throw e;
+        }
 
         parentAsset = {
-            format: "mp4",
+            format: parentFormat,
             id: new MD5().update(v1Project.file.path.replace(/\.[^/.]+$/, "")).digest("hex"),
             name: v1Project.file.path.replace(/\.[^/.]+$/, "").replace(/^.*[\\\/]/, ""),
             path: `file:${v1Project.file.path.replace(/\.[^/.]+$/, "")}`,
@@ -240,7 +249,6 @@ export default class ImportService implements IImportService {
                 const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
                     const taggedMetadata = this.addRegions(metadata, frameRegions);
                     taggedMetadata.asset.state = assetState;
-                    taggedMetadata.asset.path = `${taggedMetadata.asset.path}`;
                     taggedMetadata.asset.parent = parent;
                     return taggedMetadata;
                 });
