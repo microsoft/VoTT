@@ -98,13 +98,15 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                 <div className="asset-preview-container">
                     {!loaded &&
                         <div className="asset-loading">
-                            <i className="fas fa-circle-notch fa-spin" />
+                            <div className="asset-loading-spinner">
+                                <i className="fas fa-circle-notch fa-spin" />
+                            </div>
                         </div>
                     }
                     {hasError &&
                         <div className="asset-error text-danger">
-                            <i className="fas fa-4x fa-exclamation-circle" />
-                            <p className="m-3 h6">{strings.editorPage.assetError}</p>
+                            <i className="fas fa-2x fa-exclamation-circle" />
+                            <p className="m-2">{strings.editorPage.assetError}</p>
                         </div>
                     }
                     {!hasError &&

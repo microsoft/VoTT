@@ -3,6 +3,7 @@ import { IAppError, ErrorCode, AppError } from "../../../../models/applicationSt
 import { strings } from "../../../../common/strings";
 import Alert from "../alert/alert";
 import { Env } from "../../../../common/environment";
+import { trackError } from "../../../../telemetry";
 
 /**
  * Component properties for ErrorHandler component
@@ -120,6 +121,10 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
                 message: this.getUnknownErrorMessage(error),
             };
         }
+
+        // appInsights: track error event
+        trackError(appError);
+
         this.props.onError(appError);
     }
 

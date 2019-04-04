@@ -11,7 +11,7 @@ export const spanish: IAppStrings = {
         submit: "Enviar",
         cancel: "Cancelar",
         save: "Guardar",
-        delete: "Eliminar",
+        delete: "Borrar",
         provider: "Proveedor",
         homePage: "Página de Inicio",
     },
@@ -40,6 +40,9 @@ export const spanish: IAppStrings = {
             title: "Importar Proyecto",
             confirmation: "¿Está seguro que quiere convertir el proyecto ${project.file.name}" +
                 "a formato v2? Le recomendamos que haga una copia de seguridad de su archivo de proyecto.",
+        },
+        messages: {
+            deleteSuccess: "${project.name} eliminado correctamente",
         },
     },
     appSettings: {
@@ -137,6 +140,19 @@ export const spanish: IAppStrings = {
             fuschia: "Fuschia",
             purple: "Púrpura",
         },
+        warnings: {
+            existingName: "Nombre de etiqueta ya existe. Elige otro nombre",
+            emptyName: "El nombre de etiqueta no puede ser vacío",
+        },
+        toolbar: {
+            add: "Agregar nueva etiqueta",
+            search: "Buscar entre etiquetas",
+            edit: "Editar etiqueta",
+            lock: "Bloquear etiqueta",
+            moveDown: "Mover etiqueta hacia abajo",
+            moveUp: "Mover etiqueta hacia arriba",
+            delete: "Borrar etiqueta",
+        },
     },
     connections: {
         title: "Conexiones",
@@ -144,9 +160,30 @@ export const spanish: IAppStrings = {
         details: "Detalles de Conexión",
         settings: "Configuración de Conexión",
         instructions: "Por favor seleccione una conexión para editar",
+        messages: {
+            saveSuccess: "${connection.name} guardado correctamente",
+            deleteSuccess: "${connection.name} eliminado correctamente",
+        },
         providers: {
             azureBlob: {
-                title: "Almacenamiento de Azure Blob",
+                title: "Azure Blob Storage",
+                description: "",
+                accountName: {
+                    title: "Nombre de cuenta",
+                    description: "",
+                },
+                containerName: {
+                    title: "Nombre del contenedor",
+                    description: "",
+                },
+                sas: {
+                    title: "SAS",
+                    description: "Firma de acceso compartido utilizada para autenticarse en la cuenta de BLOB Storage",
+                },
+                createContainer: {
+                    title: "Crear contenedor",
+                    description: "Crea el contenedor de blobs si aún no existe",
+                },
             },
             bing: {
                 title: "Búsqueda de Imágenes Bing",
@@ -172,6 +209,8 @@ export const spanish: IAppStrings = {
     editorPage: {
         width: "Anchura",
         height: "Altura",
+        tagged: "Etiquetado",
+        visited: "Visitado",
         toolbar: {
             select: "Seleccionar",
             pan: "Pan",
@@ -208,7 +247,8 @@ export const spanish: IAppStrings = {
         assetError: "No se puede mostrar el activo",
         tags: {
             hotKey: {
-                help: "Aplicar etiqueta con tecla de acceso rápido",
+                apply: "Aplicar etiqueta con tecla de acceso rápido",
+                lock: "Bloquear etiqueta con tecla de acceso rápido",
             },
         },
         canvas: {
@@ -285,6 +325,14 @@ export const spanish: IAppStrings = {
             },
             tfPascalVoc: {
                 displayName: "Tensorflow Pascal VOC",
+                testTrainSplit: {
+                    title: "Prueba/tren Split",
+                    description: "La división del tren de prueba que se utilizará para los datos exportados",
+                },
+                exportUnassigned: {
+                    title: "Exportar sin asignar",
+                    description: "Si se incluyen o no etiquetas no asignadas en los datos exportados",
+                },
             },
         },
         messages: {

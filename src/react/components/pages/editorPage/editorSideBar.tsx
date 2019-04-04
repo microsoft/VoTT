@@ -1,18 +1,21 @@
 import React from "react";
 import { AutoSizer, List } from "react-virtualized";
-import { IAsset, AssetState } from "../../../../models/applicationState";
+import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
+import { strings } from "../../../../common/strings";
 
 /**
  * Properties for Editor Side Bar
  * @member assets - Array of assets to be previewed
  * @member onAssetSelected - Function to call when asset from side bar is selected
  * @member selectedAsset - Asset initially selected
+ * @member thumbnailSize - The size of the asset thumbnails
  */
 export interface IEditorSideBarProps {
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
     selectedAsset?: IAsset;
+    thumbnailSize?: ISize;
 }
 
 /**
@@ -28,24 +31,13 @@ export interface IEditorSideBarState {
  * @description - Side bar for editor page
  */
 export default class EditorSideBar extends React.Component<IEditorSideBarProps, IEditorSideBarState> {
-    private listRef: React.RefObject<List>;
+    public state: IEditorSideBarState = {
+        scrollToIndex: this.props.selectedAsset
+            ? this.props.assets.findIndex((asset) => asset.id === this.props.selectedAsset.id)
+            : 0,
+    };
 
-    constructor(props, context) {
-        super(props, context);
-
-        const selectedAsset = this.props.selectedAsset;
-        const scrollToIndex = selectedAsset
-            ? this.props.assets.findIndex((asset) => asset.id === selectedAsset.id)
-            : 0;
-
-        this.state = {
-            scrollToIndex,
-        };
-
-        this.rowRenderer = this.rowRenderer.bind(this);
-        this.onAssetClicked = this.onAssetClicked.bind(this);
-        this.listRef = React.createRef<List>();
-    }
+    private listRef: React.RefObject<List> = React.createRef();
 
     public render() {
         return (
@@ -58,7 +50,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                             height={height}
                             width={width}
                             rowCount={this.props.assets.length}
-                            rowHeight={122}
+                            rowHeight={() => this.getRowHeight(width)}
                             rowRenderer={this.rowRenderer}
                             overscanRowCount={2}
                             scrollToIndex={this.state.scrollToIndex}
@@ -70,6 +62,10 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     }
 
     public componentDidUpdate(prevProps: IEditorSideBarProps) {
+        if (prevProps.thumbnailSize !== this.props.thumbnailSize) {
+            this.listRef.current.recomputeRowHeights();
+        }
+
         if (!prevProps.selectedAsset && !this.props.selectedAsset) {
             return;
         }
@@ -80,7 +76,11 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         }
     }
 
-    private selectAsset(selectedAsset: IAsset) {
+    private getRowHeight = (width: number) => {
+        return width / (4 / 3) + 16;
+    }
+
+    private selectAsset = (selectedAsset: IAsset): void => {
         const scrollToIndex = this.props.assets.findIndex((asset) => asset.id === selectedAsset.id);
 
         this.setState({
@@ -90,12 +90,12 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         });
     }
 
-    private onAssetClicked(asset: IAsset) {
+    private onAssetClicked = (asset: IAsset): void => {
         this.selectAsset(asset);
         this.props.onAssetSelected(asset);
     }
 
-    private rowRenderer({ key, index, style }) {
+    private rowRenderer = ({ key, index, style }): JSX.Element => {
         const asset = this.props.assets[index];
         const selectedAsset = this.props.selectedAsset;
 
@@ -104,12 +104,13 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                 className={this.getAssetCssClassNames(asset, selectedAsset)}
                 onClick={() => this.onAssetClicked(asset)}>
                 <div className="asset-item-image">
+                    {this.renderBadges(asset)}
                     <AssetPreview asset={asset} />
                 </div>
                 <div className="asset-item-metadata">
                     <span className="asset-filename" title={asset.name}>{asset.name}</span>
                     {asset.size &&
-                        <span className="float-right">
+                        <span>
                             {asset.size.width} x {asset.size.height}
                         </span>
                     }
@@ -118,22 +119,31 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         );
     }
 
-    private getAssetCssClassNames(asset: IAsset, selectedAsset: IAsset = null): string {
+    private renderBadges = (asset: IAsset): JSX.Element => {
+        switch (asset.state) {
+            case AssetState.Tagged:
+                return (
+                    <span title={strings.editorPage.tagged}
+                        className="badge badge-tagged">
+                        <i className="fas fa-tag"></i>
+                    </span>
+                );
+            case AssetState.Visited:
+                return (
+                    <span title={strings.editorPage.visited}
+                        className="badge badge-visited">
+                        <i className="fas fa-eye"></i>
+                    </span>
+                );
+            default:
+                return null;
+        }
+    }
+
+    private getAssetCssClassNames = (asset: IAsset, selectedAsset: IAsset = null): string => {
         const cssClasses = ["asset-item"];
         if (selectedAsset && selectedAsset.id === asset.id) {
             cssClasses.push("selected");
-        }
-
-        switch (asset.state) {
-            case AssetState.NotVisited:
-                cssClasses.push("not-visited");
-                break;
-            case AssetState.Visited:
-                cssClasses.push("visited");
-                break;
-            case AssetState.Tagged:
-                cssClasses.push("tagged");
-                break;
         }
 
         return cssClasses.join(" ");

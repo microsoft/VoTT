@@ -1,5 +1,8 @@
 {
     "sas": {
         "ui:widget": "protectedInput"
+    },
+    "createContainer": {
+        "ui:widget": "checkbox"
     }
 }

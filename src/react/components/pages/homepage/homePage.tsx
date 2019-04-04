@@ -18,6 +18,9 @@ import {
 } from "../../../../models/applicationState";
 import ImportService from "../../../../services/importService";
 import { IAssetMetadata } from "../../../../models/applicationState";
+import { toast } from "react-toastify";
+import MessageBox from "../../common/messageBox/messageBox";
+import { isElectron } from "../../../../common/hostProcess";
 
 export interface IHomePageProps extends RouteComponentProps, React.Props<HomePage> {
     recentProjects: IProject[];
@@ -61,7 +64,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     public render() {
         return (
             <div className="app-homepage">
-                <div className="app-homepage-main text-light">
+                <div className="app-homepage-main">
                     <ul>
                         <li>
                             <a href="#" onClick={this.createNewProject} className="p-5 new-project">
@@ -69,6 +72,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
                                 <h6>{strings.homePage.newProject}</h6>
                             </a>
                         </li>
+                        { isElectron() &&
                         <li>
                             <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
                                 <i className="fas fa-folder-open fa-9x"></i>
@@ -78,6 +82,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
                                 onChange={this.onProjectFileUpload}
                                 onError={this.onProjectFileUploadError} />
                         </li>
+                        }
                         <li>
                             {/*Open Cloud Project*/}
                             <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5 cloud-open-project">
@@ -166,6 +171,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     private deleteProject = async (project: IProject) => {
         try {
             await this.props.actions.deleteProject(project);
+            toast.info(interpolate(strings.homePage.messages.deleteSuccess, { project }));
         } catch (error) {
             throw new AppError(ErrorCode.ProjectDeleteError, "Error deleting project file");
         }

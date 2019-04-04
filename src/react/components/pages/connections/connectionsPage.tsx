@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Route, RouteComponentProps } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { strings } from "../../../../common/strings";
+import { strings, interpolate } from "../../../../common/strings";
 import { IApplicationState, IConnection } from "../../../../models/applicationState";
 import IConnectionActions, * as connectionActions from "../../../../redux/actions/connectionActions";
 import CondensedList from "../../common/condensedList/condensedList";
@@ -10,6 +10,7 @@ import Confirm from "../../common/confirm/confirm";
 import ConnectionForm from "./connectionForm";
 import ConnectionItem from "./connectionItem";
 import "./connectionsPage.scss";
+import { toast } from "react-toastify";
 
 /**
  * Properties for Connection Page
@@ -97,7 +98,7 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
                     onConfirm={(connection) => this.onConnectionDelete(connection)} />
 
                 <Route exact path="/connections" render={(props) =>
-                    <div className="app-connections-page-detail m-3 text-light">
+                    <div className="app-connections-page-detail m-3">
                         <h6>{strings.connections.instructions}</h6>
                     </div>
                 } />
@@ -124,6 +125,8 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
     private onConnectionDelete = async (connection: IConnection) => {
         await this.props.actions.deleteConnection(connection);
 
+        toast.info(interpolate(strings.connections.messages.deleteSuccess, { connection }));
+
         if (this.state.connection === connection) {
             this.props.history.push("/connections");
             this.setState({ connection: null });
@@ -132,6 +135,8 @@ export default class ConnectionPage extends React.Component<IConnectionPageProps
 
     private onFormSubmit = async (connection: IConnection) => {
         await this.props.actions.saveConnection(connection);
+        toast.success(interpolate(strings.connections.messages.saveSuccess, { connection }));
+
         this.props.history.goBack();
     }
 

@@ -1,5 +1,4 @@
 {
-    "title": "${strings.connections.title}",
     "required": [
         "name",
         "providerType"

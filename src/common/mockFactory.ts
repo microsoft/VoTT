@@ -2,8 +2,9 @@ import shortid from "shortid";
 import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
-    EditorMode, IAppError, IProjectVideoSettings, AppError, ErrorCode,
-    IPoint, IRegion, RegionType, IBoundingBox } from "../models/applicationState";
+    EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
+    IPoint, IRegion, RegionType,
+} from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
@@ -114,6 +115,20 @@ export default class MockFactory {
                     format: "jpg",
                     name: `Asset ${name}.jpg`,
                     path: `${path}`,
+                    state: assetState,
+                    type: assetType,
+                    size: {
+                        width: 800,
+                        height: 600,
+                    },
+                };
+                break;
+            case AssetType.TFRecord:
+                testAsset = {
+                    id: `tfrecordasset-${name}`,
+                    format: "tfrecord",
+                    name: `tfrecordasset-${name}.tfrecord`,
+                    path: `${path}.tfrecord`,
                     state: assetState,
                     type: assetType,
                     size: {
@@ -338,7 +353,8 @@ export default class MockFactory {
                     x1: left,
                     y1: top,
                     x2: right,
-                    y2: bottom },
+                    y2: bottom,
+                },
                 points: [],
                 UID: i.toString(),
                 id: 2,
@@ -875,6 +891,7 @@ export default class MockFactory {
     public static editorPageProps(projectId?: string): IEditorPageProps {
         return {
             actions: (projectActions as any) as IProjectActions,
+            applicationActions: (applicationActions as any) as IApplicationActions,
             ...MockFactory.pageProps(projectId, "edit"),
         };
     }
@@ -996,6 +1013,7 @@ export default class MockFactory {
     private static pageProps(projectId: string, method: string) {
         return {
             project: null,
+            appSettings: MockFactory.appSettings(),
             recentProjects: MockFactory.createTestProjects(),
             projectActions: (projectActions as any) as IProjectActions,
             applicationActions: (applicationActions as any) as IApplicationActions,

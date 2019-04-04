@@ -6,6 +6,9 @@ import { strings, addLocValues } from "../../../../common/strings";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import ConnectionProviderPicker from "../../common/connectionProviderPicker/connectionProviderPicker";
 import { ProtectedInput } from "../../common/protectedInput/protectedInput";
+import Checkbox from "rc-checkbox";
+import "rc-checkbox/assets/index.css";
+import { CustomWidget } from "../../common/customField/customField";
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./connectionForm.json"));
 // tslint:disable-next-line:no-var-requires
@@ -47,6 +50,11 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         localFolderPicker: (LocalFolderPicker as any) as Widget,
         connectionProviderPicker: (ConnectionProviderPicker as any) as Widget,
         protectedInput: (ProtectedInput as any) as Widget,
+        checkbox: CustomWidget(Checkbox, (props) => ({
+            checked: props.value,
+            onChange: (value) => props.onChange(value.target.checked),
+            disabled: props.disabled,
+        })),
     };
 
     constructor(props, context) {
@@ -77,14 +85,14 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
 
     public render() {
         return (
-            <div className="app-connections-page-detail m-3 text-light">
+            <div className="app-connections-page-detail m-3">
                 <h3>
                     <i className="fas fa-plug fa-1x"></i>
                     <span className="px-2">
                         {strings.connections.settings}
                     </span>
                 </h3>
-                <div className="m-3 text-light">
+                <div className="m-3">
                     <Form
                         className={this.state.classNames.join(" ")}
                         showErrorList={false}

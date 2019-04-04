@@ -8,7 +8,7 @@ import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState,
+    EditorMode, IAsset, AssetState, AssetType, ISize,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -26,8 +26,9 @@ jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
 import Canvas from "./canvas";
 import { appInfo } from "../../../../common/appInfo";
+import SplitPane from "react-split-pane";
 
-function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, {}, EditorPage> {
+function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(
         <Provider store={store}>
             <KeyboardManager>
@@ -65,7 +66,11 @@ describe("Editor Page Component", () => {
             ...new RegionsManager(null, null),
             getSelectedRegionsBounds: jest.fn(() => MockFactory.createTestRegions()),
         };
-        editorMock.prototype.AS = {setSelectionMode: jest.fn()};
+        editorMock.prototype.AS = {
+            setSelectionMode: jest.fn(),
+            enable: jest.fn(),
+            disable: jest.fn(),
+        };
     });
 
     beforeEach(() => {
@@ -262,7 +267,7 @@ describe("Editor Page Component", () => {
                 name: testProject.name,
                 tags: expect.arrayContaining([{
                     name: "NEWTAG",
-                    color: "#008000",
+                    color: expect.any(String),
                 }]),
             };
 
@@ -384,6 +389,7 @@ describe("Editor Page Component", () => {
             expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
         });
     });
+
     describe("Basic toolbar test and hotkey tests", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
@@ -517,6 +523,25 @@ describe("Editor Page Component", () => {
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
         });
 
+        it("sets selected tag and locked tags when ctrl + hot key is pressed", async () => {
+            const project = MockFactory.createTestProject("test", 5);
+            const store = createReduxStore({
+                ...MockFactory.initialState(),
+                currentProject: project,
+            });
+
+            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
+            expect(editorPage.state().selectedTag).toBeNull();
+
+            dispatchKeyEvent("Ctrl+1");
+
+            const firstTag = project.tags[0].name;
+            expect(editorPage.state().selectedTag).toEqual(firstTag);
+            expect(editorPage.state().lockedTags).toEqual([firstTag]);
+        });
+
         it("does not set selected tag when invalid hot key is pressed", async () => {
             const tagLength = 5;
             const project = MockFactory.createTestProject("test", tagLength);
@@ -558,8 +583,8 @@ describe("Editor Page Component", () => {
             expect(getState(wrapper).project.tags).toEqual(project.tags);
 
             const newTagName = "My new tag";
-            wrapper.find("input.ReactTags__tagInputField").simulate("change", { target: { value: newTagName } });
-            wrapper.find("input.ReactTags__tagInputField").simulate("keyDown", { keyCode: 13 });
+            wrapper.find("div.tag-input-toolbar-item.plus").simulate("click");
+            wrapper.find(".tag-input-box").simulate("keydown", { key: "Enter", target: { value: newTagName } });
 
             const stateTags = getState(wrapper).project.tags;
 
@@ -567,17 +592,19 @@ describe("Editor Page Component", () => {
             expect(stateTags[stateTags.length - 1].name).toEqual(newTagName);
         });
 
-        it("remove a tag", () => {
-            const project = MockFactory.createTestProject();
+        it("Remove a tag", async () => {
+            const project = MockFactory.createTestProject("test", 5);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
             });
 
             const wrapper = createComponent(store, MockFactory.editorPageProps());
+            await waitForSelectedAsset(wrapper);
+
             expect(getState(wrapper).project.tags).toEqual(project.tags);
-            wrapper.find("a.ReactTags__remove")
-                .last().simulate("click");
+            wrapper.find(".tag-content").last().simulate("click");
+            wrapper.find("i.tag-input-toolbar-icon.fas.fa-trash").simulate("click");
 
             const stateTags = getState(wrapper).project.tags;
             expect(stateTags).toHaveLength(project.tags.length - 1);
@@ -594,7 +621,7 @@ describe("Editor Page Component", () => {
             await waitForSelectedAsset(wrapper);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             const newEditorPage = wrapper.find(EditorPage).childAt(0);
@@ -612,45 +639,77 @@ describe("Editor Page Component", () => {
             await waitForSelectedAsset(wrapper);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             let editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
 
             wrapper.update();
-            wrapper.find("div.tag")
+            wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
             editorPage = wrapper.find(EditorPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([]);
         });
+    });
 
-        it("Clears locked tags when tag is clicked", async () => {
+    describe("Resizing editor page", () => {
+        let wrapper: ReactWrapper;
+        const defaultThumbnailSize: ISize = {
+            width: 400,
+            height: 300,
+        };
+
+        beforeEach(async () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
+                appSettings: {
+                    ...MockFactory.appSettings(),
+                    thumbnailSize: defaultThumbnailSize,
+                },
             });
 
-            const wrapper = createComponent(store, MockFactory.editorPageProps());
+            wrapper = createComponent(store, MockFactory.editorPageProps());
             await waitForSelectedAsset(wrapper);
-
             wrapper.update();
-            wrapper.find("div.tag")
-                .first()
-                .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-            let editorPage = wrapper.find(EditorPage).childAt(0);
-            expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
-            expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
+        });
 
-            wrapper.update();
-            wrapper.find("div.tag")
-                .last()
-                .simulate("click", { target: { innerText: project.tags[0].name }});
-            editorPage = wrapper.find(EditorPage).childAt(0);
-            expect(editorPage.state().selectedTag).toEqual(project.tags[project.tags.length - 1].name);
-            expect(editorPage.state().lockedTags).toEqual([]);
+        it("loads default thumbnail size from app settings", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            expect(editorPage.state().thumbnailSize).toEqual(defaultThumbnailSize);
+        });
+
+        it("resizes child components", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            const canvas = editorPage.find(Canvas).instance() as Canvas;
+            const resizeSpy = jest.spyOn(canvas, "forceResize");
+            const newThumbnailWidth = 300;
+            wrapper.find(SplitPane).props().onChange(newThumbnailWidth);
+
+            expect(resizeSpy).toBeCalled();
+            expect(editorPage.state().thumbnailSize).toEqual({
+                width: newThumbnailWidth,
+                height: newThumbnailWidth / (4 / 3),
+            });
+        });
+
+        it("Saves thumbnail size to app settings", () => {
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const saveSettingsSpy = jest.spyOn(editorPage.props().applicationActions, "saveAppSettings");
+            const newThumbnailWidth = 300;
+
+            wrapper.find(SplitPane).props().onChange(newThumbnailWidth);
+            wrapper.find(SplitPane).props().onDragFinished(newThumbnailWidth);
+
+            expect(saveSettingsSpy).toBeCalledWith(expect.objectContaining({
+                thumbnailSize: {
+                    width: newThumbnailWidth,
+                    height: newThumbnailWidth / (4 / 3),
+                },
+            }));
         });
     });
 });

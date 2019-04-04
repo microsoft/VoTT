@@ -43,6 +43,9 @@ export interface IAppStrings {
             confirmation: string;
         },
         recentProjects: string,
+        messages: {
+            deleteSuccess: string,
+        },
     };
     appSettings: {
         title: string;
@@ -122,6 +125,15 @@ export interface IAppStrings {
             name: string;
             color: string;
         }
+        toolbar: {
+            add: string;
+            search: string;
+            lock: string;
+            edit: string;
+            moveUp: string;
+            moveDown: string;
+            delete: string;
+        }
         colors: {
             white: string;
             gray: string;
@@ -138,6 +150,10 @@ export interface IAppStrings {
             fuschia: string;
             purple: string;
         }
+        warnings: {
+            existingName: string;
+            emptyName: string;
+        }
     };
     connections: {
         title: string;
@@ -145,10 +161,31 @@ export interface IAppStrings {
         settings: string;
         instructions: string;
         save: string;
+        messages: {
+            saveSuccess: string;
+            deleteSuccess: string;
+        },
         providers: {
             azureBlob: {
                 title: string;
-            }
+                description: string,
+                accountName: {
+                    title: string,
+                    description: string,
+                },
+                containerName: {
+                    title: string,
+                    description: string,
+                },
+                sas: {
+                    title: string,
+                    description: string,
+                },
+                createContainer: {
+                    title: string,
+                    description: string,
+                }
+            },
             bing: {
                 title: string;
                 options: string;
@@ -173,6 +210,8 @@ export interface IAppStrings {
     editorPage: {
         width: string;
         height: string;
+        tagged: string;
+        visited: string;
         toolbar: {
             select: string;
             pan: string;
@@ -209,7 +248,8 @@ export interface IAppStrings {
         assetError: string;
         tags: {
             hotKey: {
-                help: string;
+                apply: string;
+                lock: string;
             },
         }
         canvas: {
@@ -286,6 +326,14 @@ export interface IAppStrings {
             },
             tfPascalVoc: {
                 displayName: string,
+                testTrainSplit: {
+                    title: string,
+                    description: string,
+                },
+                exportUnassigned: {
+                    title: string,
+                    description: string,
+                },
             },
         },
         messages: {

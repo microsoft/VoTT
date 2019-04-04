@@ -1,0 +1,409 @@
+{
+    "source": 2,
+    "revision": 5,
+    "description": null,
+    "createdBy": {
+        "displayName": "My Ho 🥓🥐🍚",
+        "url": "https://app.vssps.visualstudio.com/Af945f528-1155-48f8-b08b-b6529166b9f0/_apis/Identities/1077cc21-332d-415a-8e93-e6277da44f6d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+            }
+        },
+        "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
+        "uniqueName": "myho@microsoft.com",
+        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+    },
+    "createdOn": "2019-03-22T18:43:08.407Z",
+    "modifiedBy": {
+        "displayName": "My Ho 🥓🥐🍚",
+        "url": "https://app.vssps.visualstudio.com/Af945f528-1155-48f8-b08b-b6529166b9f0/_apis/Identities/1077cc21-332d-415a-8e93-e6277da44f6d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+            }
+        },
+        "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
+        "uniqueName": "myho@microsoft.com",
+        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+    },
+    "modifiedOn": "2019-03-26T19:00:37.100Z",
+    "isDeleted": false,
+    "variables": {
+        "DEV_STORAGE_ACCOUNT": {
+            "value": "vottdev",
+            "allowOverride": true
+        },
+        "PROD_STORAGE_ACCOUNT": {
+            "value": "vott"
+        }
+    },
+    "variableGroups": [],
+    "environments": [
+        {
+            "id": 4,
+            "name": "Stage 1",
+            "rank": 1,
+            "owner": {
+                "displayName": "My Ho 🥓🥐🍚",
+                "url": "https://app.vssps.visualstudio.com/Af945f528-1155-48f8-b08b-b6529166b9f0/_apis/Identities/1077cc21-332d-415a-8e93-e6277da44f6d",
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+                    }
+                },
+                "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
+                "uniqueName": "myho@microsoft.com",
+                "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+                "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+            },
+            "variables": {},
+            "variableGroups": [],
+            "preDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 10
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 1
+                }
+            },
+            "deployStep": {
+                "id": 11
+            },
+            "postDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 12
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 2
+                }
+            },
+            "deployPhases": [
+                {
+                    "deploymentInput": {
+                        "parallelExecution": {
+                            "parallelExecutionType": 0
+                        },
+                        "skipArtifactsDownload": false,
+                        "artifactsDownloadInput": {
+                            "downloadInputs": [
+                                {
+                                    "alias": "_Build Web Artifact",
+                                    "artifactType": "Build",
+                                    "artifactDownloadMode": "All",
+                                    "artifactItems": []
+                                }
+                            ]
+                        },
+                        "queueId": 3,
+                        "demands": [],
+                        "enableAccessToken": false,
+                        "timeoutInMinutes": 0,
+                        "jobCancelTimeoutInMinutes": 1,
+                        "condition": "succeeded()",
+                        "overrideInputs": {}
+                    },
+                    "rank": 1,
+                    "phaseType": 1,
+                    "name": "Deploy to dev*",
+                    "refName": null,
+                    "workflowTasks": [
+                        {
+                            "environment": {},
+                            "taskId": "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43",
+                            "version": "2.*",
+                            "name": "AzureBlob File Copy to $(DEV_STORAGE_ACCOUNT)",
+                            "refName": "",
+                            "enabled": true,
+                            "alwaysRun": false,
+                            "continueOnError": false,
+                            "timeoutInMinutes": 0,
+                            "definitionType": "task",
+                            "overrideInputs": {},
+                            "condition": "succeeded()",
+                            "inputs": {
+                                "SourcePath": "$(System.DefaultWorkingDirectory)/_Build Web Artifact/build",
+                                "ConnectedServiceNameSelector": "ConnectedServiceNameARM",
+                                "ConnectedServiceName": "",
+                                "ConnectedServiceNameARM": "28e5058e-d34a-48f3-978b-4bb47ea9e227",
+                                "Destination": "AzureBlob",
+                                "StorageAccount": "",
+                                "StorageAccountRM": "$(DEV_STORAGE_ACCOUNT)",
+                                "ContainerName": "$web",
+                                "BlobPrefix": "",
+                                "EnvironmentName": "",
+                                "EnvironmentNameRM": "",
+                                "ResourceFilteringMethod": "machineNames",
+                                "MachineNames": "",
+                                "vmsAdminUserName": "",
+                                "vmsAdminPassword": "",
+                                "TargetPath": "",
+                                "AdditionalArgumentsForBlobCopy": "",
+                                "AdditionalArgumentsForVMCopy": "",
+                                "enableCopyPrerequisites": "false",
+                                "CopyFilesInParallel": "true",
+                                "CleanTargetBeforeCopy": "false",
+                                "skipCACheck": "true",
+                                "outputStorageUri": "",
+                                "outputStorageContainerSasToken": ""
+                            }
+                        }
+                    ]
+                },
+                {
+                    "deploymentInput": {
+                        "parallelExecution": {
+                            "parallelExecutionType": 0
+                        },
+                        "skipArtifactsDownload": false,
+                        "artifactsDownloadInput": {
+                            "downloadInputs": [
+                                {
+                                    "alias": "_Build Web Artifact",
+                                    "artifactType": "Build",
+                                    "artifactDownloadMode": "All",
+                                    "artifactItems": []
+                                }
+                            ]
+                        },
+                        "queueId": 3,
+                        "demands": [],
+                        "enableAccessToken": false,
+                        "timeoutInMinutes": 0,
+                        "jobCancelTimeoutInMinutes": 1,
+                        "condition": "and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/v2'))",
+                        "overrideInputs": {}
+                    },
+                    "rank": 2,
+                    "phaseType": 1,
+                    "name": "Deploy to V2",
+                    "refName": null,
+                    "workflowTasks": [
+                        {
+                            "environment": {},
+                            "taskId": "eb72cb01-a7e5-427b-a8a1-1b31ccac8a43",
+                            "version": "2.*",
+                            "name": "AzureBlob File Copy to $(PROD_STORAGE_ACCOUNT)",
+                            "refName": "",
+                            "enabled": true,
+                            "alwaysRun": false,
+                            "continueOnError": false,
+                            "timeoutInMinutes": 0,
+                            "definitionType": "task",
+                            "overrideInputs": {},
+                            "condition": "succeeded()",
+                            "inputs": {
+                                "SourcePath": "$(System.DefaultWorkingDirectory)/_Build Web Artifact/build",
+                                "ConnectedServiceNameSelector": "ConnectedServiceNameARM",
+                                "ConnectedServiceName": "",
+                                "ConnectedServiceNameARM": "28e5058e-d34a-48f3-978b-4bb47ea9e227",
+                                "Destination": "AzureBlob",
+                                "StorageAccount": "",
+                                "StorageAccountRM": "$(PROD_STORAGE_ACCOUNT)",
+                                "ContainerName": "$web",
+                                "BlobPrefix": "",
+                                "EnvironmentName": "",
+                                "EnvironmentNameRM": "",
+                                "ResourceFilteringMethod": "machineNames",
+                                "MachineNames": "",
+                                "vmsAdminUserName": "",
+                                "vmsAdminPassword": "",
+                                "TargetPath": "",
+                                "AdditionalArgumentsForBlobCopy": "",
+                                "AdditionalArgumentsForVMCopy": "",
+                                "enableCopyPrerequisites": "false",
+                                "CopyFilesInParallel": "true",
+                                "CleanTargetBeforeCopy": "false",
+                                "skipCACheck": "true",
+                                "outputStorageUri": "",
+                                "outputStorageContainerSasToken": ""
+                            }
+                        }
+                    ]
+                }
+            ],
+            "environmentOptions": {
+                "emailNotificationType": "OnlyOnFailure",
+                "emailRecipients": "release.environment.owner;release.creator",
+                "skipArtifactsDownload": false,
+                "timeoutInMinutes": 0,
+                "enableAccessToken": false,
+                "publishDeploymentStatus": true,
+                "badgeEnabled": false,
+                "autoLinkWorkItems": false,
+                "pullRequestDeploymentEnabled": false
+            },
+            "demands": [],
+            "conditions": [
+                {
+                    "name": "ReleaseStarted",
+                    "conditionType": 1,
+                    "value": ""
+                }
+            ],
+            "executionPolicy": {
+                "concurrencyCount": 1,
+                "queueDepthCount": 0
+            },
+            "schedules": [],
+            "currentRelease": {
+                "id": 171,
+                "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/releases/171",
+                "_links": {}
+            },
+            "retentionPolicy": {
+                "daysToKeep": 30,
+                "releasesToKeep": 3,
+                "retainBuild": true
+            },
+            "processParameters": {
+                "dataSourceBindings": [
+                    {
+                        "dataSourceName": "AzureRMWebAppNamesByAppType",
+                        "parameters": {
+                            "WebAppKind": "$(WebAppKind)"
+                        },
+                        "endpointId": "$(ConnectedServiceName)",
+                        "target": "WebAppName"
+                    }
+                ]
+            },
+            "properties": {},
+            "preDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "postDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "environmentTriggers": [],
+            "badgeUrl": "https://vsrm.dev.azure.com/msft-vott/_apis/public/Release/badge/4e739af6-f85e-44b9-a3f3-75eb893a6223/4/4"
+        }
+    ],
+    "artifacts": [
+        {
+            "sourceId": "4e739af6-f85e-44b9-a3f3-75eb893a6223:36",
+            "type": "Build",
+            "alias": "_Build Web Artifact",
+            "definitionReference": {
+                "artifactSourceDefinitionUrl": {
+                    "id": "https://dev.azure.com/msft-vott/_permalink/_build/index?collectionId=2f887b33-5e65-447a-a189-049f04641d6d&projectId=4e739af6-f85e-44b9-a3f3-75eb893a6223&definitionId=36",
+                    "name": ""
+                },
+                "defaultVersionBranch": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionSpecific": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionTags": {
+                    "id": "",
+                    "name": ""
+                },
+                "defaultVersionType": {
+                    "id": "latestType",
+                    "name": "Latest"
+                },
+                "definition": {
+                    "id": "36",
+                    "name": "Build Web Artifact"
+                },
+                "definitions": {
+                    "id": "",
+                    "name": ""
+                },
+                "IsMultiDefinitionType": {
+                    "id": "False",
+                    "name": "False"
+                },
+                "project": {
+                    "id": "4e739af6-f85e-44b9-a3f3-75eb893a6223",
+                    "name": "VoTT"
+                },
+                "repository": {
+                    "id": "",
+                    "name": ""
+                }
+            },
+            "isPrimary": true,
+            "isRetained": false
+        }
+    ],
+    "triggers": [
+        {
+            "artifactAlias": "_Build Web Artifact",
+            "triggerConditions": [
+                {
+                    "sourceBranch": "dev*",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                },
+                {
+                    "sourceBranch": "v2",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                },
+                {
+                    "sourceBranch": "myho/refactorCI",
+                    "tags": [],
+                    "useBuildDefinitionBranch": false,
+                    "createReleaseOnBuildTagging": false
+                }
+            ],
+            "triggerType": 1
+        }
+    ],
+    "releaseNameFormat": "Release-$(rev:r)",
+    "tags": [],
+    "pipelineProcess": {
+        "type": 1
+    },
+    "properties": {
+        "DefinitionCreationSource": {
+            "$type": "System.String",
+            "$value": "ReleaseClone"
+        }
+    },
+    "id": 4,
+    "name": "VoTT - Deploy to Web",
+    "path": "\\",
+    "projectReference": null,
+    "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/definitions/4",
+    "_links": {
+        "self": {
+            "href": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/definitions/4"
+        },
+        "web": {
+            "href": "https://dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_release?definitionId=4"
+        }
+    }
+}

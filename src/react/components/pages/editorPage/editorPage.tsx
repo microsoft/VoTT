@@ -1,41 +1,50 @@
 import _ from "lodash";
+import Align from "rc-align";
 import React, { RefObject } from "react";
+import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
+import SplitPane from "react-split-pane";
 import { bindActionCreators } from "redux";
+import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
+import { strings } from "../../../../common/strings";
 import {
-    AssetState, EditorMode, IApplicationState, IAsset,
-    IAssetMetadata, IProject, ITag, AssetType,
+    AssetState, AssetType, EditorMode, IApplicationState,
+    IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
+    ISize, ITag,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
+import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
+import { ToolbarItemName } from "../../../../registerToolbar";
+import { AssetService } from "../../../../services/assetService";
+import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
+import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
+import { TagInput } from "../../common/tagInput/tagInput";
+import { ToolbarItem } from "../../toolbar/toolbarItem";
 import Canvas from "./canvas";
-import EditorFooter from "./editorFooter";
+import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
-import { ToolbarItem } from "../../toolbar/toolbarItem";
-import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
-import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
-import { AssetService } from "../../../../services/assetService";
-import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
-import CanvasHelpers from "./canvasHelpers";
-import { tagColors } from "../../../../common/tagColors";
-import { ToolbarItemName } from "../../../../registerToolbar";
-import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
-import { strings } from "../../../../common/strings";
+// tslint:disable-next-line:no-var-requires
+const tagColors = require("../../common/tagColors.json");
 
 /**
  * Properties for Editor Page
  * @member project - Project being edited
  * @member recentProjects - Array of projects recently viewed/edited
  * @member actions - Project actions
+ * @member applicationActions - Application setting actions
  */
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
     recentProjects: IProject[];
+    appSettings: IAppSettings;
     actions: IProjectActions;
+    applicationActions: IApplicationActions;
 }
 
 /**
@@ -46,12 +55,14 @@ export interface IEditorPageState {
     project: IProject;
     /** Array of assets in project */
     assets: IAsset[];
-    /** The editdor mode to set for canvas tools */
+    /** The editor mode to set for canvas tools */
     editorMode: EditorMode;
     /** The selection mode to set for canvas tools */
     selectionMode: SelectionMode;
     /** The selected asset for the primary editing experience */
     selectedAsset?: IAssetMetadata;
+    /** Currently selected region on current asset */
+    selectedRegions?: IRegion[];
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
     /** Additional settings for asset previews */
@@ -60,18 +71,22 @@ export interface IEditorPageState {
     selectedTag: string;
     /** Tags locked for region labeling */
     lockedTags: string[];
+    /** Size of the asset thumbnails to display in the side bar */
+    thumbnailSize: ISize;
 }
 
 function mapStateToProps(state: IApplicationState) {
     return {
         recentProjects: state.recentProjects,
         project: state.currentProject,
+        appSettings: state.appSettings,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
+        applicationActions: bindActionCreators(applicationActions, dispatch),
     };
 }
 
@@ -81,6 +96,7 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
+
     public state: IEditorPageState = {
         project: this.props.project,
         selectedTag: null,
@@ -90,6 +106,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         childAssets: [],
         editorMode: EditorMode.Rectangle,
         additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+        thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
     };
 
     private loadingProjectAssets: boolean = false;
@@ -135,58 +152,112 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
                     return (<KeyboardBinding
-                        displayName={strings.editorPage.tags.hotKey.help}
+                        displayName={strings.editorPage.tags.hotKey.apply}
                         key={index}
                         keyEventType={KeyEventType.KeyDown}
                         accelerators={[`${index}`]}
                         icon={"fa-tag"}
                         handler={this.handleTagHotKey} />);
                 })}
-                <div className="editor-page-sidebar bg-lighter-1">
-                    <EditorSideBar
-                        assets={rootAssets}
-                        selectedAsset={selectedAsset ? selectedAsset.asset : null}
-                        onAssetSelected={this.selectAsset}
-                    />
-                </div>
-                <div className="editor-page-content">
-                    <div className="editor-page-content-header">
-                        <EditorToolbar project={this.props.project}
-                            items={this.toolbarItems}
-                            actions={this.props.actions}
-                            onToolbarItemSelected={this.onToolbarItemSelected} />
-                    </div>
-                    <div className="editor-page-content-body">
-                        {selectedAsset &&
-                            <Canvas
-                                ref={this.canvas}
-                                selectedAsset={this.state.selectedAsset}
-                                onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                editorMode={this.state.editorMode}
-                                selectionMode={this.state.selectionMode}
-                                project={this.props.project}
-                                lockedTags={this.state.lockedTags}>
-                                <AssetPreview
-                                    additionalSettings={this.state.additionalSettings}
-                                    autoPlay={true}
-                                    onChildAssetSelected={this.onChildAssetSelected}
-                                    asset={this.state.selectedAsset.asset}
-                                    childAssets={this.state.childAssets} />
-                            </Canvas>
-                        }
-                    </div>
-                    <div>
-                        <EditorFooter
-                            tags={this.props.project.tags}
-                            lockedTags={this.state.lockedTags}
-                            onTagsChanged={this.onFooterChange}
-                            onTagClicked={this.onTagClicked}
-                            onCtrlTagClicked={this.onCtrlTagClicked}
+                {[...Array(10).keys()].map((index) => {
+                    return (<KeyboardBinding
+                        displayName={strings.editorPage.tags.hotKey.lock}
+                        key={index}
+                        keyEventType={KeyEventType.KeyDown}
+                        accelerators={[`Ctrl+${index}`]}
+                        icon={"fa-lock"}
+                        handler={this.handleCtrlTagHotKey} />);
+                })}
+                <SplitPane split="vertical"
+                    defaultSize={this.state.thumbnailSize.width}
+                    minSize={100}
+                    maxSize={400}
+                    paneStyle={{ display: "flex" }}
+                    onChange={this.onSideBarResize}
+                    onDragFinished={this.onSideBarResizeComplete}>
+                    <div className="editor-page-sidebar bg-lighter-1">
+                        <EditorSideBar
+                            assets={rootAssets}
+                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                            onAssetSelected={this.selectAsset}
+                            thumbnailSize={this.state.thumbnailSize}
                         />
                     </div>
-                </div>
+                    <div className="editor-page-content" onClick={this.onPageClick}>
+                        <div className="editor-page-content-main">
+                            <div className="editor-page-content-main-header">
+                                <EditorToolbar project={this.props.project}
+                                    items={this.toolbarItems}
+                                    actions={this.props.actions}
+                                    onToolbarItemSelected={this.onToolbarItemSelected} />
+                            </div>
+                            <div className="editor-page-content-main-body">
+                                    {selectedAsset &&
+                                        <Canvas
+                                            ref={this.canvas}
+                                            selectedAsset={this.state.selectedAsset}
+                                            onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                            onSelectedRegionsChanged={this.onSelectedRegionsChanged}
+                                            editorMode={this.state.editorMode}
+                                            selectionMode={this.state.selectionMode}
+                                            project={this.props.project}
+                                            lockedTags={this.state.lockedTags}>
+                                            <AssetPreview
+                                                additionalSettings={this.state.additionalSettings}
+                                                autoPlay={true}
+                                                onChildAssetSelected={this.onChildAssetSelected}
+                                                asset={this.state.selectedAsset.asset}
+                                                childAssets={this.state.childAssets} />
+                                        </Canvas>
+                                    }
+                            </div>
+                        </div>
+                        <div className="editor-page-right-sidebar">
+                            <TagInput
+                                tags={this.props.project.tags}
+                                lockedTags={this.state.lockedTags}
+                                selectedRegions={this.state.selectedRegions}
+                                onChange={this.onTagsChanged}
+                                onLockedTagsChange={this.onLockedTagsChanged}
+                                onTagClick={this.onTagClicked}
+                                onCtrlTagClick={this.onCtrlTagClicked}
+                            />
+                        </div>
+                    </div>
+                </SplitPane>
             </div>
         );
+    }
+
+    private onPageClick = () => {
+        this.setState({
+            selectedRegions: [],
+        });
+    }
+
+    /**
+     * Called when the asset side bar is resized
+     * @param newWidth The new sidebar width
+     */
+    private onSideBarResize = (newWidth: number) => {
+        this.setState({
+            thumbnailSize: {
+                width: newWidth,
+                height: newWidth / (4 / 3),
+            },
+        }, () => this.canvas.current.forceResize());
+    }
+
+    /**
+     * Called when the asset sidebar has been completed
+     */
+    private onSideBarResizeComplete = () => {
+        const appSettings = {
+            ...this.props.appSettings,
+            thumbnailSize: this.state.thumbnailSize,
+        };
+
+        this.props.applicationActions.saveAppSettings(appSettings);
     }
 
     /**
@@ -208,14 +279,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }, () => this.canvas.current.applyTag(tag.name));
     }
 
-    /**
-     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
-     * @param event KeyDown event
-     */
-    private handleTagHotKey = (event: KeyboardEvent): void => {
-        const key = parseInt(event.key, 10);
+    private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
+        let key = parseInt(event.key, 10);
         if (isNaN(key)) {
-            return;
+            try {
+                key = parseInt(event.key.split("+")[1], 10);
+            } catch (e) {
+                return;
+            }
         }
         let index: number;
         const tags = this.props.project.tags;
@@ -225,7 +296,26 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             index = key - 1;
         }
         if (index < tags.length) {
-            this.onTagClicked(tags[index]);
+            return tags[index];
+        }
+        return null;
+    }
+
+    /**
+     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
+     * @param event KeyDown event
+     */
+    private handleTagHotKey = (event: KeyboardEvent): void => {
+        const tag = this.getTagFromKeyboardEvent(event);
+        if (tag) {
+            this.onTagClicked(tag);
+        }
+    }
+
+    private handleCtrlTagHotKey = (event: KeyboardEvent): void => {
+        const tag = this.getTagFromKeyboardEvent(event);
+        if (tag) {
+            this.onCtrlTagClicked(tag);
         }
     }
 
@@ -298,14 +388,25 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({ childAssets, assets });
     }
 
-    private onFooterChange = (footerState) => {
+    private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
+        this.setState({ selectedRegions });
+    }
+
+    private onTagsChanged = (tags) => {
         const project = {
             ...this.props.project,
-            tags: footerState.tags,
+            tags,
         };
         this.setState({ project }, async () => {
             await this.props.actions.saveProject(project);
+            if (this.canvas.current) {
+                this.canvas.current.updateCanvasToolsRegions();
+            }
         });
+    }
+
+    private onLockedTagsChanged = (lockedTags: string[]) => {
+        this.setState({ lockedTags });
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
@@ -400,11 +501,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         assetTags.forEach((tag) => {
             if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                !this.props.project.tags.find((projectTag) => tag === projectTag.name) ) {
-                const tagKeys = Object.keys(tagColors);
+                !this.props.project.tags.find((projectTag) => tag === projectTag.name)) {
                 newTags.push({
                     name: tag,
-                    color: tagColors[tagKeys[newTags.length % tagKeys.length]],
+                    color: tagColors[newTags.length % tagColors.length],
                 });
                 updateTags = true;
             }
@@ -412,7 +512,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         if (updateTags) {
             asset.asset.state = AssetState.Tagged;
-            const newProject = {...this.props.project, tags: newTags};
+            const newProject = { ...this.props.project, tags: newTags };
             await this.props.actions.saveAssetMetadata(newProject, asset);
             await this.props.actions.saveProject(newProject);
         }

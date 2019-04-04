@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { TFRecordsJsonExportProvider } from "./tensorFlowRecords";
+import { TFRecordsExportProvider } from "./tensorFlowRecords";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
@@ -8,7 +8,6 @@ import {
     RegionType, IPoint, IExportProviderOptions,
 } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
-import axios, { AxiosResponse } from "axios";
 
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
@@ -18,6 +17,7 @@ import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import registerMixins from "../../registerMixins";
 import { appInfo } from "../../common/appInfo";
 import { AssetProviderFactory } from "../storage/assetProviderFactory";
+import HtmlFileReader from "../../common/htmlFileReader";
 
 registerMixins();
 
@@ -35,15 +35,7 @@ describe("TFRecords Json Export Provider", () => {
 
     const tagLengthInPbtxt = 31;
 
-    axios.get = jest.fn((url, config) => {
-        return Promise.resolve<AxiosResponse>({
-            config,
-            headers: null,
-            status: 200,
-            statusText: "OK",
-            data: [1, 2, 3],
-        });
-    });
+    HtmlFileReader.getAssetArray = jest.fn(() => Promise.resolve(new Uint8Array([1, 2, 3]).buffer));
 
     beforeAll(() => {
         AssetProviderFactory.create = jest.fn(() => {
@@ -58,7 +50,7 @@ describe("TFRecords Json Export Provider", () => {
     });
 
     it("Is defined", () => {
-        expect(TFRecordsJsonExportProvider).toBeDefined();
+        expect(TFRecordsExportProvider).toBeDefined();
     });
 
     it("Can be instantiated through the factory", () => {
@@ -67,7 +59,7 @@ describe("TFRecords Json Export Provider", () => {
         };
         const exportProvider = ExportProviderFactory.create("tensorFlowRecords", baseTestProject, options);
         expect(exportProvider).not.toBeNull();
-        expect(exportProvider).toBeInstanceOf(TFRecordsJsonExportProvider);
+        expect(exportProvider).toBeInstanceOf(TFRecordsExportProvider);
     });
 
     describe("Export variations", () => {
@@ -114,7 +106,7 @@ describe("TFRecords Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFRecordsJsonExportProvider(testProject, options);
+            const exportProvider = new TFRecordsExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -143,7 +135,7 @@ describe("TFRecords Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(1);
 
-            const exportProvider = new TFRecordsJsonExportProvider(testProject, options);
+            const exportProvider = new TFRecordsExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -171,7 +163,7 @@ describe("TFRecords Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFRecordsJsonExportProvider(testProject, options);
+            const exportProvider = new TFRecordsExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;

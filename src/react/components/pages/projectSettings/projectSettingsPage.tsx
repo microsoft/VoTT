@@ -66,19 +66,21 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     public render() {
         return (
             <div className="project-settings-page">
-                <div className="project-settings-page-settings m-3 text-light">
+                <div className="project-settings-page-settings m-3">
                     <h3>
                         <i className="fas fa-sliders-h" />
                         <span className="px-2">
                             {strings.projectSettings.title}
                         </span>
                     </h3>
-                    <ProjectForm
-                        project={this.props.project}
-                        connections={this.props.connections}
-                        appSettings={this.props.appSettings}
-                        onSubmit={this.onFormSubmit}
-                        onCancel={this.onFormCancel} />
+                    <div className="m-3">
+                        <ProjectForm
+                            project={this.props.project}
+                            connections={this.props.connections}
+                            appSettings={this.props.appSettings}
+                            onSubmit={this.onFormSubmit}
+                            onCancel={this.onFormCancel} />
+                    </div>
                 </div>
                 {this.props.project &&
                     <div className="project-settings-page-metrics bg-lighter-1">

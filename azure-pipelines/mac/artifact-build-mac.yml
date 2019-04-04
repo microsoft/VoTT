@@ -4,13 +4,13 @@ steps:
     inputs:
       versionSpec: 10.x
 
-  - bash: |  
+  - bash: |
       set -ex
-      
+
       # clean install
       npm ci
-      npm run release
-      
+      npm run release-ci
+
       mkdir -p mac
       cp releases/vott*.dmg mac/
     displayName: Build

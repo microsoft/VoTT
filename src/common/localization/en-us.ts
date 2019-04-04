@@ -41,6 +41,9 @@ export const english: IAppStrings = {
             confirmation: "Are you sure you want to convert project ${project.file.name} project settings " +
                 "to v2 format? We recommend you backup the project file first.",
         },
+        messages: {
+            deleteSuccess: "Successfully deleted ${project.name}",
+        },
     },
     appSettings: {
         title: "Application Settings",
@@ -136,6 +139,19 @@ export const english: IAppStrings = {
             fuschia: "Fuschia",
             purple: "Purple",
         },
+        warnings: {
+            existingName: "Tag name already exists. Choose another name",
+            emptyName: "Cannot have an empty tag name",
+        },
+        toolbar: {
+            add: "Add new tag",
+            search: "Search tags",
+            edit: "Edit tag",
+            lock: "Lock tag",
+            moveUp: "Move tag up",
+            moveDown: "Move tag down",
+            delete: "Delete tag",
+        },
     },
     connections: {
         title: "Connections",
@@ -143,9 +159,30 @@ export const english: IAppStrings = {
         settings: "Connection Settings",
         instructions: "Please select a connection to edit",
         save: "Save Connection",
+        messages: {
+            saveSuccess: "Successfully saved ${connection.name}",
+            deleteSuccess: "Successfully deleted ${connection.name}",
+        },
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
+                description: "",
+                accountName: {
+                    title: "Account Name",
+                    description: "",
+                },
+                containerName: {
+                    title: "Container Name",
+                    description: "",
+                },
+                sas: {
+                    title: "SAS",
+                    description: "Shared access signature used to authenticate to the blob storage account",
+                },
+                createContainer: {
+                    title: "Create Container",
+                    description: "Creates the blob container if it does not already exist",
+                },
             },
             bing: {
                 title: "Bing Image Search",
@@ -171,6 +208,8 @@ export const english: IAppStrings = {
     editorPage: {
         width: "Width",
         height: "Height",
+        tagged: "Tagged",
+        visited: "Visited",
         toolbar: {
             select: "Select (V)",
             pan: "Pan",
@@ -207,7 +246,8 @@ export const english: IAppStrings = {
         assetError: "Unable to load asset",
         tags: {
             hotKey: {
-                help: "Apply Tag with Hot Key",
+                apply: "Apply Tag with Hot Key",
+                lock: "Lock Tag with Hot Key",
             },
         },
         canvas: {
@@ -284,6 +324,14 @@ export const english: IAppStrings = {
             },
             tfPascalVoc: {
                 displayName: "Tensorflow Pascal VOC",
+                testTrainSplit: {
+                    title: "Test / Train Split",
+                    description: "The test train split to use for exported data",
+                },
+                exportUnassigned: {
+                    title: "Export Unassigned",
+                    description: "Whether or not to include unassigned tags in exported data",
+                },
             },
         },
         messages: {

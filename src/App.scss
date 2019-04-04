@@ -123,7 +123,6 @@
 }
 
 .app-help-menu-icon {
-    padding: 6px 10px;
     color: #ccc;
     display: inline-block;
 
@@ -132,4 +131,8 @@
         background-color: $lighter-2;
         cursor: pointer;
     }
+}
+
+.Toastify .vott-toast-container {
+    top: 3em;
 }
