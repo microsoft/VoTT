@@ -25,13 +25,16 @@ export class ObjectDetection {
     }
 
     public async load(modelFolderPath: string, classesPath?: string) {
-        if (modelFolderPath.startsWith("http://") ||
-            modelFolderPath.startsWith("https://")) {
+        if (modelFolderPath.toLowerCase().startsWith("http://") ||
+            modelFolderPath.toLowerCase().startsWith("https://")) {
             this.model = await tf.loadGraphModel(modelFolderPath + "/model.json");
 
             const response = await axios.get(classesPath);
             this.jsonClasses = JSON.parse(response.data);
         } else {
+            if (modelFolderPath.toLowerCase().startsWith("file://")) {
+                modelFolderPath = modelFolderPath.substring(7);
+            }
             const handler = new ElectronProxyHandler(modelFolderPath);
             this.model = await tf.loadGraphModel(handler);
 

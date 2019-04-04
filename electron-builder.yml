@@ -20,3 +20,5 @@ linux:
     - snap
 publish: null
 electronVersion: 3.0.13
+extraFiles:
+  - "cocoSSDModel"
