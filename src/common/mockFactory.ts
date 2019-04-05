@@ -300,11 +300,33 @@ export default class MockFactory {
 
         return {
             frames,
-            framerate: "1",
+            framerate: "5",
             inputTags: "testTag1,testTag2",
             suggestiontype: "suggestiontype",
             scd: true,
             visitedFrames: ["testFrame0.jpg"],
+            tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
+        };
+    }
+
+    /**
+     * Creates fake IV1Project
+     * @param name Name of project.
+     */
+    public static createTestV1VideoProject(frameCount: number = 10): IV1Project {
+        const frames: { [frameName: string]: IV1Region[]; } = {};
+        for (let i = 0; i < frameCount; i++) {
+            const name = `${i + 1}`;
+            frames[name] = MockFactory.createTestV1Regions();
+        }
+
+        return {
+            frames,
+            framerate: "1",
+            inputTags: "testTag1,testTag2",
+            suggestiontype: "suggestiontype",
+            scd: true,
+            visitedFrames: [1, 2],
             tag_colors: [MockFactory.randomColor(), MockFactory.randomColor()],
         };
     }
