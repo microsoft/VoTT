@@ -342,7 +342,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
         const initialState = assetMetadata.asset.state;
-        let saveProject = false;
 
         // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
         // asset selected from the side bar (image/video).
@@ -364,7 +363,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
 
             if (rootAssetMetadata.asset.state !== AssetState.Tagged) {
-                saveProject = true;
                 rootAssetMetadata.asset.state = assetMetadata.asset.state;
                 await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
             }
@@ -374,14 +372,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Only update asset metadata if state changes or is different
         if (initialState !== assetMetadata.asset.state || this.state.selectedAsset !== assetMetadata) {
-            saveProject = true;
             await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         }
 
-        // Only update project when assets have been modified
-        if (saveProject) {
-            await this.props.actions.saveProject(this.props.project);
-        }
+        await this.props.actions.saveProject(this.props.project);
 
         const assetService = new AssetService(this.props.project);
         const childAssets = assetService.getChildAssets(rootAsset);

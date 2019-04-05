@@ -73,15 +73,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public componentDidUpdate = async (prevProps: Readonly<ICanvasProps>, prevState: Readonly<ICanvasState>) => {
         if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
-            this.setState({
-                currentAsset: this.props.selectedAsset,
-            }, () => {
-                this.refreshCanvasToolsRegions();
-
-                if (this.props.onSelectedRegionsChanged) {
-                    this.props.onSelectedRegionsChanged(this.getSelectedRegions());
-                }
-            });
+            this.setState({ currentAsset: this.props.selectedAsset });
         }
 
         // Handle selection mode changes
@@ -99,9 +91,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (prevState.enabled !== this.state.enabled) {
             // When the canvas is ready to display
             if (this.state.enabled) {
+                this.refreshCanvasToolsRegions();
                 this.setContentSource(this.state.contentSource);
                 this.editor.AS.setSelectionMode(this.props.selectionMode);
                 this.editor.AS.enable();
+
+                if (this.props.onSelectedRegionsChanged) {
+                    this.props.onSelectedRegionsChanged(this.getSelectedRegions());
+                }
             } else { // When the canvas has been disabled
                 this.editor.AS.disable();
                 this.clearAllRegions();
@@ -277,8 +274,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.editor.scaleRegionToSourceSize(
             regionData,
-            this.props.selectedAsset.asset.size.width,
-            this.props.selectedAsset.asset.size.height,
+            this.state.currentAsset.asset.size.width,
+            this.state.currentAsset.asset.size.height,
         );
         const lockedTags = this.props.lockedTags;
         const newRegion = {
@@ -331,8 +328,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const movedRegion = currentRegions[movedRegionIndex];
         const scaledRegionData = this.editor.scaleRegionToSourceSize(
             regionData,
-            this.props.selectedAsset.asset.size.width,
-            this.props.selectedAsset.asset.size.height,
+            this.state.currentAsset.asset.size.width,
+            this.state.currentAsset.asset.size.height,
         );
 
         if (movedRegion) {
@@ -518,8 +515,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 region.id,
                 this.editor.scaleRegionToFrameSize(
                     loadedRegionData,
-                    this.props.selectedAsset.asset.size.width,
-                    this.props.selectedAsset.asset.size.height,
+                    this.state.currentAsset.asset.size.width,
+                    this.state.currentAsset.asset.size.height,
                 ),
                 CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         });
