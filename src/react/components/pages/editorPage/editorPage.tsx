@@ -140,28 +140,32 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             await this.props.actions.loadProject(project);
         }
 
-        // Load TensorFlow.js Model
-        const infoId = toast.info("Loading model...", { autoClose: false });
+        const isElectron: boolean = !!window["require"];
 
-        let modelPath = "";
-        if (this.props.project.activeLearningSettings.modelPathType === "coco") {
-            const remote = (window as any).require("electron").remote as Electron.Remote;
-            const appPath = remote.app.getAppPath();
+        if (isElectron) {
+            // Load TensorFlow.js Model
+            const infoId = toast.info("Loading model...", { autoClose: false });
 
-            if (Env.get() !== "production") {
-                modelPath = appPath + "/cocoSSDModel";
+            let modelPath = "";
+            if (this.props.project.activeLearningSettings.modelPathType === "coco") {
+                const remote = (window as any).require("electron").remote as Electron.Remote;
+                const appPath = remote.app.getAppPath();
+
+                if (Env.get() !== "production") {
+                    modelPath = appPath + "/cocoSSDModel";
+                } else {
+                    modelPath = appPath + "/../../cocoSSDModel";
+                }
             } else {
-                modelPath = appPath + "/../../cocoSSDModel";
+                modelPath = this.props.project.activeLearningSettings.modelPath;
             }
-        } else {
-            modelPath = this.props.project.activeLearningSettings.modelPath;
+
+            console.log("Model path: ", modelPath);
+
+            this.model = new ObjectDetection();
+            await this.model.load(modelPath);
+            toast.dismiss(infoId);
         }
-
-        console.log("Model path: ", modelPath);
-
-        this.model = new ObjectDetection();
-        await this.model.load(modelPath);
-        toast.dismiss(infoId);
     }
 
     public async componentDidUpdate() {
@@ -545,8 +549,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
                     const xRatio = this.state.selectedAsset.asset.size.width / image.width;
                     const yRatio = this.state.selectedAsset.asset.size.height / image.height;
-
-                    console.log(xRatio, yRatio);
 
                     const predictions = await this.model.detect(image);
                     predictions.forEach((prediction) => {
