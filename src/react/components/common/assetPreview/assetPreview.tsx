@@ -27,6 +27,8 @@ export interface IAssetProps {
     onChildAssetSelected?: (asset: IAsset) => void;
     /** Event handler that fires when an error occurred loading an asset */
     onError?: (event: React.SyntheticEvent) => void;
+    /** Event handler that fires when the loaded asset has changed */
+    onAssetChanged?: (asset: IAsset) => void;
 }
 
 /**
@@ -78,6 +80,10 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                 loaded: false,
                 hasError: false,
             });
+
+            if (this.props.onAssetChanged) {
+                this.props.onAssetChanged(this.props.asset);
+            }
         }
     }
 
@@ -138,7 +144,7 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                     autoPlay={autoPlay}
                     onLoaded={this.onAssetLoad}
                     onError={this.onError}
-                    onChildAssetSelected={this.props.onChildAssetSelected}
+                    onChildAssetSelected={this.onChildAssetSelected}
                     onActivated={this.props.onActivated}
                     onDeactivated={this.props.onDeactivated} />;
             case AssetType.TFRecord:
@@ -175,5 +181,15 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                 this.props.onError(e);
             }
         });
+    }
+
+    private onChildAssetSelected = (asset: IAsset) => {
+        if (this.props.onChildAssetSelected) {
+            this.props.onChildAssetSelected(asset);
+        }
+
+        if (this.props.onAssetChanged) {
+            this.props.onAssetChanged(asset);
+        }
     }
 }
