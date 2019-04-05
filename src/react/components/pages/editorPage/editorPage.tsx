@@ -533,71 +533,73 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private predict = async () => {
         if (this.model) {
-            const imageBuffer = await HtmlFileReader.getAssetArray(this.state.selectedAsset.asset);
-            const buffer = Buffer.from(imageBuffer);
-            const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
-            const image = document.createElement("img") as HTMLImageElement;
-            image.onload = async () => {
-                const predictions = await this.model.detect(image);
-                console.log(image.x, image.y, image.width, image.height);
-                console.log(predictions);
+            const canvas = document.querySelector("canvas");
+            canvas.toBlob(async (blob) => {
+                const imageBuffer = await new Response(blob).arrayBuffer();
+                const buffer = Buffer.from(imageBuffer);
+                const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+                const image = document.createElement("img") as HTMLImageElement;
 
-                const regions = [...this.state.selectedAsset.regions];
-                predictions.forEach((prediction) => {
-                    // check if it is a new region
-                    if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
-                            region.boundingBox.left === Math.max(0, prediction.bbox[0]) &&
-                            region.boundingBox.top === Math.max(0, prediction.bbox[1]) &&
-                            region.boundingBox.width === Math.max(0, prediction.bbox[2]) &&
-                            region.boundingBox.height === Math.max(0, prediction.bbox[3]))) {
-                        regions.push({
-                            id: shortid.generate(),
-                            type: RegionType.Rectangle,
-                            tags: this.state.project.activeLearningSettings.predictTag ? [prediction.class] : [],
-                            boundingBox: {
-                                left: Math.max(0, prediction.bbox[0]),
-                                top: Math.max(0, prediction.bbox[1]),
-                                width: Math.max(0, prediction.bbox[2]),
-                                height: Math.max(0, prediction.bbox[3]),
-                            },
-                            points: [{
-                                x: Math.max(0, prediction.bbox[0]),
-                                y: Math.max(0, prediction.bbox[1]),
-                            },
-                            {
-                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                                y: Math.max(0, prediction.bbox[1]),
-                            },
-                            {
-                                x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
-                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                            },
-                            {
-                                x: Math.max(0, prediction.bbox[0]),
-                                y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
-                            }],
-                        });
-                    }
-                });
+                image.onload = async () => {
+                    const regions = [...this.state.selectedAsset.regions];
 
-                this.canvas.current.addRegionsToAsset(regions);
-                this.canvas.current.addRegionsToCanvasTools(regions);
+                    const predictions = await this.model.detect(image);
+                    predictions.forEach((prediction) => {
+                        // check if it is a new region
+                        if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
+                                region.boundingBox.left === Math.max(0, prediction.bbox[0]) &&
+                                region.boundingBox.top === Math.max(0, prediction.bbox[1]) &&
+                                region.boundingBox.width === Math.max(0, prediction.bbox[2]) &&
+                                region.boundingBox.height === Math.max(0, prediction.bbox[3]))) {
+                            regions.push({
+                                id: shortid.generate(),
+                                type: RegionType.Rectangle,
+                                tags: this.state.project.activeLearningSettings.predictTag ? [prediction.class] : [],
+                                boundingBox: {
+                                    left: Math.max(0, prediction.bbox[0]),
+                                    top: Math.max(0, prediction.bbox[1]),
+                                    width: Math.max(0, prediction.bbox[2]),
+                                    height: Math.max(0, prediction.bbox[3]),
+                                },
+                                points: [{
+                                    x: Math.max(0, prediction.bbox[0]),
+                                    y: Math.max(0, prediction.bbox[1]),
+                                },
+                                {
+                                    x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                    y: Math.max(0, prediction.bbox[1]),
+                                },
+                                {
+                                    x: Math.max(0, prediction.bbox[0]) + Math.max(0, prediction.bbox[2]),
+                                    y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                                },
+                                {
+                                    x: Math.max(0, prediction.bbox[0]),
+                                    y: Math.max(0, prediction.bbox[1]) + Math.max(0, prediction.bbox[3]),
+                                }],
+                            });
+                        }
+                    });
 
-                const newAsset = { ...this.state.selectedAsset, regions };
-                newAsset.asset.predicted = true;
-                console.log(newAsset);
+                    this.canvas.current.addRegionsToAsset(regions);
+                    this.canvas.current.addRegionsToCanvasTools(regions);
 
-                this.onAssetMetadataChanged(newAsset);
+                    const newAsset = { ...this.state.selectedAsset, regions };
+                    newAsset.asset.predicted = true;
+                    console.log(newAsset);
 
-                this.setState({
-                    selectedAsset: newAsset,
-                });
+                    this.onAssetMetadataChanged(newAsset);
 
-                // Save
-                await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
-                await this.props.actions.saveProject(this.props.project);
-            };
-            image.src = "data:image;base64," + image64;
+                    this.setState({
+                        selectedAsset: newAsset,
+                    });
+
+                    // Save
+                    await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
+                    await this.props.actions.saveProject(this.props.project);
+                };
+                image.src = "data:image;base64," + image64;
+            });
         }
     }
 
