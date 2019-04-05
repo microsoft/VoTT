@@ -9,6 +9,7 @@ import {
     deleteProjectAction,
     loadProjectAssetsAction,
     saveAssetMetadataAction,
+    loadAssetMetadataAction,
 } from "../actions/projectActions";
 import { anyOtherAction } from "../actions/actionCreators";
 import { saveConnectionAction } from "../actions/connectionActions";
@@ -75,6 +76,19 @@ describe("Current Project Reducer", () => {
         expect(result).toBe(state);
     });
 
+    it("Load Asset Metadata updates project last visited asset state", () => {
+        const state: IProject = MockFactory.createTestProject("TestProject");
+        const testAssets = MockFactory.createTestAssets();
+        state.assets = _.keyBy(testAssets, "id");
+
+        const assetMetadata = MockFactory.createTestAssetMetadata(testAssets[0]);
+
+        const action = loadAssetMetadataAction(assetMetadata);
+        const result = reducer(state, action);
+        expect(result).not.toBe(state);
+        expect(result.lastVisitedAssetId).toEqual(assetMetadata.asset.id);
+    });
+
     it("Save Asset Metadata updates project asset state", () => {
         const state: IProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets();
@@ -97,7 +111,6 @@ describe("Current Project Reducer", () => {
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result.assets[testAssets[0].id]).toEqual(assetMetadata.asset);
-        expect(result.lastVisitedAssetId).toEqual(assetMetadata.asset.id);
     });
 
     it("Unknown action performs a noop", () => {
