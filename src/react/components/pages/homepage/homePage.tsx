@@ -14,7 +14,7 @@ import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
     IApplicationState, IConnection, IProject, IFileInfo,
-    ErrorCode, AppError, IAppError, IAppSettings,
+    ErrorCode, AppError, IAppError, IAppSettings, IAsset,
 } from "../../../../models/applicationState";
 import ImportService from "../../../../services/importService";
 import { IAssetMetadata } from "../../../../models/applicationState";
@@ -180,7 +180,8 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     private convertProject = async (projectInfo: IFileInfo) => {
         const importService = new ImportService(this.props.actions);
         let generatedAssetMetadata: IAssetMetadata[];
-        let project;
+        let project: IProject;
+
         try {
             project = await importService.convertProject(projectInfo);
         } catch (e) {
