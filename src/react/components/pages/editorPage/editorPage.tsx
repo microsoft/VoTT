@@ -29,6 +29,7 @@ import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
+import Alert from "../../common/alert/alert";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -73,6 +74,10 @@ export interface IEditorPageState {
     lockedTags: string[];
     /** Size of the asset thumbnails to display in the side bar */
     thumbnailSize: ISize;
+    /** Whether or not the editor is in a valid state */
+    isValid: boolean;
+    /** Whether the show invalid region warning alert should display */
+    showInvalidRegionWarning: boolean;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -107,6 +112,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         editorMode: EditorMode.Rectangle,
         additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
+        isValid: true,
+        showInvalidRegionWarning: false,
     };
 
     private loadingProjectAssets: boolean = false;
@@ -179,6 +186,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         <EditorSideBar
                             assets={rootAssets}
                             selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                            onBeforeAssetSelected={this.onBeforeAssetSelected}
                             onAssetSelected={this.selectAsset}
                             thumbnailSize={this.state.thumbnailSize}
                         />
@@ -205,6 +213,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                         <AssetPreview
                                             additionalSettings={this.state.additionalSettings}
                                             autoPlay={true}
+                                            controlsEnabled={this.state.isValid}
+                                            onBeforeAssetChanged={this.onBeforeAssetSelected}
                                             onChildAssetSelected={this.onChildAssetSelected}
                                             asset={this.state.selectedAsset.asset}
                                             childAssets={this.state.childAssets} />
@@ -225,6 +235,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         </div>
                     </div>
                 </SplitPane>
+                <Alert show={this.state.showInvalidRegionWarning}
+                    title="Invalid region(s) detected"
+                    // tslint:disable-next-line:max-line-length
+                    message="1 or more regions have not been tagged.  Please tag all regions before continuing to next asset."
+                    closeButtonColor="info"
+                    onClose={() => this.setState({ showInvalidRegionWarning: false })} />
             </div>
         );
     }
@@ -341,6 +357,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
+        // If the asset contains any regions without tags, don't proceed.
+        const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tags.length === 0);
+
+        if (regionsWithoutTags.length > 0) {
+            this.setState({ isValid: false });
+            return;
+        }
+
         const initialState = assetMetadata.asset.state;
 
         // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
@@ -391,7 +415,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             };
         }
 
-        this.setState({ childAssets, assets });
+        this.setState({ childAssets, assets, isValid: true });
     }
 
     private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
@@ -478,9 +502,22 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
+    private onBeforeAssetSelected = (): boolean => {
+        if (!this.state.isValid) {
+            this.setState({ showInvalidRegionWarning: true });
+        }
+
+        return this.state.isValid;
+    }
+
     private selectAsset = async (asset: IAsset): Promise<void> => {
         // Nothing to do if we are already on the same asset.
         if (this.state.selectedAsset && this.state.selectedAsset.asset.id === asset.id) {
+            return;
+        }
+
+        if (!this.state.isValid) {
+            this.setState({ showInvalidRegionWarning: true });
             return;
         }
 
