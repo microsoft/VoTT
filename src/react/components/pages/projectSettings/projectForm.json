@@ -45,6 +45,14 @@
             "title": "Active Learning ",
             "type": "object",
             "properties": {
+                "predictTag": {
+                    "title": " Predict Tag",
+                    "type": "boolean"
+                },
+                "autoDetect": {
+                    "title": " Auto Detect",
+                    "type": "boolean"
+                },
                 "modelPathType": {
                     "type": "string",
                     "title": "Model Type: ",
@@ -59,19 +67,49 @@
                         "Custom (File path)",
                         "Custom (Url)"
                     ]
-                },
-                "modelPath": {
-                    "title": "Model path: ",
-                    "type": "string",
-                    "default": "/Users/jacopo/CocoSSD"
-                },
-                "predictTag": {
-                    "title": " Predict Tag",
-                    "type": "boolean"
-                },
-                "autoDetect": {
-                    "title": " Auto Detect",
-                    "type": "boolean"
+                }
+            },
+            "dependencies": {
+                "modelPathType": {
+                    "oneOf": [
+                        {
+                            "properties": {
+                                "modelPathType": {
+                                    "enum": [
+                                        "coco"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "properties": {
+                                "modelPathType": {
+                                    "enum": [
+                                        "file"
+                                    ]
+                                },
+                                "modelPath": {
+                                    "title": "Model path: ",
+                                    "type": "string",
+                                    "default": "."
+                                }
+                            }
+                        },
+                        {
+                            "properties": {
+                                "modelPathType": {
+                                    "enum": [
+                                        "url"
+                                    ]
+                                },
+                                "modelPath": {
+                                    "title": "Model URL: ",
+                                    "type": "string",
+                                    "default": "http://"
+                                }
+                            }
+                        }
+                    ]
                 }
             }
         },
