@@ -13,5 +13,8 @@
     },
     "tags": {
         "ui:field": "tagsInput"
+    },
+    "modelPath": {
+        "ui:widget": "localFolderPicker"
     }
 }
