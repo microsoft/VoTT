@@ -278,6 +278,12 @@ export const spanish: IAppStrings = {
             },
             vottJson: {
                 displayName: "VoTT JSON",
+                properties: {
+                    includeImages: {
+                        title: "Include Images",
+                        description: "Whether or not to include binary image assets in target connection",
+                    },
+                },
             },
             azureCV: {
                 displayName: "Servicio de Visión Personalizada Azure",
