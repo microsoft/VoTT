@@ -1,10 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { AssetState, IAsset, IAssetMetadata, IProject, IRegion, ITag } from "../../../../models/applicationState";
+import { AssetState, IAsset, IAssetMetadata,
+    IProject, IRegion, ITag, IPoint } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { strings, interpolate } from "../../../../common/strings";
 import {
-    RadialChart, XYPlot, VerticalGridLines,
+    RadialChart, XYPlot, ArcSeries, Sunburst, Hint, DiscreteColorLegend,
     HorizontalGridLines, XAxis, YAxis, VerticalBarSeries,
 } from "react-vis";
 import "react-vis/dist/styles/radial-chart.scss";
@@ -20,6 +21,7 @@ export interface IProjectMetricsProps {
 
 export interface IProjectMetricsState {
     loading: boolean;
+    hoveredCell: any;
     sourceAssets: IAsset[];
     projectAssetsMetadata: IAssetMetadata[];
 }
@@ -31,9 +33,20 @@ export interface IProjectMetricsState {
 export default class ProjectMetrics extends React.Component<IProjectMetricsProps, IProjectMetricsState> {
     public state = {
         loading: true,
+        hoveredCell: null,
         sourceAssets: [],
         projectAssetsMetadata: [],
     };
+
+    private tipStyle = {
+        display: "flex",
+        color: "#fff",
+        background: "#000",
+        alignItems: "center",
+        padding: "5px",
+    };
+
+    private boxStyle = { height: "10px", width: "10px" };
 
     public async componentDidMount() {
         this.setState({
@@ -64,11 +77,20 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         );
     }
 
+    private buildValue(hoveredCell) {
+        const { radius, angle, angle0 } = hoveredCell;
+        const truedAngle = (angle + angle0) / 2;
+        return {
+            x: radius * Math.cos(truedAngle),
+            y: radius * Math.sin(truedAngle),
+        };
+    }
+
     private renderMetrics() {
         const sourceAssetCount = this.getSourceAssetCount();
         const taggedAssetCount = this.getTaggedAssetCount();
-        const visitedAssetCount = this.getVisitedAssetsCount() - taggedAssetCount;
-        const nonVistedAssetCount = sourceAssetCount - this.state.projectAssetsMetadata.length;
+        const visitedAssetCount = this.getVisitedAssetsCount();
+        const nonVistedAssetCount = sourceAssetCount - visitedAssetCount;
 
         const assetChartData = [
             {
@@ -85,6 +107,56 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
             },
         ];
 
+        const colors = ["#395ECC", "#C6FF7A", "#FF8161"];
+
+        const myData = [
+            {angle0: 0,
+                angle: visitedAssetCount * 2 * Math.PI / sourceAssetCount,
+                radius: 3, radius0: 2, color: 0, label: "1"},
+            {angle0: 0,
+                angle: taggedAssetCount * 2 * Math.PI / sourceAssetCount,
+                radius: 2, radius0: 1, color: 2, label: "2"},
+            {angle0: 0,
+                angle: -(nonVistedAssetCount * 2 * Math.PI / sourceAssetCount),
+                radius: 1, radius0: 0, color: 1, label: "3"},
+        ];
+        const COLORS = ["red", "green", "blue", "yellow",
+                        "orange", "indego", "violet", "gray",
+                        "white", "black", "teal", "crimson"];
+        const DATA = {
+            animation: true,
+            title: "asset-count",
+            children: [
+                {
+                    title: "Visited",
+                    name: visitedAssetCount,
+                    children: [
+                        { title: "Tagged", bigness: 1, children: [], clr: "#7DFFA4",
+                        name: taggedAssetCount, size: taggedAssetCount, dontRotateLabel: true},
+                        { bigness: 1, children: [], clr: "#FFDF63", name: visitedAssetCount - taggedAssetCount,
+                        title: "Not Tagged", size: visitedAssetCount - taggedAssetCount, dontRotateLabel: true},
+                    ],
+                    clr: "#89B5E8",
+                    dontRotateLabel: true,
+                    size: visitedAssetCount,
+                },
+                {
+                    title: "Not Visited",
+                    name: sourceAssetCount - visitedAssetCount,
+                    bigness: 1,
+                    children: [],
+                    clr: "#EB7B58",
+                    dontRotateLabel: true,
+                    labelStyle: {
+                        fontSize: 15,
+                        fontWeight: "bold",
+                        fontColor: "gray",
+                    },
+                    size: sourceAssetCount - visitedAssetCount,
+                },
+            ],
+        };
+
         const tagChartData = [];
         this.getTagsCounts().forEach((value) => {
             tagChartData.push({
@@ -93,6 +165,13 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                 color: value.tag.color,
             });
         });
+
+        const { hoveredCell } = this.state;
+
+        const legend = [{title: "visited", color: "#89B5E8"},
+                        {title: "not-visited", color: "#EB7B58"},
+                        {title: "tagged", color: "#7DFFA4"},
+                        {title: "not-tagged", color: "#FFDF63"}];
 
         return (
             <div className="m-3">
@@ -104,12 +183,57 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                         Total Visited:
                         <strong className="px-1 metric-total-visited-count">{this.getVisitedAssetsCount()}</strong>
                     </p>
-                    <RadialChart
+                    {/* <RadialChart
                         className="asset-chart"
                         showLabels={true}
                         data={assetChartData}
                         width={300}
-                        height={300} />
+                        height={300} /> */}
+                    {/* <XYPlot
+                        xDomain={[-3, 3]}
+                        yDomain={[-3, 3]}
+                        width={300}
+                        height={300}
+                    >
+                        <ArcSeries
+                            animation={{
+                                damping: 9,
+                                stiffness: 300,
+                            }}
+                            showLabels={true}
+                            radiusDomain={[0, 3]}
+                            data={myData}
+                            colorType={"category"}
+                            colorRange={colors}
+                        />
+                    </XYPlot> */}
+                    <DiscreteColorLegend
+                        items={legend}/>
+                    <Sunburst
+                        data={DATA}
+                        style={{ stroke: "#fff" }}
+                        onValueMouseOver={(v) =>
+                            this.setState({ hoveredCell: v.x && v.y ? v : null })
+                        }
+                        onValueMouseOut={(v) => this.setState({ hoveredCell: null })}
+                        height={300}
+                        margin={{ top: 50, bottom: 50, left: 50, right: 50 }}
+                        getLabel={(d) => d.name}
+                        getSize={(d) => d.bigness}
+                        getColor={(d) => d.clr}
+                        width={350}
+                        padAngle={() => 0.02}
+                        hideRootNode={true}
+                    >
+                        {hoveredCell ? (
+                            <Hint value={this.buildValue(hoveredCell)}>
+                                <div style={this.tipStyle}>
+                                    <div style={{ ...this.boxStyle, background: hoveredCell.clr }} />
+                                    {hoveredCell.title + ":  " + hoveredCell.size}
+                                </div>
+                            </Hint>
+                        ) : null}
+                    </Sunburst>
                 </div>
                 <div className="my-3">
                     <h4>{strings.projectMetrics.tagsSectionTitle}</h4>

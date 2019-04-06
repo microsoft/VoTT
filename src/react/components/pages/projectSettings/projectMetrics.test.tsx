@@ -74,9 +74,9 @@ describe("Project metrics page", () => {
 
             // Assets graph
             const pieSegments = wrapper.find(".rv-xy-plot__series--label-text");
-            expect(pieSegments.at(0).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
-            expect(pieSegments.at(1).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
-            expect(pieSegments.at(2).text()).toEqual(`Untagged Visited Assets (${expectedVistedAssets})`);
+            expect(pieSegments.at(0).text()).toEqual(`${expectedNonVisitedAssetCount}`);
+            expect(pieSegments.at(1).text()).toEqual(`${expectedTaggedAssets}`);
+            expect(pieSegments.at(2).text()).toEqual(`${expectedVistedAssets}`);
 
             // Tag graph
             const barBlocks = wrapper.find(".rv-xy-plot__series--bar");
@@ -119,9 +119,9 @@ describe("Project metrics page", () => {
 
             // Assets graph
             const pieSegments = wrapper.find(".rv-xy-plot__series--label-text");
-            expect(pieSegments.at(0).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
-            expect(pieSegments.at(1).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
-            expect(pieSegments.at(2).text()).toEqual(`Untagged Visited Assets (${expectedVistedAssets})`);
+            expect(pieSegments.at(0).text()).toEqual(`${expectedNonVisitedAssetCount}`);
+            expect(pieSegments.at(1).text()).toEqual(`${expectedTaggedAssets}`);
+            expect(pieSegments.at(2).text()).toEqual(`${expectedVistedAssets}`);
 
             // Tag graph
             const barBlocks = wrapper.find(".rv-xy-plot__series--bar");
