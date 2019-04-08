@@ -11,6 +11,12 @@ export interface DetectedObject {
 }
 
 export class ObjectDetection {
+    private modelLoaded: boolean = false;
+
+    get loaded(): boolean {
+        return this.modelLoaded;
+    }
+
     private model: tf.GraphModel;
     private jsonClasses: JSON;
 
@@ -25,28 +31,33 @@ export class ObjectDetection {
     }
 
     public async load(modelFolderPath: string, classesPath?: string) {
-        if (modelFolderPath.toLowerCase().startsWith("http://") ||
-            modelFolderPath.toLowerCase().startsWith("https://")) {
-            this.model = await tf.loadGraphModel(modelFolderPath + "/model.json");
+        try {
+            if (modelFolderPath.toLowerCase().startsWith("http://") ||
+                modelFolderPath.toLowerCase().startsWith("https://")) {
+                this.model = await tf.loadGraphModel(modelFolderPath + "/model.json");
 
-            const response = await axios.get(classesPath);
-            this.jsonClasses = JSON.parse(response.data);
-        } else {
-            if (modelFolderPath.toLowerCase().startsWith("file://")) {
-                modelFolderPath = modelFolderPath.substring(7);
+                const response = await axios.get(classesPath);
+                this.jsonClasses = JSON.parse(response.data);
+            } else {
+                if (modelFolderPath.toLowerCase().startsWith("file://")) {
+                    modelFolderPath = modelFolderPath.substring(7);
+                }
+                const handler = new ElectronProxyHandler(modelFolderPath);
+                this.model = await tf.loadGraphModel(handler);
+
+                const provider = new LocalFileSystemProxy();
+                this.jsonClasses = JSON.parse(await provider.readText(modelFolderPath + "/classes.json"));
             }
-            const handler = new ElectronProxyHandler(modelFolderPath);
-            this.model = await tf.loadGraphModel(handler);
 
-            const provider = new LocalFileSystemProxy();
-            this.jsonClasses = JSON.parse(await provider.readText(modelFolderPath + "/classes.json"));
+            // Warmup the model.
+            const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
+                tf.Tensor[];
+            result.map(async (t) => await t.data());
+            result.map(async (t) => t.dispose());
+            this.modelLoaded = true;
+        } catch (error) {
+            this.modelLoaded = false;
         }
-
-        // Warmup the model.
-        const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
-            tf.Tensor[];
-        result.map(async (t) => await t.data());
-        result.map(async (t) => t.dispose());
     }
 
     /**
@@ -62,7 +73,11 @@ export class ObjectDetection {
      */
     public async detect(img: tf.Tensor3D|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement,
                         maxNumBoxes: number = 20): Promise<DetectedObject[]> {
-        return this.infer(img, maxNumBoxes);
+        if (this.model) {
+            return this.infer(img, maxNumBoxes);
+        }
+
+        return [];
     }
 
     /**

@@ -162,11 +162,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 modelPath = this.props.project.activeLearningSettings.modelUrl;
             }
 
-            console.log("Model path: ", modelPath);
-
             this.model = new ObjectDetection();
             await this.model.load(modelPath);
             toast.dismiss(infoId);
+
+            if (!this.model.loaded) {
+                toast.warn("Error Loading model");
+            }
         }
     }
 
@@ -538,7 +540,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private predict = async () => {
-        if (this.model) {
+        if (this.model && this.model.loaded) {
             const canvas = document.querySelector("canvas");
             canvas.toBlob(async (blob) => {
                 const imageBuffer = await new Response(blob).arrayBuffer();
