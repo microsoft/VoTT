@@ -156,8 +156,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 } else {
                     modelPath = appPath + "/../../cocoSSDModel";
                 }
-            } else {
+            } else if (this.props.project.activeLearningSettings.modelPathType === "file") {
                 modelPath = this.props.project.activeLearningSettings.modelPath;
+            } else {
+                modelPath = this.props.project.activeLearningSettings.modelUrl;
             }
 
             console.log("Model path: ", modelPath);
