@@ -155,7 +155,7 @@ describe("Editor Page Component", () => {
         expect(editorPage.state().selectedAsset).toMatchObject({
             asset: {
                 ...expectedAsset,
-                state: AssetState.Tagged,
+                state: AssetState.Visited,
             },
         });
     });
@@ -191,7 +191,7 @@ describe("Editor Page Component", () => {
             expect.objectContaining({
                 asset: {
                     ...expectedAsset,
-                    state: AssetState.Tagged,
+                    state: AssetState.Visited,
                 },
             }),
         );
@@ -231,7 +231,7 @@ describe("Editor Page Component", () => {
             expect.objectContaining({
                 asset: {
                     ...expectedAsset,
-                    state: AssetState.Tagged,
+                    state: AssetState.Visited,
                 },
             }),
         );
@@ -289,7 +289,7 @@ describe("Editor Page Component", () => {
 
         const editedImageAsset: IAssetMetadata = {
             asset: imageAsset,
-            regions: [MockFactory.createTestRegion()],
+            regions: [MockFactory.createTestRegion("editedImageAsset", ["test"])],
             version: appInfo.version,
         };
 
@@ -353,11 +353,9 @@ describe("Editor Page Component", () => {
                 regions: [],
             }));
 
-            const newRegion = MockFactory.createTestRegion("region1", ["test"]);
-
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
-                regions: [newRegion],
+                regions: [MockFactory.createTestRegion("region1", ["test"])],
                 version: appInfo.version,
             };
 
@@ -374,7 +372,7 @@ describe("Editor Page Component", () => {
                     ...videoAsset,
                     state: AssetState.Tagged,
                 },
-                regions: [newRegion],
+                regions: [],
                 version: appInfo.version,
             };
 
