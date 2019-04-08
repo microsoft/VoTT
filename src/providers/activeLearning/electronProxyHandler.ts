@@ -9,12 +9,6 @@ export class ElectronProxyHandler implements tfc.io.IOHandler {
         this.provider = new LocalFileSystemProxy(options);
     }
 
-    public async save(modelArtifacts: tfc.io.ModelArtifacts): Promise<tfc.io.SaveResult> {
-        // Save method not implemented - call must fail
-        throw new Error(
-            "Save Method not implemented");
-    }
-
     public async load(): Promise<tfc.io.ModelArtifacts> {
         const modelJSON = JSON.parse(await this.provider.readText("/model.json"));
 
