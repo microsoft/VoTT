@@ -1,7 +1,5 @@
 import _ from "lodash";
-import Align from "rc-align";
 import React, { RefObject } from "react";
-import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import SplitPane from "react-split-pane";

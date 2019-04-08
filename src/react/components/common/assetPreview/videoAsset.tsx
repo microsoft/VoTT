@@ -46,6 +46,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     /** Default properties for the VideoAsset if not defined */
     public static defaultProps: IVideoAssetProps = {
         autoPlay: true,
+        controlsEnabled: true,
         timestamp: null,
         asset: null,
         childAssets: [],

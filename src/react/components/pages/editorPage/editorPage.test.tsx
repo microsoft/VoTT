@@ -78,7 +78,7 @@ describe("Editor Page Component", () => {
         assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
-                regions: [MockFactory.createTestRegion()],
+                regions: [],
                 version: appInfo.version,
             };
 
@@ -353,9 +353,11 @@ describe("Editor Page Component", () => {
                 regions: [],
             }));
 
+            const newRegion = MockFactory.createTestRegion("region1", ["test"]);
+
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
-                regions: [MockFactory.createTestRegion()],
+                regions: [newRegion],
                 version: appInfo.version,
             };
 
@@ -372,7 +374,7 @@ describe("Editor Page Component", () => {
                     ...videoAsset,
                     state: AssetState.Tagged,
                 },
-                regions: [],
+                regions: [newRegion],
                 version: appInfo.version,
             };
 
