@@ -30,15 +30,25 @@ describe("Asset Preview Component", () => {
         onError: onErrorHandler,
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
+        onBeforeAssetChanged: onBeforeAssetChangedHandler,
         onAssetChanged: onAssetChangedHandler,
         onChildAssetSelected: onChildAssetSelectedHandler,
-        onBeforeAssetChanged: onBeforeAssetChangedHandler,
     };
 
     function createComponent(props?: IAssetPreviewProps): ReactWrapper<IAssetPreviewProps, IAssetPreviewState> {
         props = props || defaultProps;
         return mount(<AssetPreview {...props} />);
     }
+
+    beforeEach(() => {
+        onLoadedHandler.mockClear();
+        onErrorHandler.mockClear();
+        onActivatedHandler.mockClear();
+        onDeactivatedHandler.mockClear();
+        onBeforeAssetChangedHandler.mockClear();
+        onAssetChangedHandler.mockClear();
+        onChildAssetSelectedHandler.mockClear();
+    });
 
     it("renders an image asset when asset type is image", () => {
         wrapper = createComponent();
@@ -183,7 +193,6 @@ describe("Asset Preview Component", () => {
 
     it("raises onBeforeAssetChanged during asset transitions", () => {
         const videoAsset = MockFactory.createVideoTestAsset("test-video-asset");
-        const childAsset = MockFactory.createChildVideoAsset(videoAsset, 2);
         const props: IAssetPreviewProps = {
             ...defaultProps,
             asset: videoAsset,
@@ -192,6 +201,23 @@ describe("Asset Preview Component", () => {
         wrapper.find(VideoAsset).props().onBeforeAssetChanged();
 
         expect(onBeforeAssetChangedHandler).toBeCalled();
+    });
+
+    it("blocks onChildAssetSelected", () => {
+        const videoAsset = MockFactory.createVideoTestAsset("test-video-asset");
+        const childAsset = MockFactory.createChildVideoAsset(videoAsset, 2);
+        onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
+
+        const props: IAssetPreviewProps = {
+            ...defaultProps,
+            asset: videoAsset,
+        };
+        wrapper = createComponent(props);
+        wrapper.find(VideoAsset).props().onChildAssetSelected(childAsset);
+
+        expect(onBeforeAssetChangedHandler).toBeCalled();
+        expect(onChildAssetSelectedHandler).not.toBeCalled();
+        expect(onAssetChangedHandler).not.toBeCalled();
     });
 
     it("renders landscape asset correctly", () => {
