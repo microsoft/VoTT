@@ -280,8 +280,8 @@ export const spanish: IAppStrings = {
                 displayName: "VoTT JSON",
                 properties: {
                     includeImages: {
-                        title: "Include Images",
-                        description: "Whether or not to include binary image assets in target connection",
+                        title: "Incluir imágenes",
+                        description: "Si desea o no incluir activos de imagen binaria en la conexión de destino",
                     },
                 },
             },
