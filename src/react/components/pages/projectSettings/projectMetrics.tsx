@@ -10,6 +10,7 @@ import {
 } from "react-vis";
 import "react-vis/dist/styles/radial-chart.scss";
 import "react-vis/dist/styles/plot.scss";
+import "./projectSettingsPage.scss";
 
 /**
  * Required properties for Project Metrics
@@ -141,7 +142,8 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                         },
                         { bigness: 1,
                             children: [],
-                            clr: "#FFDF63", name: visitedAssetCount - taggedAssetCount,
+                            clr: "#FFDF63",
+                            name: visitedAssetCount - taggedAssetCount,
                             title: "Not Tagged",
                             size: visitedAssetCount - taggedAssetCount,
                             dontRotateLabel: true,
@@ -149,7 +151,6 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     ],
                     clr: "#89B5E8",
                     dontRotateLabel: true,
-                    size: visitedAssetCount,
                 },
                 {
                     title: "Not Visited",
@@ -161,7 +162,6 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     labelStyle: {
                         fontSize: 15,
                         fontWeight: "bold",
-                        fontColor: "gray",
                     },
                     size: sourceAssetCount - visitedAssetCount,
                 },
@@ -186,14 +186,12 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
         return (
             <div className="m-3">
-                <div>
-                    <h4>{strings.projectMetrics.assetsSectionTitle}</h4>
-                    <p className="my-1">
-                        {strings.projectMetrics.totalAssetCount}:
-                        <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong><br/>
-                        Total Visited:
-                        <strong className="px-1 metric-total-visited-count">{this.getVisitedAssetsCount()}</strong>
-                    </p>
+                <h4>{strings.projectMetrics.assetsSectionTitle}</h4>
+                <p className="my-1">
+                    {strings.projectMetrics.totalAssetCount}:
+                        <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong><br />
+                </p>
+                <div className="assetCount">
                     {/* <RadialChart
                         className="asset-chart"
                         showLabels={true}
@@ -218,33 +216,33 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                             colorRange={colors}
                         />
                     </XYPlot> */}
-                    <DiscreteColorLegend
-                        items={legend}/>
                     <Sunburst
                         data={DATA}
-                        style={{ stroke: "#fff" }}
+                        style={{ stroke: "#fff", textShawdow: "2px 2px #ff0000"}}
                         onValueMouseOver={(v) =>
                             this.setState({ hoveredCell: v.x && v.y ? v : null })
                         }
                         onValueMouseOut={(v) => this.setState({ hoveredCell: null })}
-                        height={300}
+                        height={200}
                         margin={{ top: 50, bottom: 50, left: 50, right: 50 }}
                         getLabel={(d) => d.name}
-                        getSize={(d) => d.bigness}
+                        getSize={(d) => d.size}
                         getColor={(d) => d.clr}
-                        width={350}
-                        padAngle={() => 0.02}
+                        width={250}
+                        padAngle={() => 0.05}
                         hideRootNode={true}
                     >
                         {hoveredCell ? (
                             <Hint value={this.buildValue(hoveredCell)}>
                                 <div style={this.tipStyle}>
                                     <div style={{ ...this.boxStyle, background: hoveredCell.clr }} />
-                                    {hoveredCell.title + ":  " + hoveredCell.size}
+                                    {hoveredCell.title + ":  " + hoveredCell.name}
                                 </div>
                             </Hint>
                         ) : null}
                     </Sunburst>
+                    <DiscreteColorLegend
+                        items={legend}/>
                 </div>
                 <div className="my-3">
                     <h4>{strings.projectMetrics.tagsSectionTitle}</h4>
