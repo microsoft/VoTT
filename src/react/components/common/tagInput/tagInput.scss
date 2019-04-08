@@ -4,6 +4,7 @@ $tagInputWidth: 250px;
 
 .tag {
     &-input {
+        user-select: none;
         background: $lighter-1;
         min-width: $tagInputWidth;
 

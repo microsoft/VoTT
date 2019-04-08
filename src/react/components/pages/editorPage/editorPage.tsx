@@ -192,24 +192,24 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                     onToolbarItemSelected={this.onToolbarItemSelected} />
                             </div>
                             <div className="editor-page-content-main-body">
-                                    {selectedAsset &&
-                                        <Canvas
-                                            ref={this.canvas}
-                                            selectedAsset={this.state.selectedAsset}
-                                            onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                            onSelectedRegionsChanged={this.onSelectedRegionsChanged}
-                                            editorMode={this.state.editorMode}
-                                            selectionMode={this.state.selectionMode}
-                                            project={this.props.project}
-                                            lockedTags={this.state.lockedTags}>
-                                            <AssetPreview
-                                                additionalSettings={this.state.additionalSettings}
-                                                autoPlay={true}
-                                                onChildAssetSelected={this.onChildAssetSelected}
-                                                asset={this.state.selectedAsset.asset}
-                                                childAssets={this.state.childAssets} />
-                                        </Canvas>
-                                    }
+                                {selectedAsset &&
+                                    <Canvas
+                                        ref={this.canvas}
+                                        selectedAsset={this.state.selectedAsset}
+                                        onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                        onSelectedRegionsChanged={this.onSelectedRegionsChanged}
+                                        editorMode={this.state.editorMode}
+                                        selectionMode={this.state.selectionMode}
+                                        project={this.props.project}
+                                        lockedTags={this.state.lockedTags}>
+                                        <AssetPreview
+                                            additionalSettings={this.state.additionalSettings}
+                                            autoPlay={true}
+                                            onChildAssetSelected={this.onChildAssetSelected}
+                                            asset={this.state.selectedAsset.asset}
+                                            childAssets={this.state.childAssets} />
+                                    </Canvas>
+                                }
                             </div>
                         </div>
                         <div className="editor-page-right-sidebar">
@@ -341,6 +341,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
+        const initialState = assetMetadata.asset.state;
+
         // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
         // asset selected from the side bar (image/video).
         const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
@@ -368,7 +370,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             rootAsset.state = rootAssetMetadata.asset.state;
         }
 
-        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+        // Only update asset metadata if state changes or is different
+        if (initialState !== assetMetadata.asset.state || this.state.selectedAsset !== assetMetadata) {
+            await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+        }
+
         await this.props.actions.saveProject(this.props.project);
 
         const assetService = new AssetService(this.props.project);
@@ -473,6 +479,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
+        // Nothing to do if we are already on the same asset.
+        if (this.state.selectedAsset && this.state.selectedAsset.asset.id === asset.id) {
+            return;
+        }
+
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
         await this.updateProjectTagsFromAsset(assetMetadata);
 
@@ -485,10 +496,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.warn("Error computing asset size");
         }
 
-        await this.onAssetMetadataChanged(assetMetadata);
-
         this.setState({
             selectedAsset: assetMetadata,
+        }, async () => {
+            await this.onAssetMetadataChanged(assetMetadata);
         });
     }
 

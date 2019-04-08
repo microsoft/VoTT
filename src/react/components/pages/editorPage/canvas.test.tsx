@@ -104,13 +104,15 @@ describe("Editor Canvas", () => {
         const canvas = wrapper.instance();
 
         // Simulate an image loading asset preview
-        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
+        const image = document.createElement("img");
+        wrapper.find(AssetPreview).props().onLoaded(image);
+        wrapper.find(AssetPreview).props().onDeactivated(image);
         wrapper.update();
 
         expect(wrapper.find(".canvas-enabled").exists()).toBe(true);
         expect(wrapper.state()).toEqual({
             contentSource: expect.any(HTMLImageElement),
-            assetLoadError: false,
+            enabled: true,
             currentAsset: canvas.props.selectedAsset,
         });
     });
@@ -126,7 +128,7 @@ describe("Editor Canvas", () => {
         expect(wrapper.find(".canvas-disabled").exists()).toBe(true);
         expect(wrapper.state()).toEqual({
             contentSource: null,
-            assetLoadError: true,
+            enabled: false,
             currentAsset: canvas.props.selectedAsset,
         });
     });
@@ -142,9 +144,9 @@ describe("Editor Canvas", () => {
 
         mockSelectedRegions([]);
         wrapper.setProps({ selectedAsset: assetMetadata });
-        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
-
-        await MockFactory.flushUi();
+        const img = document.createElement("img");
+        wrapper.find(AssetPreview).props().onLoaded(img);
+        wrapper.find(AssetPreview).props().onDeactivated(img);
 
         expect(wrapper.instance().editor.RM.deleteAllRegions).toBeCalled();
         expect(wrapper.instance().getSelectedRegions()).toEqual([]);
@@ -152,7 +154,9 @@ describe("Editor Canvas", () => {
 
     it("canvas is updated when asset loads", () => {
         const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
+        const img = document.createElement("img");
+        wrapper.find(AssetPreview).props().onLoaded(img);
+        wrapper.find(AssetPreview).props().onDeactivated(img);
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
         expect(wrapper.state().contentSource).toEqual(expect.any(HTMLImageElement));
@@ -185,14 +189,6 @@ describe("Editor Canvas", () => {
         wrapper.find(AssetPreview).props().onDeactivated(document.createElement("img"));
 
         expect(wrapper.instance().editor.addContentSource).toBeCalledWith(expect.any(HTMLImageElement));
-    });
-
-    it("content source is updated on an interval", () => {
-        window.setInterval = jest.fn();
-
-        const wrapper = createComponent();
-        wrapper.find(AssetPreview).props().onActivated(document.createElement("img"));
-        expect(window.setInterval).toBeCalled();
     });
 
     it("onSelectionEnd adds region to asset and selects it", () => {
@@ -255,7 +251,7 @@ describe("Editor Canvas", () => {
         });
     });
 
-    it("canvas updates regions when a new asset is loaded", async () => {
+    it("canvas updates regions when a new asset is loaded", () => {
         const wrapper = createComponent();
 
         const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
@@ -266,15 +262,34 @@ describe("Editor Canvas", () => {
         (wrapper.instance().editor.RM.addRegion as any).mockClear();
 
         wrapper.setProps({ selectedAsset: assetMetadata });
-        wrapper.find(AssetPreview).props().onLoaded(document.createElement("img"));
-
-        await MockFactory.flushUi();
+        const img = document.createElement("img");
+        wrapper.find(AssetPreview).props().onLoaded(img);
+        wrapper.find(AssetPreview).props().onActivated(img);
+        wrapper.find(AssetPreview).props().onDeactivated(img);
 
         const canvasEditor = wrapper.instance().editor;
 
         expect(canvasEditor.RM.addRegion).toBeCalledTimes(assetMetadata.regions.length);
-        expect(canvasEditor.AS.disable).toBeCalled();
         expect(canvasEditor.AS.enable).toBeCalled();
+    });
+
+    it("canvas is disabled while new asset is loading", () => {
+        const wrapper = createComponent();
+
+        const assetMetadata = MockFactory.createTestAssetMetadata(MockFactory.createTestAsset("new-asset"));
+
+        wrapper.setProps({ selectedAsset: assetMetadata });
+        wrapper.setState({ enabled: true });
+
+        const img = document.createElement("img");
+        wrapper.find(AssetPreview).props().onLoaded(img);
+        wrapper.find(AssetPreview).props().onActivated(img);
+
+        const canvasEditor = wrapper.instance().editor;
+
+        expect(canvasEditor.RM.deleteAllRegions).toBeCalled();
+        expect(canvasEditor.AS.disable).toBeCalled();
+        expect(canvasEditor.AS.setSelectionMode).toBeCalledWith(SelectionMode.NONE);
     });
 
     it("onRegionMove edits region info in asset", () => {

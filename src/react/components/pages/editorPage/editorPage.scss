@@ -15,6 +15,10 @@
     &-nav {
       width: 100%;
 
+      .asset-list {
+        user-select: none;
+      }
+
       .asset-list:focus {
         outline: none;
       }
@@ -55,11 +59,13 @@
       background-color: #1e2024 !important;
 
       &-video {
-        height: calc(100% - 3em) !important;
+        position: static;
+        width: auto;
+        height: calc(100% - 3em);
       }
 
       &-control-bar {
-        display: static !important;
+        position: static;
       }
     }
   }
@@ -198,11 +204,12 @@
   position: absolute;
 
   &.canvas-enabled {
+    visibility: visible;
     z-index: 1;
   }
 
   &.canvas-disabled {
-    display: none;
+    visibility: hidden;
     z-index: 0;
   }
 }

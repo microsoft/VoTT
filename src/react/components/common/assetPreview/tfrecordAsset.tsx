@@ -66,10 +66,10 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
             this.props.onLoaded(this.image.current);
         }
         if (this.props.onActivated) {
-            setImmediate(() => this.props.onActivated(this.image.current));
+            this.props.onActivated(this.image.current);
         }
         if (this.props.onDeactivated) {
-            setImmediate(() => this.props.onDeactivated(this.image.current));
+            this.props.onDeactivated(this.image.current);
         }
     }
 

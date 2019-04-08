@@ -1,20 +1,26 @@
 .inline-block {
-    display: inline-block;
+  display: inline-block;
+}
+
+@media (min-width: 1280px) {
+  form {
+    max-width: 1165px;
+  }
 }
 
 .form-row {
-    align-items: center;
-    margin: 0;
+  align-items: center;
+  margin: 0;
 
-    .object-wrapper {
-        display: flex;
-        flex-direction: row;
-        flex-grow: 1;
-        margin-bottom: 0;
-    }
+  .object-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    margin-bottom: 0;
+  }
 
-    .form-group {
-        margin-right: 1em;
-        flex-grow: 1;
-    }
+  .form-group {
+    margin-right: 1em;
+    flex-grow: 1;
+  }
 }

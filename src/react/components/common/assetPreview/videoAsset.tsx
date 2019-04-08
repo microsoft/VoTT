@@ -199,9 +199,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * @param seekTime - Time (in seconds) in the video to seek to
      */
     private seekToTime = (seekTime: number) => {
-        if (seekTime >= 0) {
+        const playerState = this.getVideoPlayerState();
+
+        if (seekTime >= 0 && playerState.currentTime !== seekTime) {
             // Before seeking, pause the video
-            if (!this.getVideoPlayerState().paused) {
+            if (!playerState.paused) {
                 this.videoPlayer.current.pause();
             }
             this.videoPlayer.current.seek(seekTime);
@@ -220,7 +222,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         } else if (state.paused && (state.currentTime !== prev.currentTime || state.seeking !== prev.seeking)) {
             // Video is paused, make sure we are on a key frame, and if we are not, seek to that
             // before raising the child selected event
-            if (!this.ensureSeekIsOnValidKeyframe()) {
+            if (this.isValidKeyFrame()) {
                 this.raiseChildAssetSelected(state);
                 this.raiseDeactivated();
             }
@@ -254,7 +256,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             const rootAsset = this.props.asset.parent || this.props.asset;
             const childPath = `${rootAsset.path}#t=${state.currentTime}`;
             const childAsset = AssetService.createAssetFromFilePath(childPath);
-            childAsset.state = AssetState.Visited;
+            childAsset.state = AssetState.NotVisited;
             childAsset.type = AssetType.VideoFrame;
             childAsset.parent = rootAsset;
             childAsset.timestamp = state.currentTime;
@@ -287,7 +289,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
      * position is
      * @returns true if moved to a new position; false otherwise
      */
-    private ensureSeekIsOnValidKeyframe = (): boolean => {
+    private isValidKeyFrame = (): boolean => {
         if (!this.props.additionalSettings) {
             return false;
         }
@@ -298,11 +300,12 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         // Calculate the nearest key frame
         const numberKeyFrames = Math.round(timestamp / keyFrameTime);
         const seekTime = +(numberKeyFrames * keyFrameTime).toFixed(6);
+
         if (seekTime !== timestamp) {
             this.seekToTime(seekTime);
         }
 
-        return seekTime !== timestamp;
+        return seekTime === timestamp;
     }
 
     /**
@@ -317,11 +320,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
 
         const assetTimelineTagLines = this.renderTimeline(childAssets, videoDuration);
-        const timelineSelector = ".editor-page-content-body .video-react-progress-control .video-timeline-root";
+        const timelineSelector = ".editor-page-content-main-body .video-react-progress-control .video-timeline-root";
         this.timelineElement = document.querySelector(timelineSelector);
 
         if (!this.timelineElement) {
-            const progressControlSelector = ".editor-page-content-body .video-react-progress-control";
+            const progressControlSelector = ".editor-page-content-main-body .video-react-progress-control";
             const progressHolderElement = document.querySelector(progressControlSelector);
 
             // If we found an element to hold the tags, add them to it
