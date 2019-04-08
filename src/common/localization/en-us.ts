@@ -256,6 +256,13 @@ export const english: IAppStrings = {
                 confirmation: "Are you sure you want to remove all regions?",
             },
         },
+        messages: {
+            enforceTaggedRegions: {
+                title: "Invalid region(s) detected",
+                // tslint:disable-next-line:max-line-length
+                description: "1 or more regions have not been tagged.  Please tag all regions before continuing to next asset.",
+            },
+        },
     },
     export: {
         title: "Export",

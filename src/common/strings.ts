@@ -257,6 +257,12 @@ export interface IAppStrings {
                 title: string;
                 confirmation: string;
             },
+        },
+        messages: {
+            enforceTaggedRegions: {
+                title: string,
+                description: string,
+            },
         }
     };
     export: {

@@ -234,9 +234,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     </div>
                 </SplitPane>
                 <Alert show={this.state.showInvalidRegionWarning}
-                    title="Invalid region(s) detected"
+                    title={strings.editorPage.messages.enforceTaggedRegions.title}
                     // tslint:disable-next-line:max-line-length
-                    message="1 or more regions have not been tagged.  Please tag all regions before continuing to next asset."
+                    message={strings.editorPage.messages.enforceTaggedRegions.description}
                     closeButtonColor="info"
                     onClose={() => this.setState({ showInvalidRegionWarning: false })} />
             </div>

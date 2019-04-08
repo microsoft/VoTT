@@ -257,6 +257,13 @@ export const spanish: IAppStrings = {
                 confirmation: "¿Está seguro que quiere borrar todas las regiones?",
             },
         },
+        messages: {
+            enforceTaggedRegions: {
+                title: "Las regiones no válidas detectadas",
+                // tslint:disable-next-line:max-line-length
+                description: "1 o más regiones no se han etiquetado.  Por favor, etiquete todas las regiones antes de continuar con el siguiente activo.",
+            },
+        },
     },
     export: {
         title: "Exportar",
