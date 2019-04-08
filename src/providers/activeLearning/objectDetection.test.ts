@@ -1,12 +1,12 @@
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
-import { ElectronProxyHandler } from "./electronProxyHandler";
+import { ObjectDetection, DetectedObject } from "./objectDetection";
 import * as tf from "@tensorflow/tfjs";
 // tslint:disable-next-line:no-var-requires
 const modelJson = require("../../../cocoSSDModel/model.json");
 
-describe("Load default model from filesystem with TF io.IOHandler", () => {
-    it("Check file system proxy is correctly called", async () => {
+describe("Load an Object Detection model", () => {
+    it("Load from file system using proxy", async () => {
         const storageProviderMock = LocalFileSystemProxy as jest.Mock<LocalFileSystemProxy>;
         storageProviderMock.mockClear();
 
@@ -18,9 +18,10 @@ describe("Load default model from filesystem with TF io.IOHandler", () => {
             return [];
         });
 
-        const handler = new ElectronProxyHandler("folder");
+        const model = new ObjectDetection();
+
         try {
-            const model = await tf.loadGraphModel(handler);
+            await model.load("path");
         } catch (_) {
             // fully loading TF model fails has it has to load also weights
         }
@@ -29,5 +30,8 @@ describe("Load default model from filesystem with TF io.IOHandler", () => {
 
         // Coco SSD Lite default embedded model has 5 weights matrix
         expect(LocalFileSystemProxy.prototype.readBinary).toBeCalledTimes(5);
+
+        // Modal not properly loaded as readBinary mock is not really loading the weights
+        expect(model.loaded).toBeFalsy();
     });
 });
