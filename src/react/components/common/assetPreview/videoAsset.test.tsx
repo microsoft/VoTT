@@ -112,7 +112,7 @@ describe("Video Asset Component", () => {
         const currentAsset = childAssets[0];
         const expectedAsset = {
             ...childAssets[1],
-            state: AssetState.Visited,
+            state: AssetState.NotVisited,
         };
 
         videoPlayerMock.prototype.getState = jest.fn(() => {
@@ -144,7 +144,7 @@ describe("Video Asset Component", () => {
         const currentAsset = childAssets[4];
         const expectedAsset = {
             ...childAssets[3],
-            state: AssetState.Visited,
+            state: AssetState.NotVisited,
         };
 
         videoPlayerMock.prototype.getState = jest.fn(() => {
