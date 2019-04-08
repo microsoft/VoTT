@@ -161,8 +161,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         this.tagEditorModal.current.open(tag);
     }
 
-    private onTagModalOk(oldTag: ITag, newTag: ITag) {
-        this.tagsInput.current.updateTag(oldTag, newTag);
+    private onTagModalOk(tag: ITag, newTag: ITag) {
+        this.tagsInput.current.updateTag(tag, newTag);
         this.tagEditorModal.current.close();
     }
 

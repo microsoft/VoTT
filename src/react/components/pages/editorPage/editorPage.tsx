@@ -221,6 +221,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onLockedTagsChange={this.onLockedTagsChanged}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
+                                onTagRenamed={this.onTagRenamed}
+                                onTagDeleted={this.onTagDeleted}
                             />
                         </div>
                     </div>
@@ -409,6 +411,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.canvas.current.updateCanvasToolsRegions();
             }
         });
+    }
+
+    private onTagDeleted = async (tag: string) => {
+        await this.props.actions.deleteTag(this.props.project, tag);
+    }
+
+    private onTagRenamed = async (tag: string, newTag: string) => {
+        await this.props.actions.updateTag(this.props.project, tag, newTag);
     }
 
     private onLockedTagsChanged = (lockedTags: string[]) => {

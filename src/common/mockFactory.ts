@@ -796,6 +796,8 @@ export default class MockFactory {
             exportProject: jest.fn((project: IProject) => Promise.resolve()),
             loadAssetMetadata: jest.fn((project: IProject, asset: IAsset) => Promise.resolve()),
             saveAssetMetadata: jest.fn((project: IProject, assetMetadata: IAssetMetadata) => Promise.resolve()),
+            deleteTag: jest.fn((project: IProject, tag: string) => Promise.resolve()),
+            updateTag: jest.fn((project: IProject, tag: string, newTag: string) => Promise.resolve()),
         };
     }
 

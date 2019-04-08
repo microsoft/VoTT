@@ -89,8 +89,8 @@ export default class EditorFooter extends React.Component<IEditorFooterProps, IE
         });
     }
 
-    private onTagModalOk = (oldTag: ITag, newTag: ITag) => {
-        this.tagsInput.current.updateTag(oldTag, newTag);
+    private onTagModalOk = (tag: ITag, newTag: ITag) => {
+        this.tagsInput.current.updateTag(tag, newTag);
         this.tagEditorModal.current.close();
     }
 

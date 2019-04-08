@@ -31,7 +31,7 @@ export interface ITagInputItemProps {
     /** Function to call upon clicking item */
     onClick: (tag: ITag, props: ITagClickProps) => void;
     /** Apply updates to tag */
-    onChange: (oldTag: ITag, newTag: ITag) => void;
+    onChange: (tag: ITag, newTag: ITag) => void;
 }
 
 export interface ITagInputItemState {

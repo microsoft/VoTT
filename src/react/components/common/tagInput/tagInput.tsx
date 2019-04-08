@@ -31,7 +31,7 @@ export interface ITagInputProps {
     /** Function to call on clicking individual tag while holding CTRL key */
     onCtrlTagClick?: (tag: ITag) => void;
     /** Function to call when tag is renamed */
-    onTagRenamed?: (oldTag: string, newTag: string) => void;
+    onTagRenamed?: (tag: string, newTag: string) => void;
     /** Function to call when tag is deleted */
     onTagDeleted?: (tag: string) => void;
     /** Always show tag input box */
@@ -201,23 +201,23 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }, () => this.props.onChange(tags));
     }
 
-    private updateTag = (oldTag: ITag, newTag: ITag) => {
-        if (oldTag === newTag) {
+    private updateTag = (tag: ITag, newTag: ITag) => {
+        if (tag === newTag) {
             return;
         }
         if (!newTag.name.length) {
             toast.warn(strings.tags.warnings.emptyName);
             return;
         }
-        if (newTag.name !== oldTag.name && this.state.tags.some((t) => t.name === newTag.name)) {
+        if (newTag.name !== tag.name && this.state.tags.some((t) => t.name === newTag.name)) {
             toast.warn(strings.tags.warnings.existingName);
             return;
         }
-        if (oldTag.name !== newTag.name && this.props.onTagRenamed) {
-            this.props.onTagRenamed(oldTag.name, newTag.name);
+        if (tag.name !== newTag.name && this.props.onTagRenamed) {
+            this.props.onTagRenamed(tag.name, newTag.name);
         }
         const tags = this.state.tags.map((t) => {
-            return (t.name === oldTag.name) ? newTag : t;
+            return (t.name === tag.name) ? newTag : t;
         });
         this.setState({
             tags,
