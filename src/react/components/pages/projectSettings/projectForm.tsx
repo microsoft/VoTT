@@ -1,5 +1,5 @@
 import React from "react";
-import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
+import Form, { Widget, FormValidation, ISubmitEvent } from "react-jsonschema-form";
 import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag, IAppSettings } from "../../../../models/applicationState";
@@ -10,6 +10,7 @@ import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ISecurityTokenPickerProps, SecurityTokenPicker } from "../../common/securityTokenPicker/securityTokenPicker";
 import "vott-react/dist/css/tagsInput.css";
 import { IConnectionProviderPickerProps } from "../../common/connectionProviderPicker/connectionProviderPicker";
+import LocalFolderPicker from "../../common/localFolderPicker/localFolderPicker";
 
 // tslint:disable-next-line:no-var-requires
 const formSchema = addLocValues(require("./projectForm.json"));
@@ -50,6 +51,10 @@ export interface IProjectFormState {
  * @description - Form for editing or creating VoTT projects
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
+    private widgets = {
+        localFolderPicker: (LocalFolderPicker as any) as Widget,
+    };
+
     private tagsInput: React.RefObject<TagsInput>;
     private tagEditorModal: React.RefObject<TagEditorModal>;
 
@@ -94,6 +99,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 FieldTemplate={CustomFieldTemplate}
                 validate={this.onFormValidate}
                 fields={this.fields()}
+                widgets={this.widgets}
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
