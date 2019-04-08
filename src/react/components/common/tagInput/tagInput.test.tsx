@@ -21,6 +21,8 @@ describe("Tag Input Component", () => {
             onLockedTagsChange: jest.fn(),
             onTagClick: jest.fn(),
             onCtrlTagClick: jest.fn(),
+            onTagRenamed: jest.fn(),
+            onTagDeleted: jest.fn(),
         };
     }
 
@@ -120,6 +122,19 @@ describe("Tag Input Component", () => {
             expect(wrapper.exists("input.tag-name-editor")).toBe(true);
         });
 
+        it("Tag name can be updated", () => {
+            const tags = MockFactory.createTestTags();
+            const props = createProps(tags);
+            const wrapper = createComponent(props);
+            wrapper.find("div.tag-name-container").first().simulate("click");
+            wrapper.find("div.tag-input-toolbar-item.edit").simulate("click");
+            expect(wrapper.state().editingTag).toEqual(tags[0]);
+            expect(wrapper.exists("input.tag-name-editor")).toBe(true);
+            const newTagName = "New Tag Name";
+            wrapper.find("input.tag-name-editor").simulate("keydown", { key: "Enter", target: { value: newTagName } } );
+            expect(props.onTagRenamed).toBeCalledWith(tags[0].name, newTagName);
+        });
+
         it("Tag can be moved up from toolbar", () => {
             const tags = MockFactory.createTestTags();
             const lastTag = tags[tags.length - 1];
@@ -156,6 +171,7 @@ describe("Tag Input Component", () => {
             const stateTags = wrapper.state().tags;
             expect(stateTags.length).toEqual(tags.length - 1);
             expect(stateTags[0]).not.toEqual(firstTag);
+            expect(props.onTagDeleted).toBeCalledWith(firstTag.name);
         });
     });
 

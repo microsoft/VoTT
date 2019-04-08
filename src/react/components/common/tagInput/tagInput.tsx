@@ -33,7 +33,7 @@ export interface ITagInputProps {
     /** Function to call when tag is renamed */
     onTagRenamed?: (oldTag: string, newTag: string) => void;
     /** Function to call when tag is deleted */
-    onTagDeleted?: (tag: ITag) => void;
+    onTagDeleted?: (tag: string) => void;
     /** Always show tag input box */
     showTagInputBox?: boolean;
     /** Always show tag search box */
@@ -213,6 +213,9 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             toast.warn(strings.tags.warnings.existingName);
             return;
         }
+        if (oldTag.name !== newTag.name && this.props.onTagRenamed) {
+            this.props.onTagRenamed(oldTag.name, newTag.name);
+        }
         const tags = this.state.tags.map((t) => {
             return (t.name === oldTag.name) ? newTag : t;
         });
@@ -378,7 +381,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         this.setState({
             tags,
             selectedTag: this.getNewSelectedTag(tags, index),
-        }, () => this.props.onChange(tags));
+        }, () => {
+            this.props.onChange(tags);
+            if (this.props.onTagDeleted) {
+                this.props.onTagDeleted(tag.name);
+            }
+        });
         if (this.props.lockedTags.find((l) => l === tag.name)) {
             this.props.onLockedTagsChange(
                 this.props.lockedTags.filter((lockedTag) => lockedTag !== tag.name),
