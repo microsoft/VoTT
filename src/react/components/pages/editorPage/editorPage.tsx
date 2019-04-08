@@ -29,6 +29,7 @@ import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
+import ProjectService from "../../../../services/projectService";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -414,11 +415,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onTagDeleted = async (tag: string) => {
-        await this.props.actions.deleteTag(this.props.project, tag);
+        const projectService = new ProjectService();
+        await projectService.deleteTag(this.props.project, tag);
+        
     }
 
     private onTagRenamed = async (tag: string, newTag: string) => {
-        await this.props.actions.updateTag(this.props.project, tag, newTag);
+        const projectService = new ProjectService();
+        await projectService.updateTag(this.props.project, tag, newTag);
     }
 
     private onLockedTagsChanged = (lockedTags: string[]) => {

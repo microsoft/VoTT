@@ -28,8 +28,6 @@ export default interface IProjectActions {
     loadAssets(project: IProject): Promise<IAsset[]>;
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
-    deleteTag(project: IProject, tag: string): Promise<void>;
-    updateTag(project: IProject, tag: string, newTag: string): Promise<void>;
 }
 
 /**
@@ -208,46 +206,6 @@ export function exportProject(project: IProject): (dispatch: Dispatch) => Promis
     };
 }
 
-async function scanTags(project: IProject, tag: string, 
-        transformer: (tags: string[]) => string[]): Promise<IAssetMetadata[]> {
-    const assetService = new AssetService(project);
-    const assetKeys = Object.keys(project.assets);
-    const affectedAssetMetdata: IAssetMetadata[] = [];
-    for (const assetKey of assetKeys) {
-        const asset = project.assets[assetKey];
-        const assetMetadata = await assetService.getAssetMetadata(asset);
-        let foundTag = false;
-        for (const region of assetMetadata.regions) {
-            if (region.tags.find((t) => t === tag)) {
-                debugger;
-                foundTag = true;
-                region.tags = transformer(region.tags);
-            }
-        }
-        if (foundTag) {
-            assetService.save(assetMetadata);
-            affectedAssetMetdata.push(assetMetadata);
-        }
-    }
-    return affectedAssetMetdata;
-}
-
-export function deleteTag(project: IProject, tag: string): (dispatch: Dispatch) => Promise<void> {
-    return async (dispatch: Dispatch) => {
-        const affectedAssetMetadata = await scanTags(
-            project, tag, (tags) => tags.filter((t) => t !== tag));
-        dispatch(deleteTagAction(affectedAssetMetadata));
-    }
-}
-
-export function updateTag(project: IProject, tag: string, newTag: string): (dispatch: Dispatch) => Promise<void> {
-    return async (dispatch: Dispatch) => {
-        const affectedAssetMetadata = await scanTags(
-            project, tag, (tags) => tags.map((t) => (t === tag) ? newTag : t));
-        dispatch(updateTagAction(affectedAssetMetadata));
-    }
-}
-
 /**
  * Load project action type
  */
@@ -305,20 +263,6 @@ export interface IExportProjectAction extends IPayloadAction<string, IProject> {
 }
 
 /**
- * Delete tag action type
- */
-export interface IDeleteTagAction extends IPayloadAction<string, IAssetMetadata[]> {
-    type: ActionTypes.DELETE_TAG_SUCCESS;
-}
-
-/**
- * Update tag action type
- */
-export interface IUpdateTagAction extends IPayloadAction<string, IAssetMetadata[]> {
-    type: ActionTypes.UPDATE_TAG_SUCCESS;
-}
-
-/**
  * Instance of Load Project action
  */
 export const loadProjectAction = createPayloadAction<ILoadProjectAction>(ActionTypes.LOAD_PROJECT_SUCCESS);
@@ -354,13 +298,3 @@ export const saveAssetMetadataAction =
  */
 export const exportProjectAction =
     createPayloadAction<IExportProjectAction>(ActionTypes.EXPORT_PROJECT_SUCCESS);
-/**
- * Instance of the Delete Tag action
- */
-export const deleteTagAction =
-    createPayloadAction<IDeleteTagAction>(ActionTypes.DELETE_TAG_SUCCESS);
-/**
- * Instance of the Update Tag action
- */
-export const updateTagAction =
-    createPayloadAction<IUpdateTagAction>(ActionTypes.UPDATE_TAG_SUCCESS);

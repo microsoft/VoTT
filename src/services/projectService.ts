@@ -1,12 +1,13 @@
 import _ from "lodash";
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, ISecurityToken, AppError, ErrorCode, AssetState } from "../models/applicationState";
+import { IProject, ISecurityToken, AppError, ErrorCode, AssetState, IAssetMetadata } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { decryptProject, encryptProject } from "../common/utils";
 import packageJson from "../../package.json";
+import { AssetService } from "./assetService";
 
 /**
  * Functions required for a project service
@@ -98,6 +99,35 @@ export default class ProjectService implements IProjectService {
             JSON.stringify(project.targetConnection.providerOptions),
         );
         return (duplicateProjects !== undefined);
+    }
+
+    public async deleteTag(project: IProject, tag: string): Promise<void> {
+        await this.scanProjectTags(project, tag, (tags) => tags.filter((t) => t !== tag));
+    }
+
+    public async updateTag(project: IProject, tag: string, newTag: string): Promise<void> {
+        await this.scanProjectTags(project, tag, (tags) => tags.map((t) => (t === tag) ? newTag : t));
+    }
+
+    private async scanProjectTags(
+            project: IProject, tag: string, transformer: (tags: string[]) => string[]) {
+        const assetService = new AssetService(project);
+        const assetKeys = Object.keys(project.assets);
+        for (const assetKey of assetKeys) {
+            const asset = project.assets[assetKey];
+            const assetMetadata = await assetService.getAssetMetadata(asset);
+            let foundTag = false;
+            for (const region of assetMetadata.regions) {
+                if (region.tags.find((t) => t === tag)) {
+                    debugger;
+                    foundTag = true;
+                    region.tags = transformer(region.tags);
+                }
+            }
+            if (foundTag) {
+                assetService.save(assetMetadata);
+            }
+        }
     }
 
     private async saveExportSettings(project: IProject): Promise<void> {
