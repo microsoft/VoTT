@@ -24,7 +24,6 @@
         "dotenv": "^7.0.0",
         "google-protobuf": "^3.6.1",
         "lodash": "^4.17.11",
-        "markdown-toc": "^1.2.0",
         "md5.js": "^1.3.5",
         "node-int64": "^0.4.0",
         "rc-align": "^2.4.5",
