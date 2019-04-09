@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { AssetState, IAsset, IAssetMetadata,
-    IProject, IRegion, ITag, IPoint } from "../../../../models/applicationState";
+    IProject, IRegion, ITag, IPoint, AssetType } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { strings, interpolate } from "../../../../common/strings";
 import {
@@ -208,7 +208,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                         getLabel={(d) => d.name}
                         getSize={(d) => d.size}
                         getColor={(d) => d.clr}
-                        width={250}
+                        width={200}
                         padAngle={() => 0.05}
                         hideRootNode={true}
                     >
@@ -223,7 +223,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     </Sunburst>
                     <DiscreteColorLegend
                         items={legend}
-                        style={{fontSize: 12}}/>
+                        style={{fontSize: 15}}/>
                 </div>
                 <div className="my-3">
                     <h4>{strings.projectMetrics.tagsSectionTitle}</h4>
@@ -327,14 +327,9 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
      */
     private getSourceAssetCount = () => {
         const assets = this.state.projectAssetsMetadata.map((e) => e.asset.name);
+        const projectAssetSet = new Set(this.state.sourceAssets.map((e) => e.name).concat(assets));
 
-        const sourceAssetNames = this.state.sourceAssets.map((e) => e.name);
-        for (const sourceAssetName of sourceAssetNames) {
-            if (assets.indexOf(sourceAssetName) < 0) {
-                assets.push(sourceAssetName);
-            }
-        }
-        return assets.length;
+        return projectAssetSet.size;
     }
 
     /**
