@@ -8,7 +8,6 @@
 [Current Complexity Analysis Report](https://vottv2.z5.web.core.windows.net/)
 
 **NOTE: this is a Preview release of VoTT. Features may be incomplete or behave incorrectly (bugs! 🐞). [Feedback is appreciated!](https://github.com/Microsoft/VoTT/issues)**
-
 ----------
 
 An open source annotation and labeling tool for image and video assets.
@@ -41,11 +40,15 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
   * [Creating Connections](#creating-connections)
   * [Creating a New Project](#creating-a-new-project)
     * [Project Settings](#project-settings)
-      * [Security Tokens](#security-tokens)
+    * [Security Tokens](#security-tokens)
   * [Labeling an Image](#labeling-an-image)
   * [Labeling a Video](#labeling-a-video)
   * [Exporting Labels](#exporting-labels)
   * [Keyboard Shortcuts](#keyboard-shortcuts)
+    * [Tag Shortcuts](#tag-shortcuts)
+    * [Tag Ordering](#tag-ordering)
+    * [Tag Locking](#tag-locking)
+    * [Editor Shortcuts](#editor-shortcuts)
 * [Collaborators](#collaborators)
 * [Contributing to VoTT](#contributing-to-vott)
 
@@ -192,6 +195,8 @@ Click on the `Export` icon in the left hand navigation. Select the appropriate e
 
 ### Keyboard Shortcuts
 
+#### Tag Shortcuts
+
 VoTT allows a number of keyboard shortcuts to make it easier to keep one hand on the mouse while tagging. It allows most common shortcuts:
 
 * Ctrl+C - copy
@@ -201,7 +206,17 @@ VoTT allows a number of keyboard shortcuts to make it easier to keep one hand on
 * Ctrl+Z - undo
 * Ctrl+Shift+Z - redo
 
-The editor page assigns hotkeys of 1 through 0 to the first ten tags. These can be reordered by dragging tags in the footer. One can also lock a tag by combining `Ctrl` and the tag hotkey, ie. `Ctrl+2` would lock tag #2.
+#### Tag Ordering
+
+The editor page assigns hotkeys of 1 through 0 to the first ten tags. These can be reordered by using the up/down arrow icons in in the tag editor pane.
+
+![alt text](docs/images/reorder-tag.png "Reorder Tags")
+
+#### Tag Locking
+
+One can also lock a tag by combining `Ctrl` and the tag hotkey, ie. `Ctrl+2` would lock tag #2.
+
+#### Editor Shortcuts
 
 In addition, the editor page has some special shortcuts to select tagging tools:
 
@@ -223,6 +238,8 @@ When the video playback bar is present, it allows the following shortcuts to sel
 ## Collaborators
 
 VoTT was originally developed by the [Commercial Software Engineering (CSE) group at Microsoft](https://www.microsoft.com/developerblog/) in Israel.
+
+V2 is developed by the CSE group at Microsoft in Redmond, Washington.
 
 ## Contributing to VoTT
 
