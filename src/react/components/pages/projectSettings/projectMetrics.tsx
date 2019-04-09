@@ -129,22 +129,20 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
             title: "asset-count",
             children: [
                 {
-                    title: "Visited",
-                    name: visitedAssetCount,
+                    title: interpolate(strings.projectMetrics.visitedAssets, { count: visitedAssetCount }),
                     children: [
-                        { title: "Tagged",
+                        { title: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
                             bigness: 1,
                             children: [],
                             clr: "#70c400",
-                            name: taggedAssetCount,
                             size: taggedAssetCount,
                             dontRotateLabel: true,
                         },
                         { bigness: 1,
                             children: [],
                             clr: "#ff8c00",
-                            name: visitedAssetCount - taggedAssetCount,
-                            title: "Not Tagged",
+                            title: interpolate(strings.projectMetrics.nonTaggedAssets,
+                                { count: visitedAssetCount - taggedAssetCount }),
                             size: visitedAssetCount - taggedAssetCount,
                             dontRotateLabel: true,
                         },
@@ -153,8 +151,8 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     dontRotateLabel: true,
                 },
                 {
-                    title: "Not Visited",
-                    name: sourceAssetCount - visitedAssetCount,
+                    title: interpolate(strings.projectMetrics.nonVisitedAssets,
+                                        { count: sourceAssetCount - visitedAssetCount }),
                     bigness: 1,
                     children: [],
                     clr: "#e81123",
@@ -179,10 +177,16 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
         const { hoveredCell } = this.state;
 
-        const legend = [{title: "visited", color: "#89B5E8"},
-                        {title: "not-visited", color: "#EB7B58"},
-                        {title: "tagged", color: "#7DFFA4"},
-                        {title: "not-tagged", color: "#FFDF63"}];
+        const legend = [{title: interpolate(strings.projectMetrics.visitedAssets, { count: visitedAssetCount }),
+                            color: "#4894fe"},
+                        {title: interpolate(strings.projectMetrics.nonVisitedAssets,
+                            { count: sourceAssetCount - visitedAssetCount }),
+                            color: "#e81123"},
+                        {title: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
+                            color: "#70c400"},
+                        {title: interpolate(strings.projectMetrics.nonTaggedAssets,
+                            { count: visitedAssetCount - taggedAssetCount }),
+                            color: "#ff8c00"}];
 
         return (
             <div className="m-3">
@@ -192,30 +196,6 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                         <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong><br />
                 </p>
                 <div className="assetCount">
-                    {/* <RadialChart
-                        className="asset-chart"
-                        showLabels={true}
-                        data={assetChartData}
-                        width={300}
-                        height={300} /> */}
-                    {/* <XYPlot
-                        xDomain={[-3, 3]}
-                        yDomain={[-3, 3]}
-                        width={300}
-                        height={300}
-                    >
-                        <ArcSeries
-                            animation={{
-                                damping: 9,
-                                stiffness: 300,
-                            }}
-                            showLabels={true}
-                            radiusDomain={[0, 3]}
-                            data={myData}
-                            colorType={"category"}
-                            colorRange={colors}
-                        />
-                    </XYPlot> */}
                     <Sunburst
                         data={DATA}
                         style={{ stroke: "#fff", textShawdow: "2px 2px #ff0000"}}
@@ -236,13 +216,14 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                             <Hint value={this.buildValue(hoveredCell)}>
                                 <div style={this.tipStyle}>
                                     <div style={{ ...this.boxStyle, background: hoveredCell.clr }} />
-                                    {hoveredCell.title + ":  " + hoveredCell.name}
+                                    {hoveredCell.title}
                                 </div>
                             </Hint>
                         ) : null}
                     </Sunburst>
                     <DiscreteColorLegend
-                        items={legend}/>
+                        items={legend}
+                        style={{fontSize: 12}}/>
                 </div>
                 <div className="my-3">
                     <h4>{strings.projectMetrics.tagsSectionTitle}</h4>
