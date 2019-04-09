@@ -25,21 +25,20 @@ We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests
 ## Pull Requests
 
 1. Find an issue to work on, or create a new one
-2. Fork repo, make sure you have latest changes from `v2`
-3. Create branch following naming convention: `git checkout -b issue-<###>-<short-description>`.
-4. Write code
-5. Add unit tests
-6. Verify linting and unit tests by running `npm test`
-7. Update docs if needed
-8. Rebase on `v2` and resolve conflicts
-9. Commit your changes using a descriptive commit message that follows [our commit message conventions](#commit-message-guidelines). Adherence to these conventions is necessary because the [change log](CHANGELOG.md) is automatically generated from these messages.
-10. Submit PR to `v2` branch
+1. Fork repo, make sure you have latest changes from `v2`
+1. Create branch following naming convention: `git checkout -b issue-<###>-<short-description>`.
+1. Write code
+1. Add unit tests
+1. Verify linting and unit tests by running `npm test`
+1. Update docs if needed
+1. Rebase on `v2` and resolve conflicts
+1. Commit your changes using a descriptive commit message that follows [our commit message conventions](#commit-message-guidelines). Adherence to these conventions is necessary because the [change log](CHANGELOG.md) is automatically generated from these messages.
+1.  Submit PR to `v2` branch
 
 Try to keep PRs small to decrease the time required to review and merge.
 
 ## Commit Message Guidelines
 We have adopted standards similar to [Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit) for how our git commit messages should be formatted. We believe that this leads to more readable messages that are easier to follow when looking through the project history and in addition, are used to generate the [VoTT change log](CHANGELOG.md).
-
 
 ### Commit Message Format
 Each commit message consists of a **header**, a **body** and a **footer**.

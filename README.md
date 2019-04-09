@@ -7,7 +7,7 @@
 
 [Current Complexity Analysis Report](https://vottv2.z5.web.core.windows.net/)
 
-## **NOTE**: this is a Preview release of VoTT. Features may be incomplete or behave incorrectly (bugs! 🐞). [Feedback is appreciated!](https://github.com/Microsoft/VoTT/issues)
+**NOTE: this is a Preview release of VoTT. Features may be incomplete or behave incorrectly (bugs! 🐞). [Feedback is appreciated!](https://github.com/Microsoft/VoTT/issues)**
 
 ----------
 
@@ -27,16 +27,16 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
 
 ## Table of Contents
 <!-- generated using: https://www.npmjs.com/package/markdown-toc-->
-<!-- command: `markdown-toc -i README.md`-->
+<!-- command: `markdown-toc -i README.md --bullets "*"`-->
 
 <!-- toc -->
+
 * [Getting Started](#getting-started)
-  * [Running VoTT](#running-vott)
-    * [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
-    * [Build and run from source](#build-and-run-from-source)
+  * [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
+  * [Build and run from source](#build-and-run-from-source)
 * [V1 & V2](#v1--v2)
   * [Where is V1?](#where-is-v1)
-  * [Can I use my V1 projects in V2?](#converting-to-v2)
+  * [Can I use my V1 project in V2?](#can-i-use-my-v1-project-in-v2)
 * [Using VoTT](#using-vott)
   * [Creating Connections](#creating-connections)
   * [Creating a New Project](#creating-a-new-project)
@@ -45,6 +45,7 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
   * [Labeling an Image](#labeling-an-image)
   * [Labeling a Video](#labeling-a-video)
   * [Exporting Labels](#exporting-labels)
+  * [Keyboard Shortcuts](#keyboard-shortcuts)
 * [Collaborators](#collaborators)
 * [Contributing to VoTT](#contributing-to-vott)
 
@@ -97,17 +98,17 @@ Yes you can! There is support for converting a V1 project into V2 format, but on
 
 ### Creating Connections
 
-VoTT is a 'Bring Your Own Data' (BYOD) application. In VoTT, connections are used to configure and manage source (assets to labeled) and target (where labels should be exported to) data sources.
+VoTT is a 'Bring Your Own Data' (BYOD) application. In VoTT, connections are use to configure and manage source (assets to labeled) and target (where labels should be exported to) data sources.
 
 Connections can be setup and shared across projects. Connections have been designed using an extensible provider model -- new source/target providers can easily be added.
 
-Currently, VOTT supports:
+Currently, VoTT supports:
 
-* Azure Blob Storage
+* [Azure Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction)
 * [Bing Image Search](https://azure.microsoft.com/en-us/services/cognitive-services/bing-image-search-api/)
 * Local File System
 
-To create a new connection, click the `New Connection` icon, in the left hand navigation bar:
+To create a new connection, click the `New Connections` icon, in the left hand navigation bar:
 
 ![alt text](docs/images/new-connection.png "New Connection")
 
@@ -128,7 +129,7 @@ As mentioned above, all projects require a source and target connection:
 
 Project settings can be modified after a project has been created, by clicking on the `Project Setting` icon in the left hand navigation bar.
 
-##### Security Tokens
+#### Security Tokens
 
 Some project settings can include sensitive values, such as API keys or other shared secrets. Each project will generate a security token that can be used to encrypt/decrypt sensitive project settings.
 
@@ -142,10 +143,11 @@ The token name and key **must** match in order for sensitive values to be succes
 
 ### Labeling an Image
 
-When a project is created or opened, the main tag editor window opens. The tag editor consists of two main parts:
+When a project is created or opened, the main tag editor window opens. The tag editor consists of three main parts:
 
-* A preview pane that contains a scrollable list of images and videos, from the source target
+* A resizeable preview pane that contains a scrollable list of images and videos, from the source target
 * The main editor tool that allows tags to be applied to drawn regions
+* The tags editor pane that allows user to modify, lock, reorder, and delete tags
 
 Selecting an image or video on the left will load that image in the main tag editor. Regions can then be drawn on the loaded asset and a tag can be applied.
 
@@ -178,7 +180,13 @@ Once assets have been labeled, they can be exported into a variety of formats:
 * TensorFlow (Pascal VOC and TFRecords)
 * VoTT (generic JSON schema)
 
-In addition, users may choose to export all assets, only visited assets, or only tagged assets.  Click on the 'Export' icon in the left hand navigation. Select the appropriate export provider and which assets to export.
+In addition, users may choose to export
+
+* all assets
+* only visited assets
+* only tagged assets
+
+Click on the `Export` icon in the left hand navigation. Select the appropriate export provider and which assets to export.
 
 ![alt text](docs/images/export-labels.png "Export Labels")
 
