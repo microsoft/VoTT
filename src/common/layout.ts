@@ -55,12 +55,12 @@ export function createContentBoundingBox(contentSource: ContentSource): IBoundin
  */
 export function createLandscapeBoundingBox(contentSource: ContentSource, aspectRatio: number): IBoundingBox {
     Guard.null(contentSource);
-    Guard.expression(aspectRatio, (value) => value > 0);
 
     const size = {
         width: contentSource.offsetWidth,
         height: contentSource.offsetWidth / aspectRatio,
     };
+
     return {
         width: size.width,
         height: size.height,
@@ -77,12 +77,12 @@ export function createLandscapeBoundingBox(contentSource: ContentSource, aspectR
  */
 export function createPortraitBoundingBox(contentSource: ContentSource, aspectRatio: number): IBoundingBox {
     Guard.null(contentSource);
-    Guard.expression(aspectRatio, (value) => value > 0);
 
     const size = {
         width: contentSource.offsetHeight * aspectRatio,
         height: contentSource.offsetHeight,
     };
+
     return {
         width: size.width,
         height: size.height,
