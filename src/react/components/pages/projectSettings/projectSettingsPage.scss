@@ -40,6 +40,11 @@
   .asset-chart {
     font-size: 90%;
 
+    @media (max-width: 1920px) {
+        display: flex;
+        align-items: center;
+    }
+
     .rv-sunburst {
       margin: 0 auto;
     }

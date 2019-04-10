@@ -57,6 +57,11 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         });
 
         await this.getAssetsAndMetadata();
+        window.addEventListener("resize", this.refresh);
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener("resize", this.refresh);
     }
 
     public render() {
@@ -80,6 +85,10 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         );
     }
 
+    private refresh = () => {
+        this.forceUpdate();
+    }
+
     private buildValue(hoveredCell) {
         const { radius, angle, angle0 } = hoveredCell;
         const truedAngle = (angle + angle0) / 2;
@@ -93,6 +102,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         const sourceAssetCount = this.getSourceAssetCount();
         const taggedAssetCount = this.getTaggedAssetCount();
         const visitedAssetCount = this.getVisitedAssetsCount();
+        const assetChartSize = window.innerWidth >= 1920 ? 250 : 200;
 
         const assetChartData = {
             animation: true,
@@ -185,12 +195,12 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                             this.setState({ hoveredCell: v.x && v.y ? v : null })
                         }
                         onValueMouseOut={(v) => this.setState({ hoveredCell: null })}
-                        height={250}
+                        height={assetChartSize}
                         margin={{ top: 50, bottom: 50, left: 50, right: 50 }}
                         getLabel={(d) => d.name}
                         getSize={(d) => d.size}
                         getColor={(d) => d.clr}
-                        width={250}
+                        width={assetChartSize}
                         padAngle={() => 0.05}
                         hideRootNode={true}
                     >
