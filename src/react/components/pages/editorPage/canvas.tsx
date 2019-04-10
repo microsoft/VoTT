@@ -4,7 +4,7 @@ import { CanvasTools } from "vott-ct";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
     EditorMode, IAssetMetadata,
-    IProject, IRegion, RegionType, IAsset,
+    IProject, IRegion, RegionType, IBoundingBox, ISize,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
@@ -14,6 +14,7 @@ import Confirm from "../../common/confirm/confirm";
 import { strings } from "../../../../common/strings";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
+import { createContentBoundingBox } from "../../../../common/layout";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -445,7 +446,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private setContentSource = async (contentSource: ContentSource) => {
         try {
-            await this.editor.addContentSource(contentSource);
+            await this.editor.addContentSource(contentSource as any);
         } catch (e) {
             console.warn(e);
         }
@@ -461,11 +462,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         const canvas = this.canvasZone.current;
         if (canvas) {
-            canvas.style.top = `${contentSource.offsetTop}px`;
-            canvas.style.left = `${contentSource.offsetLeft}px`;
-            canvas.style.width = `${contentSource.offsetWidth}px`;
-            canvas.style.height = `${contentSource.offsetHeight}px`;
-            this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+            const boundingBox = createContentBoundingBox(contentSource);
+            canvas.style.top = `${boundingBox.top}px`;
+            canvas.style.left = `${boundingBox.left}px`;
+            canvas.style.width = `${boundingBox.width}px`;
+            canvas.style.height = `${boundingBox.height}px`;
+            this.editor.resize(boundingBox.width, boundingBox.height);
         }
     }
 
