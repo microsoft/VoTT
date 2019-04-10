@@ -1,7 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { AssetState, IAsset, IAssetMetadata,
-    IProject, IRegion, ITag, IPoint, AssetType } from "../../../../models/applicationState";
+import {
+    AssetState, IAsset, IAssetMetadata,
+    IProject, IRegion, ITag, IPoint, AssetType
+} from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { strings, interpolate } from "../../../../common/strings";
 import {
@@ -91,54 +93,24 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         const sourceAssetCount = this.getSourceAssetCount();
         const taggedAssetCount = this.getTaggedAssetCount();
         const visitedAssetCount = this.getVisitedAssetsCount();
-        const nonVistedAssetCount = sourceAssetCount - visitedAssetCount;
 
-        const assetChartData = [
-            {
-                angle: visitedAssetCount,
-                label: interpolate(strings.projectMetrics.visitedAssets, { count: visitedAssetCount }),
-            },
-            {
-                angle: taggedAssetCount,
-                label: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
-            },
-            {
-                angle: nonVistedAssetCount,
-                label: interpolate(strings.projectMetrics.nonVisitedAssets, { count: nonVistedAssetCount }),
-            },
-        ];
-
-        const colors = ["#395ECC", "#C6FF7A", "#FF8161"];
-
-        const myData = [
-            {angle0: 0,
-                angle: visitedAssetCount * 2 * Math.PI / sourceAssetCount,
-                radius: 3, radius0: 2, color: 0, label: "1"},
-            {angle0: 0,
-                angle: taggedAssetCount * 2 * Math.PI / sourceAssetCount,
-                radius: 2, radius0: 1, color: 2, label: "2"},
-            {angle0: 0,
-                angle: -(nonVistedAssetCount * 2 * Math.PI / sourceAssetCount),
-                radius: 1, radius0: 0, color: 1, label: "3"},
-        ];
-        const COLORS = ["red", "green", "blue", "yellow",
-                        "orange", "indego", "violet", "gray",
-                        "white", "black", "teal", "crimson"];
-        const DATA = {
+        const assetChartData = {
             animation: true,
             title: "asset-count",
             children: [
                 {
                     title: interpolate(strings.projectMetrics.visitedAssets, { count: visitedAssetCount }),
                     children: [
-                        { title: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
+                        {
+                            title: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
                             bigness: 1,
                             children: [],
                             clr: "#70c400",
                             size: taggedAssetCount,
                             dontRotateLabel: true,
                         },
-                        { bigness: 1,
+                        {
+                            bigness: 1,
                             children: [],
                             clr: "#ff8c00",
                             title: interpolate(strings.projectMetrics.nonTaggedAssets,
@@ -152,7 +124,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                 },
                 {
                     title: interpolate(strings.projectMetrics.nonVisitedAssets,
-                                        { count: sourceAssetCount - visitedAssetCount }),
+                        { count: sourceAssetCount - visitedAssetCount }),
                     bigness: 1,
                     children: [],
                     clr: "#e81123",
@@ -177,16 +149,26 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
         const { hoveredCell } = this.state;
 
-        const legend = [{title: interpolate(strings.projectMetrics.visitedAssets, { count: visitedAssetCount }),
-                            color: "#4894fe"},
-                        {title: interpolate(strings.projectMetrics.nonVisitedAssets,
-                            { count: sourceAssetCount - visitedAssetCount }),
-                            color: "#e81123"},
-                        {title: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
-                            color: "#70c400"},
-                        {title: interpolate(strings.projectMetrics.nonTaggedAssets,
-                            { count: visitedAssetCount - taggedAssetCount }),
-                            color: "#ff8c00"}];
+        const legend = [
+            {
+                title: interpolate(strings.projectMetrics.visitedAssets,
+                    { count: visitedAssetCount }),
+                color: "#4894fe",
+            },
+            {
+                title: interpolate(strings.projectMetrics.nonVisitedAssets,
+                    { count: sourceAssetCount - visitedAssetCount }),
+                color: "#e81123",
+            },
+            {
+                title: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
+                color: "#70c400",
+            },
+            {
+                title: interpolate(strings.projectMetrics.nonTaggedAssets,
+                    { count: visitedAssetCount - taggedAssetCount }),
+                color: "#ff8c00",
+            }];
 
         return (
             <div className="m-3">
@@ -195,20 +177,20 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     {strings.projectMetrics.totalAssetCount}:
                         <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong><br />
                 </p>
-                <div className="assetCount">
+                <div className="asset-chart">
                     <Sunburst
-                        data={DATA}
-                        style={{ stroke: "#fff", textShawdow: "2px 2px #ff0000"}}
+                        data={assetChartData}
+                        style={{ stroke: "#fff" }}
                         onValueMouseOver={(v) =>
                             this.setState({ hoveredCell: v.x && v.y ? v : null })
                         }
                         onValueMouseOut={(v) => this.setState({ hoveredCell: null })}
-                        height={200}
+                        height={250}
                         margin={{ top: 50, bottom: 50, left: 50, right: 50 }}
                         getLabel={(d) => d.name}
                         getSize={(d) => d.size}
                         getColor={(d) => d.clr}
-                        width={200}
+                        width={250}
                         padAngle={() => 0.05}
                         hideRootNode={true}
                     >
@@ -216,16 +198,14 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                             <Hint value={this.buildValue(hoveredCell)}>
                                 <div style={this.tipStyle}>
                                     <div style={{ ...this.boxStyle, background: hoveredCell.clr }} />
-                                    {hoveredCell.title}
+                                    <span className="px-2">{hoveredCell.title}</span>
                                 </div>
                             </Hint>
                         ) : null}
                     </Sunburst>
-                    <DiscreteColorLegend
-                        items={legend}
-                        style={{fontSize: 15}}/>
+                    <DiscreteColorLegend items={legend} />
                 </div>
-                <div className="my-3">
+                <div className="my-4">
                     <h4>{strings.projectMetrics.tagsSectionTitle}</h4>
                     <p className="my-1">
                         {strings.projectMetrics.totalTagCount}:
