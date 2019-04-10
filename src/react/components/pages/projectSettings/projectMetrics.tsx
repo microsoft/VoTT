@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import {
     AssetState, IAsset, IAssetMetadata,
-    IProject, IRegion, ITag, IPoint, AssetType
+    IProject, IRegion, ITag, IPoint, AssetType,
 } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { strings, interpolate } from "../../../../common/strings";
