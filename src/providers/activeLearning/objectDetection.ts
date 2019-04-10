@@ -89,6 +89,7 @@ export class ObjectDetection {
      * objects. There can be multiple objects of the same class, but at different
      * locations. Defaults to 20.
      */
+     /* istanbul ignore next */
     private async infer(img: tf.Tensor3D|ImageData|HTMLImageElement|HTMLCanvasElement| HTMLVideoElement,
                         maxNumBoxes: number): Promise<DetectedObject[]> {
         const batched = tf.tidy(() => {
@@ -136,6 +137,7 @@ export class ObjectDetection {
         return this.buildDetectedObjects(width, height, boxes, maxScores, indexes, classes);
     }
 
+    /* istanbul ignore next */
     private buildDetectedObjects(
         width: number, height: number, boxes: Float32Array, scores: number[],
         indexes: Float32Array, classes: number[]): DetectedObject[] {
@@ -163,6 +165,7 @@ export class ObjectDetection {
         return objects;
     }
 
+    /* istanbul ignore next */
     private getClass(index: number, indexes: Float32Array, classes: number[]): string {
         if (index < indexes.length && indexes[index] < classes.length) {
             const classId = classes[indexes[index]] - 1;
@@ -173,6 +176,7 @@ export class ObjectDetection {
         return "";
     }
 
+    /* istanbul ignore next */
     private calculateMaxScores(
         scores: Float32Array, numBoxes: number,
         numClasses: number): [number[], number[]] {
