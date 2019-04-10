@@ -8,6 +8,7 @@ import packageJson from "../../package.json";
 import { AssetService } from "./assetService";
 import IProjectActions from "../redux/actions/projectActions";
 import HtmlFileReader from "../common/htmlFileReader";
+import { sep } from "path";
 
 /**
  * Functions required for an import service
@@ -97,7 +98,7 @@ export default class ImportService implements IImportService {
      * @param project - V1 Project Content and File Information
      */
     private async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
-        const parentAsset = AssetService.createAssetFromFilePath(v1Project.file.path);
+        const parentAsset = AssetService.createAssetFromFilePath(v1Project.file.path.replace(".json", ""));
         const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
         parentAsset.size = { height: assetProps.height, width: assetProps.width };
         return parentAsset;
@@ -113,7 +114,7 @@ export default class ImportService implements IImportService {
             name: `${project.file.name.split(".")[0]} Connection`,
             providerType: "localFileSystemProxy",
             providerOptions: {
-                folderPath: project.file.path.replace(/[^\/]*$/, ""),
+                folderPath: project.file.path.replace(/[^(\/|\\)]*$/, ""),
             },
         };
 
@@ -215,8 +216,9 @@ export default class ImportService implements IImportService {
             const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
             const assetState = this.getAssetState(originalProject, frameRegions, frameInt);
             const asset = this.getAsset(parent, pathToUse, timestamp);
-            generatedAssetMetadata.push(await this.getPopulatedAssetMetadata(
-                assetService, asset, assetState, frameRegions, parent));
+            const populated = await this.getPopulatedAssetMetadata(
+                assetService, asset, assetState, frameRegions, parent);
+            generatedAssetMetadata.push(populated);
         }
         return generatedAssetMetadata;
     }
