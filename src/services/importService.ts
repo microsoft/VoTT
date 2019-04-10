@@ -184,16 +184,17 @@ export default class ImportService implements IImportService {
         const originalProject = JSON.parse(v1Project.content as string);
 
         for (const frameName in frameList) {
-            if (frameList.hasOwnProperty(frameName)) {
-                const frameRegions = frameList[frameName];
-                const asset = AssetService
-                    .createAssetFromFilePath(`${v1Project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
-                const assetState = this.getAssetState(originalProject, frameRegions, frameName);
-                generatedAssetMetadata.push(
-                    await this.getPopulatedAssetMetadata(
-                        assetService, asset, assetState, frameRegions, undefined, true),
-                );
+            if (!frameList.hasOwnProperty(frameName)) {
+                continue;
             }
+            const frameRegions = frameList[frameName];
+            const asset = AssetService
+                .createAssetFromFilePath(`${v1Project.file.path.replace(/[^\/]*$/, "")}${frameName}`);
+            const assetState = this.getAssetState(originalProject, frameRegions, frameName);
+            generatedAssetMetadata.push(
+                await this.getPopulatedAssetMetadata(
+                    assetService, asset, assetState, frameRegions, undefined, true),
+            );
         }
         return generatedAssetMetadata;
     }
