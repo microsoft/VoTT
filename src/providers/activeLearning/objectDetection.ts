@@ -156,11 +156,21 @@ export class ObjectDetection {
             bbox[3] = maxY - minY;
             objects.push({
                 bbox: bbox as [number, number, number, number],
-                class: this.jsonClasses[classes[indexes[i]] - 1].displayName,
+                class: this.getClass(i, indexes, classes),
                 score: scores[indexes[i]],
             });
         }
         return objects;
+    }
+
+    private getClass(index: number, indexes: Float32Array, classes: number[]): string {
+        if (index < indexes.length && indexes[index] < classes.length) {
+            const classId = classes[indexes[index]] - 1;
+            const classObject = this.jsonClasses[classId];
+            return classObject ? classObject.displayName : "";
+        }
+
+        return "";
     }
 
     private calculateMaxScores(
