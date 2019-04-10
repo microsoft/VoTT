@@ -2,8 +2,6 @@ import axios, { AxiosResponse } from "axios";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import { ObjectDetection, DetectedObject } from "./objectDetection";
-// import * as tf from "@tensorflow/tfjs";
-// import * as tfc from "@tensorflow/tfjs-core";
 // tslint:disable-next-line:no-var-requires
 const modelJson = require("../../../cocoSSDModel/model.json");
 
@@ -43,13 +41,6 @@ describe("Load an Object Detection model", () => {
     });
 
     it("Load model from http url", async () => {
-        // const tfMock = tf as any;
-        // const origFunc = tf.loadGraphModel;
-
-        // window.fetch = jest.fn().mockImplementation(() => {
-        //     return Promise.resolve(modelJson);
-        // });
-
         window.fetch = jest.fn().mockImplementation((url, o) => {
             if (url === "http://url/model.json") {
                 return Promise.resolve({
@@ -63,20 +54,6 @@ describe("Load an Object Detection model", () => {
                 });
             }
         });
-
-        // const fetchFuncMock = (url, o) => {
-        //     console.log(url, o);
-        //     return JSON.stringify(modelJson);
-        // };
-
-        // tslint:disable-next-line:max-line-length
-        // tfMock.loadGraphModel = jest.fn(async (modelPath: string | tfc.io.IOHandler, options?: tfc.io.LoadOptions): Promise<tf.GraphModel> => {
-        //     try {
-        //         return await origFunc(modelPath, {fetchFunc: fetchFuncMock});
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // });
 
         const model = new ObjectDetection();
 
