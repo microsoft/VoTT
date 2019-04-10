@@ -165,6 +165,9 @@ export interface IAppStrings {
             saveSuccess: string;
             deleteSuccess: string;
         },
+        imageCorsWarning: string;
+        blobCorsWarning: string;
+        azDocLinkText: string;
         providers: {
             azureBlob: {
                 title: string;
@@ -279,6 +282,12 @@ export interface IAppStrings {
             },
             vottJson: {
                 displayName: string,
+                properties: {
+                    includeImages: {
+                        title: string,
+                        description: string,
+                    },
+                },
             },
             azureCV: {
                 displayName: string,

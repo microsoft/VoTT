@@ -21,6 +21,15 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             return null;
         case ActionTypes.LOAD_PROJECT_SUCCESS:
             return { ...action.payload };
+        case ActionTypes.LOAD_ASSET_METADATA_SUCCESS:
+            if (!state) {
+                return state;
+            }
+
+            return {
+                ...state,
+                lastVisitedAssetId: action.payload.asset.id,
+            };
         case ActionTypes.SAVE_ASSET_METADATA_SUCCESS:
             if (!state) {
                 return state;
@@ -32,7 +41,6 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             return {
                 ...state,
                 assets: updatedAssets,
-                lastVisitedAssetId: action.payload.asset.id,
             };
         case ActionTypes.SAVE_CONNECTION_SUCCESS:
             if (!state) {

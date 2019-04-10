@@ -7,6 +7,7 @@ import MockFactory from "../../../../common/mockFactory";
 
 jest.mock("../../../../providers/export/exportProviderFactory");
 import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
+import { IVottJsonExportProviderOptions } from "../../../../providers/export/vottJson";
 
 describe("Export Form Component", () => {
     const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
@@ -85,11 +86,14 @@ describe("Export Form Component", () => {
     });
 
     it("Calls submit handler when form is submitted", (done) => {
+        const jsonExportProviderOptions: IVottJsonExportProviderOptions = {
+            assetState: ExportAssetState.Visited,
+            includeImages: true,
+        };
+
         const defaultExportSettings: IExportFormat = {
             providerType: "vottJson",
-            providerOptions: {
-                assetState: ExportAssetState.Visited,
-            },
+            providerOptions: jsonExportProviderOptions,
         };
 
         const props: IExportFormProps = {

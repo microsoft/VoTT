@@ -163,6 +163,12 @@ export const english: IAppStrings = {
             saveSuccess: "Successfully saved ${connection.name}",
             deleteSuccess: "Successfully deleted ${connection.name}",
         },
+        imageCorsWarning: "Warning: When using VoTT in a Web browser, some assets from Bing Image \
+                          Search may not export correctly due to CORS (Cross Origin Resource Sharing) restrictions.",
+        blobCorsWarning: "Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage \
+                          account, in order to use it as a source or target connection. More information on \
+                          enabling CORS can be found in the {0}",
+        azDocLinkText: "Azure Documentation.",
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
@@ -277,6 +283,12 @@ export const english: IAppStrings = {
             },
             vottJson: {
                 displayName: "VoTT JSON",
+                properties: {
+                    includeImages: {
+                        title: "Include Images",
+                        description: "Whether or not to include binary image assets in target connection",
+                    },
+                },
             },
             azureCV: {
                 displayName: "Azure Custom Vision Service",
