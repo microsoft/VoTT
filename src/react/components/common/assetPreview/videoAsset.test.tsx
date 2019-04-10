@@ -168,7 +168,7 @@ describe("Video Asset Component", () => {
             expect(onChildSelectedHandler).toBeCalledWith(expectedAsset);
         });
 
-        it("blocks moving to next tagged from when navigation is cancelled", () => {
+        it("blocks moving to next tagged frame when navigation is cancelled", () => {
             const currentAsset = childAssets[0];
 
             onBeforeAssetChangedHandler.mockImplementationOnce(() => false);

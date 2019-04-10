@@ -72,7 +72,10 @@ export interface IEditorPageState {
     lockedTags: string[];
     /** Size of the asset thumbnails to display in the side bar */
     thumbnailSize: ISize;
-    /** Whether or not the editor is in a valid state */
+    /**
+     * Whether or not the editor is in a valid state
+     * State is invalid when a region has not been tagged
+     */
     isValid: boolean;
     /** Whether the show invalid region warning alert should display */
     showInvalidRegionWarning: boolean;
