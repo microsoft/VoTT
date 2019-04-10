@@ -5,7 +5,15 @@ import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
 import { TFRecordAsset } from "./tfrecordAsset";
 
-export type ContentSource = HTMLImageElement | HTMLVideoElement;
+export interface IGenericContentSource {
+    width: number;
+    height: number;
+    offsetWidth: number;
+    offsetHeight: number;
+    offsetTop: number;
+    offsetLeft: number;
+}
+export type ContentSource = HTMLImageElement | HTMLVideoElement | IGenericContentSource;
 
 /**
  * AssetPreview component properties
