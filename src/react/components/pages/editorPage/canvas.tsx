@@ -4,7 +4,7 @@ import { CanvasTools } from "vott-ct";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
     EditorMode, IAssetMetadata,
-    IProject, IRegion, RegionType, IAsset,
+    IProject, IRegion, RegionType, IBoundingBox, ISize,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
@@ -461,12 +461,84 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         const canvas = this.canvasZone.current;
         if (canvas) {
-            canvas.style.top = `${contentSource.offsetTop}px`;
-            canvas.style.left = `${contentSource.offsetLeft}px`;
-            canvas.style.width = `${contentSource.offsetWidth}px`;
-            canvas.style.height = `${contentSource.offsetHeight}px`;
-            this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+            const boundingBox = this.getContentPosition(contentSource);
+            canvas.style.top = `${boundingBox.top}px`;
+            canvas.style.left = `${boundingBox.left}px`;
+            canvas.style.width = `${boundingBox.width}px`;
+            canvas.style.height = `${boundingBox.height}px`;
+            this.editor.resize(boundingBox.width, boundingBox.height);
         }
+    }
+
+    private getContentPosition = (contentSource: ContentSource): IBoundingBox => {
+        let aspectRatio: number = null;
+        if (contentSource instanceof HTMLVideoElement) {
+            aspectRatio = contentSource.videoWidth / contentSource.videoHeight;
+        } else if (contentSource instanceof HTMLImageElement) {
+            aspectRatio = contentSource.naturalWidth / contentSource.naturalHeight;
+        }
+
+        let size: ISize = null;
+
+        // Landscape = aspectRatio > 1
+        // Portrait  = aspectRatio < 1
+        if (aspectRatio >= 1) {
+            size = {
+                width: contentSource.offsetWidth,
+                height: contentSource.offsetWidth / aspectRatio,
+            };
+
+            // Render as landscape except for when the calculated height
+            // would be taller than the available area
+            return size.height > contentSource.offsetHeight
+                ? this.getPortraitBoundingBox(aspectRatio, contentSource)
+                : this.getLandscapeBoundingBox(aspectRatio, contentSource);
+        } else {
+            size = {
+                width: contentSource.offsetHeight * aspectRatio,
+                height: contentSource.offsetHeight,
+            };
+
+            // Render as portrait except for when the calculated width
+            // would be wider then the available area
+            return size.width > contentSource.offsetWidth
+                ? this.getLandscapeBoundingBox(aspectRatio, contentSource)
+                : this.getPortraitBoundingBox(aspectRatio, contentSource);
+        }
+    }
+
+    /**
+     * Gets a landscape bounding box for the canvas element based on the content source and aspect ratio
+     * Disregards generated bars from the browser
+     */
+    private getLandscapeBoundingBox = (aspectRatio: number, contentSource: ContentSource): IBoundingBox => {
+        const size = {
+            width: contentSource.offsetWidth,
+            height: contentSource.offsetWidth / aspectRatio,
+        };
+        return {
+            width: size.width,
+            height: size.height,
+            left: contentSource.offsetLeft,
+            top: contentSource.offsetTop + ((contentSource.offsetHeight - size.height) / 2),
+        };
+    }
+
+    /**
+     * Gets a portrait bounding box for the canvas element based on the content source and aspect ratio
+     * Disregards generated bars from the browser
+     */
+    private getPortraitBoundingBox = (aspectRatio: number, contentSource: ContentSource): IBoundingBox => {
+        const size = {
+            width: contentSource.offsetHeight * aspectRatio,
+            height: contentSource.offsetHeight,
+        };
+        return {
+            width: size.width,
+            height: size.height,
+            left: contentSource.offsetLeft + ((contentSource.offsetWidth - size.width) / 2),
+            top: contentSource.offsetTop,
+        };
     }
 
     /**
