@@ -14,6 +14,7 @@ import { strings } from "../../../../common/strings";
 export interface IEditorSideBarProps {
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
+    onBeforeAssetSelected?: () => boolean;
     selectedAsset?: IAsset;
     thumbnailSize?: ISize;
 }
@@ -91,6 +92,12 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     }
 
     private onAssetClicked = (asset: IAsset): void => {
+        if (this.props.onBeforeAssetSelected) {
+            if (!this.props.onBeforeAssetSelected()) {
+                return;
+            }
+        }
+
         this.selectAsset(asset);
         this.props.onAssetSelected(asset);
     }

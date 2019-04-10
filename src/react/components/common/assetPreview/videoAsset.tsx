@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from "react";
+import React, { SyntheticEvent, Fragment } from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 import {
@@ -46,6 +46,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     /** Default properties for the VideoAsset if not defined */
     public static defaultProps: IVideoAssetProps = {
         autoPlay: true,
+        controlsEnabled: true,
         timestamp: null,
         asset: null,
         childAssets: [],
@@ -76,6 +77,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 <BigPlayButton position="center" />
                 {autoPlay &&
                     <ControlBar autoHide={false}>
+                        {!this.props.controlsEnabled &&
+                            <Fragment>
+                                <div className="video-react-control-bar-disabled"></div>
+                            </Fragment>
+                        }
                         <CustomVideoPlayerButton order={1.1}
                             accelerators={["ArrowLeft", "A", "a"]}
                             tooltip={strings.editorPage.videoPlayer.previousExpectedFrame.tooltip}
@@ -202,6 +208,13 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         const playerState = this.getVideoPlayerState();
 
         if (seekTime >= 0 && playerState.currentTime !== seekTime) {
+            // Verifies if the seek operation should continue
+            if (this.props.onBeforeAssetChanged) {
+                if (!this.props.onBeforeAssetChanged()) {
+                    return;
+                }
+            }
+
             // Before seeking, pause the video
             if (!playerState.paused) {
                 this.videoPlayer.current.pause();
