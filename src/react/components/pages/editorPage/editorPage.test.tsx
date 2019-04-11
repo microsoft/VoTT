@@ -30,6 +30,7 @@ import SplitPane from "react-split-pane";
 import EditorSideBar from "./editorSideBar";
 import Alert from "../../common/alert/alert";
 import registerMixins from "../../../../registerMixins";
+import { ObjectDetection } from "../../../../providers/activeLearning/objectDetection";
 import { TagInput } from "../../common/tagInput/tagInput";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
@@ -840,6 +841,18 @@ describe("Editor Page Component", () => {
     describe("Active Learning", () => {
         let wrapper: ReactWrapper = null;
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
+
+        const objectDetectionMock = ObjectDetection as jest.Mock<ObjectDetection>;
+        // objectDetectionMock.prototype.loaded = jest.fn(() => true);
+        // objectDetectionMock.loaded = true;
+        Object.defineProperty(objectDetectionMock, "loaded", {
+            get: () => {
+              return true;
+            },
+        });
+        objectDetectionMock.prototype.detect = jest.fn(() => {
+            return [];
+        });
 
         beforeEach(async () => {
             const testProject = MockFactory.createTestProject("TestProject");
