@@ -202,6 +202,25 @@ describe("Project Service", () => {
 
     it("Deletes any empty regions after deleting only tag from region", async () => {
         const tag1 = "tag1";
+        const region = MockFactory.createTestRegion(undefined, [tag1]);
+        const asset: IAsset = {
+            ...MockFactory.createTestAsset("1"),
+            state: AssetState.Tagged,
+        };
+        const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
+        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
+
+        const saveMetadata = jest.fn();
+        AssetService.prototype.save = saveMetadata;
+
+        const expectedAssetMetadata: IAssetMetadata = MockFactory.createTestAssetMetadata(asset, []);
+        const project = populateProjectAssets();
+        await projectSerivce.deleteTag(project, tag1);
+        expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
+    });
+
+    it("Updates renamed tag within all assets of project", async () => {
+        const tag1 = "tag1";
         const newTag = "tag2";
         const region = MockFactory.createTestRegion(undefined, [tag1]);
         const asset: IAsset = {
@@ -229,15 +248,6 @@ describe("Project Service", () => {
         const project = populateProjectAssets();
         await projectSerivce.updateTag(project, tag1, newTag);
         expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
-    });
-
-    it("Updates renamed tag within all assets of project", async () => {
-        const tag = "Tag";
-        const newTag = "New Tag";
-        const project = populateProjectAssets();
-        const originalAssets = {...project.assets};
-        await projectSerivce.updateTag(project, tag, newTag);
-        fail();
     });
 
 });
