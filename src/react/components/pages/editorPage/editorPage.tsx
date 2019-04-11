@@ -32,6 +32,7 @@ import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
 import { ObjectDetection, DetectedObject } from "../../../../providers/activeLearning/objectDetection";
 import { Env } from "../../../../common/environment";
+import { isElectron } from "../../../../common/hostProcess";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -142,16 +143,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             await this.props.actions.loadProject(project);
         }
 
-        const isElectron: boolean = !!window["require"];
-
-        if (isElectron) {
+        if (isElectron()) {
             // Load TensorFlow.js Model
             const infoId = toast.info("Loading model...", { autoClose: false });
 
             let modelPath = "";
             if (this.props.project.activeLearningSettings.modelPathType === "coco") {
-                const remote = (window as any).require("electron").remote as Electron.Remote;
-                const appPath = remote.app.getAppPath();
+                const appPath = this.getAppPath();
 
                 if (Env.get() !== "production") {
                     modelPath = appPath + "/cocoSSDModel";
@@ -301,6 +299,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             selectedRegions: [],
         });
+    }
+
+    private getAppPath = () => {
+        const remote = (window as any).require("electron").remote as Electron.Remote;
+        return remote.app.getAppPath();
     }
 
     /**

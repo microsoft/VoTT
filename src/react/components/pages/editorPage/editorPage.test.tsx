@@ -58,9 +58,19 @@ describe("Editor Page Component", () => {
     let assetServiceMock: jest.Mocked<typeof AssetService> = null;
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
 
+    const electronMock = {
+        remote: {
+            app: {
+                getAppPath: jest.fn(() => ""),
+            },
+        },
+    };
+
     const testAssets: IAsset[] = MockFactory.createTestAssets(5);
 
     beforeAll(() => {
+        window["require"] = jest.fn(() => electronMock);
+
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());
         editorMock.prototype.scaleRegionToSourceSize = jest.fn((regionData: any) => regionData);
