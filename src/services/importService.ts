@@ -113,10 +113,10 @@ export default class ImportService implements IImportService {
         parentAsset.size = {
             height: 0,
             width: 0,
-        }
+        };
         parentAsset.state = AssetState.Visited;
         parentAsset.path = encodeFileURI(filePath);
-        
+
         const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
         parentAsset.size = { height: assetProps.height, width: assetProps.width };
         return parentAsset;
