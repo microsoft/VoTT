@@ -63,7 +63,7 @@ export default function registerToolbar() {
         icon: "far fa-clone",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
-        accelerators: ["Ctrl+W", "Ctrl+w"],
+        accelerators: ["CmdOrCtrl+W", "CmdOrCtrl+w"],
     });
 
     ToolbarItemFactory.register({
@@ -72,7 +72,7 @@ export default function registerToolbar() {
         icon: "fa-copy",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+C", "Ctrl+c"],
+        accelerators: ["CmdOrCtrl+C", "CmdOrCtrl+c"],
     });
 
     ToolbarItemFactory.register({
@@ -81,7 +81,7 @@ export default function registerToolbar() {
         icon: "fa-cut",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+X", "Ctrl+x"],
+        accelerators: ["CmdOrCtrl+X", "CmdOrCtrl+x"],
     });
 
     ToolbarItemFactory.register({
@@ -90,7 +90,7 @@ export default function registerToolbar() {
         icon: "fa-paste",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+V", "Ctrl+v"],
+        accelerators: ["CmdOrCtrl+V", "CmdOrCtrl+v"],
     });
 
     ToolbarItemFactory.register({
@@ -99,7 +99,7 @@ export default function registerToolbar() {
         icon: "fa-ban",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+Delete"],
+        accelerators: ["CmdOrCtrl+Delete"],
     });
 
     ToolbarItemFactory.register({
@@ -126,7 +126,7 @@ export default function registerToolbar() {
         icon: "fa-save",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+S", "Ctrl+s"],
+        accelerators: ["CmdOrCtrl+S", "CmdOrCtrl+s"],
     }, SaveProject);
 
     ToolbarItemFactory.register({
@@ -135,6 +135,6 @@ export default function registerToolbar() {
         icon: "fa-external-link-square-alt",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
-        accelerators: ["Ctrl+E", "Ctrl+e"],
+        accelerators: ["CmdOrCtrl+E", "CmdOrCtrl+e"],
     }, ExportProject);
 }

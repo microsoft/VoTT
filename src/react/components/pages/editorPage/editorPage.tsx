@@ -172,7 +172,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         displayName={strings.editorPage.tags.hotKey.lock}
                         key={index}
                         keyEventType={KeyEventType.KeyDown}
-                        accelerators={[`Ctrl+${index}`]}
+                        accelerators={[`CmdOrCtrl+${index}`]}
                         icon={"fa-lock"}
                         handler={this.handleCtrlTagHotKey} />);
                 })}

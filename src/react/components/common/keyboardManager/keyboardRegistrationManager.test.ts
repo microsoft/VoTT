@@ -26,9 +26,9 @@ describe("Keyboard Registration Manager", () => {
     });
 
     it("can add keyboard event handlers", () => {
-        const keyCode1 = "Ctrl+1";
+        const keyCode1 = "CmdOrCtrl+1";
         const handler1 = (evt: KeyboardEvent) => null;
-        const keyCode2 = "Ctrl+S";
+        const keyCode2 = "CmdOrCtrl+S";
         const handler2 = (evt: KeyboardEvent) => null;
 
         addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode1], handler1);
@@ -42,7 +42,7 @@ describe("Keyboard Registration Manager", () => {
     });
 
     it("can register handlers for same key code and different key event types", () => {
-        const keyCodeString = "Ctrl+H";
+        const keyCodeString = "CmdOrCtrl+H";
         const keyCodes = [keyCodeString];
         const keyDownHandler = (evt: KeyboardEvent) => null;
         const keyUpHandler = (evt: KeyboardEvent) => null;
@@ -60,7 +60,7 @@ describe("Keyboard Registration Manager", () => {
     });
 
     it("throws error when trying to register multiple handlers for same key code", () => {
-        const keyCode = "Ctrl+H";
+        const keyCode = "CmdOrCtrl+H";
         const handler1 = (evt: KeyboardEvent) => null;
         const handler2 = (evt: KeyboardEvent) => null;
 
@@ -69,7 +69,7 @@ describe("Keyboard Registration Manager", () => {
     });
 
     it("can remove keyboard event handlers", () => {
-        const keyCode = "Ctrl+1";
+        const keyCode = "CmdOrCtrl+1";
 
         // Register keyboard handler
         const deregister = addHandler(keyboardManager, KeyEventType.KeyDown, [keyCode], jest.fn());
@@ -93,8 +93,8 @@ describe("Keyboard Registration Manager", () => {
 
     describe("array with mulitple keyCodes", () => {
         it("register all keycodes with the same eventType and handler", () => {
-            const keyCode1 = "Ctrl+1";
-            const keyCode2 = "Ctrl+S";
+            const keyCode1 = "CmdOrCtrl+1";
+            const keyCode2 = "CmdOrCtrl+S";
             const keyCodes = [keyCode1, keyCode2];
             const handler = jest.fn();
 
@@ -105,7 +105,7 @@ describe("Keyboard Registration Manager", () => {
         });
 
         it("invoke the registered keyboard handlers", () => {
-            const keyCode1 = "Ctrl+1";
+            const keyCode1 = "CmdOrCtrl+1";
             const keyCode2 = "ArrowUp";
             const keyCodes = [keyCode1, keyCode2];
             const handler = jest.fn();
@@ -129,8 +129,8 @@ describe("Keyboard Registration Manager", () => {
         });
 
         it("correctly remove all associated handlers", () => {
-            const keyCode1 = "Ctrl+1";
-            const keyCode2 = "Ctrl+S";
+            const keyCode1 = "CmdOrCtrl+1";
+            const keyCode2 = "CmdOrCtrl+S";
             const keyCodes = [keyCode1, keyCode2];
             const handler = (evt: KeyboardEvent) => null;
 
