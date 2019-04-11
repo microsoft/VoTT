@@ -2,7 +2,8 @@ import _ from "lodash";
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, IExportFormat, ISecurityToken, AssetState, IAsset } from "../models/applicationState";
+import { IProject, IExportFormat, ISecurityToken,
+    AssetState, IAsset, IAssetMetadata } from "../models/applicationState";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { generateKey } from "../common/crypto";
@@ -27,7 +28,6 @@ describe("Project Service", () => {
 
     StorageProviderFactory.create = jest.fn(() => storageProviderMock);
     ExportProviderFactory.create = jest.fn(() => exportProviderMock);
-    
 
     beforeEach(() => {
         securityToken = {
@@ -172,39 +172,63 @@ describe("Project Service", () => {
     it("Deletes tag from all assets within project", async () => {
         const tag1 = "tag1";
         const tag2 = "tag2";
-        const region = MockFactory.createTestRegion(undefined, [tag1, tag2])
-        const asset = MockFactory.createTestAsset();
-        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(
-            MockFactory.createTestAssetMetadata(
-                asset,
-                [region]
-            )
-        ));
+        const region = MockFactory.createTestRegion(undefined, [tag1, tag2]);
+        const asset: IAsset = {
+            ...MockFactory.createTestAsset("1"),
+            state: AssetState.Tagged,
+        };
+        const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
+        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
 
         const saveMetadata = jest.fn();
         AssetService.prototype.save = saveMetadata;
 
-        const expectedAssetMetadata = MockFactory.createTestAssetMetadata(
-            asset,
-            [
-                {
-                    ...region,
-                    tags: [tag2]
-                }
-            ]
-        );
+        const expectedAssetMetadata: IAssetMetadata = {
+            ...MockFactory.createTestAssetMetadata(
+                asset,
+                [
+                    {
+                        ...region,
+                        tags: [tag2],
+                    },
+                ],
+            ),
+
+        };
         const project = populateProjectAssets();
-        const originalAssets = {...project.assets};
         await projectSerivce.deleteTag(project, tag1);
         expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
-        fail();
     });
 
     it("Deletes any empty regions after deleting only tag from region", async () => {
+        const tag1 = "tag1";
+        const newTag = "tag2";
+        const region = MockFactory.createTestRegion(undefined, [tag1]);
+        const asset: IAsset = {
+            ...MockFactory.createTestAsset("1"),
+            state: AssetState.Tagged,
+        };
+        const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
+        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
+
+        const saveMetadata = jest.fn();
+        AssetService.prototype.save = saveMetadata;
+
+        const expectedAssetMetadata: IAssetMetadata = {
+            ...MockFactory.createTestAssetMetadata(
+                asset,
+                [
+                    {
+                        ...region,
+                        tags: [newTag],
+                    },
+                ],
+            ),
+
+        };
         const project = populateProjectAssets();
-        const originalAssets = {...project.assets};
-        await projectSerivce.deleteTag(project, defaultTag);
-        fail();
+        await projectSerivce.updateTag(project, tag1, newTag);
+        expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
     });
 
     it("Updates renamed tag within all assets of project", async () => {

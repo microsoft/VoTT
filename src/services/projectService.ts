@@ -125,6 +125,7 @@ export default class ProjectService implements IProjectService {
                     region.tags = transformer(region.tags);
                 }
             }
+            assetMetadata.regions = assetMetadata.regions.filter((region) => region.tags.length > 0);
             if (foundTag) {
                 assetService.save(assetMetadata);
             }
