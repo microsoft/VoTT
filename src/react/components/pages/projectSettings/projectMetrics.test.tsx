@@ -61,6 +61,7 @@ describe("Project metrics page", () => {
             const expectedNonVisitedAssetCount = testSourceAssetCount - (testProjectAssetCount);
             const expectedTaggedAssets = testAssetsWithRegion;
             const expectedVistedAssets = testProjectAssetCount;
+            const expectedNotTaggedAssets = expectedVistedAssets - expectedTaggedAssets;
             const expectedTagCount = wrapper.props().project.tags.length;
 
             expect(wrapper.find(".metric-total-asset-count").text())
@@ -73,10 +74,11 @@ describe("Project metrics page", () => {
                 .toEqual(regionsPerAsset.toFixed(2));
 
             // Assets graph
-            const pieSegments = wrapper.find(".rv-xy-plot__series--label-text");
-            expect(pieSegments.at(0).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
-            expect(pieSegments.at(1).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
-            expect(pieSegments.at(2).text()).toEqual(`Visited Assets (${expectedVistedAssets})`);
+            const chartSegments = wrapper.find(".rv-discrete-color-legend-item__title");
+            expect(chartSegments.at(0).text()).toEqual(`Visited Assets (${expectedVistedAssets})`);
+            expect(chartSegments.at(1).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
+            expect(chartSegments.at(2).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
+            expect(chartSegments.at(3).text()).toEqual(`Not Tagged Assets (${expectedNotTaggedAssets})`);
 
             // Tag graph
             const barBlocks = wrapper.find(".rv-xy-plot__series--bar");
@@ -103,9 +105,10 @@ describe("Project metrics page", () => {
 
         it("verify project metrics", () => {
             const expectedRegionCount = 0;
-            const expectedNonVisitedAssetCount = testSourceAssetCount - (testProjectAssetCount);
+            const expectedNonVisitedAssetCount = testSourceAssetCount - (testAssetsWithRegion);
             const expectedTaggedAssets = 0;
             const expectedVistedAssets = testAssetsWithRegion;
+            const expectedNotTaggedAssets = expectedVistedAssets - expectedTaggedAssets;
             const expectedTagCount = wrapper.props().project.tags.length;
 
             expect(wrapper.find(".metric-total-asset-count").text())
@@ -118,10 +121,11 @@ describe("Project metrics page", () => {
                 .toEqual("0");
 
             // Assets graph
-            const pieSegments = wrapper.find(".rv-xy-plot__series--label-text");
-            expect(pieSegments.at(0).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
-            expect(pieSegments.at(1).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
-            expect(pieSegments.at(2).text()).toEqual(`Visited Assets (${expectedVistedAssets})`);
+            const chartSegments = wrapper.find(".rv-discrete-color-legend-item__title");
+            expect(chartSegments.at(0).text()).toEqual(`Visited Assets (${expectedVistedAssets})`);
+            expect(chartSegments.at(1).text()).toEqual(`Not Visited Assets (${expectedNonVisitedAssetCount})`);
+            expect(chartSegments.at(2).text()).toEqual(`Tagged Assets (${expectedTaggedAssets})`);
+            expect(chartSegments.at(3).text()).toEqual(`Not Tagged Assets (${expectedNotTaggedAssets})`);
 
             // Tag graph
             const barBlocks = wrapper.find(".rv-xy-plot__series--bar");

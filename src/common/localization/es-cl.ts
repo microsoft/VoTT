@@ -110,6 +110,7 @@ export const spanish: IAppStrings = {
         totalAssetCount: "Total de activos",
         visitedAssets: "Activos visitados (${count})",
         taggedAssets: "Activos etiquetados (${count})",
+        nonTaggedAssets: "Activos no etiquetados (${count})",
         nonVisitedAssets: "Activos no visitados (${count})",
         tagsSectionTitle: "Etiquetas & etiquetas",
         totalRegionCount: "Total de regiones",

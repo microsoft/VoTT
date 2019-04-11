@@ -112,6 +112,7 @@ export interface IAppStrings {
         visitedAssets: string;
         taggedAssets: string;
         nonVisitedAssets: string;
+        nonTaggedAssets: string;
         tagsSectionTitle: string;
         totalRegionCount: string;
         totalTagCount: string;
