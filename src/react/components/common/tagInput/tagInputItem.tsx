@@ -95,7 +95,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     private onColorClick = (e: MouseEvent) => {
         e.stopPropagation();
 
-        const ctrlKey = e.ctrlKey;
+        const ctrlKey = e.ctrlKey || e.metaKey;
         const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Color,
@@ -105,7 +105,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
     private onNameClick = (e: MouseEvent) => {
         e.stopPropagation();
 
-        const ctrlKey = e.ctrlKey;
+        const ctrlKey = e.ctrlKey || e.metaKey;
         const altKey = e.altKey;
         this.setState({
             tagEditMode: TagEditMode.Name,

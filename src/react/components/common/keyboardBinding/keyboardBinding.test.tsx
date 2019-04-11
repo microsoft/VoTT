@@ -11,7 +11,7 @@ describe("Keyboard Binding Component", () => {
     const onKeyDownHandler = jest.fn();
     const deregisterFunc = jest.fn();
 
-    const accelerators = ["Ctrl+1"];
+    const accelerators = ["CmdOrCtrl+1"];
     const defaultProps: IKeyboardBindingProps = {
         displayName: "Keyboard binding",
         keyEventType: KeyEventType.KeyDown,

@@ -27,6 +27,8 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import Canvas from "./canvas";
 import { appInfo } from "../../../../common/appInfo";
 import SplitPane from "react-split-pane";
+import EditorSideBar from "./editorSideBar";
+import Alert from "../../common/alert/alert";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(
@@ -78,7 +80,7 @@ describe("Editor Page Component", () => {
         assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
-                regions: [MockFactory.createTestRegion()],
+                regions: [],
                 version: appInfo.version,
             };
 
@@ -110,6 +112,7 @@ describe("Editor Page Component", () => {
 
         expect(loadProjectSpy).not.toBeCalled();
         expect(editorPage.prop("project")).toEqual(testProject);
+        expect(editorPage.state().isValid).toBe(true);
     });
 
     it("Updates state from props changes if project is null at creation", async () => {
@@ -155,7 +158,7 @@ describe("Editor Page Component", () => {
         expect(editorPage.state().selectedAsset).toMatchObject({
             asset: {
                 ...expectedAsset,
-                state: AssetState.Tagged,
+                state: AssetState.Visited,
             },
         });
     });
@@ -191,11 +194,103 @@ describe("Editor Page Component", () => {
             expect.objectContaining({
                 asset: {
                     ...expectedAsset,
-                    state: AssetState.Tagged,
+                    state: AssetState.Visited,
                 },
             }),
         );
         expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
+    });
+
+    it("sets page state to invalid when edited asset includes un-tagged regions", async () => {
+        // create test project and asset
+        const testProject = MockFactory.createTestProject("TestProject");
+        const defaultAsset = testAssets[0];
+
+        // mock store and props
+        const store = createStore(testProject, true);
+        const props = MockFactory.editorPageProps(testProject.id);
+
+        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+
+        // create mock editor page
+        const wrapper = createComponent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+        await MockFactory.flushUi();
+        wrapper.update();
+
+        // Create a new un-tagged region
+        const newRegion = MockFactory.createTestRegion("unTaggedRegion", []);
+        const assetMetadata: IAssetMetadata = {
+            asset: defaultAsset,
+            regions: [newRegion],
+            version: appInfo.version,
+        };
+
+        saveAssetMetadataSpy.mockClear();
+        saveProjectSpy.mockClear();
+
+        // Initial state change of region
+        wrapper.find(Canvas).props().onAssetMetadataChanged(assetMetadata);
+
+        expect(editorPage.state().isValid).toBe(false);
+        expect(saveAssetMetadataSpy).not.toBeCalled();
+        expect(saveProjectSpy).not.toBeCalled();
+
+        // Apply tag to region
+        newRegion.tags = ["test"];
+        wrapper.find(Canvas).props().onAssetMetadataChanged(assetMetadata);
+
+        await MockFactory.flushUi();
+
+        expect(editorPage.state().isValid).toBe(true);
+        expect(saveAssetMetadataSpy).toBeCalled();
+        expect(saveProjectSpy).toBeCalled();
+    });
+
+    it("displays un-tagged warning when user attempts to switch assets while page is in invalid state", async () => {
+        // create test project and asset
+        const testProject = MockFactory.createTestProject("TestProject");
+        const defaultAsset = testAssets[0];
+
+        // mock store and props
+        const store = createStore(testProject, true);
+        const props = MockFactory.editorPageProps(testProject.id);
+
+        const saveAssetMetadataSpy = jest.spyOn(props.actions, "saveAssetMetadata");
+        const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
+
+        // create mock editor page
+        const wrapper = createComponent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+        await MockFactory.flushUi();
+        wrapper.update();
+
+        // Create a new un-tagged region
+        const newRegion = MockFactory.createTestRegion("unTaggedRegion", []);
+        const assetMetadata: IAssetMetadata = {
+            asset: defaultAsset,
+            regions: [newRegion],
+            version: appInfo.version,
+        };
+
+        saveAssetMetadataSpy.mockClear();
+        saveProjectSpy.mockClear();
+
+        // Initial state change
+        wrapper.find(Canvas).props().onAssetMetadataChanged(assetMetadata);
+        // Attempt to navigate to different asset
+        wrapper.find(EditorSideBar).props().onAssetSelected(testAssets[1]);
+
+        expect(editorPage.state().isValid).toBe(false);
+        expect(editorPage.state().showInvalidRegionWarning).toBe(true);
+
+        // Close the warning
+        wrapper.find(Alert).props().onClose();
+
+        expect(editorPage.state().showInvalidRegionWarning).toBe(false);
     });
 
     it("Check correct saving and loading of last visited asset", async () => {
@@ -231,7 +326,7 @@ describe("Editor Page Component", () => {
             expect.objectContaining({
                 asset: {
                     ...expectedAsset,
-                    state: AssetState.Tagged,
+                    state: AssetState.Visited,
                 },
             }),
         );
@@ -289,7 +384,7 @@ describe("Editor Page Component", () => {
 
         const editedImageAsset: IAssetMetadata = {
             asset: imageAsset,
-            regions: [MockFactory.createTestRegion()],
+            regions: [MockFactory.createTestRegion("editedImageAsset", ["test"])],
             version: appInfo.version,
         };
 
@@ -355,7 +450,7 @@ describe("Editor Page Component", () => {
 
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
-                regions: [MockFactory.createTestRegion()],
+                regions: [MockFactory.createTestRegion("region1", ["test"])],
                 version: appInfo.version,
             };
 
@@ -487,22 +582,22 @@ describe("Editor Page Component", () => {
         });
 
         it("Calls copy regions with hot key", () => {
-            dispatchKeyEvent("Ctrl+c");
+            dispatchKeyEvent("CmdOrCtrl+c");
             expect(copyRegions).toBeCalled();
         });
 
         it("Calls cut regions with hot key", () => {
-            dispatchKeyEvent("Ctrl+x");
+            dispatchKeyEvent("CmdOrCtrl+x");
             expect(cutRegions).toBeCalled();
         });
 
         it("Calls paste regions with hot key", () => {
-            dispatchKeyEvent("Ctrl+v");
+            dispatchKeyEvent("CmdOrCtrl+v");
             expect(pasteRegions).toBeCalled();
         });
 
         it("Calls remove all regions confirmation with hot key", () => {
-            dispatchKeyEvent("Ctrl+Delete");
+            dispatchKeyEvent("CmdOrCtrl+Delete");
             expect(removeAllRegionsConfirm).toBeCalled();
         });
 
@@ -523,7 +618,7 @@ describe("Editor Page Component", () => {
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
         });
 
-        it("sets selected tag and locked tags when ctrl + hot key is pressed", async () => {
+        it("sets selected tag and locked tags when CmdOrCtrl + hot key is pressed", async () => {
             const project = MockFactory.createTestProject("test", 5);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
@@ -535,7 +630,7 @@ describe("Editor Page Component", () => {
 
             expect(editorPage.state().selectedTag).toBeNull();
 
-            dispatchKeyEvent("Ctrl+1");
+            dispatchKeyEvent("CmdOrCtrl+1");
 
             const firstTag = project.tags[0].name;
             expect(editorPage.state().selectedTag).toEqual(firstTag);
@@ -610,7 +705,7 @@ describe("Editor Page Component", () => {
             expect(stateTags).toHaveLength(project.tags.length - 1);
         });
 
-        it("Adds tag to locked tags when ctrl clicked", async () => {
+        it("Adds tag to locked tags when CmdOrCtrl clicked", async () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
                 ...MockFactory.initialState(),

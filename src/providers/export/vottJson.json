@@ -17,6 +17,12 @@
                 "${strings.export.providers.common.properties.assetState.options.visited}",
                 "${strings.export.providers.common.properties.assetState.options.tagged}"
             ]
+        },
+        "includeImages": {
+            "type": "boolean",
+            "default": true,
+            "title": "${strings.export.providers.vottJson.properties.includeImages.title}",
+            "description": "${strings.export.providers.vottJson.properties.includeImages.description}"
         }
     }
 }

@@ -112,6 +112,7 @@ export interface IAppStrings {
         visitedAssets: string;
         taggedAssets: string;
         nonVisitedAssets: string;
+        nonTaggedAssets: string;
         tagsSectionTitle: string;
         totalRegionCount: string;
         totalTagCount: string;
@@ -165,6 +166,9 @@ export interface IAppStrings {
             saveSuccess: string;
             deleteSuccess: string;
         },
+        imageCorsWarning: string;
+        blobCorsWarning: string;
+        azDocLinkText: string;
         providers: {
             azureBlob: {
                 title: string;
@@ -257,6 +261,12 @@ export interface IAppStrings {
                 title: string;
                 confirmation: string;
             },
+        },
+        messages: {
+            enforceTaggedRegions: {
+                title: string,
+                description: string,
+            },
         }
     };
     export: {
@@ -279,6 +289,12 @@ export interface IAppStrings {
             },
             vottJson: {
                 displayName: string,
+                properties: {
+                    includeImages: {
+                        title: string,
+                        description: string,
+                    },
+                },
             },
             azureCV: {
                 displayName: string,

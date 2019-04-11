@@ -5,7 +5,15 @@ import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
 import { TFRecordAsset } from "./tfrecordAsset";
 
-export type ContentSource = HTMLImageElement | HTMLVideoElement;
+export interface IGenericContentSource {
+    width: number;
+    height: number;
+    offsetWidth: number;
+    offsetHeight: number;
+    offsetTop: number;
+    offsetLeft: number;
+}
+export type ContentSource = HTMLImageElement | HTMLVideoElement | IGenericContentSource;
 
 /**
  * AssetPreview component properties
@@ -17,6 +25,8 @@ export interface IAssetProps {
     childAssets?: IAsset[];
     /** Additional settings for this asset */
     additionalSettings?: IAssetPreviewSettings;
+    /** Specifies whether the asset controls are enabled */
+    controlsEnabled?: boolean;
     /** Event handler that fires when the asset has been loaded */
     onLoaded?: (ContentSource: ContentSource) => void;
     /** Event handler that fires when the asset has been activated (ex. Video resumes playing) */
@@ -29,6 +39,8 @@ export interface IAssetProps {
     onError?: (event: React.SyntheticEvent) => void;
     /** Event handler that fires when the loaded asset has changed */
     onAssetChanged?: (asset: IAsset) => void;
+    /** Event handler that fires right before an asset has changed */
+    onBeforeAssetChanged?: () => boolean;
 }
 
 /**
@@ -66,6 +78,7 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
         asset: null,
         childAssets: [],
         autoPlay: false,
+        controlsEnabled: true,
     };
 
     /** The internal state for the component */
@@ -138,12 +151,14 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
             case AssetType.Video:
             case AssetType.VideoFrame:
                 return <VideoAsset asset={rootAsset}
+                    controlsEnabled={this.props.controlsEnabled}
                     additionalSettings={this.props.additionalSettings}
                     childAssets={childAssets}
                     timestamp={asset.timestamp}
                     autoPlay={autoPlay}
                     onLoaded={this.onAssetLoad}
                     onError={this.onError}
+                    onBeforeAssetChanged={this.props.onBeforeAssetChanged}
                     onChildAssetSelected={this.onChildAssetSelected}
                     onActivated={this.props.onActivated}
                     onDeactivated={this.props.onDeactivated} />;
@@ -184,6 +199,12 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
     }
 
     private onChildAssetSelected = (asset: IAsset) => {
+        if (this.props.onBeforeAssetChanged) {
+            if (!this.props.onBeforeAssetChanged()) {
+                return;
+            }
+        }
+
         if (this.props.onChildAssetSelected) {
             this.props.onChildAssetSelected(asset);
         }

@@ -109,6 +109,7 @@ export const english: IAppStrings = {
         totalAssetCount: "Total Assets",
         visitedAssets: "Visited Assets (${count})",
         taggedAssets: "Tagged Assets (${count})",
+        nonTaggedAssets: "Not Tagged Assets (${count})",
         nonVisitedAssets: "Not Visited Assets (${count})",
         tagsSectionTitle: "Tags & Labels",
         totalRegionCount: "Total Tagged Regions",
@@ -163,6 +164,12 @@ export const english: IAppStrings = {
             saveSuccess: "Successfully saved ${connection.name}",
             deleteSuccess: "Successfully deleted ${connection.name}",
         },
+        imageCorsWarning: "Warning: When using VoTT in a Web browser, some assets from Bing Image \
+                          Search may not export correctly due to CORS (Cross Origin Resource Sharing) restrictions.",
+        blobCorsWarning: "Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage \
+                          account, in order to use it as a source or target connection. More information on \
+                          enabling CORS can be found in the {0}",
+        azDocLinkText: "Azure Documentation.",
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
@@ -256,6 +263,13 @@ export const english: IAppStrings = {
                 confirmation: "Are you sure you want to remove all regions?",
             },
         },
+        messages: {
+            enforceTaggedRegions: {
+                title: "Invalid region(s) detected",
+                // tslint:disable-next-line:max-line-length
+                description: "1 or more regions have not been tagged.  Ensure all regions are tagged before continuing to next asset.",
+            },
+        },
     },
     export: {
         title: "Export",
@@ -277,6 +291,12 @@ export const english: IAppStrings = {
             },
             vottJson: {
                 displayName: "VoTT JSON",
+                properties: {
+                    includeImages: {
+                        title: "Include Images",
+                        description: "Whether or not to include binary image assets in target connection",
+                    },
+                },
             },
             azureCV: {
                 displayName: "Azure Custom Vision Service",
