@@ -52,8 +52,8 @@ export class ObjectDetection {
             // Warmup the model.
             const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
                 tf.Tensor[];
-            result.map(async (t) => await t.data());
-            result.map(async (t) => t.dispose());
+            result.forEach(async (t) => await t.data());
+            result.forEach(async (t) => t.dispose());
             this.modelLoaded = true;
         } catch (error) {
             this.modelLoaded = false;
