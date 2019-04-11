@@ -212,7 +212,7 @@ export default class ImportService implements IImportService {
             }
             const frameRegions = frameList[frameName];
             const frameInt = Number(frameName);
-            const timestamp = frameInt / Number(originalProject.framerate) - 1;
+            const timestamp = (frameInt-1) / Number(originalProject.framerate);
             const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
             const assetState = this.getAssetState(originalProject, frameRegions, frameInt);
             const asset = this.getAsset(parent, pathToUse, timestamp);
