@@ -259,16 +259,15 @@ export default class ImportService implements IImportService {
     private async getPopulatedAssetMetadata(
             assetService: AssetService, asset: IAsset, assetState: AssetState,
             frameRegions: IV1Region[], parent?: IAsset, includePath?: boolean): Promise<IAssetMetadata> {
-        return await assetService.getAssetMetadata(asset).then((metadata) => {
-            const taggedMetadata = this.addRegions(metadata, frameRegions);
-            taggedMetadata.asset.state = assetState;
-            if (parent) {
-                taggedMetadata.asset.parent = parent;
-            }
-            if (includePath) {
-                taggedMetadata.asset.path = encodeFileURI(taggedMetadata.asset.path);
-            }
-            return taggedMetadata;
-        });
+        const metadata = await assetService.getAssetMetadata(asset);
+        const taggedMetadata = this.addRegions(metadata, frameRegions);
+        taggedMetadata.asset.state = assetState;
+        if (parent) {
+            taggedMetadata.asset.parent = parent;
+        }
+        if (includePath) {
+            taggedMetadata.asset.path = encodeFileURI(taggedMetadata.asset.path);
+        }
+        return taggedMetadata;
     }
 }
