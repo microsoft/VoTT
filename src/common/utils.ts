@@ -51,6 +51,26 @@ export function createQueryString(object: any): string {
     return parts.join("&");
 }
 
+export function encodeFileURI(path: string, additionalEncodings?: boolean): string {
+    // encodeURI() will not encode: ~!@#$&*()=:/,;?+'
+    // extend it to support all of these except # and ?
+    // all other non encoded characters are implicitly supported with no reason to encoding them
+    const matchString = /(#|\?)/g;
+    const encodings = {
+        "\#": "%23",
+        "\?": "%3F",
+        };
+    const encodedURI = `file:${encodeURI(normalizeSlashes(path))}`;
+    if (additionalEncodings) {
+        return encodedURI.replace(matchString, (match) => encodings[match]);
+    }
+    return encodedURI;
+}
+
+export function normalizeSlashes(path: string): string {
+    return path.replace(/\\/g, "/");
+}
+
 /**
  * Encrypts sensitive settings for the specified project and returns the result
  * @param project The project to encrypt

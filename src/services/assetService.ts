@@ -13,6 +13,7 @@ import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import { appInfo } from "../common/appInfo";
+import { encodeFileURI } from "../common/utils";
 
 /**
  * @name - Asset Service
@@ -119,15 +120,6 @@ export class AssetService {
      * Get assets from provider
      */
     public async getAssets(): Promise<IAsset[]> {
-        // encodeURI() will not encode: ~!@#$&*()=:/,;?+'
-        // extend it to support all of these except # and ?
-        // all other non encoded characters are implicitly supported with no reason to encoding them
-        const matchString = /(#|\?)/g;
-        const encodings = {
-            "\#": "%23",
-            "\?": "%3F",
-          };
-
         const assets = await this.assetProvider.getAssets();
 
         return assets.map((asset) => {
@@ -139,8 +131,7 @@ export class AssetService {
                 !normalizedPath.startsWith("https://") &&
                 !normalizedPath.startsWith("file:")) {
                 // First replace \ character with / the do the standard url encoding then encode unsupported characters
-                asset.path = "file:" + encodeURI(asset.path.replace(/\\/g, "/"))
-                    .replace(matchString, (match) => encodings[match]);
+                asset.path = encodeFileURI(asset.path);
             }
 
             return asset;
