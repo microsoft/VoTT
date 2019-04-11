@@ -220,6 +220,7 @@ export default class ImportService implements IImportService {
                 assetService, asset, assetState, frameRegions, parent);
             generatedAssetMetadata.push(populated);
         }
+        debugger;
         return generatedAssetMetadata;
     }
 
