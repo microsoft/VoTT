@@ -19,6 +19,8 @@ export interface IProjectService {
     save(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
+    deleteTag(project: IProject, tag: string): Promise<void>;
+    updateTag(project: IProject, tag: string, newTag: string);
 }
 
 /**
@@ -119,7 +121,6 @@ export default class ProjectService implements IProjectService {
             let foundTag = false;
             for (const region of assetMetadata.regions) {
                 if (region.tags.find((t) => t === tag)) {
-                    debugger;
                     foundTag = true;
                     region.tags = transformer(region.tags);
                 }

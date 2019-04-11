@@ -692,10 +692,10 @@ export default class MockFactory {
      * Creates an array of test regions
      * @param count The number of regions to create (deafult: 5)
      */
-    public static createTestRegions(count: number = 5) {
+    public static createTestRegions(count: number = 5, tags?: string[]) {
         const regions: IRegion[] = [];
         for (let i = 1; i <= count; i++) {
-            regions.push(MockFactory.createTestRegion(`test${i}`));
+            regions.push(MockFactory.createTestRegion(`test${i}`, tags));
         }
         return regions;
     }

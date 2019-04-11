@@ -417,7 +417,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onTagDeleted = async (tag: string) => {
         const projectService = new ProjectService();
         await projectService.deleteTag(this.props.project, tag);
-        
+
     }
 
     private onTagRenamed = async (tag: string, newTag: string) => {

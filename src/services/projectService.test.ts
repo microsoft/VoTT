@@ -2,11 +2,12 @@ import _ from "lodash";
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, IExportFormat, ISecurityToken, AssetState } from "../models/applicationState";
+import { IProject, IExportFormat, ISecurityToken, AssetState, IAsset } from "../models/applicationState";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { generateKey } from "../common/crypto";
 import { encryptProject } from "../common/utils";
+import { AssetService } from "./assetService";
 
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
@@ -26,6 +27,7 @@ describe("Project Service", () => {
 
     StorageProviderFactory.create = jest.fn(() => storageProviderMock);
     ExportProviderFactory.create = jest.fn(() => exportProviderMock);
+    
 
     beforeEach(() => {
         securityToken = {
@@ -146,15 +148,72 @@ describe("Project Service", () => {
         expect(projectSerivce.isDuplicate(testProject, projectList)).toEqual(true);
     });
 
-    it("deletes all asset metadata files when project is deleted", async () => {
-        const assets = MockFactory.createTestAssets(10);
+    function populateProjectAssets(project?: IProject, assetCount = 10) {
+        if (!project) {
+            project = MockFactory.createTestProject();
+        }
+        const assets = MockFactory.createTestAssets(assetCount);
         assets.forEach((asset) => {
             asset.state = AssetState.Tagged;
         });
 
-        testProject.assets = _.keyBy(assets, (asset) => asset.id);
+        project.assets = _.keyBy(assets, (asset) => asset.id);
+        return project;
+    }
+
+    it("deletes all asset metadata files when project is deleted", async () => {
+        const assetCount = 10;
+        populateProjectAssets(testProject);
 
         await projectSerivce.delete(testProject);
-        expect(storageProviderMock.deleteFile.mock.calls).toHaveLength(assets.length + 1);
+        expect(storageProviderMock.deleteFile.mock.calls).toHaveLength(assetCount + 1);
     });
+
+    it("Deletes tag from all assets within project", async () => {
+        const tag1 = "tag1";
+        const tag2 = "tag2";
+        const region = MockFactory.createTestRegion(undefined, [tag1, tag2])
+        const asset = MockFactory.createTestAsset();
+        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(
+            MockFactory.createTestAssetMetadata(
+                asset,
+                [region]
+            )
+        ));
+
+        const saveMetadata = jest.fn();
+        AssetService.prototype.save = saveMetadata;
+
+        const expectedAssetMetadata = MockFactory.createTestAssetMetadata(
+            asset,
+            [
+                {
+                    ...region,
+                    tags: [tag2]
+                }
+            ]
+        );
+        const project = populateProjectAssets();
+        const originalAssets = {...project.assets};
+        await projectSerivce.deleteTag(project, tag1);
+        expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
+        fail();
+    });
+
+    it("Deletes any empty regions after deleting only tag from region", async () => {
+        const project = populateProjectAssets();
+        const originalAssets = {...project.assets};
+        await projectSerivce.deleteTag(project, defaultTag);
+        fail();
+    });
+
+    it("Updates renamed tag within all assets of project", async () => {
+        const tag = "Tag";
+        const newTag = "New Tag";
+        const project = populateProjectAssets();
+        const originalAssets = {...project.assets};
+        await projectSerivce.updateTag(project, tag, newTag);
+        fail();
+    });
+
 });
