@@ -1,3 +1,4 @@
+import * as tf from "@tensorflow/tfjs";
 import axios, { AxiosResponse } from "axios";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
@@ -68,5 +69,29 @@ describe("Load an Object Detection model", () => {
         expect(noDetection.length).toEqual(0);
 
         model.dispose();
+    });
+});
+
+describe("Test Detection on Fake Model", () => {
+    beforeEach(() => {
+        spyOn(tf, "loadGraphModel").and.callFake(() => {
+            const model = {
+                executeAsync:
+                    (x: tf.Tensor) => [tf.ones([1, 1917, 90]), tf.ones([1, 1917, 1, 4])],
+            };
+
+            return model;
+        });
+    });
+
+    it("ObjectDetection detect method should generate output", async () => {
+        const model = new ObjectDetection();
+        await model.load("path");
+
+        const x = tf.zeros([227, 227, 3]) as tf.Tensor3D;
+
+        const data = await model.detect(x, 1);
+
+        expect(data).toEqual([{bbox: [227, 227, 0, 0], class: "", score: 1}]);
     });
 });
