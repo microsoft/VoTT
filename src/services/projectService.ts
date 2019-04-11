@@ -102,14 +102,14 @@ export default class ProjectService implements IProjectService {
     }
 
     public async deleteTag(project: IProject, tag: string): Promise<void> {
-        await this.scanProjectTags(project, tag, (tags) => tags.filter((t) => t !== tag));
+        await this.updateProjectTags(project, tag, (tags) => tags.filter((t) => t !== tag));
     }
 
     public async updateTag(project: IProject, tag: string, newTag: string): Promise<void> {
-        await this.scanProjectTags(project, tag, (tags) => tags.map((t) => (t === tag) ? newTag : t));
+        await this.updateProjectTags(project, tag, (tags) => tags.map((t) => (t === tag) ? newTag : t));
     }
 
-    private async scanProjectTags(
+    private async updateProjectTags(
             project: IProject, tag: string, transformer: (tags: string[]) => string[]) {
         const assetService = new AssetService(project);
         const assetKeys = Object.keys(project.assets);
