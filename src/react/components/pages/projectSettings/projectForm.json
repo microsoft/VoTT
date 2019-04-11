@@ -3,7 +3,8 @@
     "properties": {
         "name": {
             "title": "${strings.common.displayName}",
-            "type": "string"
+            "type": "string",
+            "pattern": "^[^\\\\\\\\/:*?\\\\\\\"<>|]*$"
         },
         "securityToken": {
             "title": "${strings.projectSettings.securityToken.title}",
