@@ -16,6 +16,8 @@ describe("Asset Preview Component", () => {
     const onActivatedHandler = jest.fn();
     const onDeactivatedHandler = jest.fn();
     const onChildAssetSelectedHandler = jest.fn();
+    const onAssetChangedHandler = jest.fn();
+    const onBeforeAssetChangedHandler = jest.fn(() => true);
 
     const defaultProps: IAssetPreviewProps = {
         asset: {
@@ -23,10 +25,13 @@ describe("Asset Preview Component", () => {
             path: dataUri,
         },
         autoPlay: false,
+        controlsEnabled: true,
         onLoaded: onLoadedHandler,
         onError: onErrorHandler,
         onActivated: onActivatedHandler,
         onDeactivated: onDeactivatedHandler,
+        onBeforeAssetChanged: onBeforeAssetChangedHandler,
+        onAssetChanged: onAssetChangedHandler,
         onChildAssetSelected: onChildAssetSelectedHandler,
     };
 
@@ -35,9 +40,24 @@ describe("Asset Preview Component", () => {
         return mount(<AssetPreview {...props} />);
     }
 
+    beforeEach(() => {
+        onLoadedHandler.mockClear();
+        onErrorHandler.mockClear();
+        onActivatedHandler.mockClear();
+        onDeactivatedHandler.mockClear();
+        onBeforeAssetChangedHandler.mockClear();
+        onAssetChangedHandler.mockClear();
+        onChildAssetSelectedHandler.mockClear();
+    });
+
     it("renders an image asset when asset type is image", () => {
         wrapper = createComponent();
+        const imageProps = wrapper.find(ImageAsset).props();
+
         expect(wrapper.find(ImageAsset).exists()).toBe(true);
+        expect(imageProps.onActivated).toBe(onActivatedHandler);
+        expect(imageProps.onDeactivated).toBe(onDeactivatedHandler);
+
     });
 
     it("renders a video asset when asset type is video", () => {
@@ -46,20 +66,26 @@ describe("Asset Preview Component", () => {
             asset: MockFactory.createVideoTestAsset("test-video-asset"),
         };
         wrapper = createComponent(props);
+        const videoProps = wrapper.find(VideoAsset).props();
+
         expect(wrapper.find(VideoAsset).exists()).toBe(true);
+        expect(videoProps.controlsEnabled).toBe(defaultProps.controlsEnabled);
+        expect(videoProps.onActivated).toBe(onActivatedHandler);
+        expect(videoProps.onDeactivated).toBe(onDeactivatedHandler);
+        expect(videoProps.onBeforeAssetChanged).toBe(onBeforeAssetChangedHandler);
     });
 
     it("renders a tfrecord asset when asset type is tfrecord", () => {
         const props: IAssetPreviewProps = {
             ...defaultProps,
             asset: MockFactory.createTestAsset("test-record-asset",
-                                                AssetState.Visited,
-                                                dataUri,
-                                                AssetType.TFRecord),
+                AssetState.Visited,
+                dataUri,
+                AssetType.TFRecord),
         };
         wrapper = createComponent(props);
         expect(wrapper.find(TFRecordAsset).exists()).toBe(true);
-        expect(wrapper.instance().state).toMatchObject({hasError: false});
+        expect(wrapper.instance().state).toMatchObject({ hasError: false });
     });
 
     it("renders loading indicator if asset isn't fully loaded", () => {
@@ -163,6 +189,35 @@ describe("Asset Preview Component", () => {
         wrapper.find(VideoAsset).props().onChildAssetSelected(childAsset);
 
         expect(onChildAssetSelectedHandler).toBeCalledWith(childAsset);
+    });
+
+    it("raises onBeforeAssetChanged during asset transitions", () => {
+        const videoAsset = MockFactory.createVideoTestAsset("test-video-asset");
+        const props: IAssetPreviewProps = {
+            ...defaultProps,
+            asset: videoAsset,
+        };
+        wrapper = createComponent(props);
+        wrapper.find(VideoAsset).props().onBeforeAssetChanged();
+
+        expect(onBeforeAssetChangedHandler).toBeCalled();
+    });
+
+    it("blocks onChildAssetSelected", () => {
+        const videoAsset = MockFactory.createVideoTestAsset("test-video-asset");
+        const childAsset = MockFactory.createChildVideoAsset(videoAsset, 2);
+        onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
+
+        const props: IAssetPreviewProps = {
+            ...defaultProps,
+            asset: videoAsset,
+        };
+        wrapper = createComponent(props);
+        wrapper.find(VideoAsset).props().onChildAssetSelected(childAsset);
+
+        expect(onBeforeAssetChangedHandler).toBeCalled();
+        expect(onChildAssetSelectedHandler).not.toBeCalled();
+        expect(onAssetChangedHandler).not.toBeCalled();
     });
 
     it("renders landscape asset correctly", () => {

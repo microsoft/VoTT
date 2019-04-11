@@ -164,6 +164,13 @@ export const spanish: IAppStrings = {
             saveSuccess: "${connection.name} guardado correctamente",
             deleteSuccess: "${connection.name} eliminado correctamente",
         },
+        imageCorsWarning: "Advertencia: Cuando se usa VoTT en un navegador web, es posible que algunos activos de este \
+                          Búsqueda de Imágenes Bing no se exporten correctamente debido a las restricciones de CORS \
+                          (Recursos de Origen Cruzado).",
+        blobCorsWarning: "Advertencia: CORS (Recursos de Origen Cruzado) debe estar habilitado en la \
+                          cuenta de Azure Blob Storage para poder usarlo como una conexión de origen o destino. Puede \
+                          encontrar más información sobre cómo habilitar CORS en la {0}.",
+        azDocLinkText: "documentación de Azure.",
         providers: {
             azureBlob: {
                 title: "Azure Blob Storage",
@@ -257,6 +264,13 @@ export const spanish: IAppStrings = {
                 confirmation: "¿Está seguro que quiere borrar todas las regiones?",
             },
         },
+        messages: {
+            enforceTaggedRegions: {
+                title: "Las regiones no válidas detectadas",
+                // tslint:disable-next-line:max-line-length
+                description: "1 o más regiones no se han etiquetado.  Por favor, etiquete todas las regiones antes de continuar con el siguiente activo.",
+            },
+        },
     },
     export: {
         title: "Exportar",
@@ -278,6 +292,12 @@ export const spanish: IAppStrings = {
             },
             vottJson: {
                 displayName: "VoTT JSON",
+                properties: {
+                    includeImages: {
+                        title: "Incluir imágenes",
+                        description: "Si desea o no incluir activos de imagen binaria en la conexión de destino",
+                    },
+                },
             },
             azureCV: {
                 displayName: "Servicio de Visión Personalizada Azure",

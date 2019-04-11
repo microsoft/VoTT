@@ -4,7 +4,7 @@ import { CanvasTools } from "vott-ct";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
     EditorMode, IAssetMetadata,
-    IProject, IRegion, RegionType,
+    IProject, IRegion, RegionType, IBoundingBox, ISize,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
@@ -14,6 +14,7 @@ import Confirm from "../../common/confirm/confirm";
 import { strings } from "../../../../common/strings";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
+import { createContentBoundingBox } from "../../../../common/layout";
 
 export interface ICanvasProps extends React.Props<Canvas> {
     selectedAsset: IAssetMetadata;
@@ -29,11 +30,10 @@ export interface ICanvasProps extends React.Props<Canvas> {
 export interface ICanvasState {
     currentAsset: IAssetMetadata;
     contentSource: ContentSource;
-    assetLoadError: boolean;
+    enabled: boolean;
 }
 
 export default class Canvas extends React.Component<ICanvasProps, ICanvasState> {
-
     public static defaultProps: ICanvasProps = {
         selectionMode: SelectionMode.NONE,
         editorMode: EditorMode.Select,
@@ -47,10 +47,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     public state: ICanvasState = {
         currentAsset: this.props.selectedAsset,
         contentSource: null,
-        assetLoadError: false,
+        enabled: false,
     };
 
-    private intervalTimer: number = null;
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
     private clearConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -71,18 +70,14 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     public componentWillUnmount() {
         window.removeEventListener("resize", this.onWindowResize);
-        this.stopContentSource();
     }
 
-    public componentDidUpdate = (prevProps: Readonly<ICanvasProps>) => {
+    public componentDidUpdate = async (prevProps: Readonly<ICanvasProps>, prevState: Readonly<ICanvasState>) => {
         if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
-            this.editor.AS.disable();
-            this.setState({
-                currentAsset: this.props.selectedAsset,
-                contentSource: null,
-            });
+            this.setState({ currentAsset: this.props.selectedAsset });
         }
 
+        // Handle selection mode changes
         if (this.props.selectionMode !== prevProps.selectionMode) {
             const options = (this.props.selectionMode === SelectionMode.COPYRECT) ? this.template : null;
             this.editor.AS.setSelectionMode({ mode: this.props.selectionMode, template: options });
@@ -92,10 +87,29 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         if (this.props.project.tags !== prevProps.project.tags) {
             this.updateCanvasToolsRegions();
         }
+
+        // Handles when the canvas is enabled & disabled
+        if (prevState.enabled !== this.state.enabled) {
+            // When the canvas is ready to display
+            if (this.state.enabled) {
+                this.refreshCanvasToolsRegions();
+                this.setContentSource(this.state.contentSource);
+                this.editor.AS.setSelectionMode(this.props.selectionMode);
+                this.editor.AS.enable();
+
+                if (this.props.onSelectedRegionsChanged) {
+                    this.props.onSelectedRegionsChanged(this.getSelectedRegions());
+                }
+            } else { // When the canvas has been disabled
+                this.editor.AS.disable();
+                this.clearAllRegions();
+                this.editor.AS.setSelectionMode(SelectionMode.NONE);
+            }
+        }
     }
 
     public render = () => {
-        const className = this.state.assetLoadError || !this.state.contentSource ? "canvas-disabled" : "canvas-enabled";
+        const className = this.state.enabled ? "canvas-enabled" : "canvas-disabled";
 
         return (
             <Fragment>
@@ -261,8 +275,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         // RegionData not serializable so need to extract data
         const scaledRegionData = this.editor.scaleRegionToSourceSize(
             regionData,
-            this.props.selectedAsset.asset.size.width,
-            this.props.selectedAsset.asset.size.height,
+            this.state.currentAsset.asset.size.width,
+            this.state.currentAsset.asset.size.height,
         );
         const lockedTags = this.props.lockedTags;
         const newRegion = {
@@ -315,8 +329,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const movedRegion = currentRegions[movedRegionIndex];
         const scaledRegionData = this.editor.scaleRegionToSourceSize(
             regionData,
-            this.props.selectedAsset.asset.size.width,
-            this.props.selectedAsset.asset.size.height,
+            this.state.currentAsset.asset.size.width,
+            this.state.currentAsset.asset.size.height,
         );
 
         if (movedRegion) {
@@ -381,6 +395,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
     private renderChildren = () => {
         return React.cloneElement(this.props.children, {
+            onAssetChanged: this.onAssetChanged,
             onLoaded: this.onAssetLoaded,
             onError: this.onAssetError,
             onActivated: this.onAssetActivated,
@@ -389,73 +404,41 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     /**
-     * Syncs the canvas with the content source
+     * Raised when the asset bound to the asset preview has changed
      */
-    private syncContentSource = () => {
-        // Don't start a new interval if one is already started
-        if (this.intervalTimer) {
-            return;
-        }
-
-        // Setup an interval for ever 33ms...
-        // This is roughly equivalent to 30fps on videos
-        this.intervalTimer = window.setInterval(async () => {
-            this.positionCanvas(this.state.contentSource);
-            await this.setContentSource(this.state.contentSource);
-        }, 33);
-    }
-
-    /**
-     * Stops auto sync of the canvas with the underlying content source
-     */
-    private stopContentSource = () => {
-        // If an sync interval exists then clear it
-        if (this.intervalTimer) {
-            window.clearInterval(this.intervalTimer);
-            this.intervalTimer = null;
-        }
+    private onAssetChanged = () => {
+        this.setState({ enabled: false });
     }
 
     /**
      * Raised when the underlying asset has completed loading
      */
     private onAssetLoaded = (contentSource: ContentSource) => {
-        this.setState({ contentSource, assetLoadError: false }, async () => {
-            this.positionCanvas(this.state.contentSource);
-            await this.setContentSource(this.state.contentSource);
-
-            this.refreshCanvasToolsRegions();
-
-            if (this.props.onSelectedRegionsChanged) {
-                this.props.onSelectedRegionsChanged(this.getSelectedRegions());
-            }
-        });
+        this.setState({ contentSource });
+        this.positionCanvas(contentSource);
     }
 
     private onAssetError = () => {
-        this.setState({ assetLoadError: true });
+        this.setState({
+            enabled: false,
+        });
     }
 
     /**
      * Raised when the asset is taking control over the rendering
      */
     private onAssetActivated = () => {
-        this.editor.AS.setSelectionMode(SelectionMode.NONE);
-        this.syncContentSource();
+        this.setState({ enabled: false });
     }
 
     /**
      * Raise when the asset is handing off control of rendering
      */
-    private onAssetDeactivated = () => {
-        if (this.intervalTimer) {
-            this.stopContentSource();
-        } else {
-            this.setContentSource(this.state.contentSource);
-        }
-
-        this.editor.AS.setSelectionMode(this.props.selectionMode);
-        this.editor.AS.enable();
+    private onAssetDeactivated = (contentSource: ContentSource) => {
+        this.setState({
+            contentSource,
+            enabled: true,
+        });
     }
 
     /**
@@ -463,7 +446,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     private setContentSource = async (contentSource: ContentSource) => {
         try {
-            await this.editor.addContentSource(contentSource);
+            await this.editor.addContentSource(contentSource as any);
         } catch (e) {
             console.warn(e);
         }
@@ -479,11 +462,12 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
 
         const canvas = this.canvasZone.current;
         if (canvas) {
-            canvas.style.top = `${contentSource.offsetTop}px`;
-            canvas.style.left = `${contentSource.offsetLeft}px`;
-            canvas.style.width = `${contentSource.offsetWidth}px`;
-            canvas.style.height = `${contentSource.offsetHeight}px`;
-            this.editor.resize(contentSource.offsetWidth, contentSource.offsetHeight);
+            const boundingBox = createContentBoundingBox(contentSource);
+            canvas.style.top = `${boundingBox.top}px`;
+            canvas.style.left = `${boundingBox.left}px`;
+            canvas.style.width = `${boundingBox.width}px`;
+            canvas.style.height = `${boundingBox.height}px`;
+            this.editor.resize(boundingBox.width, boundingBox.height);
         }
     }
 
@@ -496,9 +480,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         }
 
         this.positionCanvas(this.state.contentSource);
-        if (!this.intervalTimer) {
-            await this.setContentSource(this.state.contentSource);
-        }
     }
 
     /**
@@ -536,8 +517,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 region.id,
                 this.editor.scaleRegionToFrameSize(
                     loadedRegionData,
-                    this.props.selectedAsset.asset.size.width,
-                    this.props.selectedAsset.asset.size.height,
+                    this.state.currentAsset.asset.size.width,
+                    this.state.currentAsset.asset.size.height,
                 ),
                 CanvasHelpers.getTagsDescriptor(this.props.project.tags, region));
         });
