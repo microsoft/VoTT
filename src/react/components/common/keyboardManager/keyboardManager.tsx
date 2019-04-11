@@ -23,7 +23,7 @@ export class KeyboardManager extends React.Component<any, IKeyboardContext> {
         keyboard: new KeyboardRegistrationManager(),
     };
 
-    private nonSupportedKeys = new Set(["Ctrl", " Control", "Alt"]);
+    private nonSupportedKeys = new Set(["Meta", "Ctrl", " Control", "Alt"]);
     private inputElementTypes = new Set(["input", "select", "textarea"]);
 
     public componentDidMount() {
