@@ -64,7 +64,6 @@ export default class ImportService implements IImportService {
             },
             autoSave: true,
         };
-
         return convertedProject;
     }
 
@@ -112,7 +111,7 @@ export default class ImportService implements IImportService {
             format: parentFormat,
             id: new MD5().update(v1Project.file.path.replace(/\.[^/.]+$/, "")).digest("hex"),
             name: v1Project.file.path.replace(/\.[^/.]+$/, "").replace(/^.*[\\\/]/, ""),
-            path: `file:${v1Project.file.path.replace(/\.[^/.]+$/, "")}`,
+            path: this.normalizePath(`file:${v1Project.file.path.replace(/\.[^/.]+$/, "")}`),
             size: {
                 height: 0,
                 width: 0,
@@ -135,11 +134,15 @@ export default class ImportService implements IImportService {
             name: `${project.file.name.split(".")[0]} Connection`,
             providerType: "localFileSystemProxy",
             providerOptions: {
-                folderPath: project.file.path.replace(/[^\/]*$/, ""),
+                folderPath: this.normalizePath(project.file.path.replace(/[^(\/|\\)]*$/, "")),
             },
         };
 
         return connection;
+    }
+
+    private normalizePath(path: string): string {
+        return path.replace(/\\/g, "/");
     }
 
     /**
@@ -210,7 +213,7 @@ export default class ImportService implements IImportService {
                 const populatedMetadata = await assetService.getAssetMetadata(asset).then((metadata) => {
                     const taggedMetadata = this.addRegions(metadata, frameRegions);
                     taggedMetadata.asset.state = assetState;
-                    taggedMetadata.asset.path = `file:${taggedMetadata.asset.path}`;
+                    taggedMetadata.asset.path = this.normalizePath(`file:${taggedMetadata.asset.path}`);
                     return taggedMetadata;
                 });
                 generatedAssetMetadata.push(populatedMetadata);
@@ -238,7 +241,7 @@ export default class ImportService implements IImportService {
                 const timestamp = frameInt / Number(originalProject.framerate) - 1;
                 const pathToUse = v1Project.file.path.replace(/\.[^/.]+$/, "");
                 const asset = AssetService.createAssetFromFilePath(
-                `file:${pathToUse}#t=${timestamp}`);
+                this.normalizePath(`file:${pathToUse}#t=${timestamp}`));
                 const assetState = originalProject.visitedFrames.indexOf(frameInt) > -1 && frameRegions.length > 0
                 ? AssetState.Tagged : (originalProject.visitedFrames.indexOf(frameInt) > -1
                 ? AssetState.Visited : AssetState.NotVisited);
