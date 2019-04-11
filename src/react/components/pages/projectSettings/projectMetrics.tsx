@@ -41,16 +41,6 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
         projectAssetsMetadata: [],
     };
 
-    private tipStyle = {
-        display: "flex",
-        color: "#fff",
-        background: "#000",
-        alignItems: "center",
-        padding: "5px",
-    };
-
-    private boxStyle = { height: "10px", width: "10px" };
-
     public async componentDidMount() {
         this.setState({
             loading: true,
@@ -206,8 +196,8 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                     >
                         {hoveredCell ? (
                             <Hint value={this.buildValue(hoveredCell)}>
-                                <div style={this.tipStyle}>
-                                    <div style={{ ...this.boxStyle, background: hoveredCell.clr }} />
+                                <div className="hint-content">
+                                    <div className="hint-content-box" style={{ background: hoveredCell.clr }} />
                                     <span className="px-2">{hoveredCell.title}</span>
                                 </div>
                             </Hint>
