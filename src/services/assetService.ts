@@ -131,7 +131,7 @@ export class AssetService {
                 !normalizedPath.startsWith("https://") &&
                 !normalizedPath.startsWith("file:")) {
                 // First replace \ character with / the do the standard url encoding then encode unsupported characters
-                asset.path = encodeFileURI(asset.path);
+                asset.path = encodeFileURI(asset.path, true);
             }
 
             return asset;
