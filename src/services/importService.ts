@@ -97,7 +97,6 @@ export default class ImportService implements IImportService {
      * @param project - V1 Project Content and File Information
      */
     private async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
-        let parentAsset: IAsset;
         let parentFormat: string;
         const pathParts = v1Project.file.path.split(/[\\\/]/);
         const fileName = pathParts[pathParts.length - 1];
@@ -108,18 +107,16 @@ export default class ImportService implements IImportService {
             throw e;
         }
 
-        parentAsset = {
-            format: parentFormat,
-            id: new MD5().update(v1Project.file.path.replace(/\.[^/.]+$/, "")).digest("hex"),
-            name: v1Project.file.path.replace(/\.[^/.]+$/, "").replace(/^.*[\\\/]/, ""),
-            path: encodeFileURI(v1Project.file.path.replace(/\.[^/.]+$/, "")),
-            size: {
-                height: 0,
-                width: 0,
-            },
-            state: 1,
-            type: AssetType.Video,
-        };
+        const filePath = v1Project.file.path.replace(/\.[^/.]+$/, "");
+
+        const parentAsset = AssetService.createAssetFromFilePath(filePath, filePath.replace(/^.*[\\\/]/, ""));
+        parentAsset.size = {
+            height: 0,
+            width: 0,
+        }
+        parentAsset.state = AssetState.Visited;
+        parentAsset.path = encodeFileURI(filePath);
+        
         const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
         parentAsset.size = { height: assetProps.height, width: assetProps.width };
         return parentAsset;
