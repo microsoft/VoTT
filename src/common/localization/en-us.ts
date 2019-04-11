@@ -109,6 +109,7 @@ export const english: IAppStrings = {
         totalAssetCount: "Total Assets",
         visitedAssets: "Visited Assets (${count})",
         taggedAssets: "Tagged Assets (${count})",
+        nonTaggedAssets: "Not Tagged Assets (${count})",
         nonVisitedAssets: "Not Visited Assets (${count})",
         tagsSectionTitle: "Tags & Labels",
         totalRegionCount: "Total Tagged Regions",
