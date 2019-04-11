@@ -30,6 +30,8 @@ import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
+import { ObjectDetection, DetectedObject } from "../../../../providers/activeLearning/objectDetection";
+import { Env } from "../../../../common/environment";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
