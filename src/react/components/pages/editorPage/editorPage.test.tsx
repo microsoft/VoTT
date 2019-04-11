@@ -69,6 +69,7 @@ describe("Editor Page Component", () => {
     const testAssets: IAsset[] = MockFactory.createTestAssets(5);
 
     beforeAll(() => {
+        registerToolbar();
         window["require"] = jest.fn(() => electronMock);
 
         const editorMock = Editor as any;
@@ -507,7 +508,6 @@ describe("Editor Page Component", () => {
         const removeAllRegionsConfirm = jest.fn();
 
         beforeAll(() => {
-            registerToolbar();
             const clipboard = (navigator as any).clipboard;
             if (!(clipboard && clipboard.writeText)) {
                 (navigator as any).clipboard = {
@@ -815,6 +815,28 @@ describe("Editor Page Component", () => {
                     height: newThumbnailWidth / (4 / 3),
                 },
             }));
+        });
+    });
+
+    describe("Active Learning", () => {
+        let wrapper: ReactWrapper = null;
+        let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
+
+        beforeEach(async () => {
+            const testProject = MockFactory.createTestProject("TestProject");
+            const store = createStore(testProject, true);
+            const props = MockFactory.editorPageProps(testProject.id);
+            wrapper = createComponent(store, props);
+
+            editorPage = wrapper.find(EditorPage).childAt(0);
+            await waitForSelectedAsset(wrapper);
+            wrapper.update();
+        });
+
+        it("Detect regions and tags", async () => {
+            wrapper.find(`.${ToolbarItemName.ActiveLearning}`).simulate("click");
+
+            // TODO
         });
     });
 });
