@@ -548,7 +548,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 const imageBuffer = await new Response(blob).arrayBuffer();
                 const buffer = Buffer.from(imageBuffer);
                 const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
-                const image = document.createElement("img") as HTMLImageElement;
+                const image = document.createElement("img");
 
                 image.onload = async () => {
                     const regions = [...this.state.selectedAsset.regions];
