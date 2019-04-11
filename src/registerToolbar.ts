@@ -99,7 +99,7 @@ export default function registerToolbar() {
         icon: "fa-ban",
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
-        accelerators: ["CmdOrCtrl+Delete"],
+        accelerators: ["CmdOrCtrl+Delete", "CmdOrCtrl+Backspace"],
     });
 
     ToolbarItemFactory.register({
