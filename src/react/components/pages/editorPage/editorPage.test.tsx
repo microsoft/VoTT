@@ -824,15 +824,13 @@ describe("Editor Page Component", () => {
         let editorPage: ReactWrapper<IEditorPageProps, IEditorPageState> = null;
 
         const objectDetectionMock = ObjectDetection as jest.Mock<ObjectDetection>;
-        // objectDetectionMock.prototype.loaded = jest.fn(() => true);
-        // objectDetectionMock.loaded = true;
-        Object.defineProperty(objectDetectionMock, "loaded", {
+        Object.defineProperty(objectDetectionMock.prototype, "loaded", {
             get: () => {
               return true;
             },
         });
         objectDetectionMock.prototype.detect = jest.fn(() => {
-            return [];
+            return [{bbox: [227, 227, 0, 0], class: "label", score: 1}];
         });
 
         beforeEach(async () => {
@@ -850,6 +848,8 @@ describe("Editor Page Component", () => {
             wrapper.find(`.${ToolbarItemName.ActiveLearning}`).simulate("click");
 
             // TODO
+
+            // expect(true).toEqual(false);
         });
     });
 });
