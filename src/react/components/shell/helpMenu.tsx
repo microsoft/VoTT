@@ -28,7 +28,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
                 <i className={`fas ${this.icon}`}/>
                 <KeyboardBinding
                     displayName={strings.editorPage.help.title}
-                    accelerators={["Ctrl+H", "Ctrl+h"]}
+                    accelerators={["CmdOrCtrl+H", "CmdOrCtrl+h"]}
                     handler={() => this.setState({show: !this.state.show})}
                     icon={this.icon}
                     keyEventType={KeyEventType.KeyDown}

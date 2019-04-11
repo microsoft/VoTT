@@ -582,22 +582,22 @@ describe("Editor Page Component", () => {
         });
 
         it("Calls copy regions with hot key", () => {
-            dispatchKeyEvent("Ctrl+c");
+            dispatchKeyEvent("CmdOrCtrl+c");
             expect(copyRegions).toBeCalled();
         });
 
         it("Calls cut regions with hot key", () => {
-            dispatchKeyEvent("Ctrl+x");
+            dispatchKeyEvent("CmdOrCtrl+x");
             expect(cutRegions).toBeCalled();
         });
 
         it("Calls paste regions with hot key", () => {
-            dispatchKeyEvent("Ctrl+v");
+            dispatchKeyEvent("CmdOrCtrl+v");
             expect(pasteRegions).toBeCalled();
         });
 
         it("Calls remove all regions confirmation with hot key", () => {
-            dispatchKeyEvent("Ctrl+Delete");
+            dispatchKeyEvent("CmdOrCtrl+Delete");
             expect(removeAllRegionsConfirm).toBeCalled();
         });
 
@@ -618,7 +618,7 @@ describe("Editor Page Component", () => {
             expect(editorPage.state().selectedTag).toEqual(project.tags[0].name);
         });
 
-        it("sets selected tag and locked tags when ctrl + hot key is pressed", async () => {
+        it("sets selected tag and locked tags when CmdOrCtrl + hot key is pressed", async () => {
             const project = MockFactory.createTestProject("test", 5);
             const store = createReduxStore({
                 ...MockFactory.initialState(),
@@ -630,7 +630,7 @@ describe("Editor Page Component", () => {
 
             expect(editorPage.state().selectedTag).toBeNull();
 
-            dispatchKeyEvent("Ctrl+1");
+            dispatchKeyEvent("CmdOrCtrl+1");
 
             const firstTag = project.tags[0].name;
             expect(editorPage.state().selectedTag).toEqual(firstTag);
@@ -705,7 +705,7 @@ describe("Editor Page Component", () => {
             expect(stateTags).toHaveLength(project.tags.length - 1);
         });
 
-        it("Adds tag to locked tags when ctrl clicked", async () => {
+        it("Adds tag to locked tags when CmdOrCtrl clicked", async () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
                 ...MockFactory.initialState(),

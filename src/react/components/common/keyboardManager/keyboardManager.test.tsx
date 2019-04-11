@@ -44,7 +44,7 @@ describe("Keyboard Manager Component", () => {
         expect(wrapper.find(".child").exists()).toBe(true);
     });
 
-    it("listens for Ctrl+ keydown events and invokes handlers", () => {
+    it("listens for CmdOrCtrl+ keydown events and invokes handlers", () => {
         const keyboardEvent = new KeyboardEvent(
             KeyEventType.KeyDown, {
                 ctrlKey: true,
@@ -54,10 +54,10 @@ describe("Keyboard Manager Component", () => {
         window.dispatchEvent(keyboardEvent);
 
         expect(registrationManagerMock.prototype.invokeHandler)
-            .toBeCalledWith(KeyEventType.KeyDown, "Ctrl+1", keyboardEvent);
+            .toBeCalledWith(KeyEventType.KeyDown, "CmdOrCtrl+1", keyboardEvent);
     });
 
-    it("listens for Ctrl+ keyup events and invokes handlers", () => {
+    it("listens for CmdOrCtrl+ keyup events and invokes handlers", () => {
         const keyboardEvent = new KeyboardEvent(
             KeyEventType.KeyUp, {
                 ctrlKey: true,
@@ -67,10 +67,10 @@ describe("Keyboard Manager Component", () => {
         window.dispatchEvent(keyboardEvent);
 
         expect(registrationManagerMock.prototype.invokeHandler)
-            .toBeCalledWith(KeyEventType.KeyUp, "Ctrl+1", keyboardEvent);
+            .toBeCalledWith(KeyEventType.KeyUp, "CmdOrCtrl+1", keyboardEvent);
     });
 
-    it("listens for Ctrl+ keypress events and invokes handlers", () => {
+    it("listens for CmdOrCtrl+ keypress events and invokes handlers", () => {
         const keyboardEvent = new KeyboardEvent(
             KeyEventType.KeyPress, {
                 ctrlKey: true,
@@ -80,7 +80,7 @@ describe("Keyboard Manager Component", () => {
         window.dispatchEvent(keyboardEvent);
 
         expect(registrationManagerMock.prototype.invokeHandler)
-            .toBeCalledWith(KeyEventType.KeyPress, "Ctrl+1", keyboardEvent);
+            .toBeCalledWith(KeyEventType.KeyPress, "CmdOrCtrl+1", keyboardEvent);
     });
 
     it("listens for Alt+ keydown events and invokes handlers", () => {
