@@ -61,7 +61,7 @@ export class KeyboardRegistrationManager {
     /**
      * Gets a list of registered event handlers for the specified key code
      * @param keyEventType Type of key event (keydown, keyup, keypress)
-     * @param keyCode The key code combination, ex) Ctrl+1
+     * @param keyCode The key code combination, ex) CmdOrCtrl+1
      */
     public getHandler(keyEventType: KeyEventType, keyCode: string): (evt?: KeyboardEvent) => void {
         Guard.null(keyEventType);
@@ -78,7 +78,7 @@ export class KeyboardRegistrationManager {
     /**
      * Invokes all registered event handlers for the specified key code\
      * @param keyEventType Type of key event (keydown, keyup, keypress)
-     * @param keyCode The key code combination, ex) Ctrl+1
+     * @param keyCode The key code combination, ex) CmdOrCtrl+1
      * @param evt The keyboard event that was raised
      */
     public invokeHandler(keyEventType: KeyEventType, keyCode: string, evt: KeyboardEvent) {
