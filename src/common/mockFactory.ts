@@ -1064,7 +1064,7 @@ export default class MockFactory {
         });
     }
 
-    public static mockCanvas(assetTestCache: Map<string, IAsset>) {
+    public static mockCanvas() {
         return jest.fn(() => {
             const canvas: any = {
                 width: 0,
