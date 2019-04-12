@@ -100,7 +100,7 @@ All `V2` efforts are on the [master](https://github.com/Microsoft/VoTT/tree/mast
 
 ### V1 projects in V2
 
-There is support for converting a V1 project into V2 format, but only for V1 projects that have only picture assets. Video assets from V1 are not yet supported. For a smooth experience, we recommend keeping the current V1 project (JSON) file in a directory with all the images for that project. Upon opening the JSON file, a window will pop up to confirm that the app should convert the project before redirecting to the editor screen. In this process, a `.vott` file will be generated in the same project directory, which may be used as the main project file going forward. We recommend backing up the V1 project file before converting the project.
+There is support for converting a V1 project into V2 format. Upon opening the JSON file, a window will pop up to confirm that the app should convert the project before redirecting to the editor screen. In this process, a `.vott` file will be generated in the same project directory, which may be used as the main project file going forward. We recommend backing up the V1 project file before converting the project.
 
 ## Using VoTT
 

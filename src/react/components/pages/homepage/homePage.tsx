@@ -14,7 +14,7 @@ import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
     IApplicationState, IConnection, IProject, IFileInfo,
-    ErrorCode, AppError, IAppError, IAppSettings,
+    ErrorCode, AppError, IAppError, IAppSettings, IAsset,
 } from "../../../../models/applicationState";
 import ImportService from "../../../../services/importService";
 import { IAssetMetadata } from "../../../../models/applicationState";
@@ -72,16 +72,17 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
                                 <h6>{strings.homePage.newProject}</h6>
                             </a>
                         </li>
-                        { isElectron() &&
-                        <li>
-                            <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
-                                <i className="fas fa-folder-open fa-9x"></i>
-                                <h6>{strings.homePage.openLocalProject.title}</h6>
-                            </a>
-                            <FilePicker ref={this.filePicker}
-                                onChange={this.onProjectFileUpload}
-                                onError={this.onProjectFileUploadError} />
-                        </li>
+                        {isElectron() &&
+                            <li>
+                                <a href="#" className="p-5 file-upload"
+                                    onClick={() => this.filePicker.current.upload()} >
+                                    <i className="fas fa-folder-open fa-9x"></i>
+                                    <h6>{strings.homePage.openLocalProject.title}</h6>
+                                </a>
+                                <FilePicker ref={this.filePicker}
+                                    onChange={this.onProjectFileUpload}
+                                    onError={this.onProjectFileUploadError} />
+                            </li>
                         }
                         <li>
                             {/*Open Cloud Project*/}
@@ -178,9 +179,10 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     }
 
     private convertProject = async (projectInfo: IFileInfo) => {
-        const importService = new ImportService(this.props.actions);
+        const importService = new ImportService();
         let generatedAssetMetadata: IAssetMetadata[];
-        let project;
+        let project: IProject;
+
         try {
             project = await importService.convertProject(projectInfo);
         } catch (e) {
@@ -193,14 +195,13 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
             generatedAssetMetadata = await importService.generateAssets(projectInfo, project);
             await this.props.actions.saveProject(project);
             await this.props.actions.loadProject(project);
-            const savedMetadata = generatedAssetMetadata.map((assetMetadata) => {
+            await generatedAssetMetadata.mapAsync((assetMetadata) => {
                 return this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
             });
-
-            await Promise.all(savedMetadata);
         } catch (e) {
             throw new Error(`Error importing project information - ${e.message}`);
         }
+
         await this.props.actions.saveProject(this.props.project);
         await this.loadSelectedProject(this.props.project);
     }
