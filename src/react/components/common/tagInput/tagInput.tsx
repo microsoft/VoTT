@@ -158,7 +158,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (!tag) {
             return defaultDOMNode();
         }
-        return ReactDOM.findDOMNode(this.tagItemRefs[tag.name]) as Element; 
+        return ReactDOM.findDOMNode(this.tagItemRefs[tag.name]) as Element;
     }
 
     private onEditTag = (tag: ITag) => {
