@@ -74,7 +74,8 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
                         </li>
                         {isElectron() &&
                             <li>
-                                <a href="#" onClick={() => this.filePicker.current.upload()} className="p-5 file-upload">
+                                <a href="#" className="p-5 file-upload"
+                                    onClick={() => this.filePicker.current.upload()} >
                                     <i className="fas fa-folder-open fa-9x"></i>
                                     <h6>{strings.homePage.openLocalProject.title}</h6>
                                 </a>
