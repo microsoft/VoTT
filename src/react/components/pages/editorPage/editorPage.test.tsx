@@ -833,12 +833,7 @@ describe("Editor Page Component", () => {
             return [{bbox: [227, 227, 0, 0], class: "label", score: 1}];
         });
 
-        beforeAll(() => {
-            spyOn(HTMLCanvasElement.prototype, "toBlob").and.callFake(() => {
-                return new Blob([new Buffer("buffer")], { type: "image" });
-            });
-        });
-
+        const assetTestCache = new Map<string, IAsset>();
         beforeEach(async () => {
             const testProject = MockFactory.createTestProject("TestProject");
             const store = createStore(testProject, true);
@@ -848,14 +843,93 @@ describe("Editor Page Component", () => {
             editorPage = wrapper.find(EditorPage).childAt(0);
             await waitForSelectedAsset(wrapper);
             wrapper.update();
+
+            assetTestCache.clear();
+
+            document.createElement = jest.fn((elementType) => {
+                switch (elementType) {
+                    case "img":
+                        return mockImage();
+                    case "video":
+                        return mockVideo();
+                    case "canvas":
+                        return mockCanvas();
+                }
+            });
+
+            document.querySelector = jest.fn((selectors) => {
+                return mockCanvas();
+            });
         });
 
         it("Detect regions and tags", async () => {
             wrapper.find(`.${ToolbarItemName.ActiveLearning}`).simulate("click");
-
-            // TODO
+            await waitForPrediction(wrapper);
 
             // expect(true).toEqual(false);
+        });
+
+        const mockImage = jest.fn(() => {
+            const element: any = {
+                naturalWidth: 0,
+                naturalHeight: 0,
+                onload: jest.fn(),
+            };
+
+            setImmediate(() => {
+                // const asset = assetTestCache.get(element.src);
+                // element.naturalWidth = asset.size.width;
+                // element.naturalHeight = asset.size.height;
+
+                element.onload();
+            });
+
+            return element;
+        });
+
+        const mockVideo = jest.fn(() => {
+            const element: any = {
+                src: "",
+                duration: 0,
+                currentTime: 0,
+                videoWidth: 0,
+                videoHeight: 0,
+                onloadedmetadata: jest.fn(),
+                onseeked: jest.fn(),
+                onerror: jest.fn(),
+            };
+
+            setImmediate(() => {
+                const asset = assetTestCache.get(element.src);
+                if (asset.name.toLowerCase().indexOf("error") > -1) {
+                    element.onerror("An error occurred loading the video");
+                } else {
+                    element.videoWidth = asset.size.width;
+                    element.videoHeight = asset.size.height;
+                    element.currentTime = asset.timestamp;
+                    element.onloadedmetadata();
+                    element.onseeked();
+                }
+            });
+
+            return element;
+        });
+
+        const mockCanvas = jest.fn(() => {
+            const canvas: any = {
+                width: 0,
+                height: 0,
+                getContext: jest.fn(() => {
+                    return {
+                        drawImage: jest.fn(),
+                    };
+                }),
+                toBlob: jest.fn((callback) => {
+                    callback(new Blob(["Binary image data"]));
+                }),
+            };
+
+            return canvas;
         });
     });
 });
@@ -878,5 +952,15 @@ async function waitForSelectedAsset(wrapper: ReactWrapper) {
             .childAt(0);
 
         return !!editorPage.state().selectedAsset;
+    });
+}
+
+async function waitForPrediction(wrapper: ReactWrapper) {
+    await MockFactory.waitForCondition(() => {
+        const editorPage = wrapper
+            .find(EditorPage)
+            .childAt(0);
+
+        return editorPage.state().selectedAsset.asset.predicted === true;
     });
 }
