@@ -49,6 +49,12 @@ export interface ITagInputState {
     searchQuery: string;
     selectedTag: ITag;
     editingTag: ITag;
+    portalElement: Element;
+    editingTagNode: Element;
+}
+
+function defaultDOMNode(): Element {
+    return document.getElementById("root");
 }
 
 export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
@@ -62,6 +68,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         searchQuery: "",
         selectedTag: null,
         editingTag: null,
+        editingTagNode: null,
+        portalElement: defaultDOMNode(),
     };
 
     private tagItemRefs: { [id: string]: TagInputItem } = {};
@@ -123,6 +131,9 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     public componentDidMount() {
         document.body.appendChild(this.portalDiv);
+        this.setState({
+            portalElement: ReactDOM.findDOMNode(this.portalDiv) as Element,
+        });
     }
 
     public componentWillUnmount() {
@@ -140,6 +151,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             this.setState({
                 selectedTag: null,
             });
+        }
+    }
+
+    private getTagNode = (tag: ITag) => {
+        if (!tag) {
+            return defaultDOMNode();
+        }
+        const ref = this.tagItemRefs[tag.name];
+        if (ref) {
+            return ReactDOM.findDOMNode(ref) as Element;
         }
     }
 
@@ -243,7 +264,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                                 }
                             </div>
                         </Align>
-                        , (ReactDOM.findDOMNode(this.portalDiv) as Element))
+                        , this.state.portalElement)
                 }
             </div>
         );
@@ -267,19 +288,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getEditingTagCoords = () => {
-        const node = this.getEditingTagNode();
+        const node = this.state.editingTagNode;
         return (node) ? node.getBoundingClientRect() : null;
     }
 
-    private getEditingTagNode = () => {
-        const { editingTag } = this.state;
-        if (editingTag) {
-            return ReactDOM.findDOMNode(this.tagItemRefs[editingTag.name]) as Element;
-        }
-    }
-
     private getTarget = () => {
-        return this.getEditingTagNode() || document;
+        return this.state.editingTagNode || document;
     }
 
     private getTagItems = () => {
@@ -334,8 +348,10 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     private onAltClick = (tag: ITag, clickedColor: boolean) => {
         const { editingTag } = this.state;
+        const newEditingTag = editingTag && editingTag.name === tag.name ? null : tag;
         this.setState({
-            editingTag: editingTag && editingTag.name === tag.name ? null : tag,
+            editingTag: newEditingTag,
+            editingTagNode: this.getTagNode(newEditingTag),
             clickedColor,
             showColorPicker: !this.state.showColorPicker && clickedColor,
         });
@@ -352,8 +368,11 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             const inEditMode = editingTag && tag.name === editingTag.name;
             const alreadySelected = selectedTag && selectedTag.name === tag.name;
 
+            const newEditingTag = inEditMode ? null : editingTag;
+
             this.setState({
-                editingTag: inEditMode ? null : editingTag,
+                editingTag: newEditingTag,
+                editingTagNode: this.getTagNode(newEditingTag),
                 selectedTag: (alreadySelected && !inEditMode) ? null : tag,
                 clickedColor: props.clickedColor,
                 showColorPicker: false,
