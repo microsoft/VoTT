@@ -54,7 +54,7 @@ export interface ITagInputState {
 }
 
 function defaultDOMNode(): Element {
-    return document.getElementById("root");
+    return document.createElement("div");
 }
 
 export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
