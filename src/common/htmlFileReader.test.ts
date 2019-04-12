@@ -14,11 +14,11 @@ describe("Html File Reader", () => {
         document.createElement = jest.fn((elementType) => {
             switch (elementType) {
                 case "img":
-                    return mockImage();
+                    return MockFactory.mockImage(assetTestCache);
                 case "video":
-                    return mockVideo();
+                    return MockFactory.mockVideo(assetTestCache);
                 case "canvas":
-                    return mockCanvas();
+                    return MockFactory.mockCanvas(assetTestCache);
             }
         });
     });
@@ -233,68 +233,5 @@ describe("Html File Reader", () => {
 
             await expect(HtmlFileReader.getAssetFrameImage(videoErrorFrame)).rejects.not.toBeNull();
         });
-    });
-
-    const mockImage = jest.fn(() => {
-        const element: any = {
-            naturalWidth: 0,
-            naturalHeight: 0,
-            onload: jest.fn(),
-        };
-
-        setImmediate(() => {
-            const asset = assetTestCache.get(element.src);
-            element.naturalWidth = asset.size.width;
-            element.naturalHeight = asset.size.height;
-
-            element.onload();
-        });
-
-        return element;
-    });
-
-    const mockVideo = jest.fn(() => {
-        const element: any = {
-            src: "",
-            duration: 0,
-            currentTime: 0,
-            videoWidth: 0,
-            videoHeight: 0,
-            onloadedmetadata: jest.fn(),
-            onseeked: jest.fn(),
-            onerror: jest.fn(),
-        };
-
-        setImmediate(() => {
-            const asset = assetTestCache.get(element.src);
-            if (asset.name.toLowerCase().indexOf("error") > -1) {
-                element.onerror("An error occurred loading the video");
-            } else {
-                element.videoWidth = asset.size.width;
-                element.videoHeight = asset.size.height;
-                element.currentTime = asset.timestamp;
-                element.onloadedmetadata();
-                element.onseeked();
-            }
-        });
-
-        return element;
-    });
-
-    const mockCanvas = jest.fn(() => {
-        const canvas: any = {
-            width: 0,
-            height: 0,
-            getContext: jest.fn(() => {
-                return {
-                    drawImage: jest.fn(),
-                };
-            }),
-            toBlob: jest.fn((callback) => {
-                callback(new Blob(["Binary image data"]));
-            }),
-        };
-
-        return canvas;
     });
 });
