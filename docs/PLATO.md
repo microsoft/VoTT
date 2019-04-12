@@ -6,9 +6,7 @@ We're also using the [eslint-plugin-react](https://github.com/yannickcr/eslint-p
 
 ## Coverage Reports
 
-### V2
-
-The [VoTT V2 coverage report](https://vottv2.z5.web.core.windows.net/) is updated on each merged PR, to reflect complexity analysis over time.
+The [VoTT coverage report](https://vottv2.z5.web.core.windows.net/) is updated on each merged PR, to reflect complexity analysis over time.
 
 ### V1
 
