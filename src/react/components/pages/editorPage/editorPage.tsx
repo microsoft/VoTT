@@ -442,15 +442,19 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onTagDeleted = async (tag: string) => {
         const projectService = new ProjectService();
         const updatedAsset = await projectService.deleteTag(this.props.project, tag, this.state.selectedAsset);
-        this.setState({selectedAsset: updatedAsset});
-        this.canvas.current.updateCanvasToolsRegions(updatedAsset);
+        if (updatedAsset) {
+            this.setState({selectedAsset: updatedAsset});
+            this.canvas.current.updateCanvasToolsRegions(updatedAsset);
+        }
     }
 
     private onTagRenamed = async (tag: string, newTag: string) => {
         const projectService = new ProjectService();
         const updatedAsset = await projectService.updateTag(this.props.project, tag, newTag, this.state.selectedAsset);
-        this.setState({selectedAsset: updatedAsset});
-        this.canvas.current.updateCanvasToolsRegions(updatedAsset);
+        if (updatedAsset) {
+            this.setState({selectedAsset: updatedAsset});
+            this.canvas.current.updateCanvasToolsRegions(updatedAsset);
+        }
     }
 
     private onLockedTagsChanged = (lockedTags: string[]) => {

@@ -196,7 +196,7 @@ describe("Project Service", () => {
 
         };
         const project = populateProjectAssets();
-        await projectSerivce.deleteTag(project, tag1);
+        await projectSerivce.deleteTag(project, tag1, assetMetadata);
         expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
     });
 
@@ -215,7 +215,7 @@ describe("Project Service", () => {
 
         const expectedAssetMetadata: IAssetMetadata = MockFactory.createTestAssetMetadata(asset, []);
         const project = populateProjectAssets();
-        await projectSerivce.deleteTag(project, tag1);
+        await projectSerivce.deleteTag(project, tag1, assetMetadata);
         expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
     });
 
@@ -246,7 +246,7 @@ describe("Project Service", () => {
 
         };
         const project = populateProjectAssets();
-        await projectSerivce.updateTag(project, tag1, newTag);
+        await projectSerivce.updateTag(project, tag1, newTag, assetMetadata);
         expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
     });
 
