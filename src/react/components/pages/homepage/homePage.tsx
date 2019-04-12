@@ -178,7 +178,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
     }
 
     private convertProject = async (projectInfo: IFileInfo) => {
-        const importService = new ImportService(this.props.actions);
+        const importService = new ImportService();
         let generatedAssetMetadata: IAssetMetadata[];
         let project: IProject;
 
@@ -202,6 +202,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
         } catch (e) {
             throw new Error(`Error importing project information - ${e.message}`);
         }
+
         await this.props.actions.saveProject(this.props.project);
         await this.loadSelectedProject(this.props.project);
     }
