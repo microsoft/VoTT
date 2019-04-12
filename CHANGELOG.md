@@ -2,7 +2,40 @@
 
 <!-- cl-start -->
 
-# [2.0.0-preview.3](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.2...2.0.0-preview.3) (03-20-2019)
+# [2.0.0](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.3...v2.0.0) (04-12-2019)
+[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/2.0.0)
+
+- doc: update v1/master reference (#748)
+- ci: update pipeline for v2 flipover to master (#747)
+- feat: add ability to import v1 video project (#726)
+- fix: Move findDOMNode outside of render method (#745)
+- doc: updating readme (#733)
+- fix: Adjusts z-index video player overlays (#740)
+- fix: Updated keyboard manager to support meta (aka cmd) key (#743)
+- fix: don't allow invalid path characters in project name (#741)
+- fix: switch asset count to include video frames (#717)
+- feat: Enforce asset tagging before switching assets (#730)
+- feat: Auto-size video/image assets and position canvas (#734)
+- fix: CORS warning message for Bing Image Search (#732)
+- feat: Adds option to specify if images are included with JSON export (#728)
+- fix: Simplifies asset load flow (#727)
+- fix: Render Enhancments (#719)
+- feat: Add toast messages when entities are created / deleted (#714)
+- feat: New Tag Input Component (#710)
+- feat: Add more export options to pascal voc exporter (#705)
+- feat: exclude desktop functionality from browser target (#713)
+- feature: tracking app metrics for web olny (#712)
+- fix: Catch error while tfrecord image not loaded (#701)
+- ci: clean up deprecated pipelines (#708)
+- feat: Update asset status to use badges & resize sidebar (#709)
+- ci: refactor plato report pipeline (#707)
+- ci: refactor web deploy pipeline (#702)
+- feat: Help menu displaying keyboard shortcuts (#689)
+- fix: replace default react favicon with tags icon (#699)
+- WIP: resizes thumbnails and sidebar (#691)
+- ci: update pipelines to work for all branches with prefix dev (#700)
+
+# [2.0.0-preview.3](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.2...v2.0.0-preview.3) (03-20-2019)
 [GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/2.0.0-preview.3)
 
 - ci: Clean up sonar cloud issues
