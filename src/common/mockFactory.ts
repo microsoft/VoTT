@@ -27,7 +27,7 @@ import { generateKey } from "./crypto";
 import { AssetService } from "../services/assetService";
 import { Point2D } from "vott-ct/lib/js/CanvasTools/Core/Point2D";
 import { RegionDataType, RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
-import { randomIntInRange } from "./utils";
+import { randomIntInRange, encodeFileURI } from "./utils";
 import { appInfo } from "./appInfo";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import { IKeyboardBindingProps } from "../react/components/common/keyboardBinding/keyboardBinding";
@@ -64,7 +64,7 @@ export default class MockFactory {
     public static createTestAsset(
         name: string = "test",
         assetState: AssetState = AssetState.NotVisited,
-        path: string = `C:\\Desktop\\asset${name}.jpg`,
+        path: string = encodeFileURI(`C:\\Desktop\\asset${name}.jpg`),
         assetType: AssetType = AssetType.Image,
         timestamp: number = 0): IAsset {
         let testAsset = null;
@@ -74,7 +74,7 @@ export default class MockFactory {
                     id: `videoasset-${name}`,
                     format: "mp4",
                     name: `videoasset${name}`,
-                    path: `C:\\Desktop\\videoasset${name}.mp4`,
+                    path: encodeFileURI(`C:\\Desktop\\videoasset${name}.mp4`),
                     state: assetState,
                     type: AssetType.Video,
                     size: {
@@ -88,7 +88,7 @@ export default class MockFactory {
                     id: `videoasset-${name}#t=${timestamp}`,
                     format: "mp4",
                     name: `videoasset${name}.mp4#t=${timestamp}`,
-                    path: `C:\\Desktop\\videoasset${name}.mp4#t=${timestamp}`,
+                    path: encodeFileURI(`C:\\Desktop\\videoasset${name}.mp4#t=${timestamp}`),
                     state: assetState,
                     type: AssetType.VideoFrame,
                     size: {
@@ -99,7 +99,7 @@ export default class MockFactory {
                         id: `videoasset-${name}`,
                         format: "mp4",
                         name: `videoasset${name}`,
-                        path: `C:\\Desktop\\videoasset${name}.mp4`,
+                        path: encodeFileURI(`C:\\Desktop\\videoasset${name}.mp4`),
                         state: assetState,
                         type: AssetType.Video,
                         size: {
@@ -175,7 +175,7 @@ export default class MockFactory {
             id: `videoasset-${name}`,
             format: "mp4",
             name: `videoasset${name}`,
-            path: `C:\\Desktop\\videoasset${name}.mp4`,
+            path: encodeFileURI(`C:\\Desktop\\videoasset${name}.mp4`),
             state: assetState,
             type: AssetType.Video,
             size: {

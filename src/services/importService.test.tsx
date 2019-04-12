@@ -4,14 +4,16 @@ import ImportService from "./importService";
 import { AssetState, RegionType, AssetType } from "../models/applicationState";
 import HtmlFileReader from "../common/htmlFileReader";
 import { IAsset } from "../models/applicationState";
+import registerMixins from "../registerMixins";
 jest.mock("../common/htmlFileReader");
 
 describe("Import Service", () => {
     let importService: ImportService = null;
 
+    beforeAll(registerMixins);
+
     beforeEach(() => {
-        const actions = MockFactory.projectActions();
-        importService = new ImportService(actions);
+        importService = new ImportService();
     });
 
     it("ConvertProject takes a V1 Image Project and produces a valid V2 project JSON string", async () => {
@@ -20,7 +22,7 @@ describe("Import Service", () => {
         file.path = "/Users/user/path/to/TestV1Project.jpg";
         const project = MockFactory.createTestV1Project();
         const content = JSON.stringify(project);
-        const result = await importService.convertProject({file, content});
+        const result = await importService.convertProject({ file, content });
 
         expect(result.name).toEqual("TestV1Project");
         expect(result.id).not.toBeNull();
@@ -41,7 +43,7 @@ describe("Import Service", () => {
         file.path = "/Users/user/path/to/TestV1VideoProject.mp4";
         const project = MockFactory.createTestV1VideoProject();
         const content = JSON.stringify(project);
-        const result = await importService.convertProject({file, content});
+        const result = await importService.convertProject({ file, content });
 
         expect(result.name).toEqual("TestV1VideoProject");
         expect(result.id).not.toBeNull();
@@ -66,14 +68,18 @@ describe("Import Service", () => {
             content,
             file,
         };
-        const v2Project = await importService.convertProject({file, content});
-        const result = await importService.generateAssets(fileInfo, v2Project);
 
-        expect(result[0].asset.name).toEqual("testFrame0.jpg");
-        expect(result[0].asset.state).toEqual(AssetState.Tagged);
-        expect(result[0].regions).toHaveLength(3);
-        expect(result[1].asset.state).toEqual(AssetState.NotVisited);
-        expect(result[0].regions[0].id).toEqual("0");
+        const v1FrameLength = Object.keys(project.frames).length;
+        const v2Project = await importService.convertProject({ file, content });
+        const results = await importService.generateAssets(fileInfo, v2Project);
+
+        expect(results.length).toEqual(v1FrameLength);
+        results.forEach((assetMetadata) => {
+            const expectedState = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+            expect(assetMetadata.asset.state).toEqual(expectedState);
+            expect(assetMetadata.asset.parent).toBeUndefined();
+            expect(assetMetadata.asset.timestamp).toBeUndefined();
+        });
     });
 
     it("generates assetMetadata given a v1 Video Project FileInfo and an assetService", async () => {
@@ -92,13 +98,24 @@ describe("Import Service", () => {
             file,
         };
 
-        const v2Project = await importService.convertProject({file, content});
-        const result = await importService.generateAssets(fileInfo, v2Project);
+        const v1FrameLength = Object.keys(project.frames).length;
+        const v2Project = await importService.convertProject({ file, content });
+        const results = await importService.generateAssets(fileInfo, v2Project);
 
-        expect(result[0].asset.name).toEqual("TestV1VideoProject.mp4#t=0");
-        expect(result[0].asset.state).toEqual(AssetState.Tagged);
-        expect(result[0].regions).toHaveLength(3);
-        expect(result[2].asset.state).toEqual(AssetState.NotVisited);
-        expect(result[0].regions[0].id).toEqual("0");
+        const parentAssets = results.filter((assetMetadata) => !(!!assetMetadata.asset.parent));
+        const childAssets = results.filter((assetMetadata) => !!assetMetadata.asset.parent);
+
+        expect(parentAssets).toHaveLength(1);
+        expect(childAssets).toHaveLength(v1FrameLength);
+
+        childAssets.forEach((assetMetadata) => {
+            const expectedState = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+            const expectedPath = `${assetMetadata.asset.parent.path}#t=${assetMetadata.asset.timestamp}`;
+            expect(assetMetadata.asset.state).toEqual(expectedState);
+            expect(assetMetadata.asset.parent).not.toBeNull();
+            expect(assetMetadata.asset.timestamp).not.toBeNull();
+            expect(assetMetadata.asset.path).toEqual(expectedPath);
+            expect(assetMetadata.asset.name).toContain(`#t=${assetMetadata.asset.timestamp}`);
+        });
     });
 });

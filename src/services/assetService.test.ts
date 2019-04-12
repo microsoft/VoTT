@@ -2,10 +2,11 @@ import { AssetService } from "./assetService";
 import { AssetType, IAssetMetadata, AssetState } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
-import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
+import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import { constants } from "../common/constants";
 import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import HtmlFileReader from "../common/htmlFileReader";
+import { encodeFileURI } from "../common/utils";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
@@ -17,7 +18,7 @@ describe("Asset Service", () => {
             expect(asset.id).toEqual(expect.any(String));
             expect(asset.name).toEqual("asset1.jpg");
             expect(asset.type).toEqual(AssetType.Image);
-            expect(asset.path).toEqual(path);
+            expect(asset.path).toEqual(encodeFileURI(path));
             expect(asset.format).toEqual("jpg");
         });
 
@@ -27,9 +28,9 @@ describe("Asset Service", () => {
 
             expect(asset).not.toBeNull();
             expect(asset.id).toEqual(expect.any(String));
-            expect(asset.name).toEqual("asset%201.jpg");
+            expect(asset.name).toEqual("asset%25201.jpg");
             expect(asset.type).toEqual(AssetType.Image);
-            expect(asset.path).toEqual(path);
+            expect(asset.path).toEqual(encodeFileURI(path));
             expect(asset.format).toEqual("jpg");
         });
 
@@ -58,7 +59,7 @@ describe("Asset Service", () => {
         });
 
         it("detects a video asset by common file extension", () => {
-            const path = "C:\\dir1\\dir2\\asset1.mp4#t=5";
+            const path = "file:C:/dir1/dir2/asset1.mp4#t=5";
             const asset = AssetService.createAssetFromFilePath(path);
             expect(asset.type).toEqual(AssetType.Video);
         });
@@ -185,8 +186,9 @@ describe("Asset Service", () => {
             testAssets.push(testAsset);
 
             const result = await assetService.getAssets();
+            const expected = encodeFileURI("C:\\Desktop\\asset 11.jpg");
 
-            expect(result[10].path).toEqual("file:C:/Desktop/asset%2011.jpg");
+            expect(result[10].path).toEqual(expected);
         });
 
         it("Test encoding special characters # and ?", async () => {
@@ -194,8 +196,9 @@ describe("Asset Service", () => {
             testAssets.push(testAsset);
 
             const result = await assetService.getAssets();
+            const expected = encodeFileURI("C:\\Desktop\\asset#test?.jpg");
 
-            expect(result[11].path).toEqual("file:C:/Desktop/asset%23test%3F.jpg");
+            expect(result[11].path).toEqual(expected);
         });
 
         it("Test encoding special characters # and ? and other chars not to be encoded", async () => {
@@ -203,8 +206,9 @@ describe("Asset Service", () => {
             testAssets.push(testAsset);
 
             const result = await assetService.getAssets();
+            const expected = encodeFileURI("C:\\Desktop\\asset~!@#$&*()=:,;?+'.jpg");
 
-            expect(result[12].path).toEqual("file:C:/Desktop/asset~!@%23$&*()=:,;%3F+'.jpg");
+            expect(result[12].path).toEqual(expected);
         });
     });
 
