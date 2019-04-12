@@ -554,74 +554,78 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 const image = document.createElement("img");
 
                 image.onload = async () => {
-                    const regions = [...this.state.selectedAsset.regions];
-
-                    const xRatio = this.state.selectedAsset.asset.size.width / image.width;
-                    const yRatio = this.state.selectedAsset.asset.size.height / image.height;
-
-                    const predictions = await this.model.detect(image);
-                    predictions.forEach((prediction) => {
-                        const left = Math.max(0, prediction.bbox[0] * xRatio);
-                        const top = Math.max(0, prediction.bbox[1] * yRatio);
-                        const width = Math.max(0, prediction.bbox[2] * xRatio);
-                        const height = Math.max(0, prediction.bbox[3] * yRatio);
-
-                        // check if it is a new region
-                        if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
-                                region.boundingBox.left === left &&
-                                region.boundingBox.top === top &&
-                                region.boundingBox.width === width &&
-                                region.boundingBox.height === height)) {
-                            regions.push({
-                                id: shortid.generate(),
-                                type: RegionType.Rectangle,
-                                tags: this.state.project.activeLearningSettings.predictTag ? [prediction.class] : [],
-                                boundingBox: {
-                                    left,
-                                    top,
-                                    width,
-                                    height,
-                                },
-                                points: [{
-                                    x: left,
-                                    y: top,
-                                },
-                                {
-                                    x: left + width,
-                                    y: top,
-                                },
-                                {
-                                    x: left + width,
-                                    y: top + height,
-                                },
-                                {
-                                    x: left,
-                                    y: top + height,
-                                }],
-                            });
-                        }
-                    });
-
-                    this.canvas.current.addRegionsToAsset(regions);
-                    this.canvas.current.addRegionsToCanvasTools(regions);
-
-                    const newAsset = { ...this.state.selectedAsset, regions };
-                    newAsset.asset.predicted = true;
-                    console.log(newAsset);
-
-                    this.onAssetMetadataChanged(newAsset);
-
-                    this.setState({
-                        selectedAsset: newAsset,
-                    });
-
-                    // Save
-                    await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
-                    await this.props.actions.saveProject(this.props.project);
+                    this.predictImage(image);
                 };
                 image.src = "data:image;base64," + image64;
             });
         }
+    }
+
+    private predictImage = async (image: HTMLImageElement) => {
+        const regions = [...this.state.selectedAsset.regions];
+
+        const xRatio = this.state.selectedAsset.asset.size.width / image.width;
+        const yRatio = this.state.selectedAsset.asset.size.height / image.height;
+
+        const predictions = await this.model.detect(image);
+        predictions.forEach((prediction) => {
+            const left = Math.max(0, prediction.bbox[0] * xRatio);
+            const top = Math.max(0, prediction.bbox[1] * yRatio);
+            const width = Math.max(0, prediction.bbox[2] * xRatio);
+            const height = Math.max(0, prediction.bbox[3] * yRatio);
+
+            // check if it is a new region
+            if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
+                    region.boundingBox.left === left &&
+                    region.boundingBox.top === top &&
+                    region.boundingBox.width === width &&
+                    region.boundingBox.height === height)) {
+                regions.push({
+                    id: shortid.generate(),
+                    type: RegionType.Rectangle,
+                    tags: this.state.project.activeLearningSettings.predictTag ? [prediction.class] : [],
+                    boundingBox: {
+                        left,
+                        top,
+                        width,
+                        height,
+                    },
+                    points: [{
+                        x: left,
+                        y: top,
+                    },
+                    {
+                        x: left + width,
+                        y: top,
+                    },
+                    {
+                        x: left + width,
+                        y: top + height,
+                    },
+                    {
+                        x: left,
+                        y: top + height,
+                    }],
+                });
+            }
+        });
+
+        this.canvas.current.addRegionsToAsset(regions);
+        this.canvas.current.addRegionsToCanvasTools(regions);
+
+        const newAsset = { ...this.state.selectedAsset, regions };
+        newAsset.asset.predicted = true;
+        console.log(newAsset);
+
+        this.onAssetMetadataChanged(newAsset);
+
+        this.setState({
+            selectedAsset: newAsset,
+        });
+
+        // Save
+        await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
+        await this.props.actions.saveProject(this.props.project);
     }
 
     /**
