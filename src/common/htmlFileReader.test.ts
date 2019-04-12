@@ -237,22 +237,4 @@ describe("Html File Reader", () => {
             await expect(HtmlFileReader.getAssetFrameImage(videoErrorFrame)).rejects.not.toBeNull();
         });
     });
-
-    const mockImage = jest.fn(() => {
-        const element: any = {
-            naturalWidth: 0,
-            naturalHeight: 0,
-            onload: jest.fn(),
-        };
-
-        setImmediate(() => {
-            const asset = assetTestCache.get(element.src);
-            element.naturalWidth = asset.size.width;
-            element.naturalHeight = asset.size.height;
-
-            element.onload();
-        });
-
-        return element;
-    });
 });
