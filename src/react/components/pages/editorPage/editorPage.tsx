@@ -441,13 +441,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private onTagDeleted = async (tag: string) => {
         const projectService = new ProjectService();
-        await projectService.deleteTag(this.props.project, tag);
-
+        const updatedAsset = await projectService.deleteTag(this.props.project, tag, this.state.selectedAsset);
+        this.setState({selectedAsset: updatedAsset});
+        this.canvas.current.updateCanvasToolsRegions(updatedAsset);
     }
 
     private onTagRenamed = async (tag: string, newTag: string) => {
         const projectService = new ProjectService();
-        await projectService.updateTag(this.props.project, tag, newTag);
+        const updatedAsset = await projectService.updateTag(this.props.project, tag, newTag, this.state.selectedAsset);
+        this.setState({selectedAsset: updatedAsset});
+        this.canvas.current.updateCanvasToolsRegions(updatedAsset);
     }
 
     private onLockedTagsChanged = (lockedTags: string[]) => {
@@ -525,9 +528,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         return this.state.isValid;
     }
 
-    private selectAsset = async (asset: IAsset): Promise<void> => {
-        // Nothing to do if we are already on the same asset.
-        if (this.state.selectedAsset && this.state.selectedAsset.asset.id === asset.id) {
+    private selectAsset = async (asset: IAsset, force?: boolean): Promise<void> => {
+        // Nothing to do if we are already on the same asset, unless `force` is included
+        if (!force && this.state.selectedAsset && this.state.selectedAsset.asset.id === asset.id) {
             return;
         }
 
@@ -547,7 +550,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         } catch (err) {
             console.warn("Error computing asset size");
         }
-
         this.setState({
             selectedAsset: assetMetadata,
         }, async () => {

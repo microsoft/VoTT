@@ -19,8 +19,8 @@ export interface IProjectService {
     save(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
-    deleteTag(project: IProject, tag: string): Promise<void>;
-    updateTag(project: IProject, tag: string, newTag: string);
+    deleteTag(project: IProject, tag: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata>;
+    updateTag(project: IProject, tag: string, newTag: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata>;
 }
 
 /**
@@ -103,33 +103,46 @@ export default class ProjectService implements IProjectService {
         return (duplicateProjects !== undefined);
     }
 
-    public async deleteTag(project: IProject, tag: string): Promise<void> {
-        await this.updateProjectTags(project, tag, (tags) => tags.filter((t) => t !== tag));
+    public async deleteTag(project: IProject,
+                           tag: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata> {
+        return await this.updateProjectTags(
+            project, tag, currentAsset, (tags) => tags.filter((t) => t !== tag));
     }
 
-    public async updateTag(project: IProject, tag: string, newTag: string): Promise<void> {
-        await this.updateProjectTags(project, tag, (tags) => tags.map((t) => (t === tag) ? newTag : t));
+    public async updateTag(project: IProject, tag: string,
+                           newTag: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata> {
+        return await this.updateProjectTags(
+            project, tag, currentAsset, (tags) => tags.map((t) => (t === tag) ? newTag : t));
     }
 
     private async updateProjectTags(
-            project: IProject, tag: string, transformer: (tags: string[]) => string[]) {
+            project: IProject, tag: string, currentAsset: IAssetMetadata, transformer: (tags: string[]) => string[]) {
         const assetService = new AssetService(project);
         const assetKeys = Object.keys(project.assets);
         for (const assetKey of assetKeys) {
             const asset = project.assets[assetKey];
             const assetMetadata = await assetService.getAssetMetadata(asset);
-            let foundTag = false;
-            for (const region of assetMetadata.regions) {
-                if (region.tags.find((t) => t === tag)) {
-                    foundTag = true;
-                    region.tags = transformer(region.tags);
-                }
-            }
-            assetMetadata.regions = assetMetadata.regions.filter((region) => region.tags.length > 0);
-            if (foundTag) {
-                assetService.save(assetMetadata);
+            const updatedAssetMetadata = this.updateAssetMetadata(assetMetadata, tag, transformer);
+            if (updatedAssetMetadata) {
+                assetService.save(updatedAssetMetadata);
             }
         }
+        return this.updateAssetMetadata(currentAsset, tag, transformer);
+    }
+
+    private updateAssetMetadata(asset: IAssetMetadata, tag: string, transformer: (tags: string[]) => string[]) {
+        let foundTag = false;
+        for (const region of asset.regions) {
+            if (region.tags.find((t) => t === tag)) {
+                foundTag = true;
+                region.tags = transformer(region.tags);
+            }
+        }
+        if (foundTag) {
+            asset.regions = asset.regions.filter((region) => region.tags.length > 0);
+            return asset;
+        }
+        return null;
     }
 
     private async saveExportSettings(project: IProject): Promise<void> {
