@@ -236,8 +236,8 @@ In addition, the editor page has some special shortcuts to select tagging tools:
 VOTT allows you to fine tune the bounding boxes using the arrow keys in a few different ways. While a region is selected:
 
 * Ctrl + Arrowkey - Move Region
-* Ctrl + Alt + Direction - Shrink Region
-* Ctrl + Shift + Direction - Expand Region
+* Ctrl + Alt + Arrowkey - Shrink Region
+* Ctrl + Shift + Arrowkey - Expand Region
 
 The slide viewer can be navigated from the keyboard as follows: 
 
