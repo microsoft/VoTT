@@ -896,9 +896,11 @@ describe("Editor Page Component", () => {
             };
 
             setImmediate(() => {
-                // const asset = assetTestCache.get(element.src);
-                // element.naturalWidth = asset.size.width;
-                // element.naturalHeight = asset.size.height;
+                const asset = assetTestCache.get(element.src);
+                if (asset) {
+                    element.naturalWidth = asset.size.width;
+                    element.naturalHeight = asset.size.height;
+                }
 
                 element.onload();
             });
