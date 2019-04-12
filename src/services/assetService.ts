@@ -29,6 +29,17 @@ export class AssetService {
     public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
         Guard.empty(filePath);
 
+        const normalizedPath = filePath.toLowerCase();
+
+        // If the path is not already prefixed with a protocol
+        // then assume it comes from the local file system
+        if (!normalizedPath.startsWith("http://") &&
+            !normalizedPath.startsWith("https://") &&
+            !normalizedPath.startsWith("file:")) {
+            // First replace \ character with / the do the standard url encoding then encode unsupported characters
+            filePath = encodeFileURI(filePath, true);
+        }
+
         const md5Hash = new MD5().update(filePath).digest("hex");
         const pathParts = filePath.split(/[\\\/]/);
         // Example filename: video.mp4#t=5
@@ -120,22 +131,7 @@ export class AssetService {
      * Get assets from provider
      */
     public async getAssets(): Promise<IAsset[]> {
-        const assets = await this.assetProvider.getAssets();
-
-        return assets.map((asset) => {
-            const normalizedPath = asset.path.toLowerCase();
-
-            // If the path is not already prefixed with a protocol
-            // then assume it comes from the local file system
-            if (!normalizedPath.startsWith("http://") &&
-                !normalizedPath.startsWith("https://") &&
-                !normalizedPath.startsWith("file:")) {
-                // First replace \ character with / the do the standard url encoding then encode unsupported characters
-                asset.path = encodeFileURI(asset.path, true);
-            }
-
-            return asset;
-        });
+        return await this.assetProvider.getAssets();
     }
 
     /**
