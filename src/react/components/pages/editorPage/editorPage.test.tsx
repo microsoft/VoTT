@@ -833,6 +833,12 @@ describe("Editor Page Component", () => {
             return [{bbox: [227, 227, 0, 0], class: "label", score: 1}];
         });
 
+        beforeAll(() => {
+            spyOn(HTMLCanvasElement.prototype, "toBlob").and.callFake(() => {
+                return new Blob([new Buffer("buffer")], { type: "image" });
+            });
+        });
+
         beforeEach(async () => {
             const testProject = MockFactory.createTestProject("TestProject");
             const store = createStore(testProject, true);
