@@ -23,6 +23,7 @@ import ProjectService from "../../../../services/projectService";
 jest.mock("../../../../services/importService");
 import ImportService from "../../../../services/importService";
 import { toast } from "react-toastify";
+import registerMixins from "../../../../registerMixins";
 
 describe("Homepage Component", () => {
     let store: Store<IApplicationState> = null;
@@ -48,6 +49,7 @@ describe("Homepage Component", () => {
     }
 
     beforeAll(() => {
+        registerMixins();
         toast.success = jest.fn(() => 2);
         toast.info = jest.fn(() => 2);
     });
@@ -161,27 +163,19 @@ describe("Homepage Component", () => {
         };
 
         const convertProjectMock = importServiceMock.prototype.convertProject as jest.Mock;
-        convertProjectMock.mockImplementationOnce(() => {
-            return convertedProject;
-        });
+        convertProjectMock.mockImplementationOnce(() => Promise.resolve(convertedProject));
         convertProjectMock.mockClear();
 
         const generateAssetsMock = importServiceMock.prototype.generateAssets as jest.Mock;
-        generateAssetsMock.mockImplementationOnce(() => {
-            return testMetadata;
-        });
+        generateAssetsMock.mockImplementationOnce(() => Promise.resolve(testMetadata));
         generateAssetsMock.mockClear();
 
         const saveMock = projectServiceMock.prototype.save as jest.Mock;
-        saveMock.mockImplementation(() => {
-            return convertedProject;
-        });
+        saveMock.mockImplementation(() => Promise.resolve(convertedProject));
         saveMock.mockClear();
 
         const loadMock = projectServiceMock.prototype.load as jest.Mock;
-        loadMock.mockImplementation(() => {
-            return convertedProject;
-        });
+        loadMock.mockImplementation(() => Promise.resolve(convertedProject));
         saveMock.mockClear();
 
         const wrapper = createComponent(store, props);

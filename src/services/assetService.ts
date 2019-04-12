@@ -13,6 +13,7 @@ import HtmlFileReader from "../common/htmlFileReader";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import { appInfo } from "../common/appInfo";
+import { encodeFileURI } from "../common/utils";
 
 /**
  * @name - Asset Service
@@ -27,6 +28,17 @@ export class AssetService {
      */
     public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
         Guard.empty(filePath);
+
+        const normalizedPath = filePath.toLowerCase();
+
+        // If the path is not already prefixed with a protocol
+        // then assume it comes from the local file system
+        if (!normalizedPath.startsWith("http://") &&
+            !normalizedPath.startsWith("https://") &&
+            !normalizedPath.startsWith("file:")) {
+            // First replace \ character with / the do the standard url encoding then encode unsupported characters
+            filePath = encodeFileURI(filePath, true);
+        }
 
         const md5Hash = new MD5().update(filePath).digest("hex");
         const pathParts = filePath.split(/[\\\/]/);
@@ -119,32 +131,7 @@ export class AssetService {
      * Get assets from provider
      */
     public async getAssets(): Promise<IAsset[]> {
-        // encodeURI() will not encode: ~!@#$&*()=:/,;?+'
-        // extend it to support all of these except # and ?
-        // all other non encoded characters are implicitly supported with no reason to encoding them
-        const matchString = /(#|\?)/g;
-        const encodings = {
-            "\#": "%23",
-            "\?": "%3F",
-          };
-
-        const assets = await this.assetProvider.getAssets();
-
-        return assets.map((asset) => {
-            const normalizedPath = asset.path.toLowerCase();
-
-            // If the path is not already prefixed with a protocol
-            // then assume it comes from the local file system
-            if (!normalizedPath.startsWith("http://") &&
-                !normalizedPath.startsWith("https://") &&
-                !normalizedPath.startsWith("file:")) {
-                // First replace \ character with / the do the standard url encoding then encode unsupported characters
-                asset.path = "file:" + encodeURI(asset.path.replace(/\\/g, "/"))
-                    .replace(matchString, (match) => encodings[match]);
-            }
-
-            return asset;
-        });
+        return await this.assetProvider.getAssets();
     }
 
     /**
