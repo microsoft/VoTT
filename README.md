@@ -3,7 +3,6 @@
 [![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT/Microsoft.VoTT?branchName=master)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=25&branchName=master)
 [![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/master/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=alert_status)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Microsoft_VoTT&metric=ncloc)](https://sonarcloud.io/dashboard?id=Microsoft_VoTT)
 
 [Complexity Analysis Report](https://vottv2.z5.web.core.windows.net/)
 
