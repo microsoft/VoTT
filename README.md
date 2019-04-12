@@ -233,6 +233,12 @@ In addition, the editor page has some special shortcuts to select tagging tools:
 * Ctrl or Cmd + S - Save Project
 * Ctrl or Cmd + E - Export Project
 
+VOTT allows you to fine tune the bounding boxes using the arrow keys in a few different ways. While a region is selected:
+
+* Ctrl + Arrowkey - Move Region
+* Ctrl + Alt + Direction - Shrink Region
+* Ctrl + Shift + Direction - Expand Region
+
 The slide viewer can be navigated from the keyboard as follows: 
 
 * W or ArrowUp - Previous Asset
@@ -244,6 +250,14 @@ When the video playback bar is present, it allows the following shortcuts to sel
 * D or ArrowRight - Next Frame
 * Q - Previous Tagged Frame
 * E - Next Tagged Frame
+
+#### Mouse Controls
+
+* Two-point mode - Hold down Ctrl while creating a region
+* Square mode - Hold down Shift while creating a region
+* Multi-select - Hold down Shift while selecting regions
+* Exclusive Tracking mode - Ctrl + N to block frame UI allowing a user to create a region on top of existing regions
+
 
 ## Collaborators
 
