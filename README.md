@@ -118,7 +118,7 @@ Currently, VoTT supports:
 
 To create a new connection, click the `New Connections` (plug) icon, in the left hand navigation bar:
 
-![alt text](docs/images/new-connection.png "New Connection")
+![alt text](docs/images/new-connection.jpg "New Connection")
 
 ### Creating a New Project
 
@@ -131,13 +131,13 @@ As mentioned above, all projects require a source and target connection:
 * **Source Connection** - Where to pull assets from
 * **Target Connection** - Where project files and exported data should be stored
 
-![alt text](docs/images/new-project.png "New Project")
+![alt text](docs/images/new-project.jpg "New Project")
 
 #### Project Settings
 
 Project settings can be modified after a project has been created, by clicking on the `Project Setting` (slider) icon in the left hand navigation bar. Project metrics, such as Visited Assets, Tagged Assets, and Average Tags Per Asset can also be viewed on this screen.
 
-![alt text](docs/images/project-settings.png "Project Settings")
+![alt text](docs/images/project-settings.jpg "Project Settings")
 
 #### Security Tokens
 
@@ -149,7 +149,7 @@ Security tokens can be found in `Application Settings` by clicking the gear icon
 
 The token name and key **must** match in order for sensitive values to be successfully decrypted.
 
-![alt text](docs/images/security-tokens.png "Security Tokens")
+![alt text](docs/images/security-tokens.jpg "Security Tokens")
 
 ### Labeling an Image
 
@@ -163,13 +163,13 @@ Selecting an image or video on the left will load that image in the main tag edi
 
 As desired, repeat this process for any additional assets.
 
-![alt text](docs/images/label-image.png "Image Tagging")
+![alt text](docs/images/label-image.jpg "Image Tagging")
 
 ### Labeling a Video
 
 Labeling a video is much like labeling a series of images. When a video is selected from the left, it will begin automatically playing, and there are several controls on the player, as seen here:
 
-![alt text](docs/images/video-player.png "Video Player")
+![alt text](docs/images/video-player.jpg "Video Player")
 
 In addition to the normal video playback controls, there are two extra pairs of buttons.
 
@@ -199,7 +199,7 @@ In addition, users may choose to export
 
 Click on the `Export` (arrow) icon in the left hand navigation. Select the appropriate export provider and which assets to export. The percentage separated into testing and training sets can be adjusted here too.
 
-![alt text](docs/images/export-labels.png "Export Labels")
+![alt text](docs/images/export-labels.jpg "Export Labels")
 
 ### Keyboard Shortcuts
 
@@ -221,7 +221,7 @@ Hotkeys of 1 through 0 are assigned to the first ten tags. These can be reordere
 
 A tag can be locked for repeated tagging using the lock icon at the top of the tag editor pane. Tags can also be locked by combining Ctrl or Cmd and the tag hotkey, i.e. `Ctrl+2` would lock the second tag in the list.
 
-![alt text](docs/images/reorder-tag.png "Tag Editor")
+![alt text](docs/images/reorder-tag.jpg "Tag Editor")
 
 #### Editor Shortcuts
 
