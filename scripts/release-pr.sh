@@ -42,7 +42,7 @@ then
     echo "version=${NEW_VERSION}"
 
     # get the latest from v2, create a release branch
-    git checkout v2
+    git checkout master
     git pull
     git checkout -b ${RELEASE_BRANCH}
     echo "Creating local tag ${NEW_VERSION}"

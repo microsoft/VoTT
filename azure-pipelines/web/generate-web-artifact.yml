@@ -2,7 +2,7 @@ trigger:
   branches:
     include:
       - dev*
-      - v2
+      - master
 pr: none # disable CI build for PR
 
 pool:

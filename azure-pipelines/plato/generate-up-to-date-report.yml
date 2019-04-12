@@ -3,7 +3,7 @@ variables:
   AZURE_STORAGE_ACCOUNT: vottv2
 trigger:
   - dev*
-  - v2
+  - master
 pr: none # disable CI build for PR
 
 pool:

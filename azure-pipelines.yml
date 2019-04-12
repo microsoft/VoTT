@@ -1,9 +1,9 @@
 trigger:
-  - v2 # disable CI build for branch except v2
   - greenkeeper/* # enable CI to run on greenkeeper branches
+  - master # run build for every merge to master
 pr:
-  - v2 # only kick off for pr targeting v2
   - dev* # kick off for pr targeting dev or prefix dev
+  - master # trigger build for pr targeting master
 
 jobs:
 - job: Linux
