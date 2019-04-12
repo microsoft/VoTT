@@ -1,6 +1,6 @@
 {
     "source": 2,
-    "revision": 7,
+    "revision": 8,
     "description": "copy artifact to azure blob hosting plato report for VoTT",
     "createdBy": {
         "displayName": "My Ho 🥓🥐🍚",
@@ -12,7 +12,7 @@
         },
         "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
         "uniqueName": "myho@microsoft.com",
-        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "imageUrl": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1",
         "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
     },
     "createdOn": "2019-03-25T22:52:29.780Z",
@@ -26,10 +26,10 @@
         },
         "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
         "uniqueName": "myho@microsoft.com",
-        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "imageUrl": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1",
         "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
     },
-    "modifiedOn": "2019-03-26T19:04:10.900Z",
+    "modifiedOn": "2019-04-12T22:29:15.590Z",
     "isDeleted": false,
     "variables": {
         "STORAGE_ACCOUNT": {
@@ -53,7 +53,7 @@
                 },
                 "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
                 "uniqueName": "myho@microsoft.com",
-                "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+                "imageUrl": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1",
                 "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
             },
             "variables": {},
@@ -195,8 +195,8 @@
             },
             "schedules": [],
             "currentRelease": {
-                "id": 170,
-                "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/releases/170",
+                "id": 216,
+                "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/releases/216",
                 "_links": {}
             },
             "retentionPolicy": {
@@ -286,12 +286,6 @@
         {
             "artifactAlias": "_VoTT - Generate latest plato report",
             "triggerConditions": [
-                {
-                    "sourceBranch": "v2",
-                    "tags": [],
-                    "useBuildDefinitionBranch": false,
-                    "createReleaseOnBuildTagging": false
-                },
                 {
                     "sourceBranch": "dev*",
                     "tags": [],

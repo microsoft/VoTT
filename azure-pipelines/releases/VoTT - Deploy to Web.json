@@ -1,6 +1,6 @@
 {
     "source": 2,
-    "revision": 5,
+    "revision": 6,
     "description": null,
     "createdBy": {
         "displayName": "My Ho 🥓🥐🍚",
@@ -12,7 +12,7 @@
         },
         "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
         "uniqueName": "myho@microsoft.com",
-        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "imageUrl": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1",
         "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
     },
     "createdOn": "2019-03-22T18:43:08.407Z",
@@ -26,25 +26,17 @@
         },
         "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
         "uniqueName": "myho@microsoft.com",
-        "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+        "imageUrl": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1",
         "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
     },
-    "modifiedOn": "2019-03-26T19:00:37.100Z",
+    "modifiedOn": "2019-04-12T21:39:14.277Z",
     "isDeleted": false,
-    "variables": {
-        "DEV_STORAGE_ACCOUNT": {
-            "value": "vottdev",
-            "allowOverride": true
-        },
-        "PROD_STORAGE_ACCOUNT": {
-            "value": "vott"
-        }
-    },
+    "variables": {},
     "variableGroups": [],
     "environments": [
         {
             "id": 4,
-            "name": "Stage 1",
+            "name": "Dev",
             "rank": 1,
             "owner": {
                 "displayName": "My Ho 🥓🥐🍚",
@@ -56,10 +48,15 @@
                 },
                 "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
                 "uniqueName": "myho@microsoft.com",
-                "imageUrl": "https://dev.azure.com/msft-vott/_api/_common/identityImage?id=1077cc21-332d-415a-8e93-e6277da44f6d",
+                "imageUrl": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1",
                 "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
             },
-            "variables": {},
+            "variables": {
+                "DEV_STORAGE_ACCOUNT": {
+                    "value": "vottdev",
+                    "allowOverride": true
+                }
+            },
             "variableGroups": [],
             "preDeployApprovals": {
                 "approvals": [
@@ -171,7 +168,131 @@
                             }
                         }
                     ]
+                }
+            ],
+            "environmentOptions": {
+                "emailNotificationType": "OnlyOnFailure",
+                "emailRecipients": "release.environment.owner;release.creator",
+                "skipArtifactsDownload": false,
+                "timeoutInMinutes": 0,
+                "enableAccessToken": false,
+                "publishDeploymentStatus": true,
+                "badgeEnabled": false,
+                "autoLinkWorkItems": false,
+                "pullRequestDeploymentEnabled": false
+            },
+            "demands": [],
+            "conditions": [
+                {
+                    "name": "ReleaseStarted",
+                    "conditionType": 1,
+                    "value": ""
+                }
+            ],
+            "executionPolicy": {
+                "concurrencyCount": 1,
+                "queueDepthCount": 0
+            },
+            "schedules": [],
+            "currentRelease": {
+                "id": 215,
+                "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/releases/215",
+                "_links": {}
+            },
+            "retentionPolicy": {
+                "daysToKeep": 30,
+                "releasesToKeep": 3,
+                "retainBuild": true
+            },
+            "processParameters": {
+                "dataSourceBindings": [
+                    {
+                        "dataSourceName": "AzureRMWebAppNamesByAppType",
+                        "parameters": {
+                            "WebAppKind": "$(WebAppKind)"
+                        },
+                        "endpointId": "$(ConnectedServiceName)",
+                        "target": "WebAppName"
+                    }
+                ]
+            },
+            "properties": {},
+            "preDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "postDeploymentGates": {
+                "id": 0,
+                "gatesOptions": null,
+                "gates": []
+            },
+            "environmentTriggers": [],
+            "badgeUrl": "https://vsrm.dev.azure.com/msft-vott/_apis/public/Release/badge/4e739af6-f85e-44b9-a3f3-75eb893a6223/4/4"
+        },
+        {
+            "id": 7,
+            "name": "v2/master",
+            "rank": 2,
+            "owner": {
+                "displayName": "My Ho 🥓🥐🍚",
+                "url": "https://app.vssps.visualstudio.com/Af945f528-1155-48f8-b08b-b6529166b9f0/_apis/Identities/1077cc21-332d-415a-8e93-e6277da44f6d",
+                "_links": {
+                    "avatar": {
+                        "href": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+                    }
                 },
+                "id": "1077cc21-332d-415a-8e93-e6277da44f6d",
+                "uniqueName": "myho@microsoft.com",
+                "imageUrl": "https://dev.azure.com/msft-vott/_apis/GraphProfile/MemberAvatars/aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1",
+                "descriptor": "aad.MTRlNGE0YjQtNDU5NS03OGI5LTk2MmItNTM0ZjNjYjUxMWI1"
+            },
+            "variables": {
+                "PROD_STORAGE_ACCOUNT": {
+                    "value": "vott"
+                }
+            },
+            "variableGroups": [],
+            "preDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 19
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 1
+                }
+            },
+            "deployStep": {
+                "id": 20
+            },
+            "postDeployApprovals": {
+                "approvals": [
+                    {
+                        "rank": 1,
+                        "isAutomated": true,
+                        "isNotificationOn": false,
+                        "id": 21
+                    }
+                ],
+                "approvalOptions": {
+                    "requiredApproverCount": null,
+                    "releaseCreatorCanBeApprover": false,
+                    "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+                    "enforceIdentityRevalidation": false,
+                    "timeoutInMinutes": 0,
+                    "executionOrder": 2
+                }
+            },
+            "deployPhases": [
                 {
                     "deploymentInput": {
                         "parallelExecution": {
@@ -193,12 +314,12 @@
                         "enableAccessToken": false,
                         "timeoutInMinutes": 0,
                         "jobCancelTimeoutInMinutes": 1,
-                        "condition": "and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/v2'))",
+                        "condition": "and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/v2'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))",
                         "overrideInputs": {}
                     },
-                    "rank": 2,
+                    "rank": 1,
                     "phaseType": 1,
-                    "name": "Deploy to V2",
+                    "name": "Deploy to V2/Master",
                     "refName": null,
                     "workflowTasks": [
                         {
@@ -258,9 +379,14 @@
             "demands": [],
             "conditions": [
                 {
-                    "name": "ReleaseStarted",
-                    "conditionType": 1,
-                    "value": ""
+                    "name": "Dev",
+                    "conditionType": 2,
+                    "value": "4"
+                },
+                {
+                    "name": "_Build Web Artifact",
+                    "conditionType": 4,
+                    "value": "{\"sourceBranch\":\"master\",\"tags\":[],\"useBuildDefinitionBranch\":false,\"createReleaseOnBuildTagging\":false,\"tagFilter\":null}"
                 }
             ],
             "executionPolicy": {
@@ -269,8 +395,8 @@
             },
             "schedules": [],
             "currentRelease": {
-                "id": 171,
-                "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/releases/171",
+                "id": 0,
+                "url": "https://vsrm.dev.azure.com/msft-vott/4e739af6-f85e-44b9-a3f3-75eb893a6223/_apis/Release/releases/0",
                 "_links": {}
             },
             "retentionPolicy": {
@@ -302,7 +428,7 @@
                 "gates": []
             },
             "environmentTriggers": [],
-            "badgeUrl": "https://vsrm.dev.azure.com/msft-vott/_apis/public/Release/badge/4e739af6-f85e-44b9-a3f3-75eb893a6223/4/4"
+            "badgeUrl": "https://vsrm.dev.azure.com/msft-vott/_apis/public/Release/badge/4e739af6-f85e-44b9-a3f3-75eb893a6223/4/7"
         }
     ],
     "artifacts": [
@@ -373,7 +499,7 @@
                     "createReleaseOnBuildTagging": false
                 },
                 {
-                    "sourceBranch": "myho/refactorCI",
+                    "sourceBranch": "master",
                     "tags": [],
                     "useBuildDefinitionBranch": false,
                     "createReleaseOnBuildTagging": false
