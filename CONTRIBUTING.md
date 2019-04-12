@@ -28,22 +28,22 @@ We welcome [issues](https://github.com/Microsoft/VoTT/issues) and [pull requests
 
 ## Pull Requests
 
-1. Find an issue to work on, or create a new one
-1. Fork repo, make sure you have latest changes from `master`
+1. Find an issue to work on, or create a new one.
+1. Fork the repo and/or pull down the latest changes from `master`.
 1. Create branch following naming convention: `git checkout -b issue-<###>-<short-description>`.
-1. Write code
-1. Add unit tests
-1. Verify linting and unit tests by running `npm test`
-1. Update docs if needed
-1. Rebase on `master` and resolve conflicts
-1. Commit your changes using a descriptive commit message that follows [our commit message conventions](#commit-message-guidelines). Adherence to these conventions is necessary because the [change log](CHANGELOG.md) is automatically generated from these messages.
-1. Submit PR to `master` branch
+1. Write code.
+1. Add unit tests.
+1. Verify linting and unit tests by running `npm test`.
+1. Update docs if needed.
+1. Rebase on `master` and resolve conflicts.
+1. Commit your changes using a descriptive commit message that follows [our commit message conventions](#commit-message-guidelines). Adherence to these conventions is necessary for the [change log](CHANGELOG.md) to be automatically generated from these messages.
+1. Submit PR to `master` branch.
 
-Try to keep PRs small to decrease the time required to review and merge.
+Please try to keep PRs small to decrease the time required to review and merge.
 
 ## Commit Message Guidelines
 
-We have adopted standards similar to [Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit) for how our git commit messages should be formatted. We believe that this leads to more readable messages that are easier to follow when looking through the project history and in addition, are used to generate the [VoTT change log](CHANGELOG.md).
+We have adopted standards similar to [Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit) for how our git commit messages should be formatted. This leads to more readable messages, which are easier to follow when looking through the project history. Those messages are used to generate the [VoTT change log](CHANGELOG.md).
 
 ### Commit Message Format
 
@@ -88,8 +88,8 @@ The body should include the motivation for the change and contrast this with pre
 
 ### Footer
 
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference Azure DevOps user stories/tasks or GitHub issues that this commit **Closes**.
+The footer should contain any information about **breaking changes** and is also the place to
+reference Azure DevOps user stories/tasks or GitHub issues that this commit **closes**.
 
 ### Commit Message Example
 
@@ -97,7 +97,7 @@ reference Azure DevOps user stories/tasks or GitHub issues that this commit **Cl
 fix: add debouncing to asset scroller to correct browser scroll position
 
 There is no debouncing when we store the asset container's scroll position.
-This results in erratic, jumpy scrolling and a poor user experience. improve
+This results in erratic, jumpy scrolling and a poor user experience. Improve
 stability and usability with debouncing.
 
 AB#17056
@@ -105,5 +105,7 @@ AB#17056
 
 ## Style
 
-* This repo uses [EditorConfig](https://editorconfig.org/) to maintain consistent styles across multiple platforms and IDEs., please refer to
+* This repo uses [EditorConfig](https://editorconfig.org/) to maintain consistent styles across multiple platforms and IDEs. Please refer to
    this [guide](docs/STYLE.md) for more information.
+
+Thank you!

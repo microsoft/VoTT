@@ -69,7 +69,6 @@ VoTT requires [NodeJS (>= 10.x, Dubnium) and NPM](https://github.com/nodejs/Rele
    ```bash
     git clone https://github.com/Microsoft/VoTT.git
     cd VoTT
-    git checkout v2
     npm ci
     npm start
    ```
@@ -93,23 +92,23 @@ All `V2` efforts are on the [master](https://github.com/Microsoft/VoTT/tree/mast
 
 ### Where is V1
 
-`V1` will be on the [v1](https://github.com/Microsoft/VoTT/tree/v1)  branch.  There will not be any fixes or updates.
+`V1` will be on the [v1](https://github.com/Microsoft/VoTT/tree/v1)  branch. There will not be any fixes or updates.
 
 #### V1 releases
 
 1.x releases can still be found under [GitHub Releases](https://github.com/Microsoft/VoTT/releases).
 
-### Can I use my V1 project in V2
+### V1 projects in V2
 
-Yes you can! There is support for converting a V1 project into V2 format, but only for V1 projects that have only picture assets. Video assets from V1 are not yet supported. For a smooth experience, it is recommended that you keep your current V1 project (JSON) file in a directory with all your images for that project. When you open the JSON file, you will asked to confirm that you would like to convert your project and then you will be directed to the editor screen. In this process, a `.vott` file will be generated in the same project directory and you can use this as your project file from now on. It is recommended that you back up your V1 project file before converting the project.
+There is support for converting a V1 project into V2 format, but only for V1 projects that have only picture assets. Video assets from V1 are not yet supported. For a smooth experience, we recommend keeping the current V1 project (JSON) file in a directory with all the images for that project. Upon opening the JSON file, a window will pop up to confirm that the app should convert the project before redirecting to the editor screen. In this process, a `.vott` file will be generated in the same project directory, which may be used as the main project file going forward. We recommend backing up the V1 project file before converting the project.
 
 ## Using VoTT
 
 ### Creating Connections
 
-VoTT is a 'Bring Your Own Data' (BYOD) application. In VoTT, connections are used to configure and manage source (assets to labeled) and target (where labels should be exported to) data sources.
+VoTT is a 'Bring Your Own Data' (BYOD) application. In VoTT, connections are used to configure and manage source (the assets to label) and target (the location to which labels should be exported).
 
-Connections can be setup and shared across projects. Connections have been designed using an extensible provider model -- new source/target providers can easily be added.
+Connections can be set up and shared across projects. They use an extensible provider model, so new source/target providers can easily be added.
 
 Currently, VoTT supports:
 
@@ -117,32 +116,34 @@ Currently, VoTT supports:
 * [Bing Image Search](https://azure.microsoft.com/en-us/services/cognitive-services/bing-image-search-api/)
 * Local File System
 
-To create a new connection, click the `New Connections` icon, in the left hand navigation bar:
+To create a new connection, click the `New Connections` (plug) icon, in the left hand navigation bar:
 
 ![alt text](docs/images/new-connection.png "New Connection")
 
 ### Creating a New Project
 
-Labeling workflows in VoTT revolve around projects - a collection of configuration and settings that are persisted.
+Labeling workflows in VoTT revolve around projects - a collection of configurations and settings that persist.
 
-Projects define a source and target connections, as well as project metadata - including tags to be used when labeling source assests.
+Projects define source and target connections, and project metadata - including tags to be used when labeling source assets.
 
 As mentioned above, all projects require a source and target connection:
 
-* **Source Connection** - Where to pull assests from
-* **Target Connection** - Where project files and exported data are stored
+* **Source Connection** - Where to pull assets from
+* **Target Connection** - Where project files and exported data should be stored
 
 ![alt text](docs/images/new-project.png "New Project")
 
 #### Project Settings
 
-Project settings can be modified after a project has been created, by clicking on the `Project Setting` icon in the left hand navigation bar.
+Project settings can be modified after a project has been created, by clicking on the `Project Setting` (slider) icon in the left hand navigation bar. Project metrics, such as Visited Assets, Tagged Assets, and Average Tags Per Asset can also be viewed on this screen.
+
+![alt text](docs/images/project-settings.png "Project Settings")
 
 #### Security Tokens
 
 Some project settings can include sensitive values, such as API keys or other shared secrets. Each project will generate a security token that can be used to encrypt/decrypt sensitive project settings.
 
-Security tokens can be found under `Application Settings` by clicking the gear icon in the lower corner of the left hand navigation bar.
+Security tokens can be found in `Application Settings` by clicking the gear icon in the lower corner of the left hand navigation bar.
 
 **NOTE:** Project files can be shared among multiple people. In order to share sensitive project settings, *all parties must have/use the same security token.*
 
@@ -155,8 +156,8 @@ The token name and key **must** match in order for sensitive values to be succes
 When a project is created or opened, the main tag editor window opens. The tag editor consists of three main parts:
 
 * A resizeable preview pane that contains a scrollable list of images and videos, from the source connection
-* The main editor tool that allows tags to be applied to drawn regions
-* The tags editor pane that allows user to modify, lock, reorder, and delete tags
+* The main editor pane that allows tags to be applied to drawn regions
+* The tags editor pane that allows users to modify, lock, reorder, and delete tags
 
 Selecting an image or video on the left will load that image in the main tag editor. Regions can then be drawn on the loaded asset and a tag can be applied.
 
@@ -167,6 +168,7 @@ As desired, repeat this process for any additional assets.
 ### Labeling a Video
 
 Labeling a video is much like labeling a series of images. When a video is selected from the left, it will begin automatically playing, and there are several controls on the player, as seen here:
+
 ![alt text](docs/images/video-player.png "Video Player")
 
 In addition to the normal video playback controls, there are two extra pairs of buttons.
@@ -195,32 +197,31 @@ In addition, users may choose to export
 * only visited assets
 * only tagged assets
 
-Click on the `Export` icon in the left hand navigation. Select the appropriate export provider and which assets to export.
+Click on the `Export` (arrow) icon in the left hand navigation. Select the appropriate export provider and which assets to export. The percentage separated into testing and training sets can be adjusted here too.
 
 ![alt text](docs/images/export-labels.png "Export Labels")
 
 ### Keyboard Shortcuts
 
-#### Tag Shortcuts
-
 VoTT allows a number of keyboard shortcuts to make it easier to keep one hand on the mouse while tagging. It allows most common shortcuts:
 
-* Ctrl+C - copy
-* Ctrl+X - cut
-* Ctrl+V - paste
-* Ctrl+A - select all
-* Ctrl+Z - undo
-* Ctrl+Shift+Z - redo
+* Ctrl or Cmd + C - copy
+* Ctrl or Cmd + X - cut
+* Ctrl or Cmd + V - paste
+* Ctrl or Cmd + A - select all
+* Ctrl or Cmd + Z - undo
+* Ctrl or Cmd + Shift + Z - redo
 
 #### Tag Ordering
 
-The editor page assigns hotkeys of 1 through 0 to the first ten tags. These can be reordered by using the up/down arrow icons in in the tag editor pane.
+Hotkeys of 1 through 0 are assigned to the first ten tags. These can be reordered by using the up/down arrow icons in in the tag editor pane.
 
-![alt text](docs/images/reorder-tag.png "Reorder Tags")
 
 #### Tag Locking
 
-One can also lock a tag by combining `Ctrl` and the tag hotkey, ie. `Ctrl+2` would lock tag #2.
+A tag can be locked for repeated tagging using the lock icon at the top of the tag editor pane. Tags can also be locked by combining Ctrl or Cmd and the tag hotkey, i.e. `Ctrl+2` would lock the second tag in the list.
+
+![alt text](docs/images/reorder-tag.png "Tag Editor")
 
 #### Editor Shortcuts
 
@@ -229,10 +230,13 @@ In addition, the editor page has some special shortcuts to select tagging tools:
 * V - Pointer/Select
 * R - Draw Rectangle
 * P - Draw Polygon
+* Ctrl or Cmd + S - Save Project
+* Ctrl or Cmd + E - Export Project
+
+The slide viewer can be navigated from the keyboard as follows: 
+
 * W or ArrowUp - Previous Asset
 * S or ArrowDown - Next Asset
-* Ctrl+S - Save Project
-* Ctrl+E - Export Project
 
 When the video playback bar is present, it allows the following shortcuts to select frames:
 
