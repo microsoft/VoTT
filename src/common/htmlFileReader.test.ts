@@ -14,11 +14,14 @@ describe("Html File Reader", () => {
         document.createElement = jest.fn((elementType) => {
             switch (elementType) {
                 case "img":
-                    return MockFactory.mockImage(assetTestCache);
+                    const mockImage = MockFactory.mockImage(assetTestCache);
+                    return mockImage();
                 case "video":
-                    return MockFactory.mockVideo(assetTestCache);
+                    const mockVideo = MockFactory.mockVideo(assetTestCache);
+                    return mockVideo();
                 case "canvas":
-                    return MockFactory.mockCanvas(assetTestCache);
+                    const mockCanvas = MockFactory.mockCanvas();
+                    return mockCanvas();
             }
         });
     });
@@ -233,5 +236,23 @@ describe("Html File Reader", () => {
 
             await expect(HtmlFileReader.getAssetFrameImage(videoErrorFrame)).rejects.not.toBeNull();
         });
+    });
+
+    const mockImage = jest.fn(() => {
+        const element: any = {
+            naturalWidth: 0,
+            naturalHeight: 0,
+            onload: jest.fn(),
+        };
+
+        setImmediate(() => {
+            const asset = assetTestCache.get(element.src);
+            element.naturalWidth = asset.size.width;
+            element.naturalHeight = asset.size.height;
+
+            element.onload();
+        });
+
+        return element;
     });
 });
