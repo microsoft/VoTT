@@ -830,12 +830,13 @@ describe("Editor Page Component", () => {
             },
         });
         objectDetectionMock.prototype.detect = jest.fn(() => {
-            return [{bbox: [227, 227, 0, 0], class: "label", score: 1}];
+            return [{bbox: [0, 0, 1, 1], class: "label", score: 1}];
         });
 
         const assetTestCache = new Map<string, IAsset>();
         beforeEach(async () => {
             const testProject = MockFactory.createTestProject("TestProject");
+            testProject.activeLearningSettings.predictTag = true;
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
             wrapper = createComponent(store, props);
@@ -863,14 +864,24 @@ describe("Editor Page Component", () => {
             document.querySelector = jest.fn((selectors) => {
                 const mockCanvas = MockFactory.mockCanvas();
                 return mockCanvas();
-    });
+            });
         });
 
         it("Detect regions and tags", async () => {
             wrapper.find(`.${ToolbarItemName.ActiveLearning}`).simulate("click");
             await waitForPrediction(wrapper);
 
-            // expect(true).toEqual(false);
+            const detectedAsset = wrapper
+                .find(EditorPage)
+                .childAt(0)
+                .state()
+                .selectedAsset;
+
+            expect(detectedAsset.asset.predicted).toEqual(true);
+            expect(detectedAsset.regions.length).toEqual(1);
+            expect(detectedAsset.regions[0].points.length).toEqual(4);
+            expect(detectedAsset.regions[0].tags.length).toEqual(1);
+            expect(detectedAsset.regions[0].tags[0]).toEqual("label");
         });
     });
 });
