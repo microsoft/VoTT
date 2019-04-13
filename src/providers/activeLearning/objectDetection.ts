@@ -30,14 +30,14 @@ export class ObjectDetection {
         }
     }
 
-    public async load(modelFolderPath: string, classesPath?: string) {
+    public async load(modelFolderPath: string) {
         try {
             if (modelFolderPath.toLowerCase().startsWith("http://") ||
                 modelFolderPath.toLowerCase().startsWith("https://")) {
                 this.model = await tf.loadGraphModel(modelFolderPath + "/model.json");
 
-                const response = await axios.get(classesPath);
-                this.jsonClasses = JSON.parse(response.data);
+                const response = await axios.get(modelFolderPath + "/classes.json");
+                this.jsonClasses = JSON.parse(JSON.stringify(response.data));
             } else {
                 if (modelFolderPath.toLowerCase().startsWith("file://")) {
                     modelFolderPath = modelFolderPath.substring(7);
@@ -55,7 +55,7 @@ export class ObjectDetection {
             result.forEach(async (t) => await t.data());
             result.forEach(async (t) => t.dispose());
             this.modelLoaded = true;
-        } catch (error) {
+        } catch (_) {
             this.modelLoaded = false;
         }
     }
