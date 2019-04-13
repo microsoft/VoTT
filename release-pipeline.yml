@@ -1,5 +1,5 @@
 trigger:
-  - refs/tags/v2* # only run build on tag with this pattern
+  - refs/tags/* # trigger on any tag
 pr: none # disable CI build for PR
 
 jobs:
