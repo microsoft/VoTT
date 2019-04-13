@@ -163,12 +163,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             }
 
             this.model = new ObjectDetection();
-            await this.model.load(modelPath);
-            toast.dismiss(infoId);
+            this.model.load(modelPath).then(() => {
+                toast.dismiss(infoId);
 
-            if (!this.model.loaded) {
-                toast.warn("Error Loading model");
-            }
+                if (!this.model.loaded) {
+                    toast.warn("Error Loading model");
+                }
+            });
         }
     }
 
