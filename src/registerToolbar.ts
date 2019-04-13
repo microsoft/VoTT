@@ -109,6 +109,7 @@ export default function registerToolbar() {
         icon: "fas fa-graduation-cap",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.Action,
+        accelerators: ["CmdOrCtrl+D", "CmdOrCtrl+d"],
     });
 
     ToolbarItemFactory.register({
