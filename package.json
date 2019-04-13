@@ -69,7 +69,7 @@
         "eject": "react-scripts eject",
         "release-pr": "./scripts/release-pr.sh",
         "release-web": "npm run build && npm run webpack:prod",
-        "release-ci": "./scripts/build.sh",
+        "release-ci": "bash ./scripts/build.sh",
         "release": "npm run build && npm run webpack:prod && electron-builder",
         "pretest": "./node_modules/.bin/tslint 'src/**/*.ts*'",
         "lintfix": "./node_modules/.bin/tslint 'src/**/*.ts*' --fix",
