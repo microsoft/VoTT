@@ -143,12 +143,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             await this.props.actions.loadProject(project);
         }
 
-        if (isElectron()) {
-            // Load TensorFlow.js Model
-            const infoId = toast.info("Loading model...", { autoClose: false });
-
-            let modelPath = "";
-            if (this.props.project.activeLearningSettings.modelPathType === "coco") {
+        let modelPath = "";
+        if (this.props.project.activeLearningSettings.modelPathType === "coco") {
+            if (isElectron()) {
                 const appPath = this.getAppPath();
 
                 if (Env.get() !== "production") {
@@ -156,21 +153,27 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 } else {
                     modelPath = appPath + "/../../cocoSSDModel";
                 }
-            } else if (this.props.project.activeLearningSettings.modelPathType === "file") {
-                modelPath = this.props.project.activeLearningSettings.modelPath;
             } else {
-                modelPath = this.props.project.activeLearningSettings.modelUrl;
+                modelPath = "https://jmangiadiag.blob.core.windows.net/vottcontainer";
             }
-
-            this.model = new ObjectDetection();
-            this.model.load(modelPath).then(() => {
-                toast.dismiss(infoId);
-
-                if (!this.model.loaded) {
-                    toast.warn("Error Loading model");
-                }
-            });
+        } else if (this.props.project.activeLearningSettings.modelPathType === "file") {
+            if (isElectron()) {
+                modelPath = this.props.project.activeLearningSettings.modelPath;
+            }
+        } else {
+            modelPath = this.props.project.activeLearningSettings.modelUrl;
         }
+
+        // Load TensorFlow.js Model
+        this.model = new ObjectDetection();
+        const infoId = toast.info("Loading model...", { autoClose: false });
+        this.model.load(modelPath).then(() => {
+            toast.dismiss(infoId);
+
+            if (!this.model.loaded) {
+                toast.warn("Error Loading model");
+            }
+        });
     }
 
     public async componentDidUpdate() {
