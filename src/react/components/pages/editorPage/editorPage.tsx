@@ -679,17 +679,18 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         const newAsset = { ...this.state.selectedAsset, regions };
         newAsset.asset.predicted = true;
+        newAsset.asset.state = AssetState.Tagged;
 
-        await this.updateProjectTagsFromAsset(newAsset);
         await this.onAssetMetadataChanged(newAsset);
 
         this.setState({
             selectedAsset: newAsset,
         });
 
-        // Save
         await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
         await this.props.actions.saveProject(this.props.project);
+        // Temporary comment this as causing an issue with the dispatcher - to be debugged
+        // await this.updateProjectTagsFromAsset(newAsset, this.props.project, true);
     }
 
     /**
@@ -728,7 +729,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
-        await this.updateProjectTagsFromAsset(assetMetadata);
+        await this.updateProjectTagsFromAsset(assetMetadata, this.props.project, false);
 
         try {
             if (!assetMetadata.asset.size) {
@@ -746,16 +747,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
     }
 
-    private async updateProjectTagsFromAsset(asset: IAssetMetadata) {
+    private async updateProjectTagsFromAsset(asset: IAssetMetadata, project: IProject, forceSave: boolean) {
         const assetTags = new Set();
         asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
 
-        const newTags: ITag[] = this.props.project.tags ? [...this.props.project.tags] : [];
+        const newTags: ITag[] = project.tags ? [...project.tags] : [];
         let updateTags = false;
 
         assetTags.forEach((tag) => {
-            if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                !this.props.project.tags.find((projectTag) => tag === projectTag.name)) {
+            if (!project.tags || project.tags.length === 0 ||
+                !project.tags.find((projectTag) => tag === projectTag.name)) {
                 newTags.push({
                     name: tag,
                     color: tagColors[newTags.length % tagColors.length],
@@ -764,9 +765,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             }
         });
 
-        if (updateTags) {
+        if (updateTags || forceSave) {
             asset.asset.state = AssetState.Tagged;
-            const newProject = { ...this.props.project, tags: newTags };
+            const newProject = { ...project, tags: newTags };
             await this.props.actions.saveAssetMetadata(newProject, asset);
             await this.props.actions.saveProject(newProject);
         }
