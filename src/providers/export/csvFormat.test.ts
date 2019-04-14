@@ -3,7 +3,8 @@ import { CSVFormatExportProvider } from "./csvFormat";
 import registerProviders from "../../registerProviders";
 import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState, IExportProviderOptions } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState, IExportProviderOptions,
+    RegionType } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
@@ -73,7 +74,19 @@ describe("CSV Format Export Provider", () => {
             assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
-                    regions: [],
+                    regions: [
+                        {
+                            id: "1",
+                            type: RegionType.Rectangle,
+                            tags: ["a", "b"],
+                            boundingBox: {
+                                left: 1,
+                                top: 2,
+                                width: 3,
+                                height: 4,
+                            },
+                        },
+                    ],
                     version: appInfo.version,
                 };
 
@@ -96,8 +109,10 @@ describe("CSV Format Export Provider", () => {
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const exportCsv = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
+            const records = exportCsv.split("\n");
 
-            expect(exportCsv.length).toEqual(0);
+            // 10 assets - Each with 1 region and 2 tags
+            expect(records.length).toEqual(20);
 
             expect(LocalFileSystemProxy.prototype.writeText)
                 .toBeCalledWith(expectedFileName, expect.any(String));
@@ -113,8 +128,10 @@ describe("CSV Format Export Provider", () => {
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const exportCsv = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
+            const records = exportCsv.split("\n");
 
-            expect(exportCsv.length).toEqual(0);
+            // 2 tagged / 1 visited assets - Each with 1 region and 2 tags
+            expect(records.length).toEqual(6);
         });
 
         it("Exports only tagged assets", async () => {
@@ -127,8 +144,10 @@ describe("CSV Format Export Provider", () => {
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const exportCsv = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
+            const records = exportCsv.split("\n");
 
-            expect(exportCsv.length).toEqual(0);
+            // 2 tagged - Each with 1 region and 2 tags
+            expect(records.length).toEqual(4);
         });
     });
 });
