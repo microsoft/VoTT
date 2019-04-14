@@ -388,6 +388,9 @@ export const spanish: IAppStrings = {
             cntk: {
                 displayName: "Microsoft Cognitive Toolkit (CNTK)",
             },
+            csvFormat: {
+                displayName: "CSV",
+            },
         },
         messages: {
             saveSuccess: "Configuración de exportación guardada correctamente",

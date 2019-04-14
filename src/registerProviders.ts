@@ -2,6 +2,7 @@ import { ExportProviderFactory } from "./providers/export/exportProviderFactory"
 import { PascalVOCExportProvider } from "./providers/export/pascalVOC";
 import { TFRecordsExportProvider } from "./providers/export/tensorFlowRecords";
 import { VottJsonExportProvider } from "./providers/export/vottJson";
+import { CSVFormatExportProvider } from "./providers/export/csvFormat";
 import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
 import { AzureBlobStorage } from "./providers/storage/azureBlobStorage";
 import { BingImageSearch } from "./providers/storage/bingImageSearch";
@@ -73,6 +74,11 @@ export default function registerProviders() {
         name: "cntk",
         displayName: strings.export.providers.cntk.displayName,
         factory: (project, options) => new CntkExportProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "csvFormat",
+        displayName: strings.export.providers.csvFormat.displayName,
+        factory: (project, options) => new CSVFormatExportProvider(project, options),
     });
 
     registerToolbar();

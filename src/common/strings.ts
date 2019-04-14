@@ -382,6 +382,9 @@ export interface IAppStrings {
             cntk: {
                 displayName: string,
             },
+            csvFormat: {
+                displayName: string,
+            },
         },
         messages: {
             saveSuccess: string;

@@ -197,6 +197,7 @@ Once assets have been labeled, they can be exported into a variety of formats:
 * [Azure Custom Vision Service](https://azure.microsoft.com/en-us/services/cognitive-services/custom-vision-service/)
 * TensorFlow (Pascal VOC and TFRecords)
 * VoTT (generic JSON schema)
+* CSV
 
 In addition, users may choose to export
 
