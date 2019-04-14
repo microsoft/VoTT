@@ -73,7 +73,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
                 height="100%"
                 autoPlay={autoPlay}
                 src={videoPath}
-                onError={this.props.onError}>
+                onError={this.props.onError}
+                crossOrigin="anonymous">
                 <BigPlayButton position="center" />
                 {autoPlay &&
                     <ControlBar autoHide={false}>
