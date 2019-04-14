@@ -550,18 +550,22 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private predict = async () => {
         if (this.model && this.model.loaded) {
-            const canvas = document.querySelector("canvas");
-            canvas.toBlob(async (blob) => {
-                const imageBuffer = await new Response(blob).arrayBuffer();
-                const buffer = Buffer.from(imageBuffer);
-                const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
-                const image = document.createElement("img");
+            try {
+                const canvas = document.querySelector("canvas");
+                canvas.toBlob(async (blob) => {
+                    const imageBuffer = await new Response(blob).arrayBuffer();
+                    const buffer = Buffer.from(imageBuffer);
+                    const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+                    const image = document.createElement("img");
 
-                image.onload = async () => {
-                    this.predictImage(image);
-                };
-                image.src = "data:image;base64," + image64;
-            });
+                    image.onload = async () => {
+                        this.predictImage(image);
+                    };
+                    image.src = "data:image;base64," + image64;
+                });
+            // tslint:disable-next-line:no-empty
+            } catch (_) {
+            }
         }
     }
 
