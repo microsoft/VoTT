@@ -869,9 +869,10 @@ describe("Editor Page Component", () => {
 
         it("Detect regions and tags", async () => {
             wrapper.find(`.${ToolbarItemName.ActiveLearning}`).simulate("click");
+
             await waitForPrediction(wrapper);
 
-            const detectedAsset = wrapper
+            const detectedAsset = await wrapper
                 .find(EditorPage)
                 .childAt(0)
                 .state()

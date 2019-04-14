@@ -625,16 +625,18 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         newAsset.asset.predicted = true;
         newAsset.asset.state = AssetState.Tagged;
 
-        await this.onAssetMetadataChanged(newAsset);
-
-        this.setState({
-            selectedAsset: newAsset,
-        });
-
+        // Temporary un-comment these two line as calling updateProjectTagsFromAsset
+        // is causing an issue with the dispatcher - to be debugged
         await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
         await this.props.actions.saveProject(this.props.project);
         // Temporary comment this as causing an issue with the dispatcher - to be debugged
         // await this.updateProjectTagsFromAsset(newAsset, this.props.project, true);
+
+        this.setState({
+            selectedAsset: newAsset,
+        }, async () => {
+            await this.onAssetMetadataChanged(newAsset);
+        });
     }
 
     /**
