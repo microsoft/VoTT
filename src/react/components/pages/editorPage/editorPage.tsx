@@ -681,7 +681,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         newAsset.asset.predicted = true;
         console.log(newAsset);
 
-        this.onAssetMetadataChanged(newAsset);
+        await this.updateProjectTagsFromAsset(newAsset);
+        await this.onAssetMetadataChanged(newAsset);
 
         this.setState({
             selectedAsset: newAsset,
