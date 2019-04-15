@@ -19,7 +19,7 @@ import IApplicationActions, * as applicationActions from "../../../../redux/acti
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { ToolbarItemName } from "../../../../registerToolbar";
 import { AssetService } from "../../../../services/assetService";
-import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { TagInput } from "../../common/tagInput/tagInput";
@@ -51,10 +51,6 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
     applicationActions: IApplicationActions;
 }
 
-interface IExportPageSettings extends IAssetPreviewSettings {
-    activeLearningSettings: IProjectActiveLearningSettings;
-}
-
 /**
  * State for Editor Page
  */
@@ -74,7 +70,7 @@ export interface IEditorPageState {
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
     /** Additional settings for asset previews */
-    additionalSettings?: IExportPageSettings;
+    additionalSettings?: IAdditionalPageSettings;
     /** Most recently selected tag */
     selectedTag: string;
     /** Tags locked for region labeling */
