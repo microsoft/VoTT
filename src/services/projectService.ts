@@ -20,8 +20,10 @@ export interface IProjectService {
     save(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
-    deleteTag(project: IProject, tagName: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata>;
-    renameTag(project: IProject, tagName: string, newTagName: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata>;
+    deleteTag(project: IProject, tagName: string,
+              currentAsset: IAssetMetadata): Promise<IAssetMetadata>;
+    renameTag(project: IProject, tagName: string, newTagName: string,
+              currentAsset: IAssetMetadata): Promise<IAssetMetadata>;
 }
 
 /**
@@ -111,8 +113,9 @@ export default class ProjectService implements IProjectService {
      * @param currentAsset Current asset being viewed. Makes changes and returns updated asset to avoid
      * needing to reload the asset in the editor page
      */
-    public async deleteTag(project: IProject, tagName: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata> {
-        const transformer = (tags) => tags.filter((t) => t!== tagName);
+    public async deleteTag(project: IProject, tagName: string,
+                           currentAsset: IAssetMetadata): Promise<IAssetMetadata> {
+        const transformer = (tags) => tags.filter((t) => t !== tagName);
         return await this.updateProjectTags(project, tagName, currentAsset, transformer);
     }
 
@@ -123,7 +126,8 @@ export default class ProjectService implements IProjectService {
      * @param currentAsset Current asset being viewed. Makes changes and returns updated asset to avoid
      * needing to reload the asset in the editor page
      */
-    public async renameTag(project: IProject, tagName: string, newTagName: string, currentAsset: IAssetMetadata): Promise<IAssetMetadata> {
+    public async renameTag(project: IProject, tagName: string, newTagName: string,
+                           currentAsset: IAssetMetadata): Promise<IAssetMetadata> {
         const transformer = (tags) => tags.map((t) => (t === tagName) ? newTagName : t);
         return await this.updateProjectTags(project, tagName, currentAsset, transformer);
     }
@@ -136,9 +140,27 @@ export default class ProjectService implements IProjectService {
      * needing to reload the asset in the editor page
      * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
      */
-    private async updateProjectTags(project: IProject, tagName: string, currentAsset: IAssetMetadata, transformer: (tags: string[]) => string[]) {
+    private async updateProjectTags(project: IProject, tagName: string, currentAsset: IAssetMetadata,
+                                    transformer: (tags: string[]) => string[]): Promise<IAssetMetadata> {
         const assetService = new AssetService(project);
         const assetKeys = Object.keys(project.assets);
+        // Loop over assets and update if necessary
+        for (const assetKey of assetKeys) {
+            const asset = project.assets[assetKey];
+            if (asset.state !== AssetState.Tagged) {
+                return;
+            }
+            const assetMetadata = await assetService.getAssetMetadata(asset);
+            const updatedAssetMetadata = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);
+            if (updatedAssetMetadata) {
+                await assetService.save(updatedAssetMetadata);
+            }
+        }
+        /*
+        TODO: Replace with async
+
+        For some reason in tests, the `forEachAsync` is not recognized as a function
+
         await assetKeys.forEachAsync(async (assetKey) => {
             const asset = project.assets[assetKey];
             if (asset.state !== AssetState.Tagged) {
@@ -150,6 +172,8 @@ export default class ProjectService implements IProjectService {
                 await assetService.save(updatedAssetMetadata);
             }
         });
+
+        */
         return this.updateTagInAssetMetadata(currentAsset, tagName, transformer);
     }
 
@@ -160,7 +184,8 @@ export default class ProjectService implements IProjectService {
      * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
      * @returns Modified asset metadata object or null if object does not need to be modified
      */
-    private updateTagInAssetMetadata(assetMetadata: IAssetMetadata, tagName: string, transformer: (tags: string[]) => string[]) {
+    private updateTagInAssetMetadata(assetMetadata: IAssetMetadata, tagName: string,
+                                     transformer: (tags: string[]) => string[]): IAssetMetadata {
         let foundTag = false;
         for (const region of assetMetadata.regions) {
             if (region.tags.find((t) => t === tagName)) {
