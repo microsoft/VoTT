@@ -340,7 +340,7 @@ export interface IAppStrings {
             tfRecords: {
                 displayName: string,
             },
-            tfPascalVoc: {
+            pascalVoc: {
                 displayName: string,
                 testTrainSplit: {
                     title: string,

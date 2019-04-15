@@ -4,7 +4,7 @@ import { ExportProvider } from "./exportProvider";
 import { IProject, IAssetMetadata, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
-import { itemTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
+import { itemTemplate } from "./pascalVOC/pascalVOCTemplates";
 import { interpolate } from "../../common/strings";
 import { TFRecordsBuilder, FeatureType } from "./tensorFlowRecords/tensorFlowBuilder";
 

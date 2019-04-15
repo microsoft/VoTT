@@ -1,5 +1,5 @@
 import { ExportProviderFactory } from "./providers/export/exportProviderFactory";
-import { TFPascalVOCExportProvider } from "./providers/export/tensorFlowPascalVOC";
+import { PascalVOCExportProvider } from "./providers/export/pascalVOC";
 import { TFRecordsExportProvider } from "./providers/export/tensorFlowRecords";
 import { VottJsonExportProvider } from "./providers/export/vottJson";
 import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
@@ -54,9 +54,9 @@ export default function registerProviders() {
         factory: (project, options) => new VottJsonExportProvider(project, options),
     });
     ExportProviderFactory.register({
-        name: "tensorFlowPascalVOC",
-        displayName: strings.export.providers.tfPascalVoc.displayName,
-        factory: (project, options) => new TFPascalVOCExportProvider(project, options),
+        name: "pascalVOC",
+        displayName: strings.export.providers.pascalVoc.displayName,
+        factory: (project, options) => new PascalVOCExportProvider(project, options),
     });
     ExportProviderFactory.register({
         name: "tensorFlowRecords",

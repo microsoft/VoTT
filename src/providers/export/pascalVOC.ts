@@ -3,7 +3,7 @@ import { ExportProvider } from "./exportProvider";
 import { IProject, IAssetMetadata, RegionType, ITag, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
-import { itemTemplate, annotationTemplate, objectTemplate } from "./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates";
+import { itemTemplate, annotationTemplate, objectTemplate } from "./pascalVOC/pascalVOCTemplates";
 import { interpolate } from "../../common/strings";
 import { PlatformType } from "../../common/hostProcess";
 import os from "os";
@@ -23,9 +23,9 @@ interface IImageInfo {
 }
 
 /**
- * Export options for TensorFlow Pascal VOC Export Provider
+ * Export options for Pascal VOC Export Provider
  */
-export interface ITFPascalVOCExportProviderOptions extends IExportProviderOptions {
+export interface IPascalVOCExportProviderOptions extends IExportProviderOptions {
     /** The test / train split ratio for exporting data */
     testTrainSplit?: number;
     /** Whether or not to include unassigned tags in exported data */
@@ -33,19 +33,19 @@ export interface ITFPascalVOCExportProviderOptions extends IExportProviderOption
 }
 
 /**
- * @name - TFPascalVOC Json Export Provider
- * @description - Exports a project into a single JSON file that include all configured assets
+ * @name - PascalVOC Export Provider
+ * @description - Exports a project into a Pascal VOC
  */
-export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExportProviderOptions> {
+export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProviderOptions> {
     private imagesInfo = new Map<string, IImageInfo>();
 
-    constructor(project: IProject, options: ITFPascalVOCExportProviderOptions) {
+    constructor(project: IProject, options: IPascalVOCExportProviderOptions) {
         super(project, options);
         Guard.null(options);
     }
 
     /**
-     * Export project to TensorFlow PascalVOC
+     * Export project to PascalVOC
      */
     public async export(): Promise<void> {
         const allAssets = await this.getAssetsForExport();
@@ -53,7 +53,7 @@ export class TFPascalVOCExportProvider extends ExportProvider<ITFPascalVOCExport
         exportObject.assets = _.keyBy(allAssets, (assetMetadata) => assetMetadata.asset.id);
 
         // Create Export Folder
-        const exportFolderName = `${this.project.name.replace(" ", "-")}-TFPascalVOC-export`;
+        const exportFolderName = `${this.project.name.replace(" ", "-")}-PascalVOC-export`;
         await this.storageProvider.createContainer(exportFolderName);
 
         await this.exportImages(exportFolderName, allAssets);

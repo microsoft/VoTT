@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "title": "${strings.export.providers.tfPascalVoc.displayName}",
+    "title": "${strings.export.providers.pascalVoc.displayName}",
     "properties": {
         "assetState": {
             "type": "string",
@@ -19,14 +19,14 @@
             ]
         },
         "testTrainSplit": {
-            "title": "${strings.export.providers.tfPascalVoc.testTrainSplit.title}",
-            "description": "${strings.export.providers.tfPascalVoc.testTrainSplit.description}",
+            "title": "${strings.export.providers.pascalVoc.testTrainSplit.title}",
+            "description": "${strings.export.providers.pascalVoc.testTrainSplit.description}",
             "type": "number",
             "default": 80
         },
         "exportUnassigned": {
-            "title": "${strings.export.providers.tfPascalVoc.exportUnassigned.title}",
-            "description": "${strings.export.providers.tfPascalVoc.exportUnassigned.description}",
+            "title": "${strings.export.providers.pascalVoc.exportUnassigned.title}",
+            "description": "${strings.export.providers.pascalVoc.exportUnassigned.description}",
             "type": "boolean",
             "default": true
         }
