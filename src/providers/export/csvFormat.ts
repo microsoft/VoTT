@@ -43,7 +43,7 @@ export class CSVFormatExportProvider extends ExportProvider {
                 assetMetadata.regions.forEach((region) => {
                     region.tags.forEach((tag) => {
                         csvBuffer.push([
-                            assetMetadata.asset.name,
+                            `"${assetMetadata.asset.name}"`,
                             Math.round(region.boundingBox.left).toString(),
                             Math.round(region.boundingBox.top).toString(),
                             Math.round(region.boundingBox.left + region.boundingBox.width).toString(),
