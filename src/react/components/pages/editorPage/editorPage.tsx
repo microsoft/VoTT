@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { strings } from "../../../../common/strings";
+import { strings, interpolate } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
@@ -162,11 +162,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Load TensorFlow.js Model
         this.model = new ObjectDetection();
-        const infoId = toast.info("Loading model...", { autoClose: false });
+        const infoId = toast.info(interpolate(strings.activeLearning.messages.loadingModel, { autoClose: false }));
         await this.model.load(modelPath);
         toast.dismiss(infoId);
         if (!this.model.loaded) {
-            toast.warn("Error Loading model");
+            toast.warn(strings.activeLearning.messages.errorLoadModel);
         }
     }
 

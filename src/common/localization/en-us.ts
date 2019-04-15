@@ -392,6 +392,10 @@ export const english: IAppStrings = {
     },
     activeLearning: {
         title: "Active Learning",
+        messages: {
+            loadingModel: "Loading model...",
+            errorLoadModel: "Error Loading model",
+        },
     },
     profile: {
         settings: "Profile Settings",

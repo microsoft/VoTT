@@ -169,7 +169,7 @@ export class ObjectDetection {
         if (index < indexes.length && indexes[index] < classes.length) {
             const classId = classes[indexes[index]] - 1;
             const classObject = this.jsonClasses[classId];
-            return classObject ? classObject.displayName : "";
+            return classObject ? classObject.displayName : "Unknown";
         }
 
         return "";
