@@ -262,7 +262,7 @@ export interface IAppStrings {
             delete: {
                 title: string;
                 confirmation: string;
-            }
+            },
         }
         canvas: {
             removeAllRegions: {

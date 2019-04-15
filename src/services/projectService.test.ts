@@ -2,13 +2,11 @@ import _ from "lodash";
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, IExportFormat, ISecurityToken,
-    AssetState, IAsset, IAssetMetadata } from "../models/applicationState";
+import { IProject, IExportFormat, ISecurityToken, AssetState } from "../models/applicationState";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { generateKey } from "../common/crypto";
 import { encryptProject } from "../common/utils";
-import { AssetService } from "./assetService";
 
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
@@ -148,105 +146,44 @@ describe("Project Service", () => {
         expect(projectSerivce.isDuplicate(testProject, projectList)).toEqual(true);
     });
 
-    function populateProjectAssets(project?: IProject, assetCount = 10) {
-        if (!project) {
-            project = MockFactory.createTestProject();
-        }
-        const assets = MockFactory.createTestAssets(assetCount);
+    it("deletes all asset metadata files when project is deleted", async () => {
+        const assets = MockFactory.createTestAssets(10);
         assets.forEach((asset) => {
             asset.state = AssetState.Tagged;
         });
 
-        project.assets = _.keyBy(assets, (asset) => asset.id);
-        return project;
-    }
-
-    it("deletes all asset metadata files when project is deleted", async () => {
-        const assetCount = 10;
-        populateProjectAssets(testProject);
+        testProject.assets = _.keyBy(assets, (asset) => asset.id);
 
         await projectSerivce.delete(testProject);
-        expect(storageProviderMock.deleteFile.mock.calls).toHaveLength(assetCount + 1);
+        expect(storageProviderMock.deleteFile.mock.calls).toHaveLength(assets.length + 1);
     });
 
-    it("Deletes tag from all assets within project", async () => {
-        const tag1 = "tag1";
-        const tag2 = "tag2";
-        const region = MockFactory.createTestRegion(undefined, [tag1, tag2]);
-        const asset: IAsset = {
-            ...MockFactory.createTestAsset("1"),
-            state: AssetState.Tagged,
+    it("Deletes a tag from project", () => {
+        const tag = MockFactory.createTestTag();
+        const project: IProject = {
+            ...MockFactory.createTestProject(),
+            tags: [tag],
         };
-        const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
-        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
-
-        const saveMetadata = jest.fn();
-        AssetService.prototype.save = saveMetadata;
-
-        const expectedAssetMetadata: IAssetMetadata = {
-            ...MockFactory.createTestAssetMetadata(
-                asset,
-                [
-                    {
-                        ...region,
-                        tags: [tag2],
-                    },
-                ],
-            ),
-
-        };
-        const project = populateProjectAssets();
-        await projectSerivce.deleteTag(project, tag1, assetMetadata);
-        expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
+        const projectService = new ProjectService();
+        expect(projectSerivce.deleteTag(project, tag.name)).toEqual({
+            ...project,
+            tags: [],
+        });
     });
 
-    it("Deletes any empty regions after deleting only tag from region", async () => {
-        const tag1 = "tag1";
-        const region = MockFactory.createTestRegion(undefined, [tag1]);
-        const asset: IAsset = {
-            ...MockFactory.createTestAsset("1"),
-            state: AssetState.Tagged,
+    it("Renames a tag within project", () => {
+        const tag = MockFactory.createTestTag();
+        const project: IProject = {
+            ...MockFactory.createTestProject(),
+            tags: [tag],
         };
-        const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
-        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
-
-        const saveMetadata = jest.fn();
-        AssetService.prototype.save = saveMetadata;
-
-        const expectedAssetMetadata: IAssetMetadata = MockFactory.createTestAssetMetadata(asset, []);
-        const project = populateProjectAssets();
-        await projectSerivce.deleteTag(project, tag1, assetMetadata);
-        expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
-    });
-
-    it("Updates renamed tag within all assets of project", async () => {
-        const tag1 = "tag1";
-        const newTag = "tag2";
-        const region = MockFactory.createTestRegion(undefined, [tag1]);
-        const asset: IAsset = {
-            ...MockFactory.createTestAsset("1"),
-            state: AssetState.Tagged,
-        };
-        const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
-        AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
-
-        const saveMetadata = jest.fn();
-        AssetService.prototype.save = saveMetadata;
-
-        const expectedAssetMetadata: IAssetMetadata = {
-            ...MockFactory.createTestAssetMetadata(
-                asset,
-                [
-                    {
-                        ...region,
-                        tags: [newTag],
-                    },
-                ],
-            ),
-
-        };
-        const project = populateProjectAssets();
-        await projectSerivce.renameTag(project, tag1, newTag, assetMetadata);
-        expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
+        const projectService = new ProjectService();
+        expect(projectSerivce.renameTag(project, tag.name, "test")).toEqual({
+            ...project,
+            tags: [{
+                name: "test",
+                color: expect.any(String),
+            }],
+        });
     });
 });
