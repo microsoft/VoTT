@@ -342,8 +342,8 @@ export const english: IAppStrings = {
             tfRecords: {
                 displayName: "Tensorflow Records",
             },
-            tfPascalVoc: {
-                displayName: "Tensorflow Pascal VOC",
+            pascalVoc: {
+                displayName: "Pascal VOC",
                 testTrainSplit: {
                     title: "Test / Train Split",
                     description: "The test train split to use for exported data",

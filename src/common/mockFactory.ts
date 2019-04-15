@@ -630,12 +630,12 @@ export default class MockFactory {
 
     /**
      * Creates array of IExportProviderRegistrationOptions for the different providers
-     * vottJson, tensorFlowPascalVOC, azureCustomVision
+     * vottJson, pascalVOC, azureCustomVision
      */
     public static createExportProviderRegistrations(): IExportProviderRegistrationOptions[] {
         const registrations: IExportProviderRegistrationOptions[] = [];
         registrations.push(MockFactory.createExportProviderRegistration("vottJson"));
-        registrations.push(MockFactory.createExportProviderRegistration("tensorFlowPascalVOC"));
+        registrations.push(MockFactory.createExportProviderRegistration("pascalVOC"));
         registrations.push(MockFactory.createExportProviderRegistration("azureCustomVision"));
 
         return registrations;
