@@ -8,6 +8,7 @@ import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRec
 import HtmlFileReader from "../common/htmlFileReader";
 import { encodeFileURI } from "../common/utils";
 import _ from "lodash";
+import registerMixins from "../registerMixins";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
@@ -339,6 +340,10 @@ describe("Asset Service", () => {
             project.assets = _.keyBy(assets, (asset) => asset.id);
             return project;
         }
+
+        beforeAll(() => {
+            registerMixins();
+        })
 
         it("Deletes tag from assets", async () => {
             const tag1 = "tag1";

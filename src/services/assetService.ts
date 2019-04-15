@@ -247,8 +247,9 @@ export class AssetService {
             return;
         }
         const assetKeys = Object.keys(assets);
+
         // Loop over assets and update if necessary
-        for (const assetKey of assetKeys) {
+        await assetKeys.forEachAsync(async (assetKey) => {
             const asset = assets[assetKey];
             if (asset.state !== AssetState.Tagged) {
                 return;
@@ -258,28 +259,7 @@ export class AssetService {
             if (updatedAssetMetadata) {
                 await this.save(updatedAssetMetadata);
             }
-        }
-        if (currentAsset) {
-            return this.updateTagInAssetMetadata(currentAsset, tagName, transformer);
-        }
-        /*
-        TODO: Replace with async
-
-        For some reason in tests, the `forEachAsync` is not recognized as a function
-
-        await assetKeys.forEachAsync(async (assetKey) => {
-            const asset = project.assets[assetKey];
-            if (asset.state !== AssetState.Tagged) {
-                return;
-            }
-            const assetMetadata = await assetService.getAssetMetadata(asset);
-            const updatedAssetMetadata = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);
-            if (updatedAssetMetadata) {
-                await assetService.save(updatedAssetMetadata);
-            }
         });
-
-        */
     }
 
     /**

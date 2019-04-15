@@ -316,7 +316,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const newProject: IProject = {
             ...project,
             tags: project.tags.map((t) => (t.name === tagName) ? {...t, name: newTagName} : t),
-        }
+        };
         this.setState({
             project: newProject,
             selectedAsset: asset || selectedAsset,
@@ -337,10 +337,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const { project } = this.props;
         const newProject: IProject = {
             ...project,
-            tags: project.tags.filter((t) => t.name !== tagName)
-        }
+            tags: project.tags.filter((t) => t.name !== tagName),
+        };
         await this.props.actions.saveProject(newProject);
-        debugger;
 
         const assetService = new AssetService(project);
         const asset = await assetService.deleteTag(project.assets, tagName, selectedAsset);
