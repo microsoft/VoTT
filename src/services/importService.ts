@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     IProject, ITag, IConnection, AppError, ErrorCode,
     IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo,
-    IAsset, AssetType,
+    IAsset, AssetType, ModelPathType,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import packageJson from "../../package.json";
@@ -66,8 +66,8 @@ export default class ImportService implements IImportService {
             videoSettings: {
                 frameExtractionRate: originalProject.framerate ? Number(originalProject.framerate) : 15,
             },
-            activeLearningSettings: {modelPathType: "coco", modelPath: "", modelUrl: "",
-                autoDetect: false, predictTag: false},
+            activeLearningSettings: { modelPathType: ModelPathType.Coco, modelPath: "", modelUrl: "",
+                autoDetect: false, predictTag: false },
             autoSave: true,
         };
     }

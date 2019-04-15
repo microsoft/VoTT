@@ -10,7 +10,7 @@ import LocalFileSystem from "./providers/storage/localFileSystem";
 let mainWindow: BrowserWindow;
 let ipcMainProxy: IpcMainProxy;
 
-async function createWindow() {
+function createWindow() {
     const windowOptions: BrowserWindowConstructorOptions = {
         width: 1024,
         height: 768,
@@ -128,8 +128,8 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 // app.on("ready", createWindow);
-app.on("ready", async () => {
-    await createWindow();
+app.on("ready", () => {
+    createWindow();
 });
 
 // Quit when all windows are closed.
