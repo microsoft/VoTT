@@ -22,7 +22,7 @@ describe("Load default model from filesystem with TF io.IOHandler", () => {
         try {
             const model = await tf.loadGraphModel(handler);
         } catch (_) {
-            // fully loading TF model fails has it has to load also weights
+            // fully loading TF model fails as it has to load also weights
         }
 
         expect(LocalFileSystemProxy.prototype.readText).toBeCalledWith("/model.json");

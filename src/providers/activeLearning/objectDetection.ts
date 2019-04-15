@@ -3,12 +3,14 @@ import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
 import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "../../providers/storage/localFileSystemProxy";
 
-// tslint:disable-next-line:interface-name
-export interface DetectedObject {
+// tslint:disable-next-line:interface-over-type-literal
+export type DetectedObject = {
     bbox: [number, number, number, number];  // [x, y, width, height]
     class: string;
     score: number;
-}
+};
+
+export type ImageObject = tf.Tensor3D|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement;
 
 export class ObjectDetection {
     private modelLoaded: boolean = false;
@@ -71,7 +73,7 @@ export class ObjectDetection {
      * locations. Defaults to 20.
      *
      */
-    public async detect(img: tf.Tensor3D|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement,
+    public async detect(img: ImageObject,
                         maxNumBoxes: number = 20): Promise<DetectedObject[]> {
         if (this.model) {
             return this.infer(img, maxNumBoxes);
@@ -89,7 +91,7 @@ export class ObjectDetection {
      * objects. There can be multiple objects of the same class, but at different
      * locations. Defaults to 20.
      */
-    private async infer(img: tf.Tensor3D|ImageData|HTMLImageElement|HTMLCanvasElement| HTMLVideoElement,
+    private async infer(img: ImageObject,
                         maxNumBoxes: number): Promise<DetectedObject[]> {
         const batched = tf.tidy(() => {
             if (!(img instanceof tf.Tensor)) {

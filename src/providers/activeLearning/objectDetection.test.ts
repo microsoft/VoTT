@@ -12,11 +12,11 @@ describe("Load an Object Detection model", () => {
         storageProviderMock.mockClear();
 
         storageProviderMock.prototype.readText = jest.fn((fileName) => {
-            return JSON.stringify(modelJson);
+            return Promise.resolve(JSON.stringify(modelJson));
         });
 
         storageProviderMock.prototype.readBinary = jest.fn((fileName) => {
-            return [];
+            return Promise.resolve([]);
         });
 
         const model = new ObjectDetection();
