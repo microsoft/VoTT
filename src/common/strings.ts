@@ -255,6 +255,14 @@ export interface IAppStrings {
                 apply: string;
                 lock: string;
             },
+            rename: {
+                title: string;
+                confirmation: string;
+            },
+            delete: {
+                title: string;
+                confirmation: string;
+            }
         }
         canvas: {
             removeAllRegions: {

@@ -31,9 +31,9 @@ export interface ITagInputProps {
     /** Function to call on clicking individual tag while holding CTRL key */
     onCtrlTagClick?: (tag: ITag) => void;
     /** Function to call when tag is renamed */
-    onTagRenamed?: (oldTag: string, newTag: string) => void;
+    onTagRenamed?: (tagName: string, newTagName: string) => void;
     /** Function to call when tag is deleted */
-    onTagDeleted?: (tag: ITag) => void;
+    onTagDeleted?: (tagName: string) => void;
     /** Always show tag input box */
     showTagInputBox?: boolean;
     /** Always show tag search box */
@@ -219,20 +219,25 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }, () => this.props.onChange(tags));
     }
 
-    private updateTag = (oldTag: ITag, newTag: ITag) => {
-        if (oldTag === newTag) {
+    private updateTag = (tag: ITag, newTag: ITag) => {
+        if (tag === newTag) {
             return;
         }
         if (!newTag.name.length) {
             toast.warn(strings.tags.warnings.emptyName);
             return;
         }
-        if (newTag.name !== oldTag.name && this.state.tags.some((t) => t.name === newTag.name)) {
+        const nameChange = tag.name !== newTag.name;
+        if (nameChange && this.state.tags.some((t) => t.name === newTag.name)) {
             toast.warn(strings.tags.warnings.existingName);
             return;
         }
+        if (nameChange && this.props.onTagRenamed) {
+            this.props.onTagRenamed(tag.name, newTag.name);
+            return;
+        }
         const tags = this.state.tags.map((t) => {
-            return (t.name === oldTag.name) ? newTag : t;
+            return (t.name === tag.name) ? newTag : t;
         });
         this.setState({
             tags,
@@ -387,6 +392,10 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
 
     private deleteTag = (tag: ITag) => {
         if (!tag) {
+            return;
+        }
+        if (this.props.onTagDeleted) {
+            this.props.onTagDeleted(tag.name);
             return;
         }
         const index = this.state.tags.indexOf(tag);
