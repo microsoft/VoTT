@@ -300,9 +300,27 @@ export const english: IAppStrings = {
             },
             azureCV: {
                 displayName: "Azure Custom Vision Service",
+                regions: {
+                    australiaEast: "Australia East",
+                    centralIndia: "Central India",
+                    eastUs: "East US",
+                    eastUs2: "East US 2",
+                    japanEast: "Japan East",
+                    northCentralUs: "North Central US",
+                    northEurope: "North Europe",
+                    southCentralUs: "South Central US",
+                    southeastAsia: "Southeast Asia",
+                    ukSouth: "UK South",
+                    westUs2: "West US 2",
+                    westEurope: "West Europe",
+                },
                 properties: {
                     apiKey: {
                         title: "API Key",
+                    },
+                    region: {
+                        title: "Region",
+                        description: "The Azure region where your service is deployed",
                     },
                     classificationType: {
                         title: "Classification Type",

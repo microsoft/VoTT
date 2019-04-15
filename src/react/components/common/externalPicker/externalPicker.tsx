@@ -98,7 +98,7 @@ export default class ExternalPicker extends React.Component<IExternalPickerProps
 
         const config: AxiosRequestConfig = {
             method: uiOptions.method,
-            url: uiOptions.url,
+            url: interpolate(uiOptions.url, { props: this.props }),
             headers: customHeaders,
         };
 
@@ -111,11 +111,10 @@ export default class ExternalPicker extends React.Component<IExternalPickerProps
                 };
             });
 
-            this.setState({
-                items,
-            });
+            this.setState({ items });
         } catch (e) {
-            return;
+            this.setState({ items: [] });
+            this.props.onChange(undefined);
         }
     }
 }

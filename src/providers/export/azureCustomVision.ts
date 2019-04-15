@@ -17,6 +17,7 @@ import HtmlFileReader from "../../common/htmlFileReader";
 export interface IAzureCustomVisionExportOptions extends IExportProviderOptions {
     assetState: ExportAssetState;
     newOrExisting: NewOrExisting;
+    region: AzureRegion;
     apiKey: string;
     projectId?: string;
     name?: string;
@@ -39,6 +40,24 @@ export enum NewOrExisting {
 }
 
 /**
+ * Azure regions
+ */
+export enum AzureRegion {
+    EastUS = "eastus",
+    EastUS2 = "eastus2",
+    NorthCentralUS = "northcentralus",
+    SouthCentralUS = "southcentralus",
+    WestUS2 = "westus2",
+    WestEurope = "westeurope",
+    NorthEurope = "northeurope",
+    SoutheastAsia = "southeastasia",
+    AustraliaEast = "australiaeast",
+    CentralIndia = "centralindia",
+    UKSouth = "uksouth",
+    JapanEast = "japaneast",
+}
+
+/**
  * @name - Azure Custom Vision Provider
  * @description - Exports a VoTT project into an Azure custom vision project
  */
@@ -49,9 +68,13 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
         super(project, options);
         Guard.null(options);
 
+        if (!options.region) {
+            options.region = AzureRegion.SouthCentralUS;
+        }
+
         const cusomVisionServiceOptions: IAzureCustomVisionServiceOptions = {
             apiKey: options.apiKey,
-            baseUrl: "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training",
+            baseUrl: `https://${options.region}.api.cognitive.microsoft.com/customvision/v2.2/Training`,
         };
         this.customVisionService = new AzureCustomVisionService(cusomVisionServiceOptions);
     }
@@ -111,6 +134,7 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
 
         return {
             assetState: customVisionOptions.assetState,
+            region: customVisionOptions.region,
             apiKey: customVisionOptions.apiKey,
             projectId: customVisionProject.id,
             newOrExisting: NewOrExisting.Existing,
