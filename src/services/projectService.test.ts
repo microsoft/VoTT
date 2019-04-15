@@ -157,33 +157,4 @@ describe("Project Service", () => {
         await projectSerivce.delete(testProject);
         expect(storageProviderMock.deleteFile.mock.calls).toHaveLength(assets.length + 1);
     });
-
-    it("Deletes a tag from project", () => {
-        const tag = MockFactory.createTestTag();
-        const project: IProject = {
-            ...MockFactory.createTestProject(),
-            tags: [tag],
-        };
-        const projectService = new ProjectService();
-        expect(projectSerivce.deleteTag(project, tag.name)).toEqual({
-            ...project,
-            tags: [],
-        });
-    });
-
-    it("Renames a tag within project", () => {
-        const tag = MockFactory.createTestTag();
-        const project: IProject = {
-            ...MockFactory.createTestProject(),
-            tags: [tag],
-        };
-        const projectService = new ProjectService();
-        expect(projectSerivce.renameTag(project, tag.name, "test")).toEqual({
-            ...project,
-            tags: [{
-                name: "test",
-                color: expect.any(String),
-            }],
-        });
-    });
 });

@@ -243,6 +243,9 @@ export class AssetService {
             tagName: string,
             transformer: (tags: string[]) => string[],
             currentAsset?: IAssetMetadata): Promise<IAssetMetadata> {
+        if (!assets) {
+            return;
+        }
         const assetKeys = Object.keys(assets);
         // Loop over assets and update if necessary
         for (const assetKey of assetKeys) {

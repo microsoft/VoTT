@@ -229,7 +229,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         </div>
                         <div className="editor-page-right-sidebar">
                             <TagInput
-                                tags={this.state.project.tags}
+                                tags={this.props.project.tags}
                                 lockedTags={this.state.lockedTags}
                                 selectedRegions={this.state.selectedRegions}
                                 onChange={this.onTagsChanged}
@@ -313,13 +313,18 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const assetService = new AssetService(project);
         const asset = await assetService.renameTag(project.assets, tagName, newTagName, selectedAsset);
 
-        const projectService = new ProjectService();
-        const newProject = projectService.renameTag(project, tagName, newTagName);
-        await this.props.actions.saveProject(newProject);
-
+        const newProject: IProject = {
+            ...project,
+            tags: project.tags.map((t) => (t.name === tagName) ? {...t, name: newTagName} : t),
+        }
         this.setState({
-            selectedAsset: asset,
             project: newProject,
+            selectedAsset: asset || selectedAsset,
+        }, async () => {
+            await this.props.actions.saveProject(newProject);
+            if (asset) {
+                this.canvas.current.updateCanvasToolsRegions(asset);
+            }
         });
     }
 
@@ -328,18 +333,21 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private onTagDeleted = async (tagName: string): Promise<void> => {
-        const { project, selectedAsset } = this.state;
+        const { selectedAsset } = this.state;
+        const { project } = this.props;
+        const newProject: IProject = {
+            ...project,
+            tags: project.tags.filter((t) => t.name !== tagName)
+        }
+        await this.props.actions.saveProject(newProject);
+        debugger;
+
         const assetService = new AssetService(project);
         const asset = await assetService.deleteTag(project.assets, tagName, selectedAsset);
-
-        const projectService = new ProjectService();
-        const newProject = projectService.deleteTag(project, tagName);
-        await this.props.actions.saveProject(newProject);
-
-        this.setState({
-            selectedAsset: asset,
-            project: newProject,
-        });
+        if (asset) {
+            this.canvas.current.updateCanvasToolsRegions(asset);
+            this.setState({selectedAsset: asset});
+        }
     }
 
     private onCtrlTagClicked = (tag: ITag): void => {
