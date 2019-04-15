@@ -256,6 +256,14 @@ export const english: IAppStrings = {
                 apply: "Apply Tag with Hot Key",
                 lock: "Lock Tag with Hot Key",
             },
+            rename: {
+                title: "Rename Tag",
+                confirmation: "Are you sure you want to rename this tag? It will be renamed throughout all assets",
+            },
+            delete: {
+                title: "Delete Tag",
+                confirmation: "Are you sure you want to delete this tag? It will be deleted throughout all assets and any regions where this is the only tag will also be deleted",
+            }
         },
         canvas: {
             removeAllRegions: {

@@ -258,6 +258,14 @@ export const spanish: IAppStrings = {
                 apply: "Aplicar etiqueta con tecla de acceso rápido",
                 lock: "Bloquear etiqueta con tecla de acceso rápido",
             },
+            rename: {
+                title: "Cambiar el nombre de la etiqueta",
+                confirmation: "¿Está seguro que quiere cambiar el nombre de esta etiqueta? Será cambiada en todos los activos",
+            },
+            delete: {
+                title: "Delete Tag",
+                confirmation: "¿Está seguro que quiere borrar esta etiqueta? Será borrada en todos los activos y en las regiones donde esta etiqueta sea la única, la region también será borrada",
+            }
         },
         canvas: {
             removeAllRegions: {

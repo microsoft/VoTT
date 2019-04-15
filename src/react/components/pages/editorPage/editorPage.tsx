@@ -28,6 +28,7 @@ import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
+import Confirm from "../../common/confirm/confirm";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -120,6 +121,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
+    private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
+    private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
     public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
@@ -232,8 +235,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onLockedTagsChange={this.onLockedTagsChanged}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
+                                onTagRenamed={this.confirmTagRenamed}
+                                onTagDeleted={this.confirmTagDeleted}
                             />
                         </div>
+                        <Confirm title={strings.editorPage.tags.rename.title}
+                            ref={this.renameTagConfirm}
+                            message={strings.editorPage.tags.rename.confirmation}
+                            confirmButtonColor="danger"
+                            onConfirm={this.onTagRenamed}/>
+                        <Confirm title={strings.editorPage.tags.delete.title}
+                            ref={this.deleteTagConfirm}
+                            message={strings.editorPage.tags.delete.confirmation}
+                            confirmButtonColor="danger"
+                            onConfirm={this.onTagDeleted}/>
                     </div>
                 </SplitPane>
                 <Alert show={this.state.showInvalidRegionWarning}
@@ -286,6 +301,22 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedTag: tag.name,
             lockedTags: [],
         }, () => this.canvas.current.applyTag(tag.name));
+    }
+
+    private confirmTagRenamed = (tagName: string, newTagName: string): void => {
+        this.renameTagConfirm.current.open(tagName, newTagName);
+    }
+
+    private onTagRenamed = (tagName: string, newTagName: string): void => {
+        debugger;
+    }
+
+    private confirmTagDeleted = (tagName: string): void => {
+        this.deleteTagConfirm.current.open(tagName);
+    }
+
+    private onTagDeleted = (tagName: string): void => {
+        debugger;
     }
 
     private onCtrlTagClicked = (tag: ITag): void => {
