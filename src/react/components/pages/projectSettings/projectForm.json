@@ -42,7 +42,7 @@
             ]
         },
         "activeLearningSettings": {
-            "title": "Active Learning ",
+            "title": "${strings.editorPage.toolbar.activeLearning}",
             "type": "object",
             "properties": {
                 "predictTag": {
