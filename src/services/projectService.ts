@@ -1,14 +1,12 @@
 import _ from "lodash";
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, ISecurityToken, AppError, ErrorCode, AssetState, IAssetMetadata } from "../models/applicationState";
+import { IProject, ISecurityToken, AppError, ErrorCode, AssetState } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { decryptProject, encryptProject } from "../common/utils";
 import packageJson from "../../package.json";
-import { AssetService } from "./assetService";
-import { forEachAsync } from "../common/extensions/array";
 
 /**
  * Functions required for a project service
@@ -20,8 +18,6 @@ export interface IProjectService {
     save(project: IProject, securityToken: ISecurityToken): Promise<IProject>;
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
-    deleteTag(project: IProject, tagName: string): IProject;
-    renameTag(project: IProject, tagName: string, newTagName: string);
 }
 
 /**
@@ -102,20 +98,6 @@ export default class ProjectService implements IProjectService {
             JSON.stringify(project.targetConnection.providerOptions),
         );
         return (duplicateProjects !== undefined);
-    }
-
-    public deleteTag(project: IProject, tagName: string): IProject {
-        return {
-            ...project,
-            tags: project.tags.filter((t) => t.name !== tagName),
-        };
-    }
-
-    public renameTag(project: IProject, tagName: string, newTagName: string): IProject {
-        return {
-            ...project,
-            tags: project.tags.map((t) => (t.name === tagName) ? {...t, name: newTagName} : t),
-        };
     }
 
     private async saveExportSettings(project: IProject): Promise<void> {
