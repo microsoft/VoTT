@@ -200,16 +200,29 @@ export interface IProjectVideoSettings {
 }
 
 /**
- * @name - Video Tagging Settings for the project
- * @description - Defines the video settings within a VoTT project
- * @member modelPathType
- * @member modelPath
- * @member modelUrl
- * @member autoDetect
- * @member predictTag
+ * @name - Model Path Type
+ * @description - Defines the mechanism to load the TF.js model for Active Learning
+ * @member Coco - Specifies the default/generic pre-trained Coco-SSD model
+ * @member File - Specifies to load a custom model from filesystem
+ * @member Url - Specifies to load a custom model from a web server
+ */
+export enum ModelPathType {
+    Coco = "coco",
+    File = "file",
+    Url = "url",
+}
+
+/**
+ * @name - Active Learning Settings for the project
+ * @description - Defines the active learning settings within a VoTT project
+ * @member modelPathType - Model loading type ["coco", "file", "url"]
+ * @member modelPath - Local filesystem path to the TF.js model
+ * @member modelUrl - Web url to the TF.js model
+ * @member autoDetect - Flag for automatically call the model while opening a new asset
+ * @member predictTag - Flag to predict also the tag name other than the rectangle coordinates only
  */
 export interface IProjectActiveLearningSettings {
-    modelPathType: string;
+    modelPathType: ModelPathType;
     modelPath: string;
     modelUrl: string;
     autoDetect: boolean;

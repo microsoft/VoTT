@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType,
+    IPoint, IRegion, RegionType, ModelPathType,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -283,8 +283,8 @@ export default class MockFactory {
             targetConnection: connection,
             tags: MockFactory.createTestTags(tagCount),
             videoSettings: MockFactory.createVideoSettings(),
-            activeLearningSettings: {modelPathType: "coco", modelPath: "", modelUrl: "",
-                autoDetect: false, predictTag: false},
+            activeLearningSettings: { modelPathType: ModelPathType.Coco, modelPath: "", modelUrl: "",
+                autoDetect: false, predictTag: false },
             autoSave: true,
         };
     }

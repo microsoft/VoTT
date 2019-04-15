@@ -12,7 +12,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, RegionType, IProjectActiveLearningSettings,
+    ISize, ITag, RegionType, IProjectActiveLearningSettings, ModelPathType,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -144,7 +144,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         let modelPath = "";
-        if (this.props.project.activeLearningSettings.modelPathType === "coco") {
+        if (this.props.project.activeLearningSettings.modelPathType === ModelPathType.Coco) {
             if (isElectron()) {
                 const appPath = this.getAppPath();
 
@@ -156,7 +156,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             } else {
                 modelPath = "https://jmangiadiag.blob.core.windows.net/vottcontainer";
             }
-        } else if (this.props.project.activeLearningSettings.modelPathType === "file") {
+        } else if (this.props.project.activeLearningSettings.modelPathType === ModelPathType.File) {
             if (isElectron()) {
                 modelPath = this.props.project.activeLearningSettings.modelPath;
             }
