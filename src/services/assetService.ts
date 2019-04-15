@@ -251,15 +251,33 @@ export class AssetService {
         // Loop over assets and update if necessary
         await assetKeys.forEachAsync(async (assetKey) => {
             const asset = assets[assetKey];
-            if (asset.state !== AssetState.Tagged) {
-                return;
-            }
             const assetMetadata = await this.getAssetMetadata(asset);
             const updatedAssetMetadata = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);
             if (updatedAssetMetadata) {
                 await this.save(updatedAssetMetadata);
             }
         });
+
+        // for (const assetKey of assetKeys) {
+        //     const asset = assets[assetKey];
+        //     if (asset.state !== AssetState.Tagged) {
+        //         debugger;
+        //         return;
+        //     }
+        //     const assetMetadata = await this.getAssetMetadata(asset);
+        //     debugger;
+        //     const updatedAssetMetadata = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);
+        //     debugger;
+        //     if (updatedAssetMetadata) {
+        //         await this.save(updatedAssetMetadata);
+        //     }
+        // }
+
+        if (currentAsset) {
+            const asset = this.updateTagInAssetMetadata(currentAsset, tagName, transformer);
+            debugger;
+            return asset;
+        }
     }
 
     /**
