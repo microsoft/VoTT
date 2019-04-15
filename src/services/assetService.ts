@@ -247,6 +247,7 @@ export class AssetService {
             return;
         }
         const assetKeys = Object.keys(assets);
+        let result: IAssetMetadata;
 
         // Loop over assets and update if necessary
         await assetKeys.forEachAsync(async (assetKey) => {
@@ -255,29 +256,12 @@ export class AssetService {
             const updatedAssetMetadata = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);
             if (updatedAssetMetadata) {
                 await this.save(updatedAssetMetadata);
+                if (currentAsset && currentAsset.asset.id === updatedAssetMetadata.asset.id) {
+                    result = updatedAssetMetadata;
+                }
             }
         });
-
-        // for (const assetKey of assetKeys) {
-        //     const asset = assets[assetKey];
-        //     if (asset.state !== AssetState.Tagged) {
-        //         debugger;
-        //         return;
-        //     }
-        //     const assetMetadata = await this.getAssetMetadata(asset);
-        //     debugger;
-        //     const updatedAssetMetadata = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);
-        //     debugger;
-        //     if (updatedAssetMetadata) {
-        //         await this.save(updatedAssetMetadata);
-        //     }
-        // }
-
-        if (currentAsset) {
-            const asset = this.updateTagInAssetMetadata(currentAsset, tagName, transformer);
-            debugger;
-            return asset;
-        }
+        return result;
     }
 
     /**
