@@ -10,20 +10,7 @@ describe("Html File Reader", () => {
 
     beforeEach(() => {
         assetTestCache.clear();
-
-        document.createElement = jest.fn((elementType) => {
-            switch (elementType) {
-                case "img":
-                    const mockImage = MockFactory.mockImage(assetTestCache);
-                    return mockImage();
-                case "video":
-                    const mockVideo = MockFactory.mockVideo(assetTestCache);
-                    return mockVideo();
-                case "canvas":
-                    const mockCanvas = MockFactory.mockCanvas();
-                    return mockCanvas();
-            }
-        });
+        MockFactory.mockElement(assetTestCache);
     });
 
     it("Resolves promise after successfully reading file", async () => {

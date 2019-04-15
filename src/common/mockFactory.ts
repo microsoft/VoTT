@@ -1012,6 +1012,22 @@ export default class MockFactory {
         };
     }
 
+    public static mockElement(assetTestCache: Map<string, IAsset>) {
+        document.createElement = jest.fn((elementType) => {
+            switch (elementType) {
+                case "img":
+                    const mockImage = MockFactory.mockImage(assetTestCache);
+                    return mockImage();
+                case "video":
+                    const mockVideo = MockFactory.mockVideo(assetTestCache);
+                    return mockVideo();
+                case "canvas":
+                    const mockCanvas = MockFactory.mockCanvas();
+                    return mockCanvas();
+            }
+        });
+    }
+
     public static mockImage(assetTestCache: Map<string, IAsset>) {
         return jest.fn(() => {
             const element: any = {

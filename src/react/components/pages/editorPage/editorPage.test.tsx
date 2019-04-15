@@ -846,20 +846,7 @@ describe("Editor Page Component", () => {
             wrapper.update();
 
             assetTestCache.clear();
-
-            document.createElement = jest.fn((elementType) => {
-                switch (elementType) {
-                    case "img":
-                        const mockImage = MockFactory.mockImage(assetTestCache);
-                        return mockImage();
-                    case "video":
-                        const mockVideo = MockFactory.mockVideo(assetTestCache);
-                        return mockVideo();
-                    case "canvas":
-                        const mockCanvas = MockFactory.mockCanvas();
-                        return mockCanvas();
-                }
-            });
+            MockFactory.mockElement(assetTestCache);
 
             document.querySelector = jest.fn((selectors) => {
                 const mockCanvas = MockFactory.mockCanvas();
