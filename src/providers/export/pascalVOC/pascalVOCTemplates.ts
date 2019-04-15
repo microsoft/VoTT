@@ -31,6 +31,6 @@ export const objectTemplate = "\
         <xmin>${xmin}</xmin>\n\
         <ymin>${ymin}</ymin>\n\
         <xmax>${xmax}</xmax>\n\
-        <ymax>${xmin}</ymax>\n\
+        <ymax>${ymax}</ymax>\n\
     </bndbox>\n\
 </object>";

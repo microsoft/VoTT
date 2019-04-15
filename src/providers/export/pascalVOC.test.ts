@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { TFPascalVOCExportProvider, ITFPascalVOCExportProviderOptions } from "./tensorFlowPascalVOC";
+import { PascalVOCExportProvider, IPascalVOCExportProviderOptions } from "./pascalVOC";
 import { ExportAssetState } from "./exportProvider";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
@@ -21,7 +21,7 @@ import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
-describe("TFPascalVOC Json Export Provider", () => {
+describe("PascalVOC Json Export Provider", () => {
     const testAssets = MockFactory.createTestAssets(10, 1);
     const baseTestProject = MockFactory.createTestProject("Test Project");
     baseTestProject.assets = {
@@ -51,18 +51,18 @@ describe("TFPascalVOC Json Export Provider", () => {
     });
 
     it("Is defined", () => {
-        expect(TFPascalVOCExportProvider).toBeDefined();
+        expect(PascalVOCExportProvider).toBeDefined();
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: ITFPascalVOCExportProviderOptions = {
+        const options: IPascalVOCExportProviderOptions = {
             assetState: ExportAssetState.All,
             exportUnassigned: true,
             testTrainSplit: 80,
         };
-        const exportProvider = ExportProviderFactory.create("tensorFlowPascalVOC", baseTestProject, options);
+        const exportProvider = ExportProviderFactory.create("pascalVOC", baseTestProject, options);
         expect(exportProvider).not.toBeNull();
-        expect(exportProvider).toBeInstanceOf(TFPascalVOCExportProvider);
+        expect(exportProvider).toBeInstanceOf(PascalVOCExportProvider);
     });
 
     describe("Export variations", () => {
@@ -87,7 +87,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: ITFPascalVOCExportProviderOptions = {
+            const options: IPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.All,
                 exportUnassigned: true,
                 testTrainSplit: 80,
@@ -96,7 +96,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+            const exportProvider = new PascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -145,7 +145,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: ITFPascalVOCExportProviderOptions = {
+            const options: IPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
                 exportUnassigned: true,
                 testTrainSplit: 80,
@@ -154,7 +154,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(1);
 
-            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+            const exportProvider = new PascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -191,7 +191,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: ITFPascalVOCExportProviderOptions = {
+            const options: IPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
                 exportUnassigned: true,
                 testTrainSplit: 80,
@@ -200,7 +200,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             const testProject = { ...baseTestProject };
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+            const exportProvider = new PascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -242,7 +242,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Export includes unassigned tags", async () => {
-            const options: ITFPascalVOCExportProviderOptions = {
+            const options: IPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
                 exportUnassigned: true,
                 testTrainSplit: 80,
@@ -254,7 +254,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+            const exportProvider = new PascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -275,7 +275,7 @@ describe("TFPascalVOC Json Export Provider", () => {
         });
 
         it("Export does not include unassigned tags", async () => {
-            const options: ITFPascalVOCExportProviderOptions = {
+            const options: IPascalVOCExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
                 exportUnassigned: false,
                 testTrainSplit: 80,
@@ -287,7 +287,7 @@ describe("TFPascalVOC Json Export Provider", () => {
             testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
             testProject.tags = MockFactory.createTestTags(3);
 
-            const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+            const exportProvider = new PascalVOCExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -309,7 +309,7 @@ describe("TFPascalVOC Json Export Provider", () => {
 
         describe("Annotations", () => {
             it("contains expected XML", async () => {
-                const options: ITFPascalVOCExportProviderOptions = {
+                const options: IPascalVOCExportProviderOptions = {
                     assetState: ExportAssetState.Tagged,
                     exportUnassigned: false,
                     testTrainSplit: 80,
@@ -321,7 +321,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
                 testProject.tags = [MockFactory.createTestTag("1")];
 
-                const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+                const exportProvider = new PascalVOCExportProvider(testProject, options);
                 await exportProvider.export();
 
                 const storageProviderMock = LocalFileSystemProxy as any;
@@ -345,7 +345,7 @@ describe("TFPascalVOC Json Export Provider", () => {
 
         describe("Test Train Splits", () => {
             async function testTestTrainSplit(testTrainSplit: number): Promise<void> {
-                const options: ITFPascalVOCExportProviderOptions = {
+                const options: IPascalVOCExportProviderOptions = {
                     assetState: ExportAssetState.Tagged,
                     exportUnassigned: true,
                     testTrainSplit,
@@ -357,7 +357,7 @@ describe("TFPascalVOC Json Export Provider", () => {
                 testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
                 testProject.tags = [MockFactory.createTestTag("1")];
 
-                const exportProvider = new TFPascalVOCExportProvider(testProject, options);
+                const exportProvider = new PascalVOCExportProvider(testProject, options);
                 await exportProvider.export();
 
                 const storageProviderMock = LocalFileSystemProxy as any;
