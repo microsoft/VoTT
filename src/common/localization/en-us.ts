@@ -262,8 +262,9 @@ export const english: IAppStrings = {
             },
             delete: {
                 title: "Delete Tag",
-                confirmation: "Are you sure you want to delete this tag? It will be deleted throughout all assets and any regions where this is the only tag will also be deleted",
-            }
+                confirmation: "Are you sure you want to delete this tag? It will be deleted throughout all assets \
+                and any regions where this is the only tag will also be deleted",
+            },
         },
         canvas: {
             removeAllRegions: {
@@ -275,7 +276,8 @@ export const english: IAppStrings = {
             enforceTaggedRegions: {
                 title: "Invalid region(s) detected",
                 // tslint:disable-next-line:max-line-length
-                description: "1 or more regions have not been tagged.  Ensure all regions are tagged before continuing to next asset.",
+                description: "1 or more regions have not been tagged.  Ensure all regions are tagged before \
+                continuing to next asset.",
             },
         },
     },

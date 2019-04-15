@@ -29,6 +29,7 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
+import ProjectService from "../../../../services/projectService";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -228,7 +229,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         </div>
                         <div className="editor-page-right-sidebar">
                             <TagInput
-                                tags={this.props.project.tags}
+                                tags={this.state.project.tags}
                                 lockedTags={this.state.lockedTags}
                                 selectedRegions={this.state.selectedRegions}
                                 onChange={this.onTagsChanged}
@@ -307,16 +308,38 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.renameTagConfirm.current.open(tagName, newTagName);
     }
 
-    private onTagRenamed = (tagName: string, newTagName: string): void => {
-        debugger;
+    private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
+        const { project, selectedAsset } = this.state;
+        const assetService = new AssetService(project);
+        const asset = await assetService.renameTag(project.assets, tagName, newTagName, selectedAsset);
+
+        const projectService = new ProjectService();
+        const newProject = projectService.renameTag(project, tagName, newTagName);
+        await this.props.actions.saveProject(newProject);
+
+        this.setState({
+            selectedAsset: asset,
+            project: newProject,
+        });
     }
 
     private confirmTagDeleted = (tagName: string): void => {
         this.deleteTagConfirm.current.open(tagName);
     }
 
-    private onTagDeleted = (tagName: string): void => {
-        debugger;
+    private onTagDeleted = async (tagName: string): Promise<void> => {
+        const { project, selectedAsset } = this.state;
+        const assetService = new AssetService(project);
+        const asset = await assetService.deleteTag(project.assets, tagName, selectedAsset);
+
+        const projectService = new ProjectService();
+        const newProject = projectService.deleteTag(project, tagName);
+        await this.props.actions.saveProject(newProject);
+
+        this.setState({
+            selectedAsset: asset,
+            project: newProject,
+        });
     }
 
     private onCtrlTagClicked = (tag: ITag): void => {
