@@ -609,39 +609,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     const image = document.createElement("img");
 
                     image.onload = async () => {
-                        const predictedRegions = await this.predictImage(image);
-
-                        const regions = [...this.state.selectedAsset.regions];
-                        predictedRegions.forEach((prediction) => {
-                            // check if it is a new region
-                            if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
-                                    region.boundingBox.left === prediction.boundingBox.left &&
-                                    region.boundingBox.top === prediction.boundingBox.top &&
-                                    region.boundingBox.width === prediction.boundingBox.width &&
-                                    region.boundingBox.height === prediction.boundingBox.height)) {
-                                regions.push(prediction);
-                            }
-                        });
-
-                        this.canvas.current.addRegionsToAsset(regions);
-                        this.canvas.current.addRegionsToCanvasTools(regions);
-
-                        const newAsset = { ...this.state.selectedAsset, regions };
-                        newAsset.asset.predicted = true;
-                        newAsset.asset.state = AssetState.Tagged;
-
-                        // Temporary un-comment these two line as calling updateProjectTagsFromAsset
-                        // is causing an issue with the dispatcher - to be debugged
-                        await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
-                        await this.props.actions.saveProject(this.props.project);
-                        // Temporary comment this as causing an issue with the dispatcher - to be debugged
-                        // await this.updateProjectTagsFromAsset(newAsset, this.props.project, true);
-
-                        this.setState({
-                            selectedAsset: newAsset,
-                        }, async () => {
-                            await this.onAssetMetadataChanged(newAsset);
-                        });
+                        await this.addPredictionsToImage(image);
                     };
                     image.src = "data:image;base64," + image64;
                 });
@@ -649,6 +617,42 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             } catch (_) {
             }
         }
+    }
+
+    private addPredictionsToImage = async (image: HTMLImageElement) => {
+        const predictedRegions = await this.predictImage(image);
+
+        const regions = [...this.state.selectedAsset.regions];
+        predictedRegions.forEach((prediction) => {
+            // check if it is a new region
+            if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
+                    region.boundingBox.left === prediction.boundingBox.left &&
+                    region.boundingBox.top === prediction.boundingBox.top &&
+                    region.boundingBox.width === prediction.boundingBox.width &&
+                    region.boundingBox.height === prediction.boundingBox.height)) {
+                regions.push(prediction);
+            }
+        });
+
+        this.canvas.current.addRegionsToAsset(regions);
+        this.canvas.current.addRegionsToCanvasTools(regions);
+
+        const newAsset = { ...this.state.selectedAsset, regions };
+        newAsset.asset.predicted = true;
+        newAsset.asset.state = AssetState.Tagged;
+
+        // Temporary un-comment these two line as calling updateProjectTagsFromAsset
+        // is causing an issue with the dispatcher - to be debugged
+        await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
+        await this.props.actions.saveProject(this.props.project);
+        // Temporary comment this as causing an issue with the dispatcher - to be debugged
+        // await this.updateProjectTagsFromAsset(newAsset, this.props.project, true);
+
+        this.setState({
+            selectedAsset: newAsset,
+        }, async () => {
+            await this.onAssetMetadataChanged(newAsset);
+        });
     }
 
     private predictImage = async (image: HTMLImageElement): Promise<IRegion[]> => {
