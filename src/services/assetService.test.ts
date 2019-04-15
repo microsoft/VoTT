@@ -343,7 +343,7 @@ describe("Asset Service", () => {
 
         beforeAll(() => {
             registerMixins();
-        })
+        });
 
         it("Deletes tag from assets", async () => {
             const tag1 = "tag1";
