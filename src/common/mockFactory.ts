@@ -802,6 +802,8 @@ export default class MockFactory {
             save: jest.fn((project: IProject) => Promise.resolve(project)),
             delete: jest.fn((project: IProject) => Promise.resolve()),
             isDuplicate: jest.fn((project: IProject, projectList: IProject[]) => true),
+            renameTag: jest.fn(),
+            deleteTag: jest.fn(),
         };
     }
 
