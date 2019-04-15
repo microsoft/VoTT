@@ -167,13 +167,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         // Load TensorFlow.js Model
         this.model = new ObjectDetection();
         const infoId = toast.info("Loading model...", { autoClose: false });
-        this.model.load(modelPath).then(() => {
-            toast.dismiss(infoId);
-
-            if (!this.model.loaded) {
-                toast.warn("Error Loading model");
-            }
-        });
+        await this.model.load(modelPath);
+        toast.dismiss(infoId);
+        if (!this.model.loaded) {
+            toast.warn("Error Loading model");
+        }
     }
 
     public async componentDidUpdate() {
