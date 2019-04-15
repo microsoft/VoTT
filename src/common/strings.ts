@@ -359,6 +359,10 @@ export interface IAppStrings {
     };
     activeLearning: {
         title: string;
+        messages: {
+            loadingModel: string;
+            errorLoadModel: string;
+        }
     };
     profile: {
         settings: string;

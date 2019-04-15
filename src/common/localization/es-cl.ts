@@ -363,6 +363,10 @@ export const spanish: IAppStrings = {
     },
     activeLearning: {
         title: "Aprendizaje Activo",
+        messages: {
+            loadingModel: "Loading model...",
+            errorLoadModel: "Error Loading model",
+        },
     },
     profile: {
         settings: "Configuración de Perfíl",
