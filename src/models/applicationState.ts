@@ -1,4 +1,5 @@
 import { ExportAssetState } from "../providers/export/exportProvider";
+import { IAssetPreviewSettings } from "../react/components/common/assetPreview/assetPreview";
 
 /**
  * @name - Application State
@@ -210,6 +211,14 @@ export enum ModelPathType {
     Coco = "coco",
     File = "file",
     Url = "url",
+}
+
+/**
+ * Properties for additional project settings
+ * @member activeLearningSettings - Active Learning settings
+ */
+export interface IAdditionalPageSettings extends IAssetPreviewSettings {
+    activeLearningSettings: IProjectActiveLearningSettings;
 }
 
 /**
