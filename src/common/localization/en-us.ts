@@ -353,6 +353,9 @@ export const english: IAppStrings = {
                     description: "Whether or not to include unassigned tags in exported data",
                 },
             },
+            cntk: {
+                displayName: "Microsoft Cognitive Toolkit (CNTK)",
+            },
         },
         messages: {
             saveSuccess: "Successfully saved export settings",

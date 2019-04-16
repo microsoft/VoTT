@@ -11,6 +11,7 @@ import registerToolbar from "./registerToolbar";
 import { strings } from "./common/strings";
 import { HostProcessType } from "./common/hostProcess";
 import { AzureCustomVisionProvider } from "./providers/export/azureCustomVision";
+import { CntkExportProvider } from "./providers/export/cntk";
 
 /**
  * Registers storage, asset and export providers, as well as all toolbar items
@@ -67,6 +68,11 @@ export default function registerProviders() {
         name: "azureCustomVision",
         displayName: strings.export.providers.azureCV.displayName,
         factory: (project, options) => new AzureCustomVisionProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "cntk",
+        displayName: strings.export.providers.cntk.displayName,
+        factory: (project, options) => new CntkExportProvider(project, options),
     });
 
     registerToolbar();

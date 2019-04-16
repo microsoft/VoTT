@@ -355,6 +355,9 @@ export const spanish: IAppStrings = {
                     description: "Si se incluyen o no etiquetas no asignadas en los datos exportados",
                 },
             },
+            cntk: {
+                displayName: "Microsoft Cognitive Toolkit (CNTK)",
+            },
         },
         messages: {
             saveSuccess: "Configuración de exportación guardada correctamente",

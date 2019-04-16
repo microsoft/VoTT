@@ -351,6 +351,9 @@ export interface IAppStrings {
                     description: string,
                 },
             },
+            cntk: {
+                displayName: string,
+            },
         },
         messages: {
             saveSuccess: string;
