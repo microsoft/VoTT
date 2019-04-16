@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import MockFactory from "../../../../common/mockFactory";
 import createReduxStore from "../../../../redux/store/store";
-import ProjectSettingsPage, { IProjectSettingsPageProps } from "./projectSettingsPage";
+import ProjectSettingsPage, { IProjectSettingsPageProps, IProjectSettingsPageState } from "./projectSettingsPage";
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
@@ -16,7 +16,7 @@ jest.mock("./projectMetrics", () => () => {
     return (
         <div className="project-settings-page-metrics">
             Dummy Project Metrics
-            </div>
+        </div>
     );
 },
 );
@@ -41,9 +41,9 @@ describe("Project settings page", () => {
     };
 
     beforeAll(() => {
-        Object.defineProperty(window, "localStorage", {
-            get: () => localStorageMock,
-            configurable: true,
+        Object.defineProperty(global, "_localStorage", {
+            value: localStorageMock,
+            writable: false,
         });
     });
 
@@ -133,7 +133,7 @@ describe("Project settings page", () => {
             securityToken: `${project.name} Token`,
         });
 
-        expect(localStorageMock.removeItem).toBeCalledWith("projectForm");
+        expect(localStorage.removeItem).toBeCalledWith("projectForm");
     });
 
     it("render ProjectMetrics", () => {
@@ -164,18 +164,37 @@ describe("Project settings page", () => {
     describe("Persisting project form", () => {
         let wrapper: ReactWrapper = null;
 
-        beforeEach(() => {
+        function initPersistProjectFormTest() {
             const store = createReduxStore(MockFactory.initialState());
             const props = MockFactory.projectSettingsProps();
             props.match.url = "/projects/create";
             wrapper = createComponent(store, props);
-        });
+        }
 
         it("Loads partial project from local storage", () => {
-            expect(localStorage.getItem("projectForm")).toBeCalled();
+            const partialProject: IProject = {
+                ...{} as any,
+                name: "partial project",
+                description: "partial project description",
+                tags: [
+                    { name: "tag-1", color: "#ff0000" },
+                    { name: "tag-3", color: "#ffff00" },
+                ],
+            };
+
+            localStorageMock.getItem.mockImplementationOnce(() => JSON.stringify(partialProject));
+
+            initPersistProjectFormTest();
+            const projectSettingsPage = wrapper
+                .find(ProjectSettingsPage)
+                .childAt(0) as ReactWrapper<IProjectSettingsPageProps, IProjectSettingsPageState>;
+
+            expect(localStorage.getItem).toBeCalledWith("projectForm");
+            expect(projectSettingsPage.state().project).toEqual(partialProject);
         });
 
         it("Stores partial project in local storage", () => {
+            initPersistProjectFormTest();
             const partialProject: IProject = {
                 ...{} as any,
                 name: "partial project",
@@ -188,6 +207,7 @@ describe("Project settings page", () => {
         });
 
         it("Does NOT store empty project in local storage", () => {
+            initPersistProjectFormTest();
             const emptyProject: IProject = {
                 ...{} as any,
                 sourceConnection: {},
