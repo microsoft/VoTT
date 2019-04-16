@@ -3,7 +3,6 @@ import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import SplitPane from "react-split-pane";
-import * as shortid from "shortid";
 import { toast } from "react-toastify";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
@@ -609,7 +608,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     const image = document.createElement("img");
 
                     image.onload = async () => {
-                        await this.addPredictionsToImage(image);
+                        await this.predictImage(image);
                     };
                     image.src = "data:image;base64," + image64;
                 });
@@ -619,8 +618,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
-    private addPredictionsToImage = async (image: HTMLImageElement) => {
-        const predictedRegions = await this.predictImage(image);
+    private predictImage = async (image: HTMLImageElement) => {
+        const predictedRegions = await this.model.predictImage(image,
+            this.state.project.activeLearningSettings.predictTag,
+            this.state.selectedAsset.asset.size.width / image.width,
+            this.state.selectedAsset.asset.size.height / image.height);
 
         const regions = [...this.state.selectedAsset.regions];
         predictedRegions.forEach((prediction) => {
@@ -653,51 +655,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }, async () => {
             await this.onAssetMetadataChanged(newAsset);
         });
-    }
-
-    private predictImage = async (image: HTMLImageElement): Promise<IRegion[]> => {
-        const regions: IRegion[] = [];
-
-        const xRatio = this.state.selectedAsset.asset.size.width / image.width;
-        const yRatio = this.state.selectedAsset.asset.size.height / image.height;
-
-        const predictions = await this.model.detect(image);
-        predictions.forEach((prediction) => {
-            const left = Math.max(0, prediction.bbox[0] * xRatio);
-            const top = Math.max(0, prediction.bbox[1] * yRatio);
-            const width = Math.max(0, prediction.bbox[2] * xRatio);
-            const height = Math.max(0, prediction.bbox[3] * yRatio);
-
-            regions.push({
-                id: shortid.generate(),
-                type: RegionType.Rectangle,
-                tags: this.state.project.activeLearningSettings.predictTag ? [prediction.class] : [],
-                boundingBox: {
-                    left,
-                    top,
-                    width,
-                    height,
-                },
-                points: [{
-                    x: left,
-                    y: top,
-                },
-                {
-                    x: left + width,
-                    y: top,
-                },
-                {
-                    x: left + width,
-                    y: top + height,
-                },
-                {
-                    x: left,
-                    y: top + height,
-                }],
-            });
-        });
-
-        return regions;
     }
 
     /**
