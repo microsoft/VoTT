@@ -1,7 +1,9 @@
 import axios from "axios";
+import * as shortid from "shortid";
 import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
 import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "../../providers/storage/localFileSystemProxy";
+import { IRegion, RegionType } from "../../models/applicationState";
 
 // tslint:disable-next-line:interface-over-type-literal
 export type DetectedObject = {
@@ -32,6 +34,10 @@ export class ObjectDetection {
         }
     }
 
+    /**
+     * Load a TensorFlow.js Object Detection model from file: or http URL.
+     * @param modelFolderPath file: or http URL to the model
+     */
     public async load(modelFolderPath: string) {
         try {
             if (modelFolderPath.toLowerCase().startsWith("http://") ||
@@ -60,6 +66,59 @@ export class ObjectDetection {
         } catch (_) {
             this.modelLoaded = false;
         }
+    }
+
+    /**
+     * Predict Regions from an HTMLImageElement returning list of IRegion.
+     * @param image HTMLImageElement to be used for prediction
+     * @param predictTag Flag indicates if predict only region bounding box of tag too.
+     * @param xRatio Width compression ratio between the HTMLImageElement and the original image.
+     * @param yRatio Height compression ratio between the HTMLImageElement and the original image.
+     */
+    public async predictImage(image: HTMLImageElement,
+                              predictTag: boolean,
+                              xRatio: number,
+                              yRatio: number,
+                             ): Promise<IRegion[]> {
+        const regions: IRegion[] = [];
+
+        const predictions = await this.detect(image);
+        predictions.forEach((prediction) => {
+            const left = Math.max(0, prediction.bbox[0] * xRatio);
+            const top = Math.max(0, prediction.bbox[1] * yRatio);
+            const width = Math.max(0, prediction.bbox[2] * xRatio);
+            const height = Math.max(0, prediction.bbox[3] * yRatio);
+
+            regions.push({
+                id: shortid.generate(),
+                type: RegionType.Rectangle,
+                tags: predictTag ? [prediction.class] : [],
+                boundingBox: {
+                    left,
+                    top,
+                    width,
+                    height,
+                },
+                points: [{
+                    x: left,
+                    y: top,
+                },
+                {
+                    x: left + width,
+                    y: top,
+                },
+                {
+                    x: left + width,
+                    y: top + height,
+                },
+                {
+                    x: left,
+                    y: top + height,
+                }],
+            });
+        });
+
+        return regions;
     }
 
     /**
