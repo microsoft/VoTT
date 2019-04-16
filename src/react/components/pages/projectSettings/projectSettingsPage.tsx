@@ -59,7 +59,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         project: this.props.project,
     };
 
-    public componentDidMount() {
+    public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
         // If we are creating a new project check to see if there is a partial
         // project already created in local storage
@@ -69,9 +69,17 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                 this.setState({ project: JSON.parse(projectJson) });
             }
         } else if (!this.props.project && projectId) {
-            const project = this.props.recentProjects.find((project) => project.id === projectId);
-            this.props.applicationActions.ensureSecurityToken(project);
-            this.props.projectActions.loadProject(project);
+            const projectToLoad = this.props.recentProjects.find((project) => project.id === projectId);
+            if (projectToLoad) {
+                await this.props.applicationActions.ensureSecurityToken(projectToLoad);
+                await this.props.projectActions.loadProject(projectToLoad);
+            }
+        }
+    }
+
+    public componentDidUpdate(prevProps: Readonly<IProjectSettingsPageProps>) {
+        if (prevProps.project !== this.props.project) {
+            this.setState({ project: this.props.project });
         }
     }
 
@@ -104,6 +112,11 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         );
     }
 
+    /**
+     * When the project form is changed verifies if the project contains enough information
+     * to persist into temp local storage to support better new project flow when
+     * creating new connections inline
+     */
     private onFormChange = (project: IProject) => {
         if (this.isPartialProject(project)) {
             localStorage.setItem(projectFormTempKey, JSON.stringify(project));
@@ -131,8 +144,11 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         this.props.history.goBack();
     }
 
+    /**
+     * Checks whether a project is partially populated
+     */
     private isPartialProject = (project: IProject): boolean => {
-        return project &&
+        return project && !(!!project.id) &&
             (
                 !!project.name
                 || !!project.description
