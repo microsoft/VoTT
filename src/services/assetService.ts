@@ -237,7 +237,7 @@ export class AssetService {
      * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
      * @param currentAsset Current asset being viewed. Makes changes and returns updated asset to avoid
      * needing to reload the asset in the editor page
-     * @returns Modified `currentAsset`. Returns `null` if asset did not need to be modified 
+     * @returns Modified `currentAsset`. Returns `null` if asset did not need to be modified
      * or if `currentAsset` is null or undefined
      */
     private async updateAssetTags(
