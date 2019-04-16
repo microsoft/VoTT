@@ -369,7 +369,6 @@ describe("Asset Service", () => {
                         },
                     ],
                 ),
-
             };
 
             const project = populateProjectAssets();
@@ -422,8 +421,8 @@ describe("Asset Service", () => {
                         },
                     ],
                 ),
-
             };
+            
             const project = populateProjectAssets();
             const assetService = new AssetService(project);
             await assetService.renameTag(project.assets, tag1, newTag, assetMetadata);

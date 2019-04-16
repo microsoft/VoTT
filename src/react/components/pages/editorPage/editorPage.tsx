@@ -308,6 +308,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.renameTagConfirm.current.open(tagName, newTagName);
     }
 
+    /**
+     * Renames tag in assets and project, and saves files
+     * @param tagName Name of tag to be renamed
+     * @param newTagName New name of tag
+     */
     private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
         const { project, selectedAsset } = this.state;
         const newProject = {
@@ -332,6 +337,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.deleteTagConfirm.current.open(tagName);
     }
 
+    /**
+     * Removes tag from assets and projects and saves files
+     * @param tagName Name of tag to be deleted
+     */
     private onTagDeleted = async (tagName: string): Promise<void> => {
         const { project, selectedAsset } = this.state;
         const newProject = {
