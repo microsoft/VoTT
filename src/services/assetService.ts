@@ -234,9 +234,11 @@ export class AssetService {
      * Update tags within asset metadata files
      * @param assets The assets containing tags to update
      * @param tagName Name of tag to update within project
+     * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
      * @param currentAsset Current asset being viewed. Makes changes and returns updated asset to avoid
      * needing to reload the asset in the editor page
-     * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
+     * @returns Modified `currentAsset`. Returns `null` if asset did not need to be modified 
+     * or if `currentAsset` is null or undefined
      */
     private async updateAssetTags(
             assets: {[id: string]: IAsset},
