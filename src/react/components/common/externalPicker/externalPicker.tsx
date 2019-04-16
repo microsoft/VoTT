@@ -46,15 +46,9 @@ export interface IExternalPickerState {
  * Dropdown that provides options from an external HTTP source
  */
 export default class ExternalPicker extends React.Component<IExternalPickerProps, any> {
-    constructor(props, context) {
-        super(props, context);
-
-        this.state = {
-            items: [],
-        };
-
-        this.onChange = this.onChange.bind(this);
-    }
+    public state: IExternalPickerState = {
+        items: [],
+    };
 
     public render() {
         return (
@@ -78,12 +72,12 @@ export default class ExternalPicker extends React.Component<IExternalPickerProps
         }
     }
 
-    private onChange(e: SyntheticEvent) {
+    private onChange = (e: SyntheticEvent) => {
         const target = e.target as HTMLSelectElement;
         this.props.onChange(target.value === "" ? undefined : target.value);
     }
 
-    private async bindExternalData() {
+    private bindExternalData = async (): Promise<void> => {
         const uiOptions = this.props.options;
         const customHeaders: any = {};
         const authHeaderValue = interpolate(uiOptions.authHeaderValue, {

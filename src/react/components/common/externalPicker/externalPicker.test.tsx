@@ -5,8 +5,9 @@ import ExternalPicker, { IExternalPickerProps, IExternalPickerState } from "./ex
 import MockFactory from "../../../../common/mockFactory";
 
 describe("External Picker", () => {
-    let wrapper: ReactWrapper<IExternalPickerProps, IExternalPickerState> = null;
-    const onChangeHandler = jest.fn();
+    const onChangeHandler = jest.fn(() => {
+        console.log("hi");
+    });
     const defaultProps = createProps({
         id: "my-custom-control",
         value: "",
@@ -16,12 +17,13 @@ describe("External Picker", () => {
         formContext: {
             providerOptions: {
                 apiKey: "",
+                region: "",
             },
         },
         onChange: onChangeHandler,
         options: {
             method: "GET",
-            url: "https://myserver/api",
+            url: "https://${props.formContext.providerOptions.region}.server.com/api",
             keySelector: "${item.key}",
             valueSelector: "${item.value}",
             authHeaderName: "Authorization",
@@ -48,32 +50,34 @@ describe("External Picker", () => {
         });
     });
 
-    beforeEach(() => {
-        wrapper = createComponent(defaultProps as IExternalPickerProps);
-    });
-
     it("Renders select element with default option", () => {
+        const wrapper = createComponent(defaultProps);
         expect(wrapper.find("select").length).toEqual(1);
         expect(wrapper.find("option").length).toEqual(1);
     });
 
     it("Does not bind external data if authorization is missing", () => {
+        createComponent(defaultProps);
         expect(axios.request).not.toBeCalled();
     });
 
     it("Renders items bound from external data when formContext rebinds", async () => {
         const expectedApiKey = "ABC123";
+        const expectedRegion = "southcentralus";
 
-        await MockFactory.flushUi(() => {
-            wrapper.setProps({
-                formContext: {
-                    providerOptions: {
-                        apiKey: expectedApiKey,
-                    },
+        const props = {
+            ...defaultProps,
+            formContext: {
+                providerOptions: {
+                    apiKey: expectedApiKey,
+                    region: expectedRegion,
                 },
-            });
-        });
+            },
+        };
 
+        const wrapper = createComponent(props);
+
+        await MockFactory.flushUi();
         wrapper.update();
 
         const expectedHeaders = {};
@@ -81,7 +85,7 @@ describe("External Picker", () => {
 
         expect(axios.request).toBeCalledWith({
             method: defaultProps.options.method,
-            url: defaultProps.options.url,
+            url: `https://${expectedRegion}.server.com/api`,
             headers: expectedHeaders,
         });
 
@@ -93,19 +97,39 @@ describe("External Picker", () => {
     });
 
     it("Calls onChange event handler on option selection", () => {
-        wrapper.setProps({
-            formContext: {},
-        });
+        const wrapper = createComponent(defaultProps);
 
         wrapper.find("select").simulate("change", { target: { value: testResponse[0].key } });
         expect(onChangeHandler).toBeCalledWith(testResponse[0].key);
     });
 
-    function createProps(otherProps: any): IExternalPickerProps {
-        const props: IExternalPickerProps = {
-            ...otherProps,
+    it("Clears items when HTTP request fails", async () => {
+        const requestMock = axios.request as jest.Mock;
+        requestMock.mockImplementationOnce(() => Promise.reject({ status: 400 }));
+
+        const expectedApiKey = "ABC123";
+        const expectedRegion = "southcentralus";
+
+        const props = {
+            ...defaultProps,
+            formContext: {
+                providerOptions: {
+                    apiKey: expectedApiKey,
+                    region: expectedRegion,
+                },
+            },
         };
 
-        return props;
+        const wrapper = createComponent(props);
+        await MockFactory.flushUi();
+
+        expect(wrapper.state().items).toEqual([]);
+        expect(onChangeHandler).toBeCalledWith(undefined);
+    });
+
+    function createProps(otherProps: any): IExternalPickerProps {
+        return {
+            ...otherProps,
+        };
     }
 });
