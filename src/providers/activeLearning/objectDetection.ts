@@ -70,12 +70,12 @@ export class ObjectDetection {
 
     /**
      * Predict Regions from an HTMLImageElement returning list of IRegion.
-     * @param image HTMLImageElement to be used for prediction
+     * @param image ImageObject to be used for prediction
      * @param predictTag Flag indicates if predict only region bounding box of tag too.
      * @param xRatio Width compression ratio between the HTMLImageElement and the original image.
      * @param yRatio Height compression ratio between the HTMLImageElement and the original image.
      */
-    public async predictImage(image: HTMLImageElement,
+    public async predictImage(image: ImageObject,
                               predictTag: boolean,
                               xRatio: number,
                               yRatio: number,
@@ -225,7 +225,7 @@ export class ObjectDetection {
     }
 
     private getClass(index: number, indexes: Float32Array, classes: number[]): string {
-        if (index < indexes.length && indexes[index] < classes.length) {
+        if (this.jsonClasses && index < indexes.length && indexes[index] < classes.length) {
             const classId = classes[indexes[index]] - 1;
             const classObject = this.jsonClasses[classId];
             return classObject ? classObject.displayName : "Unknown";

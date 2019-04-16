@@ -95,3 +95,30 @@ describe("Test Detection on Fake Model", () => {
         expect(data).toEqual([{bbox: [227, 227, 0, 0], class: "Unknown", score: 1}]);
     });
 });
+
+describe("Test predictImage on Fake Model", () => {
+    beforeEach(() => {
+        spyOn(tf, "loadGraphModel").and.callFake(() => {
+            const model = {
+                executeAsync:
+                    (x: tf.Tensor) => [tf.ones([1, 1917, 90]), tf.ones([1, 1917, 1, 4])],
+            };
+
+            return model;
+        });
+    });
+
+    it("predictImage on a fake image", async () => {
+        const model = new ObjectDetection();
+        await model.load("path");
+
+        const x = tf.zeros([227, 227, 3]) as tf.Tensor3D;
+        const regions = await model.predictImage(x, false, 1, 1);
+
+        expect(regions.length).toEqual(20);
+        expect(regions[0].boundingBox.left).toEqual(227);
+        expect(regions[0].boundingBox.top).toEqual(227);
+        expect(regions[0].boundingBox.width).toEqual(0);
+        expect(regions[0].boundingBox.height).toEqual(0);
+    });
+});
