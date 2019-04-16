@@ -304,6 +304,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }, () => this.canvas.current.applyTag(tag.name));
     }
 
+    /**
+     * Open confirm dialog for tag renaming
+     */
     private confirmTagRenamed = (tagName: string, newTagName: string): void => {
         this.renameTagConfirm.current.open(tagName, newTagName);
     }
@@ -333,6 +336,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
     }
 
+    /**
+     * Open Confirm dialog for tag deletion
+     */
     private confirmTagDeleted = (tagName: string): void => {
         this.deleteTagConfirm.current.open(tagName);
     }
