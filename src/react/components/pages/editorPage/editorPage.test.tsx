@@ -29,6 +29,7 @@ import { appInfo } from "../../../../common/appInfo";
 import SplitPane from "react-split-pane";
 import EditorSideBar from "./editorSideBar";
 import Alert from "../../common/alert/alert";
+import registerMixins from "../../../../registerMixins";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(
@@ -657,6 +658,11 @@ describe("Editor Page Component", () => {
     });
 
     describe("Basic tag interaction tests", () => {
+
+        beforeAll(() => {
+            registerMixins();
+        });
+
         it("tags are initialized correctly", () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
@@ -700,6 +706,9 @@ describe("Editor Page Component", () => {
             expect(getState(wrapper).project.tags).toEqual(project.tags);
             wrapper.find(".tag-content").last().simulate("click");
             wrapper.find("i.tag-input-toolbar-icon.fas.fa-trash").simulate("click");
+            wrapper.find("button.btn.btn-danger").simulate("click");
+
+            await MockFactory.flushUi();
 
             const stateTags = getState(wrapper).project.tags;
             expect(stateTags).toHaveLength(project.tags.length - 1);
