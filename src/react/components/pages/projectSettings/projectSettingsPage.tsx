@@ -27,6 +27,10 @@ export interface IProjectSettingsPageProps extends RouteComponentProps, React.Pr
     appSettings: IAppSettings;
 }
 
+export interface IProjectSettingsPageState {
+    project: IProject;
+}
+
 function mapStateToProps(state: IApplicationState) {
     return {
         project: state.currentProject,
@@ -43,24 +47,40 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
+const projectFormTempKey = "projectForm";
+
 /**
  * @name - Project Settings Page
  * @description - Page for adding/editing/removing projects
  */
 @connect(mapStateToProps, mapDispatchToProps)
-export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps> {
-    constructor(props, context) {
-        super(props, context);
+export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps, IProjectSettingsPageState> {
+    public state: IProjectSettingsPageState = {
+        project: this.props.project,
+    };
 
+    public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
-        if (!this.props.project && projectId) {
-            const project = this.props.recentProjects.find((project) => project.id === projectId);
-            this.props.applicationActions.ensureSecurityToken(project);
-            this.props.projectActions.loadProject(project);
+        // If we are creating a new project check to see if there is a partial
+        // project already created in local storage
+        if (this.props.match.url === "/projects/create") {
+            const projectJson = localStorage.getItem(projectFormTempKey);
+            if (projectJson) {
+                this.setState({ project: JSON.parse(projectJson) });
+            }
+        } else if (!this.props.project && projectId) {
+            const projectToLoad = this.props.recentProjects.find((project) => project.id === projectId);
+            if (projectToLoad) {
+                await this.props.applicationActions.ensureSecurityToken(projectToLoad);
+                await this.props.projectActions.loadProject(projectToLoad);
+            }
         }
+    }
 
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onFormCancel = this.onFormCancel.bind(this);
+    public componentDidUpdate(prevProps: Readonly<IProjectSettingsPageProps>) {
+        if (prevProps.project !== this.props.project) {
+            this.setState({ project: this.props.project });
+        }
     }
 
     public render() {
@@ -75,9 +95,10 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                     </h3>
                     <div className="m-3">
                         <ProjectForm
-                            project={this.props.project}
+                            project={this.state.project}
                             connections={this.props.connections}
                             appSettings={this.props.appSettings}
+                            onChange={this.onFormChange}
                             onSubmit={this.onFormSubmit}
                             onCancel={this.onFormCancel} />
                     </div>
@@ -91,11 +112,23 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         );
     }
 
+    /**
+     * When the project form is changed verifies if the project contains enough information
+     * to persist into temp local storage to support better new project flow when
+     * creating new connections inline
+     */
+    private onFormChange = (project: IProject) => {
+        if (this.isPartialProject(project)) {
+            localStorage.setItem(projectFormTempKey, JSON.stringify(project));
+        }
+    }
+
     private onFormSubmit = async (project: IProject) => {
         const isNew = !(!!project.id);
 
         await this.props.applicationActions.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
+        localStorage.removeItem(projectFormTempKey);
 
         toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }));
 
@@ -106,7 +139,23 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         }
     }
 
-    private onFormCancel() {
+    private onFormCancel = () => {
+        localStorage.removeItem(projectFormTempKey);
         this.props.history.goBack();
+    }
+
+    /**
+     * Checks whether a project is partially populated
+     */
+    private isPartialProject = (project: IProject): boolean => {
+        return project && !(!!project.id) &&
+            (
+                !!project.name
+                || !!project.description
+                || (project.sourceConnection && Object.keys(project.sourceConnection).length > 0)
+                || (project.targetConnection && Object.keys(project.targetConnection).length > 0)
+                || (project.exportFormat && Object.keys(project.exportFormat).length > 0)
+                || (project.tags && project.tags.length > 0)
+            );
     }
 }
