@@ -290,8 +290,8 @@ export const spanish: IAppStrings = {
                         },
                     },
                     testTrainSplit: {
-                        title: "Prueba/tren Split",
-                        description: "La división del tren de prueba que se utilizará para los datos exportados",
+                        title: "La división para entrenar y comprobar",
+                        description: "La división de datos para utilizar entre el entrenamiento y la comprobación",
                     },
                 },
             },
