@@ -1,6 +1,7 @@
 import _ from "lodash";
+import os from "os";
 import { CntkExportProvider, ICntkExportProviderOptions } from "./cntk";
-import { IProject, AssetState } from "../../models/applicationState";
+import { IProject, AssetState, IAssetMetadata } from "../../models/applicationState";
 import { AssetProviderFactory } from "../storage/assetProviderFactory";
 import { ExportAssetState } from "./exportProvider";
 import MockFactory from "../../common/mockFactory";
@@ -108,25 +109,59 @@ describe("CNTK Export Provider", () => {
 
     it("Writes export files to storage provider", async () => {
         const provider = createProvider(testProject);
+        const getAssetsSpy = jest.spyOn(provider, "getAssetsForExport");
+
         await provider.export();
 
+        const assetsToExport = await getAssetsSpy.mock.results[0].value;
+        const testSplit = (100 - (defaultOptions.testTrainSplit || 80)) / 100;
+        const testCount = Math.ceil(assetsToExport.length * testSplit);
+        const testArray = assetsToExport.slice(0, testCount);
+        const trainArray = assetsToExport.slice(testCount, assetsToExport.length);
+
+        const storageProviderMock = LocalFileSystemProxy as any;
+        const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
+        const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
+
+        expect(writeBinaryCalls).toHaveLength(testAssets.length);
+        expect(writeTextFileCalls).toHaveLength(testAssets.length * 2);
+
+        testArray.forEach((assetMetadata) => {
+            const testFolderPath = "Project-TestProject-CNTK-export/testImages";
+            assertExportedAsset(testFolderPath, assetMetadata);
+        });
+
+        trainArray.forEach((assetMetadata) => {
+            const trainFolderPath = "Project-TestProject-CNTK-export/positive";
+            assertExportedAsset(trainFolderPath, assetMetadata);
+        });
+    });
+
+    function assertExportedAsset(folderPath: string, assetMetadata: IAssetMetadata) {
         const storageProviderMock = LocalFileSystemProxy as any;
         const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
         const writeBinaryFilenameArgs = writeBinaryCalls.map((args) => args[0]);
         const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls;
         const writeTextFilenameArgs = writeTextFileCalls.map((args) => args[0]);
-        const writeTextDataArgs = writeTextFileCalls.map((args) => args[1]);
 
-        expect(writeBinaryCalls).toHaveLength(testAssets.length);
-        expect(writeTextFileCalls).toHaveLength(testAssets.length * 2);
+        expect(writeBinaryFilenameArgs).toContain(`${folderPath}/${assetMetadata.asset.name}`);
+        expect(writeTextFilenameArgs).toContain(`${folderPath}/${assetMetadata.asset.name}.bboxes.labels.tsv`);
+        expect(writeTextFilenameArgs).toContain(`${folderPath}/${assetMetadata.asset.name}.bboxes.tsv`);
 
-        testAssets.forEach((asset) => {
-            expect(writeBinaryFilenameArgs.find((a: string) => a.includes(asset.name)))
-                .not.toBeNull();
-            expect(writeTextFilenameArgs.find((a: string) => a.includes(`${asset.name}.bboxes.labels.tsv`)))
-                .not.toBeNull();
-            expect(writeTextFilenameArgs.find((a: string) => a.includes(`${asset.name}.bboxes.tsv`)))
-                .not.toBeNull();
-        });
-    });
+        const writeLabelsCall = writeTextFileCalls
+            .find((args: string[]) => args[0].indexOf(`${assetMetadata.asset.name}.bboxes.labels.tsv`) >= 0);
+
+        const writeBoxesCall = writeTextFileCalls
+            .find((args: string[]) => args[0].indexOf(`${assetMetadata.asset.name}.bboxes.tsv`) >= 0);
+
+        const expectedLabelData = `${assetMetadata.regions[0].tags[0]}${os.EOL}${assetMetadata.regions[1].tags[0]}`;
+        expect(writeLabelsCall[1]).toEqual(expectedLabelData);
+
+        const expectedBoxData = [];
+        // tslint:disable-next-line:max-line-length
+        expectedBoxData.push(`${assetMetadata.regions[0].boundingBox.left}\t${assetMetadata.regions[0].boundingBox.left + assetMetadata.regions[0].boundingBox.width}\t${assetMetadata.regions[0].boundingBox.top}\t${assetMetadata.regions[0].boundingBox.top + assetMetadata.regions[0].boundingBox.height}`);
+        // tslint:disable-next-line:max-line-length
+        expectedBoxData.push(`${assetMetadata.regions[1].boundingBox.left}\t${assetMetadata.regions[1].boundingBox.left + assetMetadata.regions[1].boundingBox.width}\t${assetMetadata.regions[1].boundingBox.top}\t${assetMetadata.regions[1].boundingBox.top + assetMetadata.regions[1].boundingBox.height}`);
+        expect(writeBoxesCall[1]).toEqual(expectedBoxData.join(os.EOL));
+    }
 });
