@@ -98,7 +98,7 @@
                             "title": "${strings.export.providers.azureCV.properties.projectType.title}",
                             "enum": [
                                 "Classification",
-                                "Object Detection"
+                                "ObjectDetection"
                             ],
                             "enumNames": [
                                 "${strings.export.providers.azureCV.properties.projectType.options.classification}",

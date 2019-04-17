@@ -24,6 +24,19 @@ export interface IExternalPickerUiOptions {
     valueSelector: string;
     authHeaderName?: string;
     authHeaderValue?: string;
+    filter?: IExternalPickerFilter;
+}
+
+export interface IExternalPickerFilter {
+    left: string;
+    right: string;
+    operator: FilterOperator;
+}
+
+export enum FilterOperator {
+    Equals = "eq",
+    GreaterThan = "gt",
+    LessThan = "lt",
 }
 
 /**
@@ -98,7 +111,15 @@ export default class ExternalPicker extends React.Component<IExternalPickerProps
 
         try {
             const response = await axios.request(config);
-            const items: IKeyValuePair[] = response.data.map((item) => {
+
+            let rawItems: any[] = response.data;
+
+            // Optionally filter results if a filter has been defined
+            if (uiOptions.filter) {
+                rawItems = rawItems.filter((item) => this.filterPredicate(item, uiOptions.filter));
+            }
+
+            const items: IKeyValuePair[] = rawItems.map((item) => {
                 return {
                     key: interpolate(uiOptions.keySelector, { item }),
                     value: interpolate(uiOptions.valueSelector, { item }),
@@ -109,6 +130,27 @@ export default class ExternalPicker extends React.Component<IExternalPickerProps
         } catch (e) {
             this.setState({ items: [] });
             this.props.onChange(undefined);
+        }
+    }
+
+    /**
+     * Determines if the specified item will return as part of the filter
+     * @param item The item to evaluate
+     * @param filter The filter expression to evaluate against
+     */
+    private filterPredicate(item: any, filter: IExternalPickerFilter): boolean {
+        const left = interpolate(filter.left, { item, props: this.props });
+        const right = interpolate(filter.right, { item, props: this.props });
+
+        switch (filter.operator) {
+            case FilterOperator.Equals:
+                return left === right;
+            case FilterOperator.GreaterThan:
+                return left > right;
+            case FilterOperator.LessThan:
+                return left < right;
+            default:
+                throw new Error("Invalid filter operator");
         }
     }
 }

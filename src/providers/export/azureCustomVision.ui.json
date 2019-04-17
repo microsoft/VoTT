@@ -24,7 +24,12 @@
             "authHeaderName": "Training-key",
             "authHeaderValue": "${props.formContext.providerOptions.apiKey}",
             "keySelector": "${item.id}",
-            "valueSelector": "${item.name}"
+            "valueSelector": "${item.name}",
+            "filter": {
+                "left": "${item.type}",
+                "operator": "eq",
+                "right": "${props.formContext.providerOptions.projectType}"
+            }
         }
     }
 }
