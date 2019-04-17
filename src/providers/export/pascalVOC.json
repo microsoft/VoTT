@@ -19,8 +19,8 @@
             ]
         },
         "testTrainSplit": {
-            "title": "${strings.export.providers.pascalVoc.testTrainSplit.title}",
-            "description": "${strings.export.providers.pascalVoc.testTrainSplit.description}",
+            "title": "${strings.export.providers.common.properties.testTrainSplit.title}",
+            "description": "${strings.export.providers.common.properties.testTrainSplit.description}",
             "type": "number",
             "default": 80
         },

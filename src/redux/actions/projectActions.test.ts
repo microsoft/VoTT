@@ -96,6 +96,7 @@ describe("Project Redux Actions", () => {
             providerType: "vottJson",
             providerOptions: {
                 assetState: ExportAssetState.Visited,
+                includeImages: true,
             },
         });
     });

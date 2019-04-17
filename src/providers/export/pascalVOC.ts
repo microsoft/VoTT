@@ -1,11 +1,10 @@
 import _ from "lodash";
 import { ExportProvider } from "./exportProvider";
-import { IProject, IAssetMetadata, RegionType, ITag, IExportProviderOptions } from "../../models/applicationState";
+import { IProject, IAssetMetadata, ITag, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./pascalVOC/pascalVOCTemplates";
 import { interpolate } from "../../common/strings";
-import { PlatformType } from "../../common/hostProcess";
 import os from "os";
 
 interface IObjectInfo {
@@ -53,7 +52,7 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
         exportObject.assets = _.keyBy(allAssets, (assetMetadata) => assetMetadata.asset.id);
 
         // Create Export Folder
-        const exportFolderName = `${this.project.name.replace(" ", "-")}-PascalVOC-export`;
+        const exportFolderName = `${this.project.name.replace(/\s/g, "-")}-PascalVOC-export`;
         await this.storageProvider.createContainer(exportFolderName);
 
         await this.exportImages(exportFolderName, allAssets);

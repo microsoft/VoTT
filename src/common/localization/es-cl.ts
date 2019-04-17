@@ -289,6 +289,10 @@ export const spanish: IAppStrings = {
                             tagged: "Solo activos etiquetados",
                         },
                     },
+                    testTrainSplit: {
+                        title: "Prueba/tren Split",
+                        description: "La división del tren de prueba que se utilizará para los datos exportados",
+                    },
                 },
             },
             vottJson: {
@@ -346,10 +350,6 @@ export const spanish: IAppStrings = {
             },
             pascalVoc: {
                 displayName: "Pascal VOC",
-                testTrainSplit: {
-                    title: "Prueba/tren Split",
-                    description: "La división del tren de prueba que se utilizará para los datos exportados",
-                },
                 exportUnassigned: {
                     title: "Exportar sin asignar",
                     description: "Si se incluyen o no etiquetas no asignadas en los datos exportados",

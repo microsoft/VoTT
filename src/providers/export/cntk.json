@@ -17,6 +17,12 @@
                 "${strings.export.providers.common.properties.assetState.options.visited}",
                 "${strings.export.providers.common.properties.assetState.options.tagged}"
             ]
+        },
+        "testTrainSplit": {
+            "title": "${strings.export.providers.common.properties.testTrainSplit.title}",
+            "description": "${strings.export.providers.common.properties.testTrainSplit.description}",
+            "type": "number",
+            "default": 80
         }
     }
 }

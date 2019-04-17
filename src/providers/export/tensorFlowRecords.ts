@@ -41,7 +41,7 @@ export class TFRecordsExportProvider extends ExportProvider {
         exportObject.assets = _.keyBy(allAssets, (assetMetadata) => assetMetadata.asset.id);
 
         // Create Export Folder
-        const exportFolderName = `${this.project.name.replace(" ", "-")}-TFRecords-export`;
+        const exportFolderName = `${this.project.name.replace(/\s/g, "-")}-TFRecords-export`;
         await this.storageProvider.createContainer(exportFolderName);
 
         await this.exportPBTXT(exportFolderName, this.project);

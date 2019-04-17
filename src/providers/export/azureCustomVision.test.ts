@@ -6,7 +6,7 @@ import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
 import {
     IProject, AssetState, IAsset, IAssetMetadata,
-    RegionType, IRegion, IExportProviderOptions, AssetType,
+    RegionType, IRegion, IExportProviderOptions,
 } from "../../models/applicationState";
 import { ExportAssetState } from "./exportProvider";
 jest.mock("./azureCustomVision/azureCustomVisionService");
