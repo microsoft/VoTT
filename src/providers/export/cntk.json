@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "title": "${strings.export.providers.pascalVoc.displayName}",
+    "title": "${strings.export.providers.cntk.displayName}",
     "properties": {
         "assetState": {
             "type": "string",
@@ -23,12 +23,6 @@
             "description": "${strings.export.providers.common.properties.testTrainSplit.description}",
             "type": "number",
             "default": 80
-        },
-        "exportUnassigned": {
-            "title": "${strings.export.providers.pascalVoc.exportUnassigned.title}",
-            "description": "${strings.export.providers.pascalVoc.exportUnassigned.description}",
-            "type": "boolean",
-            "default": true
         }
     }
 }

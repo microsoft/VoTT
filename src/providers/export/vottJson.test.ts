@@ -3,7 +3,7 @@ import { VottJsonExportProvider, IVottJsonExportProviderOptions } from "./vottJs
 import registerProviders from "../../registerProviders";
 import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState, IExportProviderOptions } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");

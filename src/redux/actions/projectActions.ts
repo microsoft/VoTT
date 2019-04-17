@@ -15,6 +15,8 @@ import { createAction, createPayloadAction, IPayloadAction } from "./actionCreat
 import { ExportAssetState, IExportResults } from "../../providers/export/exportProvider";
 import { appInfo } from "../../common/appInfo";
 import { strings } from "../../common/strings";
+import { IExportFormat } from "vott-react";
+import { IVottJsonExportProviderOptions } from "../../providers/export/vottJson";
 
 /**
  * Actions to be performed in relation to projects
@@ -76,11 +78,14 @@ export function saveProject(project: IProject)
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const defaultExportFormat = {
+        const defaultExportProviderOptions: IVottJsonExportProviderOptions = {
+            assetState: ExportAssetState.Visited,
+            includeImages: true,
+        };
+
+        const defaultExportFormat: IExportFormat = {
             providerType: "vottJson",
-            providerOptions: {
-                assetState: ExportAssetState.Visited,
-            },
+            providerOptions: defaultExportProviderOptions,
         };
 
         const newProject = {
@@ -130,7 +135,7 @@ export function deleteProject(project: IProject)
  */
 export function closeProject(): (dispatch: Dispatch) => void {
     return (dispatch: Dispatch): void => {
-        dispatch({type: ActionTypes.CLOSE_PROJECT_SUCCESS});
+        dispatch({ type: ActionTypes.CLOSE_PROJECT_SUCCESS });
     };
 }
 
@@ -159,7 +164,7 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
         const assetMetadata = await assetService.getAssetMetadata(asset);
         dispatch(loadAssetMetadataAction(assetMetadata));
 
-        return {...assetMetadata};
+        return { ...assetMetadata };
     };
 }
 
@@ -171,14 +176,14 @@ export function loadAssetMetadata(project: IProject, asset: IAsset): (dispatch: 
 export function saveAssetMetadata(
     project: IProject,
     assetMetadata: IAssetMetadata): (dispatch: Dispatch) => Promise<IAssetMetadata> {
-    const newAssetMetadata = {...assetMetadata, version: appInfo.version};
+    const newAssetMetadata = { ...assetMetadata, version: appInfo.version };
 
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
         const savedMetadata = await assetService.save(newAssetMetadata);
         dispatch(saveAssetMetadataAction(savedMetadata));
 
-        return {...savedMetadata};
+        return { ...savedMetadata };
     };
 }
 
