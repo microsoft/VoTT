@@ -1,7 +1,7 @@
 import React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import axios from "axios";
-import ExternalPicker, { IExternalPickerProps, IExternalPickerState } from "./externalPicker";
+import ExternalPicker, { IExternalPickerProps, IExternalPickerState, FilterOperator } from "./externalPicker";
 import MockFactory from "../../../../common/mockFactory";
 
 describe("External Picker", () => {
@@ -110,7 +110,7 @@ describe("External Picker", () => {
         const expectedApiKey = "ABC123";
         const expectedRegion = "southcentralus";
 
-        const props = {
+        const props: IExternalPickerProps = {
             ...defaultProps,
             formContext: {
                 providerOptions: {
@@ -125,6 +125,48 @@ describe("External Picker", () => {
 
         expect(wrapper.state().items).toEqual([]);
         expect(onChangeHandler).toBeCalledWith(undefined);
+    });
+
+    describe("Filters items", () => {
+        it("Applies a filter to the item when defined", async () => {
+            const requestMock = axios.request as jest.Mock;
+            requestMock.mockImplementationOnce(() => Promise.resolve({
+                data: [
+                    { id: "1", name: "Object Detection 1", type: "ObjectDetection" },
+                    { id: "2", name: "Object Detection 2", type: "ObjectDetection" },
+                    { id: "3", name: "Classification 1", type: "Classification" },
+                    { id: "4", name: "Classification 2", type: "Classification" },
+                ],
+                status: 200,
+            }));
+
+            const props: IExternalPickerProps = {
+                ...defaultProps,
+                formContext: {
+                    providerOptions: {
+                        apiKey: "ABC123",
+                        region: "southcentralus",
+                        projectType: "Classification",
+                    },
+                },
+            };
+
+            props.options.keySelector = "${item.id}";
+            props.options.valueSelector = "${item.name}";
+            props.options.filter = {
+                left: "${item.type}",
+                right: "${props.formContext.providerOptions.projectType}",
+                operator: FilterOperator.Equals,
+            };
+
+            const wrapper = createComponent(props);
+            await MockFactory.flushUi();
+
+            expect(wrapper.state().items).toEqual([
+                { key: "3", value: "Classification 1" },
+                { key: "4", value: "Classification 2" },
+            ]);
+        });
     });
 
     function createProps(otherProps: any): IExternalPickerProps {
