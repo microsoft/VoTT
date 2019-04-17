@@ -1,0 +1,5 @@
+{
+    "testTrainSplit": {
+        "ui:widget": "slider"
+    }
+}

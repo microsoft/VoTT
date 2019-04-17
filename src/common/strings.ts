@@ -285,6 +285,10 @@ export interface IAppStrings {
                             tagged: string,
                         },
                     },
+                    testTrainSplit: {
+                        title: string,
+                        description: string,
+                    },
                 },
             },
             vottJson: {
@@ -342,14 +346,13 @@ export interface IAppStrings {
             },
             pascalVoc: {
                 displayName: string,
-                testTrainSplit: {
-                    title: string,
-                    description: string,
-                },
                 exportUnassigned: {
                     title: string,
                     description: string,
                 },
+            },
+            cntk: {
+                displayName: string,
             },
         },
         messages: {
