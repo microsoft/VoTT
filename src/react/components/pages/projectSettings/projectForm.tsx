@@ -1,5 +1,5 @@
 import React from "react";
-import Form, { FormValidation, ISubmitEvent } from "react-jsonschema-form";
+import Form, { FormValidation, ISubmitEvent, IChangeEvent } from "react-jsonschema-form";
 import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IConnection, IProject, ITag, IAppSettings } from "../../../../models/applicationState";
@@ -28,6 +28,7 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
     connections: IConnection[];
     appSettings: IAppSettings;
     onSubmit: (project: IProject) => void;
+    onChange?: (project: IProject) => void;
     onCancel?: () => void;
 }
 
@@ -97,6 +98,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 schema={this.state.formSchema}
                 uiSchema={this.state.uiSchema}
                 formData={this.state.formData}
+                onChange={this.onFormChange}
                 onSubmit={this.onFormSubmit}>
                 <div>
                     <button className="btn btn-success mr-1" type="submit">{strings.projectSettings.save}</button>
@@ -182,6 +184,12 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         }
 
         return errors;
+    }
+
+    private onFormChange = (changeEvent: IChangeEvent<IProject>) => {
+        if (this.props.onChange) {
+            this.props.onChange(changeEvent.formData);
+        }
     }
 
     private onFormSubmit(args: ISubmitEvent<IProject>) {

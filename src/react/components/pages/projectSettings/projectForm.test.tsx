@@ -15,8 +15,9 @@ describe("Project Form Component", () => {
     const appSettings = MockFactory.appSettings();
     const connections = MockFactory.createTestConnections();
     let wrapper: ReactWrapper<IProjectFormProps, IProjectFormState> = null;
-    let onSubmitHandler: jest.Mock = null;
-    let onCancelHandler: jest.Mock = null;
+    const onSubmitHandler = jest.fn();
+    const onChangeHandler = jest.fn();
+    const onCancelHandler = jest.fn();
 
     function createComponent(props: IProjectFormProps) {
         return mount(
@@ -33,13 +34,16 @@ describe("Project Form Component", () => {
 
     describe("Completed project", () => {
         beforeEach(() => {
-            onSubmitHandler = jest.fn();
-            onCancelHandler = jest.fn();
+            onChangeHandler.mockClear();
+            onSubmitHandler.mockClear();
+            onCancelHandler.mockClear();
+
             wrapper = createComponent({
                 project,
                 connections,
                 appSettings,
                 onSubmit: onSubmitHandler,
+                onChange: onChangeHandler,
                 onCancel: onCancelHandler,
             });
         });
@@ -76,10 +80,14 @@ describe("Project Form Component", () => {
 
             const form = wrapper.find("form");
             form.simulate("submit");
-            expect(onSubmitHandler).toBeCalledWith({
+
+            const expectedProject = {
                 ...project,
                 name: newName,
-            });
+            };
+
+            expect(onChangeHandler).toBeCalled();
+            expect(onSubmitHandler).toBeCalledWith(expectedProject);
         });
 
         it("starting project should update description upon submission", () => {
@@ -92,10 +100,14 @@ describe("Project Form Component", () => {
 
             const form = wrapper.find("form");
             form.simulate("submit");
-            expect(onSubmitHandler).toBeCalledWith({
+
+            const expectedProject = {
                 ...project,
                 description: newDescription,
-            });
+            };
+
+            expect(onChangeHandler).toBeCalledWith(expect.objectContaining(project));
+            expect(onSubmitHandler).toBeCalledWith(expectedProject);
         });
 
         it("starting project should update source connection ID upon submission", () => {
@@ -109,11 +121,14 @@ describe("Project Form Component", () => {
             expect(wrapper.state().formData.sourceConnection).toEqual(newConnection);
             const form = wrapper.find("form");
             form.simulate("submit");
-            expect(onSubmitHandler).toBeCalledWith({
+
+            const expectedProject = {
                 ...project,
                 sourceConnection: connections[1],
-            });
+            };
 
+            expect(onChangeHandler).toBeCalledWith(expect.objectContaining(project));
+            expect(onSubmitHandler).toBeCalledWith(expectedProject);
         });
 
         it("starting project should update target connection ID upon submission", () => {
@@ -125,13 +140,17 @@ describe("Project Form Component", () => {
             wrapper.find("select#root_targetConnection").simulate("change", { target: { value: newConnection.id } });
             expect(wrapper.state().formData.targetConnection).toEqual(newConnection);
             wrapper.find("form").simulate("submit");
-            expect(onSubmitHandler).toBeCalledWith({
+
+            const expectedProject = {
                 ...project,
                 targetConnection: connections[1],
-            });
+            };
+
+            expect(onChangeHandler).toBeCalledWith(expect.objectContaining(project));
+            expect(onSubmitHandler).toBeCalledWith(expectedProject);
         });
 
-        it("starting project should call onChangeHandler on submission", () => {
+        it("starting project should call onSubmitHandler on submission", () => {
             const form = wrapper.find("form");
             form.simulate("submit");
             expect(onSubmitHandler).toBeCalledWith({
@@ -155,6 +174,7 @@ describe("Project Form Component", () => {
 
             const form = wrapper.find("form");
             form.simulate("submit");
+            expect(onChangeHandler).toBeCalledWith(expect.objectContaining(project));
             expect(onSubmitHandler).toBeCalledWith(
                 expect.objectContaining({
                     name: newName,
@@ -187,6 +207,7 @@ describe("Project Form Component", () => {
                 appSettings,
                 connections: newConnections,
                 onSubmit: onSubmitHandler,
+                onChange: onChangeHandler,
                 onCancel: onCancelHandler,
             });
             // Source Connection should have all connections
@@ -202,13 +223,12 @@ describe("Project Form Component", () => {
 
     describe("Empty Project", () => {
         beforeEach(() => {
-            onSubmitHandler = jest.fn();
-            onCancelHandler = jest.fn();
             wrapper = createComponent({
                 project: null,
                 appSettings,
                 connections,
                 onSubmit: onSubmitHandler,
+                onChange: onChangeHandler,
                 onCancel: onCancelHandler,
             });
         });
@@ -239,6 +259,7 @@ describe("Project Form Component", () => {
                 appSettings,
                 connections,
                 onSubmit: onSubmitHandler,
+                onChange: onChangeHandler,
                 onCancel: onCancelHandler,
             });
             const newTagName = "My new tag";
