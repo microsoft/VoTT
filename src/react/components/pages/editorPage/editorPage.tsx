@@ -33,8 +33,6 @@ import Confirm from "../../common/confirm/confirm";
 import { ObjectDetection, DetectedObject } from "../../../../providers/activeLearning/objectDetection";
 import { Env } from "../../../../common/environment";
 import { isElectron } from "../../../../common/hostProcess";
-// tslint:disable-next-line:no-var-requires
-const tagColors = require("../../common/tagColors.json");
 
 /**
  * Properties for Editor Page
@@ -643,12 +641,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         newAsset.asset.predicted = true;
         newAsset.asset.state = AssetState.Tagged;
 
-        // Temporary un-comment these two line as calling updateProjectTagsFromAsset
-        // is causing an issue with the dispatcher - to be debugged
-        await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
-        await this.props.actions.saveProject(this.props.project);
-        // Temporary comment this as causing an issue with the dispatcher - to be debugged
-        // await this.updateProjectTagsFromAsset(newAsset, this.props.project, true);
+        // await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
+        // await this.props.actions.saveProject(this.props.project);
 
         this.setState({
             selectedAsset: newAsset,
@@ -693,7 +687,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
-        await this.updateProjectTagsFromAsset(assetMetadata, this.props.project, false);
+        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
+        await this.props.actions.saveProject(this.props.project);
 
         try {
             if (!assetMetadata.asset.size) {
@@ -709,32 +704,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }, async () => {
             await this.onAssetMetadataChanged(assetMetadata);
         });
-    }
-
-    private async updateProjectTagsFromAsset(asset: IAssetMetadata, project: IProject, forceSave: boolean) {
-        const assetTags = new Set();
-        asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
-
-        const newTags: ITag[] = project.tags ? [...project.tags] : [];
-        let updateTags = false;
-
-        assetTags.forEach((tag) => {
-            if (!project.tags || project.tags.length === 0 ||
-                !project.tags.find((projectTag) => tag === projectTag.name)) {
-                newTags.push({
-                    name: tag,
-                    color: tagColors[newTags.length % tagColors.length],
-                });
-                updateTags = true;
-            }
-        });
-
-        if (updateTags || forceSave) {
-            asset.asset.state = AssetState.Tagged;
-            const newProject = { ...project, tags: newTags };
-            await this.props.actions.saveAssetMetadata(newProject, asset);
-            await this.props.actions.saveProject(newProject);
-        }
     }
 
     private loadProjectAssets = async (): Promise<void> => {
