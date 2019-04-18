@@ -1,6 +1,9 @@
 import shortid from "shortid";
 import _ from "lodash";
-import { AzureCustomVisionProvider, IAzureCustomVisionExportOptions, NewOrExisting } from "./azureCustomVision";
+import {
+    AzureCustomVisionProvider, IAzureCustomVisionExportOptions,
+    NewOrExisting, AzureRegion,
+} from "./azureCustomVision";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
@@ -29,6 +32,7 @@ describe("Azure Custom Vision Export Provider", () => {
     let testProject: IProject = null;
     const defaultOptions: IAzureCustomVisionExportOptions = {
         apiKey: expect.any(String),
+        region: AzureRegion.SouthCentralUS,
         assetState: ExportAssetState.All,
         newOrExisting: NewOrExisting.New,
         projectId: expect.any(String),
@@ -64,6 +68,7 @@ describe("Azure Custom Vision Export Provider", () => {
                     assetState: ExportAssetState.All,
                     projectId: "azure-custom-vision-project-1",
                     apiKey: "ABC123",
+                    region: AzureRegion.SouthCentralUS,
                 },
             },
         };
@@ -79,6 +84,18 @@ describe("Azure Custom Vision Export Provider", () => {
         const provider = ExportProviderFactory.createFromProject(testProject);
         expect(provider).not.toBeNull();
         expect(provider).toBeInstanceOf(AzureCustomVisionProvider);
+    });
+
+    it("Constructs custom vision service with correct options", () => {
+        const customVisionMock = AzureCustomVisionService as jest.Mocked<typeof AzureCustomVisionService>;
+        const providerOptions = testProject.exportFormat.providerOptions as IAzureCustomVisionExportOptions;
+        providerOptions.region = AzureRegion.WestEurope;
+        createProvider(testProject);
+
+        expect(customVisionMock).toBeCalledWith({
+            apiKey: providerOptions.apiKey,
+            baseUrl: `https://${providerOptions.region}.api.cognitive.microsoft.com/customvision/v2.2/Training`,
+        });
     });
 
     it("Calling save with New project creates Azure Custom Vision project", async () => {

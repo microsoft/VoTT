@@ -52,6 +52,7 @@ describe("Export Form Component", () => {
                 providerType: "vottJson",
                 providerOptions: {
                     assetState: ExportAssetState.Tagged,
+                    includeImages: true,
                 },
             },
             onSubmit: onSubmitHandler,

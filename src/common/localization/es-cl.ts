@@ -306,9 +306,27 @@ export const spanish: IAppStrings = {
             },
             azureCV: {
                 displayName: "Servicio de Visión Personalizada Azure",
+                regions: {
+                    australiaEast: "Australia este",
+                    centralIndia: "Centro de la India",
+                    eastUs: "Este de EE.",
+                    eastUs2: "Este US 2",
+                    japanEast: "Japón este",
+                    northCentralUs: "Centro norte de EE.",
+                    northEurope: "Europa del norte",
+                    southCentralUs: "Centro sur de EE.",
+                    southeastAsia: "Sudeste asiático",
+                    ukSouth: "UK sur",
+                    westUs2: "West US 2",
+                    westEurope: "Europa occidental",
+                },
                 properties: {
                     apiKey: {
                         title: "Clave de API",
+                    },
+                    region: {
+                        title: "Región",
+                        description: "La región de Azure donde se implementa el servicio",
                     },
                     classificationType: {
                         title: "Tipo de clasificación",

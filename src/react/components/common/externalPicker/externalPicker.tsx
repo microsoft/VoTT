@@ -24,6 +24,19 @@ export interface IExternalPickerUiOptions {
     valueSelector: string;
     authHeaderName?: string;
     authHeaderValue?: string;
+    filter?: IExternalPickerFilter;
+}
+
+export interface IExternalPickerFilter {
+    left: string;
+    right: string;
+    operator: FilterOperator;
+}
+
+export enum FilterOperator {
+    Equals = "eq",
+    GreaterThan = "gt",
+    LessThan = "lt",
 }
 
 /**
@@ -46,15 +59,9 @@ export interface IExternalPickerState {
  * Dropdown that provides options from an external HTTP source
  */
 export default class ExternalPicker extends React.Component<IExternalPickerProps, any> {
-    constructor(props, context) {
-        super(props, context);
-
-        this.state = {
-            items: [],
-        };
-
-        this.onChange = this.onChange.bind(this);
-    }
+    public state: IExternalPickerState = {
+        items: [],
+    };
 
     public render() {
         return (
@@ -78,12 +85,12 @@ export default class ExternalPicker extends React.Component<IExternalPickerProps
         }
     }
 
-    private onChange(e: SyntheticEvent) {
+    private onChange = (e: SyntheticEvent) => {
         const target = e.target as HTMLSelectElement;
         this.props.onChange(target.value === "" ? undefined : target.value);
     }
 
-    private async bindExternalData() {
+    private bindExternalData = async (): Promise<void> => {
         const uiOptions = this.props.options;
         const customHeaders: any = {};
         const authHeaderValue = interpolate(uiOptions.authHeaderValue, {
@@ -98,24 +105,52 @@ export default class ExternalPicker extends React.Component<IExternalPickerProps
 
         const config: AxiosRequestConfig = {
             method: uiOptions.method,
-            url: uiOptions.url,
+            url: interpolate(uiOptions.url, { props: this.props }),
             headers: customHeaders,
         };
 
         try {
             const response = await axios.request(config);
-            const items: IKeyValuePair[] = response.data.map((item) => {
+
+            let rawItems: any[] = response.data;
+
+            // Optionally filter results if a filter has been defined
+            if (uiOptions.filter) {
+                rawItems = rawItems.filter((item) => this.filterPredicate(item, uiOptions.filter));
+            }
+
+            const items: IKeyValuePair[] = rawItems.map((item) => {
                 return {
                     key: interpolate(uiOptions.keySelector, { item }),
                     value: interpolate(uiOptions.valueSelector, { item }),
                 };
             });
 
-            this.setState({
-                items,
-            });
+            this.setState({ items });
         } catch (e) {
-            return;
+            this.setState({ items: [] });
+            this.props.onChange(undefined);
+        }
+    }
+
+    /**
+     * Determines if the specified item will return as part of the filter
+     * @param item The item to evaluate
+     * @param filter The filter expression to evaluate against
+     */
+    private filterPredicate(item: any, filter: IExternalPickerFilter): boolean {
+        const left = interpolate(filter.left, { item, props: this.props });
+        const right = interpolate(filter.right, { item, props: this.props });
+
+        switch (filter.operator) {
+            case FilterOperator.Equals:
+                return left === right;
+            case FilterOperator.GreaterThan:
+                return left > right;
+            case FilterOperator.LessThan:
+                return left < right;
+            default:
+                throw new Error("Invalid filter operator");
         }
     }
 }

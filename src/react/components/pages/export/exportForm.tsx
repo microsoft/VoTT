@@ -1,6 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
+import { getDefaultFormState } from "react-jsonschema-form/lib/utils";
 import { addLocValues, strings } from "../../../../common/strings";
 import { IExportFormat, IExportProviderOptions } from "../../../../models/applicationState";
 import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
@@ -115,7 +116,8 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         if (providerType !== this.state.providerName) {
             this.bindForm(args.formData, true);
         } else {
-            this.setState({ formData: { ...args.formData } });
+            console.log(args.formData);
+            this.bindForm(args.formData, false);
         }
     }
 
@@ -160,11 +162,11 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         }
 
         const formData = { ...exportFormat };
-        if (resetProviderOptions) {
-            formData.providerOptions = {} as IExportProviderOptions;
-        }
+        const providerOptions = resetProviderOptions ? {} : exportFormat.providerOptions;
+        const providerDefaults = getDefaultFormState(newFormSchema.properties.providerOptions, providerOptions);
 
         formData.providerType = providerType;
+        formData.providerOptions = providerDefaults as IExportProviderOptions;
 
         this.setState({
             providerName: providerType,
