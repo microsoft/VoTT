@@ -96,6 +96,7 @@
                         "projectType": {
                             "type": "string",
                             "title": "${strings.export.providers.azureCV.properties.projectType.title}",
+                            "default": "Classification",
                             "enum": [
                                 "Classification",
                                 "ObjectDetection"
@@ -103,12 +104,12 @@
                             "enumNames": [
                                 "${strings.export.providers.azureCV.properties.projectType.options.classification}",
                                 "${strings.export.providers.azureCV.properties.projectType.options.objectDetection}"
-                            ],
-                            "default": "Classification"
+                            ]
                         },
                         "classificationType": {
                             "type": "string",
                             "title": "${strings.export.providers.azureCV.properties.classificationType.title}",
+                            "default": "Multilabel",
                             "enum": [
                                 "Multilabel",
                                 "Multiclass"
@@ -116,8 +117,7 @@
                             "enumNames": [
                                 "${strings.export.providers.azureCV.properties.classificationType.options.multiLabel}",
                                 "${strings.export.providers.azureCV.properties.classificationType.options.multiClass}"
-                            ],
-                            "default": "Multilabel"
+                            ]
                         },
                         "domainId": {
                             "type": "string",
@@ -126,6 +126,8 @@
                     },
                     "required": [
                         "name",
+                        "projectType",
+                        "classificationType",
                         "domainId"
                     ]
                 },
