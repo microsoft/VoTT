@@ -302,9 +302,27 @@ export interface IAppStrings {
             },
             azureCV: {
                 displayName: string,
+                regions: {
+                    eastUs: string,
+                    eastUs2: string,
+                    northCentralUs: string,
+                    southCentralUs: string,
+                    westUs2: string,
+                    westEurope: string,
+                    northEurope: string,
+                    southeastAsia: string,
+                    australiaEast: string,
+                    centralIndia: string,
+                    ukSouth: string,
+                    japanEast: string,
+                },
                 properties: {
                     apiKey: {
                         title: string,
+                    },
+                    region: {
+                        title: string,
+                        description: string,
                     },
                     newOrExisting: {
                         title: string,

@@ -33,7 +33,7 @@ export class ProtectedInput extends React.Component<IProtectedInputProps, IProte
 
         this.state = {
             showKey: false,
-            value: this.props.value,
+            value: this.props.value || "",
         };
 
         this.toggleKeyVisibility = this.toggleKeyVisibility.bind(this);
