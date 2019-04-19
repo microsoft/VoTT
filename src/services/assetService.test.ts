@@ -356,9 +356,6 @@ describe("Asset Service", () => {
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
 
-            const saveMetadata = jest.fn();
-            AssetService.prototype.save = saveMetadata;
-
             const expectedAssetMetadata: IAssetMetadata = {
                 ...MockFactory.createTestAssetMetadata(
                     asset,
@@ -373,8 +370,10 @@ describe("Asset Service", () => {
 
             const project = populateProjectAssets();
             const assetService = new AssetService(project);
-            await assetService.deleteTag(tag1);
-            expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
+            const assetUpdates = await assetService.deleteTag(tag1);
+
+            expect(assetUpdates).toHaveLength(1);
+            expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
         });
 
         it("Deletes empty regions after deleting only tag from region", async () => {
@@ -387,14 +386,13 @@ describe("Asset Service", () => {
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
 
-            const saveMetadata = jest.fn();
-            AssetService.prototype.save = saveMetadata;
-
             const expectedAssetMetadata: IAssetMetadata = MockFactory.createTestAssetMetadata(asset, []);
             const project = populateProjectAssets();
             const assetService = new AssetService(project);
-            await assetService.deleteTag(tag1);
-            expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
+            const assetUpdates = await assetService.deleteTag(tag1);
+
+            expect(assetUpdates).toHaveLength(1);
+            expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
         });
 
         it("Updates renamed tag within all assets", async () => {
@@ -407,9 +405,6 @@ describe("Asset Service", () => {
             };
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
-
-            const saveMetadata = jest.fn();
-            AssetService.prototype.save = saveMetadata;
 
             const expectedAssetMetadata: IAssetMetadata = {
                 ...MockFactory.createTestAssetMetadata(
@@ -425,8 +420,10 @@ describe("Asset Service", () => {
 
             const project = populateProjectAssets();
             const assetService = new AssetService(project);
-            await assetService.renameTag(tag1, newTag);
-            expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
+            const assetUpdates = await assetService.renameTag(tag1, newTag);
+
+            expect(assetUpdates).toHaveLength(1);
+            expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
         });
     });
 });

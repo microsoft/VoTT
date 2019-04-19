@@ -30,6 +30,7 @@ import SplitPane from "react-split-pane";
 import EditorSideBar from "./editorSideBar";
 import Alert from "../../common/alert/alert";
 import registerMixins from "../../../../registerMixins";
+import { TagInput } from "../../common/tagInput/tagInput";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(
@@ -162,7 +163,7 @@ describe("Editor Page Component", () => {
         });
     });
 
-    it("Raises onAssetSelected handler when an asset is selected from the sidebar", async () => {
+    it("Default asset is loaded and saved during initial page rendering", async () => {
         // create test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
         const defaultAsset = testAssets[0];
@@ -180,6 +181,7 @@ describe("Editor Page Component", () => {
         const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         await MockFactory.flushUi();
+        wrapper.update();
 
         const expectedAsset = editorPage.state().assets[0];
         const partialProject = {
@@ -669,26 +671,31 @@ describe("Editor Page Component", () => {
             });
 
             const wrapper = createComponent(store, MockFactory.editorPageProps());
-            expect(wrapper.props().project.tags).toEqual(project.tags);
+            expect(wrapper.find(TagInput).props().tags).toEqual(project.tags);
         });
 
-        it("create a new tag from text box", () => {
+        it("create a new tag updates project tags", async () => {
             const project = MockFactory.createTestProject();
             const store = createReduxStore({
                 ...MockFactory.initialState(),
                 currentProject: project,
             });
+
             const wrapper = createComponent(store, MockFactory.editorPageProps());
-            expect(wrapper.props().project.tags).toEqual(project.tags);
+            await waitForSelectedAsset(wrapper);
 
-            const newTagName = "My new tag";
-            wrapper.find("div.tag-input-toolbar-item.plus").simulate("click");
-            wrapper.find(".tag-input-box").simulate("keydown", { key: "Enter", target: { value: newTagName } });
+            const newTag = MockFactory.createTestTag("NewTag");
+            const updatedTags = [...project.tags, newTag];
+            wrapper.find(TagInput).props().onChange(updatedTags);
 
-            const projectTags = wrapper.props().project.tags;
+            await MockFactory.flushUi();
+            wrapper.update();
 
-            expect(projectTags).toHaveLength(project.tags.length + 1);
-            expect(projectTags[projectTags.length - 1].name).toEqual(newTagName);
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const projectTags = editorPage.props().project.tags;
+
+            expect(projectTags).toHaveLength(updatedTags.length);
+            expect(projectTags[projectTags.length - 1].name).toEqual(newTag.name);
         });
 
         it("Remove a tag", async () => {
@@ -701,14 +708,19 @@ describe("Editor Page Component", () => {
             const wrapper = createComponent(store, MockFactory.editorPageProps());
             await waitForSelectedAsset(wrapper);
 
-            expect(wrapper.props().project.tags).toEqual(project.tags);
-            wrapper.find(".tag-content").last().simulate("click");
-            wrapper.find("i.tag-input-toolbar-icon.fas.fa-trash").simulate("click");
-            wrapper.find("button.btn.btn-danger").simulate("click");
+            const tagToDelete = project.tags[project.tags.length - 1];
+            wrapper.find(TagInput).props().onTagDeleted(tagToDelete.name);
+
+            // Accept the modal delete warning
+            wrapper.update();
+            wrapper.find(".modal-footer button").first().simulate("click");
 
             await MockFactory.flushUi();
+            wrapper.update();
 
-            const projectTags = wrapper.props().project.tags;
+            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const projectTags = editorPage.props().project.tags;
+
             expect(projectTags).toHaveLength(project.tags.length - 1);
         });
 
