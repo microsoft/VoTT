@@ -30,6 +30,8 @@ export default interface IProjectActions {
     loadAssets(project: IProject): Promise<IAsset[]>;
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
+    updateProjectTag(project: IProject, oldTagName: string, newTagName: string): Promise<IAssetMetadata[]>;
+    deleteProjectTag(project: IProject, tagName): Promise<IAssetMetadata[]>;
 }
 
 /**
@@ -188,6 +190,69 @@ export function saveAssetMetadata(
 }
 
 /**
+ * Updates a project and all asset references from oldTagName to newTagName
+ * @param project The project to update tags
+ * @param oldTagName The old tag name
+ * @param newTagName The new tag name
+ */
+export function updateProjectTag(project: IProject, oldTagName: string, newTagName: string)
+    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAssetMetadata[]> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        // Find tags to rename
+        const assetService = new AssetService(project);
+        const assetUpdates = await assetService.renameTag(oldTagName, newTagName);
+
+        // Save updated assets
+        await assetUpdates.forEachAsync(async (assetMetadata) => {
+            await saveAssetMetadata(project, assetMetadata)(dispatch);
+        });
+
+        const currentProject = getState().currentProject;
+        const updatedProject = {
+            ...currentProject,
+            tags: project.tags.map((t) => (t.name === oldTagName) ? { ...t, name: newTagName } : t),
+        };
+
+        // Save updated project tags
+        await saveProject(updatedProject)(dispatch, getState);
+        dispatch(updateProjectTagAction(updatedProject));
+
+        return assetUpdates;
+    };
+}
+
+/**
+ * Updates a project and all asset references from oldTagName to newTagName
+ * @param project The project to delete tags
+ * @param tagName The tag to delete
+ */
+export function deleteProjectTag(project: IProject, tagName)
+    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAssetMetadata[]> {
+    return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        // Find tags to rename
+        const assetService = new AssetService(project);
+        const assetUpdates = await assetService.deleteTag(tagName);
+
+        // Save updated assets
+        await assetUpdates.forEachAsync(async (assetMetadata) => {
+            await saveAssetMetadata(project, assetMetadata)(dispatch);
+        });
+
+        const currentProject = getState().currentProject;
+        const updatedProject = {
+            ...currentProject,
+            tags: project.tags.filter((t) => t.name !== tagName),
+        };
+
+        // Save updated project tags
+        await saveProject(updatedProject)(dispatch, getState);
+        dispatch(deleteProjectTagAction(updatedProject));
+
+        return assetUpdates;
+    };
+}
+
+/**
  * Initialize export provider, get export data and dispatch export project action
  * @param project - Project to export
  */
@@ -268,6 +333,20 @@ export interface IExportProjectAction extends IPayloadAction<string, IProject> {
 }
 
 /**
+ * Update Project Tag action type
+ */
+export interface IUpdateProjectTagAction extends IPayloadAction<string, IProject> {
+    type: ActionTypes.UPDATE_PROJECT_TAG_SUCCESS;
+}
+
+/**
+ * Delete project tag action type
+ */
+export interface IDeleteProjectTagAction extends IPayloadAction<string, IProject> {
+    type: ActionTypes.DELETE_PROJECT_TAG_SUCCESS;
+}
+
+/**
  * Instance of Load Project action
  */
 export const loadProjectAction = createPayloadAction<ILoadProjectAction>(ActionTypes.LOAD_PROJECT_SUCCESS);
@@ -303,3 +382,13 @@ export const saveAssetMetadataAction =
  */
 export const exportProjectAction =
     createPayloadAction<IExportProjectAction>(ActionTypes.EXPORT_PROJECT_SUCCESS);
+/**
+ * Instance of Update project tag action
+ */
+export const updateProjectTagAction =
+    createPayloadAction<IUpdateProjectTagAction>(ActionTypes.UPDATE_PROJECT_TAG_SUCCESS);
+/**
+ * Instance of Delete project tag action
+ */
+export const deleteProjectTagAction =
+    createPayloadAction<IDeleteProjectTagAction>(ActionTypes.DELETE_PROJECT_TAG_SUCCESS);
