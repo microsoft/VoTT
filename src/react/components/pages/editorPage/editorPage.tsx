@@ -3,15 +3,14 @@ import React, { RefObject } from "react";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router-dom";
 import SplitPane from "react-split-pane";
-import { toast } from "react-toastify";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { strings, interpolate } from "../../../../common/strings";
+import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, RegionType, IProjectActiveLearningSettings, ModelPathType, IAdditionalPageSettings,
+    ISize, ITag, IAdditionalPageSettings,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -30,9 +29,7 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
-import { ObjectDetection, DetectedObject } from "../../../../providers/activeLearning/objectDetection";
-import { Env } from "../../../../common/environment";
-import { isElectron } from "../../../../common/hostProcess";
+import { ActiveLearningService } from "../../../../services/activeLearningService";
 
 /**
  * Properties for Editor Page
@@ -103,7 +100,6 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
-
     public state: IEditorPageState = {
         selectedTag: null,
         lockedTags: [],
@@ -120,9 +116,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         showInvalidRegionWarning: false,
     };
 
-    // TensorFlow model used for Active Learning
-    private model: ObjectDetection;
-
+    private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
@@ -138,38 +132,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             await this.props.actions.loadProject(project);
         }
 
-        let modelPath = "";
-        if (this.props.project.activeLearningSettings.modelPathType === ModelPathType.Coco) {
-            if (isElectron()) {
-                const appPath = this.getAppPath();
-
-                if (Env.get() !== "production") {
-                    modelPath = appPath + "/cocoSSDModel";
-                } else {
-                    modelPath = appPath + "/../../cocoSSDModel";
-                }
-            } else {
-                modelPath = "https://jmangiadiag.blob.core.windows.net/vottcontainer";
-            }
-        } else if (this.props.project.activeLearningSettings.modelPathType === ModelPathType.File) {
-            if (isElectron()) {
-                modelPath = this.props.project.activeLearningSettings.modelPath;
-            }
-        } else {
-            modelPath = this.props.project.activeLearningSettings.modelUrl;
-        }
-
-        // Load TensorFlow.js Model
-        this.model = new ObjectDetection();
-        const infoId = toast.info(interpolate(strings.activeLearning.messages.loadingModel, { autoClose: false }));
-        await this.model.load(modelPath);
-        toast.dismiss(infoId);
-        if (!this.model.loaded) {
-            toast.warn(strings.activeLearning.messages.errorLoadModel);
-        }
+        this.activeLearningService = new ActiveLearningService(this.props.project.activeLearningSettings);
     }
 
-    public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
+    public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>, prevState: Readonly<IEditorPageState>) {
         if (this.props.project && this.state.assets.length === 0) {
             await this.loadProjectAssets();
         }
@@ -190,11 +156,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             this.updateRootAssets();
         }
 
-        if (this.props.project &&
-            this.props.project.activeLearningSettings.autoDetect &&
-            this.state.selectedAsset &&
-            !this.state.selectedAsset.asset.predicted) {
-            this.predict();
+        if (this.props.project.activeLearningSettings.autoDetect
+            && this.state.selectedAsset !== prevState.selectedAsset
+            && this.state.selectedAsset.asset.predicted) {
+            await this.predictRegions();
         }
     }
 
@@ -313,11 +278,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({
             selectedRegions: [],
         });
-    }
-
-    private getAppPath = () => {
-        const remote = (window as any).require("electron").remote as Electron.Remote;
-        return remote.app.getAppPath();
     }
 
     /**
@@ -592,65 +552,37 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.canvas.current.confirmRemoveAllRegions();
                 break;
             case ToolbarItemName.ActiveLearning:
-                await this.predict();
+                await this.predictRegions();
                 break;
         }
     }
 
-    private predict = async () => {
-        if (this.model && this.model.loaded) {
-            try {
-                const canvas = document.querySelector("canvas");
-                canvas.toBlob(async (blob) => {
-                    const imageBuffer = await new Response(blob).arrayBuffer();
-                    const buffer = Buffer.from(imageBuffer);
-                    const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
-                    const image = document.createElement("img");
+    private predictRegions = async () => {
+        const canvas = document.querySelector("canvas");
+        const updatedAssetMetadata = await this.activeLearningService.predictRegions(canvas, this.state.selectedAsset);
 
-                    image.onload = async () => {
-                        await this.predictImage(image);
-                    };
-                    image.src = "data:image;base64," + image64;
-                });
-                // tslint:disable-next-line:no-empty
-            } catch (_) {
-            }
-        }
-    }
-
-    private predictImage = async (image: HTMLImageElement) => {
-        const predictedRegions = await this.model.predictImage(image,
-            this.props.project.activeLearningSettings.predictTag,
-            this.state.selectedAsset.asset.size.width / image.width,
-            this.state.selectedAsset.asset.size.height / image.height);
-
-        const regions = [...this.state.selectedAsset.regions];
-        predictedRegions.forEach((prediction) => {
-            // check if it is a new region
-            if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
-                region.boundingBox.left === prediction.boundingBox.left &&
-                region.boundingBox.top === prediction.boundingBox.top &&
-                region.boundingBox.width === prediction.boundingBox.width &&
-                region.boundingBox.height === prediction.boundingBox.height)) {
-                regions.push(prediction);
-            }
+        this.setState({ selectedAsset: updatedAssetMetadata }, async () => {
+            await this.onAssetMetadataChanged(updatedAssetMetadata);
         });
 
-        this.canvas.current.addRegionsToAsset(regions);
-        this.canvas.current.addRegionsToCanvasTools(regions);
+        // if (this.model && this.model.loaded) {
+        //     try {
+        //         const canvas = document.querySelector("canvas");
+        //         canvas.toBlob(async (blob) => {
+        //             const imageBuffer = await new Response(blob).arrayBuffer();
+        //             const buffer = Buffer.from(imageBuffer);
+        //             const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
+        //             const image = document.createElement("img");
 
-        const newAsset = { ...this.state.selectedAsset, regions };
-        newAsset.asset.predicted = true;
-        newAsset.asset.state = AssetState.Tagged;
-
-        // await this.props.actions.saveAssetMetadata(this.props.project, newAsset);
-        // await this.props.actions.saveProject(this.props.project);
-
-        this.setState({
-            selectedAsset: newAsset,
-        }, async () => {
-            await this.onAssetMetadataChanged(newAsset);
-        });
+        //             image.onload = async () => {
+        //                 await this.predictImage(image);
+        //             };
+        //             image.src = "data:image;base64," + image64;
+        //         });
+        //         // tslint:disable-next-line:no-empty
+        //     } catch (_) {
+        //     }
+        // }
     }
 
     /**

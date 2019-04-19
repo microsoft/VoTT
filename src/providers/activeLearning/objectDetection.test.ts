@@ -1,5 +1,4 @@
 import * as tf from "@tensorflow/tfjs";
-import axios, { AxiosResponse } from "axios";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import { ObjectDetection, DetectedObject } from "./objectDetection";

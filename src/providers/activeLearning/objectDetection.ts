@@ -2,7 +2,7 @@ import axios from "axios";
 import * as shortid from "shortid";
 import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
-import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "../../providers/storage/localFileSystemProxy";
+import { LocalFileSystemProxy } from "../../providers/storage/localFileSystemProxy";
 import { IRegion, RegionType } from "../../models/applicationState";
 
 // tslint:disable-next-line:interface-over-type-literal

@@ -13,10 +13,5 @@
     },
     "tags": {
         "ui:field": "tagsInput"
-    },
-    "activeLearningSettings" : {
-        "modelPath": {
-            "ui:widget": "localFolderPicker"
-        }
     }
 }

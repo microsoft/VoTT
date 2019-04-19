@@ -394,9 +394,40 @@ export const spanish: IAppStrings = {
     },
     activeLearning: {
         title: "Aprendizaje Activo",
+        form: {
+            properties: {
+                modelPathType: {
+                    title: "Proveedor del modelo",
+                    description: "Dónde cargar el modelo de entrenamiento desde",
+                    options: {
+                        preTrained: "SSD de coco pre-entrenado",
+                        customFilePath: "Personalizado (ruta de archivo)",
+                        customWebUrl: "Personalizado (URL)",
+                    },
+                },
+                autoDetect: {
+                    title: "Detección automática",
+                    // tslint:disable-next-line:max-line-length
+                    description: "Si desea o no realizar automáticamente predicciones a medida que navega entre activos",
+                },
+                modelPath: {
+                    title: "Ruta de modelo",
+                    description: "Seleccione un modelo de su sistema de archivos local",
+                },
+                modelUrl: {
+                    title: "URL del modelo",
+                    description: "Cargue el modelo desde una URL web pública",
+                },
+                predictTag: {
+                    title: "Predecir etiqueta",
+                    description: "Si se incluirán o no automáticamente las etiquetas en las predicciones",
+                },
+            },
+        },
         messages: {
-            loadingModel: "Loading model...",
-            errorLoadModel: "Error Loading model",
+            loadingModel: "Cargando modelo...",
+            errorLoadModel: "Error al cargar el modelo",
+            saveSuccess: "La configuración de aprendizaje activa guardada correctamente",
         },
     },
     profile: {

@@ -113,7 +113,7 @@ export interface IProject {
     targetConnection: IConnection;
     exportFormat: IExportFormat;
     videoSettings: IProjectVideoSettings;
-    activeLearningSettings: IProjectActiveLearningSettings;
+    activeLearningSettings: IActiveLearningSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
     lastVisitedAssetId?: string;
@@ -218,7 +218,7 @@ export enum ModelPathType {
  * @member activeLearningSettings - Active Learning settings
  */
 export interface IAdditionalPageSettings extends IAssetPreviewSettings {
-    activeLearningSettings: IProjectActiveLearningSettings;
+    activeLearningSettings: IActiveLearningSettings;
 }
 
 /**
@@ -230,7 +230,7 @@ export interface IAdditionalPageSettings extends IAssetPreviewSettings {
  * @member autoDetect - Flag for automatically call the model while opening a new asset
  * @member predictTag - Flag to predict also the tag name other than the rectangle coordinates only
  */
-export interface IProjectActiveLearningSettings {
+export interface IActiveLearningSettings {
     modelPathType: ModelPathType;
     modelPath: string;
     modelUrl: string;

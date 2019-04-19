@@ -392,9 +392,39 @@ export const english: IAppStrings = {
     },
     activeLearning: {
         title: "Active Learning",
+        form: {
+            properties: {
+                modelPathType: {
+                    title: "Model Provider",
+                    description: "Where to load the training model from",
+                    options: {
+                        preTrained: "Pre-trained Coco SSD",
+                        customFilePath: "Custom (File path)",
+                        customWebUrl: "Custom (Url)",
+                    },
+                },
+                autoDetect: {
+                    title: "Auto Detect",
+                    description: "Whether or not to automatically make predictions as you navigate between assets",
+                },
+                modelPath: {
+                    title: "Model path",
+                    description: "Select a model from your local file system",
+                },
+                modelUrl: {
+                    title: "Model URL",
+                    description: "Load your model from a public web URL",
+                },
+                predictTag: {
+                    title: "Predict Tag",
+                    description: "Whether or not to automatically include tags in predictions",
+                },
+            },
+        },
         messages: {
             loadingModel: "Loading model...",
             errorLoadModel: "Error Loading model",
+            saveSuccess: "Successfully saved active learning settings",
         },
     },
     profile: {

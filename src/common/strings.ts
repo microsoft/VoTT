@@ -388,9 +388,39 @@ export interface IAppStrings {
     };
     activeLearning: {
         title: string;
+        form: {
+            properties: {
+                modelPathType: {
+                    title: string,
+                    description: string,
+                    options: {
+                        preTrained: string,
+                        customFilePath: string,
+                        customWebUrl: string,
+                    },
+                },
+                autoDetect: {
+                    title: string,
+                    description: string,
+                },
+                predictTag: {
+                    title: string,
+                    description: string,
+                },
+                modelPath: {
+                    title: string,
+                    description: string,
+                },
+                modelUrl: {
+                    title: string,
+                    description: string,
+                },
+            },
+        }
         messages: {
             loadingModel: string;
             errorLoadModel: string;
+            saveSuccess: string;
         }
     };
     profile: {
