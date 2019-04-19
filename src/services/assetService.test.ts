@@ -373,7 +373,7 @@ describe("Asset Service", () => {
 
             const project = populateProjectAssets();
             const assetService = new AssetService(project);
-            await assetService.deleteTag(project.assets, tag1, assetMetadata);
+            await assetService.deleteTag(tag1);
             expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
         });
 
@@ -393,7 +393,7 @@ describe("Asset Service", () => {
             const expectedAssetMetadata: IAssetMetadata = MockFactory.createTestAssetMetadata(asset, []);
             const project = populateProjectAssets();
             const assetService = new AssetService(project);
-            await assetService.deleteTag(project.assets, tag1, assetMetadata);
+            await assetService.deleteTag(tag1);
             expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
         });
 
@@ -425,7 +425,7 @@ describe("Asset Service", () => {
 
             const project = populateProjectAssets();
             const assetService = new AssetService(project);
-            await assetService.renameTag(project.assets, tag1, newTag, assetMetadata);
+            await assetService.renameTag(tag1, newTag);
             expect(saveMetadata).toBeCalledWith(expectedAssetMetadata);
         });
     });

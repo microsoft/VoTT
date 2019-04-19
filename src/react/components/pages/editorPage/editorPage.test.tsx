@@ -126,12 +126,10 @@ describe("Editor Page Component", () => {
 
         const wrapper = createComponent(store, props);
         const editorPage = wrapper.find(EditorPage).childAt(0);
-        expect(getState(wrapper).project).toBeNull();
 
         editorPage.props().project = testProject;
         await MockFactory.flushUi();
         expect(editorPage.props().project).toEqual(testProject);
-        expect(getState(wrapper).project).toEqual(testProject);
     });
 
     it("Loads and merges project assets with asset provider assets when state changes", async () => {
@@ -671,7 +669,7 @@ describe("Editor Page Component", () => {
             });
 
             const wrapper = createComponent(store, MockFactory.editorPageProps());
-            expect(getState(wrapper).project.tags).toEqual(project.tags);
+            expect(wrapper.props().project.tags).toEqual(project.tags);
         });
 
         it("create a new tag from text box", () => {
@@ -681,16 +679,16 @@ describe("Editor Page Component", () => {
                 currentProject: project,
             });
             const wrapper = createComponent(store, MockFactory.editorPageProps());
-            expect(getState(wrapper).project.tags).toEqual(project.tags);
+            expect(wrapper.props().project.tags).toEqual(project.tags);
 
             const newTagName = "My new tag";
             wrapper.find("div.tag-input-toolbar-item.plus").simulate("click");
             wrapper.find(".tag-input-box").simulate("keydown", { key: "Enter", target: { value: newTagName } });
 
-            const stateTags = getState(wrapper).project.tags;
+            const projectTags = wrapper.props().project.tags;
 
-            expect(stateTags).toHaveLength(project.tags.length + 1);
-            expect(stateTags[stateTags.length - 1].name).toEqual(newTagName);
+            expect(projectTags).toHaveLength(project.tags.length + 1);
+            expect(projectTags[projectTags.length - 1].name).toEqual(newTagName);
         });
 
         it("Remove a tag", async () => {
@@ -703,15 +701,15 @@ describe("Editor Page Component", () => {
             const wrapper = createComponent(store, MockFactory.editorPageProps());
             await waitForSelectedAsset(wrapper);
 
-            expect(getState(wrapper).project.tags).toEqual(project.tags);
+            expect(wrapper.props().project.tags).toEqual(project.tags);
             wrapper.find(".tag-content").last().simulate("click");
             wrapper.find("i.tag-input-toolbar-icon.fas.fa-trash").simulate("click");
             wrapper.find("button.btn.btn-danger").simulate("click");
 
             await MockFactory.flushUi();
 
-            const stateTags = getState(wrapper).project.tags;
-            expect(stateTags).toHaveLength(project.tags.length - 1);
+            const projectTags = wrapper.props().project.tags;
+            expect(projectTags).toHaveLength(project.tags.length - 1);
         });
 
         it("Adds tag to locked tags when CmdOrCtrl clicked", async () => {
