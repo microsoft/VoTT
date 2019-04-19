@@ -139,14 +139,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         // Navigating directly to the page via URL (ie, http://vott/projects/a1b2c3dEf/edit) sets the default state
         // before props has been set, this updates the project and additional settings to be valid once props are
         // retrieved.
-        if (this.props.project !== prevProps.project) {
-            this.updateRootAssets();
-
+        if (this.props.project && !prevProps.project) {
             this.setState({
                 additionalSettings: {
                     videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
                 },
             });
+        }
+
+        if (this.props.project && prevProps.project && this.props.project.tags !== prevProps.project.tags) {
+            this.updateRootAssets();
         }
     }
 
