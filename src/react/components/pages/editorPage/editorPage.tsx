@@ -111,8 +111,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
-        additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
-            activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null },
+        additionalSettings: {
+            videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
+            activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
+        },
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
@@ -177,9 +179,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         // retrieved.
         if (this.props.project && !prevProps.project) {
             this.setState({
-                additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
-                    activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null },
+                additionalSettings: {
                     videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
+                    activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
                 },
             });
         }
@@ -188,8 +190,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             this.updateRootAssets();
         }
 
-        if (this.state.project &&
-            this.state.project.activeLearningSettings.autoDetect &&
+        if (this.props.project &&
+            this.props.project.activeLearningSettings.autoDetect &&
             this.state.selectedAsset &&
             !this.state.selectedAsset.asset.predicted) {
             this.predict();
@@ -610,7 +612,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     };
                     image.src = "data:image;base64," + image64;
                 });
-            // tslint:disable-next-line:no-empty
+                // tslint:disable-next-line:no-empty
             } catch (_) {
             }
         }
@@ -618,7 +620,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private predictImage = async (image: HTMLImageElement) => {
         const predictedRegions = await this.model.predictImage(image,
-            this.state.project.activeLearningSettings.predictTag,
+            this.props.project.activeLearningSettings.predictTag,
             this.state.selectedAsset.asset.size.width / image.width,
             this.state.selectedAsset.asset.size.height / image.height);
 
@@ -626,10 +628,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         predictedRegions.forEach((prediction) => {
             // check if it is a new region
             if (regions.length === 0 || !regions.find((region) => region.boundingBox &&
-                    region.boundingBox.left === prediction.boundingBox.left &&
-                    region.boundingBox.top === prediction.boundingBox.top &&
-                    region.boundingBox.width === prediction.boundingBox.width &&
-                    region.boundingBox.height === prediction.boundingBox.height)) {
+                region.boundingBox.left === prediction.boundingBox.left &&
+                region.boundingBox.top === prediction.boundingBox.top &&
+                region.boundingBox.width === prediction.boundingBox.width &&
+                region.boundingBox.height === prediction.boundingBox.height)) {
                 regions.push(prediction);
             }
         });
