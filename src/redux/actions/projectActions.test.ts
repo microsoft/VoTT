@@ -1,3 +1,4 @@
+import _ from "lodash";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { ActionTypes } from "./actionTypes";
 import * as projectActions from "./projectActions";
@@ -11,14 +12,17 @@ jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
 import { ExportAssetState, IExportProvider } from "../../providers/export/exportProvider";
-import { IApplicationState } from "../../models/applicationState";
+import { IApplicationState, IProject } from "../../models/applicationState";
 import initialState from "../store/initialState";
 import { appInfo } from "../../common/appInfo";
+import registerMixins from "../../registerMixins";
 
 describe("Project Redux Actions", () => {
     let store: MockStoreEnhanced<IApplicationState>;
     let projectServiceMock: jest.Mocked<typeof ProjectService>;
     const appSettings = MockFactory.appSettings();
+
+    beforeAll(registerMixins);
 
     beforeEach(() => {
         const middleware = [thunk];
@@ -26,9 +30,11 @@ describe("Project Redux Actions", () => {
             ...initialState,
             appSettings,
         };
+
         store = createMockStore<IApplicationState>(middleware)(mockState);
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.load = jest.fn((project) => Promise.resolve(project));
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
     });
 
     it("Load Project action resolves a promise and dispatches redux action", async () => {
@@ -254,5 +260,82 @@ describe("Project Redux Actions", () => {
         );
 
         expect(mockExportProvider.export).toHaveBeenCalled();
+    });
+
+    describe("Updating project tags", () => {
+        let project: IProject = null;
+
+        beforeEach(() => {
+            project = MockFactory.createTestProject("TestProject");
+            const middleware = [thunk];
+            const mockState: IApplicationState = {
+                ...initialState,
+                currentProject: project,
+                appSettings,
+            };
+
+            store = createMockStore<IApplicationState>(middleware)(mockState);
+        });
+
+        it("Updates tags across all project assets when a tag is renamed", async () => {
+            const projectAssets = _.values(project.assets);
+            const updatedTag = project.tags[project.tags.length - 1];
+
+            const updatedAssets = [
+                MockFactory.createTestAssetMetadata(projectAssets[0]),
+                MockFactory.createTestAssetMetadata(projectAssets[1]),
+            ];
+
+            const expectedTagName = `${updatedTag.name} - updated`;
+
+            const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
+            assetServiceMock.prototype.renameTag = jest.fn(() => Promise.resolve(updatedAssets));
+
+            const actualUpdatedAssets = await projectActions.updateProjectTag(
+                project,
+                updatedTag.name,
+                expectedTagName,
+            )(store.dispatch, store.getState);
+
+            const actions = store.getActions();
+
+            expect(actions.length).toEqual(5);
+            expect(actions[0].type).toEqual(ActionTypes.SAVE_ASSET_METADATA_SUCCESS);
+            expect(actions[1].type).toEqual(ActionTypes.SAVE_ASSET_METADATA_SUCCESS);
+            expect(actions[2].type).toEqual(ActionTypes.SAVE_PROJECT_SUCCESS);
+            expect(actions[3].type).toEqual(ActionTypes.LOAD_PROJECT_SUCCESS);
+            expect(actions[4].type).toEqual(ActionTypes.UPDATE_PROJECT_TAG_SUCCESS);
+
+            expect(actualUpdatedAssets).toEqual(updatedAssets);
+        });
+
+        it("Deletes tags across all project assets when a tag is renamed", async () => {
+            const projectAssets = _.values(project.assets);
+            const deletedTag = project.tags[project.tags.length - 1];
+
+            const updatedAssets = [
+                MockFactory.createTestAssetMetadata(projectAssets[0]),
+                MockFactory.createTestAssetMetadata(projectAssets[1]),
+            ];
+
+            const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
+            assetServiceMock.prototype.deleteTag = jest.fn(() => Promise.resolve(updatedAssets));
+
+            const actualUpdatedAssets = await projectActions.deleteProjectTag(
+                project,
+                deletedTag.name,
+            )(store.dispatch, store.getState);
+
+            const actions = store.getActions();
+
+            expect(actions.length).toEqual(5);
+            expect(actions[0].type).toEqual(ActionTypes.SAVE_ASSET_METADATA_SUCCESS);
+            expect(actions[1].type).toEqual(ActionTypes.SAVE_ASSET_METADATA_SUCCESS);
+            expect(actions[2].type).toEqual(ActionTypes.SAVE_PROJECT_SUCCESS);
+            expect(actions[3].type).toEqual(ActionTypes.LOAD_PROJECT_SUCCESS);
+            expect(actions[4].type).toEqual(ActionTypes.DELETE_PROJECT_TAG_SUCCESS);
+
+            expect(actualUpdatedAssets).toEqual(updatedAssets);
+        });
     });
 });
