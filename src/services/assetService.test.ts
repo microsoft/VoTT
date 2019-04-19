@@ -1,5 +1,5 @@
 import { AssetService } from "./assetService";
-import { AssetType, IAssetMetadata, AssetState } from "../models/applicationState";
+import { AssetType, IAssetMetadata, AssetState, IAsset, IProject } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
@@ -7,6 +7,8 @@ import { constants } from "../common/constants";
 import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import HtmlFileReader from "../common/htmlFileReader";
 import { encodeFileURI } from "../common/utils";
+import _ from "lodash";
+import registerMixins from "../registerMixins";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
@@ -321,6 +323,107 @@ describe("Asset Service", () => {
             expect(Math.floor(result.regions[1].points[0].y)).toEqual(80);
             expect(Math.floor(result.regions[1].points[1].x)).toEqual(600);
             expect(Math.floor(result.regions[1].points[1].y)).toEqual(800);
+        });
+    });
+
+    describe("Tag Update functions", () => {
+
+        function populateProjectAssets(project?: IProject, assetCount = 10) {
+            if (!project) {
+                project = MockFactory.createTestProject();
+            }
+            const assets = MockFactory.createTestAssets(assetCount);
+            assets.forEach((asset) => {
+                asset.state = AssetState.Tagged;
+            });
+
+            project.assets = _.keyBy(assets, (asset) => asset.id);
+            return project;
+        }
+
+        beforeAll(() => {
+            registerMixins();
+        });
+
+        it("Deletes tag from assets", async () => {
+            const tag1 = "tag1";
+            const tag2 = "tag2";
+            const region = MockFactory.createTestRegion(undefined, [tag1, tag2]);
+            const asset: IAsset = {
+                ...MockFactory.createTestAsset("1"),
+                state: AssetState.Tagged,
+            };
+            const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
+            AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
+
+            const expectedAssetMetadata: IAssetMetadata = {
+                ...MockFactory.createTestAssetMetadata(
+                    asset,
+                    [
+                        {
+                            ...region,
+                            tags: [tag2],
+                        },
+                    ],
+                ),
+            };
+
+            const project = populateProjectAssets();
+            const assetService = new AssetService(project);
+            const assetUpdates = await assetService.deleteTag(tag1);
+
+            expect(assetUpdates).toHaveLength(1);
+            expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
+        });
+
+        it("Deletes empty regions after deleting only tag from region", async () => {
+            const tag1 = "tag1";
+            const region = MockFactory.createTestRegion(undefined, [tag1]);
+            const asset: IAsset = {
+                ...MockFactory.createTestAsset("1"),
+                state: AssetState.Tagged,
+            };
+            const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
+            AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
+
+            const expectedAssetMetadata: IAssetMetadata = MockFactory.createTestAssetMetadata(asset, []);
+            const project = populateProjectAssets();
+            const assetService = new AssetService(project);
+            const assetUpdates = await assetService.deleteTag(tag1);
+
+            expect(assetUpdates).toHaveLength(1);
+            expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
+        });
+
+        it("Updates renamed tag within all assets", async () => {
+            const tag1 = "tag1";
+            const newTag = "tag2";
+            const region = MockFactory.createTestRegion(undefined, [tag1]);
+            const asset: IAsset = {
+                ...MockFactory.createTestAsset("1"),
+                state: AssetState.Tagged,
+            };
+            const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
+            AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
+
+            const expectedAssetMetadata: IAssetMetadata = {
+                ...MockFactory.createTestAssetMetadata(
+                    asset,
+                    [
+                        {
+                            ...region,
+                            tags: [newTag],
+                        },
+                    ],
+                ),
+            };
+
+            const project = populateProjectAssets();
+            const assetService = new AssetService(project);
+            const assetUpdates = await assetService.renameTag(tag1, newTag);
+
+            expect(assetUpdates).toHaveLength(1);
+            expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
         });
     });
 });

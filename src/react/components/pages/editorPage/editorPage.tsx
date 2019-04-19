@@ -28,6 +28,7 @@ import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
+import Confirm from "../../common/confirm/confirm";
 // tslint:disable-next-line:no-var-requires
 const tagColors = require("../../common/tagColors.json");
 
@@ -50,8 +51,6 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
  * State for Editor Page
  */
 export interface IEditorPageState {
-    /** Project being editor */
-    project: IProject;
     /** Array of assets in project */
     assets: IAsset[];
     /** The editor mode to set for canvas tools */
@@ -104,7 +103,6 @@ function mapDispatchToProps(dispatch) {
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
 
     public state: IEditorPageState = {
-        project: this.props.project,
         selectedTag: null,
         lockedTags: [],
         selectionMode: SelectionMode.RECT,
@@ -120,6 +118,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
+    private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
+    private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
     public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
@@ -131,7 +131,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
-    public async componentDidUpdate() {
+    public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
         if (this.props.project && this.state.assets.length === 0) {
             await this.loadProjectAssets();
         }
@@ -139,11 +139,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         // Navigating directly to the page via URL (ie, http://vott/projects/a1b2c3dEf/edit) sets the default state
         // before props has been set, this updates the project and additional settings to be valid once props are
         // retrieved.
-        if (!this.state.project && this.props.project) {
+        if (this.props.project && !prevProps.project) {
             this.setState({
-                project: this.props.project,
-                additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+                additionalSettings: {
+                    videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
+                },
             });
+        }
+
+        if (this.props.project && prevProps.project && this.props.project.tags !== prevProps.project.tags) {
+            this.updateRootAssets();
         }
     }
 
@@ -232,8 +237,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onLockedTagsChange={this.onLockedTagsChanged}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
+                                onTagRenamed={this.confirmTagRenamed}
+                                onTagDeleted={this.confirmTagDeleted}
                             />
                         </div>
+                        <Confirm title={strings.editorPage.tags.rename.title}
+                            ref={this.renameTagConfirm}
+                            message={strings.editorPage.tags.rename.confirmation}
+                            confirmButtonColor="danger"
+                            onConfirm={this.onTagRenamed} />
+                        <Confirm title={strings.editorPage.tags.delete.title}
+                            ref={this.deleteTagConfirm}
+                            message={strings.editorPage.tags.delete.confirmation}
+                            confirmButtonColor="danger"
+                            onConfirm={this.onTagDeleted} />
                     </div>
                 </SplitPane>
                 <Alert show={this.state.showInvalidRegionWarning}
@@ -286,6 +303,49 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             selectedTag: tag.name,
             lockedTags: [],
         }, () => this.canvas.current.applyTag(tag.name));
+    }
+
+    /**
+     * Open confirm dialog for tag renaming
+     */
+    private confirmTagRenamed = (tagName: string, newTagName: string): void => {
+        this.renameTagConfirm.current.open(tagName, newTagName);
+    }
+
+    /**
+     * Renames tag in assets and project, and saves files
+     * @param tagName Name of tag to be renamed
+     * @param newTagName New name of tag
+     */
+    private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
+        const assetUpdates = await this.props.actions.updateProjectTag(this.props.project, tagName, newTagName);
+        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+
+        if (selectedAsset) {
+            if (selectedAsset) {
+                this.setState({ selectedAsset });
+            }
+        }
+    }
+
+    /**
+     * Open Confirm dialog for tag deletion
+     */
+    private confirmTagDeleted = (tagName: string): void => {
+        this.deleteTagConfirm.current.open(tagName);
+    }
+
+    /**
+     * Removes tag from assets and projects and saves files
+     * @param tagName Name of tag to be deleted
+     */
+    private onTagDeleted = async (tagName: string): Promise<void> => {
+        const assetUpdates = await this.props.actions.deleteProjectTag(this.props.project, tagName);
+        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+
+        if (selectedAsset) {
+            this.setState({ selectedAsset });
+        }
     }
 
     private onCtrlTagClicked = (tag: ITag): void => {
@@ -423,17 +483,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({ selectedRegions });
     }
 
-    private onTagsChanged = (tags) => {
+    private onTagsChanged = async (tags) => {
         const project = {
             ...this.props.project,
             tags,
         };
-        this.setState({ project }, async () => {
-            await this.props.actions.saveProject(project);
-            if (this.canvas.current) {
-                this.canvas.current.updateCanvasToolsRegions();
-            }
-        });
+
+        await this.props.actions.saveProject(project);
     }
 
     private onLockedTagsChanged = (lockedTags: string[]) => {
@@ -597,5 +653,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             }
             this.loadingProjectAssets = false;
         });
+    }
+
+    /**
+     * Updates the root asset list from the project assets
+     */
+    private updateRootAssets = () => {
+        const updatedAssets = [...this.state.assets];
+        updatedAssets.forEach((asset) => {
+            const projectAsset = this.props.project.assets[asset.id];
+            if (projectAsset) {
+                asset.state = projectAsset.state;
+            }
+        });
+
+        this.setState({ assets: updatedAssets });
     }
 }

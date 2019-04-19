@@ -179,7 +179,7 @@ describe("Editor Canvas", () => {
         });
         const canvas = wrapper.instance() as Canvas;
         expect(wrapper.state().currentAsset).toEqual(assetMetadata);
-        expect(() => canvas.updateCanvasToolsRegions()).not.toThrowError();
+        expect(() => canvas.updateCanvasToolsRegionTags()).not.toThrowError();
     });
 
     it("canvas content source is updated when asset is deactivated", () => {

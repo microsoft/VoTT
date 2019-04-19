@@ -204,10 +204,73 @@ export class AssetService {
         }
     }
 
+    /**
+     * Delete a tag from asset metadata files
+     * @param tagName Name of tag to delete
+     */
+    public async deleteTag(tagName: string): Promise<IAssetMetadata[]> {
+        const transformer = (tags) => tags.filter((t) => t !== tagName);
+        return await this.getUpdatedAssets(tagName, transformer);
+    }
+
+    /**
+     * Rename a tag within asset metadata files
+     * @param tagName Name of tag to rename
+     */
+    public async renameTag(tagName: string, newTagName: string): Promise<IAssetMetadata[]> {
+        const transformer = (tags) => tags.map((t) => (t === tagName) ? newTagName : t);
+        return await this.getUpdatedAssets(tagName, transformer);
+    }
+
+    /**
+     * Update tags within asset metadata files
+     * @param tagName Name of tag to update within project
+     * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
+     */
+    private async getUpdatedAssets(tagName: string, transformer: (tags: string[]) => string[])
+        : Promise<IAssetMetadata[]> {
+        // Loop over assets and update if necessary
+        const updates = await _.values(this.project.assets).mapAsync(async (asset) => {
+            const assetMetadata = await this.getAssetMetadata(asset);
+            const isUpdated = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);
+
+            return isUpdated ? assetMetadata : null;
+        });
+
+        return updates.filter((assetMetadata) => !!assetMetadata);
+    }
+
+    /**
+     * Update tag within asset metadata object
+     * @param assetMetadata Asset metadata to update
+     * @param tagName Name of tag being updated
+     * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
+     * @returns Modified asset metadata object or null if object does not need to be modified
+     */
+    private updateTagInAssetMetadata(
+        assetMetadata: IAssetMetadata,
+        tagName: string,
+        transformer: (tags: string[]) => string[]): boolean {
+        let foundTag = false;
+
+        for (const region of assetMetadata.regions) {
+            if (region.tags.find((t) => t === tagName)) {
+                foundTag = true;
+                region.tags = transformer(region.tags);
+            }
+        }
+        if (foundTag) {
+            assetMetadata.regions = assetMetadata.regions.filter((region) => region.tags.length > 0);
+            assetMetadata.asset.state = (assetMetadata.regions.length) ? AssetState.Tagged : AssetState.Visited;
+            return true;
+        }
+
+        return false;
+    }
+
     private async getRegionsFromTFRecord(asset: IAsset): Promise<IRegion[]> {
         const objectArray = await this.getTFRecordMetadata(asset);
         const regions: IRegion[] = [];
-        const tags: string[] = [];
 
         // Add Regions from TFRecord in Regions
         for (let index = 0; index < objectArray.textArray.length; index++) {

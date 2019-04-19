@@ -4,7 +4,7 @@ import { CanvasTools } from "vott-ct";
 import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
     EditorMode, IAssetMetadata,
-    IProject, IRegion, RegionType, IBoundingBox, ISize,
+    IProject, IRegion, RegionType,
 } from "../../../../models/applicationState";
 import CanvasHelpers from "./canvasHelpers";
 import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
@@ -73,7 +73,8 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public componentDidUpdate = async (prevProps: Readonly<ICanvasProps>, prevState: Readonly<ICanvasState>) => {
-        if (this.props.selectedAsset.asset.id !== prevProps.selectedAsset.asset.id) {
+        // Handles asset changing
+        if (this.props.selectedAsset !== prevProps.selectedAsset) {
             this.setState({ currentAsset: this.props.selectedAsset });
         }
 
@@ -83,9 +84,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.AS.setSelectionMode({ mode: this.props.selectionMode, template: options });
         }
 
+        const assetIdChanged = this.state.currentAsset.asset.id !== prevState.currentAsset.asset.id;
+
+        // When the selected asset has changed but is still the same asset id
+        if (!assetIdChanged && this.state.currentAsset !== prevState.currentAsset) {
+            this.refreshCanvasToolsRegions();
+        }
+
         // When the project tags change re-apply tags to regions
         if (this.props.project.tags !== prevProps.project.tags) {
-            this.updateCanvasToolsRegions();
+            this.updateCanvasToolsRegionTags();
         }
 
         // Handles when the canvas is enabled & disabled
@@ -192,7 +200,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         return this.state.currentAsset.regions.filter((r) => selectedRegions.find((id) => r.id === id));
     }
 
-    public updateCanvasToolsRegions = (): void => {
+    public updateCanvasToolsRegionTags = (): void => {
         for (const region of this.state.currentAsset.regions) {
             this.editor.RM.updateTagsById(
                 region.id,
@@ -493,7 +501,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.editor.RM.updateTagsById(update.id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, update));
         }
         this.updateAssetRegions(updatedRegions);
-        this.updateCanvasToolsRegions();
+        this.updateCanvasToolsRegionTags();
     }
 
     /**

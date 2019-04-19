@@ -810,14 +810,16 @@ export default class MockFactory {
      */
     public static projectActions(): IProjectActions {
         return {
-            loadProject: jest.fn((project: IProject) => Promise.resolve()),
-            saveProject: jest.fn((project: IProject) => Promise.resolve()),
-            deleteProject: jest.fn((project: IProject) => Promise.resolve()),
+            loadProject: jest.fn(() => Promise.resolve()),
+            saveProject: jest.fn(() => Promise.resolve()),
+            deleteProject: jest.fn(() => Promise.resolve()),
             closeProject: jest.fn(() => Promise.resolve()),
-            loadAssets: jest.fn((project: IProject) => Promise.resolve()),
-            exportProject: jest.fn((project: IProject) => Promise.resolve()),
-            loadAssetMetadata: jest.fn((project: IProject, asset: IAsset) => Promise.resolve()),
-            saveAssetMetadata: jest.fn((project: IProject, assetMetadata: IAssetMetadata) => Promise.resolve()),
+            loadAssets: jest.fn(() => Promise.resolve()),
+            exportProject: jest.fn(() => Promise.resolve()),
+            loadAssetMetadata: jest.fn(() => Promise.resolve()),
+            saveAssetMetadata: jest.fn(() => Promise.resolve()),
+            updateProjectTag: jest.fn(() => Promise.resolve()),
+            deleteProjectTag: jest.fn(() => Promise.resolve()),
         };
     }
 

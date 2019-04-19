@@ -1,4 +1,4 @@
-import React, { KeyboardEvent } from "react";
+import React, { KeyboardEvent, RefObject } from "react";
 import ReactDOM from "react-dom";
 import Align from "rc-align";
 import { randomIntInRange } from "../../../../common/utils";
@@ -31,9 +31,9 @@ export interface ITagInputProps {
     /** Function to call on clicking individual tag while holding CTRL key */
     onCtrlTagClick?: (tag: ITag) => void;
     /** Function to call when tag is renamed */
-    onTagRenamed?: (oldTag: string, newTag: string) => void;
+    onTagRenamed?: (tagName: string, newTagName: string) => void;
     /** Function to call when tag is deleted */
-    onTagDeleted?: (tag: ITag) => void;
+    onTagDeleted?: (tagName: string) => void;
     /** Always show tag input box */
     showTagInputBox?: boolean;
     /** Always show tag search box */
@@ -72,7 +72,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         portalElement: defaultDOMNode(),
     };
 
-    private tagItemRefs: { [id: string]: TagInputItem } = {};
+    private tagItemRefs: Map<string, RefObject<TagInputItem>> = new Map<string, RefObject<TagInputItem>>();
     private portalDiv = document.createElement("div");
 
     public render() {
@@ -109,7 +109,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                     }
                     {this.getColorPickerPortal()}
                     <div className="tag-input-items">
-                        {this.getTagItems()}
+                        {this.renderTagItems()}
                     </div>
                     {
                         this.state.addTags &&
@@ -154,11 +154,13 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }
     }
 
-    private getTagNode = (tag: ITag) => {
+    private getTagNode = (tag: ITag): Element => {
         if (!tag) {
             return defaultDOMNode();
         }
-        return ReactDOM.findDOMNode(this.tagItemRefs[tag.name]) as Element;
+
+        const itemRef = this.tagItemRefs.get(tag.name);
+        return (itemRef ? ReactDOM.findDOMNode(itemRef.current) : defaultDOMNode()) as Element;
     }
 
     private onEditTag = (tag: ITag) => {
@@ -219,20 +221,25 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         }, () => this.props.onChange(tags));
     }
 
-    private updateTag = (oldTag: ITag, newTag: ITag) => {
-        if (oldTag === newTag) {
+    private updateTag = (tag: ITag, newTag: ITag) => {
+        if (tag === newTag) {
             return;
         }
         if (!newTag.name.length) {
             toast.warn(strings.tags.warnings.emptyName);
             return;
         }
-        if (newTag.name !== oldTag.name && this.state.tags.some((t) => t.name === newTag.name)) {
+        const nameChange = tag.name !== newTag.name;
+        if (nameChange && this.state.tags.some((t) => t.name === newTag.name)) {
             toast.warn(strings.tags.warnings.existingName);
             return;
         }
+        if (nameChange && this.props.onTagRenamed) {
+            this.props.onTagRenamed(tag.name, newTag.name);
+            return;
+        }
         const tags = this.state.tags.map((t) => {
-            return (t.name === oldTag.name) ? newTag : t;
+            return (t.name === tag.name) ? newTag : t;
         });
         this.setState({
             tags,
@@ -293,12 +300,15 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         return this.state.editingTagNode || document;
     }
 
-    private getTagItems = () => {
-        let props = this.getTagItemProps();
+    private renderTagItems = () => {
+        let props = this.createTagItemProps();
         const query = this.state.searchQuery;
+        this.tagItemRefs.clear();
+
         if (query.length) {
             props = props.filter((prop) => prop.tag.name.toLowerCase().includes(query.toLowerCase()));
         }
+
         return props.map((prop) =>
             <TagInputItem
                 key={prop.tag.name}
@@ -308,16 +318,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private setTagItemRef = (item, tag) => {
-        if (item) {
-            this.tagItemRefs[tag.name] = item;
-        }
+        this.tagItemRefs.set(tag.name, item);
+        return item;
     }
 
-    private getTagItemProps = (): ITagInputItemProps[] => {
+    private createTagItemProps = (): ITagInputItemProps[] => {
         const tags = this.state.tags;
         const selectedRegionTagSet = this.getSelectedRegionTagSet();
-        return tags.map((tag) => {
-            const item: ITagInputItemProps = {
+
+        return tags.map((tag) => (
+            {
                 tag,
                 index: tags.findIndex((t) => t.name === tag.name),
                 isLocked: this.props.lockedTags && this.props.lockedTags.findIndex((t) => t === tag.name) > -1,
@@ -326,9 +336,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 appliedToSelectedRegions: selectedRegionTagSet.has(tag.name),
                 onClick: this.handleClick,
                 onChange: this.updateTag,
-            };
-            return item;
-        });
+            } as ITagInputItemProps
+        ));
     }
 
     private getSelectedRegionTagSet = (): Set<string> => {
@@ -346,6 +355,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     private onAltClick = (tag: ITag, clickedColor: boolean) => {
         const { editingTag } = this.state;
         const newEditingTag = editingTag && editingTag.name === tag.name ? null : tag;
+
         this.setState({
             editingTag: newEditingTag,
             editingTagNode: this.getTagNode(newEditingTag),
@@ -355,16 +365,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private handleClick = (tag: ITag, props: ITagClickProps) => {
+        // Lock tags
         if (props.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
             this.setState({ clickedColor: props.clickedColor });
-        } else if (props.altKey) {
+        } else if (props.altKey) { // Edit tag
             this.onAltClick(tag, props.clickedColor);
-        } else {
+        } else { // Select tag
             const { editingTag, selectedTag } = this.state;
             const inEditMode = editingTag && tag.name === editingTag.name;
             const alreadySelected = selectedTag && selectedTag.name === tag.name;
-
             const newEditingTag = inEditMode ? null : editingTag;
 
             this.setState({
@@ -389,12 +399,19 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (!tag) {
             return;
         }
+        if (this.props.onTagDeleted) {
+            this.props.onTagDeleted(tag.name);
+            return;
+        }
+
         const index = this.state.tags.indexOf(tag);
         const tags = this.state.tags.filter((t) => t.name !== tag.name);
+
         this.setState({
             tags,
             selectedTag: this.getNewSelectedTag(tags, index),
         }, () => this.props.onChange(tags));
+
         if (this.props.lockedTags.find((l) => l === tag.name)) {
             this.props.onLockedTagsChange(
                 this.props.lockedTags.filter((lockedTag) => lockedTag !== tag.name),
