@@ -232,8 +232,8 @@ export interface IAdditionalPageSettings extends IAssetPreviewSettings {
  */
 export interface IActiveLearningSettings {
     modelPathType: ModelPathType;
-    modelPath: string;
-    modelUrl: string;
+    modelPath?: string;
+    modelUrl?: string;
     autoDetect: boolean;
     predictTag: boolean;
 }

@@ -45,6 +45,12 @@ export class ActiveLearningForm extends React.Component<IActiveLearningFormProps
         })),
     };
 
+    public componentDidUpdate(prevProps: Readonly<IActiveLearningFormProps>) {
+        if (this.props.settings !== prevProps.settings) {
+            this.setState({ formData: this.props.settings });
+        }
+    }
+
     public render() {
         return (
             <Form
