@@ -156,9 +156,11 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             this.updateRootAssets();
         }
 
+        // When active learning auto-detect is enabled
+        // run predictions when asset changes
         if (this.props.project.activeLearningSettings.autoDetect
             && this.state.selectedAsset !== prevState.selectedAsset
-            && this.state.selectedAsset.asset.predicted) {
+            && !this.state.selectedAsset.asset.predicted) {
             await this.predictRegions();
         }
     }
@@ -559,30 +561,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private predictRegions = async () => {
         const canvas = document.querySelector("canvas");
+        if (!canvas) {
+            return;
+        }
+
         const updatedAssetMetadata = await this.activeLearningService.predictRegions(canvas, this.state.selectedAsset);
-
-        this.setState({ selectedAsset: updatedAssetMetadata }, async () => {
-            await this.onAssetMetadataChanged(updatedAssetMetadata);
-        });
-
-        // if (this.model && this.model.loaded) {
-        //     try {
-        //         const canvas = document.querySelector("canvas");
-        //         canvas.toBlob(async (blob) => {
-        //             const imageBuffer = await new Response(blob).arrayBuffer();
-        //             const buffer = Buffer.from(imageBuffer);
-        //             const image64 = btoa(buffer.reduce((data, byte) => data + String.fromCharCode(byte), ""));
-        //             const image = document.createElement("img");
-
-        //             image.onload = async () => {
-        //                 await this.predictImage(image);
-        //             };
-        //             image.src = "data:image;base64," + image64;
-        //         });
-        //         // tslint:disable-next-line:no-empty
-        //     } catch (_) {
-        //     }
-        // }
+        await this.onAssetMetadataChanged(updatedAssetMetadata);
     }
 
     /**

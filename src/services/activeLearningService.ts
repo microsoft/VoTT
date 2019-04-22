@@ -21,7 +21,12 @@ export class ActiveLearningService {
 
         const xRatio = assetMetadata.asset.size.width / canvas.width;
         const yRatio = assetMetadata.asset.size.height / canvas.height;
-        const predictedRegions = await this.objectDetection.predictImage(canvas, true, xRatio, yRatio);
+        const predictedRegions = await this.objectDetection.predictImage(
+            canvas,
+            this.settings.predictTag,
+            xRatio,
+            yRatio,
+        );
 
         const updatedRegions = [...assetMetadata.regions];
         predictedRegions.forEach((prediction) => {
