@@ -33,6 +33,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSet
 import { IKeyboardBindingProps } from "../react/components/common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../react/components/common/keyboardManager/keyboardManager";
 import { IKeyboardRegistrations } from "../react/components/common/keyboardManager/keyboardRegistrationManager";
+import { IActiveLearningPageProps } from "../react/components/pages/activeLearning/activeLearningPage";
 
 export default class MockFactory {
 
@@ -283,8 +284,13 @@ export default class MockFactory {
             targetConnection: connection,
             tags: MockFactory.createTestTags(tagCount),
             videoSettings: MockFactory.createVideoSettings(),
-            activeLearningSettings: { modelPathType: ModelPathType.Coco, modelPath: "", modelUrl: "",
-                autoDetect: false, predictTag: false },
+            activeLearningSettings: {
+                modelPathType: ModelPathType.Coco,
+                modelPath: "",
+                modelUrl: "",
+                autoDetect: false,
+                predictTag: false,
+            },
             autoSave: true,
         };
     }
@@ -885,6 +891,21 @@ export default class MockFactory {
             ...MockFactory.pageProps(projectId, "settings"),
             connections: MockFactory.createTestConnections(),
             appSettings: MockFactory.appSettings(),
+        };
+    }
+
+    /**
+     * Creates fake IActiveLearningPageProps
+     * @param projectId Current project ID
+     */
+    public static activeLearningProps(projectId?: string): IActiveLearningPageProps {
+        return {
+            actions: (projectActions as any) as IProjectActions,
+            history: MockFactory.history(),
+            location: MockFactory.location(),
+            match: MockFactory.match(projectId, "active-learning"),
+            project: null,
+            recentProjects: MockFactory.createTestProjects(),
         };
     }
 
