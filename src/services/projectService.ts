@@ -1,12 +1,14 @@
 import _ from "lodash";
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, ISecurityToken, AppError, ErrorCode, AssetState } from "../models/applicationState";
+import { IProject, ISecurityToken, AppError, ErrorCode, AssetState, ModelPathType } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { decryptProject, encryptProject } from "../common/utils";
 import packageJson from "../../package.json";
+import { IVottJsonExportProviderOptions } from "../providers/export/vottJson";
+import { ExportAssetState } from "../providers/export/exportProvider";
 
 /**
  * Functions required for a project service
@@ -52,6 +54,32 @@ export default class ProjectService implements IProjectService {
 
         if (!project.id) {
             project.id = shortid.generate();
+        }
+
+        if (!project.tags) {
+            project.tags = [];
+        }
+
+        // Initialize active learning settings if they don't exist
+        if (!project.activeLearningSettings) {
+            project.activeLearningSettings = {
+                autoDetect: false,
+                predictTag: false,
+                modelPathType: ModelPathType.Coco,
+            };
+        }
+
+        // Initialize export settings if they don't exist
+        if (!project.exportFormat) {
+            const defaultExportProviderOptions: IVottJsonExportProviderOptions = {
+                assetState: ExportAssetState.Visited,
+                includeImages: true,
+            };
+
+            project.exportFormat = {
+                providerType: "vottJson",
+                providerOptions: defaultExportProviderOptions,
+            };
         }
 
         project.version = packageJson.version;

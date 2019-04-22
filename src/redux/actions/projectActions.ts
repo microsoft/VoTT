@@ -80,24 +80,7 @@ export function saveProject(project: IProject)
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 
-        const defaultExportProviderOptions: IVottJsonExportProviderOptions = {
-            assetState: ExportAssetState.Visited,
-            includeImages: true,
-        };
-
-        const defaultExportFormat: IExportFormat = {
-            providerType: "vottJson",
-            providerOptions: defaultExportProviderOptions,
-        };
-
-        const newProject = {
-            ...project,
-            version: appInfo.version,
-            exportFormat: project.exportFormat || defaultExportFormat,
-            tags: project.tags || [],
-        };
-
-        const savedProject = await projectService.save(newProject, projectToken);
+        const savedProject = await projectService.save(project, projectToken);
         dispatch(saveProjectAction(savedProject));
 
         // Reload project after save actions

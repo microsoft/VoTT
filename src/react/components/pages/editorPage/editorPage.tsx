@@ -10,7 +10,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, IAdditionalPageSettings,
+    ISize, ITag, IAdditionalPageSettings, IActiveLearningSettings,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -158,7 +158,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // When active learning auto-detect is enabled
         // run predictions when asset changes
-        if (this.props.project.activeLearningSettings.autoDetect
+        if (this.state.additionalSettings.activeLearningSettings.autoDetect
             && this.state.selectedAsset !== prevState.selectedAsset
             && !this.state.selectedAsset.asset.predicted) {
             await this.predictRegions();
