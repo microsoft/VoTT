@@ -9,6 +9,7 @@ export class ActiveLearningService {
     private modelLoaded: boolean = false;
 
     constructor(private settings: IActiveLearningSettings) {
+        Guard.null(settings);
         this.objectDetection = new ObjectDetection();
     }
 
