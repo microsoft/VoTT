@@ -158,7 +158,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // When active learning auto-detect is enabled
         // run predictions when asset changes
-        if (this.state.additionalSettings.activeLearningSettings.autoDetect
+        if (this.props.project.activeLearningSettings.autoDetect
             && this.state.selectedAsset !== prevState.selectedAsset
             && !this.state.selectedAsset.asset.predicted) {
             await this.predictRegions();

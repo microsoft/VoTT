@@ -8,7 +8,7 @@ import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState, AssetType, ISize, IActiveLearningSettings, ModelPathType,
+    EditorMode, IAsset, AssetState, ISize, IActiveLearningSettings, ModelPathType,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -30,12 +30,10 @@ import SplitPane from "react-split-pane";
 import EditorSideBar from "./editorSideBar";
 import Alert from "../../common/alert/alert";
 import registerMixins from "../../../../registerMixins";
-import { ObjectDetection } from "../../../../providers/activeLearning/objectDetection";
 import { TagInput } from "../../common/tagInput/tagInput";
 import { EditorToolbar } from "./editorToolbar";
-import { ToolbarItemType, ToolbarItem } from "../../toolbar/toolbarItem";
+import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
-import { settings } from "cluster";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(

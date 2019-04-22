@@ -56,6 +56,7 @@ export default class ProjectService implements IProjectService {
             project.id = shortid.generate();
         }
 
+        // Ensure tags is always initialized to an array
         if (!project.tags) {
             project.tags = [];
         }
@@ -64,7 +65,7 @@ export default class ProjectService implements IProjectService {
         if (!project.activeLearningSettings) {
             project.activeLearningSettings = {
                 autoDetect: false,
-                predictTag: false,
+                predictTag: true,
                 modelPathType: ModelPathType.Coco,
             };
         }
