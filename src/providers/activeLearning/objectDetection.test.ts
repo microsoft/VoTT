@@ -57,9 +57,8 @@ describe("Load an Object Detection model", () => {
 
         const model = new ObjectDetection();
 
-        await model.load("http://url");
-
-        expect(window.fetch).toBeCalledTimes(6);
+        expect(model.load("http://url")).rejects.not.toBeNull();
+        expect(window.fetch).toBeCalledTimes(1);
 
         // Modal not properly loaded as readBinary mock is not really loading the weights
         expect(model.loaded).toBeFalsy();
