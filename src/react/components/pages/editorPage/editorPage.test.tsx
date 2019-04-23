@@ -367,23 +367,20 @@ describe("Editor Page Component", () => {
             const store = createStore(testProject, true);
             const props = MockFactory.editorPageProps(testProject.id);
 
-            const saveProjectSpy = jest.spyOn(props.actions, "saveProject");
-
             // create mock editor page
-            createComponent(store, props);
-
-            const partialProjectToBeSaved = {
-                id: testProject.id,
-                name: testProject.name,
-                tags: expect.arrayContaining([{
-                    name: "NEWTAG",
-                    color: expect.any(String),
-                }]),
-            };
+            const wrapper = createComponent(store, props);
 
             await MockFactory.flushUi();
+            wrapper.update();
 
-            expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProjectToBeSaved));
+            const editorPage = wrapper.find(EditorPage).childAt(0);
+            const savedProject = editorPage.props().project;
+
+            expect(savedProject.tags).toMatchObject(expect.arrayContaining([{
+                name: "NEWTAG",
+                color: expect.any(String),
+            }]));
+            // expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProjectToBeSaved));
         });
     });
 

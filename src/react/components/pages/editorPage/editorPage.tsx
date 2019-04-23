@@ -10,7 +10,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, IAdditionalPageSettings, IActiveLearningSettings, AppError, ErrorCode,
+    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -136,7 +136,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.activeLearningService = new ActiveLearningService(this.props.project.activeLearningSettings);
     }
 
-    public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>, prevState: Readonly<IEditorPageState>) {
+    public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
         if (this.props.project && this.state.assets.length === 0) {
             await this.loadProjectAssets();
         }
@@ -632,8 +632,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
-        await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
-        await this.props.actions.saveProject(this.props.project);
 
         try {
             if (!assetMetadata.asset.size) {
