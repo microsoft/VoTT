@@ -10,7 +10,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, IAdditionalPageSettings, IActiveLearningSettings,
+    ISize, ITag, IAdditionalPageSettings, IActiveLearningSettings, AppError, ErrorCode,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -30,6 +30,7 @@ import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
+import { toast } from "react-toastify";
 
 /**
  * Properties for Editor Page
@@ -155,14 +156,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (this.props.project && prevProps.project && this.props.project.tags !== prevProps.project.tags) {
             this.updateRootAssets();
         }
-
-        // When active learning auto-detect is enabled
-        // run predictions when asset changes
-        if (this.props.project.activeLearningSettings.autoDetect
-            && this.state.selectedAsset !== prevState.selectedAsset
-            && !this.state.selectedAsset.asset.predicted) {
-            await this.predictRegions();
-        }
     }
 
     public render() {
@@ -224,6 +217,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                        onCanvasRendered={this.onCanvasRendered}
                                         onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                         editorMode={this.state.editorMode}
                                         selectionMode={this.state.selectionMode}
@@ -492,6 +486,17 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({ childAssets, assets, isValid: true });
     }
 
+    /**
+     * Raised when the asset binary has been painted onto the canvas tools rendering canvas
+     */
+    private onCanvasRendered = async (canvas: HTMLCanvasElement) => {
+        // When active learning auto-detect is enabled
+        // run predictions when asset changes
+        if (this.props.project.activeLearningSettings.autoDetect && !this.state.selectedAsset.asset.predicted) {
+            await this.predictRegions(canvas);
+        }
+    }
+
     private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
         this.setState({ selectedRegions });
     }
@@ -559,14 +564,36 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
     }
 
-    private predictRegions = async () => {
-        const canvas = document.querySelector("canvas");
+    private predictRegions = async (canvas?: HTMLCanvasElement) => {
+        canvas = canvas || document.querySelector("canvas");
         if (!canvas) {
             return;
         }
 
-        const updatedAssetMetadata = await this.activeLearningService.predictRegions(canvas, this.state.selectedAsset);
-        await this.onAssetMetadataChanged(updatedAssetMetadata);
+        // Load the configured ML model
+        if (!this.activeLearningService.isModelLoaded()) {
+            let toastId: number = null;
+            try {
+                toastId = toast.info(strings.activeLearning.messages.loadingModel, { autoClose: false });
+                await this.activeLearningService.ensureModelLoaded();
+            } catch (e) {
+                toast.error(strings.activeLearning.messages.errorLoadModel);
+                return;
+            } finally {
+                toast.dismiss(toastId);
+            }
+        }
+
+        // Predict and add regions to current asset
+        try {
+            const updatedAssetMetadata = await this.activeLearningService
+                .predictRegions(canvas, this.state.selectedAsset);
+
+            await this.onAssetMetadataChanged(updatedAssetMetadata);
+            this.setState({ selectedAsset: updatedAssetMetadata });
+        } catch (e) {
+            throw new AppError(ErrorCode.ActiveLearningPredictionError, "Error predicting regions");
+        }
     }
 
     /**

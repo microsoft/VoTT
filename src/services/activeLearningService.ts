@@ -1,4 +1,4 @@
-import { IAssetMetadata, ModelPathType, IActiveLearningSettings } from "../models/applicationState";
+import { IAssetMetadata, ModelPathType, IActiveLearningSettings, AssetState } from "../models/applicationState";
 import { ObjectDetection } from "../providers/activeLearning/objectDetection";
 import Guard from "../common/guard";
 import { isElectron } from "../common/hostProcess";
@@ -13,9 +13,18 @@ export class ActiveLearningService {
         this.objectDetection = new ObjectDetection();
     }
 
+    public isModelLoaded() {
+        return this.modelLoaded;
+    }
+
     public async predictRegions(canvas: HTMLCanvasElement, assetMetadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(canvas);
         Guard.null(assetMetadata);
+
+        // If the canvas or asset are invalid return asset metadata
+        if (!(canvas.width && canvas.height && assetMetadata.asset && assetMetadata.asset.size)) {
+            return assetMetadata;
+        }
 
         await this.ensureModelLoaded();
 
@@ -48,12 +57,13 @@ export class ActiveLearningService {
             regions: updatedRegions,
             asset: {
                 ...assetMetadata.asset,
+                state: updatedRegions.length > 0 ? AssetState.Tagged : AssetState.Visited,
                 predicted: true,
             },
         } as IAssetMetadata;
     }
 
-    private async ensureModelLoaded(): Promise<void> {
+    public async ensureModelLoaded(): Promise<void> {
         if (this.modelLoaded) {
             return Promise.resolve();
         }
@@ -74,6 +84,7 @@ export class ActiveLearningService {
                     modelPath = appPath + "/../../cocoSSDModel";
                 }
             } else {
+                // TODO: Move this to a different location
                 modelPath = "https://jmangiadiag.blob.core.windows.net/vottcontainer";
             }
         } else if (this.settings.modelPathType === ModelPathType.File) {

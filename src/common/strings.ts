@@ -438,6 +438,7 @@ export interface IAppStrings {
         importError: IErrorMetadata,
         pasteRegionTooBigError: IErrorMetadata,
         exportFormatNotFound: IErrorMetadata,
+        activeLearningPredictionError: IErrorMetadata,
     };
 }
 

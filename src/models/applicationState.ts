@@ -50,6 +50,7 @@ export enum ErrorCode {
     ExportFormatNotFound = "exportFormatNotFound",
     PasteRegionTooBig = "pasteRegionTooBig",
     OverloadedKeyBinding = "overloadedKeyBinding",
+    ActiveLearningPredictionError = "activeLearningPredictionError",
 }
 
 /**

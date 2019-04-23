@@ -422,8 +422,8 @@ export const english: IAppStrings = {
             },
         },
         messages: {
-            loadingModel: "Loading model...",
-            errorLoadModel: "Error Loading model",
+            loadingModel: "Loading active learning model...",
+            errorLoadModel: "Error Loading model active learning model",
             saveSuccess: "Successfully saved active learning settings",
         },
     },
@@ -478,6 +478,11 @@ export const english: IAppStrings = {
         exportFormatNotFound: {
             title: "Error exporting project",
             message: "Project is missing export format.  Please select an export format in the export setting page.",
+        },
+        activeLearningPredictionError: {
+            title: "Active Learning Error",
+            message: "An error occurred while predicting regions in the current asset. \
+                Please verify your active learning configuration and try again",
         },
     },
 };

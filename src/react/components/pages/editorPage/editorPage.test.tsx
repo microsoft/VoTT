@@ -847,6 +847,7 @@ describe("Editor Page Component", () => {
 
         async function beforeActiveLearningTest(activeLearningSettings?: IActiveLearningSettings) {
             document.querySelector = MockFactory.mockCanvas();
+            activeLearningMock.prototype.isModelLoaded = jest.fn(() => true);
             activeLearningMock.prototype.predictRegions = jest.fn((canvas, assetMetadtata) => {
                 return Promise.resolve({
                     ...assetMetadtata,
@@ -879,6 +880,7 @@ describe("Editor Page Component", () => {
 
             await beforeActiveLearningTest(activeLearningSettings);
 
+            editorPage.find(Canvas).props().onCanvasRendered(document.createElement("canvas"));
             expect(activeLearningMock.prototype.predictRegions).toBeCalled();
         });
 
@@ -923,15 +925,5 @@ async function waitForSelectedAsset(wrapper: ReactWrapper) {
             .childAt(0);
 
         return !!editorPage.state().selectedAsset;
-    });
-}
-
-async function waitForPrediction(wrapper: ReactWrapper) {
-    await MockFactory.waitForCondition(() => {
-        const editorPage = wrapper
-            .find(EditorPage)
-            .childAt(0);
-
-        return editorPage.state().selectedAsset.asset.predicted === true;
     });
 }

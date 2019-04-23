@@ -484,5 +484,10 @@ export const spanish: IAppStrings = {
             message: `Proyecto falta el formato de exportación. Seleccione un formato de exportación en la página
             de configuración de exportación.`,
         },
+        activeLearningPredictionError: {
+            title: "AError de aprendizaje",
+            message: "Se ha producido un error al predecir regiones en el activo actual. \
+                Compruebe la configuración de aprendizaje activa y vuelva a intentarlo",
+        },
     },
 };

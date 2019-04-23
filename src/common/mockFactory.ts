@@ -1106,8 +1106,8 @@ export default class MockFactory {
     public static mockCanvas() {
         return jest.fn(() => {
             const canvas: any = {
-                width: 0,
-                height: 0,
+                width: 800,
+                height: 600,
                 getContext: jest.fn(() => {
                     return {
                         drawImage: jest.fn(),

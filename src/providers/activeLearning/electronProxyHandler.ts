@@ -5,7 +5,7 @@ export class ElectronProxyHandler implements tfc.io.IOHandler {
     protected readonly provider: LocalFileSystemProxy;
 
     constructor(folderPath: string) {
-        const options: ILocalFileSystemProxyOptions = {folderPath};
+        const options: ILocalFileSystemProxyOptions = { folderPath };
         this.provider = new LocalFileSystemProxy(options);
     }
 
@@ -24,6 +24,11 @@ export class ElectronProxyHandler implements tfc.io.IOHandler {
         }
 
         return modelArtifacts;
+    }
+
+    public async loadClasses(): Promise<JSON> {
+        const json = await this.provider.readText("/classes.json");
+        return json ? JSON.parse(json) : null;
     }
 
     private async loadWeights(weightsManifest: tfc.io.WeightsManifestConfig)
@@ -48,7 +53,7 @@ export class ElectronProxyHandler implements tfc.io.IOHandler {
      * If the input is an Array of Buffers, they will be concatenated in the
      * specified order to form the output ArrayBuffer.
      */
-    private toArrayBuffer(buf: Buffer|Buffer[]): ArrayBuffer {
+    private toArrayBuffer(buf: Buffer | Buffer[]): ArrayBuffer {
         if (Array.isArray(buf)) {
             // An Array of Buffers.
             let totalLength = 0;

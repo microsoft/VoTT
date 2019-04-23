@@ -37,8 +37,12 @@ describe("Active Learning Service", () => {
 
         const expectedRegions = MockFactory.createTestRegions(2);
         const canvas = MockFactory.mockCanvas()();
+        const asset = MockFactory.createTestAsset("TestAsset", AssetState.Visited);
         const assetMetadata: IAssetMetadata = {
-            asset: MockFactory.createTestAsset("TestAsset", AssetState.Visited),
+            asset: {
+                ...asset,
+                state: AssetState.Tagged,
+            },
             regions: [],
             version: appInfo.version,
         };
@@ -61,8 +65,12 @@ describe("Active Learning Service", () => {
         const uniqueRegion = MockFactory.createTestRegion("UniqueRegion", ["tag1", "tag2"]);
         const expectedRegions = MockFactory.createTestRegions(4);
         const canvas = MockFactory.mockCanvas()();
+        const asset = MockFactory.createTestAsset("TestAsset", AssetState.Visited);
         const assetMetadata: IAssetMetadata = {
-            asset: MockFactory.createTestAsset("TestAsset", AssetState.Visited),
+            asset: {
+                ...asset,
+                state: AssetState.Tagged,
+            },
             regions: [
                 uniqueRegion,
                 expectedRegions[0],

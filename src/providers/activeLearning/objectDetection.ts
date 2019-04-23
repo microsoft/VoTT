@@ -2,7 +2,6 @@ import axios from "axios";
 import * as shortid from "shortid";
 import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
-import { LocalFileSystemProxy } from "../../providers/storage/localFileSystemProxy";
 import { IRegion, RegionType } from "../../models/applicationState";
 
 // tslint:disable-next-line:interface-over-type-literal
@@ -12,7 +11,7 @@ export type DetectedObject = {
     score: number;
 };
 
-export type ImageObject = tf.Tensor3D|ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement;
+export type ImageObject = tf.Tensor3D | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 
 export class ObjectDetection {
     private modelLoaded: boolean = false;
@@ -47,23 +46,17 @@ export class ObjectDetection {
                 const response = await axios.get(modelFolderPath + "/classes.json");
                 this.jsonClasses = JSON.parse(JSON.stringify(response.data));
             } else {
-                if (modelFolderPath.toLowerCase().startsWith("file://")) {
-                    modelFolderPath = modelFolderPath.substring(7);
-                }
                 const handler = new ElectronProxyHandler(modelFolderPath);
                 this.model = await tf.loadGraphModel(handler);
-
-                const provider = new LocalFileSystemProxy();
-                this.jsonClasses = JSON.parse(await provider.readText(modelFolderPath + "/classes.json"));
+                this.jsonClasses = await handler.loadClasses();
             }
 
             // Warmup the model.
-            const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as
-                tf.Tensor[];
+            const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as tf.Tensor[];
             result.forEach(async (t) => await t.data());
             result.forEach(async (t) => t.dispose());
             this.modelLoaded = true;
-        } catch (_) {
+        } catch (err) {
             this.modelLoaded = false;
         }
     }
@@ -75,11 +68,8 @@ export class ObjectDetection {
      * @param xRatio Width compression ratio between the HTMLImageElement and the original image.
      * @param yRatio Height compression ratio between the HTMLImageElement and the original image.
      */
-    public async predictImage(image: ImageObject,
-                              predictTag: boolean,
-                              xRatio: number,
-                              yRatio: number,
-                             ): Promise<IRegion[]> {
+    public async predictImage(image: ImageObject, predictTag: boolean, xRatio: number, yRatio: number)
+        : Promise<IRegion[]> {
         const regions: IRegion[] = [];
 
         const predictions = await this.detect(image);
@@ -123,7 +113,7 @@ export class ObjectDetection {
 
     /**
      * Detect objects for an image returning a list of bounding boxes with
-     * assocated class and score.
+     * associated class and score.
      *
      * @param img The image to detect objects from. Can be a tensor or a DOM
      *     element image, video, or canvas.
@@ -132,8 +122,7 @@ export class ObjectDetection {
      * locations. Defaults to 20.
      *
      */
-    public async detect(img: ImageObject,
-                        maxNumBoxes: number = 20): Promise<DetectedObject[]> {
+    public async detect(img: ImageObject, maxNumBoxes: number = 20): Promise<DetectedObject[]> {
         if (this.model) {
             return this.infer(img, maxNumBoxes);
         }
@@ -150,8 +139,7 @@ export class ObjectDetection {
      * objects. There can be multiple objects of the same class, but at different
      * locations. Defaults to 20.
      */
-    private async infer(img: ImageObject,
-                        maxNumBoxes: number): Promise<DetectedObject[]> {
+    private async infer(img: ImageObject, maxNumBoxes: number): Promise<DetectedObject[]> {
         const batched = tf.tidy(() => {
             if (!(img instanceof tf.Tensor)) {
                 img = tf.browser.fromPixels(img);
@@ -202,6 +190,7 @@ export class ObjectDetection {
         indexes: Float32Array, classes: number[]): DetectedObject[] {
         const count = indexes.length;
         const objects: DetectedObject[] = [];
+
         for (let i = 0; i < count; i++) {
             const bbox = [];
             for (let j = 0; j < 4; j++) {
@@ -221,6 +210,7 @@ export class ObjectDetection {
                 score: scores[indexes[i]],
             });
         }
+
         return objects;
     }
 
@@ -228,6 +218,7 @@ export class ObjectDetection {
         if (this.jsonClasses && index < indexes.length && indexes[index] < classes.length) {
             const classId = classes[indexes[index]] - 1;
             const classObject = this.jsonClasses[classId];
+
             return classObject ? classObject.displayName : "Unknown";
         }
 
