@@ -423,7 +423,7 @@ export const english: IAppStrings = {
         },
         messages: {
             loadingModel: "Loading active learning model...",
-            errorLoadModel: "Error Loading model active learning model",
+            errorLoadModel: "Error loading active learning model",
             saveSuccess: "Successfully saved active learning settings",
         },
     },

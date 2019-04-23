@@ -58,6 +58,7 @@ export class ObjectDetection {
             this.modelLoaded = true;
         } catch (err) {
             this.modelLoaded = false;
+            throw err;
         }
     }
 
