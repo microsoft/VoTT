@@ -3,7 +3,7 @@
 <!-- cl-start -->
 
 # [2.0.0](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.3...v2.0.0) (04-12-2019)
-[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/2.0.0)
+[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/v2.0.0)
 
 - doc: update v1/master reference (#748)
 - ci: update pipeline for v2 flipover to master (#747)
@@ -36,7 +36,7 @@
 - ci: update pipelines to work for all branches with prefix dev (#700)
 
 # [2.0.0-preview.3](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.2...v2.0.0-preview.3) (03-20-2019)
-[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/2.0.0-preview.3)
+[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/v2.0.0-preview.3)
 
 - ci: Clean up sonar cloud issues
 - Remove height from root style (#694)
