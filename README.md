@@ -28,34 +28,37 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
 
 <!-- toc -->
 
-* [Getting Started](#getting-started)
-  * [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
-  * [Build and run from source](#build-and-run-from-source)
-* [V1 & V2](#v1--v2)
-  * [Where is V1](#where-is-v1)
-    * [V1 releases](#v1-releases)
-  * [Can I use my V1 project in V2](#can-i-use-my-v1-project-in-v2)
-* [Using VoTT](#using-vott)
-  * [Creating Connections](#creating-connections)
-  * [Creating a New Project](#creating-a-new-project)
-    * [Project Settings](#project-settings)
-    * [Security Tokens](#security-tokens)
-  * [Labeling an Image](#labeling-an-image)
-  * [Labeling a Video](#labeling-a-video)
-  * [Exporting Labels](#exporting-labels)
-  * [Keyboard Shortcuts](#keyboard-shortcuts)
-    * [Tag Shortcuts](#tag-shortcuts)
-    * [Tag Ordering](#tag-ordering)
-    * [Tag Locking](#tag-locking)
-    * [Editor Shortcuts](#editor-shortcuts)
-* [Collaborators](#collaborators)
-* [Contributing to VoTT](#contributing-to-vott)
+- [VoTT (Visual Object Tagging Tool)](#vott-visual-object-tagging-tool)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+    - [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
+    - [Build and run from source](#build-and-run-from-source)
+    - [Run as Web Application](#run-as-web-application)
+  - [V1 & V2](#v1--v2)
+    - [Where is V1](#where-is-v1)
+      - [V1 releases](#v1-releases)
+    - [V1 projects in V2](#v1-projects-in-v2)
+  - [Using VoTT](#using-vott)
+    - [Creating Connections](#creating-connections)
+    - [Creating a New Project](#creating-a-new-project)
+      - [Project Settings](#project-settings)
+      - [Security Tokens](#security-tokens)
+    - [Labeling an Image](#labeling-an-image)
+    - [Labeling a Video](#labeling-a-video)
+    - [Exporting Labels](#exporting-labels)
+    - [Keyboard Shortcuts](#keyboard-shortcuts)
+      - [Tag Ordering](#tag-ordering)
+      - [Tag Locking](#tag-locking)
+      - [Editor Shortcuts](#editor-shortcuts)
+      - [Mouse Controls](#mouse-controls)
+  - [Collaborators](#collaborators)
+  - [Contributing to VoTT](#contributing-to-vott)
 
 <!-- tocstop -->
 
 ## Getting Started
 
-VoTT can be installed as a native application or run from source.
+VoTT can be installed as a native application or run from source. VoTT is also available as a [stand-alone Web application](https://vott.z5.web.core.windows.net) and can be used in any modern Web browser.
 
 ### Download and install a release package for your platform (recommended)
 
@@ -71,10 +74,15 @@ VoTT requires [NodeJS (>= 10.x, Dubnium) and NPM](https://github.com/nodejs/Rele
     npm ci
     npm start
    ```
-
    > **IMPORTANT**
    >
    > When running locally with `npm`, both the electron and the browser versions of the application will start. One major difference is that the electron version can access the local file system.
+
+### Run as Web Application
+
+Using a modern Web browser, VoTT can be loaded from: [https://vott.z5.web.core.windows.net](https://vott.z5.web.core.windows.net)
+
+As noted above, the Web version of VoTT *cannot* access the local file system; all assets must be imported/exported through a Cloud project.
 
 ## V1 & V2
 
@@ -238,7 +246,7 @@ VOTT allows you to fine tune the bounding boxes using the arrow keys in a few di
 * Ctrl + Alt + Arrowkey - Shrink Region
 * Ctrl + Shift + Arrowkey - Expand Region
 
-The slide viewer can be navigated from the keyboard as follows: 
+The slide viewer can be navigated from the keyboard as follows:
 
 * W or ArrowUp - Previous Asset
 * S or ArrowDown - Next Asset
