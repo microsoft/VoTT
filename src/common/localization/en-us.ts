@@ -276,9 +276,8 @@ export const english: IAppStrings = {
         messages: {
             enforceTaggedRegions: {
                 title: "Invalid region(s) detected",
-                // tslint:disable-next-line:max-line-length
                 description: "1 or more regions have not been tagged.  Ensure all regions are tagged before \
-                continuing to next asset.",
+                    continuing to next asset.",
             },
         },
     },

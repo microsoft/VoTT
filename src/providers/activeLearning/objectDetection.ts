@@ -11,8 +11,14 @@ export type DetectedObject = {
     score: number;
 };
 
+/**
+ * Defines supported data types supported by Tensorflow JS
+ */
 export type ImageObject = tf.Tensor3D | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 
+/**
+ * Object Dectection loads active learning models and predicts regions
+ */
 export class ObjectDetection {
     private modelLoaded: boolean = false;
 

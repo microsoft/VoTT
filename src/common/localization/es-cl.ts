@@ -60,8 +60,8 @@ export const spanish: IAppStrings = {
         },
         securityTokens: {
             title: "Tokens de seguridad",
-            // tslint:disable-next-line:max-line-length
-            description: "Los tokens de seguridad se utilizan para cifrar datos confidenciales dentro de la configuración del proyecto",
+            description: "Los tokens de seguridad se utilizan para cifrar datos confidenciales \
+                dentro de la configuración del proyecto",
         },
         version: {
             description: "Versión:",
@@ -279,8 +279,8 @@ export const spanish: IAppStrings = {
         messages: {
             enforceTaggedRegions: {
                 title: "Las regiones no válidas detectadas",
-                // tslint:disable-next-line:max-line-length
-                description: "1 o más regiones no se han etiquetado.  Por favor, etiquete todas las regiones antes de continuar con el siguiente activo.",
+                description: "1 o más regiones no se han etiquetado.  \
+                    Por favor, etiquete todas las regiones antes de continuar con el siguiente activo.",
             },
         },
     },
@@ -407,8 +407,8 @@ export const spanish: IAppStrings = {
                 },
                 autoDetect: {
                     title: "Detección automática",
-                    // tslint:disable-next-line:max-line-length
-                    description: "Si desea o no realizar automáticamente predicciones a medida que navega entre activos",
+                    description: "Si desea o no realizar automáticamente predicciones a \
+                        medida que navega entre activos",
                 },
                 modelPath: {
                     title: "Ruta de modelo",
@@ -427,7 +427,7 @@ export const spanish: IAppStrings = {
         messages: {
             loadingModel: "Cargando modelo...",
             errorLoadModel: "Error al cargar el modelo",
-            saveSuccess: "La configuración de aprendizaje activa guardada correctamente",
+            saveSuccess: "La configuración de aprendizaje activa se ha guardada correctamente",
         },
     },
     profile: {
@@ -485,7 +485,7 @@ export const spanish: IAppStrings = {
             de configuración de exportación.`,
         },
         activeLearningPredictionError: {
-            title: "AError de aprendizaje",
+            title: "Error de aprendizaje",
             message: "Se ha producido un error al predecir regiones en el activo actual. \
                 Compruebe la configuración de aprendizaje activa y vuelva a intentarlo",
         },

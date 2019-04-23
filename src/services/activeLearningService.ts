@@ -84,8 +84,7 @@ export class ActiveLearningService {
                     modelPath = appPath + "/../../cocoSSDModel";
                 }
             } else {
-                // TODO: Move this to a different location
-                modelPath = "https://jmangiadiag.blob.core.windows.net/vottcontainer";
+                modelPath = "https://vott.blob.core.windows.net/coco-ssd-model";
             }
         } else if (this.settings.modelPathType === ModelPathType.File) {
             if (isElectron()) {
