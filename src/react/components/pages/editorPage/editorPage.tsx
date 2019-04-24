@@ -10,14 +10,14 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag,
+    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { ToolbarItemName } from "../../../../registerToolbar";
 import { AssetService } from "../../../../services/assetService";
-import { AssetPreview, IAssetPreviewSettings } from "../../common/assetPreview/assetPreview";
+import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { TagInput } from "../../common/tagInput/tagInput";
@@ -29,8 +29,8 @@ import EditorSideBar from "./editorSideBar";
 import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
-// tslint:disable-next-line:no-var-requires
-const tagColors = require("../../common/tagColors.json");
+import { ActiveLearningService } from "../../../../services/activeLearningService";
+import { toast } from "react-toastify";
 
 /**
  * Properties for Editor Page
@@ -64,7 +64,7 @@ export interface IEditorPageState {
     /** The child assets used for nest asset typs */
     childAssets?: IAsset[];
     /** Additional settings for asset previews */
-    additionalSettings?: IAssetPreviewSettings;
+    additionalSettings?: IAdditionalPageSettings;
     /** Most recently selected tag */
     selectedTag: string;
     /** Tags locked for region labeling */
@@ -101,7 +101,6 @@ function mapDispatchToProps(dispatch) {
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
-
     public state: IEditorPageState = {
         selectedTag: null,
         lockedTags: [],
@@ -109,12 +108,16 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
-        additionalSettings: { videoSettings: (this.props.project) ? this.props.project.videoSettings : null },
+        additionalSettings: {
+            videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
+            activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
+        },
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
     };
 
+    private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
@@ -129,6 +132,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             const project = this.props.recentProjects.find((project) => project.id === projectId);
             await this.props.actions.loadProject(project);
         }
+
+        this.activeLearningService = new ActiveLearningService(this.props.project.activeLearningSettings);
     }
 
     public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
@@ -143,6 +148,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             this.setState({
                 additionalSettings: {
                     videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
+                    activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
                 },
             });
         }
@@ -211,6 +217,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                        onCanvasRendered={this.onCanvasRendered}
                                         onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                         editorMode={this.state.editorMode}
                                         selectionMode={this.state.selectionMode}
@@ -479,6 +486,17 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.setState({ childAssets, assets, isValid: true });
     }
 
+    /**
+     * Raised when the asset binary has been painted onto the canvas tools rendering canvas
+     */
+    private onCanvasRendered = async (canvas: HTMLCanvasElement) => {
+        // When active learning auto-detect is enabled
+        // run predictions when asset changes
+        if (this.props.project.activeLearningSettings.autoDetect && !this.state.selectedAsset.asset.predicted) {
+            await this.predictRegions(canvas);
+        }
+    }
+
     private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
         this.setState({ selectedRegions });
     }
@@ -540,6 +558,41 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             case ToolbarItemName.RemoveAllRegions:
                 this.canvas.current.confirmRemoveAllRegions();
                 break;
+            case ToolbarItemName.ActiveLearning:
+                await this.predictRegions();
+                break;
+        }
+    }
+
+    private predictRegions = async (canvas?: HTMLCanvasElement) => {
+        canvas = canvas || document.querySelector("canvas");
+        if (!canvas) {
+            return;
+        }
+
+        // Load the configured ML model
+        if (!this.activeLearningService.isModelLoaded()) {
+            let toastId: number = null;
+            try {
+                toastId = toast.info(strings.activeLearning.messages.loadingModel, { autoClose: false });
+                await this.activeLearningService.ensureModelLoaded();
+            } catch (e) {
+                toast.error(strings.activeLearning.messages.errorLoadModel);
+                return;
+            } finally {
+                toast.dismiss(toastId);
+            }
+        }
+
+        // Predict and add regions to current asset
+        try {
+            const updatedAssetMetadata = await this.activeLearningService
+                .predictRegions(canvas, this.state.selectedAsset);
+
+            await this.onAssetMetadataChanged(updatedAssetMetadata);
+            this.setState({ selectedAsset: updatedAssetMetadata });
+        } catch (e) {
+            throw new AppError(ErrorCode.ActiveLearningPredictionError, "Error predicting regions");
         }
     }
 
@@ -579,7 +632,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
-        await this.updateProjectTagsFromAsset(assetMetadata);
 
         try {
             if (!assetMetadata.asset.size) {
@@ -595,32 +647,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }, async () => {
             await this.onAssetMetadataChanged(assetMetadata);
         });
-    }
-
-    private async updateProjectTagsFromAsset(asset: IAssetMetadata) {
-        const assetTags = new Set();
-        asset.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
-
-        const newTags: ITag[] = this.props.project.tags ? [...this.props.project.tags] : [];
-        let updateTags = false;
-
-        assetTags.forEach((tag) => {
-            if (!this.props.project.tags || this.props.project.tags.length === 0 ||
-                !this.props.project.tags.find((projectTag) => tag === projectTag.name)) {
-                newTags.push({
-                    name: tag,
-                    color: tagColors[newTags.length % tagColors.length],
-                });
-                updateTags = true;
-            }
-        });
-
-        if (updateTags) {
-            asset.asset.state = AssetState.Tagged;
-            const newProject = { ...this.props.project, tags: newTags };
-            await this.props.actions.saveAssetMetadata(newProject, asset);
-            await this.props.actions.saveProject(newProject);
-        }
     }
 
     private loadProjectAssets = async (): Promise<void> => {

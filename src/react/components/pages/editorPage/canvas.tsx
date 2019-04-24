@@ -25,6 +25,7 @@ export interface ICanvasProps extends React.Props<Canvas> {
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
     onSelectedRegionsChanged?: (regions: IRegion[]) => void;
+    onCanvasRendered?: (canvas: HTMLCanvasElement) => void;
 }
 
 export interface ICanvasState {
@@ -455,6 +456,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     private setContentSource = async (contentSource: ContentSource) => {
         try {
             await this.editor.addContentSource(contentSource as any);
+
+            if (this.props.onCanvasRendered) {
+                const canvas = this.canvasZone.current.querySelector("canvas");
+                this.props.onCanvasRendered(canvas);
+            }
         } catch (e) {
             console.warn(e);
         }

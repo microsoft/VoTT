@@ -45,6 +45,7 @@ describe("Editor Canvas", () => {
         const canvasProps: ICanvasProps = {
             selectedAsset: getAssetMetadata(),
             onAssetMetadataChanged: jest.fn(),
+            onCanvasRendered: jest.fn(),
             editorMode: EditorMode.Rectangle,
             selectionMode: SelectionMode.RECT,
             project: MockFactory.createTestProject(),

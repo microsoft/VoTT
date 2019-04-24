@@ -31,7 +31,8 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
             <img ref={this.image}
                 src={this.state.tfRecordImage64}
                 onLoad={this.onLoad}
-                onError={this.onError} />
+                onError={this.onError}
+                crossOrigin="anonymous" />
         );
     }
 

@@ -5,9 +5,7 @@ import ExternalPicker, { IExternalPickerProps, IExternalPickerState, FilterOpera
 import MockFactory from "../../../../common/mockFactory";
 
 describe("External Picker", () => {
-    const onChangeHandler = jest.fn(() => {
-        console.log("hi");
-    });
+    const onChangeHandler = jest.fn();
     const defaultProps = createProps({
         id: "my-custom-control",
         value: "",

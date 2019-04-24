@@ -116,7 +116,6 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         if (providerType !== this.state.providerName) {
             this.bindForm(args.formData, true);
         } else {
-            console.log(args.formData);
             this.bindForm(args.formData, false);
         }
     }

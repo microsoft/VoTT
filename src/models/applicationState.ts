@@ -1,4 +1,5 @@
 import { ExportAssetState } from "../providers/export/exportProvider";
+import { IAssetPreviewSettings } from "../react/components/common/assetPreview/assetPreview";
 
 /**
  * @name - Application State
@@ -49,6 +50,7 @@ export enum ErrorCode {
     ExportFormatNotFound = "exportFormatNotFound",
     PasteRegionTooBig = "pasteRegionTooBig",
     OverloadedKeyBinding = "overloadedKeyBinding",
+    ActiveLearningPredictionError = "activeLearningPredictionError",
 }
 
 /**
@@ -112,6 +114,7 @@ export interface IProject {
     targetConnection: IConnection;
     exportFormat: IExportFormat;
     videoSettings: IProjectVideoSettings;
+    activeLearningSettings: IActiveLearningSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
     lastVisitedAssetId?: string;
@@ -199,6 +202,44 @@ export interface IProjectVideoSettings {
 }
 
 /**
+ * @name - Model Path Type
+ * @description - Defines the mechanism to load the TF.js model for Active Learning
+ * @member Coco - Specifies the default/generic pre-trained Coco-SSD model
+ * @member File - Specifies to load a custom model from filesystem
+ * @member Url - Specifies to load a custom model from a web server
+ */
+export enum ModelPathType {
+    Coco = "coco",
+    File = "file",
+    Url = "url",
+}
+
+/**
+ * Properties for additional project settings
+ * @member activeLearningSettings - Active Learning settings
+ */
+export interface IAdditionalPageSettings extends IAssetPreviewSettings {
+    activeLearningSettings: IActiveLearningSettings;
+}
+
+/**
+ * @name - Active Learning Settings for the project
+ * @description - Defines the active learning settings within a VoTT project
+ * @member modelPathType - Model loading type ["coco", "file", "url"]
+ * @member modelPath - Local filesystem path to the TF.js model
+ * @member modelUrl - Web url to the TF.js model
+ * @member autoDetect - Flag for automatically call the model while opening a new asset
+ * @member predictTag - Flag to predict also the tag name other than the rectangle coordinates only
+ */
+export interface IActiveLearningSettings {
+    modelPathType: ModelPathType;
+    modelPath?: string;
+    modelUrl?: string;
+    autoDetect: boolean;
+    predictTag: boolean;
+}
+
+/**
  * @name - Asset Video Settings
  * @description - Defines the settings for video assets
  * @member shouldAutoPlayVideo - true if the video should auto play when loaded, false otherwise
@@ -231,6 +272,7 @@ export interface IAsset {
     format?: string;
     timestamp?: number;
     parent?: IAsset;
+    predicted?: boolean;
 }
 
 /**

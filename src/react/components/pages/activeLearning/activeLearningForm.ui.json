@@ -1,0 +1,17 @@
+{
+    "modelPath": {
+        "ui:widget": "localFolderPicker"
+    },
+    "predictTag": {
+        "ui:widget": "checkbox"
+    },
+    "autoDetect": {
+        "ui:widget": "checkbox"
+    },
+    "ui:order": [
+        "modelPathType",
+        "*",
+        "predictTag",
+        "autoDetect"
+    ]
+}
