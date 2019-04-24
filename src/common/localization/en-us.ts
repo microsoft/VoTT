@@ -143,6 +143,7 @@ export const english: IAppStrings = {
         warnings: {
             existingName: "Tag name already exists. Choose another name",
             emptyName: "Cannot have an empty tag name",
+            unknownTagName: "Unknown",
         },
         toolbar: {
             add: "Add new tag",

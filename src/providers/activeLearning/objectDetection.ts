@@ -3,6 +3,7 @@ import * as shortid from "shortid";
 import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
 import { IRegion, RegionType } from "../../models/applicationState";
+import { strings } from "../../common/strings";
 
 // tslint:disable-next-line:interface-over-type-literal
 export type DetectedObject = {
@@ -146,7 +147,7 @@ export class ObjectDetection {
      * objects. There can be multiple objects of the same class, but at different
      * locations. Defaults to 20.
      */
-    private async infer(img: ImageObject, maxNumBoxes: number): Promise<DetectedObject[]> {
+    private async infer(img: ImageObject, maxNumBoxes: number = 20): Promise<DetectedObject[]> {
         const batched = tf.tidy(() => {
             if (!(img instanceof tf.Tensor)) {
                 img = tf.browser.fromPixels(img);
@@ -177,10 +178,8 @@ export class ObjectDetection {
         // run post process in cpu
         tf.setBackend("cpu");
         const indexTensor = tf.tidy(() => {
-            const boxes2 =
-                tf.tensor2d(boxes, [result[1].shape[1], result[1].shape[3]]);
-            return tf.image.nonMaxSuppression(
-                boxes2, maxScores, maxNumBoxes, 0.5, 0.5);
+            const boxes2 = tf.tensor2d(boxes, [result[1].shape[1], result[1].shape[3]]);
+            return tf.image.nonMaxSuppression(boxes2, maxScores, maxNumBoxes, 0.5, 0.5);
         });
 
         const indexes = indexTensor.dataSync() as Float32Array;
@@ -226,7 +225,7 @@ export class ObjectDetection {
             const classId = classes[indexes[index]] - 1;
             const classObject = this.jsonClasses[classId];
 
-            return classObject ? classObject.displayName : "Unknown";
+            return classObject ? classObject.displayName : strings.tags.warnings.unknownTagName;
         }
 
         return "";

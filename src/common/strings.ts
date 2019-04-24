@@ -154,6 +154,7 @@ export interface IAppStrings {
         warnings: {
             existingName: string;
             emptyName: string;
+            unknownTagName: string;
         }
     };
     connections: {

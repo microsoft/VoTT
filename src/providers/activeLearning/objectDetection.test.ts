@@ -2,6 +2,7 @@ import * as tf from "@tensorflow/tfjs";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import { ObjectDetection, DetectedObject } from "./objectDetection";
+import { strings } from "../../common/strings";
 // tslint:disable-next-line:no-var-requires
 const modelJson = require("../../../cocoSSDModel/model.json");
 
@@ -90,7 +91,7 @@ describe("Test Detection on Fake Model", () => {
 
         const data = await model.detect(x, 1);
 
-        expect(data).toEqual([{bbox: [227, 227, 0, 0], class: "Unknown", score: 1}]);
+        expect(data).toEqual([{bbox: [227, 227, 0, 0], class: strings.tags.warnings.unknownTagName, score: 1}]);
     });
 });
 

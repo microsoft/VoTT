@@ -144,6 +144,7 @@ export const spanish: IAppStrings = {
         warnings: {
             existingName: "Nombre de etiqueta ya existe. Elige otro nombre",
             emptyName: "El nombre de etiqueta no puede ser vacío",
+            unknownTagName: "Desconocido",
         },
         toolbar: {
             add: "Agregar nueva etiqueta",
@@ -398,7 +399,7 @@ export const spanish: IAppStrings = {
             properties: {
                 modelPathType: {
                     title: "Proveedor del modelo",
-                    description: "Dónde cargar el modelo de entrenamiento desde",
+                    description: "Fuente desde la cual cargar el modelo",
                     options: {
                         preTrained: "SSD de coco pre-entrenado",
                         customFilePath: "Personalizado (ruta de archivo)",
