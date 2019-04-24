@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { reducer } from "./currentProjectReducer";
-import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState, ITag } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 import {
     loadProjectAction,
@@ -50,7 +50,7 @@ describe("Current Project Reducer", () => {
         expect(result).toEqual(currentProject);
     });
 
-    it("Updating connection used by current project is updated in curren project", () => {
+    it("Updating connection used by current project is updated in current project", () => {
         const currentProject = MockFactory.createTestProject("1");
         const state: IProject = currentProject;
 
@@ -111,6 +111,29 @@ describe("Current Project Reducer", () => {
         const result = reducer(state, action);
         expect(result).not.toBe(state);
         expect(result.assets[testAssets[0].id]).toEqual(assetMetadata.asset);
+    });
+
+    it("Appends new tags to project when saving asset contains new tags", () => {
+        const state: IProject = MockFactory.createTestProject("TestProject");
+        const testAssets = MockFactory.createTestAssets();
+
+        const expectedTag: ITag = {
+            name: "NEWTAG",
+            color: expect.any(String),
+        };
+
+        const assetMetadata = MockFactory.createTestAssetMetadata(
+            testAssets[0],
+            [MockFactory.createTestRegion("Region 1", [expectedTag.name])],
+        );
+
+        const action = saveAssetMetadataAction(assetMetadata);
+        const result = reducer(state, action);
+        expect(result).not.toBe(state);
+        expect(result.tags).toEqual([
+            ...state.tags,
+            expectedTag,
+        ]);
     });
 
     it("Unknown action performs a noop", () => {

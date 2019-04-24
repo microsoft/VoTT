@@ -348,42 +348,6 @@ describe("Editor Page Component", () => {
         expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProject));
     });
 
-    describe("Editor Page Component Forcing Tag Scenario", () => {
-        it("Detect new Tag from asset metadata when selecting the Asset", async () => {
-            const getAssetMetadataMock = assetServiceMock.prototype.getAssetMetadata as jest.Mock;
-            getAssetMetadataMock.mockImplementationOnce((asset) => {
-                const assetMetadata: IAssetMetadata = {
-                    asset: { ...asset },
-                    regions: [{ ...MockFactory.createTestRegion(), tags: ["NEWTAG"] }],
-                    version: appInfo.version,
-                };
-                return Promise.resolve(assetMetadata);
-            });
-
-            // create test project and asset
-            const testProject = MockFactory.createTestProject("TestProject");
-
-            // mock store and props
-            const store = createStore(testProject, true);
-            const props = MockFactory.editorPageProps(testProject.id);
-
-            // create mock editor page
-            const wrapper = createComponent(store, props);
-
-            await MockFactory.flushUi();
-            wrapper.update();
-
-            const editorPage = wrapper.find(EditorPage).childAt(0);
-            const savedProject = editorPage.props().project;
-
-            expect(savedProject.tags).toMatchObject(expect.arrayContaining([{
-                name: "NEWTAG",
-                color: expect.any(String),
-            }]));
-            // expect(saveProjectSpy).toBeCalledWith(expect.objectContaining(partialProjectToBeSaved));
-        });
-    });
-
     it("When an image is updated the asset metadata is updated", async () => {
         const testProject = MockFactory.createTestProject("TestProject");
         const store = createStore(testProject, true);
