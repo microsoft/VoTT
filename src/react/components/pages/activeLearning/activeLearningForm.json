@@ -1,0 +1,82 @@
+{
+    "type": "object",
+    "properties": {
+        "modelPathType": {
+            "type": "string",
+            "title": "${strings.activeLearning.form.properties.modelPathType.title}",
+            "description": "${strings.activeLearning.form.properties.modelPathType.description}",
+            "enum": [
+                "coco",
+                "file",
+                "url"
+            ],
+            "default": "coco",
+            "enumNames": [
+                "${strings.activeLearning.form.properties.modelPathType.options.preTrained}",
+                "${strings.activeLearning.form.properties.modelPathType.options.customFilePath}",
+                "${strings.activeLearning.form.properties.modelPathType.options.customWebUrl}"
+            ]
+        },
+        "autoDetect": {
+            "title": "${strings.activeLearning.form.properties.autoDetect.title}",
+            "description": "${strings.activeLearning.form.properties.autoDetect.description}",
+            "type": "boolean"
+        },
+        "predictTag": {
+            "title": " ${strings.activeLearning.form.properties.predictTag.title}",
+            "description": "${strings.activeLearning.form.properties.predictTag.description}",
+            "type": "boolean"
+        }
+    },
+    "dependencies": {
+        "modelPathType": {
+            "oneOf": [
+                {
+                    "properties": {
+                        "modelPathType": {
+                            "enum": [
+                                "coco"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "modelPath"
+                    ],
+                    "properties": {
+                        "modelPathType": {
+                            "enum": [
+                                "file"
+                            ]
+                        },
+                        "modelPath": {
+                            "title": "${strings.activeLearning.form.properties.modelPath.title}",
+                            "description": "${strings.activeLearning.form.properties.modelPath.description}",
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "modelUrl"
+                    ],
+                    "properties": {
+                        "modelPathType": {
+                            "enum": [
+                                "url"
+                            ]
+                        },
+                        "modelUrl": {
+                            "title": "${strings.activeLearning.form.properties.modelUrl.title}",
+                            "description": "${strings.activeLearning.form.properties.modelUrl.description}",
+                            "default": "http://",
+                            "pattern": "^https?\\\\://[a-zA-Z0-9\\\\-\\\\.]+\\\\.[a-zA-Z]{2,3}(/\\\\S*)?$",
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -1,12 +1,17 @@
 import _ from "lodash";
 import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { IProject, ISecurityToken, AppError, ErrorCode, AssetState } from "../models/applicationState";
+import {
+    IProject, ISecurityToken, AppError,
+    ErrorCode, ModelPathType, IActiveLearningSettings,
+} from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { decryptProject, encryptProject } from "../common/utils";
 import packageJson from "../../package.json";
+import { ExportAssetState } from "../providers/export/exportProvider";
+import { IExportFormat } from "vott-react";
 
 /**
  * Functions required for a project service
@@ -19,6 +24,20 @@ export interface IProjectService {
     delete(project: IProject): Promise<void>;
     isDuplicate(project: IProject, projectList: IProject[]): boolean;
 }
+
+const defaultActiveLearningSettings: IActiveLearningSettings = {
+    autoDetect: false,
+    predictTag: true,
+    modelPathType: ModelPathType.Coco,
+};
+
+const defaultExportOptions: IExportFormat = {
+    providerType: "vottJson",
+    providerOptions: {
+        assetState: ExportAssetState.Visited,
+        includeImages: true,
+    },
+};
 
 /**
  * @name - Project Service
@@ -35,7 +54,23 @@ export default class ProjectService implements IProjectService {
 
         try {
             const loadedProject = decryptProject(project, securityToken);
-            return Promise.resolve(loadedProject);
+
+            // Ensure tags is always initialized to an array
+            if (!loadedProject.tags) {
+                loadedProject.tags = [];
+            }
+
+            // Initialize active learning settings if they don't exist
+            if (!loadedProject.activeLearningSettings) {
+                loadedProject.activeLearningSettings = defaultActiveLearningSettings;
+            }
+
+            // Initialize export settings if they don't exist
+            if (!loadedProject.exportFormat) {
+                loadedProject.exportFormat = defaultExportOptions;
+            }
+
+            return Promise.resolve({ ...loadedProject });
         } catch (e) {
             const error = new AppError(ErrorCode.ProjectInvalidSecurityToken, "Error decrypting project settings");
             return Promise.reject(error);
@@ -52,6 +87,21 @@ export default class ProjectService implements IProjectService {
 
         if (!project.id) {
             project.id = shortid.generate();
+        }
+
+        // Ensure tags is always initialized to an array
+        if (!project.tags) {
+            project.tags = [];
+        }
+
+        // Initialize active learning settings if they don't exist
+        if (!project.activeLearningSettings) {
+            project.activeLearningSettings = defaultActiveLearningSettings;
+        }
+
+        // Initialize export settings if they don't exist
+        if (!project.exportFormat) {
+            project.exportFormat = defaultExportOptions;
         }
 
         project.version = packageJson.version;

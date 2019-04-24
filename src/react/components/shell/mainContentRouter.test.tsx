@@ -11,7 +11,6 @@ import MainContentRouter from "./mainContentRouter";
 import HomePage, { IHomePageProps } from "./../pages/homepage/homePage";
 import SettingsPage from "./../pages/appSettings/appSettingsPage";
 import ConnectionsPage from "./../pages/connections/connectionsPage";
-import ProfilePage from "./../pages/profileSettingsPage";
 import { IApplicationState } from "./../../../models/applicationState";
 
 describe("Main Content Router", () => {
@@ -43,7 +42,6 @@ describe("Main Content Router", () => {
         expect(pathMap["/"]).toBe(HomePage);
         expect(pathMap["/settings"]).toBe(SettingsPage);
         expect(pathMap["/connections"]).toBe(ConnectionsPage);
-        expect(pathMap["/profile"]).toBe(ProfilePage);
     });
 
     it("renders a redirect when no route is matched", () => {

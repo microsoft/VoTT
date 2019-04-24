@@ -60,8 +60,8 @@ export const spanish: IAppStrings = {
         },
         securityTokens: {
             title: "Tokens de seguridad",
-            // tslint:disable-next-line:max-line-length
-            description: "Los tokens de seguridad se utilizan para cifrar datos confidenciales dentro de la configuración del proyecto",
+            description: "Los tokens de seguridad se utilizan para cifrar datos confidenciales \
+                dentro de la configuración del proyecto",
         },
         version: {
             description: "Versión:",
@@ -144,6 +144,7 @@ export const spanish: IAppStrings = {
         warnings: {
             existingName: "Nombre de etiqueta ya existe. Elige otro nombre",
             emptyName: "El nombre de etiqueta no puede ser vacío",
+            unknownTagName: "Desconocido",
         },
         toolbar: {
             add: "Agregar nueva etiqueta",
@@ -233,6 +234,7 @@ export const spanish: IAppStrings = {
             nextAsset: "Siguiente activo",
             saveProject: "Guardar Proyecto",
             exportProject: "Exprtar Proyecto",
+            activeLearning: "Aprendizaje Activo",
         },
         videoPlayer: {
             previousTaggedFrame: {
@@ -278,8 +280,8 @@ export const spanish: IAppStrings = {
         messages: {
             enforceTaggedRegions: {
                 title: "Las regiones no válidas detectadas",
-                // tslint:disable-next-line:max-line-length
-                description: "1 o más regiones no se han etiquetado.  Por favor, etiquete todas las regiones antes de continuar con el siguiente activo.",
+                description: "1 o más regiones no se han etiquetado.  \
+                    Por favor, etiquete todas las regiones antes de continuar con el siguiente activo.",
             },
         },
     },
@@ -393,6 +395,41 @@ export const spanish: IAppStrings = {
     },
     activeLearning: {
         title: "Aprendizaje Activo",
+        form: {
+            properties: {
+                modelPathType: {
+                    title: "Proveedor del modelo",
+                    description: "Fuente desde la cual cargar el modelo",
+                    options: {
+                        preTrained: "SSD de coco pre-entrenado",
+                        customFilePath: "Personalizado (ruta de archivo)",
+                        customWebUrl: "Personalizado (URL)",
+                    },
+                },
+                autoDetect: {
+                    title: "Detección automática",
+                    description: "Si desea o no realizar automáticamente predicciones a \
+                        medida que navega entre activos",
+                },
+                modelPath: {
+                    title: "Ruta de modelo",
+                    description: "Seleccione un modelo de su sistema de archivos local",
+                },
+                modelUrl: {
+                    title: "URL del modelo",
+                    description: "Cargue el modelo desde una URL web pública",
+                },
+                predictTag: {
+                    title: "Predecir etiqueta",
+                    description: "Si se incluirán o no automáticamente las etiquetas en las predicciones",
+                },
+            },
+        },
+        messages: {
+            loadingModel: "Cargando modelo...",
+            errorLoadModel: "Error al cargar el modelo",
+            saveSuccess: "La configuración de aprendizaje activa se ha guardada correctamente",
+        },
     },
     profile: {
         settings: "Configuración de Perfíl",
@@ -447,6 +484,11 @@ export const spanish: IAppStrings = {
             title: "Error exportando proyecto",
             message: `Proyecto falta el formato de exportación. Seleccione un formato de exportación en la página
             de configuración de exportación.`,
+        },
+        activeLearningPredictionError: {
+            title: "Error de aprendizaje",
+            message: "Se ha producido un error al predecir regiones en el activo actual. \
+                Compruebe la configuración de aprendizaje activa y vuelva a intentarlo",
         },
     },
 };

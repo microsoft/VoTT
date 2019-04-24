@@ -16,6 +16,7 @@
     "main": "build/main.js",
     "dependencies": {
         "@azure/storage-blob": "^10.3.0",
+        "@tensorflow/tfjs": "^1.0.3",
         "@types/snapsvg": "^0.4.35",
         "axios": "^0.18.0",
         "bootstrap": "^4.1.3",
@@ -23,8 +24,10 @@
         "crypto-js": "^3.1.9-1",
         "dotenv": "^7.0.0",
         "google-protobuf": "^3.6.1",
+        "jpeg-js": "^0.3.4",
         "lodash": "^4.17.11",
         "md5.js": "^1.3.5",
+        "node-fetch": "^2.3.0",
         "node-int64": "^0.4.0",
         "rc-align": "^2.4.5",
         "rc-checkbox": "^2.1.6",

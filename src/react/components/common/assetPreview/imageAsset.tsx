@@ -12,7 +12,8 @@ export class ImageAsset extends React.Component<IAssetProps> {
             <img ref={this.image}
                 src={this.props.asset.path}
                 onLoad={this.onLoad}
-                onError={this.props.onError} />);
+                onError={this.props.onError}
+                crossOrigin="anonymous" />);
     }
 
     private onLoad = () => {

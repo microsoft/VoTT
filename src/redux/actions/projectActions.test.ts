@@ -11,7 +11,7 @@ import ProjectService from "../../services/projectService";
 jest.mock("../../services/assetService");
 import { AssetService } from "../../services/assetService";
 import { ExportProviderFactory } from "../../providers/export/exportProviderFactory";
-import { ExportAssetState, IExportProvider } from "../../providers/export/exportProvider";
+import { IExportProvider } from "../../providers/export/exportProvider";
 import { IApplicationState, IProject } from "../../models/applicationState";
 import initialState from "../store/initialState";
 import { appInfo } from "../../common/appInfo";
@@ -85,40 +85,6 @@ describe("Project Redux Actions", () => {
         const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
 
         expect(result.version).toEqual(appInfo.version);
-    });
-
-    it("Save Project action on new project correctly add default export format", async () => {
-        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
-
-        const skeletonProject = MockFactory.createTestProject("TestProject");
-        const project = {
-            ...skeletonProject,
-            exportFormat: null,
-        };
-
-        const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
-
-        expect(result.exportFormat).toEqual({
-            providerType: "vottJson",
-            providerOptions: {
-                assetState: ExportAssetState.Visited,
-                includeImages: true,
-            },
-        });
-    });
-
-    it("Save Project action on new project correctly set tags to empty if none created", async () => {
-        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
-
-        const skeletonProject = MockFactory.createTestProject("TestProject");
-        const project = {
-            ...skeletonProject,
-            tags: null,
-        };
-
-        const result = await projectActions.saveProject(project)(store.dispatch, store.getState);
-
-        expect(result.tags).toEqual([]);
     });
 
     it("Save Project action does not override existing export format", async () => {

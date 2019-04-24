@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType,
+    IPoint, IRegion, RegionType, ModelPathType,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -33,6 +33,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSet
 import { IKeyboardBindingProps } from "../react/components/common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../react/components/common/keyboardManager/keyboardManager";
 import { IKeyboardRegistrations } from "../react/components/common/keyboardManager/keyboardRegistrationManager";
+import { IActiveLearningPageProps } from "../react/components/pages/activeLearning/activeLearningPage";
 
 export default class MockFactory {
 
@@ -283,6 +284,13 @@ export default class MockFactory {
             targetConnection: connection,
             tags: MockFactory.createTestTags(tagCount),
             videoSettings: MockFactory.createVideoSettings(),
+            activeLearningSettings: {
+                modelPathType: ModelPathType.Coco,
+                modelPath: "",
+                modelUrl: "",
+                autoDetect: false,
+                predictTag: false,
+            },
             autoSave: true,
         };
     }
@@ -887,6 +895,21 @@ export default class MockFactory {
     }
 
     /**
+     * Creates fake IActiveLearningPageProps
+     * @param projectId Current project ID
+     */
+    public static activeLearningProps(projectId?: string): IActiveLearningPageProps {
+        return {
+            actions: (projectActions as any) as IProjectActions,
+            history: MockFactory.history(),
+            location: MockFactory.location(),
+            match: MockFactory.match(projectId, "active-learning"),
+            project: null,
+            recentProjects: MockFactory.createTestProjects(),
+        };
+    }
+
+    /**
      * Creates fake IEditorPageProps
      * @param projectId Current project ID
      */
@@ -1012,6 +1035,93 @@ export default class MockFactory {
         };
     }
 
+    public static mockElement(assetTestCache: Map<string, IAsset>) {
+        document.createElement = jest.fn((elementType) => {
+            switch (elementType) {
+                case "img":
+                    const mockImage = MockFactory.mockImage(assetTestCache);
+                    return mockImage();
+                case "video":
+                    const mockVideo = MockFactory.mockVideo(assetTestCache);
+                    return mockVideo();
+                case "canvas":
+                    const mockCanvas = MockFactory.mockCanvas();
+                    return mockCanvas();
+            }
+        });
+    }
+
+    public static mockImage(assetTestCache: Map<string, IAsset>) {
+        return jest.fn(() => {
+            const element: any = {
+                naturalWidth: 0,
+                naturalHeight: 0,
+                onload: jest.fn(),
+            };
+
+            setImmediate(() => {
+                const asset = assetTestCache.get(element.src);
+                if (asset) {
+                    element.naturalWidth = asset.size.width;
+                    element.naturalHeight = asset.size.height;
+                }
+
+                element.onload();
+            });
+
+            return element;
+        });
+    }
+
+    public static mockVideo(assetTestCache: Map<string, IAsset>) {
+        return jest.fn(() => {
+            const element: any = {
+                src: "",
+                duration: 0,
+                currentTime: 0,
+                videoWidth: 0,
+                videoHeight: 0,
+                onloadedmetadata: jest.fn(),
+                onseeked: jest.fn(),
+                onerror: jest.fn(),
+            };
+
+            setImmediate(() => {
+                const asset = assetTestCache.get(element.src);
+                if (asset.name.toLowerCase().indexOf("error") > -1) {
+                    element.onerror("An error occurred loading the video");
+                } else {
+                    element.videoWidth = asset.size.width;
+                    element.videoHeight = asset.size.height;
+                    element.currentTime = asset.timestamp;
+                    element.onloadedmetadata();
+                    element.onseeked();
+                }
+            });
+
+            return element;
+        });
+    }
+
+    public static mockCanvas() {
+        return jest.fn(() => {
+            const canvas: any = {
+                width: 800,
+                height: 600,
+                getContext: jest.fn(() => {
+                    return {
+                        drawImage: jest.fn(),
+                    };
+                }),
+                toBlob: jest.fn((callback) => {
+                    callback(new Blob(["Binary image data"]));
+                }),
+            };
+
+            return canvas;
+        });
+    }
+
     private static pageProps(projectId: string, method: string) {
         return {
             project: null,
@@ -1093,5 +1203,4 @@ export default class MockFactory {
                 return StorageType.Other;
         }
     }
-
 }

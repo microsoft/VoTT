@@ -143,6 +143,7 @@ export const english: IAppStrings = {
         warnings: {
             existingName: "Tag name already exists. Choose another name",
             emptyName: "Cannot have an empty tag name",
+            unknownTagName: "Unknown",
         },
         toolbar: {
             add: "Add new tag",
@@ -231,6 +232,7 @@ export const english: IAppStrings = {
             nextAsset: "Next Asset",
             saveProject: "Save Project",
             exportProject: "Export Project",
+            activeLearning: "Active Learning",
         },
         videoPlayer: {
             previousTaggedFrame: {
@@ -275,9 +277,8 @@ export const english: IAppStrings = {
         messages: {
             enforceTaggedRegions: {
                 title: "Invalid region(s) detected",
-                // tslint:disable-next-line:max-line-length
                 description: "1 or more regions have not been tagged.  Ensure all regions are tagged before \
-                continuing to next asset.",
+                    continuing to next asset.",
             },
         },
     },
@@ -391,6 +392,40 @@ export const english: IAppStrings = {
     },
     activeLearning: {
         title: "Active Learning",
+        form: {
+            properties: {
+                modelPathType: {
+                    title: "Model Provider",
+                    description: "Where to load the training model from",
+                    options: {
+                        preTrained: "Pre-trained Coco SSD",
+                        customFilePath: "Custom (File path)",
+                        customWebUrl: "Custom (Url)",
+                    },
+                },
+                autoDetect: {
+                    title: "Auto Detect",
+                    description: "Whether or not to automatically make predictions as you navigate between assets",
+                },
+                modelPath: {
+                    title: "Model path",
+                    description: "Select a model from your local file system",
+                },
+                modelUrl: {
+                    title: "Model URL",
+                    description: "Load your model from a public web URL",
+                },
+                predictTag: {
+                    title: "Predict Tag",
+                    description: "Whether or not to automatically include tags in predictions",
+                },
+            },
+        },
+        messages: {
+            loadingModel: "Loading active learning model...",
+            errorLoadModel: "Error loading active learning model",
+            saveSuccess: "Successfully saved active learning settings",
+        },
     },
     profile: {
         settings: "Profile Settings",
@@ -443,6 +478,11 @@ export const english: IAppStrings = {
         exportFormatNotFound: {
             title: "Error exporting project",
             message: "Project is missing export format.  Please select an export format in the export setting page.",
+        },
+        activeLearningPredictionError: {
+            title: "Active Learning Error",
+            message: "An error occurred while predicting regions in the current asset. \
+                Please verify your active learning configuration and try again",
         },
     },
 };

@@ -1,13 +1,12 @@
 import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import HomePage from "../pages/homepage/homePage";
-import ActiveLearningPage from "../pages/activeLearningPage";
+import ActiveLearningPage from "../pages/activeLearning/activeLearningPage";
 import AppSettingsPage from "../pages/appSettings/appSettingsPage";
 import ConnectionPage from "../pages/connections/connectionsPage";
 import EditorPage from "../pages/editorPage/editorPage";
 import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
-import ProfileSettingsPage from "../pages/profileSettingsPage";
 
 /**
  * @name - Main Content Router
@@ -19,7 +18,6 @@ export default function MainContentRouter() {
             <Switch>
                 <Route path="/" exact component={HomePage} />
                 <Route path="/settings" component={AppSettingsPage} />
-                <Route path="/profile" component={ProfileSettingsPage} />
                 <Route path="/connections/:connectionId" component={ConnectionPage} />
                 <Route path="/connections" exact component={ConnectionPage} />
                 <Route path="/projects/:projectId/edit" component={EditorPage} />

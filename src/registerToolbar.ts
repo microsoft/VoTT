@@ -17,6 +17,7 @@ export enum ToolbarItemName {
     NextAsset = "navigateNextAsset",
     SaveProject = "saveProject",
     ExportProject = "exportProject",
+    ActiveLearning = "activeLearning",
 }
 
 export enum ToolbarItemGroup {
@@ -100,6 +101,15 @@ export default function registerToolbar() {
         group: ToolbarItemGroup.Regions,
         type: ToolbarItemType.Action,
         accelerators: ["CmdOrCtrl+Delete", "CmdOrCtrl+Backspace"],
+    });
+
+    ToolbarItemFactory.register({
+        name: ToolbarItemName.ActiveLearning,
+        tooltip: strings.editorPage.toolbar.activeLearning,
+        icon: "fas fa-graduation-cap",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.Action,
+        accelerators: ["CmdOrCtrl+D", "CmdOrCtrl+d"],
     });
 
     ToolbarItemFactory.register({
