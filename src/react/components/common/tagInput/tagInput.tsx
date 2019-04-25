@@ -72,7 +72,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         portalElement: defaultDOMNode(),
     };
 
-    private tagItemRefs: Map<string, RefObject<TagInputItem>> = new Map<string, RefObject<TagInputItem>>();
+    private tagItemRefs: Map<string, TagInputItem> = new Map<string, TagInputItem>();
     private portalDiv = document.createElement("div");
 
     public render() {
@@ -158,9 +158,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (!tag) {
             return defaultDOMNode();
         }
-
         const itemRef = this.tagItemRefs.get(tag.name);
-        return (itemRef ? ReactDOM.findDOMNode(itemRef.current) : defaultDOMNode()) as Element;
+        return (itemRef ? ReactDOM.findDOMNode(itemRef) : defaultDOMNode()) as Element;
     }
 
     private onEditTag = (tag: ITag) => {
@@ -317,7 +316,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             />);
     }
 
-    private setTagItemRef = (item, tag) => {
+    private setTagItemRef = (item: TagInputItem, tag: ITag) => {
         this.tagItemRefs.set(tag.name, item);
         return item;
     }
