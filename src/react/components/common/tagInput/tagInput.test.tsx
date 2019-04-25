@@ -4,6 +4,7 @@ import { TagInput, ITagInputProps, ITagInputState } from "./tagInput";
 import MockFactory from "../../../../common/mockFactory";
 import { ITag } from "../../../../models/applicationState";
 import TagInputItem, { ITagInputItemProps } from "./tagInputItem";
+import { ColorPicker } from "../colorPicker";
 
 describe("Tag Input Component", () => {
 
@@ -58,6 +59,11 @@ describe("Tag Input Component", () => {
         expect(wrapper.state().showColorPicker).toBe(true);
         expect(wrapper.state().editingTag).toEqual(props.tags[0]);
         expect(wrapper.exists("div.color-picker")).toBe(true);
+        const picker = wrapper.find(ColorPicker).instance() as ColorPicker;
+
+        picker.props.onEditColor("#000000");                
+        expect(props.onChange).toBeCalled();
+        expect(true).toBeTruthy();
     });
 
     it("Calls onClick handler when clicking text", () => {
@@ -203,6 +209,16 @@ describe("Tag Input Component", () => {
         expect(props.onChange).not.toBeCalled();
     });
 
+    it("Does not try to add tag with same name as existing tag", () => {
+        const props: ITagInputProps = {
+            ...createProps(),
+            showTagInputBox: true,
+        };
+        const wrapper = createComponent(props);
+        wrapper.find(".tag-input-box").simulate("keydown", { key: "Enter", target: { value: props.tags[0].name } });
+        expect(props.onChange).not.toBeCalled();
+    });
+
     it("Selects a tag", () => {
         const tags = MockFactory.createTestTags();
         const onChange = jest.fn();
@@ -281,7 +297,20 @@ describe("Tag Input Component", () => {
         expect(wrapper.state().tags.indexOf(firstTag)).toEqual(0);
     });
 
-    it("set's applied tags when selected regions are available", () => {
+    it("Searches for a tag", () => {
+        const props: ITagInputProps = {
+            ...createProps(),
+            showSearchBox: true,
+        };
+        const wrapper = createComponent(props);
+        expect(wrapper.find(".tag-item-block").length).toBeGreaterThan(1);
+        wrapper.find(".tag-search-box").simulate("change", { target: { value: "1" } });
+        expect(wrapper.state().searchQuery).toEqual("1");
+        expect(wrapper.find(".tag-item-block")).toHaveLength(1);
+        expect(wrapper.find(".tag-name-body").first().text()).toEqual("Tag 1");
+    });
+
+    it("sets applied tags when selected regions are available", () => {
         const tags = MockFactory.createTestTags();
         const onChange = jest.fn();
         const props = createProps(tags, onChange);

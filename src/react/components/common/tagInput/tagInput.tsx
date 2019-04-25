@@ -98,6 +98,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                         this.state.searchTags &&
                         <div className="tag-input-text-input-row search-input">
                             <input
+                                className="tag-search-box"
                                 type="text"
                                 onKeyDown={this.onSearchKeyDown}
                                 onChange={(e) => this.setState({ searchQuery: e.target.value })}
@@ -155,7 +156,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getTagNode = (tag: ITag): Element => {
-        const itemRef = this.tagItemRefs.get(tag.name);
+        const itemRef = tag ? this.tagItemRefs.get(tag.name) : null;
         return (itemRef ? ReactDOM.findDOMNode(itemRef) : defaultDOMNode()) as Element;
     }
 
