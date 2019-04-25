@@ -217,7 +217,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private updateTag = (tag: ITag, newTag: ITag) => {
-        if (tag === newTag) {
+        if (tag.name === newTag.name && tag.color === newTag.color) {
             return;
         }
         if (!newTag.name.length) {
