@@ -40,6 +40,26 @@ describe("Tag Input Component", () => {
         expect(props.onCtrlTagClick).not.toBeCalled();
     });
 
+    it("Edits tag name when alt clicked", () => {
+        const props = createProps();
+        const wrapper = createComponent(props);
+        wrapper.find("div.tag-name-container").first().simulate("click", { altKey: true } );
+        expect(wrapper.state().editingTag).toEqual(props.tags[0]);
+        expect(wrapper.exists("input.tag-name-editor")).toBe(true);
+    });
+
+    it("Edits tag color when alt clicked", () => {
+        const props = createProps();
+        const wrapper = createComponent(props);
+        expect(wrapper.state().clickedColor).toBe(false);
+        expect(wrapper.exists("div.color-picker")).toBe(false);
+        wrapper.find("div.tag-color").first().simulate("click", { altKey: true } );
+        expect(wrapper.state().clickedColor).toBe(true);
+        expect(wrapper.state().showColorPicker).toBe(true);
+        expect(wrapper.state().editingTag).toEqual(props.tags[0]);
+        expect(wrapper.exists("div.color-picker")).toBe(true);
+    });
+
     it("Calls onClick handler when clicking text", () => {
         const props: ITagInputProps = createProps();
         const wrapper = createComponent(props);
@@ -110,7 +130,7 @@ describe("Tag Input Component", () => {
             expect(props.onLockedTagsChange).toBeCalledWith([tags[0].name]);
         });
 
-        it("Tag can be edited from toolbar", () => {
+        it("Tag name can be edited from toolbar", () => {
             const tags = MockFactory.createTestTags();
             const props = createProps(tags);
             const wrapper = createComponent(props);
@@ -118,6 +138,20 @@ describe("Tag Input Component", () => {
             wrapper.find("div.tag-input-toolbar-item.edit").simulate("click");
             expect(wrapper.state().editingTag).toEqual(tags[0]);
             expect(wrapper.exists("input.tag-name-editor")).toBe(true);
+        });
+
+        it("Tag color can be edited from toolbar", () => {
+            const tags = MockFactory.createTestTags();
+            const props = createProps(tags);
+            const wrapper = createComponent(props);
+            expect(wrapper.state().clickedColor).toBe(false);
+            expect(wrapper.exists("div.color-picker")).toBe(false);
+            wrapper.find("div.tag-color").first().simulate("click");
+            expect(wrapper.state().clickedColor).toBe(true);
+            wrapper.find("div.tag-input-toolbar-item.edit").simulate("click");
+            expect(wrapper.state().showColorPicker).toBe(true);
+            expect(wrapper.state().editingTag).toEqual(tags[0]);
+            expect(wrapper.exists("div.color-picker")).toBe(true);
         });
 
         it("Tag can be moved up from toolbar", () => {

@@ -25,20 +25,22 @@ export class ColorPicker extends React.Component<IColorPickerProps> {
 
     private GithubPicker = () => {
         return (
-            <GithubPicker
-                color={{hex: this.props.color}}
-                onChangeComplete={this.onChange}
-                colors={this.props.colors}
-                width={160}
-                styles={{
-                    default: {
-                        card: {
-                            background: this.pickerBackground,
+            <div className="color-picker">
+                <GithubPicker
+                    color={{hex: this.props.color}}
+                    onChangeComplete={this.onChange}
+                    colors={this.props.colors}
+                    width={160}
+                    styles={{
+                        default: {
+                            card: {
+                                background: this.pickerBackground,
+                            },
                         },
-                    },
-                }}
-                triangle={"hide"}
-            />
+                    }}
+                    triangle={"hide"}
+                />
+            </div>
         );
     }
 

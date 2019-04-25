@@ -155,21 +155,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getTagNode = (tag: ITag): Element => {
-        if (!tag) {
-            return defaultDOMNode();
-        }
         const itemRef = this.tagItemRefs.get(tag.name);
         return (itemRef ? ReactDOM.findDOMNode(itemRef) : defaultDOMNode()) as Element;
     }
 
     private onEditTag = (tag: ITag) => {
-        if (!tag) {
-            return;
-        }
         const { editingTag } = this.state;
         const newEditingTag = (editingTag && editingTag.name === tag.name) ? null : tag;
         this.setState({
             editingTag: newEditingTag,
+            editingTagNode: this.getTagNode(newEditingTag),
         });
         if (this.state.clickedColor) {
             this.setState({
