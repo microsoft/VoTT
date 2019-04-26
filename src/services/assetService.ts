@@ -40,10 +40,10 @@ export class AssetService {
             filePath = encodeFileURI(filePath, true);
         }
 
-        const hashTarget = projectName ? JSON.stringify({
+        const hashTarget = JSON.stringify({
             projectName,
             filePath
-        }) : filePath
+        });
 
         const md5Hash = new MD5().update(hashTarget).digest("hex");
         const pathParts = filePath.split(/[\\\/]/);

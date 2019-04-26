@@ -5,12 +5,12 @@ import MD5 from "md5.js";
 
 describe("Bing Image Search", () => {
     const options: IBingImageSearchOptions = {
-        projectName: "myproject",
         apiKey: "ABC123",
         query: "Waterfalls",
         aspectRatio: BingImageSearchAspectRatio.All,
     };
     const provider = new BingImageSearch(options);
+    const projectName = "my project";
 
     const assets = [
         { contentUrl: "http://images.com/image1.jpg" },
@@ -37,7 +37,7 @@ describe("Bing Image Search", () => {
             },
         };
 
-        await provider.getAssets();
+        await provider.getAssets(projectName);
         expect(axios.get).toBeCalledWith(expectedUrl, expectedHeaders);
     });
 
@@ -52,7 +52,7 @@ describe("Bing Image Search", () => {
             size: null,
         };
 
-        const assets = await provider.getAssets();
+        const assets = await provider.getAssets(projectName);
         expect(assets.length).toEqual(assets.length);
         expect(assets[0]).toEqual(expectedAsset);
     });

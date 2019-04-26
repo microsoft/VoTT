@@ -190,7 +190,7 @@ describe("Azure blob functions", () => {
             };
         });
         provider.getFileName = jest.fn();
-        const assets = await provider.getAssets();
+        const assets = await provider.getAssets("myproject");
         expect(provider.getFileName).toBeCalled();
         expect(assets).toHaveLength(ad.blobs.segment.blobItems.length);
     });
