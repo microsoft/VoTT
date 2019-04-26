@@ -72,7 +72,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         portalElement: defaultDOMNode(),
     };
 
-    private tagItemRefs: Map<string, RefObject<TagInputItem>> = new Map<string, RefObject<TagInputItem>>();
+    private tagItemRefs: Map<string, TagInputItem> = new Map<string, TagInputItem>();
     private portalDiv = document.createElement("div");
 
     public render() {
@@ -98,6 +98,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                         this.state.searchTags &&
                         <div className="tag-input-text-input-row search-input">
                             <input
+                                className="tag-search-box"
                                 type="text"
                                 onKeyDown={this.onSearchKeyDown}
                                 onChange={(e) => this.setState({ searchQuery: e.target.value })}
@@ -155,22 +156,16 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private getTagNode = (tag: ITag): Element => {
-        if (!tag) {
-            return defaultDOMNode();
-        }
-
-        const itemRef = this.tagItemRefs.get(tag.name);
-        return (itemRef ? ReactDOM.findDOMNode(itemRef.current) : defaultDOMNode()) as Element;
+        const itemRef = tag ? this.tagItemRefs.get(tag.name) : null;
+        return (itemRef ? ReactDOM.findDOMNode(itemRef) : defaultDOMNode()) as Element;
     }
 
     private onEditTag = (tag: ITag) => {
-        if (!tag) {
-            return;
-        }
         const { editingTag } = this.state;
         const newEditingTag = (editingTag && editingTag.name === tag.name) ? null : tag;
         this.setState({
             editingTag: newEditingTag,
+            editingTagNode: this.getTagNode(newEditingTag),
         });
         if (this.state.clickedColor) {
             this.setState({
@@ -222,7 +217,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private updateTag = (tag: ITag, newTag: ITag) => {
-        if (tag === newTag) {
+        if (tag.name === newTag.name && tag.color === newTag.color) {
             return;
         }
         if (!newTag.name.length) {
@@ -317,7 +312,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             />);
     }
 
-    private setTagItemRef = (item, tag) => {
+    private setTagItemRef = (item: TagInputItem, tag: ITag) => {
         this.tagItemRefs.set(tag.name, item);
         return item;
     }
