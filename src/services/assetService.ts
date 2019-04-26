@@ -42,7 +42,7 @@ export class AssetService {
 
         const hashTarget = JSON.stringify({
             projectName,
-            filePath
+            filePath,
         });
 
         const md5Hash = new MD5().update(hashTarget).digest("hex");

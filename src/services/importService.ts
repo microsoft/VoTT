@@ -163,7 +163,8 @@ export default class ImportService implements IImportService {
      */
     private async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
         const filePath = v1Project.file.path.replace(/\.[^/.]+$/, "");
-        const parentAsset = AssetService.createAssetFromFilePath(filePath, v1Project.file.name, filePath.replace(/^.*[\\\/]/, ""));
+        const parentAsset = AssetService.createAssetFromFilePath(
+            filePath, v1Project.file.name, filePath.replace(/^.*[\\\/]/, ""));
         const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
 
         parentAsset.size = { height: assetProps.height, width: assetProps.width };

@@ -114,7 +114,8 @@ describe("Html File Reader", () => {
         });
 
         it("Test non valid asset type", async () => {
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported", projectName);
+            const imageAsset = AssetService.createAssetFromFilePath(
+                "https://server.com/image.notsupported", projectName);
             try {
                 const result = await HtmlFileReader.readAssetAttributes(imageAsset);
             } catch (error) {

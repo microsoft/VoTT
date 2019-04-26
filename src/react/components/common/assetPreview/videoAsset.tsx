@@ -237,7 +237,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             // Video is paused, make sure we are on a key frame, and if we are not, seek to that
             // before raising the child selected event
             if (this.isValidKeyFrame()) {
-                this.raiseChildAssetSelected(state, );
+                this.raiseChildAssetSelected(state );
                 this.raiseDeactivated();
             }
         } else if (!state.paused && state.paused !== prev.paused) {

@@ -171,7 +171,8 @@ export default class MockFactory {
      * @param name Name of asset
      * @param assetState State of asset
      */
-    public static createVideoTestAsset(name: string, projectName: string, assetState: AssetState = AssetState.NotVisited): IAsset {
+    public static createVideoTestAsset(name: string, projectName: string,
+                                       assetState: AssetState = AssetState.NotVisited): IAsset {
         return {
             id: `videoasset-${name}`,
             projectName,
@@ -209,9 +210,9 @@ export default class MockFactory {
      * @param rootAsset The parent video asset
      * @param count The number of child assets to create (default 10)
      */
-    public static createChildVideoAssets(rootAsset: IAsset, count: number = 10): IAsset[] {
+    public static createChildVideoAssets(rootAsset: IAsset, count: number = 10, projectName="my project"): IAsset[] {
         return [...Array(count).keys()].map((index) => {
-            return this.createChildVideoAsset(rootAsset, index, "myproject");
+            return this.createChildVideoAsset(rootAsset, index, projectName);
         });
     }
 
