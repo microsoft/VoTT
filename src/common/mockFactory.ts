@@ -210,7 +210,7 @@ export default class MockFactory {
      * @param rootAsset The parent video asset
      * @param count The number of child assets to create (default 10)
      */
-    public static createChildVideoAssets(rootAsset: IAsset, count: number = 10, projectName="my project"): IAsset[] {
+    public static createChildVideoAssets(rootAsset: IAsset, count: number = 10, projectName= "my project"): IAsset[] {
         return [...Array(count).keys()].map((index) => {
             return this.createChildVideoAsset(rootAsset, index, projectName);
         });
