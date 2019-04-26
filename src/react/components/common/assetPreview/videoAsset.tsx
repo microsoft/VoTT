@@ -265,11 +265,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     /**
      * Raises the "childAssetSelected" event if available
      */
-    private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
+    private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>, projectName: string) => {
         if (this.props.onChildAssetSelected) {
             const rootAsset = this.props.asset.parent || this.props.asset;
             const childPath = `${rootAsset.path}#t=${state.currentTime}`;
-            const childAsset = AssetService.createAssetFromFilePath(childPath);
+            const childAsset = AssetService.createAssetFromFilePath(childPath, projectName);
             childAsset.state = AssetState.NotVisited;
             childAsset.type = AssetType.VideoFrame;
             childAsset.parent = rootAsset;

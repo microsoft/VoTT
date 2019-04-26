@@ -26,7 +26,7 @@ export class AssetService {
      * @param filePath - filepath of asset
      * @param fileName - name of asset
      */
-    public static createAssetFromFilePath(filePath: string, fileName?: string, projectName?: string): IAsset {
+    public static createAssetFromFilePath(filePath: string, projectName: string, fileName?: string): IAsset {
         Guard.empty(filePath);
 
         const normalizedPath = filePath.toLowerCase();

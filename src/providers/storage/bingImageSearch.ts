@@ -40,7 +40,7 @@ export class BingImageSearch implements IAssetProvider {
     /**
      * Retrieves assets from Bing Image Search based on options provided
      */
-    public async getAssets(): Promise<IAsset[]> {
+    public async getAssets(projectName: string): Promise<IAsset[]> {
         const query = {
             q: this.options.query,
             aspect: this.options.aspectRatio,
@@ -58,7 +58,7 @@ export class BingImageSearch implements IAssetProvider {
         const items = response.data.value.map((item) => item.contentUrl);
 
         return items
-            .map((filePath) => AssetService.createAssetFromFilePath(filePath))
+            .map((filePath) => AssetService.createAssetFromFilePath(filePath, projectName))
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
 }

@@ -112,7 +112,7 @@ export default class ImportService implements IImportService {
 
         return await frames.mapAsync(async (frame) => {
             const filePath = `${projectPath}/${frame.name}`;
-            const asset = AssetService.createAssetFromFilePath(filePath);
+            const asset = AssetService.createAssetFromFilePath(filePath, v1Project.file.name);
             const assetState = this.getAssetState(frame);
 
             return await this.createAssetMetadata(asset, assetState, frame.regions);
@@ -131,7 +131,7 @@ export default class ImportService implements IImportService {
         const videoFrameAssets = await frames.mapAsync(async (frame) => {
             const frameInt = Number(frame.name);
             const timestamp = (frameInt - 1) / Number(originalProject.framerate);
-            const asset = this.createVideoFrameAsset(parentVideoAsset, timestamp);
+            const asset = this.createVideoFrameAsset(parentVideoAsset, timestamp, v1Project.file.name);
             const assetState = this.getAssetState(frame);
 
             return await this.createAssetMetadata(asset, assetState, frame.regions, parentVideoAsset);
@@ -163,7 +163,7 @@ export default class ImportService implements IImportService {
      */
     private async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
         const filePath = v1Project.file.path.replace(/\.[^/.]+$/, "");
-        const parentAsset = AssetService.createAssetFromFilePath(filePath, filePath.replace(/^.*[\\\/]/, ""));
+        const parentAsset = AssetService.createAssetFromFilePath(filePath, v1Project.file.name, filePath.replace(/^.*[\\\/]/, ""));
         const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
 
         parentAsset.size = { height: assetProps.height, width: assetProps.width };
@@ -243,9 +243,9 @@ export default class ImportService implements IImportService {
      * @param parent The parent video asset
      * @param timestamp The timestamp for the child video frame
      */
-    private createVideoFrameAsset(parent: IAsset, timestamp: number): IAsset {
+    private createVideoFrameAsset(parent: IAsset, timestamp: number, projectName: string): IAsset {
         return {
-            ...AssetService.createAssetFromFilePath(`${parent.path}#t=${timestamp}`),
+            ...AssetService.createAssetFromFilePath(`${parent.path}#t=${timestamp}`, projectName),
             timestamp,
             parent,
             type: AssetType.VideoFrame,

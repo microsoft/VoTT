@@ -191,9 +191,9 @@ export default class MockFactory {
      * @param rootAsset The parent video asset
      * @param timestamp The timestamp to generate child asset
      */
-    public static createChildVideoAsset(rootAsset: IAsset, timestamp: number): IAsset {
+    public static createChildVideoAsset(rootAsset: IAsset, timestamp: number, projectName: string): IAsset {
         const childPath = `${rootAsset.path}#t=${timestamp}`;
-        const childAsset = AssetService.createAssetFromFilePath(childPath);
+        const childAsset = AssetService.createAssetFromFilePath(childPath, projectName);
         childAsset.type = AssetType.VideoFrame;
         childAsset.state = AssetState.Tagged;
         childAsset.parent = rootAsset;

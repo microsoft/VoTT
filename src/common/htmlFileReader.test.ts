@@ -8,6 +8,8 @@ import { AssetState, IAsset } from "../models/applicationState";
 describe("Html File Reader", () => {
     const assetTestCache = new Map<string, IAsset>();
 
+    const projectName = "test";
+
     beforeEach(() => {
         assetTestCache.clear();
         MockFactory.mockElement(assetTestCache);
@@ -27,7 +29,7 @@ describe("Html File Reader", () => {
     });
 
     it("Loads attributes for HTML 5 video", async () => {
-        const videoAsset = AssetService.createAssetFromFilePath("https://server.com/video.mp4");
+        const videoAsset = AssetService.createAssetFromFilePath("https://server.com/video.mp4", projectName);
         videoAsset.size = {
             width: 1920,
             height: 1080,
@@ -41,7 +43,7 @@ describe("Html File Reader", () => {
     });
 
     it("Loads attributes for an image asset", async () => {
-        const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+        const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", projectName);
         imageAsset.size = {
             width: 1920,
             height: 1080,
@@ -56,7 +58,7 @@ describe("Html File Reader", () => {
 
     describe("Download asset binaries", () => {
         it("Downloads a blob from the asset path", async () => {
-            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", projectName);
             axios.get = jest.fn((url, config) => {
                 return Promise.resolve<AxiosResponse>({
                     config,
@@ -74,7 +76,7 @@ describe("Html File Reader", () => {
         });
 
         it("Rejects the promise when request receives non 200 result", async () => {
-            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", projectName);
             axios.get = jest.fn((url, config) => {
                 return Promise.resolve<AxiosResponse>({
                     config,
@@ -104,7 +106,7 @@ describe("Html File Reader", () => {
         });
 
         it("Downloads a byte array from the asset path", async () => {
-            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", projectName);
             const result = await HtmlFileReader.getAssetArray(asset);
             expect(result).not.toBeNull();
             expect(result).toBeInstanceOf(ArrayBuffer);
@@ -112,7 +114,7 @@ describe("Html File Reader", () => {
         });
 
         it("Test non valid asset type", async () => {
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported");
+            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported", projectName);
             try {
                 const result = await HtmlFileReader.readAssetAttributes(imageAsset);
             } catch (error) {
@@ -144,7 +146,7 @@ describe("Html File Reader", () => {
                 });
             });
 
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
+            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord", projectName);
             const result = await HtmlFileReader.readAssetAttributes(imageAsset);
 
             expect(result.width).toEqual(expected.width);
@@ -175,7 +177,7 @@ describe("Html File Reader", () => {
                 });
             });
 
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
+            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord", projectName);
             const result = await HtmlFileReader.readAssetAttributes(imageAsset);
 
             expect(result.width).toEqual(expected.width);
@@ -186,7 +188,7 @@ describe("Html File Reader", () => {
     describe("Extracting video frames", () => {
         it("Gets a blob for the requested video frame", async () => {
             const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-1", AssetState.Tagged);
-            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 123.456);
+            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 123.456, projectName);
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
             const blob = await HtmlFileReader.getAssetFrameImage(videoFrame);
@@ -196,7 +198,7 @@ describe("Html File Reader", () => {
 
         it("Appends jpg file extension on specified video frame asset", async () => {
             const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-2", AssetState.Tagged);
-            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789);
+            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789, projectName);
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
             expect(videoFrame.name.endsWith(".jpg")).toBe(false);
@@ -206,7 +208,7 @@ describe("Html File Reader", () => {
 
         it("Does not duplicate jpg file extension on specified video frame asset", async () => {
             const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-3", AssetState.Tagged);
-            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789);
+            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789, projectName);
             videoFrame.name += ".jpg";
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
@@ -218,7 +220,7 @@ describe("Html File Reader", () => {
 
         it("Throws an error when a video error occurs", async () => {
             const videoErrorAsset = MockFactory.createVideoTestAsset("VideoErrorAsset", AssetState.Tagged);
-            const videoErrorFrame = MockFactory.createChildVideoAsset(videoErrorAsset, 123.456);
+            const videoErrorFrame = MockFactory.createChildVideoAsset(videoErrorAsset, 123.456, projectName);
             assetTestCache.set(videoErrorAsset.path, videoErrorFrame);
 
             await expect(HtmlFileReader.getAssetFrameImage(videoErrorFrame)).rejects.not.toBeNull();

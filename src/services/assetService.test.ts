@@ -12,9 +12,11 @@ import registerMixins from "../registerMixins";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
+        const projectName = "test";
+
         it("creates an asset from a file path", () => {
             const path = "C:\\dir1\\dir2\\asset1.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
 
             expect(asset).not.toBeNull();
             expect(asset.id).toEqual(expect.any(String));
@@ -26,7 +28,7 @@ describe("Asset Service", () => {
 
         it("creates an asset from an encoded file", () => {
             const path = "C:\\dir1\\dir2\\asset%201.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
 
             expect(asset).not.toBeNull();
             expect(asset.id).toEqual(expect.any(String));
@@ -38,7 +40,7 @@ describe("Asset Service", () => {
 
         it("creates an asset from a http source", () => {
             const path = "http://my.server.com/asset1.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
 
             expect(asset).not.toBeNull();
             expect(asset.id).toEqual(expect.any(String));
@@ -50,43 +52,43 @@ describe("Asset Service", () => {
 
         it("detects an image asset by common file extension", () => {
             const path = "C:\\dir1\\dir2\\asset1.png";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
             expect(asset.type).toEqual(AssetType.Image);
         });
 
         it("detects a video asset by common file extension", () => {
             const path = "C:\\dir1\\dir2\\asset1.mp4";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
             expect(asset.type).toEqual(AssetType.Video);
         });
 
         it("detects a video asset by common file extension", () => {
             const path = "file:C:/dir1/dir2/asset1.mp4#t=5";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
             expect(asset.type).toEqual(AssetType.Video);
         });
 
         it("detects a tfrecord asset by common file extension", () => {
             const path = "C:\\dir1\\dir2\\asset1.tfrecord";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
             expect(asset.type).toEqual(AssetType.TFRecord);
         });
 
         it("detects an asset as unkonwn if it doesn't match well known file extensions", () => {
             const path = "C:\\dir1\\dir2\\asset1.docx";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
             expect(asset.type).toEqual(AssetType.Unknown);
         });
 
         it("detects an asset in case asset name contains other file extension in the middle", () => {
             const path = "C:\\dir1\\dir2\\asset1.docx.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
             expect(asset.type).toEqual(AssetType.Image);
         });
 
         it("detects an asset in case asset name contains other file extension in the middle", () => {
             const path = "C:\\dir1\\dir2\\asset1.jpg.docx";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const asset = AssetService.createAssetFromFilePath(path, projectName);
             expect(asset.type).toEqual(AssetType.Unknown);
         });
     });
