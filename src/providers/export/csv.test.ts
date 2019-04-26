@@ -1,10 +1,12 @@
 import _ from "lodash";
-import { CSVFormatExportProvider } from "./csvFormat";
+import { CsvExportProvider, ICsvExportProviderOptions } from "./csv";
 import registerProviders from "../../registerProviders";
 import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState, IExportProviderOptions,
-    RegionType } from "../../models/applicationState";
+import {
+    IProject, IAssetMetadata, AssetState, IExportProviderOptions,
+    RegionType,
+} from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
@@ -16,6 +18,7 @@ import registerMixins from "../../registerMixins";
 import HtmlFileReader from "../../common/htmlFileReader";
 import { appInfo } from "../../common/appInfo";
 import { AssetProviderFactory } from "../storage/assetProviderFactory";
+import os from "os";
 
 registerMixins();
 
@@ -30,7 +33,7 @@ describe("CSV Format Export Provider", () => {
             "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
         },
         exportFormat: {
-            providerType: "csvFormat",
+            providerType: "csv",
             providerOptions: {
                 assetState: ExportAssetState.All,
             },
@@ -56,16 +59,16 @@ describe("CSV Format Export Provider", () => {
     });
 
     it("Is defined", () => {
-        expect(CSVFormatExportProvider).toBeDefined();
+        expect(CsvExportProvider).toBeDefined();
     });
 
     it("Can be instantiated through the factory", () => {
         const options: IExportProviderOptions = {
             assetState: ExportAssetState.All,
         };
-        const exportProvider = ExportProviderFactory.create("csvFormat", testProject, options);
+        const exportProvider = ExportProviderFactory.create("csv", testProject, options);
         expect(exportProvider).not.toBeNull();
-        expect(exportProvider).toBeInstanceOf(CSVFormatExportProvider);
+        expect(exportProvider).toBeInstanceOf(CsvExportProvider);
     });
 
     describe("Export variations", () => {
@@ -100,54 +103,57 @@ describe("CSV Format Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: IExportProviderOptions = {
+            const options: ICsvExportProviderOptions = {
                 assetState: ExportAssetState.All,
+                includeImages: false,
             };
 
-            const exportProvider = new CSVFormatExportProvider(testProject, options);
+            const exportProvider = new CsvExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const exportCsv = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            const records = exportCsv.split("\n");
+            const records = exportCsv.split(os.EOL);
 
             // 10 assets - Each with 1 region and 2 tags
-            expect(records.length).toEqual(20);
+            expect(records.length).toEqual(testAssets.length * 2 + 1);
 
             expect(LocalFileSystemProxy.prototype.writeText)
                 .toBeCalledWith(expectedFileName, expect.any(String));
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: IExportProviderOptions = {
+            const options: ICsvExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
+                includeImages: false,
             };
 
-            const exportProvider = new CSVFormatExportProvider(testProject, options);
+            const exportProvider = new CsvExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const exportCsv = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            const records = exportCsv.split("\n");
+            const records = exportCsv.split(os.EOL);
 
             // 2 tagged / 1 visited assets - Each with 1 region and 2 tags
-            expect(records.length).toEqual(6);
+            expect(records.length).toEqual(7);
         });
 
         it("Exports only tagged assets", async () => {
-            const options: IExportProviderOptions = {
+            const options: ICsvExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
+                includeImages: false,
             };
 
-            const exportProvider = new CSVFormatExportProvider(testProject, options);
+            const exportProvider = new CsvExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
             const exportCsv = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
-            const records = exportCsv.split("\n");
+            const records = exportCsv.split(os.EOL);
 
             // 2 tagged - Each with 1 region and 2 tags
-            expect(records.length).toEqual(4);
+            expect(records.length).toEqual(5);
         });
     });
 });

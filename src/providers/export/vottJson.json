@@ -21,8 +21,8 @@
         "includeImages": {
             "type": "boolean",
             "default": true,
-            "title": "${strings.export.providers.vottJson.properties.includeImages.title}",
-            "description": "${strings.export.providers.vottJson.properties.includeImages.description}"
+            "title": "${strings.export.providers.common.properties.includeImages.title}",
+            "description": "${strings.export.providers.common.properties.includeImages.description}"
         }
     }
 }
