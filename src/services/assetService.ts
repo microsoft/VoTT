@@ -26,7 +26,7 @@ export class AssetService {
      * @param filePath - filepath of asset
      * @param fileName - name of asset
      */
-    public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
+    public static createAssetFromFilePath(filePath: string, fileName?: string, projectName?: string): IAsset {
         Guard.empty(filePath);
 
         const normalizedPath = filePath.toLowerCase();
@@ -40,7 +40,12 @@ export class AssetService {
             filePath = encodeFileURI(filePath, true);
         }
 
-        const md5Hash = new MD5().update(filePath).digest("hex");
+        const hashTarget = projectName ? JSON.stringify({
+            projectName,
+            filePath
+        }) : filePath
+
+        const md5Hash = new MD5().update(hashTarget).digest("hex");
         const pathParts = filePath.split(/[\\\/]/);
         // Example filename: video.mp4#t=5
         // fileNameParts[0] = "video"
