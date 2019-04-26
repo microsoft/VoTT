@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { ExportProvider } from "./exportProvider";
-import { IProject, IExportProviderOptions, IAssetMetadata } from "../../models/applicationState";
+import { IProject, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";
 import { constants } from "../../common/constants";
 import HtmlFileReader from "../../common/htmlFileReader";

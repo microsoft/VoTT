@@ -4,7 +4,6 @@ import { IProject, IExportProviderOptions } from "../../models/applicationState"
 import Guard from "../../common/guard";
 import HtmlFileReader from "../../common/htmlFileReader";
 import json2csv, { Parser } from "json2csv";
-import JSON2CSVAsyncParser from "json2csv/JSON2CSVAsyncParser";
 
 /**
  * Options for CSV Export Provider
