@@ -299,16 +299,14 @@ export interface IAppStrings {
                         title: string,
                         description: string,
                     },
-                },
-            },
-            vottJson: {
-                displayName: string,
-                properties: {
                     includeImages: {
                         title: string,
                         description: string,
                     },
                 },
+            },
+            vottJson: {
+                displayName: string,
             },
             azureCV: {
                 displayName: string,
@@ -380,6 +378,9 @@ export interface IAppStrings {
                 },
             },
             cntk: {
+                displayName: string,
+            },
+            csv: {
                 displayName: string,
             },
         },
