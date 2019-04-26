@@ -16,6 +16,7 @@ import { BlobDeleteResponse } from "@azure/storage-blob/typings/lib/generated/li
  * @member oauthToken - Not yet implemented. Optional token for accessing Azure Blob Storage
  */
 export interface IAzureCloudStorageOptions {
+    projectName: string;
     accountName: string;
     containerName: string;
     createContainer: boolean;
@@ -191,13 +192,13 @@ export class AzureBlobStorage implements IStorageProvider {
      * @param containerName - Container from which to retrieve assets. Defaults to
      * container specified in Azure Cloud Storage options
      */
-    public async getAssets(containerName?: string, projectName?: string): Promise<IAsset[]> {
+    public async getAssets(containerName?: string): Promise<IAsset[]> {
         containerName = (containerName) ? containerName : this.options.containerName;
         const files = await this.listFiles(containerName);
         const result: IAsset[] = [];
         for (const file of files) {
             const url = this.getUrl(file);
-            const asset = AssetService.createAssetFromFilePath(url, projectName, this.getFileName(url));
+            const asset = AssetService.createAssetFromFilePath(url, this.options.projectName, this.getFileName(url));
             if (asset.type !== AssetType.Unknown) {
                 result.push(asset);
             }

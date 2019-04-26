@@ -210,7 +210,7 @@ export default class MockFactory {
      */
     public static createChildVideoAssets(rootAsset: IAsset, count: number = 10): IAsset[] {
         return [...Array(count).keys()].map((index) => {
-            return this.createChildVideoAsset(rootAsset, index);
+            return this.createChildVideoAsset(rootAsset, index, "myproject");
         });
     }
 
@@ -387,6 +387,7 @@ export default class MockFactory {
      */
     public static createAzureOptions(): IAzureCloudStorageOptions {
         return {
+            projectName: "myproject",
             accountName: "myaccount",
             containerName: "container0",
             sas: "sas",
@@ -547,6 +548,7 @@ export default class MockFactory {
      */
     public static createBingOptions(): IBingImageSearchOptions {
         return {
+            projectName: "myproject",
             apiKey: "key",
             aspectRatio: BingImageSearchAspectRatio.All,
             query: "test",

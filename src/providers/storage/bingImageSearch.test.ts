@@ -5,6 +5,7 @@ import MD5 from "md5.js";
 
 describe("Bing Image Search", () => {
     const options: IBingImageSearchOptions = {
+        projectName: "myproject",
         apiKey: "ABC123",
         query: "Waterfalls",
         aspectRatio: BingImageSearchAspectRatio.All,
