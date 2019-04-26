@@ -126,7 +126,6 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
      * @param folderName - Directory containing assets
      */
     public getAssets(projectName: string): Promise<IAsset[]> {
-        const folderPath = [this.options.folderPath].join("/");
         return IpcRendererProxy.send(`${PROXY_NAME}:getAssets`, [this.options.folderPath, projectName]);
     }
 }
