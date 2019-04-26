@@ -302,16 +302,14 @@ export const english: IAppStrings = {
                         title: "Test / Train Split",
                         description: "The test train split to use for exported data",
                     },
-                },
-            },
-            vottJson: {
-                displayName: "VoTT JSON",
-                properties: {
                     includeImages: {
                         title: "Include Images",
                         description: "Whether or not to include binary image assets in target connection",
                     },
                 },
+            },
+            vottJson: {
+                displayName: "VoTT JSON",
             },
             azureCV: {
                 displayName: "Azure Custom Vision Service",
@@ -384,6 +382,9 @@ export const english: IAppStrings = {
             },
             cntk: {
                 displayName: "Microsoft Cognitive Toolkit (CNTK)",
+            },
+            csv: {
+                displayName: "Comma Separated Values (CSV)",
             },
         },
         messages: {

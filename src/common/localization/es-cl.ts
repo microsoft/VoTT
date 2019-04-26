@@ -305,16 +305,14 @@ export const spanish: IAppStrings = {
                         title: "La división para entrenar y comprobar",
                         description: "La división de datos para utilizar entre el entrenamiento y la comprobación",
                     },
-                },
-            },
-            vottJson: {
-                displayName: "VoTT JSON",
-                properties: {
                     includeImages: {
                         title: "Incluir imágenes",
                         description: "Si desea o no incluir activos de imagen binaria en la conexión de destino",
                     },
                 },
+            },
+            vottJson: {
+                displayName: "VoTT JSON",
             },
             azureCV: {
                 displayName: "Servicio de Visión Personalizada Azure",
@@ -387,6 +385,9 @@ export const spanish: IAppStrings = {
             },
             cntk: {
                 displayName: "Microsoft Cognitive Toolkit (CNTK)",
+            },
+            csv: {
+                displayName: "Los valores separados por comas (CSV)",
             },
         },
         messages: {

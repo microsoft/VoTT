@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "title": "${strings.export.providers.vottJson.displayName}",
+    "title": "${strings.export.providers.csv.displayName}",
     "properties": {
         "assetState": {
             "type": "string",
