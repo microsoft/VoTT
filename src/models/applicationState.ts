@@ -264,6 +264,7 @@ export interface IAssetVideoSettings {
  */
 export interface IAsset {
     id: string;
+    projectName: string;
     type: AssetType;
     state: AssetState;
     name: string;

@@ -32,7 +32,7 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
 
     public async export(): Promise<IExportResults> {
         await this.createFolderStructure();
-        const assetsToExport = await this.getAssetsForExport();
+        const assetsToExport = await this.getAssetsForExport(this.project.name);
         const testSplit = (100 - (this.options.testTrainSplit || 80)) / 100;
         const testCount = Math.ceil(assetsToExport.length * testSplit);
         const testArray = assetsToExport.slice(0, testCount);

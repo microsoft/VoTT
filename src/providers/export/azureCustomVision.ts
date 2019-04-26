@@ -85,7 +85,7 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
      */
     public async export(): Promise<IExportResults> {
         const customVisionTags = await this.syncTags();
-        const assetsToExport = await this.getAssetsForExport();
+        const assetsToExport = await this.getAssetsForExport(this.project.name);
         const tagMap = _.keyBy(customVisionTags, "name");
 
         const results = await assetsToExport.mapAsync(async (asset) => {

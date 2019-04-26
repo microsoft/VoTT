@@ -44,6 +44,7 @@ describe("Bing Image Search", () => {
     it("returns parsed image assets", async () => {
         const expectedAsset: IAsset = {
             id: new MD5().update("http://images.com/image1.jpg").digest("hex"),
+            projectName,
             format: "jpg",
             name: "image1.jpg",
             path: "http://images.com/image1.jpg",

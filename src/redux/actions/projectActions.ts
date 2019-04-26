@@ -131,7 +131,7 @@ export function closeProject(): (dispatch: Dispatch) => void {
 export function loadAssets(project: IProject): (dispatch: Dispatch) => Promise<IAsset[]> {
     return async (dispatch: Dispatch) => {
         const assetService = new AssetService(project);
-        const assets = await assetService.getAssets();
+        const assets = await assetService.getAssets(project.name);
         dispatch(loadProjectAssetsAction(assets));
 
         return assets;

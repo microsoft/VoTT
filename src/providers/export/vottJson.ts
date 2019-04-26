@@ -27,7 +27,7 @@ export class VottJsonExportProvider extends ExportProvider<IVottJsonExportProvid
      * Export project to VoTT JSON format
      */
     public async export(): Promise<void> {
-        const results = await this.getAssetsForExport();
+        const results = await this.getAssetsForExport(this.project.name);
 
         if (this.options.includeImages) {
             await results.forEachAsync(async (assetMetadata) => {

@@ -18,6 +18,7 @@ describe("Asset Preview Component", () => {
     const onChildAssetSelectedHandler = jest.fn();
     const onAssetChangedHandler = jest.fn();
     const onBeforeAssetChangedHandler = jest.fn(() => true);
+    const projectName = "my project";
 
     const defaultProps: IAssetPreviewProps = {
         asset: {
@@ -63,7 +64,7 @@ describe("Asset Preview Component", () => {
     it("renders a video asset when asset type is video", () => {
         const props: IAssetPreviewProps = {
             ...defaultProps,
-            asset: MockFactory.createVideoTestAsset("test-video-asset"),
+            asset: MockFactory.createVideoTestAsset("test-video-asset", projectName),
         };
         wrapper = createComponent(props);
         const videoProps = wrapper.find(VideoAsset).props();
@@ -140,7 +141,7 @@ describe("Asset Preview Component", () => {
     it("raises asset error handler when a video asset fails to load successfully", () => {
         const props: IAssetPreviewProps = {
             ...defaultProps,
-            asset: MockFactory.createVideoTestAsset("test-video-asset"),
+            asset: MockFactory.createVideoTestAsset("test-video-asset", projectName),
         };
         wrapper = createComponent(props);
         const errorEvent = new Event("error");
@@ -154,7 +155,7 @@ describe("Asset Preview Component", () => {
     it("raises asset loaded handler when image asset loading is complete", () => {
         const props: IAssetPreviewProps = {
             ...defaultProps,
-            asset: MockFactory.createVideoTestAsset("test-video-asset"),
+            asset: MockFactory.createVideoTestAsset("test-video-asset", projectName),
         };
         wrapper = createComponent(props);
         wrapper.find(VideoAsset).props().onLoaded(document.createElement("video"));
@@ -182,17 +183,17 @@ describe("Asset Preview Component", () => {
     it("raises child asset selected handler when a child asset is selected", () => {
         const props: IAssetPreviewProps = {
             ...defaultProps,
-            asset: MockFactory.createVideoTestAsset("test-video-asset"),
+            asset: MockFactory.createVideoTestAsset("test-video-asset", projectName),
         };
         wrapper = createComponent(props);
-        const childAsset = MockFactory.createChildVideoAsset(props.asset, 10);
+        const childAsset = MockFactory.createChildVideoAsset(props.asset, 10, projectName);
         wrapper.find(VideoAsset).props().onChildAssetSelected(childAsset);
 
         expect(onChildAssetSelectedHandler).toBeCalledWith(childAsset);
     });
 
     it("raises onBeforeAssetChanged during asset transitions", () => {
-        const videoAsset = MockFactory.createVideoTestAsset("test-video-asset");
+        const videoAsset = MockFactory.createVideoTestAsset("test-video-asset", projectName);
         const props: IAssetPreviewProps = {
             ...defaultProps,
             asset: videoAsset,
@@ -204,8 +205,8 @@ describe("Asset Preview Component", () => {
     });
 
     it("blocks onChildAssetSelected", () => {
-        const videoAsset = MockFactory.createVideoTestAsset("test-video-asset");
-        const childAsset = MockFactory.createChildVideoAsset(videoAsset, 2);
+        const videoAsset = MockFactory.createVideoTestAsset("test-video-asset", projectName);
+        const childAsset = MockFactory.createChildVideoAsset(videoAsset, 2, projectName);
         onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
 
         const props: IAssetPreviewProps = {

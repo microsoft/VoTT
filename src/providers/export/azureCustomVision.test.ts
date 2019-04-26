@@ -38,6 +38,8 @@ describe("Azure Custom Vision Export Provider", () => {
         projectId: expect.any(String),
     };
 
+    const projectName = "my project";
+
     function createProvider(project: IProject): AzureCustomVisionProvider {
         return new AzureCustomVisionProvider(
             project,
@@ -210,7 +212,7 @@ describe("Azure Custom Vision Export Provider", () => {
         it("Uploads binaries, regions & tags for all assets", async () => {
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
             const provider = createProvider(testProject);
-            const allAssets = await provider.getAssetsForExport();
+            const allAssets = await provider.getAssetsForExport(projectName);
             const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
             const results = await provider.export();
 
@@ -274,7 +276,7 @@ describe("Azure Custom Vision Export Provider", () => {
         it("Returns export results", async () => {
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
             const provider = createProvider(testProject);
-            const allAssets = await provider.getAssetsForExport();
+            const allAssets = await provider.getAssetsForExport(projectName);
             const results = await provider.export();
 
             expect(results.count).toEqual(allAssets.length);

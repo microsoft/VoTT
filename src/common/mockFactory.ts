@@ -171,9 +171,10 @@ export default class MockFactory {
      * @param name Name of asset
      * @param assetState State of asset
      */
-    public static createVideoTestAsset(name: string, assetState: AssetState = AssetState.NotVisited): IAsset {
+    public static createVideoTestAsset(name: string, projectName: string, assetState: AssetState = AssetState.NotVisited): IAsset {
         return {
             id: `videoasset-${name}`,
+            projectName,
             format: "mp4",
             name: `videoasset${name}`,
             path: encodeFileURI(`C:\\Desktop\\videoasset${name}.mp4`),
@@ -387,7 +388,6 @@ export default class MockFactory {
      */
     public static createAzureOptions(): IAzureCloudStorageOptions {
         return {
-            projectName: "myproject",
             accountName: "myaccount",
             containerName: "container0",
             sas: "sas",
@@ -548,7 +548,6 @@ export default class MockFactory {
      */
     public static createBingOptions(): IBingImageSearchOptions {
         return {
-            projectName: "myproject",
             apiKey: "key",
             aspectRatio: BingImageSearchAspectRatio.All,
             query: "test",

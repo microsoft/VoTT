@@ -187,7 +187,7 @@ describe("Html File Reader", () => {
 
     describe("Extracting video frames", () => {
         it("Gets a blob for the requested video frame", async () => {
-            const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-1", AssetState.Tagged);
+            const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-1", projectName, AssetState.Tagged);
             const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 123.456, projectName);
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
@@ -197,7 +197,7 @@ describe("Html File Reader", () => {
         });
 
         it("Appends jpg file extension on specified video frame asset", async () => {
-            const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-2", AssetState.Tagged);
+            const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-2", projectName, AssetState.Tagged);
             const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789, projectName);
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
@@ -207,7 +207,7 @@ describe("Html File Reader", () => {
         });
 
         it("Does not duplicate jpg file extension on specified video frame asset", async () => {
-            const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-3", AssetState.Tagged);
+            const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-3", projectName, AssetState.Tagged);
             const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789, projectName);
             videoFrame.name += ".jpg";
             assetTestCache.set(videoFrame.parent.path, videoFrame);
@@ -219,7 +219,7 @@ describe("Html File Reader", () => {
         });
 
         it("Throws an error when a video error occurs", async () => {
-            const videoErrorAsset = MockFactory.createVideoTestAsset("VideoErrorAsset", AssetState.Tagged);
+            const videoErrorAsset = MockFactory.createVideoTestAsset("VideoErrorAsset", projectName, AssetState.Tagged);
             const videoErrorFrame = MockFactory.createChildVideoAsset(videoErrorAsset, 123.456, projectName);
             assetTestCache.set(videoErrorAsset.path, videoErrorFrame);
 

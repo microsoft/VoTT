@@ -11,8 +11,9 @@ import _ from "lodash";
 import registerMixins from "../registerMixins";
 
 describe("Asset Service", () => {
+    const projectName = "test";
+
     describe("Static Methods", () => {
-        const projectName = "test";
 
         it("creates an asset from a file path", () => {
             const path = "C:\\dir1\\dir2\\asset1.jpg";
@@ -99,6 +100,7 @@ describe("Asset Service", () => {
         let assetService: AssetService = null;
         let assetProviderMock: IAssetProvider = null;
         let storageProviderMock: any = null;
+        const projectName = "my project";
 
         beforeEach(() => {
             assetProviderMock = {
@@ -189,7 +191,7 @@ describe("Asset Service", () => {
             const testAsset = MockFactory.createTestAsset(" 11");
             testAssets.push(testAsset);
 
-            const result = await assetService.getAssets();
+            const result = await assetService.getAssets(projectName);
             const expected = encodeFileURI("C:\\Desktop\\asset 11.jpg");
 
             expect(result[10].path).toEqual(expected);
@@ -199,7 +201,7 @@ describe("Asset Service", () => {
             const testAsset = MockFactory.createTestAsset("#test?");
             testAssets.push(testAsset);
 
-            const result = await assetService.getAssets();
+            const result = await assetService.getAssets(projectName);
             const expected = encodeFileURI("C:\\Desktop\\asset#test?.jpg");
 
             expect(result[11].path).toEqual(expected);
@@ -209,7 +211,7 @@ describe("Asset Service", () => {
             const testAsset = MockFactory.createTestAsset("~!@#$&*()=:,;?+'");
             testAssets.push(testAsset);
 
-            const result = await assetService.getAssets();
+            const result = await assetService.getAssets(projectName);
             const expected = encodeFileURI("C:\\Desktop\\asset~!@#$&*()=:,;?+'.jpg");
 
             expect(result[12].path).toEqual(expected);
@@ -248,7 +250,7 @@ describe("Asset Service", () => {
         });
 
         it("Check file protocol", async () => {
-            const assets = await assetService.getAssets();
+            const assets = await assetService.getAssets(projectName);
 
             expect(assets.length).toEqual(2);
             expect(assets[0].path).toEqual("file:C:/Desktop/asset0.jpg");

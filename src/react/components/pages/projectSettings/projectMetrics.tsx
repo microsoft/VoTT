@@ -238,8 +238,9 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     }
 
     private async getAssetsAndMetadata() {
-        const assetService = new AssetService(this.props.project);
-        const sourceAssets = await assetService.getAssets();
+        const {project} = this.props;
+        const assetService = new AssetService(project);
+        const sourceAssets = await assetService.getAssets(project.name);
 
         const assetsMap = this.props.project.assets;
         const assets = _.values(assetsMap);

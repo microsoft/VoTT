@@ -70,7 +70,7 @@ export abstract class ExportProvider
     /**
      * Gets the assets that are configured to be exported based on the configured asset state
      */
-    public async getAssetsForExport(): Promise<IAssetMetadata[]> {
+    public async getAssetsForExport(projectName: string): Promise<IAssetMetadata[]> {
         let predicate: (asset: IAsset) => boolean = null;
 
         const getProjectAssets = () => Promise.resolve(_.values(this.project.assets));
@@ -78,7 +78,7 @@ export abstract class ExportProvider
             const projectAssets = await getProjectAssets();
 
             return _(projectAssets)
-                .concat((await this.assetProvider.getAssets()))
+                .concat((await this.assetProvider.getAssets(projectName)))
                 .uniqBy((asset) => asset.id)
                 .value();
         };

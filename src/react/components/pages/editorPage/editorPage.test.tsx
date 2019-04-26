@@ -393,7 +393,7 @@ describe("Editor Page Component", () => {
 
         beforeEach(async () => {
             const testProject = MockFactory.createTestProject("TestProject");
-            videoAsset = MockFactory.createVideoTestAsset("TestVideo");
+            videoAsset = MockFactory.createVideoTestAsset("TestVideo", testProject.name);
             videoFrames = MockFactory.createChildVideoAssets(videoAsset);
             const projectAssets = [videoAsset].concat(videoFrames);
             testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);

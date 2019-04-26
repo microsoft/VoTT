@@ -22,8 +22,9 @@ describe("Video Asset Component", () => {
     const onDeactivatedHandler = jest.fn();
     const onChildSelectedHandler = jest.fn();
     const onBeforeAssetChangedHandler = jest.fn(() => true);
+    const projectName = "my project";
     const defaultProps: IVideoAssetProps = {
-        asset: MockFactory.createVideoTestAsset("test-video"),
+        asset: MockFactory.createVideoTestAsset("test-video", projectName),
         autoPlay: true,
         controlsEnabled: true,
         timestamp: 0,
@@ -78,7 +79,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent();
         mockLoaded();
 
-        const newAsset = MockFactory.createVideoTestAsset("new-video-asset");
+        const newAsset = MockFactory.createVideoTestAsset("new-video-asset", projectName);
         wrapper.setProps({ asset: newAsset });
         expect(wrapper.state().loaded).toBe(false);
     });
@@ -91,7 +92,7 @@ describe("Video Asset Component", () => {
         wrapper = createComponent(testProps);
         mockLoaded();
 
-        const newAsset = MockFactory.createVideoTestAsset("new-video-asset");
+        const newAsset = MockFactory.createVideoTestAsset("new-video-asset", projectName);
         wrapper.setProps({ asset: newAsset });
         expect(videoPlayerMock.prototype.subscribeToStateChange).not.toBeCalled();
     });

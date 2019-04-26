@@ -47,7 +47,7 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
      * Export project to PascalVOC
      */
     public async export(): Promise<void> {
-        const allAssets = await this.getAssetsForExport();
+        const allAssets = await this.getAssetsForExport(this.project.name);
         const exportObject: any = { ...this.project };
         exportObject.assets = _.keyBy(allAssets, (assetMetadata) => assetMetadata.asset.id);
 

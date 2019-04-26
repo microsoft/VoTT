@@ -237,7 +237,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             // Video is paused, make sure we are on a key frame, and if we are not, seek to that
             // before raising the child selected event
             if (this.isValidKeyFrame()) {
-                this.raiseChildAssetSelected(state);
+                this.raiseChildAssetSelected(state, );
                 this.raiseDeactivated();
             }
         } else if (!state.paused && state.paused !== prev.paused) {
@@ -265,11 +265,11 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     /**
      * Raises the "childAssetSelected" event if available
      */
-    private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>, projectName: string) => {
+    private raiseChildAssetSelected = (state: Readonly<IVideoPlayerState>) => {
         if (this.props.onChildAssetSelected) {
             const rootAsset = this.props.asset.parent || this.props.asset;
             const childPath = `${rootAsset.path}#t=${state.currentTime}`;
-            const childAsset = AssetService.createAssetFromFilePath(childPath, projectName);
+            const childAsset = AssetService.createAssetFromFilePath(childPath, rootAsset.projectName);
             childAsset.state = AssetState.NotVisited;
             childAsset.type = AssetType.VideoFrame;
             childAsset.parent = rootAsset;

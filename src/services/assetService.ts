@@ -60,6 +60,7 @@ export class AssetService {
 
         return {
             id: md5Hash,
+            projectName,
             format: assetFormat,
             state: AssetState.NotVisited,
             type: assetType,
@@ -135,8 +136,8 @@ export class AssetService {
     /**
      * Get assets from provider
      */
-    public async getAssets(): Promise<IAsset[]> {
-        return await this.assetProvider.getAssets();
+    public async getAssets(projectName: string): Promise<IAsset[]> {
+        return await this.assetProvider.getAssets(projectName);
     }
 
     /**

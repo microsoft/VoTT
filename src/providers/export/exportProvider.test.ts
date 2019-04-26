@@ -65,7 +65,7 @@ describe("Export Provider Base", () => {
         });
 
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
-        const assetsToExport = await exportProvider.getAssetsForExport();
+        const assetsToExport = await exportProvider.getAssetsForExport(testProject.name);
         expect(assetsToExport.length).toEqual(testAssets.length);
     });
 
@@ -79,7 +79,7 @@ describe("Export Provider Base", () => {
         });
 
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
-        const assetsToExport = await exportProvider.getAssetsForExport();
+        const assetsToExport = await exportProvider.getAssetsForExport(testProject.name);
         const visitedAssets = _
             .values(testProject.assets)
             .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
@@ -96,7 +96,7 @@ describe("Export Provider Base", () => {
         });
 
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
-        const assetsToExport = await exportProvider.getAssetsForExport();
+        const assetsToExport = await exportProvider.getAssetsForExport(testProject.name);
         const taggedAssets = _
             .values(testProject.assets)
             .filter((asset) => asset.state === AssetState.Tagged);
