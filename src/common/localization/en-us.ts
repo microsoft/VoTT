@@ -384,7 +384,7 @@ export const english: IAppStrings = {
                 displayName: "Microsoft Cognitive Toolkit (CNTK)",
             },
             csv: {
-                displayName: "Comma Seperated Values (CSV)",
+                displayName: "Comma Separated Values (CSV)",
             },
         },
         messages: {

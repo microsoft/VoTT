@@ -198,7 +198,7 @@ Once assets have been labeled, they can be exported into a variety of formats:
 * [Microsoft Cognitive Toolkit (CNTK)](https://github.com/Microsoft/CNTK)
 * TensorFlow (Pascal VOC and TFRecords)
 * VoTT (generic JSON schema)
-* CSV
+* Comma Separated Values (CSV)
 
 In addition, users may choose to export
 
