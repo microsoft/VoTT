@@ -142,7 +142,7 @@ export default function registerToolbar() {
     ToolbarItemFactory.register({
         name: ToolbarItemName.ExportProject,
         tooltip: strings.editorPage.toolbar.exportProject,
-        icon: "fa-external-link-square-alt",
+        icon: "fas fa-file-export",
         group: ToolbarItemGroup.Project,
         type: ToolbarItemType.Action,
         accelerators: ["CmdOrCtrl+E", "CmdOrCtrl+e"],
