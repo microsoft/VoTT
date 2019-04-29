@@ -23,6 +23,7 @@ describe("LocalFileSystem Storage Provider", () => {
             a: 1,
             b: 2,
             c: 3,
+            d: "한글 中國 にほんご",
         };
 
         await localFileSystem.writeText(filePath, JSON.stringify(contents, null, 4));

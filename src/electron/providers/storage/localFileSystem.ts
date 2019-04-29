@@ -71,7 +71,7 @@ export default class LocalFileSystem implements IStorageProvider {
     }
 
     public writeText(filePath: string, contents: string): Promise<void> {
-        const buffer = Buffer.alloc(contents.length, contents);
+        const buffer = Buffer.from(contents);
         return this.writeBinary(filePath, buffer);
     }
 
