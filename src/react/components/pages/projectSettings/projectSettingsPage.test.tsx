@@ -72,7 +72,6 @@ describe("Project settings page", () => {
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
         const wrapper = createComponent(store, props);
 
-
         // Update a tag
         wrapper.find("div.tag").last().simulate("click", { shiftKey: true });
 
@@ -99,8 +98,6 @@ describe("Project settings page", () => {
         wrapper.find("a.ReactTags__remove").last().simulate("click");
 
         await MockFactory.flushUi();
-
-        
 
         wrapper.find("form").simulate("submit");
         await MockFactory.flushUi();
