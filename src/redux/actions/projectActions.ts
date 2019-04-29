@@ -181,6 +181,10 @@ export function saveAssetMetadata(
 export function updateProjectTag(project: IProject, oldTagName: string, newTagName: string)
     : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAssetMetadata[]> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
+        // Don't perform action if the names are the same
+        if (oldTagName === newTagName) {
+            return [];
+        }
         // Find tags to rename
         const assetService = new AssetService(project);
         const assetUpdates = await assetService.renameTag(oldTagName, newTagName);

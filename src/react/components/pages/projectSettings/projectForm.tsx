@@ -31,6 +31,8 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
     onSubmit: (project: IProject) => void;
     onChange?: (project: IProject) => void;
     onCancel?: () => void;
+    onTagRenamed?: (tag: ITag, newTag: ITag) => void;
+    onTagDeleted?: (tag: ITag) => void;
 }
 
 /**
@@ -52,32 +54,22 @@ export interface IProjectFormState {
  * @description - Form for editing or creating VoTT projects
  */
 export default class ProjectForm extends React.Component<IProjectFormProps, IProjectFormState> {
+
+    public state = {
+        classNames: ["needs-validation"],
+        uiSchema: { ...uiSchema },
+        formSchema: { ...formSchema },
+        formData: {
+            ...this.props.project,
+        },
+    };
     private widgets = {
         localFolderPicker: (LocalFolderPicker as any) as Widget,
     };
 
-    private tagsInput: React.RefObject<TagsInput>;
-    private tagEditorModal: React.RefObject<TagEditorModal>;
+    private tagsInput: React.RefObject<TagsInput> = React.createRef<TagsInput>();
+    private tagEditorModal: React.RefObject<TagEditorModal> = React.createRef<TagEditorModal>();
 
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            classNames: ["needs-validation"],
-            uiSchema: { ...uiSchema },
-            formSchema: { ...formSchema },
-            formData: {
-                ...this.props.project,
-            },
-        };
-        this.tagsInput = React.createRef<TagsInput>();
-        this.tagEditorModal = React.createRef<TagEditorModal>();
-
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-        this.onFormCancel = this.onFormCancel.bind(this);
-        this.onFormValidate = this.onFormValidate.bind(this);
-        this.onTagShiftClick = this.onTagShiftClick.bind(this);
-        this.onTagModalOk = this.onTagModalOk.bind(this);
-    }
     /**
      * Updates state if project from properties has changed
      * @param prevProps - previously set properties
@@ -125,7 +117,7 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         );
     }
 
-    private fields() {
+    private fields = () => {
         return {
             securityToken: CustomField<ISecurityTokenPickerProps>(SecurityTokenPicker, (props) => ({
                 id: props.idSchema.$id,
@@ -159,22 +151,26 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     onChange: props.onChange,
                     placeHolder: strings.tags.placeholder,
                     onShiftTagClick: this.onTagShiftClick,
+                    onTagDelete: this.props.onTagDeleted,
                     ref: this.tagsInput,
                 };
             }),
         };
     }
 
-    private onTagShiftClick(tag: ITag) {
+    private onTagShiftClick = (tag: ITag) => {
         this.tagEditorModal.current.open(tag);
     }
 
-    private onTagModalOk(oldTag: ITag, newTag: ITag) {
+    private onTagModalOk = (oldTag: ITag, newTag: ITag) => {
         this.tagsInput.current.updateTag(oldTag, newTag);
         this.tagEditorModal.current.close();
+        if (this.props.onTagRenamed && oldTag.name !== newTag.name) {
+            this.props.onTagRenamed(oldTag, newTag);
+        }
     }
 
-    private onFormValidate(project: IProject, errors: FormValidation) {
+    private onFormValidate = (project: IProject, errors: FormValidation) => {
         if (Object.keys(project.sourceConnection).length === 0) {
             errors.sourceConnection.addError("is a required property");
         }
@@ -198,14 +194,14 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
         }
     }
 
-    private onFormSubmit(args: ISubmitEvent<IProject>) {
+    private onFormSubmit = (args: ISubmitEvent<IProject>) => {
         const project: IProject = {
             ...args.formData,
         };
         this.props.onSubmit(project);
     }
 
-    private onFormCancel() {
+    private onFormCancel = () => {
         if (this.props.onCancel) {
             this.props.onCancel();
         }

@@ -232,6 +232,7 @@ describe("Project Form Component", () => {
                 onCancel: onCancelHandler,
             });
         });
+
         it("Has initial state loaded correctly", () => {
             const formData = wrapper.state().formData;
             const defaultVideoSettings: IProjectVideoSettings = { frameExtractionRate: 15 };

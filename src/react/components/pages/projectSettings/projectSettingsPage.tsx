@@ -5,11 +5,12 @@ import { RouteComponentProps } from "react-router-dom";
 import ProjectForm from "./projectForm";
 import { strings, interpolate } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import { IApplicationState, IProject, IConnection, IAppSettings } from "../../../../models/applicationState";
+import { IApplicationState, IProject, IConnection, IAppSettings, ITag } from "../../../../models/applicationState";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { toast } from "react-toastify";
 import "./projectSettingsPage.scss";
 import ProjectMetrics from "./projectMetrics";
+import { string } from "prop-types";
 
 /**
  * Properties for Project Settings Page
@@ -29,6 +30,8 @@ export interface IProjectSettingsPageProps extends RouteComponentProps, React.Pr
 
 export interface IProjectSettingsPageState {
     project: IProject;
+    renamedTags: Map<string, string>;
+    deletedTags: Set<string>;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -55,8 +58,11 @@ const projectFormTempKey = "projectForm";
  */
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ProjectSettingsPage extends React.Component<IProjectSettingsPageProps, IProjectSettingsPageState> {
+
     public state: IProjectSettingsPageState = {
         project: this.props.project,
+        renamedTags: new Map<string, string>(),
+        deletedTags: new Set<string>(),
     };
 
     public async componentDidMount() {
@@ -100,7 +106,9 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                             appSettings={this.props.appSettings}
                             onChange={this.onFormChange}
                             onSubmit={this.onFormSubmit}
-                            onCancel={this.onFormCancel} />
+                            onCancel={this.onFormCancel}
+                            onTagDeleted={this.onTagDeleted}
+                            onTagRenamed={this.onTagRenamed} />
                     </div>
                 </div>
                 {this.props.project &&
@@ -125,6 +133,19 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
 
     private onFormSubmit = async (project: IProject) => {
         const isNew = !(!!project.id);
+
+        this.state.deletedTags.forEach(async (tag) => {
+            // Handles the case of a tag being deleted and then re-added
+            if (!project.tags.find((t) => t.name === tag)) {
+                await this.props.projectActions.deleteProjectTag(this.props.project, tag);
+            }
+        });
+
+        this.state.renamedTags.forEachAsync(async (tagName: string, newTagName: string) => {
+            if (tagName !== newTagName) {
+                await this.props.projectActions.updateProjectTag(this.props.project, tagName, newTagName);
+            }
+        });
 
         await this.props.applicationActions.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
@@ -157,5 +178,17 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                 || (project.exportFormat && Object.keys(project.exportFormat).length > 0)
                 || (project.tags && project.tags.length > 0)
             );
+    }
+
+    private onTagRenamed = (tag: ITag, newTag: ITag) => {
+        const { renamedTags } = this.state;
+        renamedTags[tag.name] = newTag.name;
+        this.setState({ renamedTags });
+    }
+
+    private onTagDeleted = (tag: ITag) => {
+        const { deletedTags } = this.state;
+        deletedTags.add(tag.name);
+        this.setState({ deletedTags });
     }
 }

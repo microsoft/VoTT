@@ -8,9 +8,13 @@ import ProjectSettingsPage, { IProjectSettingsPageProps, IProjectSettingsPageSta
 
 jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
+jest.mock("../../../../services/assetService");
+import { AssetService } from "../../../../services/assetService";
+
 import { IAppSettings, IProject } from "../../../../models/applicationState";
 import ProjectMetrics from "./projectMetrics";
 import ProjectForm, { IProjectFormProps } from "./projectForm";
+import registerMixins from "../../../../registerMixins";
 
 jest.mock("./projectMetrics", () => () => {
     return (
@@ -23,12 +27,13 @@ jest.mock("./projectMetrics", () => () => {
 
 describe("Project settings page", () => {
     let projectServiceMock: jest.Mocked<typeof ProjectService> = null;
+    let assetServiceMock: jest.Mocked<typeof AssetService> = null;
 
-    function createComponent(store, props: IProjectSettingsPageProps): ReactWrapper {
+    function createComponent(store?, props?: IProjectSettingsPageProps): ReactWrapper {
         return mount(
-            <Provider store={store}>
+            <Provider store={store || createReduxStore(MockFactory.initialState())}>
                 <Router>
-                    <ProjectSettingsPage {...props} />
+                    <ProjectSettingsPage {...props || MockFactory.projectSettingsProps()} />
                 </Router>
             </Provider>,
         );
@@ -45,6 +50,7 @@ describe("Project settings page", () => {
             value: localStorageMock,
             writable: false,
         });
+        registerMixins();
     });
 
     beforeEach(() => {
@@ -54,6 +60,51 @@ describe("Project settings page", () => {
 
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
         projectServiceMock.prototype.load = jest.fn((project) => ({ ...project }));
+
+        assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
+    });
+
+    it("Form submission calls update tag action", async () => {
+        const store = createReduxStore(MockFactory.initialState());
+        const props = MockFactory.projectSettingsProps();
+        const deleteTagSpy = jest.spyOn(props.projectActions, "deleteProjectTag");
+        assetServiceMock.prototype.renameTag = jest.fn((oldTag: string, newTag: string) => Promise.resolve([]));
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
+        const wrapper = createComponent(store, props);
+
+
+        // Update a tag
+        wrapper.find("div.tag").last().simulate("click", { shiftKey: true });
+
+        await MockFactory.flushUi();
+
+        wrapper.find("input#modal-form_name").simulate("change", { target: { value: "my new tag name"}});
+        wrapper.find("button.btn.btn-success").simulate("click");
+
+        await MockFactory.flushUi();
+
+        wrapper.find("form").simulate("submit");
+        await MockFactory.flushUi();
+    });
+
+    it("Form submission calls delete tag action", async () => {
+        const store = createReduxStore(MockFactory.initialState());
+        const props = MockFactory.projectSettingsProps();
+        const deleteTagSpy = jest.spyOn(props.projectActions, "deleteProjectTag");
+        assetServiceMock.prototype.deleteTag = jest.fn((tagName: string) => Promise.resolve([]));
+        projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
+        const wrapper = createComponent(store, props);
+
+        // Delete a tag
+        wrapper.find("a.ReactTags__remove").last().simulate("click");
+
+        await MockFactory.flushUi();
+
+        
+
+        wrapper.find("form").simulate("submit");
+        await MockFactory.flushUi();
+        expect(deleteTagSpy).toBeCalled();
     });
 
     it("Form submission calls save project action", async () => {
@@ -145,7 +196,7 @@ describe("Project settings page", () => {
         expect(projectMetrics).toHaveLength(1);
     });
 
-    describe("project does not exists", () => {
+    describe("project does not exist", () => {
         it("does not render ProjectMetrics", () => {
             const initialState = MockFactory.initialState();
 
