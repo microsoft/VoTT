@@ -12,6 +12,7 @@ import { generateKey } from "../common/crypto";
 import { encryptProject, decryptProject } from "../common/utils";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IVottJsonExportProviderOptions } from "../providers/export/vottJson";
+import { IPascalVOCExportProviderOptions } from "../providers/export/pascalVOC";
 
 describe("Project Service", () => {
     let projectSerivce: IProjectService = null;
@@ -200,5 +201,24 @@ describe("Project Service", () => {
 
         await projectSerivce.delete(testProject);
         expect(storageProviderMock.deleteFile.mock.calls).toHaveLength(assets.length + 1);
+    });
+
+    it("Updates export settings to v2.1 supported values", async () => {
+        testProject = MockFactory.createTestProject("TestProject");
+        testProject.version = "2.0.0";
+        testProject.exportFormat = {
+            providerType: "tensorFlowPascalVOC",
+            providerOptions: {
+                assetState: ExportAssetState.All,
+                exportUnassigned: true,
+                testTrainSplit: 80,
+            } as IPascalVOCExportProviderOptions,
+        };
+
+        const encryptedProject = encryptProject(testProject, securityToken);
+        const decryptedProject = await projectSerivce.load(encryptedProject, securityToken);
+
+        expect(decryptedProject.exportFormat.providerType).toEqual("pascalVOC");
+        expect(decryptedProject.exportFormat.providerOptions).toEqual(testProject.exportFormat.providerOptions);
     });
 });
