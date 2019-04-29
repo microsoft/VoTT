@@ -70,6 +70,8 @@ export default class ProjectService implements IProjectService {
                 loadedProject.exportFormat = defaultExportOptions;
             }
 
+            this.ensureBackwardsCompatibility(loadedProject);
+
             return Promise.resolve({ ...loadedProject });
         } catch (e) {
             const error = new AppError(ErrorCode.ProjectInvalidSecurityToken, "Error decrypting project settings");
@@ -162,5 +164,18 @@ export default class ProjectService implements IProjectService {
         }
 
         project.exportFormat.providerOptions = await exportProvider.save(project.exportFormat);
+    }
+
+    /**
+     * Ensures backwards compatibility with project
+     * @param project The project to update
+     */
+    private ensureBackwardsCompatibility(project: IProject) {
+        if (project.version === "2.0.0") {
+            // Required for backwards compatibility with v2.0.0 release
+            if (project.exportFormat.providerType === "tensorFlowPascalVOC") {
+                project.exportFormat.providerType = "pascalVOC";
+            }
+        }
     }
 }
