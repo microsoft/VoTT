@@ -2,8 +2,8 @@
 
 <!-- cl-start -->
 
-# [2.1.0](https://github.com/Microsoft/VoTT/compare/v2.0.0...2.1.0) (04-29-2019)
-[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/2.1.0)
+# [2.1.0](https://github.com/Microsoft/VoTT/compare/v2.0.0...v2.1.0) (04-29-2019)
+[GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/v2.1.0)
 
 - fix: Updates backwards compat & fixes cntk export image bug (#789)
 - fix: Updates export options for pascalVOC rename (#788)
@@ -11,30 +11,14 @@
 - feat: Add CSV Exporter (#757)
 - fix: Fix display of tag color picker (#782)
 - feat: Active Learning Updates (#778)
-- docs: updates to readme and changelog (#781)
-- Create CODE_OF_CONDUCT.md (#779)
+- doc: updates to readme and changelog (#781)
+- doc: Adds CODE_OF_CONDUCT.md (#779)
 - doc: Add bug & feature templates (#780)
-- test: Verify tag update/delete project actions
-- test: Refactored editor page tests
-- fix: Refactored project tag/delete updates
-- Dummy commit to kick off build again
-- Lint fixes
-- Clean up and docs
-- Fix tag removal test for editor page
-- Rename tag function in editor page
-- Delete tag working
-- Saving assets in async foreach loop
-- Register mixins and run async loop
-- Editor Page and canvas upates
-- Split out project functions and asset functions into respective services
-- Added confirm and strings for tag and rename operations
-- Added tests for project service
-- Project service functions
-- refactor: Remove editor footer
-- Fix: Enables selection of azure region for custom vision export (#765)
+- fix: Refactored project tag/delete updates (#764)
+- fix: Enables selection of azure region for custom vision export (#765)
 - feat: CNTK Export Provider (#771)
 - feat: Save partial project progress during project creation (#769)
-- Fix ymax and rename Tensorflow nama everywhere (#763)
+- fix: Fixes ymax and rename Tensorflow nama everywhere (#763)
 
 # [2.0.0](https://github.com/Microsoft/VoTT/compare/v2.0.0-preview.3...v2.0.0) (04-12-2019)
 [GitHub Release](https://github.com/Microsoft/VoTT/releases/tag/v2.0.0)
