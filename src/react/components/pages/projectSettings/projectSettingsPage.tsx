@@ -134,18 +134,20 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     private onFormSubmit = async (project: IProject) => {
         const isNew = !(!!project.id);
 
-        this.state.deletedTags.forEach(async (tag) => {
-            // Handles the case of a tag being deleted and then re-added
-            if (!project.tags.find((t) => t.name === tag)) {
-                await this.props.projectActions.deleteProjectTag(this.props.project, tag);
-            }
-        });
+        if (!isNew) {
+            this.state.deletedTags.forEach(async (tag) => {
+                // Handles the case of a tag being deleted and then re-added
+                if (!project.tags.find((t) => t.name === tag)) {
+                    await this.props.projectActions.deleteProjectTag(this.props.project, tag);
+                }
+            });
 
-        this.state.renamedTags.forEachAsync(async (tagName: string, newTagName: string) => {
-            if (tagName !== newTagName) {
-                await this.props.projectActions.updateProjectTag(this.props.project, tagName, newTagName);
-            }
-        });
+            this.state.renamedTags.forEachAsync(async (tagName: string, newTagName: string) => {
+                if (tagName !== newTagName) {
+                    await this.props.projectActions.updateProjectTag(this.props.project, tagName, newTagName);
+                }
+            });
+        }
 
         await this.props.applicationActions.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
