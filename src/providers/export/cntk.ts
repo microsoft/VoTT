@@ -76,12 +76,11 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
             });
         });
 
+        const buffer = await HtmlFileReader.getAssetArray(assetMetadata.asset);
         const folderName = exportSplit === ExportSplit.Train ? "positive" : "testImages";
         const labelsPath = `${this.exportFolderName}/${folderName}/${assetMetadata.asset.name}.bboxes.labels.tsv`;
         const boundingBoxPath = `${this.exportFolderName}/${folderName}/${assetMetadata.asset.name}.bboxes.tsv`;
         const binaryPath = `${this.exportFolderName}/${folderName}/${assetMetadata.asset.name}`;
-
-        const buffer = await HtmlFileReader.getAssetArray(assetMetadata.asset);
 
         await Promise.all([
             this.storageProvider.writeText(labelsPath, labelData.join(os.EOL)),

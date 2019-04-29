@@ -171,7 +171,9 @@ export default class ProjectService implements IProjectService {
      * @param project The project to update
      */
     private ensureBackwardsCompatibility(project: IProject) {
-        if (project.version === "2.0.0") {
+        const projectVersion = project.version.toLowerCase();
+
+        if (projectVersion.startsWith("2.0.0")) {
             // Required for backwards compatibility with v2.0.0 release
             if (project.exportFormat.providerType === "tensorFlowPascalVOC") {
                 project.exportFormat.providerType = "pascalVOC";
