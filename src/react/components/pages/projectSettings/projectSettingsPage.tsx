@@ -135,14 +135,14 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         const isNew = !(!!project.id);
 
         if (!isNew) {
-            this.state.deletedTags.forEach(async (tag) => {
+            await this.state.deletedTags.forEach(async (tag) => {
                 // Handles the case of a tag being deleted and then re-added
                 if (!project.tags.find((t) => t.name === tag)) {
                     await this.props.projectActions.deleteProjectTag(this.props.project, tag);
                 }
             });
 
-            this.state.renamedTags.forEachAsync(async (tagName: string, newTagName: string) => {
+            await this.state.renamedTags.forEachAsync(async (tagName: string, newTagName: string) => {
                 if (tagName !== newTagName) {
                     await this.props.projectActions.updateProjectTag(this.props.project, tagName, newTagName);
                 }

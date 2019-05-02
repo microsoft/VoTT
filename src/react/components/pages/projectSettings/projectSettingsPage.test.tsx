@@ -15,6 +15,7 @@ import { IAppSettings, IProject } from "../../../../models/applicationState";
 import ProjectMetrics from "./projectMetrics";
 import ProjectForm, { IProjectFormProps } from "./projectForm";
 import registerMixins from "../../../../registerMixins";
+import { TagEditorModal } from "vott-react";
 
 jest.mock("./projectMetrics", () => () => {
     return (
@@ -64,26 +65,28 @@ describe("Project settings page", () => {
         assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
     });
 
-    it("Form submission calls update tag action", async () => {
+    fit("Form submission calls update tag action", async () => {
         const store = createReduxStore(MockFactory.initialState());
-        const props = MockFactory.projectSettingsProps();
-        const deleteTagSpy = jest.spyOn(props.projectActions, "deleteProjectTag");
+        const props: IProjectSettingsPageProps = {
+            ...MockFactory.projectSettingsProps(),
+            project: MockFactory.createTestProject(),
+        }
+        const updateTagSpy = jest.spyOn(props.projectActions, "updateProjectTag");
         assetServiceMock.prototype.renameTag = jest.fn((oldTag: string, newTag: string) => Promise.resolve([]));
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
         const wrapper = createComponent(store, props);
 
         // Update a tag
         wrapper.find("div.tag").last().simulate("click", { shiftKey: true });
-
         await MockFactory.flushUi();
-
-        wrapper.find("input#modal-form_name").simulate("change", { target: { value: "my new tag name"}});
-        wrapper.find("button.btn.btn-success").simulate("click");
-
-        await MockFactory.flushUi();
-
-        wrapper.find("form").simulate("submit");
-        await MockFactory.flushUi();
+        expect(wrapper.exists("input#modal-form_name")).toBe(true);
+        const modal = wrapper.find(TagEditorModal).instance() as TagEditorModal;
+        const firstTag = props.project.tags[0];
+        const newTagName = "New Tag Name";
+        modal.props.onOk(firstTag, {...firstTag, name: newTagName});
+        
+        await MockFactory.flushUi(() => wrapper.find("form").first().simulate("submit"));
+        expect(updateTagSpy).toBeCalled();
     });
 
     it("Form submission calls delete tag action", async () => {
