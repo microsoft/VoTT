@@ -28,7 +28,11 @@ export class ElectronProxyHandler implements tfc.io.IOHandler {
 
     public async loadClasses(): Promise<JSON> {
         const json = await this.provider.readText("/classes.json");
-        return json ? JSON.parse(json) : null;
+        // Assign each element to it's respective index. Indexing starts from
+        // 1 in classes.json, so subtract 1 from each index during assignment.
+        return json ? JSON.parse(json).reduce((acc, curr) => {
+            acc[curr.id - 1] = curr; return acc;
+        }, []) : null;
     }
 
     private async loadWeights(weightsManifest: tfc.io.WeightsManifestConfig)

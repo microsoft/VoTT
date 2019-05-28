@@ -222,7 +222,7 @@ export class ObjectDetection {
 
     private getClass(index: number, indexes: Float32Array, classes: number[]): string {
         if (this.jsonClasses && index < indexes.length && indexes[index] < classes.length) {
-            const classId = classes[indexes[index]] - 1;
+            const classId = classes[indexes[index]];
             const classObject = this.jsonClasses[classId];
 
             return classObject ? classObject.displayName : strings.tags.warnings.unknownTagName;
