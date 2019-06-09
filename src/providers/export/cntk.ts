@@ -33,13 +33,33 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
     public async export(): Promise<IExportResults> {
         await this.createFolderStructure();
         const assetsToExport = await this.getAssetsForExport();
+        const testAssets: string[] = [];
+
         const testSplit = (100 - (this.options.testTrainSplit || 80)) / 100;
-        const testCount = Math.ceil(assetsToExport.length * testSplit);
-        const testArray = assetsToExport.slice(0, testCount);
+        if (testSplit > 0 && testSplit <= 1) {
+            const tagsAssetDict: { [index: string]: { assetList: Set<string> } } = {};
+            const tags = this.project.tags;
+            tags.forEach((tag) => tagsAssetDict[tag.name] = { assetList: new Set() });
+            assetsToExport.forEach((assetMetadata) => {
+                assetMetadata.regions.forEach((region) => {
+                    region.tags.forEach((tagName) => {
+                        if (tagsAssetDict[tagName]) {
+                            tagsAssetDict[tagName].assetList.add(assetMetadata.asset.name);
+                        }
+                    });
+                });
+            });
+
+            for (const tagKey of Object.keys(tagsAssetDict)) {
+                const assetList = tagsAssetDict[tagKey].assetList;
+                const testCount = Math.ceil(assetList.size * testSplit);
+                testAssets.push(...Array.from(assetList).slice(0, testCount));
+            }
+        }
 
         const results = await assetsToExport.mapAsync(async (assetMetadata) => {
             try {
-                const exportSplit = testArray.find((am) => am.asset.id === assetMetadata.asset.id)
+                const exportSplit = testAssets.find((am) => am === assetMetadata.asset.id)
                     ? ExportSplit.Test
                     : ExportSplit.Train;
 
