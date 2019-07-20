@@ -59,4 +59,10 @@ describe("Image Asset Component", () => {
         expect(onActivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
         expect(onDeactivatedHandler).toBeCalledWith(expect.any(HTMLImageElement));
     });
+
+    it("has crossorigin as attribute before src", () => {
+        wrapper = createComponent();
+        const imgHtml = wrapper.find("img").html();
+        expect(imgHtml.indexOf("crossorigin")).toBeLessThan(imgHtml.indexOf("src"));
+    });
 });
