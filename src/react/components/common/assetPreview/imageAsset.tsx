@@ -9,11 +9,11 @@ export class ImageAsset extends React.Component<IAssetProps> {
 
     public render() {
         return (
-            <img ref={this.image}
+            <img crossOrigin="anonymous"
+                ref={this.image}
                 src={this.props.asset.path}
                 onLoad={this.onLoad}
-                onError={this.props.onError}
-                crossOrigin="anonymous" />);
+                onError={this.props.onError} />);
     }
 
     private onLoad = () => {
