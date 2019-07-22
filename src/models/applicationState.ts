@@ -199,6 +199,7 @@ export interface IExportFormat {
  */
 export interface IProjectVideoSettings {
     frameExtractionRate: number;
+    tracking: boolean;
 }
 
 /**
@@ -212,6 +213,7 @@ export enum ModelPathType {
     Coco = "coco",
     File = "file",
     Url = "url",
+    Cvs = "cvs",
 }
 
 /**
@@ -235,6 +237,11 @@ export interface IActiveLearningSettings {
     modelPathType: ModelPathType;
     modelPath?: string;
     modelUrl?: string;
+    cvsApiKey? : string;
+    cvsRegions? : string;
+    cvsProjectId? : string;
+    cvsPublishedModelName? : string;
+    cvsPredictionUrl? : string;
     autoDetect: boolean;
     predictTag: boolean;
 }

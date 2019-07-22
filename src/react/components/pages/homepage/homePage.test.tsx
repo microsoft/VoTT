@@ -158,6 +158,7 @@ describe("Homepage Component", () => {
             exportFormat: null,
             videoSettings: {
                 frameExtractionRate: 15,
+                tracking: false,
             },
             autoSave: true,
         };

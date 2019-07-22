@@ -97,6 +97,7 @@ export const english: IAppStrings = {
             title: "Video Settings",
             description: "The rate at which frames are extracted for tagging.",
             frameExtractionRate: "Frame Extraction Rate (frames per a video second)",
+            tracking: "Tracking"
         },
         addConnection: "Add Connection",
         messages: {
@@ -402,6 +403,7 @@ export const english: IAppStrings = {
                         preTrained: "Pre-trained Coco SSD",
                         customFilePath: "Custom (File path)",
                         customWebUrl: "Custom (Url)",
+                        cvsPredictionAPI: "Custom Vision Prediction",
                     },
                 },
                 autoDetect: {
@@ -415,6 +417,32 @@ export const english: IAppStrings = {
                 modelUrl: {
                     title: "Model URL",
                     description: "Load your model from a public web URL",
+                },
+                cvsApiKey: {
+                    title: "Prediction API Key",
+                },
+                cvsRegions: {
+                    title: "Prediction API Region",
+                    options: {
+                        australiaEast: "Australia East",
+                        centralIndia: "Central India",
+                        eastUs: "East US",
+                        eastUs2: "East US 2",
+                        japanEast: "Japan East",
+                        northCentralUs: "North Central US",
+                        northEurope: "North Europe",
+                        southCentralUs: "South Central US",
+                        southeastAsia: "Southeast Asia",
+                        ukSouth: "UK South",
+                        westUs2: "West US 2",
+                        westEurope: "West Europe",
+                    },
+                },
+                cvsProjectId: {
+                    title: "Project ID",
+                },
+                cvsPublishedModelName: {
+                    title: "Published Model Name",
                 },
                 predictTag: {
                     title: "Predict Tag",

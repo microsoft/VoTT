@@ -98,6 +98,7 @@ export const spanish: IAppStrings = {
             title: "Ajustes de video",
             description: "La velocidad a la que se extraen los marcos para el etiquetado.",
             frameExtractionRate: "Tasa de extracción de cuadros (cuadros por segundo de video)",
+            tracking: "Tracking"
         },
         addConnection: "Agregar Conexión",
         messages: {
@@ -405,6 +406,7 @@ export const spanish: IAppStrings = {
                         preTrained: "SSD de coco pre-entrenado",
                         customFilePath: "Personalizado (ruta de archivo)",
                         customWebUrl: "Personalizado (URL)",
+                        cvsPredictionAPI: "Custom Vision Prediction",
                     },
                 },
                 autoDetect: {
@@ -419,6 +421,32 @@ export const spanish: IAppStrings = {
                 modelUrl: {
                     title: "URL del modelo",
                     description: "Cargue el modelo desde una URL web pública",
+                },
+                cvsApiKey: {
+                    title: "Custom Vision Prediction API Key",
+                },
+                cvsRegions: {
+                    title: "Custom Vision Prediction API Region",
+                    options: {
+                        australiaEast: "Australia este",
+                        centralIndia: "Centro de la India",
+                        eastUs: "Este de EE.",
+                        eastUs2: "Este US 2",
+                        japanEast: "Japón este",
+                        northCentralUs: "Centro norte de EE.",
+                        northEurope: "Europa del norte",
+                        southCentralUs: "Centro sur de EE.",
+                        southeastAsia: "Sudeste asiático",
+                        ukSouth: "UK sur",
+                        westUs2: "West US 2",
+                        westEurope: "Europa occidental",
+                    },
+                },
+                cvsProjectId: {
+                    title: "Custom Vision Project ID",
+                },
+                cvsPublishedModelName: {
+                    title: "Custom Vision Published Model Name",
                 },
                 predictTag: {
                     title: "Predecir etiqueta",

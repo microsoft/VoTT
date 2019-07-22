@@ -32,7 +32,7 @@ describe("Video Asset Component", () => {
         onDeactivated: onDeactivatedHandler,
         onChildAssetSelected: onChildSelectedHandler,
         onBeforeAssetChanged: onBeforeAssetChangedHandler,
-        additionalSettings: { videoSettings: { frameExtractionRate: 1 } },
+        additionalSettings: { videoSettings: { frameExtractionRate: 1, tracking: false } },
     };
 
     beforeEach(() => {

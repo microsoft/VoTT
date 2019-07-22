@@ -8,13 +8,15 @@
             "enum": [
                 "coco",
                 "file",
-                "url"
+                "url",
+                "cvs"
             ],
             "default": "coco",
             "enumNames": [
                 "${strings.activeLearning.form.properties.modelPathType.options.preTrained}",
                 "${strings.activeLearning.form.properties.modelPathType.options.customFilePath}",
-                "${strings.activeLearning.form.properties.modelPathType.options.customWebUrl}"
+                "${strings.activeLearning.form.properties.modelPathType.options.customWebUrl}",
+                "${strings.activeLearning.form.properties.modelPathType.options.cvsPredictionAPI}"
             ]
         },
         "autoDetect": {
@@ -72,6 +74,66 @@
                             "description": "${strings.activeLearning.form.properties.modelUrl.description}",
                             "default": "http://",
                             "pattern": "^https?\\\\://[a-zA-Z0-9\\\\-\\\\.]+\\\\.[a-zA-Z]{2,3}(/\\\\S*)?$",
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "cvsApiKey",
+                        "cvsRegions",
+                        "cvsProjectId",
+                        "cvsPublishedModelName"
+                    ],
+                    "properties": {
+                        "modelPathType": {
+                            "enum": [
+                                "cvs"
+                            ]
+                        },
+                        "cvsApiKey": {
+                            "title": "${strings.activeLearning.form.properties.cvsApiKey.title}",
+                            "type": "string"
+                        },
+                        "cvsRegions": {
+                            "title": "${strings.activeLearning.form.properties.cvsRegions.title}",
+                            "type": "string",
+                            "default": "southcentralus",
+                            "enum": [
+                                "australiaeast",
+                                "centralindia",
+                                "eastus",
+                                "eastus2",
+                                "japaneast",
+                                "northcentralus",
+                                "northeurope",
+                                "southcentralus",
+                                "southeastasia",
+                                "uksouth",
+                                "westus2",
+                                "westeurope"
+                            ],
+                            "enumNames": [
+                                "${strings.export.providers.azureCV.regions.australiaEast}",
+                                "${strings.export.providers.azureCV.regions.centralIndia}",
+                                "${strings.export.providers.azureCV.regions.eastUs}",
+                                "${strings.export.providers.azureCV.regions.eastUs2}",
+                                "${strings.export.providers.azureCV.regions.japanEast}",
+                                "${strings.export.providers.azureCV.regions.northCentralUs}",
+                                "${strings.export.providers.azureCV.regions.northEurope}",
+                                "${strings.export.providers.azureCV.regions.southCentralUs}",
+                                "${strings.export.providers.azureCV.regions.southeastAsia}",
+                                "${strings.export.providers.azureCV.regions.ukSouth}",
+                                "${strings.export.providers.azureCV.regions.westUs2}",
+                                "${strings.export.providers.azureCV.regions.westEurope}"
+                            ]
+                        },
+                        "cvsProjectId": {
+                            "title": "${strings.activeLearning.form.properties.cvsProjectId.title}",
+                            "type": "string"
+                        },
+                        "cvsPublishedModelName": {
+                            "title": "${strings.activeLearning.form.properties.cvsPublishedModelName.title}",
                             "type": "string"
                         }
                     }

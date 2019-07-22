@@ -234,7 +234,7 @@ describe("Project Form Component", () => {
         });
         it("Has initial state loaded correctly", () => {
             const formData = wrapper.state().formData;
-            const defaultVideoSettings: IProjectVideoSettings = { frameExtractionRate: 15 };
+            const defaultVideoSettings: IProjectVideoSettings = { frameExtractionRate: 15, tracking: false };
             expect(formData.name).toBe(undefined);
             expect(formData.sourceConnection).toEqual({});
             expect(formData.targetConnection).toEqual({});

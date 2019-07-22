@@ -99,6 +99,7 @@ export interface IAppStrings {
             title: string;
             description: string;
             frameExtractionRate: string;
+            tracking: string
         },
         addConnection: string,
         messages: {
@@ -399,6 +400,7 @@ export interface IAppStrings {
                         preTrained: string,
                         customFilePath: string,
                         customWebUrl: string,
+                        cvsPredictionAPI: string,
                     },
                 },
                 autoDetect: {
@@ -416,6 +418,32 @@ export interface IAppStrings {
                 modelUrl: {
                     title: string,
                     description: string,
+                },
+                cvsApiKey: {
+                    title: string,
+                },
+                cvsRegions: {
+                    title: string,
+                    options: {
+                        eastUs: string,
+                        eastUs2: string,
+                        northCentralUs: string,
+                        southCentralUs: string,
+                        westUs2: string,
+                        westEurope: string,
+                        northEurope: string,
+                        southeastAsia: string,
+                        australiaEast: string,
+                        centralIndia: string,
+                        ukSouth: string,
+                        japanEast: string,
+                    },
+                },
+                cvsProjectId: {
+                    title: string,
+                },
+                cvsPublishedModelName: {
+                    title: string,
                 },
             },
         }

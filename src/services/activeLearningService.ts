@@ -3,6 +3,7 @@ import { ObjectDetection } from "../providers/activeLearning/objectDetection";
 import Guard from "../common/guard";
 import { isElectron } from "../common/hostProcess";
 import { Env } from "../common/environment";
+import { PythonShell } from 'python-shell';
 
 export class ActiveLearningService {
     private objectDetection: ObjectDetection;
@@ -72,8 +73,21 @@ export class ActiveLearningService {
         this.modelLoaded = true;
     }
 
+    public async track(): Promise<void> {
+        PythonShell.run('tracking.py', null, function (err) {
+            if (err) throw err;
+            console.log('finished');
+          });
+    }
+
     private async loadModel() {
         let modelPath = "";
+        if (this.settings.modelPathType == ModelPathType.Cvs) {
+            this.objectDetection.configCustomVisionPrediction(this.settings.cvsApiKey, 
+                this.settings.cvsRegions, this.settings.cvsProjectId, this.settings.cvsPublishedModelName);
+                return;
+        }
+        
         if (this.settings.modelPathType === ModelPathType.Coco) {
             if (isElectron()) {
                 const appPath = this.getAppPath();

@@ -35,6 +35,11 @@
                     "type": "integer",
                     "default": 15,
                     "minimum": 1
+                },
+                "tracking": {
+                    "title": "${strings.projectSettings.videoSettings.tracking}",
+                    "type": "boolean",
+                    "default": false
                 }
             },
             "required": [
