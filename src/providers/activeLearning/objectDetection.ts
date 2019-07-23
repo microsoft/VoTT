@@ -2,9 +2,8 @@ import axios, { AxiosRequestConfig } from "axios";
 import * as shortid from "shortid";
 import * as tf from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
-import { IRegion, RegionType } from "../../models/applicationState";
+import { IRegion, RegionType, VideoClip, TimestampRegionPair } from "../../models/applicationState";
 import { strings } from "../../common/strings";
-import {PythonShell} from 'python-shell';
 
 // tslint:disable-next-line:interface-over-type-literal
 export type DetectedObject = {
@@ -32,6 +31,7 @@ export class ObjectDetection {
     private jsonClasses: JSON;
     private cvsPredictionUrl: string;
     private cvsRequestHeader: AxiosRequestConfig;
+    private flaskRequestHeader: AxiosRequestConfig;
 
     /**
      * Dispose the tensors allocated by the model. You should call this when you
@@ -96,6 +96,9 @@ export class ObjectDetection {
      */
     public async predictImage(image: ImageObject, predictTag: boolean, xRatio: number, yRatio: number)
         : Promise<IRegion[]> {
+
+        await this.track_stub();
+
         const regions: IRegion[] = [];
         const predictions = await this.detect(image);
         
@@ -295,6 +298,32 @@ export class ObjectDetection {
         
 
         return objects;
+    }
+
+    private async track_stub(): Promise<void> {
+        const videoClip: VideoClip = {id: "cvs_team_video", startTimestamp: 0.0, endTimestamp: 10.0};
+        const regions: IRegion[] = [];
+        regions.push({id:"weichih", type: RegionType.Square, tags: [], points: [], boundingBox: {left: 0, top: 1, width: 2, height: 3}});
+        regions.push({id:"kualu", type: RegionType.Square, tags: [], points: [], boundingBox: {left: 4, top: 5, width: 6, height: 7}});
+        regions.push({id:"liang", type: RegionType.Square, tags: [], points: [], boundingBox: {left: 8, top: 9, width: 10, height: 11}});
+        await this.track(videoClip, regions);
+        return;
+    }
+
+    private async track(clip: VideoClip, initRegions: IRegion[]): Promise<TimestampRegionPair[]> {
+        const requestHeader = this.createRequestConfigForTracking();
+        const response = await axios.post("http://localhost:5000/track", {"clip": clip, "init_regions": initRegions}, requestHeader)
+        console.log(response.data);
+        const result: TimestampRegionPair[] = [];
+        return result;
+    }
+
+    private createRequestConfigForTracking(): AxiosRequestConfig {
+        return {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
     }
 
     /**
