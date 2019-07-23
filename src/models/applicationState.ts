@@ -337,6 +337,30 @@ export interface IBoundingBox {
 }
 
 /**
+ * @name - VideoClip
+ * @description - Defines the video clip to be processed by object tracking module
+ * @member id - The id of the source video
+ * @member startTimestamp - The start timestamp of the clip
+ * @member endTimestamp - The end timestamp of the clip
+ */
+export interface VideoClip {
+    id: string;
+    startTimestamp: number;
+    endTimestamp: number;
+}
+
+/**
+ * @name - TimestampRegionPair
+ * @description - Defines the paired object of a timestamp with its object tracking result
+ * @member timestamp - The timestamp
+ * @member regions - The object tracking result of that timestamp
+ */
+export interface TimestampRegionPair {
+    timestamp: number;
+    regions: IRegion[];
+}
+
+/**
  * @name - Point
  * @description - Defines a point / coordinate within a region
  * @member x - The x value relative to the asset
