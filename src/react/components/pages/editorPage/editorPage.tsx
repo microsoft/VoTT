@@ -187,14 +187,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         icon={"fa-lock"}
                         handler={this.handleCtrlTagHotKey} />);
                 })}
-                <SplitPane split="vertical"
-                    defaultSize={this.state.thumbnailSize.width}
+                <SplitPane split="horizontal"
+                    defaultSize={this.state.thumbnailSize.height}
                     minSize={100}
                     maxSize={400}
                     paneStyle={{ display: "flex" }}
                     onChange={this.onSideBarResize}
                     onDragFinished={this.onSideBarResizeComplete}>
-                    <div className="editor-page-sidebar bg-lighter-1">
+                    <div className="editor-page-bottombar bg-lighter-1">
                         <EditorSideBar
                             assets={rootAssets}
                             selectedAsset={selectedAsset ? selectedAsset.asset : null}
