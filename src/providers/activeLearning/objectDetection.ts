@@ -149,7 +149,7 @@ export class ObjectDetection {
      *
      */
     public async detect(img: ImageObject, maxNumBoxes: number = 20): Promise<DetectedObject[]> {
-        if (this.cvsPredictionUrl.length > 0) {
+        if (this.cvsPredictionUrl && this.cvsPredictionUrl.length > 0) {
             return this.cvsPredict(img, maxNumBoxes);
         }
 
