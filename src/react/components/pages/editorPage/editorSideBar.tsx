@@ -1,11 +1,8 @@
 import React from "react";
-import { AutoSizer, List } from "react-virtualized";
+import { AutoSizer, List, Grid } from "react-virtualized";
 import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import { strings } from "../../../../common/strings";
-import VirtualList, { ScrollDirection } from 'react-tiny-virtual-list';
-import { DIRECTION } from "react-tiny-virtual-list/types/constants";
-import { Direction } from "reactstrap/lib/Dropdown";
 
 /**
  * Properties for Editor Side Bar
@@ -41,42 +38,23 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             : 0,
     };
 
-    private listRef: React.RefObject<VirtualList> = React.createRef();
+    private listRef: React.RefObject<Grid> = React.createRef();
 
     public render() {
         return (
             <div className="editor-page-bottombar-nav">
-                {/*<AutoSizer>
-                    {({ height, width }) => (
-                        <List
-                            ref={this.listRef}
-                            className="asset-list"
-                            height={height}
-                            width={width}
-                            //rowCount={this.props.assets.length}
-                            //rowHeight={() => this.getRowHeight(width)}
-                            columnCount={this.props.assets.length}
-                            columnWidth={() => this.getRowHeight(width)}
-                            columnRenderer={this.rowRenderer}
-                            overscanColumnCount={2}
-                            scrollToIndex={this.state.scrollToIndex}
-                        />
-                    )}
-                    </AutoSizer>*/}
                 <AutoSizer>
-                    {({ height, width }) => (
-                    <VirtualList 
+                    {({ height, width}) => (
+                    <Grid
                         ref={this.listRef}
                         className="asset-list"
+                        cellRenderer={this.rowRenderer}
+                        columnCount={this.props.assets.length}
+                        columnWidth={this.props.thumbnailSize.width}
                         height={height}
-                        width={width}
-                        itemCount={this.props.assets.length}
-                        renderItem={this.rowRenderer}
-                        itemSize={this.getRowHeight(height)}     
-                        scrollDirection={ScrollDirection.HORIZONTAL}
-                        scrollToIndex={this.state.scrollToIndex}
-                    />)}
-
+                        rowCount={1}
+                        rowHeight={this.props.thumbnailSize.height}
+                        width={width} />)}
                 </AutoSizer>
             </div>
         );
@@ -84,7 +62,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     public componentDidUpdate(prevProps: IEditorSideBarProps) {
         if (prevProps.thumbnailSize !== this.props.thumbnailSize) {
-            this.listRef.current.recomputeSizes();
+            this.listRef.current.recomputeGridSize();
         }
 
         if (!prevProps.selectedAsset && !this.props.selectedAsset) {
@@ -97,11 +75,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         }
     }
 
-    private getRowHeight = (width: number) => {
-        //return width / (4 / 3) + 16;
-        return (width -16) *(4/3);
-    }
-
     private selectAsset = (selectedAsset: IAsset): void => {
         const scrollToIndex = this.props.assets.findIndex((asset) => asset.id === selectedAsset.id);
 
@@ -109,7 +82,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             scrollToIndex,
         }, () => {
             this.listRef.current.forceUpdate();
-        
         });
     }
 
@@ -124,8 +96,8 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         this.props.onAssetSelected(asset);
     }
 
-    private rowRenderer = ({ key, index, style }): JSX.Element => {
-        const asset = this.props.assets[index];
+    private rowRenderer = ({ columnIndex, key, rowIndex, style }): JSX.Element => {
+        const asset = this.props.assets[columnIndex];
         const selectedAsset = this.props.selectedAsset;
 
         return (

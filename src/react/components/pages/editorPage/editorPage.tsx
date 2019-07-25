@@ -188,22 +188,19 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         handler={this.handleCtrlTagHotKey} />);
                 })}
                 <SplitPane split="horizontal"
-                    defaultSize={this.state.thumbnailSize.height}
                     minSize={100}
                     maxSize={400}
                     paneStyle={{ display: "flex" }}
                     onChange={this.onSideBarResize}
-                    onDragFinished={this.onSideBarResizeComplete}>
-                    <div className="editor-page-bottombar bg-lighter-1">
-                        <EditorSideBar
-                            assets={rootAssets}
-                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
-                            onBeforeAssetSelected={this.onBeforeAssetSelected}
-                            onAssetSelected={this.selectAsset}
-                            thumbnailSize={this.state.thumbnailSize}
-                        />
-                    </div>
+                    onDragFinished={this.onSideBarResizeComplete}
+                    primary={"second"}
+                    >
                     <div className="editor-page-content" onClick={this.onPageClick}>
+                     {/*   <SplitPane split="vertical"
+                            paneStyle={{ display: "flex" }}
+                            defaultSize={500}
+                            primary={"second"}
+                            > */}
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-header">
                                 <EditorToolbar project={this.props.project}
@@ -248,16 +245,26 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onTagDeleted={this.confirmTagDeleted}
                             />
                         </div>
-                        <Confirm title={strings.editorPage.tags.rename.title}
-                            ref={this.renameTagConfirm}
-                            message={strings.editorPage.tags.rename.confirmation}
-                            confirmButtonColor="danger"
-                            onConfirm={this.onTagRenamed} />
-                        <Confirm title={strings.editorPage.tags.delete.title}
-                            ref={this.deleteTagConfirm}
-                            message={strings.editorPage.tags.delete.confirmation}
-                            confirmButtonColor="danger"
-                            onConfirm={this.onTagDeleted} />
+                        {/* </SplitPane> */}
+                    <Confirm title={strings.editorPage.tags.rename.title}
+                        ref={this.renameTagConfirm}
+                        message={strings.editorPage.tags.rename.confirmation}
+                        confirmButtonColor="danger"
+                        onConfirm={this.onTagRenamed} />
+                    <Confirm title={strings.editorPage.tags.delete.title}
+                        ref={this.deleteTagConfirm}
+                        message={strings.editorPage.tags.delete.confirmation}
+                        confirmButtonColor="danger"
+                        onConfirm={this.onTagDeleted} />
+                    </div>
+                    <div className="editor-page-bottombar bg-lighter-1">
+                        <EditorSideBar
+                            assets={rootAssets}
+                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                            onBeforeAssetSelected={this.onBeforeAssetSelected}
+                            onAssetSelected={this.selectAsset}
+                            thumbnailSize={this.state.thumbnailSize}
+                        />
                     </div>
                 </SplitPane>
                 <Alert show={this.state.showInvalidRegionWarning}
