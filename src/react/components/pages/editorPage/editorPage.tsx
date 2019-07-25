@@ -196,11 +196,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     primary={"second"}
                     >
                     <div className="editor-page-content" onClick={this.onPageClick}>
-                     {/*   <SplitPane split="vertical"
-                            paneStyle={{ display: "flex" }}
-                            defaultSize={500}
-                            primary={"second"}
-                            > */}
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-header">
                                 <EditorToolbar project={this.props.project}
@@ -245,7 +240,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onTagDeleted={this.confirmTagDeleted}
                             />
                         </div>
-                        {/* </SplitPane> */}
                     <Confirm title={strings.editorPage.tags.rename.title}
                         ref={this.renameTagConfirm}
                         message={strings.editorPage.tags.rename.confirmation}
