@@ -1,5 +1,5 @@
 import React from "react";
-import { AutoSizer, List, Grid } from "react-virtualized";
+import { AutoSizer, Grid } from "react-virtualized";
 import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import { strings } from "../../../../common/strings";
@@ -50,10 +50,10 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                         className="asset-list"
                         cellRenderer={this.rowRenderer}
                         columnCount={this.props.assets.length}
-                        columnWidth={this.props.thumbnailSize.width}
+                        columnWidth={() => this.getColumnWidth(height)}
                         height={height}
                         rowCount={1}
-                        rowHeight={this.props.thumbnailSize.height}
+                        rowHeight={height}
                         width={width} />)}
                 </AutoSizer>
             </div>
@@ -73,6 +73,10 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             prevProps.selectedAsset.id !== this.props.selectedAsset.id) {
             this.selectAsset(this.props.selectedAsset);
         }
+    }
+
+    private getColumnWidth = (height: number) => {
+        return (height - 16) * (4 / 3);
     }
 
     private selectAsset = (selectedAsset: IAsset): void => {
