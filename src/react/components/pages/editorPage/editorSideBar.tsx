@@ -100,7 +100,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         this.props.onAssetSelected(asset);
     }
 
-    private rowRenderer = ({ columnIndex, key, rowIndex, style }): JSX.Element => {
+    private rowRenderer = ({ columnIndex, key, style }): JSX.Element => {
         const asset = this.props.assets[columnIndex];
         const selectedAsset = this.props.selectedAsset;
 
