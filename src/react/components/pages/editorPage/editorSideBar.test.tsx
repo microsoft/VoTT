@@ -118,7 +118,7 @@ describe("Editor SideBar", () => {
 
         const wrapper = createComponent(props);
         const grid = wrapper.find(Grid).instance() as Grid;
-        const recomputeRowHeightsSpy = jest.spyOn(grid, "recomputeGridSize");
+        const recomputeGridSizeSpy = jest.spyOn(grid, "recomputeGridSize");
 
         wrapper.setProps({
             thumbnailSize: {
@@ -127,6 +127,6 @@ describe("Editor SideBar", () => {
             },
         });
 
-        expect(recomputeRowHeightsSpy).toBeCalled();
+        expect(recomputeGridSizeSpy).toBeCalled();
     });
 });
