@@ -7,6 +7,7 @@ import ConnectionPage from "../pages/connections/connectionsPage";
 import EditorPage from "../pages/editorPage/editorPage";
 import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
+import LoginPage from "../pages/login/login";
 
 /**
  * @name - Main Content Router
@@ -16,7 +17,8 @@ export default function MainContentRouter() {
     return (
         <div className="app-content text-light">
             <Switch>
-                <Route path="/" exact component={HomePage} />
+                <Route path-="/" exact component={LoginPage} />
+                <Route path="/home" exact component={HomePage} />
                 <Route path="/settings" component={AppSettingsPage} />
                 <Route path="/connections/:connectionId" component={ConnectionPage} />
                 <Route path="/connections" exact component={ConnectionPage} />

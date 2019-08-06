@@ -25,6 +25,13 @@ export interface IAppStrings {
         restore: string;
         close: string;
     };
+    login: {
+        title: string;
+        username: string;
+        password: string;
+        organization: string;
+        submit: string;
+    }
     homePage: {
         newProject: string;
         openLocalProject: {
@@ -103,7 +110,7 @@ export interface IAppStrings {
         addConnection: string,
         messages: {
             saveSuccess: string;
-        },
+        },    
     };
     projectMetrics: {
         title: string;

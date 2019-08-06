@@ -16,6 +16,7 @@ import {
     ISaveProjectAction,
     ILoadProjectAssetsAction,
     ISaveAssetMetadataAction,
+    IAddLoginInfoAction,
     ILoadAssetMetadataAction,
     IExportProjectAction,
     IDeleteProjectAction,
@@ -83,6 +84,7 @@ export type AnyAction = IOtherAction |
     ISaveProjectAction |
     IDeleteProjectAction |
     ILoadProjectAssetsAction |
+    IAddLoginInfoAction |
     ISaveAssetMetadataAction |
     ILoadAssetMetadataAction |
     IExportProjectAction |

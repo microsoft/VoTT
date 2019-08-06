@@ -10,6 +10,7 @@ import {
     IAsset,
     IAssetMetadata,
     IProject,
+    ILoginInfo,
 } from "../../models/applicationState";
 import { createAction, createPayloadAction, IPayloadAction } from "./actionCreators";
 import { ExportAssetState, IExportResults } from "../../providers/export/exportProvider";
@@ -30,6 +31,7 @@ export default interface IProjectActions {
     loadAssets(project: IProject): Promise<IAsset[]>;
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
+    addLoginInfo(loginInfo: ILoginInfo): Promise<ILoginInfo>
     updateProjectTag(project: IProject, oldTagName: string, newTagName: string): Promise<IAssetMetadata[]>;
     deleteProjectTag(project: IProject, tagName): Promise<IAssetMetadata[]>;
 }
@@ -79,7 +81,7 @@ export function saveProject(project: IProject)
         if (!projectToken) {
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
-
+        project.loginInfo = appState.loginInfo; 
         const savedProject = await projectService.save(project, projectToken);
         dispatch(saveProjectAction(savedProject));
 
@@ -169,6 +171,24 @@ export function saveAssetMetadata(
         dispatch(saveAssetMetadataAction(savedMetadata));
 
         return { ...savedMetadata };
+    };
+}
+
+/**
+ * Save metadata from asset within project
+ * @param loginInfo - login info for user
+ */
+export function addLoginInfodata(
+    loginInfo: ILoginInfo): (dispatch: Dispatch) => Promise<ILoginInfo> {
+    const newLoginInfo = { ...loginInfo, version: appInfo.version };
+
+    return async (dispatch: Dispatch) => {
+        let project : IProject;
+        const assetService = new AssetService(project);
+        const savedLoginInfo = await assetService.saveLoginInfo(loginInfo);
+        dispatch(addLoginInfoAction(savedLoginInfo));
+
+        return { ...savedLoginInfo };
     };
 }
 
@@ -309,6 +329,14 @@ export interface ISaveAssetMetadataAction extends IPayloadAction<string, IAssetM
 }
 
 /**
+ * Save asset logininfo action type
+ */
+export interface IAddLoginInfoAction extends IPayloadAction<string, ILoginInfo> {
+    type: ActionTypes.SAVE_LOGIN_INFO_SUCCESS;
+}
+
+
+/**
  * Export project action type
  */
 export interface IExportProjectAction extends IPayloadAction<string, IProject> {
@@ -360,6 +388,11 @@ export const loadAssetMetadataAction =
  */
 export const saveAssetMetadataAction =
     createPayloadAction<ISaveAssetMetadataAction>(ActionTypes.SAVE_ASSET_METADATA_SUCCESS);
+/**
+ * Instance of Save Asset Metadata action
+ */
+export const addLoginInfoAction =
+    createPayloadAction<IAddLoginInfoAction>(ActionTypes.SAVE_LOGIN_INFO_SUCCESS);
 /**
  * Instance of Export Project action
  */

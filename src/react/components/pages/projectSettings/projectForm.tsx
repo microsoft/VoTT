@@ -2,7 +2,7 @@ import React from "react";
 import Form, { FormValidation, ISubmitEvent, IChangeEvent, Widget } from "react-jsonschema-form";
 import { ITagsInputProps, TagEditorModal, TagsInput } from "vott-react";
 import { addLocValues, strings } from "../../../../common/strings";
-import { IConnection, IProject, ITag, IAppSettings } from "../../../../models/applicationState";
+import { IConnection, IProject, ITag, IAppSettings, ILoginInfo } from "../../../../models/applicationState";
 import { StorageProviderFactory } from "../../../../providers/storage/storageProviderFactory";
 import { ConnectionPickerWithRouter } from "../../common/connectionPicker/connectionPicker";
 import { CustomField } from "../../common/customField/customField";
@@ -66,7 +66,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
             uiSchema: { ...uiSchema },
             formSchema: { ...formSchema },
             formData: {
-                ...this.props.project,
+                ...this.props.project
+
             },
         };
         this.tagsInput = React.createRef<TagsInput>();

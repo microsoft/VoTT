@@ -17,7 +17,7 @@ export default function Sidebar({ project }) {
         <div className="bg-lighter-2 app-sidebar">
             <ul>
                 <li>
-                    <NavLink title={"Home"} to={`/`}>
+                    <NavLink title={"Home"} to={`/home`}>
                         <i className="fas fa-home"></i>
                     </NavLink>
                 </li>

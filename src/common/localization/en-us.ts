@@ -45,6 +45,14 @@ export const english: IAppStrings = {
             deleteSuccess: "Successfully deleted ${project.name}",
         },
     },
+    login: {
+        username: "username",
+        password: "password",
+        organization: "organization",
+        title: "Login Page",
+        submit: "submit"
+
+    },
     appSettings: {
         title: "Application Settings",
         storageTitle: "Storage Settings",

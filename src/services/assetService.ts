@@ -4,7 +4,7 @@ import * as shortid from "shortid";
 import Guard from "../common/guard";
 import {
     IAsset, AssetType, IProject, IAssetMetadata, AssetState,
-    IRegion, RegionType, ITFRecordMetadata,
+    IRegion, RegionType, ITFRecordMetadata, ILoginInfo,
 } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
@@ -174,6 +174,26 @@ export class AssetService {
             }
         }
         return metadata;
+    }
+    public async saveLoginInfo(loginInfo: ILoginInfo): Promise<ILoginInfo> {
+        Guard.null(loginInfo);
+
+        const fileName = `${loginInfo.username}${constants.assetMetadataFileExtension}`;
+
+        // Only save asset metadata if asset is in a tagged state
+        // Otherwise primary asset information is already persisted in the project file.
+        if (loginInfo.username.length !== 0) {
+            await this.storageProvider.writeText(fileName, JSON.stringify(loginInfo, null, 4));
+        } else {
+            // If the asset is no longer tagged, then it doesn't contain any regions
+            // and the file is not required.
+            try {
+                await this.storageProvider.deleteFile(fileName);
+            } catch (err) {
+                // The file may not exist - that's OK
+            }
+        }
+        return loginInfo;
     }
 
     /**

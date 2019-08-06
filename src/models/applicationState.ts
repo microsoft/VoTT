@@ -9,6 +9,7 @@ import { IAssetPreviewSettings } from "../react/components/common/assetPreview/a
  * @member recentProjects - List of recently used projects
  * @member currentProject - The active project being edited
  * @member appError - error in the app if any
+ * @member loginInfo - user information
  */
 export interface IApplicationState {
     appSettings: IAppSettings;
@@ -16,6 +17,7 @@ export interface IApplicationState {
     recentProjects: IProject[];
     currentProject: IProject;
     appError?: IAppError;
+    loginInfo: ILoginInfo;
 }
 
 /**
@@ -29,6 +31,19 @@ export interface IAppError {
     errorCode: ErrorCode;
     message: any;
     title?: string;
+}
+
+/**
+ * @name - login info
+ * @description - user and password for login info
+ * @member username - username
+ * @member password - password
+ * @member organization - organization
+ */
+export interface ILoginInfo {
+    username: string;
+    password: string;
+    organization: string;
 }
 
 /**
@@ -118,6 +133,7 @@ export interface IProject {
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
     lastVisitedAssetId?: string;
+    loginInfo: ILoginInfo;
 }
 
 /**

@@ -5,7 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import ProjectForm from "./projectForm";
 import { strings, interpolate } from "../../../../common/strings";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import { IApplicationState, IProject, IConnection, IAppSettings } from "../../../../models/applicationState";
+import { IApplicationState, IProject, IConnection, IAppSettings, ILoginInfo } from "../../../../models/applicationState";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import { toast } from "react-toastify";
 import "./projectSettingsPage.scss";
@@ -25,6 +25,7 @@ export interface IProjectSettingsPageProps extends RouteComponentProps, React.Pr
     applicationActions: IApplicationActions;
     connections: IConnection[];
     appSettings: IAppSettings;
+    loginInfo: ILoginInfo;
 }
 
 export interface IProjectSettingsPageState {

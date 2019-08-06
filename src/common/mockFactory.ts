@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType, ModelPathType,
+    IPoint, IRegion, RegionType, ModelPathType, ILoginInfo,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -292,6 +292,7 @@ export default class MockFactory {
                 predictTag: false,
             },
             autoSave: true,
+            loginInfo: MockFactory.createLoginInfo(),
         };
     }
 
@@ -828,6 +829,7 @@ export default class MockFactory {
             saveAssetMetadata: jest.fn(() => Promise.resolve()),
             updateProjectTag: jest.fn(() => Promise.resolve()),
             deleteProjectTag: jest.fn(() => Promise.resolve()),
+            addLoginInfo: jest.fn(()=> Promise.resolve()),
         };
     }
 
@@ -869,6 +871,12 @@ export default class MockFactory {
         };
     }
 
+    public static createLoginInfo(): ILoginInfo{
+        return { username: "user", 
+                password: "password",
+                organization: "org"}
+    }
+
     /**
      * Creates test security tokens
      * @param count The number of tokens to generate (default: 10)
@@ -891,6 +899,7 @@ export default class MockFactory {
             ...MockFactory.pageProps(projectId, "settings"),
             connections: MockFactory.createTestConnections(),
             appSettings: MockFactory.appSettings(),
+            loginInfo: MockFactory.createLoginInfo(),
         };
     }
 
