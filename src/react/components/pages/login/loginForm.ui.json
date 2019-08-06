@@ -1,0 +1,11 @@
+{
+    "username": {
+        "ui:field": "username"
+    },
+    "password": {
+        "ui:field": "password"
+    },
+    "organization": {
+        "ui:field": "organization"
+    }
+}

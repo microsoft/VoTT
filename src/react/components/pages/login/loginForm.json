@@ -1,0 +1,25 @@
+{
+    "type": "object",
+    "properties": {
+        "username": {
+            "title": "${strings.login.username}",
+            "type": "string",
+            "pattern": "^[^\\\\\\\\/:*?\\\\\\\"<>|]*$"
+        },
+        "password": {
+            "title": "${strings.login.password}",
+            "type": "string",
+            "pattern": "^[^\\\\\\\\/:*?\\\\\\\"<>|]*$"
+        },
+        "organization": {
+            "title": "${strings.login.organization}",
+            "type": "string",
+            "pattern": "^[^\\\\\\\\/:*?\\\\\\\"<>|]*$"
+        }
+    },
+    "required": [
+        "username",
+        "password",
+        "organziation"
+    ]
+}
