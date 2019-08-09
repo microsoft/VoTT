@@ -50,6 +50,13 @@ export default function Sidebar({ project }) {
                     </ConditionalNavLink>
                 </li>
                 <li>
+                    <ConditionalNavLink disabled={!projectId}
+                        title={strings.login.title}
+                        to={`/projects/${projectId}/login`}>
+                        <i className="fas fa-user-circle"></i>
+                    </ConditionalNavLink>
+                </li>
+                <li>
                     <NavLink title={strings.connections.title}
                         to={`/connections`}><i className="fas fa-plug"></i></NavLink>
                 </li>

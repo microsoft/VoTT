@@ -17,7 +17,7 @@ export interface IApplicationState {
     recentProjects: IProject[];
     currentProject: IProject;
     appError?: IAppError;
-    loginInfo: ILoginInfo;
+    loginInfo?: ILoginInfo;
 }
 
 /**
