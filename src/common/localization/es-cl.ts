@@ -181,6 +181,10 @@ export const spanish: IAppStrings = {
                     title: "Nombre de cuenta",
                     description: "",
                 },
+                accountKey: {
+                    title: "Clave de cuenta",
+                    description: "",
+                },
                 containerName: {
                     title: "Nombre del contenedor",
                     description: "",

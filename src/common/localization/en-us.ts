@@ -179,6 +179,10 @@ export const english: IAppStrings = {
                     title: "Account Name",
                     description: "",
                 },
+                accountKey: {
+                    title: "Account Key",
+                    description: "",
+                },
                 containerName: {
                     title: "Container Name",
                     description: "",

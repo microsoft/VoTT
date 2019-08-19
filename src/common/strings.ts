@@ -178,6 +178,10 @@ export interface IAppStrings {
                     title: string,
                     description: string,
                 },
+                accountKey: {
+                    title: string,
+                    description: string,
+                },
                 containerName: {
                     title: string,
                     description: string,

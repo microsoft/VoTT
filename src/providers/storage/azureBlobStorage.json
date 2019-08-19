@@ -12,6 +12,10 @@
             "title": "${strings.connections.providers.azureBlob.accountName.title}",
             "type": "string"
         },
+        "accountKey": {
+            "title": "${strings.connections.providers.azureBlob.accountKey.title}",
+            "type": "string"
+        },
         "containerName": {
             "title": "${strings.connections.providers.azureBlob.containerName.title}",
             "type": "string"

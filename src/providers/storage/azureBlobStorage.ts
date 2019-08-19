@@ -1,11 +1,8 @@
-import { IStorageProvider } from "./storageProviderFactory";
-import { IAsset, AssetType, StorageType } from "../../models/applicationState";
+import { Aborter, AnonymousCredential, BlockBlobURL, ContainerURL,
+    Credential, ServiceURL, StorageURL, TokenCredential, SharedKeyCredential } from "@azure/storage-blob";
+import { AssetType, IAsset, StorageType } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
-import {
-    TokenCredential, AnonymousCredential, ContainerURL,
-    StorageURL, ServiceURL, Credential, Aborter, BlockBlobURL,
-} from "@azure/storage-blob";
-import { BlobDeleteResponse } from "@azure/storage-blob/typings/lib/generated/lib/models";
+import { IStorageProvider } from "./storageProviderFactory";
 
 /**
  * Options for Azure Cloud Storage
@@ -19,6 +16,7 @@ export interface IAzureCloudStorageOptions {
     accountName: string;
     containerName: string;
     createContainer: boolean;
+    accountKey?: string;
     sas?: string;
     oauthToken?: string;
 }
@@ -229,6 +227,8 @@ export class AzureBlobStorage implements IStorageProvider {
     private getCredential(): Credential {
         if (this.options.oauthToken) {
             return new TokenCredential(this.options.oauthToken);
+        } else if (this.options.accountKey) {
+            return new SharedKeyCredential(this.options.accountName, this.options.accountKey);
         } else {
             return new AnonymousCredential();
         }
