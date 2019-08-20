@@ -28,6 +28,7 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
 
 <!-- toc -->
 
+
 - [VoTT (Visual Object Tagging Tool)](#vott-visual-object-tagging-tool)
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
