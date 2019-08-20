@@ -4,7 +4,7 @@ import { forEachAsync as mapForEachAsync } from "./common/extensions/map";
 declare global {
     // tslint:disable-next-line:interface-name
     interface Array<T> {
-        /**
+    /**
          * Processes items in the array within the specified batch size (default: 5)
          * @param this The array to process
          * @param action The action to perform on each item in the array
@@ -23,7 +23,7 @@ declare global {
 
     // tslint:disable-next-line:interface-name
     interface Map<K, V> {
-        /**
+    /**
          * Processes items in the map within the specified batch size (default: 5)
          * @param this The map to process
          * @param action The action to perform on each item in the map

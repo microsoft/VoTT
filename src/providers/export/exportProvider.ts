@@ -55,7 +55,7 @@ export interface IExportProvider {
  * Provides quick access to the configured projects asset & storage providers
  */
 export abstract class ExportProvider
-    <TOptions extends IExportProviderOptions = IExportProviderOptions> implements IExportProvider {
+<TOptions extends IExportProviderOptions = IExportProviderOptions> implements IExportProvider {
     private storageProviderInstance: IStorageProvider;
     private assetProviderInstance: IAssetProvider;
     private assetService: AssetService;

@@ -282,8 +282,7 @@ describe("Asset Service", () => {
 
             assetService = new AssetService(testProject);
 
-            let builder: TFRecordsBuilder;
-            builder = new TFRecordsBuilder();
+            const builder = new TFRecordsBuilder();
 
             builder.addFeature("image/width", FeatureType.Int64, 600);
             builder.addFeature("image/height", FeatureType.Int64, 800);

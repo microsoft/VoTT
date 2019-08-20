@@ -60,7 +60,7 @@ export default class TagInputItem extends React.Component<ITagInputItemProps, IT
                     this.props.tag &&
                     <li className={this.getItemClassName()} style={style}>
                         <div
-                            className={`tag-color`}
+                            className={"tag-color"}
                             onClick={this.onColorClick}>
                         </div>
                         <div

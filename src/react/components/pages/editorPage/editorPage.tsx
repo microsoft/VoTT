@@ -118,7 +118,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     };
 
     private activeLearningService: ActiveLearningService = null;
-    private loadingProjectAssets: boolean = false;
+    private loadingProjectAssets = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
@@ -425,7 +425,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
-        // If the asset contains any regions without tags, don't proceed.
+    // If the asset contains any regions without tags, don't proceed.
         const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tags.length === 0);
 
         if (regionsWithoutTags.length > 0) {
@@ -490,8 +490,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      * Raised when the asset binary has been painted onto the canvas tools rendering canvas
      */
     private onCanvasRendered = async (canvas: HTMLCanvasElement) => {
-        // When active learning auto-detect is enabled
-        // run predictions when asset changes
+    // When active learning auto-detect is enabled
+    // run predictions when asset changes
         if (this.props.project.activeLearningSettings.autoDetect && !this.state.selectedAsset.asset.predicted) {
             await this.predictRegions(canvas);
         }
@@ -621,7 +621,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
-        // Nothing to do if we are already on the same asset.
+    // Nothing to do if we are already on the same asset.
         if (this.state.selectedAsset && this.state.selectedAsset.asset.id === asset.id) {
             return;
         }

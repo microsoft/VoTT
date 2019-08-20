@@ -39,9 +39,7 @@ export default class ImportService implements IImportService {
     public async convertProject(projectInfo: IFileInfo): Promise<IProject> {
         Guard.null(projectInfo);
 
-        let originalProject: IV1Project;
-        let connection: IConnection;
-        let parsedTags: ITag[];
+        let originalProject: IV1Project; // eslint-disable-line prefer-const
 
         try {
             originalProject = JSON.parse(projectInfo.content as string);
@@ -49,8 +47,8 @@ export default class ImportService implements IImportService {
             throw new AppError(ErrorCode.ProjectInvalidJson, "Error parsing JSON");
         }
 
-        parsedTags = this.parseTags(originalProject);
-        connection = this.generateConnection(projectInfo);
+        const parsedTags = this.parseTags(originalProject);
+        const connection = this.generateConnection(projectInfo);
 
         // map v1 values to v2 values
         return {
@@ -80,11 +78,10 @@ export default class ImportService implements IImportService {
         Guard.null(v1Project);
         Guard.null(v2Project);
 
-        let originalProject: IV1Project;
         let generatedAssetMetadata: IAssetMetadata[] = [];
         this.assetService = new AssetService(v2Project);
 
-        originalProject = JSON.parse(v1Project.content as string);
+        const originalProject = JSON.parse(v1Project.content as string);
 
         const frames: IV1Frame[] = Object.keys(originalProject.frames).map((frameName) => {
             return {

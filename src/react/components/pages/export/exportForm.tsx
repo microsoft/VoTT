@@ -140,8 +140,8 @@ export default class ExportForm extends React.Component<IExportFormProps, IExpor
         }
     }
 
-    private bindForm = (exportFormat: IExportFormat, resetProviderOptions: boolean = false): void => {
-        // If no provider type was specified on bind, pick the default provider
+    private bindForm = (exportFormat: IExportFormat, resetProviderOptions = false): void => {
+    // If no provider type was specified on bind, pick the default provider
         const providerType = (exportFormat && exportFormat.providerType)
             ? exportFormat.providerType
             : ExportProviderFactory.defaultProvider.name;

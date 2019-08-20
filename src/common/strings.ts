@@ -29,23 +29,23 @@ export interface IAppStrings {
         newProject: string;
         openLocalProject: {
             title: string;
-        },
+        };
         openCloudProject: {
             title: string;
             selectConnection: string;
-        },
+        };
         deleteProject: {
             title: string;
             confirmation: string;
-        },
+        };
         importProject: {
             title: string;
             confirmation: string;
-        },
-        recentProjects: string,
+        };
+        recentProjects: string;
         messages: {
-            deleteSuccess: string,
-        },
+            deleteSuccess: string;
+        };
     };
     appSettings: {
         title: string;
@@ -55,59 +55,59 @@ export interface IAppStrings {
         securityToken: {
             name: {
                 title: string;
-            },
+            };
             key: {
                 title: string;
-            },
-        },
+            };
+        };
         securityTokens: {
             title: string;
             description: string;
-        },
+        };
         version: {
             description: string;
-        },
-        commit: string,
+        };
+        commit: string;
         devTools: {
             description: string;
             button: string;
-        },
+        };
         reload: {
             description: string;
             button: string;
-        },
+        };
         messages: {
             saveSuccess: string;
-        },
+        };
     };
     projectSettings: {
         title: string;
         securityToken: {
             title: string;
             description: string;
-        },
+        };
         save: string;
         sourceConnection: {
             title: string;
             description: string;
-        },
+        };
         targetConnection: {
             title: string;
             description: string;
-        },
+        };
         videoSettings: {
             title: string;
             description: string;
             frameExtractionRate: string;
-        },
-        addConnection: string,
+        };
+        addConnection: string;
         messages: {
             saveSuccess: string;
-        },
+        };
     };
     projectMetrics: {
         title: string;
-        assetsSectionTitle: string
+        assetsSectionTitle: string;
         totalAssetCount: string;
         visitedAssets: string;
         taggedAssets: string;
@@ -125,7 +125,7 @@ export interface IAppStrings {
         modal: {
             name: string;
             color: string;
-        }
+        };
         toolbar: {
             add: string;
             search: string;
@@ -134,7 +134,7 @@ export interface IAppStrings {
             moveUp: string;
             moveDown: string;
             delete: string;
-        }
+        };
         colors: {
             white: string;
             gray: string;
@@ -150,12 +150,12 @@ export interface IAppStrings {
             navy: string;
             fuschia: string;
             purple: string;
-        }
+        };
         warnings: {
             existingName: string;
             emptyName: string;
             unknownTagName: string;
-        }
+        };
     };
     connections: {
         title: string;
@@ -166,31 +166,31 @@ export interface IAppStrings {
         messages: {
             saveSuccess: string;
             deleteSuccess: string;
-        },
+        };
         imageCorsWarning: string;
         blobCorsWarning: string;
         azDocLinkText: string;
         providers: {
             azureBlob: {
                 title: string;
-                description: string,
+                description: string;
                 accountName: {
-                    title: string,
-                    description: string,
-                },
+                    title: string;
+                    description: string;
+                };
                 containerName: {
-                    title: string,
-                    description: string,
-                },
+                    title: string;
+                    description: string;
+                };
                 sas: {
-                    title: string,
-                    description: string,
-                },
+                    title: string;
+                    description: string;
+                };
                 createContainer: {
-                    title: string,
-                    description: string,
-                }
-            },
+                    title: string;
+                    description: string;
+                };
+            };
             bing: {
                 title: string;
                 options: string;
@@ -202,15 +202,15 @@ export interface IAppStrings {
                     square: string;
                     wide: string;
                     tall: string;
-                }
-            },
+                };
+            };
             local: {
                 title: string;
                 folderPath: string;
                 selectFolder: string;
                 chooseFolder: string;
-            },
-        }
+            };
+        };
     };
     editorPage: {
         width: string;
@@ -232,52 +232,52 @@ export interface IAppStrings {
             saveProject: string;
             exportProject: string;
             activeLearning: string;
-        }
+        };
         videoPlayer: {
             nextTaggedFrame: {
-                tooltip: string,
-            },
+                tooltip: string;
+            };
             previousTaggedFrame: {
-                tooltip: string,
-            },
+                tooltip: string;
+            };
             nextExpectedFrame: {
-                tooltip: string,
-            },
+                tooltip: string;
+            };
             previousExpectedFrame: {
-                tooltip: string,
-            },
-        }
+                tooltip: string;
+            };
+        };
         help: {
             title: string;
             escape: string;
-        }
+        };
         assetError: string;
         tags: {
             hotKey: {
                 apply: string;
                 lock: string;
-            },
+            };
             rename: {
                 title: string;
                 confirmation: string;
-            },
+            };
             delete: {
                 title: string;
                 confirmation: string;
-            },
-        }
+            };
+        };
         canvas: {
             removeAllRegions: {
                 title: string;
                 confirmation: string;
-            },
-        },
+            };
+        };
         messages: {
             enforceTaggedRegions: {
-                title: string,
-                description: string,
-            },
-        }
+                title: string;
+                description: string;
+            };
+        };
     };
     export: {
         title: string;
@@ -287,160 +287,160 @@ export interface IAppStrings {
             common: {
                 properties: {
                     assetState: {
-                        title: string,
-                        description: string,
+                        title: string;
+                        description: string;
                         options: {
-                            all: string,
-                            visited: string,
-                            tagged: string,
-                        },
-                    },
+                            all: string;
+                            visited: string;
+                            tagged: string;
+                        };
+                    };
                     testTrainSplit: {
-                        title: string,
-                        description: string,
-                    },
+                        title: string;
+                        description: string;
+                    };
                     includeImages: {
-                        title: string,
-                        description: string,
-                    },
-                },
-            },
+                        title: string;
+                        description: string;
+                    };
+                };
+            };
             vottJson: {
-                displayName: string,
-            },
+                displayName: string;
+            };
             azureCV: {
-                displayName: string,
+                displayName: string;
                 regions: {
-                    eastUs: string,
-                    eastUs2: string,
-                    northCentralUs: string,
-                    southCentralUs: string,
-                    westUs2: string,
-                    westEurope: string,
-                    northEurope: string,
-                    southeastAsia: string,
-                    australiaEast: string,
-                    centralIndia: string,
-                    ukSouth: string,
-                    japanEast: string,
-                },
+                    eastUs: string;
+                    eastUs2: string;
+                    northCentralUs: string;
+                    southCentralUs: string;
+                    westUs2: string;
+                    westEurope: string;
+                    northEurope: string;
+                    southeastAsia: string;
+                    australiaEast: string;
+                    centralIndia: string;
+                    ukSouth: string;
+                    japanEast: string;
+                };
                 properties: {
                     apiKey: {
-                        title: string,
-                    },
+                        title: string;
+                    };
                     region: {
-                        title: string,
-                        description: string,
-                    },
+                        title: string;
+                        description: string;
+                    };
                     newOrExisting: {
-                        title: string,
+                        title: string;
                         options: {
-                            new: string,
-                            existing: string,
-                        },
-                    },
+                            new: string;
+                            existing: string;
+                        };
+                    };
                     name: {
-                        title: string,
-                    },
+                        title: string;
+                    };
                     description: {
-                        title: string,
-                    },
+                        title: string;
+                    };
                     projectType: {
-                        title: string,
+                        title: string;
                         options: {
-                            classification: string,
-                            objectDetection: string,
-                        },
-                    },
+                            classification: string;
+                            objectDetection: string;
+                        };
+                    };
                     classificationType: {
-                        title: string,
+                        title: string;
                         options: {
-                            multiLabel: string,
-                            multiClass: string,
-                        },
-                    },
+                            multiLabel: string;
+                            multiClass: string;
+                        };
+                    };
                     domainId: {
-                        title: string,
-                    },
+                        title: string;
+                    };
                     projectId: {
-                        title: string,
-                    },
-                },
-            },
+                        title: string;
+                    };
+                };
+            };
             tfRecords: {
-                displayName: string,
-            },
+                displayName: string;
+            };
             pascalVoc: {
-                displayName: string,
+                displayName: string;
                 exportUnassigned: {
-                    title: string,
-                    description: string,
-                },
-            },
+                    title: string;
+                    description: string;
+                };
+            };
             cntk: {
-                displayName: string,
-            },
+                displayName: string;
+            };
             csv: {
-                displayName: string,
-            },
-        },
+                displayName: string;
+            };
+        };
         messages: {
             saveSuccess: string;
-        },
+        };
     };
     activeLearning: {
         title: string;
         form: {
             properties: {
                 modelPathType: {
-                    title: string,
-                    description: string,
+                    title: string;
+                    description: string;
                     options: {
-                        preTrained: string,
-                        customFilePath: string,
-                        customWebUrl: string,
-                    },
-                },
+                        preTrained: string;
+                        customFilePath: string;
+                        customWebUrl: string;
+                    };
+                };
                 autoDetect: {
-                    title: string,
-                    description: string,
-                },
+                    title: string;
+                    description: string;
+                };
                 predictTag: {
-                    title: string,
-                    description: string,
-                },
+                    title: string;
+                    description: string;
+                };
                 modelPath: {
-                    title: string,
-                    description: string,
-                },
+                    title: string;
+                    description: string;
+                };
                 modelUrl: {
-                    title: string,
-                    description: string,
-                },
-            },
-        }
+                    title: string;
+                    description: string;
+                };
+            };
+        };
         messages: {
             loadingModel: string;
             errorLoadModel: string;
             saveSuccess: string;
-        }
+        };
     };
     profile: {
         settings: string;
     };
     errors: {
-        unknown: IErrorMetadata,
-        projectInvalidJson: IErrorMetadata,
-        projectInvalidSecurityToken: IErrorMetadata,
-        projectUploadError: IErrorMetadata,
-        projectDeleteError: IErrorMetadata,
-        genericRenderError: IErrorMetadata,
-        securityTokenNotFound: IErrorMetadata,
-        canvasError: IErrorMetadata,
-        importError: IErrorMetadata,
-        pasteRegionTooBigError: IErrorMetadata,
-        exportFormatNotFound: IErrorMetadata,
-        activeLearningPredictionError: IErrorMetadata,
+        unknown: IErrorMetadata;
+        projectInvalidJson: IErrorMetadata;
+        projectInvalidSecurityToken: IErrorMetadata;
+        projectUploadError: IErrorMetadata;
+        projectDeleteError: IErrorMetadata;
+        genericRenderError: IErrorMetadata;
+        securityTokenNotFound: IErrorMetadata;
+        canvasError: IErrorMetadata;
+        importError: IErrorMetadata;
+        pasteRegionTooBigError: IErrorMetadata;
+        exportFormatNotFound: IErrorMetadata;
+        activeLearningPredictionError: IErrorMetadata;
     };
 }
 

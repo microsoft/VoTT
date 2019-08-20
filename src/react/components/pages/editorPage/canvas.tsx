@@ -74,7 +74,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
     }
 
     public componentDidUpdate = async (prevProps: Readonly<ICanvasProps>, prevState: Readonly<ICanvasState>) => {
-        // Handles asset changing
+    // Handles asset changing
         if (this.props.selectedAsset !== prevProps.selectedAsset) {
             this.setState({ currentAsset: this.props.selectedAsset });
         }
@@ -362,7 +362,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      * @returns {void}
      */
     private onRegionDelete = (id: string) => {
-        // Remove from Canvas Tools
+    // Remove from Canvas Tools
         this.editor.RM.deleteRegionById(id);
 
         // Remove from project

@@ -178,7 +178,7 @@ export default class CanvasHelpers {
      * @param others Other regions existing in the asset (used to not put region on top of other region)
      */
     public static duplicateRegionsAndMove =
-            (regions: IRegion[], others: IRegion[], width: number, height: number): IRegion[] => {
+    (regions: IRegion[], others: IRegion[], width: number, height: number): IRegion[] => {
         const result: IRegion[] = [];
         for (const region of regions) {
             const shiftCoordinates = CanvasHelpers.getShiftCoordinates(region.boundingBox, others, width, height);
@@ -249,7 +249,7 @@ export default class CanvasHelpers {
     }
 
     private static getShiftCoordinates =
-            (boundingBox: IBoundingBox, otherRegions: IRegion[], width: number, height: number): IPoint => {
+    (boundingBox: IBoundingBox, otherRegions: IRegion[], width: number, height: number): IPoint => {
         let x = boundingBox.left;
         let y = boundingBox.top;
 

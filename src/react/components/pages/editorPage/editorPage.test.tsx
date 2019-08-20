@@ -178,7 +178,7 @@ describe("Editor Page Component", () => {
     });
 
     it("Default asset is loaded and saved during initial page rendering", async () => {
-        // create test project and asset
+    // create test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
         const defaultAsset = testAssets[0];
 
@@ -217,7 +217,7 @@ describe("Editor Page Component", () => {
     });
 
     it("sets page state to invalid when edited asset includes un-tagged regions", async () => {
-        // create test project and asset
+    // create test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
         const defaultAsset = testAssets[0];
 
@@ -265,7 +265,7 @@ describe("Editor Page Component", () => {
     });
 
     it("displays un-tagged warning when user attempts to switch assets while page is in invalid state", async () => {
-        // create test project and asset
+    // create test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
         const defaultAsset = testAssets[0];
 
@@ -309,7 +309,7 @@ describe("Editor Page Component", () => {
     });
 
     it("Check correct saving and loading of last visited asset", async () => {
-        // create test project and asset
+    // create test project and asset
         const testProject = MockFactory.createTestProject("TestProject");
         testProject.lastVisitedAssetId = testAssets[1].id;
         const defaultAsset = testAssets[1];
@@ -868,7 +868,7 @@ describe("Editor Page Component", () => {
     });
 });
 
-function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
+function createStore(project: IProject, setCurrentProject = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
         currentProject: setCurrentProject ? project : null,
         appSettings: MockFactory.appSettings(),

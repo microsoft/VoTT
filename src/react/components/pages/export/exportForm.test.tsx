@@ -83,7 +83,7 @@ describe("Export Form Component", () => {
 
         expect(wrapper.find("form").exists()).toBe(true);
         expect(wrapper.find("select").exists()).toBe(true);
-        expect(wrapper.find(`button[type="submit"]`).exists()).toBe(true);
+        expect(wrapper.find("button[type=\"submit\"]").exists()).toBe(true);
     });
 
     it("Calls submit handler when form is submitted", (done) => {

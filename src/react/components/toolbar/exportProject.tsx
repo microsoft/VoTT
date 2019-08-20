@@ -13,7 +13,7 @@ export class ExportProject extends ToolbarItem {
         toast.dismiss(infoId);
 
         if (!results || (results && results.errors.length === 0)) {
-            toast.success(`Export completed successfully!`);
+            toast.success("Export completed successfully!");
         } else if (results && results.errors.length > 0) {
             toast.warn(`Successfully exported ${results.completed.length}/${results.count} assets`);
         }

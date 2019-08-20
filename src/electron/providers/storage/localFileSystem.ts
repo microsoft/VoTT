@@ -179,7 +179,7 @@ export default class LocalFileSystem implements IStorageProvider {
      * @param  {string} path
      * @returns {Promise} Resolved path and stats
      */
-    private getStats(path: string): Promise<{ path: string, stats: fs.Stats }> {
+    private getStats(path: string): Promise<{ path: string; stats: fs.Stats }> {
         return new Promise((resolve, reject) => {
             fs.stat(path, (err, stats: fs.Stats) => {
                 if (err) {

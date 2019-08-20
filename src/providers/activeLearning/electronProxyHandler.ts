@@ -31,8 +31,7 @@ export class ElectronProxyHandler implements tfc.io.IOHandler {
         return json ? JSON.parse(json) : null;
     }
 
-    private async loadWeights(weightsManifest: tfc.io.WeightsManifestConfig)
-        : Promise<[tfc.io.WeightsManifestEntry[], ArrayBuffer]> {
+    private async loadWeights(weightsManifest: tfc.io.WeightsManifestConfig): Promise<[tfc.io.WeightsManifestEntry[], ArrayBuffer]> {
         const buffers: Buffer[] = [];
         const weightSpecs: tfc.io.WeightsManifestEntry[] = [];
 

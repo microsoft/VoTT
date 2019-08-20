@@ -8,7 +8,7 @@ import { AppError, ErrorCode } from "../../../../models/applicationState";
  */
 export interface IKeyboardRegistrations {
     [keyEventType: string]: {
-        [key: string]: IKeyboardBindingProps,
+        [key: string]: IKeyboardBindingProps;
     };
 }
 

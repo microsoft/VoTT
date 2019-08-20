@@ -21,8 +21,7 @@ describe("TFRecord Asset Component", () => {
 
     let tfRecords: Buffer;
     beforeEach(() => {
-        let builder: TFRecordsBuilder;
-        builder = new TFRecordsBuilder();
+        const builder = new TFRecordsBuilder();
         builder.addFeature("image/encoded", FeatureType.Binary, dataImage);
 
         const buffer = builder.build();

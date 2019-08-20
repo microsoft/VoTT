@@ -32,7 +32,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     private currentWindow: Electron.BrowserWindow;
 
     public componentDidMount() {
-        const isElectron: boolean = !!window["require"];
+        const isElectron = !!window["require"];
 
         if (isElectron) {
             this.remote = (window as any).require("electron").remote as Electron.Remote;
@@ -88,23 +88,23 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     {this.state.platform === PlatformType.Windows &&
                         <ul>
                             <li title={strings.titleBar.minimize} className="btn-window-minimize"
-                                    onClick={this.minimizeWindow}>
+                                onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
                             </li>
                             {!this.state.maximized &&
                                 <li title={strings.titleBar.maximize} className="btn-window-maximize"
-                                        onClick={this.maximizeWindow}>
+                                    onClick={this.maximizeWindow}>
                                     <i className="far fa-window-maximize" />
                                 </li>
                             }
                             {this.state.maximized &&
                                 <li title={strings.titleBar.restore} className="btn-window-restore"
-                                        onClick={this.unmaximizeWindow}>
+                                    onClick={this.unmaximizeWindow}>
                                     <i className="far fa-window-restore" />
                                 </li>
                             }
                             <li title={strings.titleBar.close} className="btn-window-close"
-                                    onClick={this.closeWindow}>
+                                onClick={this.closeWindow}>
                                 <i className="fas fa-times" />
                             </li>
                         </ul>
@@ -210,7 +210,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     }
 
     private onMenuItemSelected = (key: string, item: React.Component) => {
-        // Required to auto-close the menu after user selects an item.
+    // Required to auto-close the menu after user selects an item.
         this.menu.current.store.setState({
             openKeys: [],
             selectedKeys: [],

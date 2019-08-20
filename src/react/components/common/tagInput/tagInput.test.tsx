@@ -9,7 +9,7 @@ import { ColorPicker } from "../colorPicker";
 describe("Tag Input Component", () => {
 
     function createComponent(props?: ITagInputProps):
-        ReactWrapper<ITagInputProps, ITagInputState> {
+    ReactWrapper<ITagInputProps, ITagInputState> {
         return mount(<TagInput {...(props || createProps())} />);
     }
 

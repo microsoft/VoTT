@@ -9,7 +9,7 @@ import Guard from "../guard";
 export async function forEachAsync<K, V>(
     this: Map<K, V>,
     action: (value: V, key: K) => Promise<void>,
-    batchSize: number = 5): Promise<void> {
+    batchSize = 5): Promise<void> {
     Guard.null(this);
     Guard.null(action);
     Guard.expression(batchSize, (value) => value > 0);

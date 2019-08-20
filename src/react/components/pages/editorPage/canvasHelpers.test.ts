@@ -151,7 +151,7 @@ describe("Canvas Helpers", () => {
     }
 
     it("Duplicates a region with coordinates out of range into the default location", () => {
-        // Starting coordinates out of range
+    // Starting coordinates out of range
         expectDefaultDuplication(10001, 10001);
         // Starting left out of range
         expectDefaultDuplication(10001, 0);
@@ -166,7 +166,7 @@ describe("Canvas Helpers", () => {
     });
 
     it("Throws error for region too big", () => {
-        // Both width and height too big
+    // Both width and height too big
         expect(() => expectDefaultDuplication(0, 0, 10001, 10001)).toThrowError();
         // Just width too big
         expect(() => expectDefaultDuplication(0, 0, 10001, 10)).toThrowError();

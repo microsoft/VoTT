@@ -175,7 +175,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                 <h4>{strings.projectMetrics.assetsSectionTitle}</h4>
                 <p className="my-1">
                     {strings.projectMetrics.totalAssetCount}:
-                        <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong><br />
+                    <strong className="px-1 metric-total-asset-count">{sourceAssetCount}</strong><br />
                 </p>
                 <div className="asset-chart">
                     <Sunburst
@@ -315,11 +315,11 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
     /**
      * a map of asset count per tag
      */
-    private getTagsCounts = (): Map<string, { tag: ITag, count: number }> => {
+    private getTagsCounts = (): Map<string, { tag: ITag; count: number }> => {
         const projectTags = _.keyBy(this.props.project.tags, (tag) => tag.name);
         const tagReferences = this.getAllTagReferences();
 
-        const map = new Map<string, { tag: ITag, count: number }>();
+        const map = new Map<string, { tag: ITag; count: number }>();
         tagReferences.forEach((t) => {
             const projectTag = projectTags[t];
             if (!projectTag) {

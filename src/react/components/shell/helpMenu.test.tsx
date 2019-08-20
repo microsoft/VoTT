@@ -44,7 +44,7 @@ describe("Help Menu", () => {
         const wrapper = createComponent();
         wrapper.find("div.help-menu-button").simulate("click");
         await MockFactory.flushUi();
-        expect(wrapper.exists(`div.col-1.keybinding-icon.fas.test-icon-1`)).toBe(true);
+        expect(wrapper.exists("div.col-1.keybinding-icon.fas.test-icon-1")).toBe(true);
         expect(wrapper.find("div.col-4.keybinding-accelerator").first().text()).toEqual("A");
         expect(wrapper.find("div.col-6.keybinding-name").first().text()).toEqual("Binding 1");
     });

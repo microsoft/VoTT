@@ -14,7 +14,7 @@ describe("CloudFilePicker", () => {
         (connection: IConnection) => MockFactory.createStorageProviderFromConnection(connection));
 
     function createComponent(props: ICloudFilePickerProps):
-            ReactWrapper<ICloudFilePickerProps, ICloudFilePickerState, CloudFilePicker> {
+    ReactWrapper<ICloudFilePickerProps, ICloudFilePickerState, CloudFilePicker> {
         return mount(<CloudFilePicker {...props}/>);
     }
 
@@ -86,7 +86,7 @@ describe("CloudFilePicker", () => {
         expect(state.backDisabled).toBe(false);
         expect(state.okDisabled).toBe(true);
         expect(state.selectedFile).toBeNull();
-        expect(state.modalHeader).toEqual(`Select a file from "Connection 1"`);
+        expect(state.modalHeader).toEqual("Select a file from \"Connection 1\"");
         expect(state.selectedConnection).toEqual(connections[0]);
         expect(wrapper.find("a")).toHaveLength(mockFiles.length);
     });

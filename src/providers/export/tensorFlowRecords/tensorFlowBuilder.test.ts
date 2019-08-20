@@ -12,7 +12,7 @@ describe("TFRecords Builder Functions", () => {
 
             expect(builder.build()).toEqual(
                 new Buffer([10, 23, 10, 21, 10, 12, 105, 109, 97, 103, 101, 47, 104,
-                            101, 105, 103, 104, 116, 18, 5, 26, 3, 10, 1, 123]));
+                    101, 105, 103, 104, 116, 18, 5, 26, 3, 10, 1, 123]));
         });
 
         it("Check addFloatFeature", async () => {
@@ -20,7 +20,7 @@ describe("TFRecords Builder Functions", () => {
 
             expect(builder.build()).toEqual(
                 new Buffer([10, 26, 10, 24, 10, 12, 105, 109, 97, 103, 101, 47, 104,
-                            101, 105, 103, 104, 116, 18, 8, 18, 6, 10, 4, 0, 0, 246, 66]));
+                    101, 105, 103, 104, 116, 18, 8, 18, 6, 10, 4, 0, 0, 246, 66]));
         });
 
         it("Check addStringFeature", async () => {
@@ -28,7 +28,7 @@ describe("TFRecords Builder Functions", () => {
 
             expect(builder.build()).toEqual(
                 new Buffer([10, 25, 10, 23, 10, 12, 105, 109, 97, 103, 101, 47, 104,
-                            101, 105, 103, 104, 116, 18, 7, 10, 5, 10, 3, 49, 50, 51]));
+                    101, 105, 103, 104, 116, 18, 7, 10, 5, 10, 3, 49, 50, 51]));
         });
     });
 

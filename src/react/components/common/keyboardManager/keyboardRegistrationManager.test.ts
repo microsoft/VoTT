@@ -6,7 +6,7 @@ describe("Keyboard Registration Manager", () => {
     let keyboardManager: KeyboardRegistrationManager = null;
 
     function addHandler(keyboardManager: KeyboardRegistrationManager,
-                        keyEventType: KeyEventType, accelerators: string[], handler) {
+        keyEventType: KeyEventType, accelerators: string[], handler) {
         const bindingProps: IKeyboardBindingProps = {
             accelerators,
             displayName: "test binding",

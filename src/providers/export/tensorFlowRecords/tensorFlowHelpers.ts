@@ -42,10 +42,10 @@ export function crc32c(buffer: Buffer): number {
     function reverse(x, n) {
         let b = 0;
         while (n) {
-        b = b * 2 + x % 2;
-        x /= 2;
-        x -= x % 1;
-        n--;
+            b = b * 2 + x % 2;
+            x /= 2;
+            x -= x % 1;
+            n--;
         }
         return b;
     }
@@ -54,7 +54,7 @@ export function crc32c(buffer: Buffer): number {
         c = reverse(i, 32);
 
         for (j = 0; j < 8; j++) {
-        c = ((c * 2) ^ (((c >>> 31) % 2) * polynomial)) >>> 0;
+            c = ((c * 2) ^ (((c >>> 31) % 2) * polynomial)) >>> 0;
         }
 
         table[i] = reverse(c, 32);
@@ -63,7 +63,7 @@ export function crc32c(buffer: Buffer): number {
     for (i = 0; i < buffer.length; i++) {
         c = buffer[i];
         if (c > 255) {
-        throw new RangeError();
+            throw new RangeError();
         }
         j = (crc % 256) ^ c;
         crc = ((crc / 256) ^ table[j]) >>> 0;

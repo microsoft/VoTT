@@ -286,7 +286,7 @@ describe("Azure Custom Vision Export Provider", () => {
             const getAssetBlobMock = HtmlFileReader.getAssetBlob as jest.Mock;
             HtmlFileReader.getAssetBlob = getAssetBlobMock
                 .mockImplementationOnce((asset: IAsset) => {
-                    if (asset.path === `file:C:/Desktop/asset1.jpg`) {
+                    if (asset.path === "file:C:/Desktop/asset1.jpg") {
                         return Promise.reject("Error downloading binary");
                     } else {
                         Promise.resolve(new Blob(["Some binary data"]));

@@ -58,7 +58,7 @@ export function saveAppSettings(appSettings: IAppSettings): (dispatch: Dispatch)
  * @param project The project to validate
  */
 export function ensureSecurityToken(project: IProject):
-    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAppSettings> {
+(dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAppSettings> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         let securityToken = appState.appSettings.securityTokens

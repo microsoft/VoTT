@@ -202,7 +202,7 @@ describe("Homepage Component", () => {
         const wrapper = createComponent(store, props);
 
         const fileUpload = wrapper.find("a.file-upload").first();
-        const fileInput = wrapper.find(`input[type="file"]`);
+        const fileInput = wrapper.find("input[type=\"file\"]");
         const filePicker = wrapper.find(FilePicker);
         const uploadSpy = jest.spyOn(filePicker.instance() as FilePicker, "upload");
 
@@ -279,8 +279,8 @@ describe("Homepage Component", () => {
             match: {
                 params: {},
                 isExact: true,
-                path: `https://localhost:3000/`,
-                url: `https://localhost:3000/`,
+                path: "https://localhost:3000/",
+                url: "https://localhost:3000/",
             },
         };
     }

@@ -124,7 +124,7 @@ export class TFRecordsExportProvider extends ExportProvider {
     }
 
     private async writeTFRecords(fileNamePath: string, buffers: Buffer[]) {
-        // Get TFRecords buffer
+    // Get TFRecords buffer
         const tfRecords = TFRecordsBuilder.buildTFRecords(buffers);
 
         // Write TFRecords

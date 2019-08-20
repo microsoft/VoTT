@@ -71,7 +71,7 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
     }
 
     private async exportImages(exportFolderName: string, allAssets: IAssetMetadata[]) {
-        // Create JPEGImages Sub Folder
+    // Create JPEGImages Sub Folder
         const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
         await this.storageProvider.createContainer(jpegImagesFolderName);
 
@@ -134,7 +134,7 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
     }
 
     private async updateImageSizeInfo(imageBuffer: ArrayBuffer, imageFileName: string, assetName: string) {
-        // Get Base64
+    // Get Base64
         const image64 = btoa(new Uint8Array(imageBuffer).
             reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
@@ -176,7 +176,7 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
     }
 
     private async exportAnnotations(exportFolderName: string, allAssets: IAssetMetadata[]) {
-        // Create Annotations Sub Folder
+    // Create Annotations Sub Folder
         const annotationsFolderName = `${exportFolderName}/Annotations`;
         await this.storageProvider.createContainer(annotationsFolderName);
 

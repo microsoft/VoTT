@@ -46,8 +46,7 @@ export default class HtmlFileReader {
      * Reads attributes from asset depending on type (video or image)
      * @param asset Asset to read from
      */
-    public static async readAssetAttributes(asset: IAsset)
-        : Promise<{ width: number, height: number, duration?: number }> {
+    public static async readAssetAttributes(asset: IAsset): Promise<{ width: number; height: number; duration?: number }> {
         Guard.null(asset);
 
         switch (asset.type) {
@@ -62,8 +61,7 @@ export default class HtmlFileReader {
         }
     }
 
-    public static async readAssetAttributesWithBuffer(base64: string)
-        : Promise<{ width: number, height: number, duration?: number }> {
+    public static async readAssetAttributesWithBuffer(base64: string): Promise<{ width: number; height: number; duration?: number }> {
         Guard.null(base64);
 
         return await this.readImageAttributes("data:image;base64," + base64);
@@ -147,7 +145,7 @@ export default class HtmlFileReader {
         });
     }
 
-    private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {
+    private static readVideoAttributes(url: string): Promise<{ width: number; height: number; duration: number }> {
         return new Promise((resolve, reject) => {
             const video = document.createElement("video") as HTMLVideoElement;
             video.onloadedmetadata = () => {
@@ -162,7 +160,7 @@ export default class HtmlFileReader {
         });
     }
 
-    private static readImageAttributes(url: string): Promise<{ width: number, height: number }> {
+    private static readImageAttributes(url: string): Promise<{ width: number; height: number }> {
         return new Promise((resolve, reject) => {
             const image = document.createElement("img") as HTMLImageElement;
             image.onload = () => {
@@ -176,8 +174,8 @@ export default class HtmlFileReader {
         });
     }
 
-    private static async readTFRecordAttributes(asset: IAsset): Promise<{ width: number, height: number }> {
-        // Get from TFRecord Reader
+    private static async readTFRecordAttributes(asset: IAsset): Promise<{ width: number; height: number }> {
+    // Get from TFRecord Reader
         const tfrecords = new Buffer(await this.getAssetArray(asset));
         const reader = new TFRecordsReader(tfrecords);
         const width = reader.getFeature(0, "image/width", FeatureType.Int64) as number;

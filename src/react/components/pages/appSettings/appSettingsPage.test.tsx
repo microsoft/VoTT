@@ -117,8 +117,8 @@ describe("App Settings Page", () => {
             match: {
                 params: {},
                 isExact: true,
-                path: `https://localhost:3000/settings`,
-                url: `https://localhost:3000/settings`,
+                path: "https://localhost:3000/settings",
+                url: "https://localhost:3000/settings",
             },
         };
     }

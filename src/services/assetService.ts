@@ -227,9 +227,8 @@ export class AssetService {
      * @param tagName Name of tag to update within project
      * @param transformer Function that accepts array of tags from a region and returns a modified array of tags
      */
-    private async getUpdatedAssets(tagName: string, transformer: (tags: string[]) => string[])
-        : Promise<IAssetMetadata[]> {
-        // Loop over assets and update if necessary
+    private async getUpdatedAssets(tagName: string, transformer: (tags: string[]) => string[]): Promise<IAssetMetadata[]> {
+    // Loop over assets and update if necessary
         const updates = await _.values(this.project.assets).mapAsync(async (asset) => {
             const assetMetadata = await this.getAssetMetadata(asset);
             const isUpdated = this.updateTagInAssetMetadata(assetMetadata, tagName, transformer);

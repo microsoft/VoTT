@@ -18,8 +18,7 @@ import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 
 describe("Editor Canvas", () => {
-    function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
-        : ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
+    function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps): ReactWrapper<ICanvasProps, ICanvasState, Canvas> {
         const props = createProps();
         const cProps = canvasProps || props.canvas;
         const aProps = assetPreviewProps || props.assetPreview;

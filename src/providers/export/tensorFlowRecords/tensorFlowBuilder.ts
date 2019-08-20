@@ -37,9 +37,9 @@ export class TFRecordsBuilder {
 
             // Concatenate all TFRecords Header, Data and Footer buffer
             return Buffer.concat([bufferLength,
-                                  bufferLengthMaskedCRC,
-                                  record,
-                                  bufferDataMaskedCRC]);
+                bufferLengthMaskedCRC,
+                record,
+                bufferDataMaskedCRC]);
         }));
     }
 
@@ -109,7 +109,7 @@ export class TFRecordsBuilder {
      * @description - Return a Buffer representation of a single TFRecord
      */
     public build(): Buffer {
-        // Get Protocol Buffer TFRecords object with exported image features
+    // Get Protocol Buffer TFRecords object with exported image features
         const imageMessage = new TFRecordsImageMessage();
         imageMessage.setContext(this.features);
 

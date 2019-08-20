@@ -14,7 +14,7 @@ import ConnectionsPage from "./../pages/connections/connectionsPage";
 import { IApplicationState } from "./../../../models/applicationState";
 
 describe("Main Content Router", () => {
-    const badRoute: string = "/index.html";
+    const badRoute = "/index.html";
 
     function createComponent(routerContext, route, store, props: IHomePageProps): ReactWrapper {
         return mount(

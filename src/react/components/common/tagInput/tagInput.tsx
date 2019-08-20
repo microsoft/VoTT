@@ -360,7 +360,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
     }
 
     private handleClick = (tag: ITag, props: ITagClickProps) => {
-        // Lock tags
+    // Lock tags
         if (props.ctrlKey && this.props.onCtrlTagClick) {
             this.props.onCtrlTagClick(tag);
             this.setState({ clickedColor: props.clickedColor });

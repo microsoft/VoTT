@@ -13,8 +13,7 @@ describe("App Settings Form", () => {
         securityTokens: [],
     };
 
-    function createComponent(props: IAppSettingsFormProps = null)
-        : ReactWrapper<IAppSettingsFormProps, IAppSettingsFormState> {
+    function createComponent(props: IAppSettingsFormProps = null): ReactWrapper<IAppSettingsFormProps, IAppSettingsFormState> {
         props = props || createProps(defaultAppSettings);
         return mount(<AppSettingsForm {...props} />);
     }

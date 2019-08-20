@@ -39,7 +39,7 @@ export default interface IProjectActions {
  * @param project - Project to load
  */
 export function loadProject(project: IProject):
-    (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
+(dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         const projectService = new ProjectService();
@@ -62,8 +62,7 @@ export function loadProject(project: IProject):
  * Dispatches Save Project action and resolves with IProject
  * @param project - Project to save
  */
-export function saveProject(project: IProject)
-    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
+export function saveProject(project: IProject): (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IProject> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         const projectService = new ProjectService();
@@ -94,8 +93,7 @@ export function saveProject(project: IProject)
  * Dispatches Delete Project action and resolves with project
  * @param project - Project to delete
  */
-export function deleteProject(project: IProject)
-    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<void> {
+export function deleteProject(project: IProject): (dispatch: Dispatch, getState: () => IApplicationState) => Promise<void> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
         const projectService = new ProjectService();
@@ -178,10 +176,9 @@ export function saveAssetMetadata(
  * @param oldTagName The old tag name
  * @param newTagName The new tag name
  */
-export function updateProjectTag(project: IProject, oldTagName: string, newTagName: string)
-    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAssetMetadata[]> {
+export function updateProjectTag(project: IProject, oldTagName: string, newTagName: string): (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAssetMetadata[]> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
-        // Find tags to rename
+    // Find tags to rename
         const assetService = new AssetService(project);
         const assetUpdates = await assetService.renameTag(oldTagName, newTagName);
 
@@ -209,10 +206,9 @@ export function updateProjectTag(project: IProject, oldTagName: string, newTagNa
  * @param project The project to delete tags
  * @param tagName The tag to delete
  */
-export function deleteProjectTag(project: IProject, tagName)
-    : (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAssetMetadata[]> {
+export function deleteProjectTag(project: IProject, tagName): (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAssetMetadata[]> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
-        // Find tags to rename
+    // Find tags to rename
         const assetService = new AssetService(project);
         const assetUpdates = await assetService.deleteTag(tagName);
 

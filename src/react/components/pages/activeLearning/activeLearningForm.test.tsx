@@ -21,8 +21,7 @@ describe("Active Learning Form", () => {
         onCancel: onCancelHandler,
     };
 
-    function createComponent(props?: IActiveLearningFormProps)
-        : ReactWrapper<IActiveLearningFormProps, IActiveLearningFormState> {
+    function createComponent(props?: IActiveLearningFormProps): ReactWrapper<IActiveLearningFormProps, IActiveLearningFormState> {
         props = props || defaultProps;
         return mount(<ActiveLearningForm {...props} />);
     }

@@ -4,7 +4,7 @@ import { IpcProxyMessage } from "./ipcProxy";
 export type IpcProxyHandler<T> = (sender: any, args: T) => any;
 
 export class IpcMainProxy {
-    private static PROXY_EVENT_NAME: string = "ipc-renderer-proxy";
+    private static PROXY_EVENT_NAME = "ipc-renderer-proxy";
 
     public handlers: { [type: string]: IpcProxyHandler<any> } = {};
 
