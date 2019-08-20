@@ -28,7 +28,7 @@
                     display: inline-block;
 
                     &.active, &:hover {
-                        color: #fff;
+                        color: rgb(162, 228, 100);
                         background-color: $lighter-2;
                         text-decoration: none;
                     }

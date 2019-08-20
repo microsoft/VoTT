@@ -177,7 +177,6 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
             throw new AppError(ErrorCode.ProjectDeleteError, "Error deleting project file");
         }
     }
-    
 
     private convertProject = async (projectInfo: IFileInfo) => {
         const importService = new ImportService();
