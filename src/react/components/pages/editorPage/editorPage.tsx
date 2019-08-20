@@ -193,8 +193,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     paneStyle={{ display: "flex" }}
                     onChange={this.onSideBarResize}
                     onDragFinished={this.onSideBarResizeComplete}
-                    primary={"second"}
-                    >
+                    primary={"second"}>
                     <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-header">
