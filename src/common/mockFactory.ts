@@ -618,7 +618,7 @@ export default class MockFactory {
     public static createAssetProvider(): IAssetProvider {
         return {
             initialize: jest.fn(() => Promise.resolve()),
-            getAssets(containerName?: string): Promise<IAsset[]> {
+            getAssets(project?: IProject): Promise<IAsset[]> {
                 throw new Error("Method not implemented.");
             },
         };

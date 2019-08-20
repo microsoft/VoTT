@@ -1,5 +1,5 @@
 import { AssetProviderFactory, IAssetProvider } from "./assetProviderFactory";
-import { IAsset } from "../../models/applicationState";
+import { IAsset, IProject } from "../../models/applicationState";
 
 describe("Asset Provider Factory", () => {
     it("registers new storage providers", () => {
@@ -25,7 +25,7 @@ class TestAssetProvider implements IAssetProvider {
     public initialize(): Promise<void> {
         throw new Error("Method not implemented");
     }
-    public getAssets(containerName?: string): Promise<IAsset[]> {
+    public getAssets(project?: IProject): Promise<IAsset[]> {
         throw new Error("Method not implemented.");
     }
 }

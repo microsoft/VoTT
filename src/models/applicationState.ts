@@ -94,6 +94,8 @@ export interface IAppSettings {
  * @description - Defines the structure of a VoTT project
  * @member id - Unique identifier
  * @member name - User defined name
+ * @member version - Application Version
+ * @member projectSchemaVersion
  * @member securityToken - The Base64 encoded token used to encrypt sensitive project data
  * @member description - User defined description
  * @member tags - User defined list of tags
@@ -105,8 +107,11 @@ export interface IAppSettings {
  */
 export interface IProject {
     id: string;
+    /** This is my name */
     name: string;
     version: string;
+    /** Version for the Project JSON schema */
+    schemaVersion?: string;
     securityToken: string;
     description?: string;
     tags: ITag[];

@@ -3,9 +3,10 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import { IStorageProvider } from "../../../providers/storage/storageProviderFactory";
-import { IAsset, AssetType, StorageType } from "../../../models/applicationState";
+import { IAsset, AssetType, StorageType, IProject } from "../../../models/applicationState";
 import { AssetService } from "../../../services/assetService";
 import { strings } from "../../../common/strings";
+import semver from "semver"
 
 export default class LocalFileSystem implements IStorageProvider {
     public storageType: StorageType.Local;
@@ -92,7 +93,7 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public listFiles(folderPath: string): Promise<string[]> {
+    public listFiles(folderPath?: string): Promise<string[]> {
         return this.listItems(path.normalize(folderPath), (stats) => !stats.isDirectory());
     }
 
@@ -136,9 +137,14 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public async getAssets(folderPath?: string): Promise<IAsset[]> {
-        return (await this.listFiles(path.normalize(folderPath)))
-            .map((filePath) => AssetService.createAssetFromFilePath(filePath))
+    public async getAssets(project?: IProject): Promise<IAsset[]> {
+        alert("Hello");
+        let files = await this.listFiles();
+        const schemaVersion = (project) ? project.schemaVersion : undefined;
+        if (semver.valid(schemaVersion) && semver.satisfies(schemaVersion, ">=2.0.0")) {
+            files = files.map((filePath) => path.relative("", filePath))
+        }
+        return files.map((filePath) => AssetService.createAssetFromFilePath(filePath))
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
 

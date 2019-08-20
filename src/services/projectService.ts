@@ -13,6 +13,11 @@ import packageJson from "../../package.json";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IExportFormat } from "vott-react";
 
+export const ProjectFileVersions = {
+    latest: "1.0.0",
+
+}
+
 /**
  * Functions required for a project service
  * @member save - Save a project

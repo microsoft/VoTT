@@ -1,5 +1,5 @@
 import { StorageProviderFactory, IStorageProvider } from "./storageProviderFactory";
-import { IAsset, StorageType } from "../../models/applicationState";
+import { IAsset, StorageType, IProject } from "../../models/applicationState";
 
 describe("Storage Provider Factory", () => {
     it("registers new storage providers", () => {
@@ -51,7 +51,7 @@ class TestStorageProvider implements IStorageProvider {
     public deleteContainer(folderPath: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    public getAssets(containerName?: string): Promise<IAsset[]> {
+    public getAssets(project?: IProject): Promise<IAsset[]> {
         throw new Error("Method not implemented.");
     }
 }

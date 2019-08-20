@@ -1,5 +1,5 @@
 import { IStorageProvider } from "./storageProviderFactory";
-import { IAsset, AssetType, StorageType } from "../../models/applicationState";
+import { IAsset, AssetType, StorageType, IProject } from "../../models/applicationState";
 import { AssetService } from "../../services/assetService";
 import {
     TokenCredential, AnonymousCredential, ContainerURL,
@@ -191,9 +191,8 @@ export class AzureBlobStorage implements IStorageProvider {
      * @param containerName - Container from which to retrieve assets. Defaults to
      * container specified in Azure Cloud Storage options
      */
-    public async getAssets(containerName?: string): Promise<IAsset[]> {
-        containerName = (containerName) ? containerName : this.options.containerName;
-        const files = await this.listFiles(containerName);
+    public async getAssets(project?: IProject): Promise<IAsset[]> {
+        const files = await this.listFiles(this.options.containerName);
         const result: IAsset[] = [];
         for (const file of files) {
             const url = this.getUrl(file);
