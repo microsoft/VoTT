@@ -11,7 +11,8 @@
         "ordered-imports": false,
         "no-string-literal": false,
         "no-bitwise": false,
-        "function-constructor": false
+        "function-constructor": false,
+        "interface-name": false
     },
     "rulesDirectory": []
 }

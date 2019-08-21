@@ -13,13 +13,14 @@ export default class LocalFileSystem implements IStorageProvider {
     constructor(private browserWindow: BrowserWindow) { }
 
     public selectContainer(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            const filePaths = dialog.showOpenDialog(this.browserWindow, {
+        return new Promise<string>(async (resolve, reject) => {
+            const dialogResults = await dialog.showOpenDialog(this.browserWindow, {
                 title: strings.connections.providers.local.selectFolder,
                 buttonLabel: strings.connections.providers.local.chooseFolder,
                 properties: ["openDirectory", "createDirectory"],
             });
 
+            const filePaths = dialogResults.filePaths;
             if (!filePaths || filePaths.length !== 1) {
                 return reject();
             }
