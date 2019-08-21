@@ -11,8 +11,10 @@
   &-bottombar {
     display: flex;
     flex-grow: 1;
+    flex-direction: row;
 
     &-nav {
+      height: 100%;
       width: 100%;
 
       .asset-list {
