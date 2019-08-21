@@ -9,4 +9,5 @@ update_configs:
     update_schedule: "weekly"
 
     default_labels:
-      - "dependency-update"
+    - "dependencies"
+    - "dependabot"
