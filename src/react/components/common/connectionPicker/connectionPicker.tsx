@@ -85,4 +85,5 @@ export class ConnectionPicker extends React.Component<IConnectionPickerProps, IC
     }
 }
 
-export const ConnectionPickerWithRouter = withRouter<IConnectionPickerProps>(ConnectionPicker);
+// tslint:disable-next-line:max-line-length
+export const ConnectionPickerWithRouter = withRouter<IConnectionPickerProps, React.ComponentType<IConnectionPickerProps>>(ConnectionPicker);
