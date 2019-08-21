@@ -3,6 +3,7 @@ import { ExportProvider, IExportResults } from "./exportProvider";
 import { IAssetMetadata, IExportProviderOptions, IProject } from "../../models/applicationState";
 import HtmlFileReader from "../../common/htmlFileReader";
 import Guard from "../../common/guard";
+import {splitTestAsset} from "./testAssetsSplitHelper";
 
 enum ExportSplit {
     Test,
@@ -37,24 +38,8 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
 
         const testSplit = (100 - (this.options.testTrainSplit || 80)) / 100;
         if (testSplit > 0 && testSplit <= 1) {
-            const tagsAssetDict: { [index: string]: { assetList: Set<string> } } = {};
-            const tags = this.project.tags;
-            tags.forEach((tag) => tagsAssetDict[tag.name] = { assetList: new Set() });
-            assetsToExport.forEach((assetMetadata) => {
-                assetMetadata.regions.forEach((region) => {
-                    region.tags.forEach((tagName) => {
-                        if (tagsAssetDict[tagName]) {
-                            tagsAssetDict[tagName].assetList.add(assetMetadata.asset.name);
-                        }
-                    });
-                });
-            });
-
-            for (const tagKey of Object.keys(tagsAssetDict)) {
-                const assetList = tagsAssetDict[tagKey].assetList;
-                const testCount = Math.ceil(assetList.size * testSplit);
-                testAssets.push(...Array.from(assetList).slice(0, testCount));
-            }
+            const splittedAssets = splitTestAsset(assetsToExport, this.project.tags, testSplit);
+            testAssets.push(...splittedAssets);
         }
 
         const results = await assetsToExport.mapAsync(async (assetMetadata) => {

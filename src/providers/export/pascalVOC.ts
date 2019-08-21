@@ -6,6 +6,7 @@ import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./pascalVOC/pascalVOCTemplates";
 import { interpolate } from "../../common/strings";
 import os from "os";
+import { splitTestAsset } from "./testAssetsSplitHelper";
 
 interface IObjectInfo {
     name: string;
@@ -254,25 +255,8 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
         });
 
         if (testSplit > 0 && testSplit <= 1) {
-            const testAssets: string[] = [];
-            const tagsAssetDict: { [index: string]: { assetList: Set<string> } } = {};
             const tags = this.project.tags;
-            tags.forEach((tag) => tagsAssetDict[tag.name] = { assetList: new Set() });
-            allAssets.forEach((assetMetadata) => {
-                assetMetadata.regions.forEach((region) => {
-                    region.tags.forEach((tagName) => {
-                        if (tagsAssetDict[tagName]) {
-                            tagsAssetDict[tagName].assetList.add(assetMetadata.asset.name);
-                        }
-                    });
-                });
-            });
-
-            for (const tagKey of Object.keys(tagsAssetDict)) {
-                const assetList = tagsAssetDict[tagKey].assetList;
-                const testCount = Math.ceil(assetList.size * testSplit);
-                testAssets.push(...Array.from(assetList).slice(0, testCount));
-            }
+            const testAssets: string[] = splitTestAsset(allAssets, tags, testSplit);
 
             await tags.forEachAsync(async (tag) => {
                 const tagInstances = tagUsage.get(tag.name) || 0;
