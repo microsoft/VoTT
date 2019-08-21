@@ -129,4 +129,32 @@ describe("Editor SideBar", () => {
 
         expect(recomputeGridSizeSpy).toBeCalled();
     });
+
+    it("Correctly computes Grid column size", () => {
+        const props: IEditorSideBarProps = {
+            assets: testAssets,
+            onAssetSelected: onSelectAssetHandler,
+            thumbnailSize: {
+                width: 175,
+                height: 155,
+            },
+        };
+
+        const wrapper = createComponent(props);
+        const grid = wrapper.find(Grid).instance() as Grid;
+        const autoSizer = wrapper.find(AutoSizer).instance() as AutoSizer;
+        autoSizer.setState({
+            width: 150,
+            height: 91,
+        });
+
+        wrapper.setProps({
+            thumbnailSize: {
+                width: 150,
+                height: 91,
+            },
+        });
+
+        expect(grid.props.columnWidth()).toBe(100);
+    });
 });
