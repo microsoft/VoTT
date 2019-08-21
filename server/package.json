@@ -1,37 +1,56 @@
 {
-    "name": "vott-server",
-    "version": "1.0.0",
-    "description": "Server to support VoTT with login",
-    "main": "./lib/app.js",
-    "scripts": {
-      "build": "tsc",
-      "start": "tsc && node ./lib/app.js",
-      "test:unit": "jest --coverage --detectOpenHandles",
-      "test": "npm run lint && npm run test:unit",
-      "watch": "concurrently --kill-others \"tsc -w\" \"nodemon --inspect ./lib/app.js\"",
-      "lint": "tslint -q -p . -c tslint.json",
-      "lint:fix": "tslint --fix -p . -c tslint.json"
-    },
-    "author": "Microsoft",
-    "license": "MIT",
-    "dependencies": {
-      "node-fetch": "^2.6.0",
-      "restify": "^8.4.0",
-      "ts-jest": "^24.0.2"
-    },
-    "devDependencies": {
-      "@types/dotenv": "^6.1.1",
-      "@types/jest": "^24.0.17",
-      "@types/node-fetch": "^2.5.0",
-      "@types/restify": "^7.2.12",
-      "concurrently": "^4.1.1",
-      "dotenv": "^8.0.0",
-      "jest": "^24.8.0",
-      "nodemon": "^1.19.1",
-      "tslint": "^5.18.0",
-      "typescript": "^3.5.3"
-    },
-    "engines": {
-      "node": ">= 10.0.0"
-    }
+  "name": "vott-server",
+  "version": "1.0.0",
+  "description": "Server to support VoTT with login",
+  "main": "./lib/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node ./lib/app.js",
+    "test:unit": "jest --coverage --detectOpenHandles",
+    "test": "npm run lint && npm run test:unit",
+    "watch": "concurrently --kill-others \"tsc -w\" \"nodemon --inspect ./lib/app.js\"",
+    "lint": "tslint -q -p . -c tslint.json",
+    "lint:fix": "tslint --fix -p . -c tslint.json"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "dependencies": {
+    "assert-plus": "*",
+    "body-parser": "^1.15.2",
+    "bunyan": "*",
+    "connect-mongo": "^3.0.0",
+    "cookie-parser": "^1.4.3",
+    "ejs": ">= 0.0.0",
+    "ejs-locals": ">= 0.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.14.1",
+    "method-override": "^3.0.0",
+    "mongoose": "^5.6.10",
+    "node-fetch": "^2.6.0",
+    "passport": "*",
+    "passport-azure-ad": "^4.1.0",
+    "restify": "^8.4.0",
+    "ts-jest": "^24.0.2"
+  },
+  "devDependencies": {
+    "@types/bunyan": "^1.8.6",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^4.17.1",
+    "@types/express-session": "^1.15.14",
+    "@types/jest": "^24.0.17",
+    "@types/method-override": "0.0.31",
+    "@types/node-fetch": "^2.5.0",
+    "@types/passport": "^1.0.0",
+    "@types/restify": "^7.2.12",
+    "concurrently": "^4.1.1",
+    "dotenv": "^8.0.0",
+    "jest": "^24.8.0",
+    "nodemon": "^1.19.1",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  },
+  "engines": {
+    "node": ">= 10.0.0"
   }
+}
