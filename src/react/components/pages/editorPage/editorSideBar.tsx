@@ -1,5 +1,5 @@
 import React from "react";
-import { AutoSizer, List } from "react-virtualized";
+import { AutoSizer, Grid } from "react-virtualized";
 import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import { strings } from "../../../../common/strings";
@@ -38,23 +38,24 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
             : 0,
     };
 
-    private listRef: React.RefObject<List> = React.createRef();
+    private listRef: React.RefObject<Grid> = React.createRef();
 
     public render() {
         return (
             <div className="editor-page-sidebar-nav">
                 <AutoSizer>
                     {({ height, width }) => (
-                        <List
+                        <Grid
                             ref={this.listRef}
                             className="asset-list"
+                            cellRenderer={this.rowRenderer}
+                            columnCount={this.props.assets.length}
+                            columnWidth={() => this.getColumnWidth(height)}
                             height={height}
                             width={width}
-                            rowCount={this.props.assets.length}
-                            rowHeight={() => this.getRowHeight(width)}
+                            rowCount={1}
+                            rowHeight={height}
                             rowRenderer={this.rowRenderer}
-                            overscanRowCount={2}
-                            scrollToIndex={this.state.scrollToIndex}
                         />
                     )}
                 </AutoSizer>
@@ -64,7 +65,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     public componentDidUpdate(prevProps: IEditorSideBarProps) {
         if (prevProps.thumbnailSize !== this.props.thumbnailSize) {
-            this.listRef.current.recomputeRowHeights();
+            this.listRef.current.recomputeGridSize();
         }
 
         if (!prevProps.selectedAsset && !this.props.selectedAsset) {
@@ -77,8 +78,8 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         }
     }
 
-    private getRowHeight = (width: number) => {
-        return width / (4 / 3) + 16;
+    private getColumnWidth = (height: number) => {
+        return (height - 16) * (4 / 3);
     }
 
     private selectAsset = (selectedAsset: IAsset): void => {
@@ -87,7 +88,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         this.setState({
             scrollToIndex,
         }, () => {
-            this.listRef.current.forceUpdateGrid();
+            this.listRef.current.forceUpdate();
         });
     }
 
@@ -102,8 +103,8 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         this.props.onAssetSelected(asset);
     }
 
-    private rowRenderer = ({ key, index, style }): JSX.Element => {
-        const asset = this.props.assets[index];
+    private rowRenderer = ({ columnIndex, key, style }): JSX.Element => {
+        const asset = this.props.assets[columnIndex];
         const selectedAsset = this.props.selectedAsset;
 
         return (
