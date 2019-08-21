@@ -114,13 +114,15 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                     {this.renderBadges(asset)}
                     <AssetPreview asset={asset} />
                 </div>
-                <div className="asset-item-metadata">
-                    <span className="asset-filename" title={asset.name}>{asset.name}</span>
-                    {asset.size &&
-                        <span>
-                            {asset.size.width} x {asset.size.height}
-                        </span>
-                    }
+                <div>
+                    <div className="asset-item-metadata">
+                        <span className="asset-filename" title={asset.name}>{asset.name}</span>
+                        {asset.size &&
+                            <span>
+                                {asset.size.width} x {asset.size.height}
+                            </span>
+                        }
+                    </div>
                 </div>
             </div>
         );
