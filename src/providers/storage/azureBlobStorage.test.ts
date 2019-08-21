@@ -124,6 +124,12 @@ describe("Azure blob functions", () => {
         expect(blobs).toEqual(ad.blobs.segment.blobItems.map((element) => element.name));
     });
 
+    it("Reports whether or not a file exists within the container", async () => {
+        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        expect(await provider.fileExists(ad.blobs.segment.blobItems[0].name)).toBe(true);
+        expect(await provider.fileExists("doesNotExist.vott")).toBe(false);
+    });
+
     it("Deletes a blob within a container", async () => {
         const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
 

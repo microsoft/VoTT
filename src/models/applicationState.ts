@@ -107,6 +107,7 @@ export interface IProject {
     id: string;
     name: string;
     version: string;
+    schemaVersion?: string;
     securityToken: string;
     description?: string;
     tags: ITag[];
@@ -283,6 +284,7 @@ export interface IAsset {
  */
 export interface IAssetMetadata {
     asset: IAsset;
+    schemaVersion?: string;
     regions: IRegion[];
     version: string;
 }

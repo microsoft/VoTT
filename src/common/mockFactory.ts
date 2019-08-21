@@ -34,6 +34,7 @@ import { IKeyboardBindingProps } from "../react/components/common/keyboardBindin
 import { KeyEventType } from "../react/components/common/keyboardManager/keyboardManager";
 import { IKeyboardRegistrations } from "../react/components/common/keyboardManager/keyboardRegistrationManager";
 import { IActiveLearningPageProps } from "../react/components/pages/activeLearning/activeLearningPage";
+import { constants } from "./constants";
 
 export default class MockFactory {
 
@@ -247,6 +248,7 @@ export default class MockFactory {
     public static createTestAssetMetadata(asset?: IAsset, regions?: IRegion[]): IAssetMetadata {
         return {
             asset: asset || MockFactory.createTestAsset(),
+            schemaVersion: constants.assetSchemaVersion,
             regions: regions || [],
             version: appInfo.version,
         };
@@ -586,10 +588,10 @@ export default class MockFactory {
     public static createStorageProvider(): IStorageProvider {
         return {
             storageType: StorageType.Cloud,
-
             initialize: jest.fn(() => Promise.resolve()),
             readText: jest.fn(() => Promise.resolve("Fake text")),
             readBinary: jest.fn(),
+            fileExists: jest.fn(),
             deleteFile: jest.fn(),
             writeText: jest.fn(),
             writeBinary: jest.fn(),

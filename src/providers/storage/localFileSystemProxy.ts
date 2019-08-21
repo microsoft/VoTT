@@ -55,6 +55,11 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
         return IpcRendererProxy.send(`${PROXY_NAME}:readBinary`, [filePath]);
     }
 
+    public fileExists(fileName: string): Promise<boolean> {
+        const filePath = [this.options.folderPath, fileName].join("/");
+        return IpcRendererProxy.send(`${PROXY_NAME}:fileExists`, [filePath]);
+    }
+
     /**
      * Delete file
      * @param fileName Name of file to delete

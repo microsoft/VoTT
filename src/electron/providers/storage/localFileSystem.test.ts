@@ -38,6 +38,12 @@ describe("LocalFileSystem Storage Provider", () => {
         expect(fs.existsSync(filePath)).toBeFalsy();
     });
 
+    it("reports whether or not a file exists", async () => {
+        const filePath = path.join(__dirname, "localFileSystem.test.ts");
+        expect(await localFileSystem.fileExists(filePath)).toBe(true);
+        expect(await localFileSystem.fileExists("doesNotExist.vott")).toBe(false);
+    });
+
     it("writes and deletes a container", async () => {
         const folderPath = path.join(process.cwd(), "test-output", shortid.generate());
 

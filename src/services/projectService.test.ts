@@ -1,7 +1,7 @@
 import _ from "lodash";
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
-import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
+import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
 import {
     IProject, IExportFormat, ISecurityToken,
     AssetState, IActiveLearningSettings, ModelPathType,
@@ -19,9 +19,13 @@ describe("Project Service", () => {
     let testProject: IProject = null;
     let projectList: IProject[] = null;
     let securityToken: ISecurityToken = null;
+    const defaultProjectName = "TestProject";
 
     const storageProviderMock = {
         writeText: jest.fn((project) => Promise.resolve(project)),
+        fileExists: jest.fn((fileName: string) => {
+            return (fileName === `Project ${defaultProjectName}.vott`) ? true : false;
+        }),
         deleteFile: jest.fn(() => Promise.resolve()),
     };
 
@@ -38,7 +42,7 @@ describe("Project Service", () => {
             name: "TestToken",
             key: generateKey(),
         };
-        testProject = MockFactory.createTestProject("TestProject");
+        testProject = MockFactory.createTestProject(defaultProjectName);
         projectSerivce = new ProjectService();
 
         storageProviderMock.writeText.mockClear();
@@ -149,6 +153,24 @@ describe("Project Service", () => {
         createMock.mockImplementationOnce(() => { throw expectedError; });
 
         await expect(projectSerivce.save(testProject, securityToken)).rejects.toEqual(expectedError);
+    });
+
+    it("Save does not add a schema version existing projects missing schema version", async () => {
+        await projectSerivce.save(testProject, securityToken);
+        const writeTextCall = storageProviderMock.writeText.mock.calls[0];
+        const parsedFileContents: IProject = JSON.parse(writeTextCall[1]);
+        expect(parsedFileContents.schemaVersion).toBeUndefined();
+    });
+
+    it("Save writes current schema version to new projects", async () => {
+        const newProject: IProject = {
+            ...testProject,
+            name: "My New Project",
+        };
+        await projectSerivce.save(newProject, securityToken);
+        const writeTextCall = storageProviderMock.writeText.mock.calls[0];
+        const parsedFileContents: IProject = JSON.parse(writeTextCall[1]);
+        expect(parsedFileContents.schemaVersion).toEqual(constants.projectSchemaVersion);
     });
 
     it("Delete calls project storage provider to delete project", async () => {

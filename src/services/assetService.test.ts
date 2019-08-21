@@ -153,6 +153,7 @@ describe("Asset Service", () => {
                     ...testAssets[0],
                     state: AssetState.Tagged,
                 },
+                schemaVersion: constants.assetSchemaVersion,
                 regions: [],
                 version: "",
             };

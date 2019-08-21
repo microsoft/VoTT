@@ -76,6 +76,11 @@ export class AzureBlobStorage implements IStorageProvider {
         return Buffer.from(text);
     }
 
+    public async fileExists(blobName: string): Promise<boolean> {
+        const files = await this.listFiles(null);
+        return !!files.find((fileName) => fileName === blobName);
+    }
+
     /**
      * Writes text to blob in container
      * @param blobName - Name of blob in container

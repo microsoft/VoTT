@@ -52,6 +52,14 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
+    public async fileExists(filePath: string): Promise<boolean> {
+        return new Promise<boolean>((resolve) => {
+            fs.exists(path.normalize(filePath), (exists: boolean) => {
+                resolve(exists);
+            });
+        });
+    }
+
     public writeBinary(filePath: string, contents: Buffer): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const containerName: fs.PathLike = path.normalize(path.dirname(filePath));

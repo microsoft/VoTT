@@ -57,6 +57,17 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
             expect(actual).toEqual(expectedContents);
         });
 
+        it("fileExists", async () => {
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve(true));
+
+            const fileName = "test.txt";
+            const expectedFilePath = [options.folderPath, fileName].join("/");
+            const actual = await provider.fileExists(fileName);
+
+            expect(IpcRendererProxy.send).toBeCalledWith("LocalFileSystem:fileExists", [expectedFilePath]);
+            expect(actual).toEqual(true);
+        });
+
         it("deleteFile", async () => {
             IpcRendererProxy.send = jest.fn(() => Promise.resolve());
 

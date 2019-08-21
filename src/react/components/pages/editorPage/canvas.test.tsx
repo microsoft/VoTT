@@ -16,6 +16,7 @@ import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager
 import Confirm, { IConfirmProps } from "../../common/confirm/confirm";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
+import { constants } from "../../../../common/constants";
 
 describe("Editor Canvas", () => {
     function createComponent(canvasProps?: ICanvasProps, assetPreviewProps?: IAssetPreviewProps)
@@ -302,6 +303,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            schemaVersion: constants.assetSchemaVersion,
             version: appInfo.version,
         };
 
@@ -337,6 +339,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            schemaVersion: constants.assetSchemaVersion,
             version: appInfo.version,
         };
 

@@ -158,6 +158,10 @@ export class AssetService {
     public async save(metadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(metadata);
 
+        if (!metadata.schemaVersion) {
+            metadata.schemaVersion = constants.assetSchemaVersion;
+        }
+
         const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
 
         // Only save asset metadata if asset is in a tagged state
@@ -188,19 +192,20 @@ export class AssetService {
             const json = await this.storageProvider.readText(fileName);
             return JSON.parse(json) as IAssetMetadata;
         } catch (err) {
-            if (asset.type === AssetType.TFRecord) {
-                return {
-                    asset: { ...asset },
+            const newAssetMetadata: IAssetMetadata = {
+                asset: { ...asset },
+                schemaVersion: constants.assetSchemaVersion,
+                regions: [],
+                version: appInfo.version,
+            };
+            return (asset.type === AssetType.TFRecord)
+                ?
+                {
+                    ...newAssetMetadata,
                     regions: await this.getRegionsFromTFRecord(asset),
-                    version: appInfo.version,
-                };
-            } else {
-                return {
-                    asset: { ...asset },
-                    regions: [],
-                    version: appInfo.version,
-                };
-            }
+                }
+                :
+                newAssetMetadata;
         }
     }
 

@@ -91,6 +91,15 @@ export default class ProjectService implements IProjectService {
             project.id = shortid.generate();
         }
 
+        const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
+        const filePath = `${project.name}${constants.projectFileExtension}`;
+
+        const existingProject = await storageProvider.fileExists(filePath);
+
+        if (!existingProject) {
+            project.schemaVersion = constants.projectSchemaVersion;
+        }
+
         // Ensure tags is always initialized to an array
         if (!project.tags) {
             project.tags = [];
@@ -108,12 +117,11 @@ export default class ProjectService implements IProjectService {
 
         project.version = packageJson.version;
 
-        const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
         await this.saveExportSettings(project);
         project = encryptProject(project, securityToken);
 
         await storageProvider.writeText(
-            `${project.name}${constants.projectFileExtension}`,
+            filePath,
             JSON.stringify(project, null, 4),
         );
 
