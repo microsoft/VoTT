@@ -182,6 +182,10 @@ export interface IAppStrings {
                     title: string,
                     description: string,
                 },
+                connectionString: {
+                    title: string,
+                    description: string,
+                },
                 sas: {
                     title: string,
                     description: string,

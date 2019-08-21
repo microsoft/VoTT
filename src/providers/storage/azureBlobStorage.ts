@@ -12,6 +12,7 @@ import { BlobDeleteResponse } from "@azure/storage-blob/typings/lib/generated/li
  * @member accountName - Name of Storage Account
  * @member containerName - Name of targeted container
  * @member createContainer - Option for creating container in `initialize()`
+ * @member connectionString - Connection String for accessing Azure Blob Storage
  * @member sas - Shared Access Signature (SAS) token for accessing Azure Blob Storage
  * @member oauthToken - Not yet implemented. Optional token for accessing Azure Blob Storage
  */
@@ -19,6 +20,7 @@ export interface IAzureCloudStorageOptions {
     accountName: string;
     containerName: string;
     createContainer: boolean;
+    connectionString?: string;
     sas?: string;
     oauthToken?: string;
 }
@@ -218,6 +220,9 @@ export class AzureBlobStorage implements IStorageProvider {
      * @returns - URL for Azure Blob Storage account with SAS token appended if specified
      */
     public getAccountUrl(): string {
+        if(this.options.connectionString){
+            return this.options.connectionString;
+        }
         return `https://${this.options.accountName}.blob.core.windows.net` + (this.options.sas || "");
     }
 

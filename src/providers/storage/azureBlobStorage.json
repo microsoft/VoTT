@@ -4,6 +4,7 @@
     "required": [
         "accountName",
         "containerName",
+        "connectionString",
         "sas"
     ],
     "type": "object",
@@ -14,6 +15,11 @@
         },
         "containerName": {
             "title": "${strings.connections.providers.azureBlob.containerName.title}",
+            "type": "string"
+        },
+        "connectionString": {
+            "title": "${strings.connections.providers.azureBlob.connectionString.title}",
+            "description": "${strings.connections.providers.azureBlob.connectionString.description}",
             "type": "string"
         },
         "sas": {

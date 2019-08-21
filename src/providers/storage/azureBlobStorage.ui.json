@@ -1,4 +1,7 @@
 {
+    "connectionString": {
+        "ui:widget": "input"
+    },
     "sas": {
         "ui:widget": "protectedInput"
     },

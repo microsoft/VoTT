@@ -185,6 +185,10 @@ export const spanish: IAppStrings = {
                     title: "Nombre del contenedor",
                     description: "",
                 },
+                connectionString: {
+                    title: "Connection String",
+                    description: "Connection String for accessing Azure Blob Storage",
+                },
                 sas: {
                     title: "SAS",
                     description: "Firma de acceso compartido utilizada para autenticarse en la cuenta de BLOB Storage",

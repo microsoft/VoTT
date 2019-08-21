@@ -183,6 +183,10 @@ export const english: IAppStrings = {
                     title: "Container Name",
                     description: "",
                 },
+                connectionString: {
+                    title: "Connection String",
+                    description: "Connection String for accessing Azure Blob Storage",
+                },
                 sas: {
                     title: "SAS",
                     description: "Shared access signature used to authenticate to the blob storage account",
