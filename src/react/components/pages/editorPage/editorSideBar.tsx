@@ -79,7 +79,10 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
     }
 
     private getColumnWidth = (height: number) => {
-        return (height - 16) * (4 / 3);
+        const padding = 16;
+        const aspectRatio = 4 / 3;
+
+        return (height - padding) * aspectRatio;
     }
 
     private selectAsset = (selectedAsset: IAsset): void => {
