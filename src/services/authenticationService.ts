@@ -19,14 +19,14 @@ export class AuthenticationService {
         this.availableSubscriptions = result.availableSubscriptions;
     }
 
-    public async getStorageAccountKey(subscriptionId: string, resourceGroupName: string, accountName: string, credentials: ServiceClientCredentials) {
-        const context = new StorageManagementClientContext(this.credentials, subscriptionId);
-        const storageAccounts = new StorageAccounts(context);
-        const accounts = await storageAccounts.list();
-        if (!accounts.find((account) => account.name === accountName)) {
-            throw new Error(`Couldn't find storage account with name ${accountName}`);
-        }
-        const { keys } = await storageAccounts.listKeys(resourceGroupName, accountName);
-        return keys[0].value;
-    }
+    // public async getStorageAccountKey(subscriptionId: string, resourceGroupName: string, accountName: string, credentials: ServiceClientCredentials) {
+    //     const context = new StorageManagementClientContext(this.credentials, subscriptionId);
+    //     const storageAccounts = new StorageAccounts(context);
+    //     const accounts = await storageAccounts.list();
+    //     if (!accounts.find((account) => account.name === accountName)) {
+    //         throw new Error(`Couldn't find storage account with name ${accountName}`);
+    //     }
+    //     const { keys } = await storageAccounts.listKeys(resourceGroupName, accountName);
+    //     return keys[0].value;
+    // }
 }

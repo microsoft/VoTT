@@ -28,7 +28,11 @@ export class RestService {
             headers: allHeaders
         };
 
-        return await axios(`${this.baseUrl}${relativeUrl}`, requestOptions);
+        const url = `${this.baseUrl}${relativeUrl}`;
+
+        console.log(`Making ${method} request to ${url}`)
+
+        return await axios(url, requestOptions);
     }
 
     protected async getApiResponse(
@@ -37,6 +41,7 @@ export class RestService {
         options: any = {}
     ) {
         const { data } = await this.sendApiRequest(method, relativeUrl, options);
+        console.log(`Got response: ${JSON.stringify(data)}`)
         return (typeof data === "string") ? JSON.parse(data) : data;
     }
 }

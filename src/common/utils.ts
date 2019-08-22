@@ -137,7 +137,7 @@ function encryptProviderOptions(providerOptions: IProviderOptions | ISecureStrin
     };
 }
 
-function decryptProviderOptions<T = IProviderOptions>(providerOptions: IProviderOptions | ISecureString, secret): T {
+export function decryptProviderOptions<T = IProviderOptions>(providerOptions: IProviderOptions | ISecureString, secret): T {
     const secureString = providerOptions as ISecureString;
     if (!(secureString && secureString.encrypted)) {
         return providerOptions as T;
