@@ -22,7 +22,7 @@ describe("Confirm component", () => {
 
     it("Renders nothing if not activiated", () => {
         const wrapper = createComponent(defaultProps);
-        expect(wrapper.html()).toBeNull();
+        expect(wrapper.html()).toEqual("");
     });
 
     it("Renders modal when activiated", () => {
