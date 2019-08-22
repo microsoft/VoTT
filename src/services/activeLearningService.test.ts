@@ -1,3 +1,7 @@
+import { FakeTextEncoder } from "./fakeTextEncoder";
+global["TextEncoder"] = FakeTextEncoder;
+const te = new TextEncoder();
+
 import { ActiveLearningService } from "./activeLearningService";
 import { IActiveLearningSettings, ModelPathType, IAssetMetadata, AssetState } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
