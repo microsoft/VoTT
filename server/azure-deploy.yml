@@ -34,7 +34,7 @@ stages:
     - script: |        
         npm install
         npm run build --if-present
-        npm run test --if-present
+        # npm run test --if-present
       workingDirectory: $(System.DefaultWorkingDirectory)/server
       displayName: 'npm install, build and test'
       
