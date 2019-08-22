@@ -4,6 +4,7 @@
  *****************************************************************************/
 
 import * as bodyParser from 'body-parser';
+import * as morgan from 'morgan';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
@@ -126,7 +127,7 @@ const app = express();
 
 app.set('views', path.join(__dirname, '../public/views'));
 app.set('view engine', 'ejs');
-// app.use(express.logger());
+app.use(morgan("dev"));
 app.use(methodOverride());
 app.use(cookieParser());
 
