@@ -124,7 +124,7 @@ passport.use(new passportAzureAD.OIDCStrategy({
 // -----------------------------------------------------------------------------
 const app = express();
 
-app.set('views', path.join(__dirname , '../public/views'));
+app.set('views', path.join(__dirname, '../public/views'));
 app.set('view engine', 'ejs');
 // app.use(express.logger());
 app.use(methodOverride());
@@ -173,7 +173,7 @@ app.get('/', (req, res) => {
 });
 
 // '/account' is only available to logged in user
-app.get('/account', ensureAuthenticated, (req, res) => {
+app.get('/account', ensureAuthenticated, (req, res, next) => {
   res.render('account', { user: req.user });
 });
 
@@ -193,6 +193,7 @@ app.get('/login',
     res.redirect('/');
   });
 
+
 // 'GET returnURL'
 // `passport.authenticate` will try to authenticate the content returned in
 // query (such as authorization code). If authentication fails, user will be
@@ -206,7 +207,7 @@ app.get('/auth/openid/return',
       } as passport.AuthenticateOptions,
     )(req, res, next);
   },
-  (req, res) => {
+  (req, res, next) => {
     log.info('We received a return from AzureAD.');
     res.redirect('/');
   });
@@ -224,7 +225,7 @@ app.post('/auth/openid/return',
       } as passport.AuthenticateOptions,
     )(req, res, next);
   },
-  (req, res) => {
+  (req, res, next) => {
     log.info('We received a return from AzureAD.');
     res.redirect('/');
   });
@@ -237,6 +238,50 @@ app.get('/logout', (req, res) => {
   });
 });
 
-app.listen(3000);
 
-app.use(express.static(__dirname + '/../../public'));
+var cloudConnections = new Map<string, any>([
+  ['connection1', { foo: 'bar' }],
+  ['connection2', { foo: 'baz' }]
+]);
+
+app.get('/api/v1.0/cloudconnections', ensureAuthenticated, (req, res, next) => {
+  res.json(Array.from(cloudConnections.keys()));
+  res.end();
+  next();
+});
+
+app.get('/api/v1.0/cloudconnections/:id', ensureAuthenticated, (req, res, next) => {
+  const id = req.params.id;
+  res.json(cloudConnections.get(id));
+  res.end();
+  next();
+});
+
+app.put('/api/v1.0/cloudconnections/:id', ensureAuthenticated, (req, res, next) => {
+  const id = req.params.id;
+  const body = req.body;
+  const status = cloudConnections.has(id) ? 200 : 201;
+  cloudConnections.set(id, body);
+  res.sendStatus(status);
+  res.json(body);
+  next();
+});
+
+app.delete('/api/v1.0/cloudconnections/:id', ensureAuthenticated, (req, res, next) => {
+  const id = req.params.id;
+  if (cloudConnections.has(id)) {
+    res.sendStatus(404).end();
+    return next();
+  }
+  cloudConnections.delete(id);
+  res.end()
+  return next();
+});
+
+
+
+app.use('/public', express.static(path.join(__dirname, '../public')));
+
+
+
+app.listen(3000);
