@@ -42,7 +42,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     public render() {
         return (
-            <div className="editor-page-sidebar-nav">
+            <div className="editor-page-bottombar-nav">
                 <AutoSizer>
                     {({ height, width }) => (
                         <Grid
@@ -80,7 +80,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     private getColumnWidth = (height: number) => {
         const padding = 16;
-        const aspectRatio = 4 / 3;
+        const aspectRatio = (4 / 3);
 
         return (height - padding) * aspectRatio;
     }

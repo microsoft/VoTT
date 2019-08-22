@@ -59,7 +59,7 @@
         "vott-react": "^0.2.10"
     },
     "scripts": {
-        "start": "nf start -p 3000",
+        "start": "nf start -p 3030",
         "compile": "tsc",
         "build": "react-scripts build",
         "webpack:dev": "webpack --config ./config/webpack.dev.js",
