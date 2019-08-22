@@ -15,10 +15,12 @@
     "private": true,
     "main": "build/main.js",
     "dependencies": {
+        "@azure/arm-storage": "^9.0.1",
+        "@azure/ms-rest-browserauth": "^0.1.4",
         "@azure/storage-blob": "^10.3.0",
         "@tensorflow/tfjs": "^1.0.3",
         "@types/snapsvg": "^0.4.35",
-        "axios": "^0.18.0",
+        "axios": "^0.18.1",
         "bootstrap": "^4.1.3",
         "buffer-reverse": "^1.0.1",
         "crypto-js": "^3.1.9-1",
