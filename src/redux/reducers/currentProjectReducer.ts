@@ -50,7 +50,7 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
                 if (!state.tags || state.tags.length === 0 ||
                     !state.tags.find((projectTag) => tag === projectTag.name)) {
                     newTags.push({
-                        name: tag,
+                        name: tag as string,
                         color: tagColors[newTags.length % tagColors.length],
                     });
                     updateTags = true;

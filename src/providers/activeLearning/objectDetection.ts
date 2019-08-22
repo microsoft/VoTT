@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as shortid from "shortid";
-import * as tf from "@tensorflow/tfjs";
+import { Tensor3D, GraphModel, loadGraphModel, zeros, Tensor, tidy, browser,
+    dispose, getBackend, setBackend, tensor2d, image } from "@tensorflow/tfjs";
 import { ElectronProxyHandler } from "./electronProxyHandler";
 import { IRegion, RegionType } from "../../models/applicationState";
 import { strings } from "../../common/strings";
@@ -15,7 +16,7 @@ export type DetectedObject = {
 /**
  * Defines supported data types supported by Tensorflow JS
  */
-export type ImageObject = tf.Tensor3D | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+export type ImageObject = Tensor3D | ImageData | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
 
 /**
  * Object Dectection loads active learning models and predicts regions
@@ -27,7 +28,7 @@ export class ObjectDetection {
         return this.modelLoaded;
     }
 
-    private model: tf.GraphModel;
+    private model: GraphModel;
     private jsonClasses: JSON;
 
     /**
@@ -48,18 +49,18 @@ export class ObjectDetection {
         try {
             if (modelFolderPath.toLowerCase().startsWith("http://") ||
                 modelFolderPath.toLowerCase().startsWith("https://")) {
-                this.model = await tf.loadGraphModel(modelFolderPath + "/model.json");
+                this.model = await loadGraphModel(modelFolderPath + "/model.json");
 
                 const response = await axios.get(modelFolderPath + "/classes.json");
                 this.jsonClasses = JSON.parse(JSON.stringify(response.data));
             } else {
                 const handler = new ElectronProxyHandler(modelFolderPath);
-                this.model = await tf.loadGraphModel(handler);
+                this.model = await loadGraphModel(handler);
                 this.jsonClasses = await handler.loadClasses();
             }
 
             // Warmup the model.
-            const result = await this.model.executeAsync(tf.zeros([1, 300, 300, 3])) as tf.Tensor[];
+            const result = await this.model.executeAsync(zeros([1, 300, 300, 3])) as Tensor[];
             result.forEach(async (t) => await t.data());
             result.forEach(async (t) => t.dispose());
             this.modelLoaded = true;
@@ -148,9 +149,9 @@ export class ObjectDetection {
      * locations. Defaults to 20.
      */
     private async infer(img: ImageObject, maxNumBoxes: number = 20): Promise<DetectedObject[]> {
-        const batched = tf.tidy(() => {
-            if (!(img instanceof tf.Tensor)) {
-                img = tf.browser.fromPixels(img);
+        const batched = tidy(() => {
+            if (!(img instanceof Tensor)) {
+                img = browser.fromPixels(img);
             }
             // Reshape to a single-element batch so we can pass it to executeAsync.
             return img.expandDims(0);
@@ -163,30 +164,30 @@ export class ObjectDetection {
         // 2. box location with shape of [1, 1917, 1, 4]
         // where 1917 is the number of box detectors, 90 is the number of classes.
         // and 4 is the four coordinates of the box.
-        const result = await this.model.executeAsync(batched) as tf.Tensor[];
+        const result = await this.model.executeAsync(batched) as Tensor[];
 
         const scores = result[0].dataSync() as Float32Array;
         const boxes = result[1].dataSync() as Float32Array;
 
         // clean the webgl tensors
         batched.dispose();
-        tf.dispose(result);
+        dispose(result);
 
         const [maxScores, classes] = this.calculateMaxScores(scores, result[0].shape[1], result[0].shape[2]);
 
-        const prevBackend = tf.getBackend();
+        const prevBackend = getBackend();
         // run post process in cpu
-        tf.setBackend("cpu");
-        const indexTensor = tf.tidy(() => {
-            const boxes2 = tf.tensor2d(boxes, [result[1].shape[1], result[1].shape[3]]);
-            return tf.image.nonMaxSuppression(boxes2, maxScores, maxNumBoxes, 0.5, 0.5);
+        setBackend("cpu");
+        const indexTensor = tidy(() => {
+            const boxes2 = tensor2d(boxes, [result[1].shape[1], result[1].shape[3]]);
+            return image.nonMaxSuppression(boxes2, maxScores, maxNumBoxes, 0.5, 0.5);
         });
 
         const indexes = indexTensor.dataSync() as Float32Array;
         indexTensor.dispose();
 
         // restore previous backend
-        tf.setBackend(prevBackend);
+        setBackend(prevBackend);
 
         return this.buildDetectedObjects(width, height, boxes, maxScores, indexes, classes);
     }

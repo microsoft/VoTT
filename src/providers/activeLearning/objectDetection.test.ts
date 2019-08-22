@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import * as tf from "@tensorflow/tfjs";
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
@@ -42,7 +46,7 @@ describe("Load an Object Detection model", () => {
     });
 
     it("Load model from http url", async () => {
-        window.fetch = jest.fn().mockImplementation((url, o) => {
+        global["fetch"] = jest.fn().mockImplementation((url, o) => {
             if (url === "http://url/model.json") {
                 return Promise.resolve({
                     ok: true,
@@ -59,7 +63,7 @@ describe("Load an Object Detection model", () => {
         const model = new ObjectDetection();
 
         expect(model.load("http://url")).rejects.not.toBeNull();
-        expect(window.fetch).toBeCalledTimes(1);
+        expect(global["fetch"]).toBeCalledTimes(1);
 
         // Modal not properly loaded as readBinary mock is not really loading the weights
         expect(model.loaded).toBeFalsy();

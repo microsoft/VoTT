@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 jest.mock("../storage/localFileSystemProxy");
 import { LocalFileSystemProxy } from "../storage/localFileSystemProxy";
 import { ElectronProxyHandler } from "./electronProxyHandler";
