@@ -818,16 +818,16 @@ export default class MockFactory {
      */
     public static projectActions(): IProjectActions {
         return {
-            loadProject: jest.fn(() => Promise.resolve()),
-            saveProject: jest.fn(() => Promise.resolve()),
+            loadProject: jest.fn((project: IProject) => Promise.resolve(project)),
+            saveProject: jest.fn((project: IProject) => Promise.resolve(project)),
             deleteProject: jest.fn(() => Promise.resolve()),
             closeProject: jest.fn(() => Promise.resolve()),
-            loadAssets: jest.fn(() => Promise.resolve()),
+            loadAssets: jest.fn((project: IProject) => Promise.resolve([])),
             exportProject: jest.fn(() => Promise.resolve()),
-            loadAssetMetadata: jest.fn(() => Promise.resolve()),
-            saveAssetMetadata: jest.fn(() => Promise.resolve()),
-            updateProjectTag: jest.fn(() => Promise.resolve()),
-            deleteProjectTag: jest.fn(() => Promise.resolve()),
+            loadAssetMetadata: jest.fn((project: IProject) => Promise.resolve(null)),
+            saveAssetMetadata: jest.fn((project: IProject) => Promise.resolve(null)),
+            updateProjectTag: jest.fn((project: IProject) => Promise.resolve([])),
+            deleteProjectTag: jest.fn((project: IProject) => Promise.resolve([])),
         };
     }
 
@@ -836,8 +836,8 @@ export default class MockFactory {
      */
     public static connectionActions(): IConnectionActions {
         return {
-            loadConnection: jest.fn((connection: IConnection) => Promise.resolve()),
-            saveConnection: jest.fn((connection: IConnection) => Promise.resolve()),
+            loadConnection: jest.fn((connection: IConnection) => Promise.resolve(connection)),
+            saveConnection: jest.fn((connection: IConnection) => Promise.resolve(connection)),
             deleteConnection: jest.fn((connection: IConnection) => Promise.resolve()),
         };
     }
@@ -1036,7 +1036,7 @@ export default class MockFactory {
     }
 
     public static mockElement(assetTestCache: Map<string, IAsset>) {
-        document.createElement = jest.fn((elementType) => {
+        document.createElement = jest.fn((elementType: string) => {
             switch (elementType) {
                 case "img":
                     const mockImage = MockFactory.mockImage(assetTestCache);
