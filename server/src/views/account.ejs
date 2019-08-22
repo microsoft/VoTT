@@ -1,0 +1,11 @@
+<% if (!user) { %>
+	<h2>Welcome! Please log in.</h2>
+	<a href="/login">Log In</a>
+<% } else { %>
+<p>UPN: <%= user._json.upn %></p>
+<p>Profile ID: <%= user.id %></p>
+<p>Full Claims</p>
+<%- JSON.stringify(user) %>
+<p></p>
+<a href="/logout">Log Out</a>
+<% } %>
