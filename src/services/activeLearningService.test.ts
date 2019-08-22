@@ -1,5 +1,4 @@
-import { FakeTextEncoder } from "./fakeTextEncoder";
-global["TextEncoder"] = FakeTextEncoder;
+global["TextEncoder"] = {};
 const te = new TextEncoder();
 
 import { ActiveLearningService } from "./activeLearningService";
