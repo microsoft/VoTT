@@ -5,7 +5,6 @@ import {
     TokenCredential, AnonymousCredential, ContainerURL,
     StorageURL, ServiceURL, Credential, Aborter, BlockBlobURL,
 } from "@azure/storage-blob";
-import { BlobDeleteResponse } from "@azure/storage-blob/typings/lib/generated/lib/models";
 
 /**
  * Options for Azure Cloud Storage

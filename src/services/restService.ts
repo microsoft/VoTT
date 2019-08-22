@@ -1,5 +1,12 @@
 import axios from "axios";
 
+export enum RestMethods {
+    GET = "GET",
+    POST = "POST",
+    PUT = "PUT",
+    DELETE = "DELETE"
+}
+
 export class RestService {
 
     public constructor(private baseUrl: string, private defaultHeaders?: any){ }

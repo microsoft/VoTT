@@ -20,8 +20,7 @@ export class AuthenticationService {
     }
 
     public async getStorageAccountKey(subscriptionId: string, resourceGroupName: string, accountName: string, credentials: ServiceClientCredentials) {
-        const creds = await this.login();
-        const context = new StorageManagementClientContext(creds, subscriptionId);
+        const context = new StorageManagementClientContext(this.credentials, subscriptionId);
         const storageAccounts = new StorageAccounts(context);
         const accounts = await storageAccounts.list();
         if (!accounts.find((account) => account.name === accountName)) {
@@ -30,6 +29,4 @@ export class AuthenticationService {
         const { keys } = await storageAccounts.listKeys(resourceGroupName, accountName);
         return keys[0].value;
     }
-
-
 }
