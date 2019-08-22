@@ -1,6 +1,16 @@
-import { FakeTextEncoder } from "./fakeTextEncoder";
-global["TextEncoder"] = FakeTextEncoder;
-const te = new TextEncoder();
+class FakeTextEncoder extends TextEncoder {
+    constructor() {
+        throw new Error(
+            "IN CONSTRUCTOR!!!",
+        );
+
+        super();
+    }
+}
+
+window.TextEncoder = FakeTextEncoder;
+
+const te = new FakeTextEncoder();
 
 import { ActiveLearningService } from "./activeLearningService";
 import { IActiveLearningSettings, ModelPathType, IAssetMetadata, AssetState } from "../models/applicationState";
