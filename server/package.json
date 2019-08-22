@@ -46,7 +46,7 @@
     "@types/passport-azure-ad": "^4.0.3",
     "@types/restify": "^7.2.12",
     "concurrently": "^4.1.1",
-    "dotenv": "^8.0.0",
+    "dotenv": "^8.1.0",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
     "tslint": "^5.18.0",

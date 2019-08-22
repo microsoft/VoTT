@@ -3,16 +3,16 @@
  * Module dependencies.
  *****************************************************************************/
 
+import * as bodyParser from 'body-parser';
+import * as bunyan from 'bunyan';
+import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import * as  cookieParser from 'cookie-parser';
-import * as  expressSession from 'express-session';
-import * as  bodyParser from 'body-parser';
-import * as  methodOverride from 'method-override';
-import * as  passport from 'passport';
-import * as  util from 'util';
-import * as  bunyan from 'bunyan';
-import * as  config from './config';
-import passportazuread = require('passport-azure-ad');
+import * as expressSession from 'express-session';
+import * as methodOverride from 'method-override';
+import * as passport from 'passport';
+import * as passportAzureAD from 'passport-azure-ad';
+import * as config from './config';
+import * as path from 'path';
 
 // set up database for express session
 import ConnectMongo = require('connect-mongo');
@@ -21,7 +21,7 @@ import mongoose = require('mongoose');
 
 // Start QuickStart here
 
-const OIDCStrategyTemplate = {} as passportazuread.IOIDCStrategyOptionWithoutRequest;
+const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
 const log = bunyan.createLogger({
   name: 'Microsoft OIDC Example Web Application',
@@ -78,7 +78,7 @@ const findByOid = (oid: number, fn: (err: Error, user: any) => void) => {
 //
 // To do prototype (6), passReqToCallback must be set to true in the config.
 // -----------------------------------------------------------------------------
-passport.use(new passportazuread.OIDCStrategy({
+passport.use(new passportAzureAD.OIDCStrategy({
   identityMetadata: config.creds.identityMetadata,
   clientID: config.creds.clientID,
   responseType: config.creds.responseType as typeof OIDCStrategyTemplate.responseType,
@@ -124,7 +124,7 @@ passport.use(new passportazuread.OIDCStrategy({
 // -----------------------------------------------------------------------------
 const app = express();
 
-app.set('views', __dirname + '/views');
+app.set('views', path.join(__dirname , '../public/views'));
 app.set('view engine', 'ejs');
 // app.use(express.logger());
 app.use(methodOverride());

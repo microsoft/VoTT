@@ -1,3 +1,9 @@
+import * as path  from 'path';
+// require('dotenv').config( { path: path.join(__dirname__, "../public")});
+require('dotenv').config();
+
+export const baseUrl = process.env.baseUrl || 'http://localhost:3000/'
+
 export let creds = {
     // Required
     identityMetadata: 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
@@ -9,7 +15,7 @@ export let creds = {
     // To use the common endpoint, you have to either turn `validateIssuer` off, or provide the `issuer` value.
 
     // Required, the client ID of your app in AAD
-    clientID: 'aef21f00-1574-4e07-a10c-287ad1e47dc6',
+    clientID: process.env.APP_ID,
 
     // Required, must be 'code', 'code id_token', 'id_token code' or 'id_token'
     // If you want to get access_token, you must use 'code', 'code id_token' or 'id_token code'
@@ -19,14 +25,14 @@ export let creds = {
     responseMode: 'form_post',
 
     // Required, the reply URL registered in AAD for your app
-    redirectUrl: 'http://localhost:3000/auth/openid/return',
+    redirectUrl: baseUrl + "auth/openid/return",
 
     // Required if we use http for redirectUrl
     allowHttpForRedirectUrl: true,
 
     // Required if `responseType` is 'code', 'id_token code' or 'code id_token'.
     // If app key contains '\', replace it with '\\'.
-    clientSecret: '?tyfPODRWlMz6n-p]5sfuWO@jkcnHb56',
+    clientSecret: process.env.APP_SECRET,
 
     // Required to set to false if you don't want to validate issuer
     validateIssuer: false,
