@@ -148,13 +148,6 @@ describe("Editor SideBar", () => {
             height: 91,
         });
 
-        wrapper.setProps({
-            thumbnailSize: {
-                width: 150,
-                height: 91,
-            },
-        });
-
         expect(grid.props.columnWidth()).toBe(100);
     });
 });
