@@ -6,26 +6,25 @@ import { IAssetMetadata, ITag } from "../../models/applicationState";
  * @param params Params containing substitution values
  */
 export function splitTestAsset(allAssets: IAssetMetadata[], tags: ITag[], testSplitRatio: number): string[] {
-    const testAssets: string[] = [];
+    if (testSplitRatio <= 0 || testSplitRatio > 1) { return []; }
 
-    if (testSplitRatio > 0 && testSplitRatio <= 1) {
-        const tagsAssetDict: { [index: string]: { assetList: Set<string> } } = {};
-        tags.forEach((tag) => tagsAssetDict[tag.name] = { assetList: new Set() });
-        allAssets.forEach((assetMetadata) => {
-            assetMetadata.regions.forEach((region) => {
-                region.tags.forEach((tagName) => {
-                    if (tagsAssetDict[tagName]) {
-                        tagsAssetDict[tagName].assetList.add(assetMetadata.asset.name);
-                    }
-                });
+    const testAssets: string[] = [];
+    const tagsAssetDict: { [index: string]: { assetList: Set<string> } } = {};
+    tags.forEach((tag) => tagsAssetDict[tag.name] = { assetList: new Set() });
+    allAssets.forEach((assetMetadata) => {
+        assetMetadata.regions.forEach((region) => {
+            region.tags.forEach((tagName) => {
+                if (tagsAssetDict[tagName]) {
+                    tagsAssetDict[tagName].assetList.add(assetMetadata.asset.name);
+                }
             });
         });
+    });
 
-        for (const tagKey of Object.keys(tagsAssetDict)) {
-            const assetList = tagsAssetDict[tagKey].assetList;
-            const testCount = Math.ceil(assetList.size * testSplitRatio);
-            testAssets.push(...Array.from(assetList).slice(0, testCount));
-        }
+    for (const tagKey of Object.keys(tagsAssetDict)) {
+        const assetList = tagsAssetDict[tagKey].assetList;
+        const testCount = Math.ceil(assetList.size * testSplitRatio);
+        testAssets.push(...Array.from(assetList).slice(0, testCount));
     }
     return testAssets;
 }
