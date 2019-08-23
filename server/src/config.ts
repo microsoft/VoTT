@@ -96,3 +96,4 @@ export let databaseUri = 'mongodb://localhost/OIDCStrategy';
 
   // How long you want to keep session in mongoDB.
 export let mongoDBSessionMaxAge = 24 * 60 * 60;  // 1 day (unit is second)
+
