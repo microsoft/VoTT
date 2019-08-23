@@ -92,8 +92,8 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public listFiles(folderPath: string): Promise<string[]> {
-        return this.listItems(path.normalize(folderPath), (stats) => !stats.isDirectory());
+    public listFiles(folderPath: string, ext?: string, recursive?: boolean): Promise<string[]> {
+        return this.listItems(path.normalize(folderPath), (stats) => !stats.isDirectory(), recursive);
     }
 
     public listContainers(folderPath: string): Promise<string[]> {
@@ -136,8 +136,8 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public async getAssets(folderPath?: string): Promise<IAsset[]> {
-        return (await this.listFiles(path.normalize(folderPath)))
+    public async getAssets(folderPath?: string, recursive?: boolean): Promise<IAsset[]> {
+        return (await this.listFiles(path.normalize(folderPath), null, recursive))
             .map((filePath) => AssetService.createAssetFromFilePath(filePath))
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
@@ -148,7 +148,7 @@ export default class LocalFileSystem implements IStorageProvider {
      * @param  {(stats:fs.Stats)=>boolean} predicate
      * @returns {Promise} Resolved list of matching file system items
      */
-    private listItems(folderPath: string, predicate: (stats: fs.Stats) => boolean) {
+    private listItems(folderPath: string, predicate: (stats: fs.Stats) => boolean, recursive = false) {
         return new Promise<string[]>((resolve, reject) => {
             fs.readdir(path.normalize(folderPath), async (err: NodeJS.ErrnoException, fileSystemItems: string[]) => {
                 if (err) {
@@ -165,7 +165,15 @@ export default class LocalFileSystem implements IStorageProvider {
                     const filteredItems = statsResults
                         .filter((result) => predicate(result.stats))
                         .map((result) => result.path);
-
+                    if (recursive) {
+                        const directories = statsResults
+                            .filter((item) => item.stats.isDirectory())
+                            .map((item) => item.path);
+                        for (const dir of directories) {
+                            const itemsInDir = await this.listItems(dir, predicate, recursive);
+                            itemsInDir.forEach((item) => filteredItems.push(item));
+                        }
+                    }
                     resolve(filteredItems);
                 } catch (err) {
                     reject(err);

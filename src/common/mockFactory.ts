@@ -397,6 +397,7 @@ export default class MockFactory {
     public static createLocalFileSystemOptions(): ILocalFileSystemProxyOptions {
         return {
             folderPath: "C:\\projects\\vott\\project",
+            recursive: false,
         };
     }
 

@@ -19,6 +19,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
         let provider: LocalFileSystemProxy = null;
         const options: ILocalFileSystemProxyOptions = {
             folderPath: "/test",
+            recursive: false,
         };
 
         beforeEach(() => {

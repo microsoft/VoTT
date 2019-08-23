@@ -1,5 +1,8 @@
 {
     "folderPath": {
         "ui:widget": "localFolderPicker"
+    },
+    "recursive": {
+        "ui:widget": "checkbox"
     }
 }

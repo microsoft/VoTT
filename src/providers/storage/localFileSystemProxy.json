@@ -8,6 +8,10 @@
         "folderPath": {
             "title": "${strings.connections.providers.local.folderPath}",
             "type": "string"
+        },
+        "recursive": {
+            "title": "Recursive",
+            "type": "boolean"
         }
     }
 }

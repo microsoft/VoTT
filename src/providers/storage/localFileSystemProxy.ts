@@ -11,6 +11,7 @@ const PROXY_NAME = "LocalFileSystem";
  */
 export interface ILocalFileSystemProxyOptions {
     folderPath: string;
+    recursive: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
         if (!this.options) {
             this.options = {
                 folderPath: null,
+                recursive: false,
             };
         }
     }
@@ -89,9 +91,9 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
      * @param folderName - Name of folder from which to list files
      * @param ext - NOT CURRENTLY USED IN IMPLEMENTATION.
      */
-    public listFiles(folderName?: string, ext?: string): Promise<string[]> {
+    public listFiles(folderName?: string): Promise<string[]> {
         const folderPath = folderName ? [this.options.folderPath, folderName].join("/") : this.options.folderPath;
-        return IpcRendererProxy.send(`${PROXY_NAME}:listFiles`, [folderPath]);
+        return IpcRendererProxy.send(`${PROXY_NAME}:listFiles`, [folderPath, null, this.options.recursive]);
     }
 
     /**
@@ -127,6 +129,6 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
      */
     public getAssets(folderName?: string): Promise<IAsset[]> {
         const folderPath = [this.options.folderPath, folderName].join("/");
-        return IpcRendererProxy.send(`${PROXY_NAME}:getAssets`, [folderPath]);
+        return IpcRendererProxy.send(`${PROXY_NAME}:getAssets`, [folderPath, this.options.recursive]);
     }
 }
