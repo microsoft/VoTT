@@ -187,13 +187,22 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                         icon={"fa-lock"}
                         handler={this.handleCtrlTagHotKey} />);
                 })}
-                <SplitPane split="horizontal"
+                <SplitPane split="vertical"
+                    defaultSize={this.state.thumbnailSize.width}
                     minSize={100}
                     maxSize={400}
                     paneStyle={{ display: "flex" }}
                     onChange={this.onSideBarResize}
-                    onDragFinished={this.onSideBarResizeComplete}
-                    primary={"second"}>
+                    onDragFinished={this.onSideBarResizeComplete}>
+                    <div className="editor-page-sidebar bg-lighter-1">
+                        <EditorSideBar
+                            assets={rootAssets}
+                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                            onBeforeAssetSelected={this.onBeforeAssetSelected}
+                            onAssetSelected={this.selectAsset}
+                            thumbnailSize={this.state.thumbnailSize}
+                        />
+                    </div>
                     <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-header">
@@ -249,15 +258,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             message={strings.editorPage.tags.delete.confirmation}
                             confirmButtonColor="danger"
                             onConfirm={this.onTagDeleted} />
-                    </div>
-                    <div className="editor-page-bottombar bg-lighter-1">
-                        <EditorSideBar
-                            assets={rootAssets}
-                            selectedAsset={selectedAsset ? selectedAsset.asset : null}
-                            onBeforeAssetSelected={this.onBeforeAssetSelected}
-                            onAssetSelected={this.selectAsset}
-                            thumbnailSize={this.state.thumbnailSize}
-                        />
                     </div>
                 </SplitPane>
                 <Alert show={this.state.showInvalidRegionWarning}
