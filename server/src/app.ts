@@ -3,26 +3,19 @@ import * as morgan from 'morgan';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import * as expressSession from 'express-session';
+import cookieSession = require( 'cookie-session');
 import * as methodOverride from 'method-override';
 import * as passport from 'passport';
 import * as passportAzureAD from 'passport-azure-ad';
 import * as config from './config';
 import * as path from 'path';
 
-// set up database for express session
-import ConnectMongo = require('connect-mongo');
-const MongoStore = ConnectMongo(expressSession);
-import mongoose = require('mongoose');
 
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
 const log = console;
 
-/* bunyan.createLogger({
-  name: 'Microsoft OIDC Example Web Application',
-});
-*/
+
 
 /******************************************************************************
  * Set up passport in the app
@@ -48,6 +41,7 @@ passport.deserializeUser((oid: number, done) => {
 const users: any[] = [];
 
 const findByOid = (oid: number, fn: (err: Error, user: any) => void) => {
+  log.info(`finding user by oid ${oid}`)
   for (let i = 0, len = users.length; i < len; i++) {
     const user = users[i];
     log.info('user: ', user);
@@ -107,6 +101,7 @@ passport.use(new passportAzureAD.OIDCStrategy({
         }
         if (!user) {
           // "Auto-registration"
+          log.info(`storing user`, profile)
           users.push(profile);
           return done(null, profile);
         }
@@ -127,22 +122,9 @@ app.use(morgan('dev'));
 app.use(methodOverride());
 app.use(cookieParser());
 
-// set up session middleware
-if (config.useMongoDBSessionStore) {
-  mongoose.connect(config.databaseUri);
-  app.use(expressSession({
-    secret: 'secret',
-    cookie: { maxAge: config.mongoDBSessionMaxAge * 1000 },
-    store: new MongoStore({
-      mongooseConnection: mongoose.connection,
-      // clear_interval: config.mongoDBSessionMaxAge,
-    }),
-  }));
-} else {
-  app.use(expressSession({ secret: 'keyboard cat', resave: true, saveUninitialized: false }));
-}
+ app.use(cookieSession({ secret: 'keyboard cat', maxAge: 1000 * 60 * 60 * 24 * 365 }));
 
-app.use(bodyParser.urlencoded({ extended: true }));
+ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Initialize Passport!  Also use passport.session() middleware, to support
 // persistent login sessions (recommended).
@@ -189,6 +171,7 @@ app.get('/login',
         // resourceURL: config.creds.redirectUrl,    // optional. Provide a value if you want to specify the resource.
         customState: 'my_state',            // optional. Provide a value if you want to provide custom state value.
         failureRedirect: '/',
+        // session: false,
       } as passport.AuthenticateOptions,
     )(req, res, next);
   },
@@ -207,6 +190,8 @@ app.get('/auth/openid/return',
       {
         response: res,                      // required
         failureRedirect: '/',
+        // session: false,
+
       } as passport.AuthenticateOptions,
     )(req, res, next);
   },
@@ -225,6 +210,7 @@ app.post('/auth/openid/return',
       {
         response: res,                      // required
         failureRedirect: '/',
+        // session: false,
       } as passport.AuthenticateOptions,
     )(req, res, next);
   },
@@ -235,10 +221,11 @@ app.post('/auth/openid/return',
 
 // 'logout' route, logout from passport, and destroy the session with AAD.
 app.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
+    delete req.session;
+  // req.session.destroy((err) => {
     req.logOut();
     res.redirect(config.destroySessionUrl);
-  });
+  // });
 });
 
 const cloudConnections = new Map<string, any>([
