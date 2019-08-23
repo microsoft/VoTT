@@ -8,6 +8,7 @@
 
   jobs:
   - job: Create_Github_Release
+    checkout: none # we already have the artifacts built, don't need the code
     timeoutInMinutes: 30 # timeout on job if deploy is not completed in 30 minutes
     pool:
       vmImage: ubuntu-16.04
