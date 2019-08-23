@@ -1,8 +1,3 @@
-
-/******************************************************************************
- * Module dependencies.
- *****************************************************************************/
-
 import * as bodyParser from 'body-parser';
 import * as morgan from 'morgan';
 import * as bunyan from 'bunyan';
@@ -20,13 +15,14 @@ import ConnectMongo = require('connect-mongo');
 const MongoStore = ConnectMongo(expressSession);
 import mongoose = require('mongoose');
 
-// Start QuickStart here
-
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
-const log = bunyan.createLogger({
+const log = console;
+
+/* bunyan.createLogger({
   name: 'Microsoft OIDC Example Web Application',
 });
+*/
 
 /******************************************************************************
  * Set up passport in the app
@@ -54,7 +50,7 @@ const users: any[] = [];
 const findByOid = (oid: number, fn: (err: Error, user: any) => void) => {
   for (let i = 0, len = users.length; i < len; i++) {
     const user = users[i];
-    log.info('we are using user: ', user);
+    log.info('user: ', user);
     if (user.oid === oid) {
       return fn(null, user);
     }
@@ -99,7 +95,7 @@ passport.use(new passportAzureAD.OIDCStrategy({
   cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
   clockSkew: config.creds.clockSkew,
 },
-  (iss: any, sub: any, profile: any, accessToken: any, refreshToken: any, done: any) => {
+  ( iss: any, sub: any, profile: any, accessToken: any, refreshToken: any, done: any) => {
     if (!profile.oid) {
       return done(new Error('No oid found'), null);
     }
@@ -127,7 +123,7 @@ const app = express();
 
 app.set('views', path.join(__dirname, '../public/views'));
 app.set('view engine', 'ejs');
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 app.use(methodOverride());
 app.use(cookieParser());
 
@@ -164,9 +160,15 @@ app.use(passport.session());
 // `ensureAuthenticated`. It checks if there is an user stored in session, if not
 // it will call `passport.authenticate` to ask for user to log in.
 // -----------------------------------------------------------------------------
-function ensureAuthenticated(req: any, res: any, next: any) {
+function ensureAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/login');
+}
+
+function ensureAuthenticatedApi(req: express.Request, res: express.Response, next: express.NextFunction) {
+  if (req.isAuthenticated()) { return next(); }
+  res.sendStatus(401).end();
+  return next();
 }
 
 app.get('/', (req, res) => {
@@ -180,6 +182,7 @@ app.get('/account', ensureAuthenticated, (req, res, next) => {
 
 app.get('/login',
   (req, res, next) => {
+
     passport.authenticate('azuread-openidconnect',
       {
         response: res,                      // required
@@ -190,10 +193,9 @@ app.get('/login',
     )(req, res, next);
   },
   (req, res) => {
-    log.info('Login was called in the Sample');
+    log.info('login was called');
     res.redirect('/');
   });
-
 
 // 'GET returnURL'
 // `passport.authenticate` will try to authenticate the content returned in
@@ -209,7 +211,7 @@ app.get('/auth/openid/return',
     )(req, res, next);
   },
   (req, res, next) => {
-    log.info('We received a return from AzureAD.');
+    log.info('received a return from AzureAD.');
     res.redirect('/');
   });
 
@@ -218,7 +220,7 @@ app.get('/auth/openid/return',
 // body (such as authorization code). If authentication fails, user will be
 // redirected to '/' (home page); otherwise, it passes to the next middleware.
 app.post('/auth/openid/return',
-  (req, res, next) => {
+   (req, res, next) => {
     passport.authenticate('azuread-openidconnect',
       {
         response: res,                      // required
@@ -227,7 +229,7 @@ app.post('/auth/openid/return',
     )(req, res, next);
   },
   (req, res, next) => {
-    log.info('We received a return from AzureAD.');
+    log.info('received a return from AzureAD.');
     res.redirect('/');
   });
 
@@ -239,50 +241,49 @@ app.get('/logout', (req, res) => {
   });
 });
 
-
-var cloudConnections = new Map<string, any>([
+const cloudConnections = new Map<string, any>([
   ['connection1', { foo: 'bar' }],
-  ['connection2', { foo: 'baz' }]
+  ['connection2', { foo: 'baz' }],
 ]);
 
-app.get('/api/v1.0/cloudconnections', ensureAuthenticated, (req, res, next) => {
-  res.json(Array.from(cloudConnections.keys()));
-  res.end();
-  next();
-});
+app.get('/api/v1.0/cloudconnections', ensureAuthenticatedApi,
+  (req, res, next) => {
+    res.json(Array.from(cloudConnections.keys()));
+    res.end();
+    next();
+  });
 
-app.get('/api/v1.0/cloudconnections/:id', ensureAuthenticated, (req, res, next) => {
-  const id = req.params.id;
-  res.json(cloudConnections.get(id));
-  res.end();
-  next();
-});
+app.get('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
+  (req, res, next) => {
+    const id = req.params.id;
+    res.json(cloudConnections.get(id));
+    res.end();
+    next();
+  });
 
-app.put('/api/v1.0/cloudconnections/:id', ensureAuthenticated, (req, res, next) => {
-  const id = req.params.id;
-  const body = req.body;
-  const status = cloudConnections.has(id) ? 200 : 201;
-  cloudConnections.set(id, body);
-  res.sendStatus(status);
-  res.json(body);
-  next();
-});
+app.put('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
+  (req, res, next) => {
+    const id = req.params.id;
+    const body = req.body;
+    const status = cloudConnections.has(id) ? 200 : 201;
+    cloudConnections.set(id, body);
+    res.sendStatus(status);
+    res.json(body);
+    next();
+  });
 
-app.delete('/api/v1.0/cloudconnections/:id', ensureAuthenticated, (req, res, next) => {
-  const id = req.params.id;
-  if (cloudConnections.has(id)) {
-    res.sendStatus(404).end();
+app.delete('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
+  (req, res, next) => {
+    const id = req.params.id;
+    if (cloudConnections.has(id)) {
+      res.sendStatus(404).end();
+      return next();
+    }
+    cloudConnections.delete(id);
+    res.end();
     return next();
-  }
-  cloudConnections.delete(id);
-  res.end()
-  return next();
-});
-
-
+  });
 
 app.use('/public', express.static(path.join(__dirname, '../public')));
 
-
-
-app.listen(process.env.PORT);
+app.listen(config.port);

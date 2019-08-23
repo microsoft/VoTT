@@ -1,8 +1,9 @@
-import * as path  from 'path';
-// require('dotenv').config( { path: path.join(__dirname__, "../public")});
+// tslint:disable-next-line: no-var-requires
 require('dotenv').config();
 
-export const baseUrl = process.env.baseUrl || 'http://localhost:3000/'
+export const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';
+export const redirectPath = 'auth/openid/return';
+export const port = process.env.PORT || '3000';
 
 export let creds = {
     // Required
@@ -25,10 +26,11 @@ export let creds = {
     responseMode: 'form_post',
 
     // Required, the reply URL registered in AAD for your app
-    redirectUrl: baseUrl + "auth/openid/return",
+
+    redirectUrl: baseUrl + redirectPath,
 
     // Required if we use http for redirectUrl
-    allowHttpForRedirectUrl: true,
+    allowHttpForRedirectUrl: process.env.ALLOW_HTTP ? process.env.ALLOW_HTTP === 'true' : true,
 
     // Required if `responseType` is 'code', 'id_token code' or 'code id_token'.
     // If app key contains '\', replace it with '\\'.
@@ -53,10 +55,11 @@ export let creds = {
     // Required if `useCookieInsteadOfSession` is set to true. You can provide multiple set of key/iv pairs for key
     // rollover purpose. We always use the first set of key/iv pair to encrypt cookie, but we will try every set of
     // key/iv pair to decrypt cookie. Key can be any string of length 32, and iv can be any string of length 12.
-    cookieEncryptionKeys: [
+    cookieEncryptionKeys:  (process.env.COOKIES_SECRETS ? JSON.parse(process.env.COOKIES_SECRETS) :
+    [
       { key: '12345678901234567890123456789012', iv: '123456789012' },
       { key: 'abcdefghijklmnopqrstuvwxyzabcdef', iv: 'abcdefghijkl' },
-    ],
+    ]) as Array<{ key: string; iv: string; }>,
 
     // The additional scopes we want besides 'openid'.
     // 'profile' scope is required, the rest scopes are optional.
@@ -65,7 +68,7 @@ export let creds = {
     scope: ['profile', 'offline_access', 'https://graph.microsoft.com/mail.read'],
 
     // Optional, 'error', 'warn' or 'info'
-    loggingLevel: 'info',
+    loggingLevel: process.env.LOGGING_LEVEL || 'info',
 
     // Optional. The lifetime of nonce in session or cookie, the default value is 3600 (seconds).
     nonceLifetime: null as number,
