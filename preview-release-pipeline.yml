@@ -5,7 +5,6 @@ trigger:
   branches:
     include:
     - develop
-    - myho/addPreviewReleasePipeline # for testing
 
 pr: none # disable CI build for PR
 
@@ -93,4 +92,4 @@ stages:
       releaseNotesSource: input
       addChangeLog: false
       isPreRelease: true
-      isDraft: true
+      isDraft: false
