@@ -103,6 +103,8 @@ passport.use(new passportAzureAD.OIDCStrategy({
         let user = JSON.parse(userdata);
         return done(null, user)
       }
+      // profile.refreshToken = refreshToken;
+      // profile.accessToken = accessToken;
       cookies.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
       users.set(profile.oid, profile);
       return done(null, profile);
