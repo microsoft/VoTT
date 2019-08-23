@@ -1,7 +1,7 @@
 import React from "react";
 import EditorSideBar, { IEditorSideBarProps, IEditorSideBarState } from "./editorSideBar";
 import { ReactWrapper, mount } from "enzyme";
-import { AutoSizer, List } from "react-virtualized";
+import { AutoSizer, Grid } from "react-virtualized";
 import MockFactory from "../../../../common/mockFactory";
 
 describe("Editor SideBar", () => {
@@ -21,7 +21,7 @@ describe("Editor SideBar", () => {
         const wrapper = createComponent(props);
         expect(wrapper.exists()).toBe(true);
         expect(wrapper.find(AutoSizer).exists()).toBe(true);
-        expect(wrapper.find(List).exists()).toBe(true);
+        expect(wrapper.find(Grid).exists()).toBe(true);
     });
 
     it("Initializes state without asset selected", () => {
@@ -117,8 +117,8 @@ describe("Editor SideBar", () => {
         };
 
         const wrapper = createComponent(props);
-        const list = wrapper.find(List).instance() as List;
-        const recomputeRowHeightsSpy = jest.spyOn(list, "recomputeRowHeights");
+        const grid = wrapper.find(Grid).instance() as Grid;
+        const recomputeGridSizeSpy = jest.spyOn(grid, "recomputeGridSize");
 
         wrapper.setProps({
             thumbnailSize: {
@@ -127,6 +127,27 @@ describe("Editor SideBar", () => {
             },
         });
 
-        expect(recomputeRowHeightsSpy).toBeCalled();
+        expect(recomputeGridSizeSpy).toBeCalled();
+    });
+
+    it("Correctly computes Grid column size", () => {
+        const props: IEditorSideBarProps = {
+            assets: testAssets,
+            onAssetSelected: onSelectAssetHandler,
+            thumbnailSize: {
+                width: 175,
+                height: 155,
+            },
+        };
+
+        const wrapper = createComponent(props);
+        const grid = wrapper.find(Grid).instance() as Grid;
+        const autoSizer = wrapper.find(AutoSizer).instance() as AutoSizer;
+        autoSizer.setState({
+            width: 150,
+            height: 91,
+        });
+
+        expect(grid.props.columnWidth()).toBe(100);
     });
 });
