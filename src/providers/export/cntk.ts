@@ -3,7 +3,7 @@ import { ExportProvider, IExportResults } from "./exportProvider";
 import { IAssetMetadata, IExportProviderOptions, IProject } from "../../models/applicationState";
 import HtmlFileReader from "../../common/htmlFileReader";
 import Guard from "../../common/guard";
-import {splitTestAsset} from "./testAssetsSplitHelper";
+import { splitTestAsset } from "./testAssetsSplitHelper";
 
 enum ExportSplit {
     Test,
