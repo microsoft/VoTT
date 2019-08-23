@@ -1,4 +1,4 @@
-name: $(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)  # build numbering format
+name: $(SourceBranch)_$(SHA)_$(Date:yyyyMMdd)$(Rev:.r)  # build numbering format
 
 trigger:
   branches:
