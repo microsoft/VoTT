@@ -8,13 +8,16 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\lib\\app.js",
-            "args": [],
+            "program": "${workspaceFolder}/lib/app.js", //"${workspaceFolder}\\lib\\app.js",
+            "args": [
+                "|",
+                "bunyan"
+            ],
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ],
-            "console": "internalConsole",
-            "outputCapture": "std",
+            "console": "integratedTerminal",
+            "outputCapture": "std",            
         }
     ]
 }
