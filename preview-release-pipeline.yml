@@ -1,13 +1,11 @@
-name: $(SourceBranchName)_$(SHA)_$(Date:yyyyMMdd)$(Rev:.r)  # build numbering format
-
-variables:
-  SHA: ''  # reset later in version bump script
+# https://github.com/MicrosoftDocs/vsts-docs/blob/e5d4e6f62d381a0d78b2c3dba7ffeedcf25be73a/docs/pipelines/build/options.md
+name: $(SourceBranchName)_$(SourceVersion)_$(Date:yyyyMMdd)$(Rev:.r)  # build numbering format
 
 trigger:
   branches:
     include:
     - develop
-    - myho/addPreviewReleasePipeline # for testing 
+    - myho/addPreviewReleasePipeline # for testing
 
 pr: none # disable CI build for PR
 
