@@ -1,4 +1,7 @@
-name: $(SourceBranch)_$(SHA)_$(Date:yyyyMMdd)$(Rev:.r)  # build numbering format
+name: $(SourceBranchName)_$(SHA)_$(Date:yyyyMMdd)$(Rev:.r)  # build numbering format
+
+variables:
+  SHA: ''  # reset later in version bump script
 
 trigger:
   branches:
