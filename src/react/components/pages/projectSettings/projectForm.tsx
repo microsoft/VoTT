@@ -31,6 +31,7 @@ export interface IProjectFormProps extends React.Props<ProjectForm> {
     onSubmit: (project: IProject) => void;
     onChange?: (project: IProject) => void;
     onCancel?: () => void;
+    onSecurityChange?: (value: boolean) => void;
 }
 
 /**
@@ -92,36 +93,44 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
 
     public render() {
         return (
-            <Form
-                className={this.state.classNames.join(" ")}
-                showErrorList={false}
-                liveValidate={true}
-                noHtml5Validate={true}
-                FieldTemplate={CustomFieldTemplate}
-                validate={this.onFormValidate}
-                fields={this.fields()}
-                widgets={this.widgets}
-                schema={this.state.formSchema}
-                uiSchema={this.state.uiSchema}
-                formData={this.state.formData}
-                onChange={this.onFormChange}
-                onSubmit={this.onFormSubmit}>
-                <div>
-                    <button className="btn btn-success mr-1" type="submit">{strings.projectSettings.save}</button>
-                    <button className="btn btn-secondary btn-cancel"
-                        type="button"
-                        onClick={this.onFormCancel}>{strings.common.cancel}</button>
-                </div>
-                <TagEditorModal
-                    ref={this.tagEditorModal}
-                    onOk={this.onTagModalOk}
-
-                    tagNameText={strings.tags.modal.name}
-                    tagColorText={strings.tags.modal.color}
-                    saveText={strings.common.save}
-                    cancelText={strings.common.cancel}
+            <div>
+                <input
+                    type="checkbox"
+                    name="toggle-security"
+                    checked={this.props.project.isSecure}
+                    className="form-check-input"
                 />
-            </Form>
+                <Form
+                    className={this.state.classNames.join(" ")}
+                    showErrorList={false}
+                    liveValidate={true}
+                    noHtml5Validate={true}
+                    FieldTemplate={CustomFieldTemplate}
+                    validate={this.onFormValidate}
+                    fields={this.fields()}
+                    widgets={this.widgets}
+                    schema={this.state.formSchema}
+                    uiSchema={this.state.uiSchema}
+                    formData={this.state.formData}
+                    onChange={this.onFormChange}
+                    onSubmit={this.onFormSubmit}>
+                    <div>
+                        <button className="btn btn-success mr-1" type="submit">{strings.projectSettings.save}</button>
+                        <button className="btn btn-secondary btn-cancel"
+                            type="button"
+                            onClick={this.onFormCancel}>{strings.common.cancel}</button>
+                    </div>
+                    <TagEditorModal
+                        ref={this.tagEditorModal}
+                        onOk={this.onTagModalOk}
+
+                        tagNameText={strings.tags.modal.name}
+                        tagColorText={strings.tags.modal.color}
+                        saveText={strings.common.save}
+                        cancelText={strings.common.cancel}
+                    />
+                </Form>
+            </div>
         );
     }
 
@@ -133,6 +142,8 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                 value: props.formData,
                 securityTokens: this.props.appSettings.securityTokens,
                 onChange: props.onChange,
+                onCheckChange: this.props.onSecurityChange,
+                isSecure: (this.props.project) ? this.props.project.isSecure : undefined,
             })),
             sourceConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPickerWithRouter, (props) => {
                 return {

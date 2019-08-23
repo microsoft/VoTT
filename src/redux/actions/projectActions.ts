@@ -72,11 +72,10 @@ export function saveProject(project: IProject)
             throw new AppError(ErrorCode.ProjectDuplicateName, `Project with name '${project.name}
                 already exists with the same target connection '${project.targetConnection.name}'`);
         }
+        const projectToken = (project.isSecure) ? appState.appSettings.securityTokens
+            .find((securityToken) => securityToken.name === project.securityToken) : undefined;
 
-        const projectToken = appState.appSettings.securityTokens
-            .find((securityToken) => securityToken.name === project.securityToken);
-
-        if (!projectToken) {
+        if (!projectToken && project.isSecure) {
             throw new AppError(ErrorCode.SecurityTokenNotFound, "Security Token Not Found");
         }
 

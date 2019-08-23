@@ -100,7 +100,8 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                             appSettings={this.props.appSettings}
                             onChange={this.onFormChange}
                             onSubmit={this.onFormSubmit}
-                            onCancel={this.onFormCancel} />
+                            onCancel={this.onFormCancel} 
+                            onSecurityChange={this.onSecurityChange.bind(this)}/>
                     </div>
                 </div>
                 {this.props.project &&
@@ -157,5 +158,10 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
                 || (project.exportFormat && Object.keys(project.exportFormat).length > 0)
                 || (project.tags && project.tags.length > 0)
             );
+    }
+
+    private onSecurityChange(){
+        // this.props.project.isSecure = !this.props.project.isSecure;
+        // this.setState({project} as any);
     }
 }

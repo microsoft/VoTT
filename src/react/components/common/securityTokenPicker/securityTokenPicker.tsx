@@ -1,5 +1,6 @@
 import React, { SyntheticEvent } from "react";
 import { ISecurityToken } from "../../../../models/applicationState";
+import { connect } from "react-redux";
 
 /**
  * Security Token Picker Properties
@@ -13,15 +14,30 @@ export interface ISecurityTokenPickerProps {
     value: string;
     securityTokens: ISecurityToken[];
     onChange: (value: string) => void;
+    onCheckChange: (value: boolean) => void;
+    isSecure: boolean;
+}
+
+export interface ISecurityTokenPickerState {
+    isEnabled: boolean;
+}
+
+function mapStateToProps(state: ISecurityTokenPickerState) {
+    return {
+        isSecure: state.isEnabled,
+    };
 }
 
 /**
  * Security Token Picker
  * @description - Used to display a list of security tokens
  */
-export class SecurityTokenPicker extends React.Component<ISecurityTokenPickerProps> {
+@connect(mapStateToProps)
+export class SecurityTokenPicker extends React.Component<ISecurityTokenPickerProps, ISecurityTokenPickerState> {
     constructor(props) {
         super(props);
+
+        this.state = {isEnabled: props.isSecure};
 
         this.onChange = this.onChange.bind(this);
     }
@@ -31,7 +47,8 @@ export class SecurityTokenPicker extends React.Component<ISecurityTokenPickerPro
             <select id={this.props.id}
                 className="form-control"
                 value={this.props.value}
-                onChange={this.onChange}>
+                onChange={this.onChange}
+                disabled={!this.state.isEnabled}>
                 <option value="">Generate New Security Token</option>
                 {this.props.securityTokens.map((item) => <option key={item.key} value={item.name}>{item.name}</option>)}
             </select>
@@ -41,5 +58,10 @@ export class SecurityTokenPicker extends React.Component<ISecurityTokenPickerPro
     private onChange(e: SyntheticEvent) {
         const inputElement = e.target as HTMLSelectElement;
         this.props.onChange(inputElement.value ? inputElement.value : undefined);
+    }
+
+    private onCheckChange(e: SyntheticEvent) {
+        this.props.onCheckChange(!this.state.isEnabled);
+        this.setState({isEnabled: !this.state.isEnabled});
     }
 }

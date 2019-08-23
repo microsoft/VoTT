@@ -116,6 +116,7 @@ export interface IProject {
     videoSettings: IProjectVideoSettings;
     activeLearningSettings: IActiveLearningSettings;
     autoSave: boolean;
+    isSecure: boolean;
     assets?: { [index: string]: IAsset };
     lastVisitedAssetId?: string;
 }

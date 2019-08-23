@@ -68,6 +68,7 @@ export default class ImportService implements IImportService {
             },
             activeLearningSettings: null,
             autoSave: true,
+            isSecure: true,
         };
     }
 

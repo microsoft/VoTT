@@ -53,27 +53,17 @@ export default class ProjectService implements IProjectService {
         Guard.null(project);
 
         try {
-            const loadedProject = decryptProject(project, securityToken);
+            let loadedProject = (securityToken) ? decryptProject(project, securityToken) : project;
 
-            // Ensure tags is always initialized to an array
-            if (!loadedProject.tags) {
-                loadedProject.tags = [];
-            }
-
-            // Initialize active learning settings if they don't exist
-            if (!loadedProject.activeLearningSettings) {
-                loadedProject.activeLearningSettings = defaultActiveLearningSettings;
-            }
-
-            // Initialize export settings if they don't exist
-            if (!loadedProject.exportFormat) {
-                loadedProject.exportFormat = defaultExportOptions;
-            }
+            loadedProject = this.checkProject(loadedProject);
 
             this.ensureBackwardsCompatibility(loadedProject);
 
             return Promise.resolve({ ...loadedProject });
         } catch (e) {
+            if(!securityToken){
+                return Promise.resolve(project)
+            }
             const error = new AppError(ErrorCode.ProjectInvalidSecurityToken, "Error decrypting project settings");
             return Promise.reject(error);
         }
@@ -87,30 +77,13 @@ export default class ProjectService implements IProjectService {
     public async save(project: IProject, securityToken: ISecurityToken): Promise<IProject> {
         Guard.null(project);
 
-        if (!project.id) {
-            project.id = shortid.generate();
-        }
-
-        // Ensure tags is always initialized to an array
-        if (!project.tags) {
-            project.tags = [];
-        }
-
-        // Initialize active learning settings if they don't exist
-        if (!project.activeLearningSettings) {
-            project.activeLearningSettings = defaultActiveLearningSettings;
-        }
-
-        // Initialize export settings if they don't exist
-        if (!project.exportFormat) {
-            project.exportFormat = defaultExportOptions;
-        }
+        project = this.checkProject(project);
 
         project.version = packageJson.version;
 
         const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
         await this.saveExportSettings(project);
-        project = encryptProject(project, securityToken);
+        project = (securityToken) ? encryptProject(project, securityToken) : project;
 
         await storageProvider.writeText(
             `${project.name}${constants.projectFileExtension}`,
@@ -179,5 +152,28 @@ export default class ProjectService implements IProjectService {
                 project.exportFormat.providerType = "pascalVOC";
             }
         }
+    }
+
+    private checkProject(project: IProject) {
+        if (!project.id) {
+            project.id = shortid.generate();
+        }
+
+        // Ensure tags is always initialized to an array
+        if (!project.tags) {
+            project.tags = [];
+        }
+
+        // Initialize active learning settings if they don't exist
+        if (!project.activeLearningSettings) {
+            project.activeLearningSettings = defaultActiveLearningSettings;
+        }
+
+        // Initialize export settings if they don't exist
+        if (!project.exportFormat) {
+            project.exportFormat = defaultExportOptions;
+        }
+
+        return project;
     }
 }

@@ -292,6 +292,7 @@ export default class MockFactory {
                 predictTag: false,
             },
             autoSave: true,
+            isSecure: true,
         };
     }
 
@@ -1191,7 +1192,7 @@ export default class MockFactory {
 
     /**
      * Gets StorageType for asset providers
-     * @param providerType Asset Providet type
+     * @param providerType Asset Provider type
      */
     private static getStorageType(providerType: string): StorageType {
         switch (providerType) {
