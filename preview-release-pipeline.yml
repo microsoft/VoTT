@@ -7,6 +7,7 @@ trigger:
   branches:
     include:
     - develop
+    - myho/addPreviewReleasePipeline # for testing 
 
 pr: none # disable CI build for PR
 
