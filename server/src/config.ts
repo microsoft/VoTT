@@ -4,6 +4,8 @@ require('dotenv').config();
 export const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';
 export const redirectPath = 'auth/openid/return';
 export const port = process.env.PORT || '3000';
+export let loggingLevel = process.env.LOGGING_LEVEL || 'info';
+export let httpLogFormat = process.env.HTTP_LOG_FORMAT || 'dev';
 
 export let creds = {
     // Required
@@ -52,6 +54,8 @@ export let creds = {
     // to be completely express session free.
     useCookieInsteadOfSession: true,
 
+    logLevel: loggingLevel,
+
     // Required if `useCookieInsteadOfSession` is set to true. You can provide multiple set of key/iv pairs for key
     // rollover purpose. We always use the first set of key/iv pair to encrypt cookie, but we will try every set of
     // key/iv pair to decrypt cookie. Key can be any string of length 32, and iv can be any string of length 12.
@@ -67,8 +71,6 @@ export let creds = {
     // (2) if you want to get access_token for graph api, use the graph api url like 'https://graph.microsoft.com/mail.read'
     scope: ['profile', 'offline_access', 'https://graph.microsoft.com/user.readwrite'],
 
-    // Optional, 'error', 'warn' or 'info'
-    loggingLevel: process.env.LOGGING_LEVEL || 'info',
 
     // Optional. The lifetime of nonce in session or cookie, the default value is 3600 (seconds).
     nonceLifetime: null as number,

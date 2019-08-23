@@ -9,12 +9,15 @@ import * as passport from 'passport';
 import * as passportAzureAD from 'passport-azure-ad';
 import * as config from './config';
 import * as path from 'path';
+import * as express_request_id from 'express-request-id';
 
 
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
-const log = console;
-
+const log = bunyan.createLogger({
+  name: 'BUNYAN-LOGGER',
+  src: true
+});
 
 
 /******************************************************************************
@@ -82,7 +85,7 @@ passport.use(new passportAzureAD.OIDCStrategy({
   issuer: config.creds.issuer,
   passReqToCallback: false,
   scope: config.creds.scope,
-  loggingLevel: config.creds.loggingLevel as typeof OIDCStrategyTemplate.loggingLevel,
+  loggingLevel: config.creds.logLevel as typeof OIDCStrategyTemplate.loggingLevel,
   nonceLifetime: config.creds.nonceLifetime,
   nonceMaxAmount: config.creds.nonceMaxAmount,
   useCookieInsteadOfSession: config.creds.useCookieInsteadOfSession,
@@ -115,10 +118,10 @@ passport.use(new passportAzureAD.OIDCStrategy({
 // Config the app, include middlewares
 // -----------------------------------------------------------------------------
 const app = express();
-
+app.use(morgan(config.httpLogFormat));
 app.set('views', path.join(__dirname, '../public/views'));
 app.set('view engine', 'ejs');
-app.use(morgan('dev'));
+app.use(express_request_id());
 app.use(methodOverride());
 app.use(cookieParser());
 
@@ -164,7 +167,7 @@ app.get('/account', ensureAuthenticated, (req, res, next) => {
 
 app.get('/login',
   (req, res, next) => {
-
+    log.info('testing');
     passport.authenticate('azuread-openidconnect',
       {
         response: res,                      // required
