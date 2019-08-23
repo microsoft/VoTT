@@ -1,0 +1,28 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=azure-devops#job-templates-with-parameters
+jobs:
+- job: ${{ parameters.name }}
+  pool: ${{ parameters.pool }}
+  timeoutInMinutes: 15 # how long to run the job before automatically cancelling
+  steps:
+    - task: NodeTool@0
+      displayName: 'Use Node 10.x'
+      inputs:
+        versionSpec: 10.x
+
+    - bash: |
+        set -ex
+
+        # clean install
+        npm ci
+        npm run release-ci
+
+        OS=${{ parameters.os }}
+        ARTIFACT_NAME=${{ parameters.artifact }}
+
+        mkdir -p ${OS}
+        cp releases/${ARTIFACT_NAME} ${OS}/
+
+      displayName: Build
+
+    - publish: $(System.DefaultWorkingDirectory)/${{ parameters.os }}
+      artifact: ${{ parameters.os }}
