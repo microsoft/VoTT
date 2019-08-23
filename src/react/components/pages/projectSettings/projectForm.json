@@ -6,6 +6,11 @@
             "type": "string",
             "pattern": "^[^\\\\\\\\/:*?\\\\\\\"<>|]*$"
         },
+        "isSecure": {
+            "title": "Secure Project?",
+            "type": "boolean",
+            "description": "Secure project with security token?"
+        },
         "securityToken": {
             "title": "${strings.projectSettings.securityToken.title}",
             "description": "${strings.projectSettings.securityToken.description}",

@@ -1,4 +1,7 @@
 {
+    "isSecure": {
+        "ui:widget": "checkbox"
+    },
     "securityToken": {
         "ui:field": "securityToken"
     },

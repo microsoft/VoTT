@@ -10,7 +10,6 @@ describe("Security Token Picker", () => {
         value: "",
         securityTokens: [],
         onChange: onChangeHandler,
-        onCheckChange: (val: boolean) => {},
         isSecure: true,
     };
 
