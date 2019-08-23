@@ -3,7 +3,7 @@ import * as morgan from 'morgan';
 import * as bunyan from 'bunyan';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
-import cookieSession = require( 'cookie-session');
+import cookieSession = require('cookie-session');
 import * as methodOverride from 'method-override';
 import * as passport from 'passport';
 import * as passportAzureAD from 'passport-azure-ad';
@@ -19,6 +19,8 @@ const log = bunyan.createLogger({
   src: true
 });
 
+var cookieSessionMiddleware = cookieSession({ secret: 'keyboard cat', maxAge: 1000 * 60 * 60 * 24 * 365 })
+
 /******************************************************************************
  * Set up passport in the app
  ******************************************************************************/
@@ -33,23 +35,19 @@ passport.serializeUser((user: any, done) => {
   done(null, user.oid);
 });
 
-passport.deserializeUser((oid: number, done) => {
+passport.deserializeUser((oid: string, done) => {
   findByOid(oid, (err, user) => {
     done(err, user);
   });
 });
 
 // array to hold logged in users
-const users: any[] = [];
+const users = new Map<string, any>();
 
-const findByOid = (oid: number, fn: (err: Error, user: any) => void) => {
+const findByOid = (oid: string, fn: (err: Error, user: any) => void) => {
   log.info(`finding user by oid ${oid}`)
-  for (let i = 0, len = users.length; i < len; i++) {
-    const user = users[i];
-    log.info('user: ', user);
-    if (user.oid === oid) {
-      return fn(null, user);
-    }
+  if (users.has(oid)) {
+    return fn(null, users.get(oid));
   }
   return fn(null, null);
 };
@@ -82,7 +80,7 @@ passport.use(new passportAzureAD.OIDCStrategy({
   validateIssuer: config.creds.validateIssuer,
   isB2C: config.creds.isB2C,
   issuer: config.creds.issuer,
-  passReqToCallback: false,
+  passReqToCallback: true,
   scope: config.creds.scope,
   loggingLevel: config.creds.logLevel as typeof OIDCStrategyTemplate.loggingLevel,
   nonceLifetime: config.creds.nonceLifetime,
@@ -91,13 +89,24 @@ passport.use(new passportAzureAD.OIDCStrategy({
   cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
   clockSkew: config.creds.clockSkew,
 },
-  ( iss: any, sub: any, profile: any, accessToken: any, refreshToken: any, done: any) => {
+  (req: any, iss: any, sub: any, profile: any, accessToken: any, refreshToken: any, done: any) => {
     if (!profile.oid) {
       return done(new Error('No oid found'), null);
     }
     // asynchronous verification, for effect...
     process.nextTick(() => {
-      findByOid(profile.oid, (err, user) => {
+
+      let cookies = req.sessionCookies;
+      let userdata = cookies.get('User');
+      if (userdata) {
+        let user = JSON.parse(userdata);
+        return done(null, user)
+      }
+      cookies.set('User', JSON.stringify(profile));
+      users.set(profile.oid, profile);
+      return done(null, profile);
+
+/*       findByOid(profile.oid, (err, user) => {
         if (err) {
           return done(err);
         }
@@ -109,7 +118,7 @@ passport.use(new passportAzureAD.OIDCStrategy({
         }
         return done(null, user);
       });
-    });
+ */    });
   },
 ));
 
@@ -124,9 +133,9 @@ app.use(express_request_id());
 app.use(methodOverride());
 app.use(cookieParser());
 
- app.use(cookieSession({ secret: 'keyboard cat', maxAge: 1000 * 60 * 60 * 24 * 365 }));
+app.use(cookieSession({ secret: 'keyboard cat', maxAge: 1000 * 60 * 60 * 24 * 365 }));
 
- app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Initialize Passport!  Also use passport.session() middleware, to support
 // persistent login sessions (recommended).
@@ -207,7 +216,7 @@ app.get('/auth/openid/return',
 // body (such as authorization code). If authentication fails, user will be
 // redirected to '/' (home page); otherwise, it passes to the next middleware.
 app.post('/auth/openid/return',
-   (req, res, next) => {
+  (req, res, next) => {
     passport.authenticate('azuread-openidconnect',
       {
         response: res,                      // required
@@ -223,10 +232,10 @@ app.post('/auth/openid/return',
 
 // 'logout' route, logout from passport, and destroy the session with AAD.
 app.get('/logout', (req, res) => {
-    delete req.session;
+  delete req.session;
   // req.session.destroy((err) => {
-    req.logOut();
-    res.redirect(config.destroySessionUrl);
+  req.logOut();
+  res.redirect(config.destroySessionUrl);
   // });
 });
 
