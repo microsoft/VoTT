@@ -1,8 +1,4 @@
-trigger:
-  branches:
-    include:
-    - develop
-
+trigger: none # manual queue only when we're ready to release
 pr: none # disable CI build for PR
 
 stages:
