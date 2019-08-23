@@ -19,10 +19,7 @@ echo "Checked out branch: ${SOURCE_BRANCH_NAME}"
 NPM_VERSION=`npm version ${NPM_RELEASE_TYPE} -m "release: Update ${NPM_RELEASE_TYPE} version to %s ***NO_CI***"`
 echo "Set NPM version to: ${NPM_VERSION}"
 
-echo "##vso[task.setvariable variable=TAG_NAME]${NPM_VERSION}"
-
 SHA=`git rev-parse HEAD`
-echo "##vso[task.setvariable variable=TAG_SHA]${SHA}"
 
 export GIT_SSH_COMMAND="ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 git remote add authOrigin git@github.com:microsoft/VoTT.git
