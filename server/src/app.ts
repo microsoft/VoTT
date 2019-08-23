@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as morgan from 'morgan';
 import * as bunyan from 'bunyan';
+import * as cookies from 'cookies';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import cookieSession = require('cookie-session');
@@ -96,13 +97,13 @@ passport.use(new passportAzureAD.OIDCStrategy({
     // asynchronous verification, for effect...
     process.nextTick(() => {
 
-      let cookies = req.sessionCookies;
+      let cookies = req.sessionCookies as cookies;
       let userdata = cookies.get('User');
       if (userdata) {
         let user = JSON.parse(userdata);
         return done(null, user)
       }
-      cookies.set('User', JSON.stringify(profile));
+      cookies.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
       users.set(profile.oid, profile);
       return done(null, profile);
 
