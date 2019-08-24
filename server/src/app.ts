@@ -87,22 +87,22 @@ passport.use(new passportAzureAD.OIDCStrategy({
   cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
   clockSkew: config.creds.clockSkew,
 },
-  (req: any, iss: any, sub: any, profile: any, accessToken: any, refreshToken: any, done: any) => {
+  (req: express.Request, iss: any, sub: any, profile: any, accessToken: any, refreshToken: any, done: any) => {
     if (!profile.oid) {
       return done(new Error('No oid found'), null);
     }
     // asynchronous verification, for effect...
     process.nextTick(() => {
 
-      const sessionCookies = req.sessionCookies as cookies;
-      const userdata = sessionCookies.get('User');
+      const session = req.session;
+      const userdata = session.User;
       if (userdata) {
         const user = JSON.parse(userdata);
         return done(null, user);
       }
       // profile.refreshToken = refreshToken;
       // profile.accessToken = accessToken;
-      sessionCookies.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
+      session.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
       users.set(profile.oid, profile);
       return done(null, profile);
 
@@ -128,12 +128,13 @@ passport.use(new passportAzureAD.OIDCStrategy({
 const app = express();
 
 app.use(morgan(config.httpLogFormat));
+app.set('trust proxy', true);
 app.set('views', path.join(__dirname, '../public/views'));
 app.set('view engine', 'ejs');
 app.use(express_request_id());
 app.use(methodOverride());
 app.use(cookieParser());
-app.use(cookieSession({ secret: 'keyboard cat', maxAge: 1000 * 60 * 60 * 24 * 365 }));
+app.use(cookieSession({ secret: 'xyzzy       1234', secureProxy: true, maxAge: 1000 * 60 * 60 * 24 * 365 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -228,7 +229,7 @@ app.post('/auth/openid/return',
 
 // 'logout' route, logout from passport, and destroy the session with AAD.
 app.get('/logout', (req, res) => {
-  delete req.session;
+  req.session = null;
   // req.session.destroy((err) => {
   req.logOut();
   res.redirect(config.destroySessionUrl);
