@@ -12,15 +12,12 @@ import * as config from './config';
 import * as path from 'path';
 import * as express_request_id from 'express-request-id';
 
-
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
 const log = bunyan.createLogger({
   name: 'BUNYAN-LOGGER',
-  src: true
+  src: true,
 });
-
-var cookieSessionMiddleware = cookieSession({ secret: 'keyboard cat', maxAge: 1000 * 60 * 60 * 24 * 365 })
 
 /******************************************************************************
  * Set up passport in the app
@@ -46,7 +43,7 @@ passport.deserializeUser((oid: string, done) => {
 const users = new Map<string, any>();
 
 const findByOid = (oid: string, fn: (err: Error, user: any) => void) => {
-  log.info(`finding user by oid ${oid}`)
+  log.info(`finding user by oid ${oid}`);
   if (users.has(oid)) {
     return fn(null, users.get(oid));
   }
@@ -97,15 +94,15 @@ passport.use(new passportAzureAD.OIDCStrategy({
     // asynchronous verification, for effect...
     process.nextTick(() => {
 
-      let cookies = req.sessionCookies as cookies;
-      let userdata = cookies.get('User');
+      const sessionCookies = req.sessionCookies as cookies;
+      const userdata = sessionCookies.get('User');
       if (userdata) {
-        let user = JSON.parse(userdata);
-        return done(null, user)
+        const user = JSON.parse(userdata);
+        return done(null, user);
       }
       // profile.refreshToken = refreshToken;
       // profile.accessToken = accessToken;
-      cookies.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
+      sessionCookies.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
       users.set(profile.oid, profile);
       return done(null, profile);
 
@@ -129,19 +126,15 @@ passport.use(new passportAzureAD.OIDCStrategy({
 // Config the app, include middlewares
 // -----------------------------------------------------------------------------
 const app = express();
+
 app.use(morgan(config.httpLogFormat));
 app.set('views', path.join(__dirname, '../public/views'));
 app.set('view engine', 'ejs');
 app.use(express_request_id());
 app.use(methodOverride());
 app.use(cookieParser());
-
 app.use(cookieSession({ secret: 'keyboard cat', maxAge: 1000 * 60 * 60 * 24 * 365 }));
-
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Initialize Passport!  Also use passport.session() middleware, to support
-// persistent login sessions (recommended).
 app.use(passport.initialize());
 app.use(passport.session());
 
