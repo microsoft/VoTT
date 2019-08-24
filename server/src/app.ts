@@ -11,7 +11,6 @@ import * as passportAzureAD from 'passport-azure-ad';
 import * as config from './config';
 import * as path from 'path';
 import * as express_request_id from 'express-request-id';
-
 import * as graph from './graph';
 
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
