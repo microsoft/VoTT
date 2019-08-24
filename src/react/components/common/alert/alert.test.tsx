@@ -21,7 +21,7 @@ describe("Alert component", () => {
 
     it("Renders nothing if not activated", () => {
         const wrapper = createComponent(defaultProps);
-        expect(wrapper.html()).toBeNull();
+        expect(wrapper.html()).toEqual("");
     });
 
     it("Renders modal when activated", () => {

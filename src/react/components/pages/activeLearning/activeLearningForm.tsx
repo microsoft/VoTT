@@ -1,6 +1,6 @@
 import React from "react";
 import Form, { ISubmitEvent, IChangeEvent, Widget } from "react-jsonschema-form";
-import { IActiveLearningSettings, ModelPathType } from "../../../../models/applicationState";
+import { IActiveLearningSettings } from "../../../../models/applicationState";
 import { strings, addLocValues } from "../../../../common/strings";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import LocalFolderPicker from "../../common/localFolderPicker/localFolderPicker";

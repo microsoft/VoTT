@@ -161,7 +161,7 @@ describe("Video Asset Component", () => {
             };
 
             setupMoveFrameTest(currentAsset);
-            wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(3).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).toBeCalled();
             expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
@@ -174,7 +174,7 @@ describe("Video Asset Component", () => {
             onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
 
             setupMoveFrameTest(currentAsset);
-            wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(3).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).not.toBeCalled();
             expect(videoPlayerMock.prototype.seek).not.toBeCalled();
@@ -190,8 +190,8 @@ describe("Video Asset Component", () => {
 
             setupMoveFrameTest(currentAsset);
 
-            wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
-            wrapper.find(CustomVideoPlayerButton).at(2).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(3).find("button").simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(2).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).toBeCalled();
             expect(videoPlayerMock.prototype.seek).toBeCalledWith(expectedAsset.timestamp);
@@ -203,7 +203,7 @@ describe("Video Asset Component", () => {
             onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
             setupMoveFrameTest(currentAsset);
 
-            wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(3).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).not.toBeCalled();
             expect(videoPlayerMock.prototype.seek).not.toBeCalled();
@@ -214,8 +214,8 @@ describe("Video Asset Component", () => {
             const currentAsset = childAssets[0];
             setupMoveFrameTest(currentAsset);
 
-            wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
-            wrapper.find(CustomVideoPlayerButton).at(1).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(3).find("button").simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(1).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).toBeCalled();
             expect(videoPlayerMock.prototype.seek).toBeCalledWith(
@@ -227,7 +227,7 @@ describe("Video Asset Component", () => {
             onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
             setupMoveFrameTest(currentAsset);
 
-            wrapper.find(CustomVideoPlayerButton).at(3).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(3).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).not.toBeCalled();
             expect(videoPlayerMock.prototype.seek).not.toBeCalled();
@@ -237,7 +237,7 @@ describe("Video Asset Component", () => {
             const currentAsset = childAssets[4];
             setupMoveFrameTest(currentAsset);
 
-            wrapper.find(CustomVideoPlayerButton).at(0).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(0).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).toBeCalled();
             expect(videoPlayerMock.prototype.seek).toBeCalledWith(
@@ -249,7 +249,7 @@ describe("Video Asset Component", () => {
             onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
             setupMoveFrameTest(currentAsset);
 
-            wrapper.find(CustomVideoPlayerButton).at(0).simulate("click");
+            wrapper.find(CustomVideoPlayerButton).at(0).find("button").simulate("click");
 
             expect(videoPlayerMock.prototype.pause).not.toBeCalled();
             expect(videoPlayerMock.prototype.seek).not.toBeCalled();

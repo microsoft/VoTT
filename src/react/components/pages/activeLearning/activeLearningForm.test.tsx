@@ -2,7 +2,7 @@ import React from "react";
 import { IActiveLearningFormProps, ActiveLearningForm, IActiveLearningFormState } from "./activeLearningForm";
 import { ReactWrapper, mount } from "enzyme";
 import { ModelPathType, IActiveLearningSettings } from "../../../../models/applicationState";
-import Form from "react-jsonschema-form";
+import Form, { IChangeEvent } from "react-jsonschema-form";
 
 describe("Active Learning Form", () => {
     const onChangeHandler = jest.fn();
@@ -19,6 +19,17 @@ describe("Active Learning Form", () => {
         onChange: onChangeHandler,
         onSubmit: onSubmitHandler,
         onCancel: onCancelHandler,
+    };
+
+    const defaultEvent: IChangeEvent = {
+        edit: false,
+        errorSchema: null,
+        errors: [],
+        idSchema: null,
+        schema: null,
+        status: null,
+        uiSchema: null,
+        formData: null,
     };
 
     function createComponent(props?: IActiveLearningFormProps)
@@ -72,16 +83,16 @@ describe("Active Learning Form", () => {
         };
 
         // Set type to URL
-        wrapper.find(Form).props().onChange({ formData: { modelPathType: ModelPathType.Url } });
+        wrapper.find(Form).props().onChange({ ...defaultEvent, formData: { modelPathType: ModelPathType.Url } });
         // Set the remaining settings
-        wrapper.find(Form).props().onChange({ formData });
+        wrapper.find(Form).props().onChange({ ...defaultEvent, formData });
         expect(wrapper.state().formData).toEqual(formData);
         expect(onChangeHandler).toBeCalledWith(formData);
     });
 
     it("submits form data to the registered submit handler", () => {
         const wrapper = createComponent();
-        wrapper.find(Form).props().onSubmit({ formData: defaultProps.settings });
+        wrapper.find(Form).props().onSubmit({ ...defaultEvent, formData: defaultProps.settings });
 
         expect(onSubmitHandler).toBeCalledWith(defaultProps.settings);
     });
