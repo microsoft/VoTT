@@ -12,6 +12,8 @@ import * as config from './config';
 import * as path from 'path';
 import * as express_request_id from 'express-request-id';
 
+import * as graph from './graph';
+
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
 const log = bunyan.createLogger({
@@ -29,14 +31,22 @@ const log = bunyan.createLogger({
 // this will be as simple as storing the user ID when serializing, and finding
 // the user by ID when deserializing.
 // -----------------------------------------------------------------------------
-passport.serializeUser((user: any, done) => {
-  done(null, user.oid);
+
+interface ISerializedUser {
+  oid: string;
+  access_token: string;
+  refresh_token: string;
+}
+
+passport.serializeUser((user: ISerializedUser, done) => {
+  const stored = { oid: user.oid, refresh_token: user.refresh_token};
+  done(null, stored );
 });
 
-passport.deserializeUser((oid: string, done) => {
-  findByOid(oid, (err, user) => {
-    done(err, user);
-  });
+passport.deserializeUser(async (stored: ISerializedUser, done) => {
+  const result = await graph.getUserDetails(stored.refresh_token);
+  if (!result) { done(Error('no user profile')); }
+  return done(null, result);
 });
 
 // array to hold logged in users
@@ -87,24 +97,33 @@ passport.use(new passportAzureAD.OIDCStrategy({
   cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
   clockSkew: config.creds.clockSkew,
 },
-  (req: express.Request, iss: any, sub: any, profile: any, accessToken: any, refreshToken: any, done: any) => {
+  (req: express.Request, iss: string, sub: string, profile: passportAzureAD.IProfile, jwtClaims: any, access_token: string, refresh_token: string, params: any, done: passportAzureAD.VerifyCallback) => {
     if (!profile.oid) {
       return done(new Error('No oid found'), null);
     }
     // asynchronous verification, for effect...
-    process.nextTick(() => {
+    process.nextTick(async () => {
 
-      const session = req.session;
-      const userdata = session.User;
-      if (userdata) {
-        const user = JSON.parse(userdata);
+/*    const session = req.session;
+      const profileCookie = session.profile;
+      if (profileCookie) {
+        const user = JSON.parse(profileCookie);
         return done(null, user);
       }
       // profile.refreshToken = refreshToken;
       // profile.accessToken = accessToken;
       session.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
       users.set(profile.oid, profile);
-      return done(null, profile);
+      return done(null, profile); */
+
+      const fullProfile = await graph.getUserDetails(access_token);
+      if (!fullProfile) {
+        return done(Error('no profile'));
+      }
+      fullProfile.access_token = access_token;
+      fullProfile.refresh_token = refresh_token;
+      fullProfile.oid = profile.oid;
+      return done(null, fullProfile);
 
 /*       findByOid(profile.oid, (err, user) => {
         if (err) {
@@ -134,7 +153,7 @@ app.set('view engine', 'ejs');
 app.use(express_request_id());
 app.use(methodOverride());
 app.use(cookieParser());
-app.use(cookieSession({ secret: 'xyzzy       1234', secureProxy: true, maxAge: 1000 * 60 * 60 * 24 * 365 }));
+app.use(cookieSession({ secret: 'xyzzy       1234', secure: false, maxAge: 1000 * 60 * 60 * 24 * 365 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
