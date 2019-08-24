@@ -99,3 +99,6 @@ export let databaseUri = 'mongodb://localhost/OIDCStrategy';
   // How long you want to keep session in mongoDB.
 export let mongoDBSessionMaxAge = 24 * 60 * 60;  // 1 day (unit is second)
 
+if (!creds.clientID || !creds.clientSecret ) { throw Error ('Missing configuration. You need a .env file or environment variables for APP_ID and APP_SECRET')}
+console.log('app id / secret', creds.clientID, creds.clientSecret);
+console.log('redirect path', creds.redirectUrl);

@@ -16,8 +16,8 @@
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ],
-            "console": "integratedTerminal",
-            "outputCapture": "std",            
+            "console": "internalConsole",
+            "outputCapture": "std",       
         }
     ]
 }

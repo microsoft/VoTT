@@ -11,6 +11,7 @@ import * as passportAzureAD from 'passport-azure-ad';
 import * as config from './config';
 import * as path from 'path';
 import * as express_request_id from 'express-request-id';
+import * as graph from './graph'
 
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
@@ -29,14 +30,26 @@ const log = bunyan.createLogger({
 // this will be as simple as storing the user ID when serializing, and finding
 // the user by ID when deserializing.
 // -----------------------------------------------------------------------------
-passport.serializeUser((user: any, done) => {
-  done(null, user.oid);
+
+class IMinUser {
+  oid: string;
+  refresh_token: string;
+}
+
+passport.serializeUser((user: IMinUser, done) => {
+  done(null, { oid: user.oid, refresh_token: user.refresh_token })
 });
 
-passport.deserializeUser((oid: string, done) => {
-  findByOid(oid, (err, user) => {
-    done(err, user);
-  });
+passport.deserializeUser(async (storedUser: IMinUser, done) => {
+  let profile = await graph.getUserDetails(storedUser.refresh_token)
+    .catch(reason => {
+      log.error('graph get', reason);
+      return done(reason);
+    });
+
+  profile = { ...profile, ...storedUser };
+
+  done(null, profile)
 });
 
 // array to hold logged in users
@@ -92,33 +105,14 @@ passport.use(new passportAzureAD.OIDCStrategy({
       return done(new Error('No oid found'), null);
     }
     // asynchronous verification, for effect...
-    process.nextTick(() => {
+    process.nextTick(async () => {
 
-      const session = req.session;
-      const userdata = session.User;
-      if (userdata) {
-        const user = JSON.parse(userdata);
-        return done(null, user);
-      }
-      // profile.refreshToken = refreshToken;
-      // profile.accessToken = accessToken;
-      session.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
-      users.set(profile.oid, profile);
-      return done(null, profile);
+      let userInfo = await graph.getUserDetails(refreshToken);
+      userInfo.oid = profile.oid;
+      userInfo.refresh_token = refreshToken;
 
-/*       findByOid(profile.oid, (err, user) => {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          // "Auto-registration"
-          log.info(`storing user`, profile)
-          users.push(profile);
-          return done(null, profile);
-        }
-        return done(null, user);
-      });
- */    });
+      return done(null, userInfo);
+    });
   },
 ));
 
