@@ -1,6 +1,6 @@
 import {
     app, ipcMain, BrowserWindow, BrowserWindowConstructorOptions,
-    Menu, MenuItemConstructorOptions,
+    Menu, MenuItemConstructorOptions, MenuItem,
 } from "electron";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
@@ -70,20 +70,21 @@ function onToggleDevTools() {
  */
 function registerContextMenu(browserWindow: BrowserWindow): void {
     const selectionMenu = Menu.buildFromTemplate([
-        { role: "copy", accelerator: "CmdOrCtrl+C" },
-        { type: "separator" },
-        { role: "selectall", accelerator: "CmdOrCtrl+A" },
+        new MenuItem({ role: "copy", accelerator: "CmdOrCtrl+C" }),
+        new MenuItem({ role: "copy", accelerator: "CmdOrCtrl+C" }),
+        new MenuItem({ type: "separator" }),
+        new MenuItem({ role: "selectAll", accelerator: "CmdOrCtrl+A" }),
     ]);
 
     const inputMenu = Menu.buildFromTemplate([
-        { role: "undo", accelerator: "CmdOrCtrl+Z" },
-        { role: "redo", accelerator: "CmdOrCtrl+Shift+Z" },
-        { type: "separator" },
-        { role: "cut", accelerator: "CmdOrCtrl+X" },
-        { role: "copy", accelerator: "CmdOrCtrl+C" },
-        { role: "paste", accelerator: "CmdOrCtrl+V" },
-        { type: "separator" },
-        { role: "selectall", accelerator: "CmdOrCtrl+A" },
+        new MenuItem({ role: "undo", accelerator: "CmdOrCtrl+Z" }),
+        new MenuItem({ role: "redo", accelerator: "CmdOrCtrl+Shift+Z" }),
+        new MenuItem({ type: "separator" }),
+        new MenuItem({ role: "cut", accelerator: "CmdOrCtrl+X" }),
+        new MenuItem({ role: "copy", accelerator: "CmdOrCtrl+C" }),
+        new MenuItem({ role: "paste", accelerator: "CmdOrCtrl+V" }),
+        new MenuItem({ type: "separator" }),
+        new MenuItem({ role: "selectAll", accelerator: "CmdOrCtrl+A" }),
     ]);
 
     browserWindow.webContents.on("context-menu", (e, props) => {
@@ -107,16 +108,16 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
         },
         { role: "editMenu" },
         {
-            label: "View", submenu: [
-                { role: "reload" },
-                { type: "separator" },
-                { role: "toggleDevTools" },
-                { role: "toggleFullScreen" },
-                { type: "separator" },
-                { role: "resetZoom" },
-                { role: "zoomIn" },
-                { role: "zoomOut" },
-            ],
+            label: "View", submenu: Menu.buildFromTemplate([
+                new MenuItem({ role: "reload" }),
+                new MenuItem({ type: "separator" }),
+                new MenuItem({ role: "toggleDevTools" }),
+                new MenuItem({ role: "togglefullscreen" }),
+                new MenuItem({ type: "separator" }),
+                new MenuItem({ role: "resetZoom" }),
+                new MenuItem({ role: "zoomIn" }),
+                new MenuItem({ role: "zoomOut" }),
+            ]),
         },
         { role: "windowMenu" },
     ];
