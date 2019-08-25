@@ -1,23 +1,28 @@
 import * as express from 'express';
+import * as simple_oauth2 from 'simple-oauth2';
+import * as config from './config';
 
-export async function getAccessToken(req: express.Request) {
-  let user: any = req.get('user');
-  if (req.user) {
-    // Get the stored token
-    var storedToken = user.oauthToken;
+export const oauth2 = simple_oauth2.create({
+  client: {
+    id: config.creds.clientID,
+    secret: config.creds.clientSecret,
+  },
+  auth: {
+    tokenHost: 'https://login.microsoftonline.com/common',
+    authorizePath: '/oauth2/v2.0/authorize',
+    tokenPath: '/oauth2/v2.0/token',
+  },
+});
 
-    if (storedToken) {
-      if (storedToken.expired()) {
-        // refresh token
-        var newToken = await storedToken.refresh();
 
-        // Update stored token
-        user.oauthToken = newToken;
-        return newToken.token.access_token;
-      }
+export interface IToken {
+  refresh_token: string;
+  access_token?: string;
+  expires_at?: string | Date;
+}
 
-      // Token still valid, just return it
-      return storedToken.token.access_token;
-    }
-  }
+export function create(token: IToken) {
+  token.expires_at = token.expires_at || new Date(0);
+  const result = oauth2.accessToken.create(token);
+  return result;
 }

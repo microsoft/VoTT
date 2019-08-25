@@ -4,12 +4,12 @@ require('dotenv').config();
 export const baseUrl = process.env.BASE_URL || 'http://localhost:3000/';
 export const redirectPath = 'auth/openid/return';
 export const port = process.env.PORT || '3000';
-export let loggingLevel = process.env.LOGGING_LEVEL || 'info';
-export let httpLogFormat = process.env.HTTP_LOG_FORMAT || 'dev';
+export const loggingLevel = process.env.LOGGING_LEVEL || 'info';
+export const httpLogFormat = process.env.HTTP_LOG_FORMAT || 'dev';
 
 console.log('config values', process.env.APP_ID, process.env.APP_SECRET, baseUrl, redirectPath, port, loggingLevel, httpLogFormat);
 
-export let creds = {
+export const creds = {
   // Required
   identityMetadata: 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
   // 'https://login.microsoftonline.com/<tenant_name>.onmicrosoft.com/v2.0/.well-known/openid-configuration',

@@ -29,7 +29,8 @@
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.0",
     "passport": "*",
-    "passport-azure-ad": "^4.1.0"
+    "passport-azure-ad": "^4.1.0",
+    "simple-oauth2": "^2.2.1"
   },
   "devDependencies": {
     "@types/bunyan": "^1.8.6",
@@ -45,6 +46,7 @@
     "@types/node-fetch": "^2.5.0",
     "@types/passport": "^1.0.1",
     "@types/passport-azure-ad": "^4.0.3",
+    "@types/simple-oauth2": "^2.2.1",
     "concurrently": "^4.1.1",
     "dotenv": "^8.1.0",
     "jest": "^24.8.0",

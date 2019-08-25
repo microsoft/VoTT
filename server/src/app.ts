@@ -11,7 +11,9 @@ import * as passportAzureAD from 'passport-azure-ad';
 import * as config from './config';
 import * as path from 'path';
 import * as express_request_id from 'express-request-id';
+import * as simple_oath2 from 'simple-oauth2';
 import * as graph from './graph';
+import * as tokens from './tokens';
 
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
@@ -33,19 +35,25 @@ const log = bunyan.createLogger({
 
 interface ISerializedUser {
   oid: string;
-  access_token: string;
   refresh_token: string;
+  access_token?: string;
+  expires_at?: string;
 }
 
 passport.serializeUser((user: ISerializedUser, done) => {
-  const stored = { oid: user.oid, access_token: user.access_token, refresh_token: user.refresh_token};
-  done(null, stored );
+  const stored = { oid: user.oid, refresh_token: user.refresh_token, /* access_token: user.access_token, expires_at: user.expires_at */ };
+  done(null, stored);
 });
 
 passport.deserializeUser(async (stored: ISerializedUser, done) => {
-  if (!stored.access_token) { return done(Error('no user profile')); }
-  const result = await graph.getUserDetails(stored.access_token);
-  if (!result) { return done(Error('no user profile')); }
+  if (!stored || !stored.refresh_token) { return done(Error('no user profile')); }
+  let oauth = await tokens.create(stored);
+  if (oauth.expired()) {
+    oauth = await oauth.refresh();
+  }
+  const profile = await graph.getUserDetails(oauth.token.access_token).catch(reason => { log.error('could not retrieve profile', reason);  });
+  if (!profile) { return done(Error('no user profile')); }
+  const result = { ...profile, ...stored, ...oauth.token };
   return done(null, result);
 });
 
@@ -96,48 +104,25 @@ passport.use(new passportAzureAD.OIDCStrategy({
   useCookieInsteadOfSession: config.creds.useCookieInsteadOfSession,
   cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
   clockSkew: config.creds.clockSkew,
-},
-  (req: express.Request, iss: string, sub: string, profile: passportAzureAD.IProfile, jwtClaims: any, access_token: string, refresh_token: string, params: any, done: passportAzureAD.VerifyCallback) => {
+}, async (req: express.Request, iss: string, sub: string, profile: passportAzureAD.IProfile, jwtClaims: any, access_token: string, refresh_token: string, params: any, done: passportAzureAD.VerifyCallback) => {
     if (!profile.oid) {
       return done(new Error('No oid found'), null);
     }
     // asynchronous verification, for effect...
     process.nextTick(async () => {
 
-/*    const session = req.session;
-      const profileCookie = session.profile;
-      if (profileCookie) {
-        const user = JSON.parse(profileCookie);
-        return done(null, user);
-      }
-      // profile.refreshToken = refreshToken;
-      // profile.accessToken = accessToken;
-      session.set('User', JSON.stringify(profile), { maxAge: 1000 * 60 * 60 * 24 * 365 });
-      users.set(profile.oid, profile);
-      return done(null, profile); */
-
       const fullProfile = await graph.getUserDetails(access_token);
       if (!fullProfile) {
         return done(Error('no profile'));
       }
-      fullProfile.access_token = access_token;
-      fullProfile.refresh_token = refresh_token;
       fullProfile.oid = profile.oid;
-      return done(null, fullProfile);
 
-/*       findByOid(profile.oid, (err, user) => {
-        if (err) {
-          return done(err);
-        }
-        if (!user) {
-          // "Auto-registration"
-          log.info(`storing user`, profile)
-          users.push(profile);
-          return done(null, profile);
-        }
-        return done(null, user);
-      });
- */    });
+      let oauth = tokens.create(params);
+      let result = { ...fullProfile, ...oauth.token};
+
+      return done(null, result);
+
+    });
   },
 ));
 
@@ -259,6 +244,16 @@ const cloudConnections = new Map<string, any>([
   ['connection1', { foo: 'bar' }],
   ['connection2', { foo: 'baz' }],
 ]);
+
+app.get('/api/v1.0/profile', ensureAuthenticatedApi,
+  async (req, res, next) => {
+    let oauth = tokens.create(req.user as tokens.IToken);
+    if (oauth.expired()) { oauth = await oauth.refresh();}
+    const result = await graph.getUserDetails(oauth.token.access_token);
+    res.json(result);
+    res.end();
+    next();
+  });
 
 app.get('/api/v1.0/cloudconnections', ensureAuthenticatedApi,
   (req, res, next) => {
