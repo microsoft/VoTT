@@ -1,7 +1,6 @@
 import * as bodyParser from 'body-parser';
 import * as morgan from 'morgan';
 import * as bunyan from 'bunyan';
-import * as cookies from 'cookies';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import cookieSession = require('cookie-session');
@@ -41,7 +40,7 @@ interface ISerializedUser {
 }
 
 passport.serializeUser((user: ISerializedUser, done) => {
-  const stored = { oid: user.oid, refresh_token: user.refresh_token, /* access_token: user.access_token, expires_at: user.expires_at */ };
+  const stored = { oid: user.oid, refresh_token: user.refresh_token /*, access_token: user.access_token, expires_at: user.expires_at */ };
   done(null, stored);
 });
 
@@ -51,7 +50,7 @@ passport.deserializeUser(async (stored: ISerializedUser, done) => {
   if (oauth.expired()) {
     oauth = await oauth.refresh();
   }
-  const profile = await graph.getUserDetails(oauth.token.access_token).catch(reason => { log.error('could not retrieve profile', reason);  });
+  const profile = await graph.user(oauth.token.access_token).catch(reason => { log.error('could not retrieve profile', reason); });
   if (!profile) { return done(Error('no user profile')); }
   const result = { ...profile, ...stored, ...oauth.token };
   return done(null, result);
@@ -85,7 +84,7 @@ const findByOid = (oid: string, fn: (err: Error, user: any) => void) => {
 //
 // To do prototype (6), passReqToCallback must be set to true in the config.
 // -----------------------------------------------------------------------------
-passport.use(new passportAzureAD.OIDCStrategy({
+const azureStrategyOptions: passportAzureAD.IOIDCStrategyOptionWithRequest = {
   identityMetadata: config.creds.identityMetadata,
   clientID: config.creds.clientID,
   responseType: config.creds.responseType as typeof OIDCStrategyTemplate.responseType,
@@ -104,27 +103,33 @@ passport.use(new passportAzureAD.OIDCStrategy({
   useCookieInsteadOfSession: config.creds.useCookieInsteadOfSession,
   cookieEncryptionKeys: config.creds.cookieEncryptionKeys,
   clockSkew: config.creds.clockSkew,
-}, async (req: express.Request, iss: string, sub: string, profile: passportAzureAD.IProfile, jwtClaims: any, access_token: string, refresh_token: string, params: any, done: passportAzureAD.VerifyCallback) => {
-    if (!profile.oid) {
-      return done(new Error('No oid found'), null);
+};
+
+async function processAzureStrategy(req: express.Request,
+  iss: string, sub: string, profile: passportAzureAD.IProfile, jwtClaims: any,
+  access_token: string, refresh_token: string, oauthToken: any,
+  done: passportAzureAD.VerifyCallback) {
+
+  if (!profile.oid) {
+    return done(new Error('No oid found'), null);
+  }
+  // asynchronous verification, for effect...
+  process.nextTick(async () => {
+
+    const fullProfile = await graph.user(access_token);
+    if (!fullProfile) {
+      return done(Error('no profile'));
     }
-    // asynchronous verification, for effect...
-    process.nextTick(async () => {
+    fullProfile.oid = profile.oid;
 
-      const fullProfile = await graph.getUserDetails(access_token);
-      if (!fullProfile) {
-        return done(Error('no profile'));
-      }
-      fullProfile.oid = profile.oid;
+    const oauth = tokens.create(oauthToken);
+    const result = { ...fullProfile, ...oauth.token };
 
-      let oauth = tokens.create(params);
-      let result = { ...fullProfile, ...oauth.token};
+    return done(null, result);
+  });
+}
 
-      return done(null, result);
-
-    });
-  },
-));
+passport.use(new passportAzureAD.OIDCStrategy(azureStrategyOptions, processAzureStrategy));
 
 // -----------------------------------------------------------------------------
 // Config the app, include middlewares
@@ -139,6 +144,7 @@ app.use(express_request_id());
 app.use(methodOverride());
 app.use(cookieParser());
 app.use(cookieSession({ secret: 'xyzzy       1234', secure: false, maxAge: 1000 * 60 * 60 * 24 * 365 }));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -231,66 +237,144 @@ app.post('/auth/openid/return',
     res.redirect('/');
   });
 
+// 'endsession' route, logout from passport, and destroy the session with AAD.
+app.get('/endsession', (req, res) => {
+  req.session = null;
+  req.logOut();
+  res.redirect('/');
+});
+
 // 'logout' route, logout from passport, and destroy the session with AAD.
 app.get('/logout', (req, res) => {
   req.session = null;
   // req.session.destroy((err) => {
   req.logOut();
   res.redirect(config.destroySessionUrl);
-  // });
 });
 
-const cloudConnections = new Map<string, any>([
-  ['connection1', { foo: 'bar' }],
-  ['connection2', { foo: 'baz' }],
-]);
+app.get('/api/v1.0/me', ensureAuthenticatedApi,
+  async (req, res, next) => {
+    try {
+      let oauth = tokens.create(req.user as tokens.IToken);
+      if (oauth.expired()) { oauth = await oauth.refresh(); }
+      const result = await graph.user(oauth.token.access_token);
+      res.json(result);
+      res.end();
+      next();
+    } catch (error) {
+      res.status(error.statusCode).json(error).end();
+      return next();
+    }
+  });
 
 app.get('/api/v1.0/profile', ensureAuthenticatedApi,
   async (req, res, next) => {
-    let oauth = tokens.create(req.user as tokens.IToken);
-    if (oauth.expired()) { oauth = await oauth.refresh();}
-    const result = await graph.getUserDetails(oauth.token.access_token);
-    res.json(result);
-    res.end();
-    next();
+    try {
+      let oauth = tokens.create(req.user as tokens.IToken);
+      if (oauth.expired()) { oauth = await oauth.refresh(); }
+      const result = await graph.client(oauth.token.access_token).api('/me/extensions/com.code-with.vott').get();
+      res.json(result);
+      res.end();
+      next();
+    } catch (error) {
+      res.status(error.statusCode).json(error).end();
+      return next();
+    }
   });
 
-app.get('/api/v1.0/cloudconnections', ensureAuthenticatedApi,
-  (req, res, next) => {
-    res.json(Array.from(cloudConnections.keys()));
-    res.end();
-    next();
+app.put('/api/v1.0/profile', ensureAuthenticatedApi,
+  async (req, res, next) => {
+    try {
+      let oauth = tokens.create(req.user as tokens.IToken);
+      if (oauth.expired()) { oauth = await oauth.refresh(); }
+      const body = { ...req.body, extensionName: 'com.code-with.vott' };
+      let result = null;
+      try { // Handle bad graph open extension semantics
+        result = await graph.client(oauth.token.access_token).api('/me/extensions/').post(body);
+      } catch (error) {
+        // if it already exists and we are replacing.  Delete and try again.
+        result = await graph.client(oauth.token.access_token).api('/me/extensions/com.code-with.vott').delete();
+        result = await graph.client(oauth.token.access_token).api('/me/extensions').post(body);
+      }
+      res.json(result);
+      res.end();
+      next();
+    } catch (error) {
+      res.status(error.statusCode).json(error).end();
+      return next();
+    }
   });
 
 app.get('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
-  (req, res, next) => {
-    const id = req.params.id;
-    res.json(cloudConnections.get(id));
-    res.end();
-    next();
+  async (req, res, next) => {
+    try {
+      const id = req.params.id;  // careful should only be a domain name pattern.
+      let oauth = tokens.create(req.user as tokens.IToken);
+      if (oauth.expired()) { oauth = await oauth.refresh(); }
+      const result = await graph.client(oauth.token.access_token).api(`/me/extensions/com.code-with.vott.${id}`).get();
+      res.json(result);
+      res.end();
+      next();
+    } catch (error) {
+      res.status(error.statusCode).json(error).end();
+      return next();
+    }
   });
 
 app.put('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
-  (req, res, next) => {
-    const id = req.params.id;
-    const body = req.body;
-    const status = cloudConnections.has(id) ? 200 : 201;
-    cloudConnections.set(id, body);
-    res.sendStatus(status);
-    res.json(body);
-    next();
+  async (req, res, next) => {
+    try {
+      const id = req.params.id;  // careful should only be a domain name pattern.
+      let oauth = tokens.create(req.user as tokens.IToken);
+      if (oauth.expired()) { oauth = await oauth.refresh(); }
+      const body = { ...req.body, extensionName: `com.code-with.vott.${id}` };
+      let result = null;
+      try { // Handle bad graph open extension semantics
+        result = await graph.client(oauth.token.access_token).api('/me/extensions/').post(body);
+      } catch (error) {
+        // if it already exists and we are replacing.  Delete and try again.
+        result = await graph.client(oauth.token.access_token).api(`/me/extensions/com.code-with.vott.${id}`).delete();
+        result = await graph.client(oauth.token.access_token).api('/me/extensions').post(body);
+      }
+      res.json(result);
+      res.end();
+      next();
+    } catch (error) {
+      res.status(error.statusCode).json(error).end();
+      return next();
+    }
+  });
+
+app.patch('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
+  async (req, res, next) => {
+    try {
+      const id = req.params.id;  // careful should only be a domain name pattern.
+      let oauth = tokens.create(req.user as tokens.IToken);
+      if (oauth.expired()) { oauth = await oauth.refresh(); }
+      const body = { ...req.body, extensionName: `com.code-with.vott.${id}` };
+      const result = await graph.client(oauth.token.access_token).api(`/me/extensions/com.code-with.vott.${id}`).patch(body);
+      res.json(result);
+      res.end();
+      next();
+    } catch (error) {
+      res.status(error.statusCode).json(error).end();
+      return next();
+    }
   });
 
 app.delete('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
-  (req, res, next) => {
-    const id = req.params.id;
-    if (cloudConnections.has(id)) {
-      res.sendStatus(404).end();
+  async (req, res, next) => {
+    try {
+      const id = req.params.id;  // careful should only be a domain name pattern.
+      let oauth = tokens.create(req.user as tokens.IToken);
+      if (oauth.expired()) { oauth = await oauth.refresh(); }
+      const result = await graph.client(oauth.token.access_token).api(`/me/extensions/com.code-with.vott.${id}`).delete();
+      res.end();
+      return next();
+    } catch (error) {
+      res.status(error.statusCode).json(error).end();
       return next();
     }
-    cloudConnections.delete(id);
-    res.end();
-    return next();
   });
 
 app.use('/public', express.static(path.join(__dirname, '../public')));

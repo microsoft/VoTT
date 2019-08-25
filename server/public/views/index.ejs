@@ -2,7 +2,10 @@
 	<h2>Welcome! Please log in.</h2>
 	<a href="/login">Log In</a>
 <% } else { %>
-	<h2>Hello, <%= user.displayName %>.</h2>
+	<h2>Hello, <%= user.displayName %></h2>
 	<a href="/account">Account Info</a></br>
-	<a href="/logout">Log Out</a>
+	<a href="/public/test.html">Run tests</a></br>
+	<a href="/endsession">End session</a></br>
+	<a href="/logout">Log Out</a></br>
+	<a href="https://myapps.microsoft.com">Manage your permissions</a></br>
 <% } %>

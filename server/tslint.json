@@ -3,6 +3,13 @@
     "extends": [
         "tslint:recommended"
     ],
+    "linterOptions": {
+        "exclude": [
+            "lib",
+            "public",
+            "src/routes"
+        ]
+    },
     "jsRules": {},
     "rules": {
         "quotemark": [
@@ -20,13 +27,20 @@
                 }
             ]
         },
-        "no-console": [
-            false
-        ],
+        "no-console": false,
+        "arrow-parens": false,
         "max-classes-per-file": false,
-        "ordered-imports": [
-            false
-        ],
-        "object-literal-sort-keys": false
+        "ordered-imports": false,
+        "object-literal-sort-keys": false,
+        "align": false,
+        "variable-name": {
+            "options": [
+                "ban-keywords",
+                "check-format",
+                "allow-leading-underscore",
+                "allow-pascal-case",
+                "allow-snake-case"
+            ]
+        }
     }
 }

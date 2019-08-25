@@ -14,7 +14,6 @@ export const oauth2 = simple_oauth2.create({
   },
 });
 
-
 export interface IToken {
   refresh_token: string;
   access_token?: string;
