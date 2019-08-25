@@ -38,13 +38,14 @@ interface ISerializedUser {
 }
 
 passport.serializeUser((user: ISerializedUser, done) => {
-  const stored = { oid: user.oid, refresh_token: user.refresh_token};
+  const stored = { oid: user.oid, access_token: user.access_token, refresh_token: user.refresh_token};
   done(null, stored );
 });
 
 passport.deserializeUser(async (stored: ISerializedUser, done) => {
-  const result = await graph.getUserDetails(stored.refresh_token);
-  if (!result) { done(Error('no user profile')); }
+  if (!stored.access_token) { return done(Error('no user profile')); }
+  const result = await graph.getUserDetails(stored.access_token);
+  if (!result) { return done(Error('no user profile')); }
   return done(null, result);
 });
 
