@@ -7,6 +7,8 @@ export const port = process.env.PORT || '3000';
 export let loggingLevel = process.env.LOGGING_LEVEL || 'info';
 export let httpLogFormat = process.env.HTTP_LOG_FORMAT || 'dev';
 
+console.log('config values', process.env.APP_ID, process.env.APP_SECRET, baseUrl, redirectPath, port, loggingLevel, httpLogFormat);
+
 export let creds = {
     // Required
     identityMetadata: 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration',
@@ -88,6 +90,6 @@ export let creds = {
   // The url you need to go to destroy the session with AAD
 export let destroySessionUrl = 'https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=http://localhost:3000';
 
-if (!creds.clientID || !creds.clientSecret ) { throw Error ('Missing configuration. You need a .env file or environment variables for APP_ID and APP_SECRET')}
-console.log('app id / secret', creds.clientID, creds.clientSecret);
-console.log('redirect path', creds.redirectUrl);
+if (!creds.clientID || !creds.clientSecret) {
+  console.log('issue with config');
+}
