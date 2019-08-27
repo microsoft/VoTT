@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./lib/app.js",
-    "test:unit": "jest --coverage --detectOpenHandles --runInBand",
+    "test:unit": "jest  --runInBand",
     "test": "npm run lint && npm run test:unit",
     "watch": "concurrently --kill-others \"tsc -w\" \"nodemon --inspect ./lib/app.js\"",
     "lint": "tslint -q -p . -c tslint.json",
