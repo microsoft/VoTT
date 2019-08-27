@@ -20,7 +20,7 @@ export default class LocalFileSystem implements IStorageProvider {
         });
 
         if (!dialogResult.filePaths || dialogResult.filePaths.length !== 1) {
-            throw new Error("No folder selected");
+            return "";
         }
 
         return dialogResult.filePaths[0];

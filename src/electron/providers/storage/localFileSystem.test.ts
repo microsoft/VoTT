@@ -83,7 +83,8 @@ describe("LocalFileSystem Storage Provider", () => {
         const mockMethod = dialog.showOpenDialog as jest.Mock;
         mockMethod.mockReturnValue(Promise.resolve({ filePaths: [] }));
 
-        await expect(localFileSystem.selectContainer()).rejects.not.toBeNull();
+        const result = await localFileSystem.selectContainer();
+        expect(result).toEqual("");
     });
 
     it("deleting file that doesn't exist resolves successfully", async () => {
