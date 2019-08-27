@@ -4,14 +4,6 @@ import MockFactory from "../common/mockFactory";
 import { appInfo } from "../common/appInfo";
 import { ObjectDetection } from "../providers/activeLearning/objectDetection";
 
-jest.mock("electron", () => ({
-    remote: {
-        app: {
-            getAppPath: jest.fn(),
-        },
-    },
-}));
-
 describe("Active Learning Service", () => {
     const objectDetectionMock = ObjectDetection as jest.Mocked<typeof ObjectDetection>;
     const defaultSettings: IActiveLearningSettings = {
@@ -21,6 +13,18 @@ describe("Active Learning Service", () => {
     };
 
     let activeLearningService: ActiveLearningService = null;
+
+    const electronMock = {
+        remote: {
+            app: {
+                getAppPath: jest.fn(),
+            },
+        },
+    };
+
+    beforeAll(() => {
+        window["require"] = jest.fn(() => electronMock);
+    });
 
     beforeEach(() => {
         activeLearningService = new ActiveLearningService(defaultSettings);

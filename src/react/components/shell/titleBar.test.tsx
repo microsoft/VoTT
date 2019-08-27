@@ -2,8 +2,6 @@ import React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import { TitleBar, ITitleBarProps, ITitleBarState } from "./titleBar";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
-jest.mock("electron", () => ({ remote: null }));
-import electron from "electron";
 
 describe("TileBar Component", () => {
     let wrapper: ReactWrapper<ITitleBarProps, ITitleBarState>;
@@ -49,6 +47,15 @@ describe("TileBar Component", () => {
         close: jest.fn(),
     };
 
+    const electronMock = {
+        remote: {
+            getCurrentWindow: jest.fn(() => electronCurrentWindow),
+            Menu: {
+                getApplicationMenu: jest.fn(() => mockMenu),
+            },
+        },
+    };
+
     function createComponent(props?: ITitleBarProps): ReactWrapper<ITitleBarProps, ITitleBarState> {
         props = props || defaultProps;
         return mount(
@@ -71,6 +78,7 @@ describe("TileBar Component", () => {
 
     describe("Web", () => {
         beforeAll(() => {
+            window["require"] = undefined;
             Object.defineProperty(global.process, "platform", {
                 value: undefined,
             });
@@ -86,23 +94,11 @@ describe("TileBar Component", () => {
             expect(title.text()).toEqual(`${defaultProps.title} - VoTT`);
             expect(wrapper.find(".fa-user-circle").exists()).toBe(true);
         });
-
-        it("does NOT render windows controls", () => {
-            expect(wrapper.find(".btn-window-minimize").exists()).toBe(false);
-            expect(wrapper.find(".btn-window-maximize").exists()).toBe(false);
-            expect(wrapper.find(".btn-window-close").exists()).toBe(false);
-        });
     });
 
     describe("Electron", () => {
         beforeAll(() => {
-            const electronMock = electron as any;
-            electronMock.remote = {
-                getCurrentWindow: jest.fn(() => electronCurrentWindow),
-                Menu: {
-                    getApplicationMenu: jest.fn(() => mockMenu),
-                },
-            };
+            window["require"] = jest.fn(() => electronMock);
         });
 
         describe("Windows", () => {

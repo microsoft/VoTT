@@ -18,13 +18,16 @@ function createWindow() {
         titleBarStyle: "hidden",
         backgroundColor: "#272B30",
         show: false,
+        // Node Integration is now disabled by default
+        // https://github.com/electron/electron/pull/16235
+        webPreferences: {
+            nodeIntegration: true,
+        },
     };
 
     const staticUrl = process.env.ELECTRON_START_URL || `file:///${__dirname}/index.html`;
     if (process.env.ELECTRON_START_URL) {
-        windowOptions.webPreferences = {
-            webSecurity: false,
-        };
+        windowOptions.webPreferences.webSecurity = false;
     }
 
     mainWindow = new BrowserWindow(windowOptions);

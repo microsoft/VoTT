@@ -1,5 +1,4 @@
-import React from "react";
-import electron from "electron";
+import React, { Fragment } from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
@@ -32,10 +31,10 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     private currentWindow: Electron.BrowserWindow;
 
     public componentDidMount() {
-        const isElectron: boolean = !!(electron && electron.remote);
+        const isElectron: boolean = !!window["require"];
 
         if (isElectron) {
-            this.remote = electron.remote;
+            this.remote = (window as any).require("electron").remote as Electron.Remote;
             this.currentWindow = this.remote.getCurrentWindow();
 
             this.currentWindow.on("maximize", () => this.onMaximize(true));
