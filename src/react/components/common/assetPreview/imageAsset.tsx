@@ -10,6 +10,7 @@ export class ImageAsset extends React.Component<IAssetProps> {
     public render() {
         return (
             <img ref={this.image}
+                alt={this.props.asset.path}
                 src={this.props.asset.path}
                 onLoad={this.onLoad}
                 onError={this.props.onError}

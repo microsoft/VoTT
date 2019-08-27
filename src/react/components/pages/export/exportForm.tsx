@@ -1,5 +1,4 @@
 import React from "react";
-import _ from "lodash";
 import Form, { Widget, FormValidation, IChangeEvent, ISubmitEvent } from "react-jsonschema-form";
 import { getDefaultFormState } from "react-jsonschema-form/lib/utils";
 import { addLocValues, strings } from "../../../../common/strings";

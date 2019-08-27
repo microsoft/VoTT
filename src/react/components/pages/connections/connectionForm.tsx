@@ -94,20 +94,22 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
                     </span>
                 </h3>
                 <div className="m-3">
-                    { isBrowser() && this.state.providerName === "bingImageSearch" &&
-                    <div className="alert alert-warning" role="alert">
-                        <i className="fas fa-exclamation-circle mr-1" aria-hidden="true"></i>
-                        { strings.connections.imageCorsWarning }
-                    </div>
+                    {isBrowser() && this.state.providerName === "bingImageSearch" &&
+                        <div className="alert alert-warning" role="alert">
+                            <i className="fas fa-exclamation-circle mr-1" aria-hidden="true"></i>
+                            {strings.connections.imageCorsWarning}
+                        </div>
                     }
-                    { isBrowser() && this.state.providerName === "azureBlobStorage" &&
-                    <div className="alert alert-warning" role="alert">
-                        <i className="fas fa-exclamation-circle mr-1" aria-hidden="true"></i>
-                        { strings.formatString(
-                            strings.connections.blobCorsWarning,
-                            <a href="https://aka.ms/blob-cors" target="_blank">{strings.connections.azDocLinkText}</a>)
-                        }
-                    </div>
+                    {isBrowser() && this.state.providerName === "azureBlobStorage" &&
+                        <div className="alert alert-warning" role="alert">
+                            <i className="fas fa-exclamation-circle mr-1" aria-hidden="true"></i>
+                            {strings.formatString(
+                                strings.connections.blobCorsWarning,
+                                <a href="https://aka.ms/blob-cors"
+                                    target="_blank"
+                                    rel="noopener noreferrer">{strings.connections.azDocLinkText}</a>)
+                            }
+                        </div>
                     }
                     <Form
                         className={this.state.classNames.join(" ")}

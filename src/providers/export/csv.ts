@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { ExportProvider } from "./exportProvider";
 import { IProject, IExportProviderOptions } from "../../models/applicationState";
 import Guard from "../../common/guard";

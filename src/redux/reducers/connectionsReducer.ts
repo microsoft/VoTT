@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { ActionTypes } from "../actions/actionTypes";
 import { IConnection } from "../../models/applicationState";
 import { AnyAction } from "../actions/actionCreators";

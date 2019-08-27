@@ -1,5 +1,5 @@
 import Guard from "../../../../common/guard";
-import { KeyboardManager, KeyEventType } from "./keyboardManager";
+import { KeyEventType } from "./keyboardManager";
 import { IKeyboardBindingProps } from "../keyboardBinding/keyboardBinding";
 import { AppError, ErrorCode } from "../../../../models/applicationState";
 

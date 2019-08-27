@@ -29,6 +29,7 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
     public render() {
         return (
             <img ref={this.image}
+                alt=""
                 src={this.state.tfRecordImage64}
                 onLoad={this.onLoad}
                 onError={this.onError}

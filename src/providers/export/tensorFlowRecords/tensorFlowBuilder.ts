@@ -1,5 +1,7 @@
-import { TFRecordsImageMessage, Features, Feature, FeatureList,
-    BytesList, Int64List, FloatList } from "./tensorFlowRecordsProtoBuf_pb";
+import {
+    TFRecordsImageMessage, Features, Feature,
+    BytesList, Int64List, FloatList,
+} from "./tensorFlowRecordsProtoBuf_pb";
 import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer, textEncode } from "./tensorFlowHelpers";
 
 /**
@@ -37,9 +39,9 @@ export class TFRecordsBuilder {
 
             // Concatenate all TFRecords Header, Data and Footer buffer
             return Buffer.concat([bufferLength,
-                                  bufferLengthMaskedCRC,
-                                  record,
-                                  bufferDataMaskedCRC]);
+                bufferLengthMaskedCRC,
+                record,
+                bufferDataMaskedCRC]);
         }));
     }
 

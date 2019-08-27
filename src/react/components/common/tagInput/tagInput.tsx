@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, RefObject } from "react";
+import React, { KeyboardEvent } from "react";
 import ReactDOM from "react-dom";
 import Align from "rc-align";
 import { randomIntInRange } from "../../../../common/utils";

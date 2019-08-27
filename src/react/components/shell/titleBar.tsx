@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";

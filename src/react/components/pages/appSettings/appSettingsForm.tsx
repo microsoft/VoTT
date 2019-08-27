@@ -1,6 +1,6 @@
 import React from "react";
 import { strings, addLocValues } from "../../../../common/strings";
-import Form, { FormValidation, Widget } from "react-jsonschema-form";
+import Form, { FormValidation } from "react-jsonschema-form";
 import { ObjectFieldTemplate } from "../../common/objectField/objectFieldTemplate";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 import { ArrayFieldTemplate } from "../../common/arrayField/arrayFieldTemplate";

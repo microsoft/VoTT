@@ -1,4 +1,3 @@
-import shortid from "shortid";
 import { IConnection } from "../../models/applicationState";
 import { ActionTypes } from "./actionTypes";
 import { IPayloadAction, createPayloadAction } from "./actionCreators";

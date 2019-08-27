@@ -136,8 +136,8 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
 
     private async updateImageSizeInfo(imageBuffer: ArrayBuffer, imageFileName: string, assetName: string) {
         // Get Base64
-        const image64 = btoa(new Uint8Array(imageBuffer).
-            reduce((data, byte) => data + String.fromCharCode(byte), ""));
+        const image64 = btoa(new Uint8Array(imageBuffer)
+            .reduce((data, byte) => data + String.fromCharCode(byte), ""));
 
         if (image64.length < 10) {
             // Ignore the error at the moment

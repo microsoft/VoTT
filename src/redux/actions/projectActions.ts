@@ -12,11 +12,9 @@ import {
     IProject,
 } from "../../models/applicationState";
 import { createAction, createPayloadAction, IPayloadAction } from "./actionCreators";
-import { ExportAssetState, IExportResults } from "../../providers/export/exportProvider";
+import { IExportResults } from "../../providers/export/exportProvider";
 import { appInfo } from "../../common/appInfo";
 import { strings } from "../../common/strings";
-import { IExportFormat } from "vott-react";
-import { IVottJsonExportProviderOptions } from "../../providers/export/vottJson";
 
 /**
  * Actions to be performed in relation to projects

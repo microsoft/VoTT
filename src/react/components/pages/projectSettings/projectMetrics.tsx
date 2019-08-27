@@ -2,12 +2,12 @@ import React from "react";
 import _ from "lodash";
 import {
     AssetState, IAsset, IAssetMetadata,
-    IProject, IRegion, ITag, IPoint, AssetType,
+    IProject, IRegion, ITag,
 } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { strings, interpolate } from "../../../../common/strings";
 import {
-    RadialChart, XYPlot, ArcSeries, Sunburst, Hint, DiscreteColorLegend,
+    XYPlot, Sunburst, Hint, DiscreteColorLegend,
     HorizontalGridLines, XAxis, YAxis, VerticalBarSeries,
 } from "react-vis";
 import "react-vis/dist/styles/radial-chart.scss";

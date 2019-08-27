@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, Fragment } from "react";
+import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 import {
