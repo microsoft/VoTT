@@ -1,9 +1,9 @@
-import React, { Fragment } from "react";
+import React from "react";
+import electron from "electron";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
 import { strings } from "../../../common/strings";
-import { HelpMenu } from "./helpMenu";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
@@ -32,10 +32,10 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     private currentWindow: Electron.BrowserWindow;
 
     public componentDidMount() {
-        const isElectron: boolean = !!window["require"];
+        const isElectron: boolean = !!(electron && electron.remote);
 
         if (isElectron) {
-            this.remote = (window as any).require("electron").remote as Electron.Remote;
+            this.remote = electron.remote;
             this.currentWindow = this.remote.getCurrentWindow();
 
             this.currentWindow.on("maximize", () => this.onMaximize(true));
@@ -88,23 +88,23 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                     {this.state.platform === PlatformType.Windows &&
                         <ul>
                             <li title={strings.titleBar.minimize} className="btn-window-minimize"
-                                    onClick={this.minimizeWindow}>
+                                onClick={this.minimizeWindow}>
                                 <i className="far fa-window-minimize" />
                             </li>
                             {!this.state.maximized &&
                                 <li title={strings.titleBar.maximize} className="btn-window-maximize"
-                                        onClick={this.maximizeWindow}>
+                                    onClick={this.maximizeWindow}>
                                     <i className="far fa-window-maximize" />
                                 </li>
                             }
                             {this.state.maximized &&
                                 <li title={strings.titleBar.restore} className="btn-window-restore"
-                                        onClick={this.unmaximizeWindow}>
+                                    onClick={this.unmaximizeWindow}>
                                     <i className="far fa-window-restore" />
                                 </li>
                             }
                             <li title={strings.titleBar.close} className="btn-window-close"
-                                    onClick={this.closeWindow}>
+                                onClick={this.closeWindow}>
                                 <i className="fas fa-times" />
                             </li>
                         </ul>

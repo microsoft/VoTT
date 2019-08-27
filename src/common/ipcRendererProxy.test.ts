@@ -1,4 +1,11 @@
 import { IpcRendererProxy } from "./ipcRendererProxy";
+jest.mock("electron", () => ({
+    ipcRenderer: {
+        on: jest.fn(),
+        send: jest.fn(),
+    },
+}));
+import electron from "electron";
 
 describe("IpcRendererProxy", () => {
     it("is defined", () => {
@@ -12,19 +19,11 @@ describe("IpcRendererProxy", () => {
             b: 2,
         };
 
-        const electronMock = {
-            ipcRenderer: {
-                send: jest.fn(),
-                on: jest.fn(),
-            },
-        };
-
-        (window as any).require = jest.fn(() => electronMock);
         expect(Object.keys(IpcRendererProxy.pending).length).toEqual(0);
 
         IpcRendererProxy.send(commandName, args);
 
-        expect(electronMock.ipcRenderer.send).toBeCalledWith("ipc-main-proxy", {
+        expect(electron.ipcRenderer.send).toBeCalledWith("ipc-main-proxy", {
             id: expect.any(String),
             type: commandName,
             args,

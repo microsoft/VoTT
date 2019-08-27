@@ -1,3 +1,4 @@
+import * as electron from "electron";
 import { IAssetMetadata, ModelPathType, IActiveLearningSettings, AssetState } from "../models/applicationState";
 import { ObjectDetection } from "../providers/activeLearning/objectDetection";
 import Guard from "../common/guard";
@@ -98,7 +99,6 @@ export class ActiveLearningService {
     }
 
     private getAppPath = () => {
-        const remote = (window as any).require("electron").remote as Electron.Remote;
-        return remote.app.getAppPath();
+        return electron.remote.app.getAppPath();
     }
 }

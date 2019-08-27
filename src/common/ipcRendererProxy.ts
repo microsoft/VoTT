@@ -1,6 +1,7 @@
 import * as shortid from "shortid";
 import { IpcProxyMessage } from "../electron/common/ipcProxy";
 import { Deferred } from "./deferred";
+import electron from "electron";
 
 export class IpcRendererProxy {
 
@@ -11,7 +12,7 @@ export class IpcRendererProxy {
             return;
         }
 
-        IpcRendererProxy.ipcRenderer = (window as any).require("electron").ipcRenderer;
+        IpcRendererProxy.ipcRenderer = electron.ipcRenderer;
         IpcRendererProxy.ipcRenderer.on("ipc-renderer-proxy", (sender, message: IpcProxyMessage<any>) => {
             const deferred = IpcRendererProxy.pending[message.id];
 

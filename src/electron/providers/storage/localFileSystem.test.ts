@@ -73,7 +73,7 @@ describe("LocalFileSystem Storage Provider", () => {
     it("selectContainer opens a dialog and resolves with selected path", async () => {
         const expectedContainerPath = "/path/to/container";
         const mockMethod = dialog.showOpenDialog as jest.Mock;
-        mockMethod.mockReturnValue([expectedContainerPath]);
+        mockMethod.mockReturnValue(Promise.resolve({ filePaths: [expectedContainerPath] }));
 
         const result = await localFileSystem.selectContainer();
         expect(result).toEqual(expectedContainerPath);
@@ -81,7 +81,7 @@ describe("LocalFileSystem Storage Provider", () => {
 
     it("selectContainer rejects when a folder path is not returned", async () => {
         const mockMethod = dialog.showOpenDialog as jest.Mock;
-        mockMethod.mockReturnValue([]);
+        mockMethod.mockReturnValue(Promise.resolve({ filePaths: [] }));
 
         await expect(localFileSystem.selectContainer()).rejects.not.toBeNull();
     });
