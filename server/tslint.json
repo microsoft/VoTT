@@ -7,7 +7,8 @@
         "exclude": [
             "lib",
             "public",
-            "src/routes"
+            "src/routes",
+            "jest.config.js"
         ]
     },
     "jsRules": {},

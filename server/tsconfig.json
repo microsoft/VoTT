@@ -51,6 +51,7 @@
     },
     "exclude": [
       "node_modules",
+      "coverage",
       "data_models",
       "public",
       "lib",

@@ -16,7 +16,7 @@ import * as tokens from './tokens';
 
 const OIDCStrategyTemplate = {} as passportAzureAD.IOIDCStrategyOptionWithoutRequest;
 
-const log = bunyan.createLogger({
+export const log = bunyan.createLogger({
   name: 'BUNYAN-LOGGER',
   src: true,
 });
@@ -55,17 +55,6 @@ passport.deserializeUser(async (stored: ISerializedUser, done) => {
   const result = { ...profile, ...stored, ...oauth.token };
   return done(null, result);
 });
-
-// array to hold logged in users
-const users = new Map<string, any>();
-
-const findByOid = (oid: string, fn: (err: Error, user: any) => void) => {
-  log.info(`finding user by oid ${oid}`);
-  if (users.has(oid)) {
-    return fn(null, users.get(oid));
-  }
-  return fn(null, null);
-};
 
 // -----------------------------------------------------------------------------
 // Use the OIDCStrategy within Passport.
@@ -134,7 +123,7 @@ passport.use(new passportAzureAD.OIDCStrategy(azureStrategyOptions, processAzure
 // -----------------------------------------------------------------------------
 // Config the app, include middlewares
 // -----------------------------------------------------------------------------
-const app = express();
+export const app = express();
 
 app.use(morgan(config.httpLogFormat));
 app.set('trust proxy', true);
@@ -379,4 +368,4 @@ app.delete('/api/v1.0/cloudconnections/:id', ensureAuthenticatedApi,
 
 app.use('/public', express.static(path.join(__dirname, '../public')));
 
-app.listen(config.port);
+export const server = app.listen(config.port);
