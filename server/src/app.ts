@@ -55,7 +55,7 @@ passport.deserializeUser(async (stored: MinimizedUserSchema, done) => {
   }
   const profile = await graph.user(oauthClient.token.access_token).catch(reason => { log.error('could not retrieve profile', reason); });
   if (!profile) { return done(Error('no user profile')); }
-  const result = { ...profile, oid: stored.oid, token: oauthClient.token };
+  const result = { ...profile, oid: stored.oid, oauthToken: oauthClient.token };
   return done(null, result);
 });
 
