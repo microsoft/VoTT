@@ -13,6 +13,13 @@
     },
     "jsRules": {},
     "rules": {
+        "no-console": false,
+        "arrow-parens": false,
+        "max-classes-per-file": false,
+        "ordered-imports": false,
+        "object-literal-sort-keys": false,
+        "align": false,
+        "interface-name": false,
         "quotemark": [
             true,
             "single",
@@ -28,12 +35,6 @@
                 }
             ]
         },
-        "no-console": false,
-        "arrow-parens": false,
-        "max-classes-per-file": false,
-        "ordered-imports": false,
-        "object-literal-sort-keys": false,
-        "align": false,
         "variable-name": {
             "options": [
                 "ban-keywords",

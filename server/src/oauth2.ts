@@ -14,13 +14,13 @@ export const oauth2 = simple_oauth2.create({
   },
 });
 
-export interface IToken {
+export interface Token {
   refresh_token: string;
   access_token?: string;
   expires_at?: string | Date;
 }
 
-export function create(token: IToken) {
+export function client(token: Token) {
   token.expires_at = token.expires_at || new Date(0);
   const result = oauth2.accessToken.create(token);
   return result;
