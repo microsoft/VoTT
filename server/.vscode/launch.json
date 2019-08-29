@@ -7,6 +7,17 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Launch via NPM",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "port": 9229
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/lib/app.js", //"${workspaceFolder}\\lib\\app.js",
             "args": [
@@ -17,7 +28,8 @@
                 "${workspaceFolder}/**/*.js"
             ],
             "console": "internalConsole",
-            "outputCapture": "std",       
+            "outputCapture": "std",            
         }
+ 
     ]
 }

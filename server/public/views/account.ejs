@@ -4,5 +4,5 @@
 <% } else { %>
 <p>Profile ID: <%= user.oid %></p>
 <p>Email:  <%= user.mail %></p>
-<%- JSON.stringify(user) %>
+<pre><%- JSON.stringify(user, null, 2) %></pre>
 <% } %>

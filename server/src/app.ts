@@ -161,11 +161,13 @@ function ensureAuthenticatedApi(req: express.Request, res: express.Response, nex
 }
 
 app.get('/', (req, res) => {
-  res.render('index', { user: req.user });
+  let user = { ...req.user, oauthToken: '[removed]'};
+  res.render('index', { user });
 });
 
 app.get('/account', ensureAuthenticated, (req, res, next) => {
-  res.render('account', { user: req.user });
+  let user = { ...req.user, oauthToken: '[removed]'};
+  res.render('account', { user });
 });
 
 app.get('/login', (req, res, next) => {
