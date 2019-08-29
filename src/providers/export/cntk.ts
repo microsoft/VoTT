@@ -3,6 +3,7 @@ import { ExportProvider, IExportResults } from "./exportProvider";
 import { IAssetMetadata, IExportProviderOptions, IProject } from "../../models/applicationState";
 import HtmlFileReader from "../../common/htmlFileReader";
 import Guard from "../../common/guard";
+import { splitTestAsset } from "./testAssetsSplitHelper";
 
 enum ExportSplit {
     Test,
@@ -33,13 +34,17 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
     public async export(): Promise<IExportResults> {
         await this.createFolderStructure();
         const assetsToExport = await this.getAssetsForExport();
+        const testAssets: string[] = [];
+
         const testSplit = (100 - (this.options.testTrainSplit || 80)) / 100;
-        const testCount = Math.ceil(assetsToExport.length * testSplit);
-        const testArray = assetsToExport.slice(0, testCount);
+        if (testSplit > 0 && testSplit <= 1) {
+            const splittedAssets = splitTestAsset(assetsToExport, this.project.tags, testSplit);
+            testAssets.push(...splittedAssets);
+        }
 
         const results = await assetsToExport.mapAsync(async (assetMetadata) => {
             try {
-                const exportSplit = testArray.find((am) => am.asset.id === assetMetadata.asset.id)
+                const exportSplit = testAssets.find((am) => am === assetMetadata.asset.id)
                     ? ExportSplit.Test
                     : ExportSplit.Train;
 

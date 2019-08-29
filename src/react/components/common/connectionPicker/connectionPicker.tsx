@@ -58,7 +58,7 @@ export class ConnectionPicker extends React.Component<IConnectionPickerProps, IC
                         <option
                             className="connection-option"
                             key={connection.id}
-                            value={connection.id}>{connection.name}
+                            value={connection.id}>{this.getConnectionText(connection)}
                         </option>)
                     }
                 </select>
@@ -69,6 +69,18 @@ export class ConnectionPicker extends React.Component<IConnectionPickerProps, IC
                 </div>
             </div>
         );
+    }
+
+    private getConnectionText = (connection: IConnection): string => {
+        const options = connection.providerOptions;
+
+        if (options["folderPath"]) {
+            return `${connection.name} (${options["folderPath"]})`;
+        } else if (options["accountName"]) {
+            return `${connection.name} (Azure:${options["accountName"]}\\${options["containerName"]})`;
+        } else {
+            return connection.name;
+        }
     }
 
     private onChange = (e) => {

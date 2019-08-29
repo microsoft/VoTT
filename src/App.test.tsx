@@ -12,6 +12,16 @@ import { ErrorHandler } from "./react/components/common/errorHandler/errorHandle
 describe("App Component", () => {
     const defaultState: IApplicationState = initialState;
     const store = createReduxStore(defaultState);
+    const electronMock = {
+        ipcRenderer: {
+            send: jest.fn(),
+            on: jest.fn(),
+        },
+    };
+
+    beforeAll(() => {
+        delete (window as any).require;
+    });
 
     function createComponent() {
         return mount(
