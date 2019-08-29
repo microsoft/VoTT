@@ -26,7 +26,7 @@ export class ElectronProxyHandler implements tfc.io.IOHandler {
         return modelArtifacts;
     }
 
-    public async loadClasses(): Promise<JSON> {
+    public async loadClasses(): Promise<[string]> {
         const json = await this.provider.readText("/classes.json");
         return json ? JSON.parse(json) : null;
     }

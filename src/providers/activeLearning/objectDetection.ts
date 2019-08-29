@@ -28,7 +28,7 @@ export class ObjectDetection {
     }
 
     private model: tf.GraphModel;
-    private jsonClasses: JSON;
+    private jsonClasses: [string];
 
     /**
      * Dispose the tensors allocated by the model. You should call this when you
@@ -221,14 +221,12 @@ export class ObjectDetection {
     }
 
     private getClass(index: number, indexes: Float32Array, classes: number[]): string {
-        if (this.jsonClasses && index < indexes.length && indexes[index] < classes.length) {
-            const classId = classes[indexes[index]] - 1;
-            const classObject = this.jsonClasses[classId];
-
-            return classObject ? classObject.displayName : strings.tags.warnings.unknownTagName;
+        if (this.jsonClasses && index < indexes.length && indexes[index] < classes.length &&
+            classes[indexes[index]] < this.jsonClasses.length ) {
+            return this.jsonClasses[classes[indexes[index]]];
         }
 
-        return "";
+        return "Unknown";
     }
 
     private calculateMaxScores(
