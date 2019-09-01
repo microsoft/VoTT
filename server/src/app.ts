@@ -161,17 +161,16 @@ function ensureAuthenticatedApi(req: express.Request, res: express.Response, nex
 }
 
 app.get('/', (req, res) => {
-  let user = { ...req.user, oauthToken: '[removed]'};
+  const user = { ...req.user, oauthToken: '[removed]'};
   res.render('index', { user });
 });
 
 app.get('/account', ensureAuthenticated, (req, res, next) => {
-  let user = { ...req.user, oauthToken: '[removed]'};
+  const user = { ...req.user, oauthToken: '[removed]'};
   res.render('account', { user });
 });
 
 app.get('/login', (req, res, next) => {
-  log.info('testing');
   passport.authenticate('azuread-openidconnect',
     {
       response: res,                      // required
