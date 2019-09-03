@@ -1,0 +1,8 @@
+<% if (!user) { %>
+	<h2>Welcome! Please log in.</h2>
+	<a href="/login">Log In</a>
+<% } else { %>
+<p>Profile ID: <%= user.oid %></p>
+<p>Email:  <%= user.mail %></p>
+<pre><%- JSON.stringify(user, null, 2) %></pre>
+<% } %>
