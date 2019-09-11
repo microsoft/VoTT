@@ -19,6 +19,7 @@
 
 # misc
 .DS_Store
+.env
 .env.local
 .env.development.local
 .env.test.local
@@ -37,3 +38,8 @@ secrets.sh
 # complexity reports
 es6-src/
 report/
+
+# VoTT Server
+server/lib
+server/node_modules
+server/coverage

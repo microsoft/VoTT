@@ -115,9 +115,37 @@ describe("CNTK Export Provider", () => {
 
         const assetsToExport = await getAssetsSpy.mock.results[0].value;
         const testSplit = (100 - (defaultOptions.testTrainSplit || 80)) / 100;
-        const testCount = Math.ceil(assetsToExport.length * testSplit);
-        const testArray = assetsToExport.slice(0, testCount);
-        const trainArray = assetsToExport.slice(testCount, assetsToExport.length);
+
+        const trainArray = [];
+        const testArray = [];
+        const tagsAssestList: {
+            [index: string]: {
+                assetSet: Set<string>,
+                testArray: string[],
+                trainArray: string[],
+            },
+        } = {};
+        testProject.tags.forEach((tag) =>
+            tagsAssestList[tag.name] = {
+                assetSet: new Set(), testArray: [],
+                trainArray: [],
+            });
+        assetsToExport.forEach((assetMetadata) => {
+            assetMetadata.regions.forEach((region) => {
+                region.tags.forEach((tagName) => {
+                    if (tagsAssestList[tagName]) {
+                        tagsAssestList[tagName].assetSet.add(assetMetadata.asset.name);
+                    }
+                });
+            });
+        });
+
+        for (const tagKey of Object.keys(tagsAssestList)) {
+            const assetSet = tagsAssestList[tagKey].assetSet;
+            const testCount = Math.ceil(assetSet.size * testSplit);
+            testArray.push(...Array.from(assetSet).slice(0, testCount));
+            trainArray.push(...Array.from(assetSet).slice(testCount, assetSet.size));
+        }
 
         const storageProviderMock = LocalFileSystemProxy as any;
         const writeBinaryCalls = storageProviderMock.mock.instances[0].writeBinary.mock.calls;
