@@ -24,6 +24,7 @@ import {
     IShowAppErrorAction,
     IClearErrorAction,
 } from "./appErrorActions";
+import { ISignInAction, ISignOutAction } from "./authActions";
 
 /**
  * Data payload dispatched from the action and delivered to reducer
@@ -87,4 +88,6 @@ export type AnyAction = IOtherAction |
     ILoadAssetMetadataAction |
     IExportProjectAction |
     IShowAppErrorAction |
-    IClearErrorAction;
+    IClearErrorAction |
+    ISignInAction |
+    ISignOutAction;
