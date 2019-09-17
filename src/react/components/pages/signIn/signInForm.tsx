@@ -18,11 +18,12 @@ export interface ISignInFormState {
     uiSchema: any;
     formData: ISignIn;
 }
-/*
-    const formats = {
+  
+    const customFormats = {
         'email' : /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     }
-*/
+  
+
 export default class SignInForm extends React.Component<ISignInFormProps, ISignInFormState> {
     constructor(props) {
         super(props);
@@ -32,8 +33,6 @@ export default class SignInForm extends React.Component<ISignInFormProps, ISignI
             formData : this.props.signin
         }
     }
-
-
     public render() {
         return (
             <div>
@@ -41,7 +40,6 @@ export default class SignInForm extends React.Component<ISignInFormProps, ISignI
                     schema = {this.state.formSchema}
                     uiSchema = {this.state.uiSchema}
                     formData = {this.state.formData}
-                    //customFormats = {formats}
                     onSubmit = {(form) => this.props.onSubmit(form.formData)}
                 >
                 <div>

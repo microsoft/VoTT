@@ -1,10 +1,15 @@
 import React from "react"
 import { ISignIn } from "../../../../models/applicationState";
 import SignInForm from "./signInForm";
-import { Route } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import ApiService from "../../../../services/apiService"
+import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
+import { showError } from "../../../../redux/actions/appErrorActions";
 
-export interface ISignInPageProps extends React.Props<SignInPage> {}
+
+export interface ISignInPageProps extends React.Props<SignInPage> {
+    actions: IAuthActions;
+}
 
 export interface ISignInPageState {
     signin: ISignIn;
@@ -20,15 +25,17 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
 
     }
 
-    private onFormSubmit(signin: ISignIn) {
-        ApiService.loginWithCredentials(signin); // returns access token / error
-        // then authAction with the access token? or show error
-        // if login redirect to homepage
+    private async onFormSubmit(signin: ISignIn) {
+        ApiService.loginWithCredentials(signin).then( token => {
+                this.props.actions.signIn(token.data)
+                return <Redirect to="homepage" />
+            }
+        ).catch(e => console.log(e))
     }
 
     public render() {
         return (
-            <div className="app-signin-page">
+            <div className="app-signin-page-form">
                 <Route exact path="/login">
                     <SignInForm
                         signin={this.state.signin}
