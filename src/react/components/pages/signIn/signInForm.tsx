@@ -17,7 +17,6 @@ export interface ISignInFormState {
     formData: ISignIn;
 }
 
-
 export default class SignInForm extends React.Component<ISignInFormProps, ISignInFormState> {
     constructor(props) {
         super(props);

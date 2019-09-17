@@ -1,6 +1,7 @@
 import React, { cloneElement } from "react"
 import { ISignIn } from "../../../../models/applicationState";
 import SignInForm from "./signInForm";
+<<<<<<< HEAD
 import { Route, Redirect } from "react-router-dom";
 import ApiService, { ILoginRequestPayload } from "../../../../services/apiService"
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
@@ -9,11 +10,29 @@ import { connect } from "react-redux";
 import { IApplicationState } from "../../../../models/applicationState";
 import history from "../../../../history"
 import { toast } from "react-toastify";
+||||||| parent of dc271bf... submit login form
+import { Route } from "react-router-dom";
+import ApiService from "../../../../services/apiService"
+=======
+import { Route, Redirect } from "react-router-dom";
+import ApiService from "../../../../services/apiService"
+import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
+import { showError } from "../../../../redux/actions/appErrorActions";
+>>>>>>> dc271bf... submit login form
 
+<<<<<<< HEAD
 export interface ISignInPageProps extends React.Props<SignInPage> {
     actions: IAuthActions;
     signin: ISignIn;
 }
+||||||| parent of dc271bf... submit login form
+export interface ISignInPageProps extends React.Props<SignInPage> {}
+=======
+
+export interface ISignInPageProps extends React.Props<SignInPage> {
+    actions: IAuthActions;
+}
+>>>>>>> dc271bf... submit login form
 
 export interface ISignInPageState {
     signin: ISignIn;
