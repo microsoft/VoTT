@@ -3,6 +3,9 @@
             "ui:widget": "password"
         },
         "remember": {
-            "ui:widget": "checkboxes"
+            "ui:widget": "radio",
+            "ui:options": {
+                "inline": true
+            }
         }
 }

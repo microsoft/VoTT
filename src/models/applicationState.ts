@@ -180,6 +180,7 @@ export interface IConnection {
 export interface ISignIn {
     email: string;
     password: string;
+    rememberMe: boolean;
 }
 
 /**

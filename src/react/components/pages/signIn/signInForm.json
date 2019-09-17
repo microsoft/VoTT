@@ -12,12 +12,10 @@
             "type": "string"
         },
         "remember": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "enum": ["Remember me"]
-            },
-            "uniqueItems": "true"
+            "type": "boolean",
+            "title": "Remember me",
+            "enumNames":["Yes ", "No"],
+            "default": true
         }
     }
 }
