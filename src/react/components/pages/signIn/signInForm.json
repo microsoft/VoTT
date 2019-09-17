@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "required" : ["email", "password"],
+    "properties": {
+        "email": {
+            "title": "Email",
+            "type": "string",
+            "format": "email"
+        },
+        "password":{
+            "title": "Password",
+            "type": "string"
+        },
+        "remember": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": ["Remember me"]
+            },
+            "uniqueItems": "true"
+        }
+    }
+}

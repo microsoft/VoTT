@@ -1,0 +1,8 @@
+{
+        "password": {
+            "ui:widget": "password"
+        },
+        "remember": {
+            "ui:widget": "checkboxes"
+        }
+}

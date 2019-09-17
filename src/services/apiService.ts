@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import qs from "qs";
 import { Env } from "../common/environment";
+import { ISignIn } from "../models/applicationState"
 
 export interface ILoginRequestPayload {
     username: string;
@@ -46,7 +47,8 @@ class ApiService {
 
     public removeToken = (): void => localStorage.removeItem("token");
 
-    public loginWithCredentials = (data: ILoginRequestPayload) => {
+    // changed from ILoginRequestPayload to ISignIn
+    public loginWithCredentials = (data: ISignIn) => {
         const url = "api/v1/login/access-token";
         return this.client.post(url, qs.stringify(data));
     }

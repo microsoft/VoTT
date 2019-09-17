@@ -90,4 +90,5 @@ export type AnyAction = IOtherAction |
     IShowAppErrorAction |
     IClearErrorAction |
     ISignInAction |
-    ISignOutAction;
+    ISignOutAction |
+    IClearErrorAction ;
