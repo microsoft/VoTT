@@ -1,7 +1,6 @@
 import React from "react";
 import Form, { FormValidation, Widget } from "react-jsonschema-form";
 import { ISignIn } from "../../../../models/applicationState";
-import Alert from "reactstrap/lib/Alert"
 
 const formSchema = require("./signInForm.json");
 const uiSchema = require("./signInForm.ui.json");

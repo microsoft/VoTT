@@ -59,15 +59,15 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
     private async sendCredentials() {
         try {
             const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
-            console.log("token: " + token.data.access_token)
+            localStorage.setItem("token", token.data.access_token);
             await this.props.actions.signIn(token.data.access_token);
-            console.log("success")
-            return <Redirect to="/" />
+            history.push("/");
+            
         }catch(error){
             console.log(error)
             toast.error("Sorry, we could not log you in!",{position:toast.POSITION.TOP_CENTER})
         }
-    }ß
+    }
     public render() {
         return (
             <div className="app-signin-page-form">
