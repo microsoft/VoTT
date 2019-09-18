@@ -18,7 +18,13 @@ export default interface IAuthActions {
  * Sign in to the application
  * @param accessToken - Auth to the application
  */
+<<<<<<< HEAD
 export function signIn(auth: IAuth): (disptach: Dispatch) => Promise<void> {
+||||||| parent of 956f99c... login appears when user not logged, token correctly received
+export function signIn(accessToken: string): (disptach: Dispatch) => Promise<void> {
+=======
+export function signIn(accessToken: string): (dispatch: Dispatch) => Promise<void> {
+>>>>>>> 956f99c... login appears when user not logged, token correctly received
     return (dispatch: Dispatch) => {
         return IpcRendererProxy.send("SIGN_IN", auth)
         .then(() => {

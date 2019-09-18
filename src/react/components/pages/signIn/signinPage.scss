@@ -1,8 +1,16 @@
 .app-signin-page {
     display: flex;
     flex-direction: row;
+<<<<<<< HEAD
     align-content: center;
     align-items: center;
+||||||| parent of 956f99c... login appears when user not logged, token correctly received
+    width: 50%;
+=======
+    align-content: center;
+    align-items: center;
+    width: 30%;
+>>>>>>> 956f99c... login appears when user not logged, token correctly received
     min-height: fit-content;
     &-form {
         flex-basis: 1;
