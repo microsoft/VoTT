@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { Router } from "react-router-dom";
+import { Router, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
@@ -16,6 +16,7 @@ import { StatusBar } from "./react/components/shell/statusBar";
 import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
 import { HelpMenu } from "./react/components/shell/helpMenu";
 import history from "./history";
+import ApiService from "./services/apiService";
 
 interface IAppProps {
     currentProject?: IProject;
@@ -58,7 +59,9 @@ export default class App extends React.Component<IAppProps> {
         });
     }
 
+
     public render() {
+
         const platform = global && global.process ? global.process.platform : "web";
 
         return (
@@ -77,7 +80,14 @@ export default class App extends React.Component<IAppProps> {
                                     <div className="app-help-menu-icon"><HelpMenu/></div>
                                 </TitleBar>
                                 <div className="app-main">
-                                    <Sidebar project={this.props.currentProject} />
+                                    {
+                                        ApiService.getToken() !== null &&
+                                        <Sidebar project={this.props.currentProject} />
+                                    }
+                                    {
+                                        ApiService.getToken() === null &&
+                                        <Redirect to="/login" />
+                                    }
                                     <MainContentRouter />
                                 </div>
                                 <StatusBar>

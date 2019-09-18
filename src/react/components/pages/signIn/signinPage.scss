@@ -1,7 +1,9 @@
 .app-signin-page {
     display: flex;
     flex-direction: row;
-    width: 50%;
+    align-content: center;
+    align-items: center;
+    width: 30%;
     min-height: fit-content;
     &-form {
         flex-basis: 1;

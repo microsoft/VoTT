@@ -18,7 +18,7 @@ export default interface IAuthActions {
  * Sign in to the application
  * @param accessToken - Auth to the application
  */
-export function signIn(accessToken: string): (disptach: Dispatch) => Promise<void> {
+export function signIn(accessToken: string): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
         return IpcRendererProxy.send("SIGN_IN", accessToken)
         .then(() => {

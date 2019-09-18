@@ -13,9 +13,8 @@
         },
         "remember": {
             "type": "boolean",
-            "title": "Remember me",
-            "enumNames":["Yes ", "No"],
-            "default": true
+            "title": " Stay logged in",
+            "default": false
         }
     }
 }
