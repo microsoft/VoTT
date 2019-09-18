@@ -35,14 +35,6 @@ export const KeyCodes = {
 };
 
 /**
- * Regular expressions for form validation
- */
-export const regex = {
-    'email' : /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-}
-
-
-/**
  * Generates a query string from the key/values of a JSON object
  * @param object The json object
  * @returns A value representing a URL compatible query string

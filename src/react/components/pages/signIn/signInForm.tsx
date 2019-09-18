@@ -1,7 +1,6 @@
 import React from "react";
 import Form, { FormValidation, Widget } from "react-jsonschema-form";
 import { ISignIn } from "../../../../models/applicationState";
-import Alert from "reactstrap/lib/Alert"
 
 const formSchema = require("./signInForm.json");
 const uiSchema = require("./signInForm.ui.json");
@@ -30,23 +29,29 @@ export default class SignInForm extends React.Component<ISignInFormProps, ISignI
     }
     
     private onSubmit = (form) => {
+        console.log(form.formData)
         this.props.onSubmit(form.formData);
 
     }
 
     public render() {
         return (
-            <div>
-                <Form
-                    schema={this.state.formSchema}
-                    uiSchema={this.state.uiSchema}
-                    formData={this.state.formData}
-                    onSubmit={this.onSubmit}
-                >
-                <div>
-                    <button type="submit" className="btn btn-success">Submit</button>
+            <div className="app-signin-page-form p-3">
+                <h3 className="mb-3">
+                    Sign in
+                </h3>
+                <div className="m-3">
+                    <Form
+                        schema={this.state.formSchema}
+                        uiSchema={this.state.uiSchema}
+                        formData={this.state.formData}
+                        onSubmit={this.onSubmit}
+                    >
+                    <div>
+                        <button type="submit" className="btn btn-success">Submit</button>
+                    </div>
+                    </Form>
                 </div>
-                </Form>
             </div>
         )
     }

@@ -5,9 +5,10 @@ import { Route, Redirect } from "react-router-dom";
 import ApiService, { ILoginRequestPayload } from "../../../../services/apiService"
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
 import { bindActionCreators } from "redux";
-import { connect } from "net";
+import { connect } from "react-redux";
 import { IApplicationState } from "../../../../models/applicationState";
-import Alert from "../../common/alert/alert"
+import history from "../../../../history"
+import { toast } from "react-toastify";
 
 export interface ISignInPageProps extends React.Props<SignInPage> {
     actions: IAuthActions;
@@ -31,7 +32,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-//@connect(mapStateToProps, mapDispatchToProps)
+@connect(mapStateToProps, mapDispatchToProps)
 export default class SignInPage extends React.Component<ISignInPageProps, ISignInPageState> {
     constructor(props){
         super(props);
@@ -39,6 +40,7 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
             signin: null,
             loginRequestPayload: null,
         };
+        ApiService.removeToken();
         this.onFormSubmit = this.onFormSubmit.bind(this);
 
     }
@@ -57,15 +59,15 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
     private async sendCredentials() {
         try {
             const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
-            console.log("token: " + token.data.access_token)
+            localStorage.setItem("token", token.data.access_token);
             await this.props.actions.signIn(token.data.access_token);
-            console.log("success")
-            return <Redirect to="/" />
+            history.push("/");
+            
         }catch(error){
             console.log(error)
-            return <Alert title="Error" message="Sorry, we could not sign you in." />
+            toast.error("Sorry, we could not log you in!",{position:toast.POSITION.TOP_CENTER})
         }
-    }ß
+    }
     public render() {
         return (
             <div className="app-signin-page-form">
