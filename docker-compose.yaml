@@ -5,3 +5,18 @@ services:
     image: cortexia/vott:${DOCKER_TAG}
     env_file:
      - ./.env
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK}
+      - default
+    deploy:
+      labels:
+        - traefik.frontend.rule=Host:vott.${DOMAIN}
+        - traefik.enable=true
+        - traefik.port=5000
+        - traefik.tags=${TRAEFIK_PUBLIC_TAG}
+        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK}
+        # Traefik service that listens to HTTP
+        - traefik.redirectorservice.frontend.entryPoints=http
+        - traefik.redirectorservice.frontend.redirect.entryPoint=https
+        # Traefik service that listens to HTTPS
+        - traefik.webservice.frontend.entryPoints=https
