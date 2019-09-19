@@ -4,8 +4,13 @@ import * as connections from "./connectionsReducer";
 import * as currentProject from "./currentProjectReducer";
 import * as recentProjects from "./recentProjectsReducer";
 import * as appError from "./appErrorReducer";
+<<<<<<< HEAD
 import * as auth from "./authReducer";
 
+||||||| merged common ancestors
+=======
+import * as auth from "./authReducer";
+>>>>>>> sprint-1
 
 /**
  * All application reducers
@@ -19,6 +24,7 @@ export default combineReducers({
     connections: connections.reducer,
     recentProjects: recentProjects.reducer,
     currentProject: currentProject.reducer,
+    auth: auth.reducer,
     appError: appError.reducer,
     auth: auth.reducer
 });

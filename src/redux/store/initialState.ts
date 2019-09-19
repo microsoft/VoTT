@@ -16,10 +16,11 @@ const initialState: IApplicationState = {
     connections: [],
     recentProjects: [],
     currentProject: null,
-    appError: null,
     auth: {
         accessToken: null,
+        fullName: null,
     },
+    appError: null,
 };
 
 /**

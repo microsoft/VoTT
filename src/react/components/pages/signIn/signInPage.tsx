@@ -1,4 +1,4 @@
-import React from "react"
+import React, { cloneElement } from "react"
 import { ISignIn } from "../../../../models/applicationState";
 import SignInForm from "./signInForm";
 import { Route, Redirect } from "react-router-dom";
@@ -45,7 +45,7 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
 
     }
 
-    private async onFormSubmit(signin: ISignIn) {
+    private onFormSubmit(signin: ISignIn) {
         this.setState({
             loginRequestPayload: {
                 username: signin.email,
@@ -61,7 +61,8 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
             const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
             localStorage.setItem("token", token.data.access_token);
             await this.props.actions.signIn(token.data.access_token);
-            history.push("/");
+            
+            history.push("/")
             
         }catch(error){
             console.log(error)
