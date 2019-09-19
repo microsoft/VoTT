@@ -1,0 +1,13 @@
+version: "3"
+services:
+  vott-dev:
+    build: 
+      context: ./
+      dockerfile: Dockerfile-dev
+    image: vott-dev:latest
+    env_file:
+     - ./.env
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "$DEV_VOTT_PORT:3000"
