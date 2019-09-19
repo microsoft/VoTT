@@ -18,11 +18,11 @@ export default interface IAuthActions {
  * Sign in to the application
  * @param accessToken - Auth to the application
  */
-export function signIn(accessToken: string): (disptach: Dispatch) => Promise<void> {
+export function signIn(auth: IAuth): (disptach: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
-        return IpcRendererProxy.send("SIGN_IN", accessToken)
+        return IpcRendererProxy.send("SIGN_IN", auth)
         .then(() => {
-            dispatch(signInAction(accessToken));
+            dispatch(signInAction(auth));
         });
     };
 }
@@ -42,7 +42,7 @@ export function signOut(): (dispatch: Dispatch) => Promise<void> {
 /**
  * Sign in action type
  */
-export interface ISignInAction extends IPayloadAction<string, string> {
+export interface ISignInAction extends IPayloadAction<string, IAuth> {
     type: ActionTypes.SIGN_IN_SUCCESS;
 }
 

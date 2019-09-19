@@ -22,27 +22,25 @@ describe("Auth Redux Actions", () => {
     });
 
     it("Sign in action forwards call to IpcRenderer proxy and dispatches redux action", async () => {
-        const accessToken = MockFactory.createTestAuth("access_token").accessToken;
-        await authActions.signIn(accessToken)(store.dispatch);
+        const authObject = MockFactory.createTestAuth("access_token", "John Doe");
+        await authActions.signIn(authObject)(store.dispatch);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
         expect(actions[0]).toEqual({
             type: ActionTypes.SIGN_IN_SUCCESS,
-            payload: accessToken,
+            payload: authObject,
         });
-        expect(IpcRendererProxy.send).toBeCalledWith("SIGN_IN", accessToken);
+        expect(IpcRendererProxy.send).toBeCalledWith("SIGN_IN", authObject);
     });
 
     it("Sign out action forwards call to IpcRenderer proxy and dispatches redux action", async () => {
-        const accessToken = MockFactory.createTestAuth().accessToken;
         await authActions.signOut()(store.dispatch);
         const actions = store.getActions();
 
         expect(actions.length).toEqual(1);
         expect(actions[0]).toEqual({
             type: ActionTypes.SIGN_OUT_SUCCESS,
-            payload: accessToken,
         });
         expect(IpcRendererProxy.send).toBeCalledWith("SIGN_OUT");
     });
