@@ -32,6 +32,7 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
   - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
     - [Download and install a release package for your platform (recommended)](#download-and-install-a-release-package-for-your-platform-recommended)
+    - [Build and run from docker](#build-and-run-from-docker)
     - [Build and run from source](#build-and-run-from-source)
     - [Run as Web Application](#run-as-web-application)
   - [V1 & V2](#v1--v2)
@@ -64,6 +65,32 @@ VoTT can be installed as a native application or run from source. VoTT is also a
 
 VoTT is available for Windows, Linux and OSX. Download the appropriate platform package/installer from [GitHub Releases](https://github.com/Microsoft/VoTT/releases). `v2` releases will be prefixed by `2.x`.
 
+### Build and run from docker
+
+For developement purpose, a Docker image is provided with mounted volumes. The main commands have shortcuts in a Makefile.
+
+Therefore, you can start the application with:_
+
+  ```
+  $ make build up logs
+  ```
+
+It will be available on http://localhost:5000 (where the port is customizable in the `.env` file, through the DEV_VOTT_PORT variable)
+
+You can stop the server with:
+
+  ```
+  $ make stop
+  ```
+
+Check the Makefile for more commands like `make down`, `make ps` or `make version`
+
+When it comes to production, three commands are available to create prodcution-ready images, and push them to docker hub:
+
+- `make push-prod` will push to cortexia/vott:prod
+- `make push-qa` will push to cortexia/vott:stag
+- `make push-dev` will push to cortexia/vott:latest
+
 ### Build and run from source
 
 VoTT requires [NodeJS (>= 10.x, Dubnium, <= 11.15.0) and NPM](https://github.com/nodejs/Release)
@@ -71,8 +98,22 @@ VoTT requires [NodeJS (>= 10.x, Dubnium, <= 11.15.0) and NPM](https://github.com
 In order to change your node version, see folowing [article](https://www.surrealcms.com/blog/how-to-upgrade-or-downgrade-nodejs-using-npm.html), which can be summarize as:
 
   ```bash
+  $ node --version
+  v12.9.1
+
   $ npm install -g n
-  $ sudo /usr/local/Cellar/node/12.9.1/bin/n 11.15.0
+  /usr/local/bin/n -> /usr/local/lib/node_modules/n/bin/n
+  + n@6.0.1
+  added 1 package from 4 contributors in 1.477s
+
+  $ sudo n 10.16.3
+    installing : node-v10.16.3
+        mkdir : /usr/local/n/versions/node/10.16.3
+        fetch : https://nodejs.org/dist/v10.16.3/node-v10.16.3-darwin-x64.tar.gz
+    installed : v10.16.3 (with npm 6.10.3)
+
+  $ node --version
+  v10.16.3
   ```
 
 then Proceed with VOTT installation:
