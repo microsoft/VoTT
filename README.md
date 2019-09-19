@@ -66,7 +66,16 @@ VoTT is available for Windows, Linux and OSX. Download the appropriate platform 
 
 ### Build and run from source
 
-VoTT requires [NodeJS (>= 10.x, Dubnium) and NPM](https://github.com/nodejs/Release)
+VoTT requires [NodeJS (>= 10.x, Dubnium, <= 11.15.0) and NPM](https://github.com/nodejs/Release)
+
+In order to change your node version, see folowing [article](https://www.surrealcms.com/blog/how-to-upgrade-or-downgrade-nodejs-using-npm.html), which can be summarize as:
+
+  ```bash
+  $ npm install -g n
+  $ sudo /usr/local/Cellar/node/12.9.1/bin/n 11.15.0
+  ```
+
+then Proceed with VOTT installation:
 
    ```bash
     git clone https://github.com/Microsoft/VoTT.git
