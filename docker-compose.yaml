@@ -2,6 +2,6 @@ version: "2"
 services:
   vott:
     build: .
-    image: cortexia/vott:$DOCKER_TAG
+    image: cortexia/vott:${DOCKER_TAG}
     env_file:
      - ./.env

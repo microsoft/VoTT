@@ -23,7 +23,7 @@ push-prod: login
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=prod make build-hub
+	DOCKER_TAG=prod docker-compose up --build -d
 
 	# push image to docker
 	docker push cortexia/vott:prod
@@ -34,7 +34,7 @@ push-qa: login
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=stag make build-hub
+	DOCKER_TAG=stag docker-compose up --build -d
 
 	# push image to docker
 	docker push cortexia/vott:stag
@@ -45,7 +45,7 @@ push-dev: login
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=latest make build-hub
+	DOCKER_TAG=latest docker-compose up --build -d
 
 	# push image to docker
 	docker push cortexia/vott:latest
@@ -58,10 +58,6 @@ login:
 ps:
 	docker ps --format 'table {{.Image}}\t{{.Status}}\t{{.Ports}}\t{{.Names}}'
 
-# docker shortcuts for development purpose
-
-build-hub: check-env
-	docker-compose up --build -d
 
 # docker shortcuts for development purpose
 
