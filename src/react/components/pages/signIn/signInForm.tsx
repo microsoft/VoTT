@@ -1,5 +1,5 @@
-import React from "react";
-import Form, { FormValidation, Widget } from "react-jsonschema-form";
+import * as React from "react";
+import Form from "react-jsonschema-form";
 import { ISignIn } from "../../../../models/applicationState";
 
 import formSchema from "./signInForm.json";
@@ -16,7 +16,7 @@ export interface ISignInFormState {
     formData: ISignIn;
 }
 
-export default class SignInForm extends React.Component<ISignInFormProps, ISignInFormState> {
+export class SignInForm extends React.Component<ISignInFormProps, ISignInFormState> {
     constructor(props) {
         super(props);
         this.state = {
@@ -50,7 +50,5 @@ export default class SignInForm extends React.Component<ISignInFormProps, ISignI
 
     private onSubmit = (form) => {
         this.props.onSubmit(form.formData);
-
     }
-
 }

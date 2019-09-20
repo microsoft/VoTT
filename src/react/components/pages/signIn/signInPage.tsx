@@ -1,6 +1,6 @@
-import React, { cloneElement } from "react";
+import * as React from "react";
 import { ISignIn, IAuth } from "../../../../models/applicationState";
-import SignInForm from "./signInForm";
+import { SignInForm } from "./signInForm";
 import { Route, Redirect } from "react-router-dom";
 import ApiService, { ILoginRequestPayload } from "../../../../services/apiService";
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
@@ -43,9 +43,9 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
             auth: null,
         };
         ApiService.removeToken();
-        this.onFormSubmit = this.onFormSubmit.bind(this);
-
+        this.onFormSubmit = this.onFormSubmit;
     }
+
     public render() {
         return (
             <div className="app-sign-in-page-form">
@@ -61,7 +61,7 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
         );
     }
 
-    private onFormSubmit(signIn: ISignIn) {
+    private onFormSubmit = (signIn: ISignIn) => {
         this.setState({
             loginRequestPayload: {
                 username: signIn.email,

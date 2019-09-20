@@ -52,10 +52,9 @@ class ApiService {
     }
 
     public getCurrentUser = () => {
-        const url ="api/v1/users/me";
+        const url = "api/v1/users/me";
         return this.client.get(url);
     }
-
 }
 
 const apiService = new ApiService();
