@@ -1,4 +1,4 @@
-version: "2"
+version: "3.3"
 services:
   vott:
     build: .
@@ -10,7 +10,7 @@ services:
       - default
     deploy:
       labels:
-        - traefik.frontend.rule=Host:vott.${DOMAIN}
+        - traefik.frontend.rule=Host:${SUBDOMAIN}.${DOMAIN}
         - traefik.enable=true
         - traefik.port=5000
         - traefik.tags=${TRAEFIK_PUBLIC_TAG}

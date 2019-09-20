@@ -13,20 +13,52 @@ include .env
 export
 endif
 
-version:
+version: check-env
 	@echo $(VERSION)
 
+init:
+	cp .env.sample .env
+
+vars: check-env
+	@echo '  Version: $(VERSION)'
+	@echo ''
+	@echo 'Sensible defaults values (for local dev)'
+	@echo '  DEV_VOTT_PORT=${DEV_VOTT_PORT}'
+	@echo '  DOCKER_TAG=${DOCKER_TAG}'
+	@echo '  PUBLIC_URL=${PUBLIC_URL}'
+	@echo ''
+	@echo 'For deployment purpose'
+	@echo '  SUBDOMAIN=${SUBDOMAIN}'
+	@echo '  DOMAIN=${DOMAIN}'
+	@echo '  STACK_NAME=${STACK_NAME}'
+	@echo '  TRAEFIK_PUBLIC_NETWORK=${TRAEFIK_PUBLIC_NETWORK}'
+	@echo '  TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG}'
+
+deploy:
+ifeq ($(wildcard docker-stack.yml),)
+	@echo "docker-stack.yml file is missing. call push-* first"
+	@exit 1
+endif
+	docker-auto-labels docker-stack.yml
+	docker stack deploy -c docker-stack.yml --with-registry-auth ${STACK_NAME}
 
 push-prod: login
 	# update tags
 	git tag -f prod
 	git push --tags --force
 
-	# build docker image
-	DOCKER_TAG=prod docker-compose up --build -d
+	# build and push docker image
+	DOCKER_TAG=prod PUBLIC_URL=vott.${DOMAIN} docker-compose build
+	DOCKER_TAG=prod docker-compose push
 
-	# push image to docker
-	docker push cortexia/vott:prod
+deploy-prod:
+	DOCKER_TAG=prod  \
+		SUBDOMAIN=vott \
+		DOMAIN=${DOMAIN} \
+		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
+		STACK_NAME=${STACK_NAME} \
+		docker-compose config > docker-stack.yml
+	make deploy
 
 push-qa: login
 	# update tags
@@ -34,21 +66,35 @@ push-qa: login
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=stag docker-compose up --build -d
+	DOCKER_TAG=stag PUBLIC_URL=vott-qa.${DOMAIN} docker-compose build
+	DOCKER_TAG=stag docker-compose push
 
-	# push image to docker
-	docker push cortexia/vott:stag
+deploy-qa:
+	DOCKER_TAG=stag \
+		SUBDOMAIN=vott-qa \
+		DOMAIN=${DOMAIN} \
+		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
+		STACK_NAME=${STACK_NAME} \
+		docker-compose config > docker-stack.yml
+	make deploy
 
-push-dev: login
+push-int: login
 	# update tags
 	git tag -f latest
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=latest docker-compose up --build -d
+	DOCKER_TAG=latest PUBLIC_URL=vott-dev.${DOMAIN} docker-compose build
+	DOCKER_TAG=latest docker-compose push
 
-	# push image to docker
-	docker push cortexia/vott:latest
+deploy-int:
+	DOCKER_TAG=latest \
+		SUBDOMAIN=vott-dev \
+		DOMAIN=${DOMAIN} \
+		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
+		STACK_NAME=${STACK_NAME} \
+		docker-compose config > docker-stack.yml
+	make deploy
 
 # docker shortcuts for maintenance purpose
 
