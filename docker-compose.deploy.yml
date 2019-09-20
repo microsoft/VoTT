@@ -5,9 +5,6 @@ services:
     image: cortexia/vott:${DOCKER_TAG}
     env_file:
      - ./.env
-    networks:
-      - ${TRAEFIK_PUBLIC_NETWORK}
-      - default
     deploy:
       labels:
         - traefik.frontend.rule=Host:${SUBDOMAIN}.${DOMAIN}

@@ -48,7 +48,7 @@ push-prod: login
 	git push --tags --force
 
 	# build and push docker image
-	DOCKER_TAG=prod PUBLIC_URL=vott.${DOMAIN} docker-compose build
+	DOCKER_TAG=prod PUBLIC_URL=vott.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
 	DOCKER_TAG=prod docker-compose push
 
 deploy-prod:
@@ -57,7 +57,10 @@ deploy-prod:
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
 		STACK_NAME=${STACK_NAME} \
-		docker-compose config > docker-stack.yml
+		docker-compose \
+			-f docker-compose.deploy.yml \
+			-f docker-compose.deploy.networks.yml \
+		config > docker-stack.yml
 	make deploy
 
 push-qa: login
@@ -66,7 +69,7 @@ push-qa: login
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=stag PUBLIC_URL=vott-qa.${DOMAIN} docker-compose build
+	DOCKER_TAG=stag PUBLIC_URL=vott-qa.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
 	DOCKER_TAG=stag docker-compose push
 
 deploy-qa:
@@ -75,7 +78,9 @@ deploy-qa:
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
 		STACK_NAME=${STACK_NAME} \
-		docker-compose config > docker-stack.yml
+			-f docker-compose.deploy.yml \
+			-f docker-compose.deploy.networks.yml \
+		config > docker-stack.yml
 	make deploy
 
 push-int: login
@@ -84,7 +89,7 @@ push-int: login
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=latest PUBLIC_URL=vott-dev.${DOMAIN} docker-compose build
+	DOCKER_TAG=latest PUBLIC_URL=vott-dev.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
 	DOCKER_TAG=latest docker-compose push
 
 deploy-int:
@@ -93,7 +98,9 @@ deploy-int:
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
 		STACK_NAME=${STACK_NAME} \
-		docker-compose config > docker-stack.yml
+			-f docker-compose.deploy.yml \
+			-f docker-compose.deploy.networks.yml \
+		config > docker-stack.yml
 	make deploy
 
 # docker shortcuts for maintenance purpose
@@ -108,18 +115,18 @@ ps:
 # docker shortcuts for development purpose
 
 up: check-env
-	docker-compose -f docker-compose-dev.yaml up -d
+	docker-compose -f docker-compose.dev.yml up -d
 
 down:
-	docker-compose -f docker-compose-dev.yaml down
+	docker-compose -f docker-compose.dev.yml down
 
 stop:
-	docker-compose -f docker-compose-dev.yaml stop
+	docker-compose -f docker-compose.dev.yml stop
 
 logs:
-	docker-compose -f docker-compose-dev.yaml logs --tail 20 -f
+	docker-compose -f docker-compose.dev.yml logs --tail 20 -f
 
 build: check-env
 	rm -rf build node_modules
-	docker-compose -f docker-compose-dev.yaml build --pull
+	docker-compose -f docker-compose.dev.yml build --pull
 
