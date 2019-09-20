@@ -52,7 +52,7 @@ export default class App extends React.Component<IAppProps> {
             currentProject: this.props.currentProject,
         };
     }
-
+    
     public componentDidCatch(error: Error) {
         this.props.actions.showError({
             errorCode: ErrorCode.GenericRenderError,
@@ -60,7 +60,6 @@ export default class App extends React.Component<IAppProps> {
             message: error.message,
         });
     }
-
 
     public render() {
 
