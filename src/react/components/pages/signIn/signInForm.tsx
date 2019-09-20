@@ -2,13 +2,12 @@ import React from "react";
 import Form, { FormValidation, Widget } from "react-jsonschema-form";
 import { ISignIn } from "../../../../models/applicationState";
 
-const formSchema = require("./signInForm.json");
-const uiSchema = require("./signInForm.ui.json");
-
+import formSchema from "./signInForm.json";
+import uiSchema from "./signInForm.ui.json";
 
 export interface ISignInFormProps extends React.Props<SignInForm> {
-    signin: ISignIn;
-    onSubmit: (signin: ISignIn) => void;
+    signIn: ISignIn;
+    onSubmit: (signIn: ISignIn) => void;
 }
 
 export interface ISignInFormState {
@@ -23,19 +22,13 @@ export default class SignInForm extends React.Component<ISignInFormProps, ISignI
         this.state = {
             formSchema : { ...formSchema },
             uiSchema : { ...uiSchema },
-            formData : this.props.signin
-        }
-    }
-    
-    private onSubmit = (form) => {
-        console.log(form.formData)
-        this.props.onSubmit(form.formData);
-
+            formData : this.props.signIn,
+        };
     }
 
     public render() {
         return (
-            <div className="app-signin-page-form p-3">
+            <div className="app-sign-in-page-form p-3">
                 <h3 className="mb-3">
                     Sign in
                 </h3>
@@ -52,6 +45,12 @@ export default class SignInForm extends React.Component<ISignInFormProps, ISignI
                     </Form>
                 </div>
             </div>
-        )
+        );
     }
+
+    private onSubmit = (form) => {
+        this.props.onSubmit(form.formData);
+
+    }
+
 }

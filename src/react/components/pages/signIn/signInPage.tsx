@@ -1,22 +1,22 @@
-import React, { cloneElement } from "react"
+import React, { cloneElement } from "react";
 import { ISignIn, IAuth } from "../../../../models/applicationState";
 import SignInForm from "./signInForm";
 import { Route, Redirect } from "react-router-dom";
-import ApiService, { ILoginRequestPayload } from "../../../../services/apiService"
+import ApiService, { ILoginRequestPayload } from "../../../../services/apiService";
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { IApplicationState } from "../../../../models/applicationState";
-import history from "../../../../history"
+import history from "../../../../history";
 import { toast } from "react-toastify";
 
 export interface ISignInPageProps extends React.Props<SignInPage> {
     actions: IAuthActions;
-    signin: ISignIn;
+    signIn: ISignIn;
 }
 
 export interface ISignInPageState {
-    signin: ISignIn;
+    signIn: ISignIn;
     loginRequestPayload: ILoginRequestPayload;
     auth: IAuth;
 }
@@ -35,10 +35,10 @@ function mapDispatchToProps(dispatch) {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class SignInPage extends React.Component<ISignInPageProps, ISignInPageState> {
-    constructor(props){
+    constructor(props) {
         super(props);
-        this.state = { 
-            signin: null,
+        this.state = {
+            signIn: null,
             loginRequestPayload: null,
             auth: null,
         };
@@ -46,19 +46,33 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
         this.onFormSubmit = this.onFormSubmit.bind(this);
 
     }
-
-    private onFormSubmit(signin: ISignIn) {
-        this.setState({
-            loginRequestPayload: {
-                username: signin.email,
-                password: signin.password,
-            }
-        }, () => {
-            this.sendCredentials(signin.remember)
-        })
+    public render() {
+        return (
+            <div className="app-sign-in-page-form">
+                <Route exact path="/login">
+                    <div>
+                        <SignInForm
+                            signIn={this.state.signIn}
+                            onSubmit={this.onFormSubmit}
+                        />
+                    </div>
+                </Route>
+            </div>
+        );
     }
 
-    private async sendCredentials(remember: boolean) {
+    private onFormSubmit(signIn: ISignIn) {
+        this.setState({
+            loginRequestPayload: {
+                username: signIn.email,
+                password: signIn.password,
+            },
+        }, () => {
+            this.sendCredentials(signIn.rememberUser);
+        });
+    }
+
+    private async sendCredentials(rememberUser: boolean) {
         try {
             const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
             localStorage.setItem("token", token.data.access_token);
@@ -67,31 +81,24 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
                 auth: {
                     accessToken: token.data.access_token,
                     fullName: userInfo.data.full_name,
-                    remember: remember,
-                }
-            })
+                    rememberUser,
+                },
+            });
             await this.props.actions.signIn(this.state.auth);
             history.push("/");
-            
-        }catch(error){
-            console.log(error)
-            toast.error("Sorry, we could not log you in!",{position:toast.POSITION.TOP_CENTER})
+
+        } catch (error) {
+            let errorMessage;
+            if (error.response) {
+                if (error.response.status === 400) {
+                    errorMessage = "Incorrect email or password.";
+                } else {
+                    errorMessage = "Sorry, something went wrong...";
+                }
+            } else {
+                errorMessage = "Sorry, something went wrong...";
+            }
+            toast.error(errorMessage, { position: toast.POSITION.TOP_CENTER} );
         }
     }
-    public render() {
-        return (
-            <div className="app-signin-page-form">
-                <Route exact path="/login">
-                    <div>
-                        <SignInForm
-                            signin={this.state.signin}
-                            onSubmit={this.onFormSubmit}
-                        />
-                    </div>
-                </Route>
-            </div>
-        )
-    }
-
-
 }

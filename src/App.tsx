@@ -52,7 +52,7 @@ export default class App extends React.Component<IAppProps> {
             currentProject: this.props.currentProject,
         };
     }
-    
+
     public componentDidCatch(error: Error) {
         this.props.actions.showError({
             errorCode: ErrorCode.GenericRenderError,
@@ -64,12 +64,11 @@ export default class App extends React.Component<IAppProps> {
     public render() {
 
         const platform = global && global.process ? global.process.platform : "web";
-        if(!this.props.auth.remember){
+        if (!this.props.auth.rememberUser) {
             window.addEventListener("beforeunload", (e) => {
                 event.preventDefault();
                 localStorage.removeItem("token");
-            }
-            )
+            });
         }
         return (
             <Fragment>
@@ -84,7 +83,7 @@ export default class App extends React.Component<IAppProps> {
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}
-                                    fullName={ApiService.getToken()? this.props.auth.fullName: ""}>
+                                    fullName={ApiService.getToken() ? this.props.auth.fullName : ""}>
                                     <div className="app-help-menu-icon"><HelpMenu/></div>
                                 </TitleBar>
                                 <div className="app-main">
