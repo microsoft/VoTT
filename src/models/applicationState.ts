@@ -180,7 +180,7 @@ export interface IConnection {
 export interface ISignIn {
     email: string;
     password: string;
-    rememberMe: boolean;
+    remember: boolean;
 }
 
 /**
@@ -432,4 +432,5 @@ export interface ITFRecordMetadata {
 export interface IAuth {
     accessToken?: string;
     fullName?: string;
+    remember?: boolean;
 }

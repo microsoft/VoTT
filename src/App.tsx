@@ -65,7 +65,13 @@ export default class App extends React.Component<IAppProps> {
     public render() {
 
         const platform = global && global.process ? global.process.platform : "web";
-
+        if(!this.props.auth.remember){
+            window.addEventListener("beforeunload", (e) => {
+                event.preventDefault();
+                localStorage.removeItem("token");
+            }
+            )
+        }
         return (
             <Fragment>
                 <ErrorHandler
@@ -79,17 +85,13 @@ export default class App extends React.Component<IAppProps> {
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}
-                                    fullName={this.props.auth.fullName}>
+                                    fullName={ApiService.getToken()? this.props.auth.fullName: ""}>
                                     <div className="app-help-menu-icon"><HelpMenu/></div>
                                 </TitleBar>
                                 <div className="app-main">
                                     {
                                         ApiService.getToken() !== null &&
                                         <Sidebar project={this.props.currentProject} />
-                                    }
-                                    {
-                                        ApiService.getToken() === null &&
-                                        <Redirect to="/login" />
                                     }
                                     <MainContentRouter />
                                 </div>

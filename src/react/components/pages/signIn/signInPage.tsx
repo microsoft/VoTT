@@ -1,5 +1,5 @@
 import React, { cloneElement } from "react"
-import { ISignIn } from "../../../../models/applicationState";
+import { ISignIn, IAuth } from "../../../../models/applicationState";
 import SignInForm from "./signInForm";
 import { Route, Redirect } from "react-router-dom";
 import ApiService, { ILoginRequestPayload } from "../../../../services/apiService"
@@ -18,6 +18,7 @@ export interface ISignInPageProps extends React.Props<SignInPage> {
 export interface ISignInPageState {
     signin: ISignIn;
     loginRequestPayload: ILoginRequestPayload;
+    auth: IAuth;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -39,6 +40,7 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
         this.state = { 
             signin: null,
             loginRequestPayload: null,
+            auth: null,
         };
         ApiService.removeToken();
         this.onFormSubmit = this.onFormSubmit.bind(this);
@@ -52,15 +54,23 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
                 password: signin.password,
             }
         }, () => {
-            this.sendCredentials()
+            this.sendCredentials(signin.remember)
         })
     }
 
-    private async sendCredentials() {
+    private async sendCredentials(remember: boolean) {
         try {
             const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
             localStorage.setItem("token", token.data.access_token);
-            await this.props.actions.signIn(token.data.access_token);
+            const userInfo = await ApiService.getCurrentUser();
+            this.setState({
+                auth: {
+                    accessToken: token.data.access_token,
+                    fullName: userInfo.data.full_name,
+                    remember: remember,
+                }
+            })
+            await this.props.actions.signIn(this.state.auth);
             history.push("/");
             
         }catch(error){
