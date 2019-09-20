@@ -2,8 +2,6 @@
 # Default values, can be overridden either on the command line of make
 # or in .env
 
-VERSION:=$(shell node -pe "require('./package.json').version")
-
 check-env:
 ifeq ($(wildcard .env),)
 	@echo ".env file is missing. Create it first"
@@ -14,14 +12,12 @@ export
 endif
 
 version: check-env
-	@echo $(VERSION)
+	@echo $(shell node -pe "require('./package.json').version")
 
 init:
 	cp .env.sample .env
 
 vars: check-env
-	@echo '  Version: $(VERSION)'
-	@echo ''
 	@echo 'Sensible defaults values (for local dev)'
 	@echo '  DEV_VOTT_PORT=${DEV_VOTT_PORT}'
 	@echo '  DOCKER_TAG=${DOCKER_TAG}'
@@ -72,6 +68,7 @@ deploy-qa:
 		STACK_NAME=vott-qa \
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
+		docker-compose \
 			-f docker-compose.deploy.yml \
 			-f docker-compose.deploy.networks.yml \
 		config > docker-stack.yml
@@ -94,6 +91,7 @@ deploy-int:
 		STACK_NAME=vott-dev \
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
+		docker-compose \
 			-f docker-compose.deploy.yml \
 			-f docker-compose.deploy.networks.yml \
 		config > docker-stack.yml
