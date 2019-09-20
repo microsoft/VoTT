@@ -34,14 +34,6 @@ vars: check-env
 	@echo '  TRAEFIK_PUBLIC_NETWORK=${TRAEFIK_PUBLIC_NETWORK}'
 	@echo '  TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG}'
 
-deploy:
-ifeq ($(wildcard docker-stack.yml),)
-	@echo "docker-stack.yml file is missing. call push-* first"
-	@exit 1
-endif
-	docker-auto-labels docker-stack.yml
-	docker stack deploy -c docker-stack.yml --with-registry-auth ${STACK_NAME}
-
 push-prod: login
 	# update tags
 	git tag -f prod
@@ -49,19 +41,21 @@ push-prod: login
 
 	# build and push docker image
 	DOCKER_TAG=prod PUBLIC_URL=vott.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
-	DOCKER_TAG=prod docker-compose push
+	DOCKER_TAG=prod docker-compose -f docker-compose.deploy.yml push
 
 deploy-prod:
 	DOCKER_TAG=prod  \
 		SUBDOMAIN=vott \
+		STACK_NAME=vott \
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
-		STACK_NAME=${STACK_NAME} \
 		docker-compose \
 			-f docker-compose.deploy.yml \
 			-f docker-compose.deploy.networks.yml \
 		config > docker-stack.yml
-	make deploy
+
+	docker-auto-labels docker-stack.yml
+	docker stack deploy -c docker-stack.yml --with-registry-auth vott
 
 push-qa: login
 	# update tags
@@ -70,18 +64,20 @@ push-qa: login
 
 	# build docker image
 	DOCKER_TAG=stag PUBLIC_URL=vott-qa.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
-	DOCKER_TAG=stag docker-compose push
+	DOCKER_TAG=stag docker-compose -f docker-compose.deploy.yml push
 
 deploy-qa:
 	DOCKER_TAG=stag \
 		SUBDOMAIN=vott-qa \
+		STACK_NAME=vott-qa \
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
-		STACK_NAME=${STACK_NAME} \
 			-f docker-compose.deploy.yml \
 			-f docker-compose.deploy.networks.yml \
 		config > docker-stack.yml
-	make deploy
+
+	docker-auto-labels docker-stack.yml
+	docker stack deploy -c docker-stack.yml --with-registry-auth vott-qa
 
 push-int: login
 	# update tags
@@ -90,18 +86,20 @@ push-int: login
 
 	# build docker image
 	DOCKER_TAG=latest PUBLIC_URL=vott-dev.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
-	DOCKER_TAG=latest docker-compose push
+	DOCKER_TAG=latest docker-compose -f docker-compose.deploy.yml push
 
 deploy-int:
 	DOCKER_TAG=latest \
 		SUBDOMAIN=vott-dev \
+		STACK_NAME=vott-dev \
 		DOMAIN=${DOMAIN} \
 		TRAEFIK_PUBLIC_TAG=${TRAEFIK_PUBLIC_TAG} \
-		STACK_NAME=${STACK_NAME} \
 			-f docker-compose.deploy.yml \
 			-f docker-compose.deploy.networks.yml \
 		config > docker-stack.yml
-	make deploy
+
+	docker-auto-labels docker-stack.yml
+	docker stack deploy -c docker-stack.yml --with-registry-auth vott-dev
 
 # docker shortcuts for maintenance purpose
 
