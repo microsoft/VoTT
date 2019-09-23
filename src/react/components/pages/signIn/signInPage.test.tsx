@@ -10,22 +10,25 @@ import { ReactWrapper, mount } from "enzyme";
 import { Store, AnyAction } from "redux";
 import { IAuth } from "../../../../models/applicationState";
 import history from "../../../../history";
+import ApiService from "../../../../services/apiService";
 
 describe("App Settings Page", () => {
+    const signIn = jest.fn();
     const defaultProps: ISignInPageProps = {
-        actions: null,
+        actions: {
+            signIn,
+            signOut: jest.fn(),
+        },
         signIn: {
-            email: null,
-            password: null,
+            email: "some@email.com",
+            password: "somePassword",
             rememberUser: false,
         },
     };
 
     function createComponent(
         store: Store<IApplicationState>,
-        props: ISignInPageProps = null): ReactWrapper<ISignInPageProps> {
-        props = props;
-
+        props: ISignInPageProps = defaultProps): ReactWrapper<ISignInPageProps> {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -38,22 +41,35 @@ describe("App Settings Page", () => {
     it("renders correctly", () => {
         const store = createStore();
         const wrapper = createComponent(store);
-        expect(wrapper.find(SignInForm).length).toEqual(1);
+        expect(wrapper.find(SignInForm).exists()).toBe(true);
     });
 
-    it("updates values in signIn props when the form is submitted", () => {
-        
-    });
+    // it("updates values in signIn props when the form is submitted", () => {
+    //
+    // });
 
     it("stores the token in localstorage when the form is submitted", () => {
         expect(localStorage.getItem("token")).toBe("access_token");
     });
 
-    it("saves the auth values when the form is submitted", () => {
+    it("saves the auth values when the form is submitted", async () => {
         const auth = MockFactory.createTestAuth("access_token", "John Doe", false);
         const store = createStore(auth);
         const wrapper = createComponent(store);
-        wrapper.find(SignInForm).find("button#submitCredentials").simulate("click");
+        jest.spyOn(ApiService, "loginWithCredentials")
+            .mockImplementationOnce(() => Promise.resolve({
+                data: {
+                    access_token: "token",
+                },
+            }));
+        jest.spyOn(ApiService, "getCurrentUser")
+            .mockImplementationOnce(() => Promise.resolve({
+                data: {
+                    full_name: "User FullName",
+                },
+            }));
+        await wrapper.find(SignInForm).props().onSubmit(defaultProps.signIn);
+        expect(signIn).toBeCalled();
     });
 
     it("displays error message when the credentials are wrong", () => {
