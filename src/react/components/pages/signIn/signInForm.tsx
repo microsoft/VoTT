@@ -40,7 +40,7 @@ export class SignInForm extends React.Component<ISignInFormProps, ISignInFormSta
                         onSubmit={this.onSubmit}
                     >
                     <div>
-                        <button type="submit" className="btn btn-success">Submit</button>
+                        <button id="submitCredentials" type="submit" className="btn btn-success">Submit</button>
                     </div>
                     </Form>
                 </div>
