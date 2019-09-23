@@ -1,7 +1,6 @@
 import React from "react";
 import { ISignInFormProps, ISignInFormState, SignInForm } from "./signInForm";
 import { ReactWrapper, mount } from "enzyme";
-import MockFactory from "../../../../common/mockFactory";
 import Form from "react-jsonschema-form";
 
 describe("Sign In Form", () => {
@@ -10,17 +9,16 @@ describe("Sign In Form", () => {
 
     const defaultProps: ISignInFormProps = {
         signIn: {
-            email: "",
-            password: "",
+            email: "some@domain.com",
+            password: "$ecreT",
             rememberUser: false,
         },
         onSubmit: onSubmitHandler,
     };
 
-    function createComponent(props?: ISignInFormProps)
+    function createComponent(props: ISignInFormProps = defaultProps)
     : ReactWrapper<ISignInFormProps, ISignInFormState> {
-    props = props || defaultProps;
-    return mount(<SignInForm {...props} />);
+        return mount(<SignInForm {...props} />);
     }
 
     it("initializes default state", () => {
@@ -35,13 +33,13 @@ describe("Sign In Form", () => {
         wrapper = createComponent();
         expect(wrapper.find(Form).exists()).toBe(true);
         expect(wrapper.state().formData).toEqual(defaultProps.signIn);
-        expect(wrapper.find("button#submitCredentials")).toEqual(1);
+        expect(wrapper.find("button#submitCredentials").exists()).toBe(true);
     });
 
     it("raises the submit handler on clicking the submit button", async () => {
         wrapper = createComponent();
-        await MockFactory.flushUi(() => wrapper.find("form").simulate("submit"));
-        expect(onSubmitHandler).toBeCalledWith(defaultProps);
+        wrapper.find("form").simulate("submit");
+        expect(onSubmitHandler).toBeCalledWith(defaultProps.signIn);
     });
 
 });

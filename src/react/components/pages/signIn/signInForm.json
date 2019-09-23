@@ -11,7 +11,7 @@
             "title": "Password",
             "type": "string"
         },
-        "remember": {
+        "rememberUser": {
             "type": "boolean",
             "title": " Stay logged in",
             "default": false
