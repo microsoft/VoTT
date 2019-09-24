@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  vott:
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK}
+      - default
+
+networks:
+  traefik-public:
+    external: true

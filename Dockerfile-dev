@@ -1,0 +1,14 @@
+# this container is made for conveniency to ease developement process
+# the resulting image should not be pushed to any repository
+# since it wraps all files in the root directory of the project
+
+FROM node:10.16.3-alpine
+
+ADD . /app
+
+WORKDIR /app
+VOLUME ["/app/src"]
+
+RUN npm ci
+
+CMD npm run react-start
