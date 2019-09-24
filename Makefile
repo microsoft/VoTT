@@ -76,7 +76,7 @@ deploy-qa:
 	docker-auto-labels docker-stack.yml
 	docker stack deploy -c docker-stack.yml --with-registry-auth vott-qa
 
-push-int: login
+push-dev: login
 	# update tags
 	git tag -f latest
 	git push --tags --force
@@ -85,7 +85,7 @@ push-int: login
 	DOCKER_TAG=latest PUBLIC_URL=vott-dev.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
 	DOCKER_TAG=latest docker-compose -f docker-compose.deploy.yml push
 
-deploy-int:
+deploy-dev:
 	DOCKER_TAG=latest \
 		SUBDOMAIN=vott-dev \
 		STACK_NAME=vott-dev \
