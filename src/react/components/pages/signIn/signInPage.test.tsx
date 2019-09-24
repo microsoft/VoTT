@@ -11,26 +11,12 @@ import { Store, AnyAction } from "redux";
 import { IAuth } from "../../../../models/applicationState";
 import history from "../../../../history";
 import ApiService from "../../../../services/apiService";
-
-jest.mock("react-toastify");
+import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
 
 describe("Sign In Page", () => {
-    const signIn = jest.fn();
-    const defaultProps: ISignInPageProps = {
-        actions: {
-            signIn,
-            signOut: jest.fn(),
-        },
-        signIn: {
-            email: "some@email.com",
-            password: "somePassword",
-            rememberUser: false,
-        },
-    };
-
     function createComponent(
         store: Store<IApplicationState>,
-        props: ISignInPageProps = defaultProps): ReactWrapper<ISignInPageProps> {
+        props: ISignInPageProps = createProps()): ReactWrapper<ISignInPageProps> {
         return mount(
             <Provider store={store}>
                 <Router>
@@ -46,12 +32,8 @@ describe("Sign In Page", () => {
         expect(wrapper.find(SignInForm).exists()).toBe(true);
     });
 
-    it("saves the auth values when the form is submitted", async () => {
+    it("gets the information from the API", async () => {
         const auth = MockFactory.createTestAuth("access_token", "John Doe", false);
-        const store = createStore();
-        const wrapper = createComponent(store);
-        const homepageSpy = jest.spyOn(history, "push");
-        const localStorageSpy = jest.spyOn(Storage.prototype, "setItem");
 
         jest.spyOn(ApiService, "loginWithCredentials")
             .mockImplementationOnce(() => Promise.resolve({
@@ -59,27 +41,27 @@ describe("Sign In Page", () => {
                     access_token: auth.accessToken,
                 },
             }));
-
-        expect(localStorageSpy).toBeCalled();
-
         jest.spyOn(ApiService, "getCurrentUser")
-            .mockImplementationOnce(() => Promise.resolve({
-                data: {
-                    full_name: auth.fullName,
-                },
-            }));
-        await wrapper.find(SignInForm).props().onSubmit(defaultProps.signIn);
-        /*
-        jest.spyOn(defaultProps.actions, "signIn")
-            .mockImplementationOnce(() => Promise.resolve({
-                data: {
-                    auth,
-                },
-            }));
-        */
-        await signIn(auth);
-        expect(signIn).toHaveBeenCalledWith(auth);
+        .mockImplementationOnce(() => Promise.resolve({
+            data: {
+                full_name: auth.fullName,
+            },
+        }));
+    });
+
+    it("saves the auth values when the form is submitted and redirect to home", async () => {
+        const auth = MockFactory.createTestAuth("access_token", "John Doe", false);
+        const store = createStore(auth);
+        const props = createProps();
+        const signInAction = jest.spyOn(props.actions, "signIn");
+        const wrapper = createComponent(store, props);
+        const homepageSpy = jest.spyOn(history, "push");
+        const localStorageSpy = jest.spyOn(Storage.prototype, ("setItem"));
+
+        await MockFactory.flushUi(() => wrapper.find("form").simulate("submit"));
+        expect(signInAction).toBeCalledWith(auth);
         expect(store.getState().auth).not.toBeNull();
+        expect(localStorageSpy).toHaveBeenCalled();
         expect(homepageSpy).toBeCalled();
     });
 
@@ -93,6 +75,17 @@ describe("Sign In Page", () => {
         };
 
         return createReduxStore(initialState);
+    }
+
+    function createProps(): ISignInPageProps {
+        return {
+            actions: (authActions as any) as IAuthActions,
+            signIn: {
+                email: "some@email.com",
+                password: "somePassword",
+                rememberUser: false,
+            },
+        };
     }
 
 });

@@ -38,7 +38,7 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
     constructor(props) {
         super(props);
         this.state = {
-            signIn: null,
+            signIn: props.signIn || null,
             loginRequestPayload: null,
             auth: null,
         };
