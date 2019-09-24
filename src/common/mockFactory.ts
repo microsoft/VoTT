@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType, ModelPathType,
+    IPoint, IRegion, RegionType, ModelPathType, IAuth, ISignIn,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -1032,6 +1032,19 @@ export default class MockFactory {
         }
         return {
             keydown: keyDownRegs,
+        };
+    }
+
+    /**
+     * Create fake IAuth
+     * @param accessToken Access token which is used to auth the user
+     */
+    public static createTestAuth(
+        accessToken?: string, fullName?: string, rememberUser?: boolean): IAuth {
+        return {
+            accessToken,
+            fullName,
+            rememberUser,
         };
     }
 

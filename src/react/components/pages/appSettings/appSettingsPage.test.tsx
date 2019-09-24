@@ -129,6 +129,7 @@ describe("App Settings Page", () => {
             appSettings: appSettings || MockFactory.appSettings(),
             connections: [],
             recentProjects: [],
+            auth: null,
         };
 
         return createReduxStore(initialState);

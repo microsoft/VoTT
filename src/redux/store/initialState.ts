@@ -6,6 +6,7 @@ import { IApplicationState } from "../../models/applicationState";
  * @member connections - Connections
  * @member recentProjects - Recent projects
  * @member currentProject - Current project
+ * @member auth - Application auth
  */
 const initialState: IApplicationState = {
     appSettings: {
@@ -15,6 +16,10 @@ const initialState: IApplicationState = {
     connections: [],
     recentProjects: [],
     currentProject: null,
+    auth: {
+        accessToken: null,
+        fullName: null,
+    },
     appError: null,
 };
 

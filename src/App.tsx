@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { Router } from "react-router-dom";
+import { Router, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
-import { IAppError, IApplicationState, IProject, ErrorCode } from "./models/applicationState";
+import { IAppError, IApplicationState, IProject, ErrorCode, IAuth } from "./models/applicationState";
 import "./App.scss";
 import "react-toastify/dist/ReactToastify.css";
 import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActions";
@@ -16,17 +16,20 @@ import { StatusBar } from "./react/components/shell/statusBar";
 import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
 import { HelpMenu } from "./react/components/shell/helpMenu";
 import history from "./history";
+import ApiService from "./services/apiService";
 
 interface IAppProps {
     currentProject?: IProject;
     appError?: IAppError;
     actions?: IAppErrorActions;
+    auth?: IAuth;
 }
 
 function mapStateToProps(state: IApplicationState) {
     return {
         currentProject: state.currentProject,
         appError: state.appError,
+        auth: state.auth,
     };
 }
 
@@ -59,8 +62,14 @@ export default class App extends React.Component<IAppProps> {
     }
 
     public render() {
-        const platform = global && global.process ? global.process.platform : "web";
 
+        const platform = global && global.process ? global.process.platform : "web";
+        if (!this.props.auth.rememberUser) {
+            window.addEventListener("beforeunload", (e) => {
+                event.preventDefault();
+                localStorage.removeItem("token");
+            });
+        }
         return (
             <Fragment>
                 <ErrorHandler
@@ -73,11 +82,15 @@ export default class App extends React.Component<IAppProps> {
                         <Router history={history}>
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
-                                    title={this.props.currentProject ? this.props.currentProject.name : ""}>
+                                    title={this.props.currentProject ? this.props.currentProject.name : ""}
+                                    fullName={ApiService.getToken() ? this.props.auth.fullName : ""}>
                                     <div className="app-help-menu-icon"><HelpMenu/></div>
                                 </TitleBar>
                                 <div className="app-main">
-                                    <Sidebar project={this.props.currentProject} />
+                                    {
+                                        ApiService.getToken() !== null &&
+                                        <Sidebar project={this.props.currentProject} />
+                                    }
                                     <MainContentRouter />
                                 </div>
                                 <StatusBar>
