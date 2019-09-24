@@ -50,6 +50,11 @@ class ApiService {
         const url = "api/v1/login/access-token";
         return this.client.post(url, qs.stringify(data));
     }
+
+    public getCurrentUser = () => {
+        const url = "api/v1/users/me";
+        return this.client.get(url);
+    }
 }
 
 const apiService = new ApiService();

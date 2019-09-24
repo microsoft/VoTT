@@ -7,6 +7,8 @@ import ConnectionPage from "../pages/connections/connectionsPage";
 import EditorPage from "../pages/editorPage/editorPage";
 import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
+import SignInPage from "../pages/signIn/signInPage";
+import SignedInRoute from "./signedInRoute";
 
 /**
  * @name - Main Content Router
@@ -25,6 +27,7 @@ export default function MainContentRouter() {
                 <Route path="/projects/:projectId/settings" component={ProjectSettingsPage} />
                 <Route path="/projects/:projectId/export" component={ExportPage} />
                 <Route path="/projects/:projectId/active-learning" component={ActiveLearningPage} />
+                <SignedInRoute path="/sign-in" exact component={SignInPage} />
                 <Route component={HomePage} />
             </Switch>
         </div>

@@ -1,0 +1,10 @@
+.app-sign-in-page {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    min-height: fit-content;
+    &-form {
+        flex-basis: 1;
+    }
+}

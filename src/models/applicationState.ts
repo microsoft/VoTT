@@ -173,6 +173,17 @@ export interface IConnection {
 }
 
 /**
+ * @name - Sign In
+ * @member email - User email
+ * @member password - User password
+ */
+export interface ISignIn {
+    email: string;
+    password: string;
+    rememberUser: boolean;
+}
+
+/**
  * @name - Export Provider Options
  * @description - options defining the type of asset to export
  * @member assetState - export asset with the following state
@@ -421,4 +432,5 @@ export interface ITFRecordMetadata {
 export interface IAuth {
     accessToken?: string;
     fullName?: string;
+    rememberUser?: boolean;
 }

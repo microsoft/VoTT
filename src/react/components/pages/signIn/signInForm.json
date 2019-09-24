@@ -1,0 +1,20 @@
+{
+    "type": "object",
+    "required" : ["email", "password"],
+    "properties": {
+        "email": {
+            "title": "Email",
+            "type": "string",
+            "format": "email"
+        },
+        "password":{
+            "title": "Password",
+            "type": "string"
+        },
+        "rememberUser": {
+            "type": "boolean",
+            "title": " Stay logged in",
+            "default": false
+        }
+    }
+}
