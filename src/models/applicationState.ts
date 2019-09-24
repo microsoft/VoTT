@@ -8,6 +8,7 @@ import { IAssetPreviewSettings } from "../react/components/common/assetPreview/a
  * @member connections - Global list of connections available to application
  * @member recentProjects - List of recently used projects
  * @member currentProject - The active project being edited
+ * @member auth - Auth in the application
  * @member appError - error in the app if any
  */
 export interface IApplicationState {
@@ -15,6 +16,7 @@ export interface IApplicationState {
     connections: IConnection[];
     recentProjects: IProject[];
     currentProject: IProject;
+    auth: IAuth;
     appError?: IAppError;
 }
 
@@ -409,4 +411,14 @@ export interface ITFRecordMetadata {
     xmaxArray: number[];
     ymaxArray: number[];
     textArray: string[];
+}
+
+/**
+ * @name - Auth
+ * @description - Defines an auth parameters
+ * @member accessToken - Unique authentication token
+ */
+export interface IAuth {
+    accessToken?: string;
+    fullName?: string;
 }

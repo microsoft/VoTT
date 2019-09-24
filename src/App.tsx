@@ -4,7 +4,7 @@ import { Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
-import { IAppError, IApplicationState, IProject, ErrorCode } from "./models/applicationState";
+import { IAppError, IApplicationState, IProject, ErrorCode, IAuth } from "./models/applicationState";
 import "./App.scss";
 import "react-toastify/dist/ReactToastify.css";
 import IAppErrorActions, * as appErrorActions from "./redux/actions/appErrorActions";
@@ -21,12 +21,14 @@ interface IAppProps {
     currentProject?: IProject;
     appError?: IAppError;
     actions?: IAppErrorActions;
+    auth?: IAuth;
 }
 
 function mapStateToProps(state: IApplicationState) {
     return {
         currentProject: state.currentProject,
         appError: state.appError,
+        auth: state.auth,
     };
 }
 
@@ -73,7 +75,8 @@ export default class App extends React.Component<IAppProps> {
                         <Router history={history}>
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
-                                    title={this.props.currentProject ? this.props.currentProject.name : ""}>
+                                    title={this.props.currentProject ? this.props.currentProject.name : ""}
+                                    fullName={this.props.auth.fullName}>
                                     <div className="app-help-menu-icon"><HelpMenu/></div>
                                 </TitleBar>
                                 <div className="app-main">
