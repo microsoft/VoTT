@@ -20,10 +20,8 @@ export default interface IAuthActions {
  */
 export function signIn(auth: IAuth): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
-        return IpcRendererProxy.send("SIGN_IN", auth)
-        .then(() => {
-            dispatch(signInAction(auth));
-        });
+        dispatch(signInAction(auth));
+        return Promise.resolve();
     };
 }
 

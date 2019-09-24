@@ -12,7 +12,9 @@ import { IAuth } from "../../../../models/applicationState";
 import history from "../../../../history";
 import ApiService from "../../../../services/apiService";
 
-describe("App Settings Page", () => {
+jest.mock("react-toastify");
+
+describe("Sign In Page", () => {
     const signIn = jest.fn();
     const defaultProps: ISignInPageProps = {
         actions: {
@@ -44,39 +46,41 @@ describe("App Settings Page", () => {
         expect(wrapper.find(SignInForm).exists()).toBe(true);
     });
 
-    // it("updates values in signIn props when the form is submitted", () => {
-    //
-    // });
-
-    it("stores the token in localstorage when the form is submitted", () => {
-        expect(localStorage.getItem("token")).toBe("access_token");
-    });
-
     it("saves the auth values when the form is submitted", async () => {
         const auth = MockFactory.createTestAuth("access_token", "John Doe", false);
-        const store = createStore(auth);
+        const store = createStore();
         const wrapper = createComponent(store);
+        const homepageSpy = jest.spyOn(history, "push");
+        const localStorageSpy = jest.spyOn(Storage.prototype, "setItem");
+
         jest.spyOn(ApiService, "loginWithCredentials")
             .mockImplementationOnce(() => Promise.resolve({
                 data: {
-                    access_token: "token",
+                    access_token: auth.accessToken,
                 },
             }));
+
+        expect(localStorageSpy).toBeCalled();
+
         jest.spyOn(ApiService, "getCurrentUser")
             .mockImplementationOnce(() => Promise.resolve({
                 data: {
-                    full_name: "User FullName",
+                    full_name: auth.fullName,
                 },
             }));
         await wrapper.find(SignInForm).props().onSubmit(defaultProps.signIn);
-        expect(signIn).toBeCalled();
-    });
-
-    it("displays error message when the credentials are wrong", () => {
-    });
-
-    it("redirects to homepage when token is in localstorage", () => {
-        const homepageSpy = jest.spyOn(history, "push");
+        /*
+        jest.spyOn(defaultProps.actions, "signIn")
+            .mockImplementationOnce(() => Promise.resolve({
+                data: {
+                    auth,
+                },
+            }));
+        */
+        await signIn(auth);
+        expect(signIn).toHaveBeenCalledWith(auth);
+        expect(store.getState().auth).not.toBeNull();
+        expect(homepageSpy).toBeCalled();
     });
 
     function createStore(auth: IAuth = null): Store<IApplicationState, AnyAction> {
@@ -85,7 +89,7 @@ describe("App Settings Page", () => {
             appSettings: null,
             connections: [],
             recentProjects: [],
-            auth: auth || MockFactory.createTestAuth("access_token", "John Doe", false),
+            auth,
         };
 
         return createReduxStore(initialState);
