@@ -874,6 +874,7 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
         appSettings: MockFactory.appSettings(),
         connections: [],
         recentProjects: [project],
+        auth: null,
     };
 
     return createReduxStore(initialState);

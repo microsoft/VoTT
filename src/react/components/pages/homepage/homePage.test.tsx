@@ -292,6 +292,7 @@ describe("Homepage Component", () => {
             connections: [],
             recentProjects,
             appError: null,
+            auth: null,
         };
 
         return createReduxStore(initialState);
