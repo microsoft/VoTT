@@ -2,9 +2,16 @@ import React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import { TitleBar, ITitleBarProps, ITitleBarState } from "./titleBar";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
+import { AnyAction } from "../../../redux/actions/actionCreators";
+import { Store } from "redux";
+import { Provider } from "react-redux";
+import { IApplicationState, IAuth } from "../../../models/applicationState";
+import createReduxStore from "./../../../redux/store/store";
+import MockFactory from "../../../common/mockFactory";
 
 describe("TileBar Component", () => {
     let wrapper: ReactWrapper<ITitleBarProps, ITitleBarState>;
+    let store: Store<IApplicationState, AnyAction>;
     const defaultProps: ITitleBarProps = {
         title: "Test Title",
         icon: "fas fa-tags",
@@ -57,24 +64,40 @@ describe("TileBar Component", () => {
         },
     };
 
-    function createComponent(props?: ITitleBarProps): ReactWrapper<ITitleBarProps, ITitleBarState> {
+    function createComponent(   store: Store<IApplicationState>,
+                                props?: ITitleBarProps): ReactWrapper<ITitleBarProps, ITitleBarState> {
         props = props || defaultProps;
         return mount(
-            <TitleBar {...props}>
-                <ul>
-                    <li>
-                        <a title="Profile" href="#/profile">
-                            <i className="fas fa-user-circle"></i>
-                        </a>
-                    </li>
-                </ul>
-            </TitleBar>,
+            <Provider store={store} >
+                <TitleBar {...props}>
+                    <ul>
+                        <li>
+                            <a title="Profile" href="#/profile">
+                                <i className="fas fa-user-circle"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </TitleBar>
+            </Provider>,
         );
+    }
+
+    function createStore(auth: IAuth): Store<IApplicationState, AnyAction> {
+        const initialState: IApplicationState = {
+            currentProject: null,
+            appSettings: null,
+            connections: [],
+            recentProjects: [],
+            auth,
+        };
+        return createReduxStore(initialState);
     }
 
     beforeEach(() => {
         handlerMapping = {};
-        wrapper = createComponent();
+        const fakeAuth = MockFactory.createTestAuth("access_token", "John Doe", false);
+        store = createStore(fakeAuth);
+        wrapper = createComponent(store);
     });
 
     describe("Web", () => {
@@ -86,10 +109,13 @@ describe("TileBar Component", () => {
         });
 
         it("renders ico, title, user full name and children", () => {
+            const signOut = wrapper.find(".title-bar-sign-out");
             const icon = wrapper.find(".title-bar-icon");
             const title = wrapper.find(".title-bar-main");
             const fullName = wrapper.find(".title-bar-user-full-name");
 
+            expect(signOut.exists()).toBe(true);
+            expect(signOut.text()).toEqual("Sign out");
             expect(icon.exists()).toBe(true);
             expect(icon.find(".fa-tags").exists()).toBe(true);
             expect(title.exists()).toBe(true);
@@ -101,7 +127,7 @@ describe("TileBar Component", () => {
 
         it("does not render user full name", () => {
             const props = {};
-            const newWrapper = createComponent(props);
+            const newWrapper = createComponent(store, props);
             const fullName = newWrapper.find(".title-bar-user-full-name");
 
             expect(fullName.exists()).toBe(false);
