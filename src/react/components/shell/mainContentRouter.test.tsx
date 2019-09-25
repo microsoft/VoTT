@@ -34,7 +34,7 @@ describe("Main Content Router", () => {
     }
 
     it("renders correct routes when authenticated", () => {
-        const wrapper = shallow(<MainContentRouter isAuth={true} />);
+        const wrapper = shallow(<MainContentRouter />);
         const pathMapSignedOut = wrapper.find(SignedOutRoute).reduce((pathMap, route) => {
             const routeProps = route.props();
             pathMap[routeProps.path] = routeProps.component;
@@ -51,8 +51,6 @@ describe("Main Content Router", () => {
         expect(pathMapSignedOut["/settings"]).toBe(SettingsPage);
         expect(pathMapSignedOut["/connections"]).toBe(ConnectionsPage);
         expect(pathMapSignedIn["/sign-in"]).toBe(SignInPage);
-
-        // expect(pathMap["/sign-in"]).toBe(SignInPage);
     });
 
     it("renders a redirect when no route is matched", () => {

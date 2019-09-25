@@ -94,7 +94,7 @@ export default class App extends React.Component<IAppProps> {
                                         this.props.auth.accessToken !== null &&
                                         <Sidebar project={this.props.currentProject} />
                                     }
-                                    <MainContentRouter isAuth={this.props.auth.accessToken === null ? false : true} />
+                                    <MainContentRouter />
                                 </div>
                                 <StatusBar>
                                     <StatusBarMetrics project={this.props.currentProject} />

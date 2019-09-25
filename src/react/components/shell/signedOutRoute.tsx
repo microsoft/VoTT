@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import apiService from "../../../services/apiService";
 import { Route } from "react-router-dom";
