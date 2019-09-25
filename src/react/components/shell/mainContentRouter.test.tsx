@@ -1,8 +1,9 @@
 import { shallow, mount, ReactWrapper } from "enzyme";
 
 import React from "react";
-import { Route, StaticRouter as Router } from "react-router-dom";
-
+import { Route, StaticRouter as Router, Redirect } from "react-router-dom";
+import SignedInRoute from "./signedInRoute";
+import SignedOutRoute from "./signedOutRoute";
 import { Provider } from "react-redux";
 import { AnyAction, Store } from "redux";
 import createReduxStore from "../../../redux/store/store";
@@ -32,19 +33,26 @@ describe("Main Content Router", () => {
         return createComponent(context, route, store, props);
     }
 
-    it("renders correct routes", () => {
-        const wrapper = shallow(<MainContentRouter />);
-        const pathMap = wrapper.find(Route).reduce((pathMap, route) => {
+    it("renders correct routes when authenticated", () => {
+        const wrapper = shallow(<MainContentRouter isAuth={true} />);
+        const pathMapSignedOut = wrapper.find(SignedOutRoute).reduce((pathMap, route) => {
             const routeProps = route.props();
             pathMap[routeProps.path] = routeProps.component;
             return pathMap;
         }, {});
 
-        /*
-        expect(pathMap["/"]).toBe(HomePage);
-        expect(pathMap["/settings"]).toBe(SettingsPage);
-        expect(pathMap["/connections"]).toBe(ConnectionsPage);
-        expect(pathMap["/sign-in"]).toBe(SignInPage); */
+        const pathMapSignedIn = wrapper.find(SignedInRoute).reduce((pathMap, route) => {
+            const routeProps = route.props();
+            pathMap[routeProps.path] = routeProps.component;
+            return pathMap;
+        }, {});
+
+        expect(pathMapSignedOut["/"]).toBe(HomePage);
+        expect(pathMapSignedOut["/settings"]).toBe(SettingsPage);
+        expect(pathMapSignedOut["/connections"]).toBe(ConnectionsPage);
+        expect(pathMapSignedIn["/sign-in"]).toBe(SignInPage);
+
+        // expect(pathMap["/sign-in"]).toBe(SignInPage);
     });
 
     it("renders a redirect when no route is matched", () => {
