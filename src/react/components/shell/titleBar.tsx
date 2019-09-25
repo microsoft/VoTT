@@ -3,12 +3,19 @@ import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
 import { strings } from "../../../common/strings";
-import { HelpMenu } from "./helpMenu";
+import IAuthActions, * as authActions from "../../../redux/actions/authActions";
+import { IApplicationState } from "../../../models/applicationState";
+import { bindActionCreators } from "redux";
+import * as appErrorActions from "../../../redux/actions/appErrorActions";
+import { connect } from "react-redux";
+import history from "../../../history";
+import { toast } from "react-toastify";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
     title?: string;
     fullName?: string;
+    actions?: IAuthActions;
 }
 
 export interface ITitleBarState {
@@ -19,6 +26,13 @@ export interface ITitleBarState {
     menu: Electron.Menu;
 }
 
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(authActions, dispatch),
+    };
+}
+
+@connect(mapDispatchToProps)
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     public state: ITitleBarState = {
         isElectron: false,
@@ -90,6 +104,9 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                    {fullName}
                 </div>
                 }
+                <div className="title-bar-sign-out" onClick={this.onClickSignOut}>
+                    Sign out
+                </div>
                 <div className="title-bar-controls">
                     {this.props.children}
                     {this.state.platform === PlatformType.Windows &&
@@ -265,6 +282,15 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 return "CmdOrCtrl+Shift+=";
             case "zoomout":
                 return "CmdOrCtrl+-";
+        }
+    }
+
+    private onClickSignOut = async () => {
+        try {
+            await this.props.actions.signOut();
+            history.push("/sign.in");
+        } catch {
+            toast.error("Sorry, we could not log you out.", { position: toast.POSITION.TOP_CENTER} );
         }
     }
 }

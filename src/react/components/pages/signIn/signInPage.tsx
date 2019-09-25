@@ -42,7 +42,7 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
             loginRequestPayload: null,
             auth: null,
         };
-        ApiService.removeToken();
+        // ApiService.removeToken();
         this.onFormSubmit = this.onFormSubmit;
     }
 

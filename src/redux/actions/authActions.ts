@@ -30,10 +30,8 @@ export function signIn(auth: IAuth): (dispatch: Dispatch) => Promise<void> {
  */
 export function signOut(): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
-        return IpcRendererProxy.send("SIGN_OUT")
-        .then(() => {
-            dispatch(signOutAction());
-        });
+        dispatch(signOutAction());
+        return Promise.resolve();
     };
 }
 

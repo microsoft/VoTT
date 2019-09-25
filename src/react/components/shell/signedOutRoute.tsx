@@ -5,7 +5,7 @@ import { Route } from "react-router-dom";
 
 export interface ILoggedInRouteProps extends React.Props<LoggedInRoute> {
     component: any;
-    path: string;
+    path?: string;
     exact?: boolean;
 }
 
@@ -41,9 +41,9 @@ export default class LoggedInRoute extends React.Component<ILoggedInRouteProps, 
                         <i className="fas fa-circle-notch fa-spin fa-2x" />
                     </div>;
         } else if (this.state.isAuth) {
-            return <Redirect to="/" />;
-        } else {
             return <Route path={this.props.path} exact={this.props.exact} component={this.props.component} />;
+        } else {
+            return <Redirect to="/sign-in" />;
         }
     }
 

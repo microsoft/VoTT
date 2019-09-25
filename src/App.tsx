@@ -17,12 +17,14 @@ import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
 import { HelpMenu } from "./react/components/shell/helpMenu";
 import history from "./history";
 import ApiService from "./services/apiService";
+import IAuthActions, * as authActions from "./redux/actions/authActions";
 
 interface IAppProps {
     currentProject?: IProject;
     appError?: IAppError;
     actions?: IAppErrorActions;
     auth?: IAuth;
+    authActions?: IAuthActions;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -36,6 +38,7 @@ function mapStateToProps(state: IApplicationState) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(appErrorActions, dispatch),
+        authActions: bindActionCreators(authActions, dispatch),
     };
 }
 
@@ -62,12 +65,12 @@ export default class App extends React.Component<IAppProps> {
     }
 
     public render() {
-
         const platform = global && global.process ? global.process.platform : "web";
         if (!this.props.auth.rememberUser) {
-            window.addEventListener("beforeunload", (e) => {
+            window.addEventListener("beforeunload", async (e) => {
                 event.preventDefault();
                 localStorage.removeItem("token");
+                await this.props.authActions.signOut();
             });
         }
         return (
@@ -88,10 +91,10 @@ export default class App extends React.Component<IAppProps> {
                                 </TitleBar>
                                 <div className="app-main">
                                     {
-                                        ApiService.getToken() !== null &&
+                                        this.props.auth.accessToken !== null &&
                                         <Sidebar project={this.props.currentProject} />
                                     }
-                                    <MainContentRouter />
+                                    <MainContentRouter isAuth={this.props.auth.accessToken === null ? false : true} />
                                 </div>
                                 <StatusBar>
                                     <StatusBarMetrics project={this.props.currentProject} />

@@ -51,6 +51,11 @@ class ApiService {
         return this.client.post(url, qs.stringify(data));
     }
 
+    public testToken = () => {
+        const url = "api/v1/login/test-token";
+        return this.client.post(url);
+    }
+
     public getCurrentUser = () => {
         const url = "api/v1/users/me";
         return this.client.get(url);
