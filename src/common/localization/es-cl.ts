@@ -21,6 +21,7 @@ export const spanish: IAppStrings = {
         maximize: "Maximizar",
         restore: "Restaurar",
         close: "Cerrar",
+        signOut: "Desconectar",
     },
     homePage: {
         newProject: "Nuevo Proyecto",

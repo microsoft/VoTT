@@ -2,7 +2,6 @@ import { ActionTypes } from "./actionTypes";
 import { IPayloadAction, createPayloadAction, createAction } from "./actionCreators";
 import { IAuth } from "../../models/applicationState";
 import { Dispatch, Action } from "redux";
-import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 
 /**
  * Actions which manage users auth

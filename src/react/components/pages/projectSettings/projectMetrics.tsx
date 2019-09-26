@@ -105,7 +105,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
                             title: interpolate(strings.projectMetrics.taggedAssets, { count: taggedAssetCount }),
                             bigness: 1,
                             children: [],
-                        clr: "#70c400",
+                            clr: "#70c400",
                             size: taggedAssetCount,
                             dontRotateLabel: true,
                         },

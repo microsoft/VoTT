@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
@@ -6,10 +6,10 @@ import { strings } from "../../../common/strings";
 import IAuthActions, * as authActions from "../../../redux/actions/authActions";
 import { IApplicationState, IAuth } from "../../../models/applicationState";
 import { bindActionCreators } from "redux";
-import * as appErrorActions from "../../../redux/actions/appErrorActions";
 import { connect } from "react-redux";
 import history from "../../../history";
 import { toast } from "react-toastify";
+import ApiService from "../../../services/apiService";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
@@ -113,7 +113,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 }
                 {this.props.auth.accessToken !== null &&
                 <div className="title-bar-sign-out" onClick={this.onClickSignOut}>
-                    Sign out
+                    {strings.titleBar.signOut}
                 </div>
                 }
                 <div className="title-bar-controls">
@@ -297,7 +297,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     private onClickSignOut = async () => {
         try {
             await this.props.actions.signOut();
-            localStorage.removeItem("token");
+            await ApiService.deleteTokenFromHeader();
             history.push("/sign-in");
         } catch (error) {
             toast.error("Sorry, we could not log you out.", { position: toast.POSITION.TOP_CENTER} );

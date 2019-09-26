@@ -9,7 +9,7 @@ import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
 import SignInPage from "../pages/signIn/signInPage";
 import SignedInRoute from "./signedInRoute";
-import SignedOutRoute from "./signedOutRoute";
+import AnonymousRoute from "./anonymousRoute";
 
 /**
  * @name - Main Content Router
@@ -19,17 +19,17 @@ export default function MainContentRouter() {
     return (
         <div className="app-content text-light">
             <Switch>
-                <SignedOutRoute path="/" exact component={HomePage} />
-                <SignedOutRoute path="/settings" component={AppSettingsPage} />
-                <SignedOutRoute path="/connections/:connectionId" component={ConnectionPage} />
-                <SignedOutRoute path="/connections" exact component={ConnectionPage} />
-                <SignedOutRoute path="/projects/:projectId/edit" component={EditorPage} />
-                <SignedOutRoute path="/projects/create" component={ProjectSettingsPage} />
-                <SignedOutRoute path="/projects/:projectId/settings" component={ProjectSettingsPage} />
-                <SignedOutRoute path="/projects/:projectId/export" component={ExportPage} />
-                <SignedOutRoute path="/projects/:projectId/active-learning" component={ActiveLearningPage} />
+                <AnonymousRoute path="/" exact component={HomePage} />
+                <AnonymousRoute path="/settings" component={AppSettingsPage} />
+                <AnonymousRoute path="/connections/:connectionId" component={ConnectionPage} />
+                <AnonymousRoute path="/connections" exact component={ConnectionPage} />
+                <AnonymousRoute path="/projects/:projectId/edit" component={EditorPage} />
+                <AnonymousRoute path="/projects/create" component={ProjectSettingsPage} />
+                <AnonymousRoute path="/projects/:projectId/settings" component={ProjectSettingsPage} />
+                <AnonymousRoute path="/projects/:projectId/export" component={ExportPage} />
+                <AnonymousRoute path="/projects/:projectId/active-learning" component={ActiveLearningPage} />
                 <SignedInRoute path="/sign-in" exact component={SignInPage} />
-                <SignedOutRoute component={HomePage} />
+                <AnonymousRoute component={HomePage} />
             </Switch>
         </div>
     );

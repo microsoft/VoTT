@@ -47,6 +47,12 @@ describe("Sign In Page", () => {
                 full_name: auth.fullName,
             },
         }));
+        jest.spyOn(ApiService, "updateHeader")
+        .mockImplementationOnce(() => Promise.resolve({
+            data: {
+                token: auth.accessToken,
+            },
+        }));
     });
 
     it("saves the auth values when the form is submitted and redirect to home", async () => {
@@ -56,12 +62,10 @@ describe("Sign In Page", () => {
         const signInAction = jest.spyOn(props.actions, "signIn");
         const wrapper = createComponent(store, props);
         const homepageSpy = jest.spyOn(history, "push");
-        const localStorageSpy = jest.spyOn(Storage.prototype, ("setItem"));
 
         await MockFactory.flushUi(() => wrapper.find("form").simulate("submit"));
         expect(signInAction).toBeCalledWith(auth);
         expect(store.getState().auth).not.toBeNull();
-        expect(localStorageSpy).toHaveBeenCalled();
         expect(homepageSpy).toBeCalled();
     });
 

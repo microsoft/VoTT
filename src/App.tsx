@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { Router, Redirect } from "react-router-dom";
+import { Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Sidebar from "./react/components/shell/sidebar";
 import MainContentRouter from "./react/components/shell/mainContentRouter";
@@ -16,7 +16,6 @@ import { StatusBar } from "./react/components/shell/statusBar";
 import { StatusBarMetrics } from "./react/components/shell/statusBarMetrics";
 import { HelpMenu } from "./react/components/shell/helpMenu";
 import history from "./history";
-import ApiService from "./services/apiService";
 import IAuthActions, * as authActions from "./redux/actions/authActions";
 
 interface IAppProps {
@@ -25,6 +24,10 @@ interface IAppProps {
     actions?: IAppErrorActions;
     auth?: IAuth;
     authActions?: IAuthActions;
+}
+
+interface IAppState {
+    currentProject: IProject;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -47,7 +50,7 @@ function mapDispatchToProps(dispatch) {
  * @description - Root level component for VoTT Application
  */
 @connect(mapStateToProps, mapDispatchToProps)
-export default class App extends React.Component<IAppProps> {
+export default class App extends React.Component<IAppProps, IAppState> {
     constructor(props, context) {
         super(props, context);
 
@@ -66,13 +69,14 @@ export default class App extends React.Component<IAppProps> {
 
     public render() {
         const platform = global && global.process ? global.process.platform : "web";
-        if (!this.props.auth.rememberUser) {
+        if (this.props.auth.rememberUser === false) {
+            console.log("no remember");
             window.addEventListener("beforeunload", async (e) => {
                 event.preventDefault();
-                localStorage.removeItem("token");
                 await this.props.authActions.signOut();
             });
         }
+
         return (
             <Fragment>
                 <ErrorHandler
@@ -86,12 +90,12 @@ export default class App extends React.Component<IAppProps> {
                             <div className={`app-shell platform-${platform}`}>
                                 <TitleBar icon="fas fa-tags"
                                     title={this.props.currentProject ? this.props.currentProject.name : ""}
-                                    fullName={ApiService.getToken() ? this.props.auth.fullName : ""}>
-                                    <div className="app-help-menu-icon"><HelpMenu/></div>
+                                    fullName={!!this.props.auth.accessToken ? this.props.auth.fullName : ""}>
+                                    <div className="app-help-menu-icon"><HelpMenu /></div>
                                 </TitleBar>
                                 <div className="app-main">
                                     {
-                                        this.props.auth.accessToken !== null &&
+                                        !!this.props.auth.accessToken &&
                                         <Sidebar project={this.props.currentProject} />
                                     }
                                     <MainContentRouter />
@@ -107,4 +111,5 @@ export default class App extends React.Component<IAppProps> {
             </Fragment>
         );
     }
+
 }

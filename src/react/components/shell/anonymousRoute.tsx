@@ -3,18 +3,18 @@ import { Redirect } from "react-router-dom";
 import apiService from "../../../services/apiService";
 import { Route } from "react-router-dom";
 
-export interface ILoggedInRouteProps extends React.Props<LoggedInRoute> {
+export interface IAnonymousRouteProps extends React.Props<AnonymousRoute> {
     component: any;
     path?: string;
     exact?: boolean;
 }
 
-export interface ILoggedInRouteState {
+export interface IAnonymousRouteState {
     isAuth: boolean;
     loading: boolean;
 }
 
-export default class LoggedInRoute extends React.Component<ILoggedInRouteProps, ILoggedInRouteState> {
+export default class AnonymousRoute extends React.Component<IAnonymousRouteProps, IAnonymousRouteState> {
     constructor(props) {
         super(props);
         this.state = {
@@ -42,9 +42,7 @@ export default class LoggedInRoute extends React.Component<ILoggedInRouteProps, 
                     </div>;
         } else if (this.state.isAuth) {
             return <Route path={this.props.path} exact={this.props.exact} component={this.props.component} />;
-        } else {
-            return <Redirect to="/sign-in" />;
         }
+        return <Redirect to="/sign-in" />;
     }
-
 }

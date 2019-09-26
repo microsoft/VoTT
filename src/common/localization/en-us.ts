@@ -21,6 +21,7 @@ export const english: IAppStrings = {
         maximize: "Maximize",
         restore: "Restore",
         close: "Close",
+        signOut: "Sign out",
     },
     homePage: {
         newProject: "New Project",

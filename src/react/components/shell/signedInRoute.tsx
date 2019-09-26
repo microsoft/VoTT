@@ -1,41 +1,15 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
-import apiService from "../../../services/apiService";
 import { Route } from "react-router-dom";
+import AnonymousRoute from "./anonymousRoute";
 
-export interface ILoggedInRouteProps extends React.Props<LoggedInRoute> {
-    component: any;
-    path: string;
-    exact?: boolean;
-}
-
-export interface ILoggedInRouteState {
-    isAuth: boolean;
-    loading: boolean;
-}
-
-export default class LoggedInRoute extends React.Component<ILoggedInRouteProps, ILoggedInRouteState> {
+export default class SignedInRoute extends AnonymousRoute {
     constructor(props) {
         super(props);
-        this.state = {
-            isAuth: false,
-            loading: true,
-        };
-    }
-
-    public async componentDidMount() {
-        this.setState({loading: true});
-        try {
-            await apiService.testToken();
-            this.setState({isAuth: true});
-        } catch {
-            this.setState({isAuth: false});
-        } finally {
-            this.setState({loading: false});
-        }
     }
 
     public render() {
+        console.log("in sign in page route");
         if (this.state.loading) {
             return  <div>
                         <i className="fas fa-circle-notch fa-spin fa-2x" />
