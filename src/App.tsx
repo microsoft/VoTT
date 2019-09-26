@@ -70,7 +70,6 @@ export default class App extends React.Component<IAppProps, IAppState> {
     public render() {
         const platform = global && global.process ? global.process.platform : "web";
         if (this.props.auth.rememberUser === false) {
-            console.log("no remember");
             window.addEventListener("beforeunload", async (e) => {
                 event.preventDefault();
                 await this.props.authActions.signOut();

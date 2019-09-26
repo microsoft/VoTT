@@ -32,20 +32,10 @@ class ApiService {
 
     }
 
-    public updateHeader = (token: string) => {
+    public updateToken = (token: string) => {
         this.client.interceptors.request.use(
             async (config) => {
                 config.headers.Authorization = `Bearer ${token}`;
-                return config;
-            },
-            (error) => Promise.reject(error),
-        );
-    }
-
-    public deleteTokenFromHeader = () => {
-        this.client.interceptors.request.use(
-            async (config) => {
-                config.headers.Authorization = "";
                 return config;
             },
             (error) => Promise.reject(error),

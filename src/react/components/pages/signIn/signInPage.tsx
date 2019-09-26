@@ -73,9 +73,8 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
 
     private async sendCredentials(rememberUser: boolean) {
         try {
-            console.log("just before login...");
             const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
-            await ApiService.updateHeader(token.data.access_token);
+            await ApiService.updateToken(token.data.access_token);
             const userInfo = await ApiService.getCurrentUser();
             this.setState({
                 auth: {

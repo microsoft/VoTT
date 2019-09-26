@@ -1,7 +1,6 @@
-import React, { Component } from "react";
-import { Redirect } from "react-router-dom";
+import React from "react";
+import { Redirect, Route } from "react-router-dom";
 import apiService from "../../../services/apiService";
-import { Route } from "react-router-dom";
 
 export interface IAnonymousRouteProps extends React.Props<AnonymousRoute> {
     component: any;

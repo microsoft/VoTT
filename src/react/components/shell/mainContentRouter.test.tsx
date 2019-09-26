@@ -2,8 +2,8 @@ import { shallow, mount, ReactWrapper } from "enzyme";
 
 import React from "react";
 import { StaticRouter as Router } from "react-router-dom";
-import SignInPageRoute from "./signInPageRoute";
-import AllPagesRoute from "./allPagesRoute";
+import SignInPageRoute from "./signedInRoute";
+import AllPagesRoute from "./anonymousRoute";
 import { Provider } from "react-redux";
 import { AnyAction, Store } from "redux";
 import createReduxStore from "../../../redux/store/store";

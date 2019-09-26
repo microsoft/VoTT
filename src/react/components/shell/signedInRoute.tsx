@@ -1,6 +1,5 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
-import { Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import AnonymousRoute from "./anonymousRoute";
 
 export default class SignedInRoute extends AnonymousRoute {
@@ -9,7 +8,6 @@ export default class SignedInRoute extends AnonymousRoute {
     }
 
     public render() {
-        console.log("in sign in page route");
         if (this.state.loading) {
             return  <div>
                         <i className="fas fa-circle-notch fa-spin fa-2x" />
