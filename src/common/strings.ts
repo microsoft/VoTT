@@ -232,6 +232,7 @@ export interface IAppStrings {
             saveProject: string;
             exportProject: string;
             activeLearning: string;
+            magnifier: string;
         }
         videoPlayer: {
             nextTaggedFrame: {

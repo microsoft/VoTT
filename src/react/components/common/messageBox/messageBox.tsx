@@ -86,7 +86,7 @@ export default class MessageBox extends React.Component<IMessageBoxProps, IMessa
         this.setState({
             isOpen: false,
         }, () => {
-            if (!this.state.isButtonSelected && this.props.onCancel) {
+            if (this.props.onCancel) {
                 this.props.onCancel();
             }
         });

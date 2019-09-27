@@ -31,6 +31,7 @@ import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 import { toast } from "react-toastify";
+import { MagnifierModalMessage } from "./MagnifierModalMessage";
 
 /**
  * Properties for Editor Page
@@ -78,6 +79,7 @@ export interface IEditorPageState {
     isValid: boolean;
     /** Whether the show invalid region warning alert should display */
     showInvalidRegionWarning: boolean;
+    magnifierModalIsOpen: boolean;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -115,6 +117,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
+        magnifierModalIsOpen: false,
     };
 
     private activeLearningService: ActiveLearningService = null;
@@ -260,6 +263,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             onConfirm={this.onTagDeleted} />
                     </div>
                 </SplitPane>
+
+                <Alert show={this.state.magnifierModalIsOpen}
+                    title="Native Magnifier Instruction"
+                    // tslint:disable-next-line:max-line-length
+                    message={<MagnifierModalMessage />}
+                    closeButtonColor="info"
+                    onClose={this.closeNativeMagnifierModal} />
+
                 <Alert show={this.state.showInvalidRegionWarning}
                     title={strings.editorPage.messages.enforceTaggedRegions.title}
                     // tslint:disable-next-line:max-line-length
@@ -268,6 +279,18 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     onClose={() => this.setState({ showInvalidRegionWarning: false })} />
             </div>
         );
+    }
+
+    private closeNativeMagnifierModal = () => {
+        this.setState({
+            magnifierModalIsOpen: false,
+        });
+    }
+
+    private showNativeMagnifierModal = () => {
+        this.setState({
+            magnifierModalIsOpen: true,
+        });
     }
 
     private onPageClick = () => {
@@ -560,6 +583,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 break;
             case ToolbarItemName.ActiveLearning:
                 await this.predictRegions();
+                break;
+            case ToolbarItemName.Magnifier:
+                this.showNativeMagnifierModal();
                 break;
         }
     }
