@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
-import apiService from "../../../services/apiService";
+import ApiService from "../../../services/apiService";
 
 export interface IAnonymousRouteProps extends React.Props<AnonymousRoute> {
     component: any;
@@ -25,7 +25,7 @@ export default class AnonymousRoute extends React.Component<IAnonymousRouteProps
     public async componentDidMount() {
         this.setState({loading: true});
         try {
-            await apiService.testToken();
+            await ApiService.testToken();
             this.setState({isAuth: true});
         } catch {
             this.setState({isAuth: false});

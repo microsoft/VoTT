@@ -10,6 +10,7 @@ import { connect } from "react-redux";
 import history from "../../../history";
 import { toast } from "react-toastify";
 import ApiService from "../../../services/apiService";
+import apiService from "../../../services/apiService";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
@@ -297,7 +298,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     private onClickSignOut = async () => {
         try {
             await this.props.actions.signOut();
-            await ApiService.updateToken(null);
+            // await apiService.deleteToken();
             history.push("/sign-in");
         } catch (error) {
             toast.error("Sorry, we could not log you out.", { position: toast.POSITION.TOP_CENTER} );

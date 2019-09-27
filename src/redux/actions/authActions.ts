@@ -11,6 +11,7 @@ import { Dispatch, Action } from "redux";
 export default interface IAuthActions {
     signIn(accessToken: IAuth): Promise<void>;
     signOut(): Promise<void>;
+    saveFullName(fullName: string): Promise<void>;
 }
 
 /**
@@ -35,6 +36,16 @@ export function signOut(): (dispatch: Dispatch) => Promise<void> {
 }
 
 /**
+ * Save full name of the user
+ */
+export function saveFullName(fullName: string): (dispatch: Dispatch) => Promise<void> {
+    return (dispatch: Dispatch) => {
+        dispatch(saveFullNameAction(fullName));
+        return Promise.resolve();
+    };
+}
+
+/**
  * Sign in action type
  */
 export interface ISignInAction extends IPayloadAction<string, IAuth> {
@@ -49,6 +60,13 @@ export interface ISignOutAction extends Action<string> {
 }
 
 /**
+ * Save full name action type
+ */
+export interface ISaveFullNameAction extends IPayloadAction<string, string> {
+    type: ActionTypes.SAVE_FULL_NAME_SUCCESS;
+}
+
+/**
  * Instance of sign in action
  */
 export const signInAction = createPayloadAction<ISignInAction>(ActionTypes.SIGN_IN_SUCCESS);
@@ -56,3 +74,7 @@ export const signInAction = createPayloadAction<ISignInAction>(ActionTypes.SIGN_
  * Instance of sign out action
  */
 export const signOutAction = createAction<ISignOutAction>(ActionTypes.SIGN_OUT_SUCCESS);
+/**
+ * Instance of save full name action
+ */
+export const saveFullNameAction = createPayloadAction<ISaveFullNameAction>(ActionTypes.SAVE_FULL_NAME_SUCCESS);

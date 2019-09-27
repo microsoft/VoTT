@@ -182,7 +182,6 @@ describe("TileBar Component", () => {
 
                 // Trigger full screen
                 wrapper.setState({ fullscreen: true });
-
                 expect(wrapper.find(".title-bar").exists()).toBe(false);
             });
 

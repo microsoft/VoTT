@@ -8,6 +8,8 @@ export const reducer = (state: IAuth = null, action: AnyAction): IAuth => {
             return { ...state, ...action.payload };
         case ActionTypes.SIGN_OUT_SUCCESS:
             return { ...state, accessToken: null, fullName: null, rememberUser: null };
+        case ActionTypes.SAVE_FULL_NAME_SUCCESS:
+            return { ...state, fullName: action.payload};
         default:
             return state;
     }

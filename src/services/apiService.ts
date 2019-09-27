@@ -32,16 +32,6 @@ class ApiService {
 
     }
 
-    public updateToken = (token: string) => {
-        this.client.interceptors.request.use(
-            async (config) => {
-                config.headers.Authorization = `Bearer ${token}`;
-                return config;
-            },
-            (error) => Promise.reject(error),
-        );
-    }
-
     public loginWithCredentials = (data: ILoginRequestPayload) => {
         const url = "api/v1/login/access-token";
         return this.client.post(url, qs.stringify(data));
