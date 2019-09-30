@@ -31,7 +31,6 @@ describe("Auth Redux Actions", () => {
             type: ActionTypes.SIGN_IN_SUCCESS,
             payload: authObject,
         });
-        expect(IpcRendererProxy.send).toBeCalledWith("SIGN_IN", authObject);
     });
 
     it("Sign out action forwards call to IpcRenderer proxy and dispatches redux action", async () => {
@@ -42,6 +41,5 @@ describe("Auth Redux Actions", () => {
         expect(actions[0]).toEqual({
             type: ActionTypes.SIGN_OUT_SUCCESS,
         });
-        expect(IpcRendererProxy.send).toBeCalledWith("SIGN_OUT");
     });
 });
