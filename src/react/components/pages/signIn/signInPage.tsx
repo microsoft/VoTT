@@ -1,8 +1,8 @@
 import * as React from "react";
 import { ISignIn, IAuth } from "../../../../models/applicationState";
 import { SignInForm } from "./signInForm";
-import { Route, Redirect } from "react-router-dom";
-import ApiService, { ILoginRequestPayload } from "../../../../services/apiService";
+import { Route } from "react-router-dom";
+import apiService, { ILoginRequestPayload } from "../../../../services/apiService";
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 export interface ISignInPageProps extends React.Props<SignInPage> {
     actions: IAuthActions;
     signIn: ISignIn;
+    apiService: any;
 }
 
 export interface ISignInPageState {
@@ -42,7 +43,6 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
             loginRequestPayload: null,
             auth: null,
         };
-        ApiService.removeToken();
         this.onFormSubmit = this.onFormSubmit;
     }
 
@@ -74,17 +74,17 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
 
     private async sendCredentials(rememberUser: boolean) {
         try {
-            const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
-            localStorage.setItem("token", token.data.access_token);
-            const userInfo = await ApiService.getCurrentUser();
+            const token = await apiService.loginWithCredentials(this.state.loginRequestPayload);
             this.setState({
                 auth: {
                     accessToken: token.data.access_token,
-                    fullName: userInfo.data.full_name,
+                    fullName: null,
                     rememberUser,
                 },
             });
             await this.props.actions.signIn(this.state.auth);
+            const userInfo = await apiService.getCurrentUser();
+            await this.props.actions.saveFullName(userInfo.data.full_name);
             history.push("/");
 
         } catch (error) {

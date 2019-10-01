@@ -21,7 +21,7 @@ class ApiService {
 
         this.client.interceptors.request.use(
             (config) => {
-                const token = localStorage.getItem("token");
+                const token = JSON.parse(localStorage.getItem("auth")).accessToken;
                 if (token) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
@@ -29,26 +29,17 @@ class ApiService {
             },
             (error) => Promise.reject(error),
         );
+
     }
-
-    public updateToken = (token: string) => {
-        localStorage.setItem("token", token);
-        this.client.interceptors.request.use(
-            async (config) => {
-                config.headers.Authorization = `Bearer ${token}`;
-                return config;
-            },
-            (error) => Promise.reject(error),
-        );
-    }
-
-    public getToken = (): string | null => localStorage.getItem("token");
-
-    public removeToken = (): void => localStorage.removeItem("token");
 
     public loginWithCredentials = (data: ILoginRequestPayload) => {
         const url = "api/v1/login/access-token";
         return this.client.post(url, qs.stringify(data));
+    }
+
+    public testToken = () => {
+        const url = "api/v1/login/test-token";
+        return this.client.post(url);
     }
 
     public getCurrentUser = () => {

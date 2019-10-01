@@ -1,14 +1,21 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
 import { strings } from "../../../common/strings";
-import { HelpMenu } from "./helpMenu";
+import IAuthActions, * as authActions from "../../../redux/actions/authActions";
+import { IApplicationState, IAuth } from "../../../models/applicationState";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import history from "../../../history";
+import { toast } from "react-toastify";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
     title?: string;
     fullName?: string;
+    actions?: IAuthActions;
+    auth?: IAuth;
 }
 
 export interface ITitleBarState {
@@ -19,6 +26,19 @@ export interface ITitleBarState {
     menu: Electron.Menu;
 }
 
+function mapStateToProps(state: IApplicationState) {
+    return {
+        auth: state.auth,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(authActions, dispatch),
+    };
+}
+
+@connect(mapStateToProps, mapDispatchToProps)
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     public state: ITitleBarState = {
         isElectron: false,
@@ -88,6 +108,11 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 {fullName &&
                 <div className="title-bar-user-full-name">
                    {fullName}
+                </div>
+                }
+                {this.props.auth.accessToken !== null &&
+                <div className="title-bar-sign-out" onClick={this.onClickSignOut}>
+                    {strings.titleBar.signOut}
                 </div>
                 }
                 <div className="title-bar-controls">
@@ -265,6 +290,15 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 return "CmdOrCtrl+Shift+=";
             case "zoomout":
                 return "CmdOrCtrl+-";
+        }
+    }
+
+    private onClickSignOut = async () => {
+        try {
+            await this.props.actions.signOut();
+            history.push("/sign-in");
+        } catch (error) {
+            toast.error("Sorry, we could not log you out.", { position: toast.POSITION.TOP_CENTER} );
         }
     }
 }
