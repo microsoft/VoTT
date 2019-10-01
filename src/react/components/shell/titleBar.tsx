@@ -83,7 +83,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         if (this.state.fullscreen) {
             return null;
         }
-        const {fullName} = this.props;
+        const {fullName, auth} = this.props;
 
         return (
             <div className="title-bar bg-lighter-3">
@@ -106,14 +106,14 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 }
                 <div className="title-bar-main">{this.props.title || "Welcome"} - VoTT</div>
                 {fullName &&
-                <div className="title-bar-user-full-name">
-                   {fullName}
-                </div>
+                    <div className="title-bar-user-full-name">
+                        {fullName}
+                    </div>
                 }
-                {this.props.auth.accessToken !== null &&
-                <div className="title-bar-sign-out" onClick={this.onClickSignOut}>
-                    {strings.titleBar.signOut}
-                </div>
+                {auth.accessToken &&
+                    <div className="title-bar-sign-out" onClick={this.onClickSignOut}>
+                        {strings.titleBar.signOut}
+                    </div>
                 }
                 <div className="title-bar-controls">
                     {this.props.children}

@@ -32,39 +32,19 @@ describe("Sign In Page", () => {
         expect(wrapper.find(SignInForm).exists()).toBe(true);
     });
 
-    it("gets the information from the API", async () => {
-        const auth = MockFactory.createTestAuth("access_token", "John Doe", false);
-
-        jest.spyOn(ApiService, "loginWithCredentials")
-            .mockImplementationOnce(() => Promise.resolve({
-                data: {
-                    access_token: auth.accessToken,
-                },
-            }));
-        jest.spyOn(ApiService, "getCurrentUser")
-        .mockImplementationOnce(() => Promise.resolve({
-            data: {
-                full_name: auth.fullName,
-            },
-        }));
-        jest.spyOn(ApiService, "updateHeader")
-        .mockImplementationOnce(() => Promise.resolve({
-            data: {
-                token: auth.accessToken,
-            },
-        }));
-    });
-
     it("saves the auth values when the form is submitted and redirect to home", async () => {
-        const auth = MockFactory.createTestAuth("access_token", "John Doe", false);
+        const auth = MockFactory.createTestAuth("access_token", null, false);
         const store = createStore(auth);
         const props = createProps();
+        const fullName = "John Doe";
         const signInAction = jest.spyOn(props.actions, "signIn");
+        const saveFullNameAction = jest.spyOn(props.actions, "saveFullName");
         const wrapper = createComponent(store, props);
         const homepageSpy = jest.spyOn(history, "push");
-
+        MockApiCalls(auth.accessToken, fullName);
         await MockFactory.flushUi(() => wrapper.find("form").simulate("submit"));
         expect(signInAction).toBeCalledWith(auth);
+        expect(saveFullNameAction).toBeCalledWith(fullName);
         expect(store.getState().auth).not.toBeNull();
         expect(homepageSpy).toBeCalled();
     });
@@ -92,4 +72,18 @@ describe("Sign In Page", () => {
         };
     }
 
+    function MockApiCalls(accessToken: string = null, fullName: string = null) {
+        jest.spyOn(ApiService, "loginWithCredentials")
+            .mockImplementationOnce(() => Promise.resolve({
+                data: {
+                    access_token: accessToken,
+                },
+            }));
+        jest.spyOn(ApiService, "getCurrentUser")
+            .mockImplementationOnce(() => Promise.resolve({
+                data: {
+                    full_name: fullName,
+                },
+            }));
+    }
 });

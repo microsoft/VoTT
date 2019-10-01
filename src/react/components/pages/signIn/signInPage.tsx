@@ -2,7 +2,7 @@ import * as React from "react";
 import { ISignIn, IAuth } from "../../../../models/applicationState";
 import { SignInForm } from "./signInForm";
 import { Route } from "react-router-dom";
-import apiService, { ILoginRequestPayload } from "../../../../services/apiService";
+import apiService, { ILoginRequestPayload, IApiService } from "../../../../services/apiService";
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 export interface ISignInPageProps extends React.Props<SignInPage> {
     actions: IAuthActions;
     signIn: ISignIn;
-    apiService: any;
 }
 
 export interface ISignInPageState {

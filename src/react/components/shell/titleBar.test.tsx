@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { IApplicationState, IAuth } from "../../../models/applicationState";
 import createReduxStore from "./../../../redux/store/store";
 import MockFactory from "../../../common/mockFactory";
+import IAuthActions, * as authActions from "../../../redux/actions/authActions";
 
 describe("TileBar Component", () => {
     let wrapper: ReactWrapper<ITitleBarProps, ITitleBarState>;
@@ -16,6 +17,8 @@ describe("TileBar Component", () => {
         title: "Test Title",
         icon: "fas fa-tags",
         fullName: "John Doe",
+        actions: (authActions as any) as IAuthActions,
+        auth: MockFactory.createTestAuth(),
     };
 
     let handlerMapping = {};
@@ -64,11 +67,13 @@ describe("TileBar Component", () => {
         },
     };
 
-    function createComponent(   store: Store<IApplicationState>,
-                                props?: ITitleBarProps): ReactWrapper<ITitleBarProps, ITitleBarState> {
+    function createComponent(
+        store?: Store<IApplicationState, AnyAction>,
+        props?: ITitleBarProps,
+    ): ReactWrapper<ITitleBarProps, ITitleBarState> {
         props = props || defaultProps;
         return mount(
-            <Provider store={store} >
+            <Provider store={store}>
                 <TitleBar {...props}>
                     <ul>
                         <li>

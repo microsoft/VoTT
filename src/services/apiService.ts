@@ -7,7 +7,13 @@ export interface ILoginRequestPayload {
     password: string;
 }
 
-class ApiService {
+export interface IApiService {
+    loginWithCredentials(data: ILoginRequestPayload): Promise<object>;
+    testToken(): Promise<object>;
+    getCurrentUser(): Promise<object>;
+}
+
+export class ApiService implements IApiService {
     private client: AxiosInstance;
 
     constructor() {
