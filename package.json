@@ -117,10 +117,13 @@
         "enzyme": "^3.7.0",
         "enzyme-adapter-react-16": "^1.7.0",
         "foreman": "^3.0.1",
+        "husky": "^3.0.8",
         "jest-enzyme": "^7.0.1",
         "jquery": "^3.3.1",
+        "lint-staged": "^9.4.1",
         "node-sass": "^4.10.0",
         "popper.js": "^1.14.6",
+        "prettier": "^1.18.2",
         "redux-immutable-state-invariant": "^2.1.0",
         "redux-logger": "^3.0.6",
         "redux-mock-store": "^1.5.3",
@@ -134,5 +137,15 @@
     "engines": {
         "node": ">=10.14.2",
         "npm": ">=6.4.1"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.{js,ts,tsx}": [
+            "prettier --write"
+        ]
     }
 }
