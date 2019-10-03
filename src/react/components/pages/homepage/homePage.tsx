@@ -13,15 +13,20 @@ import "./homePage.scss";
 import RecentProjectItem from "./recentProjectItem";
 import { constants } from "../../../../common/constants";
 import {
-    IApplicationState, IConnection, IProject, IFileInfo,
-    ErrorCode, AppError, IAppSettings,
+    IApplicationState,
+    IConnection,
+    IProject,
+    IFileInfo,
+    ErrorCode,
+    AppError,
+    IAppSettings
 } from "../../../../models/applicationState";
 import ImportService from "../../../../services/importService";
 import { IAssetMetadata } from "../../../../models/applicationState";
 import { toast } from "react-toastify";
 import { isElectron } from "../../../../common/hostProcess";
 
-export interface IHomePageProps extends RouteComponentProps, React.Props<HomePage> {
+export interface IHomePageProps extends RouteComponentProps {
     recentProjects: IProject[];
     connections: IConnection[];
     actions: IProjectActions;
@@ -39,21 +44,24 @@ function mapStateToProps(state: IApplicationState) {
         recentProjects: state.recentProjects,
         connections: state.connections,
         appSettings: state.appSettings,
-        project: state.currentProject,
+        project: state.currentProject
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
-        applicationActions: bindActionCreators(applicationActions, dispatch),
+        applicationActions: bindActionCreators(applicationActions, dispatch)
     };
 }
 
-@connect(mapStateToProps, mapDispatchToProps)
+@connect(
+    mapStateToProps,
+    mapDispatchToProps
+)
 export default class HomePage extends React.Component<IHomePageProps, IHomePageState> {
     public state: IHomePageState = {
-        cloudPickerOpen: false,
+        cloudPickerOpen: false
     };
     private filePicker: React.RefObject<FilePicker> = React.createRef();
     private deleteConfirm: React.RefObject<Confirm> = React.createRef();
@@ -67,58 +75,75 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
                     <ul>
                         <li>
                             <a href="#" onClick={this.createNewProject} className="p-5 new-project">
-                                <i className="fas fa-folder-plus fa-9x"></i>
+                                <i className="fas fa-folder-plus fa-9x" />
                                 <h6>{strings.homePage.newProject}</h6>
                             </a>
                         </li>
-                        {isElectron() &&
+                        {isElectron() && (
                             <li>
-                                <a href="#" className="p-5 file-upload"
-                                    onClick={() => this.filePicker.current.upload()} >
-                                    <i className="fas fa-folder-open fa-9x"></i>
+                                <a
+                                    href="#"
+                                    className="p-5 file-upload"
+                                    onClick={() => this.filePicker.current.upload()}
+                                >
+                                    <i className="fas fa-folder-open fa-9x" />
                                     <h6>{strings.homePage.openLocalProject.title}</h6>
                                 </a>
-                                <FilePicker ref={this.filePicker}
+                                <FilePicker
+                                    ref={this.filePicker}
                                     onChange={this.onProjectFileUpload}
-                                    onError={this.onProjectFileUploadError} />
+                                    onError={this.onProjectFileUploadError}
+                                />
                             </li>
-                        }
+                        )}
                         <li>
                             {/*Open Cloud Project*/}
-                            <a href="#" onClick={this.handleOpenCloudProjectClick} className="p-5 cloud-open-project">
-                                <i className="fas fa-cloud fa-9x"></i>
+                            <a
+                                href="#"
+                                onClick={this.handleOpenCloudProjectClick}
+                                className="p-5 cloud-open-project"
+                            >
+                                <i className="fas fa-cloud fa-9x" />
                                 <h6>{strings.homePage.openCloudProject.title}</h6>
                             </a>
                             <CloudFilePicker
                                 ref={this.cloudFilePicker}
                                 connections={this.props.connections}
-                                onSubmit={(content) => this.loadSelectedProject(JSON.parse(content))}
+                                onSubmit={content => this.loadSelectedProject(JSON.parse(content))}
                                 fileExtension={constants.projectFileExtension}
                             />
                         </li>
                     </ul>
                 </div>
-                {(this.props.recentProjects && this.props.recentProjects.length > 0) &&
+                {this.props.recentProjects && this.props.recentProjects.length > 0 && (
                     <div className="app-homepage-recent bg-lighter-1">
                         <CondensedList
                             title={strings.homePage.recentProjects}
                             Component={RecentProjectItem}
                             items={this.props.recentProjects}
                             onClick={this.loadSelectedProject}
-                            onDelete={(project) => this.deleteConfirm.current.open(project)} />
+                            onDelete={project => this.deleteConfirm.current.open(project)}
+                        />
                     </div>
-                }
-                <Confirm title="Delete Project"
+                )}
+                <Confirm
+                    title="Delete Project"
                     ref={this.deleteConfirm as any}
-                    message={(project: IProject) => `${strings.homePage.deleteProject.confirmation} ${project.name}?`}
+                    message={(project: IProject) =>
+                        `${strings.homePage.deleteProject.confirmation} ${project.name}?`
+                    }
                     confirmButtonColor="danger"
-                    onConfirm={this.deleteProject} />
-                <Confirm title="Import Project"
+                    onConfirm={this.deleteProject}
+                />
+                <Confirm
+                    title="Import Project"
                     ref={this.importConfirm as any}
                     message={(project: IFileInfo) =>
-                        interpolate(strings.homePage.importProject.confirmation, { project })}
+                        interpolate(strings.homePage.importProject.confirmation, { project })
+                    }
                     confirmButtonColor="danger"
-                    onConfirm={this.convertProject} />
+                    onConfirm={this.convertProject}
+                />
             </div>
         );
     }
@@ -128,11 +153,11 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
         this.props.history.push("/projects/create");
 
         e.preventDefault();
-    }
+    };
 
     private handleOpenCloudProjectClick = () => {
         this.cloudFilePicker.current.open();
-    }
+    };
 
     private onProjectFileUpload = async (e, project) => {
         let projectJson: IProject;
@@ -153,7 +178,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
         } else {
             await this.loadSelectedProject(projectJson);
         }
-    }
+    };
 
     private onProjectFileUploadError = (e, error: any) => {
         if (error instanceof AppError) {
@@ -161,21 +186,25 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
         }
 
         throw new AppError(ErrorCode.ProjectUploadError, "Error uploading project file");
-    }
+    };
 
     private loadSelectedProject = async (project: IProject) => {
         await this.props.actions.loadProject(project);
         this.props.history.push(`/projects/${project.id}/edit`);
-    }
+    };
 
     private deleteProject = async (project: IProject) => {
         try {
             await this.props.actions.deleteProject(project);
-            toast.info(interpolate(strings.homePage.messages.deleteSuccess, { project }));
+            toast.info(
+                interpolate(strings.homePage.messages.deleteSuccess, {
+                    project
+                })
+            );
         } catch (error) {
             throw new AppError(ErrorCode.ProjectDeleteError, "Error deleting project file");
         }
-    }
+    };
 
     private convertProject = async (projectInfo: IFileInfo) => {
         const importService = new ImportService();
@@ -194,7 +223,7 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
             generatedAssetMetadata = await importService.generateAssets(projectInfo, project);
             await this.props.actions.saveProject(project);
             await this.props.actions.loadProject(project);
-            await generatedAssetMetadata.mapAsync((assetMetadata) => {
+            await generatedAssetMetadata.mapAsync(assetMetadata => {
                 return this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
             });
         } catch (e) {
@@ -203,5 +232,5 @@ export default class HomePage extends React.Component<IHomePageProps, IHomePageS
 
         await this.props.actions.saveProject(this.props.project);
         await this.loadSelectedProject(this.props.project);
-    }
+    };
 }

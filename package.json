@@ -129,6 +129,7 @@
         "redux-mock-store": "^1.5.3",
         "ts-loader": "^5.3.0",
         "tslint": "^5.11.0",
+        "tslint-config-prettier": "^1.18.0",
         "typescript": "^3.1.6",
         "webpack": "^4.19.1",
         "webpack-cli": "^3.1.2",
