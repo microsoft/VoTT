@@ -331,3 +331,11 @@ There are many ways to contribute to VoTT -- please review our [contribution gui
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see
 the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com)
 with any additional questions or comments.
+
+The project has Prettier tool set up, so the code will be auto-formatted for you.
+
+Prettier has been also integrated as a pre-commit githook via Husky,
+so all of your commited code will be always properly formatted.
+
+Prettier configuration is based on `tslint.json` - to not have conflicts with it
+and additional rules are added in `prettier.config.js`
