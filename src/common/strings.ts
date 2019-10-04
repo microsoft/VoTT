@@ -246,6 +246,12 @@ export interface IAppStrings {
             previousExpectedFrame: {
                 tooltip: string,
             },
+            nextVisitedFrame: {
+                tooltip: string,
+            },
+            previousVisitedFrame: {
+                tooltip: string,
+            },
         }
         help: {
             title: string;
