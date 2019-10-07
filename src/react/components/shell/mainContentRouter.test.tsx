@@ -1,8 +1,9 @@
 import { shallow, mount, ReactWrapper } from "enzyme";
 
 import React from "react";
-import { Route, StaticRouter as Router } from "react-router-dom";
-
+import { StaticRouter as Router } from "react-router-dom";
+import SignInPageRoute from "./signedInRoute";
+import AllPagesRoute from "./anonymousRoute";
 import { Provider } from "react-redux";
 import { AnyAction, Store } from "redux";
 import createReduxStore from "../../../redux/store/store";
@@ -12,6 +13,7 @@ import HomePage, { IHomePageProps } from "./../pages/homepage/homePage";
 import SettingsPage from "./../pages/appSettings/appSettingsPage";
 import ConnectionsPage from "./../pages/connections/connectionsPage";
 import { IApplicationState } from "./../../../models/applicationState";
+import SignInPage from "../pages/signIn/signInPage";
 
 describe("Main Content Router", () => {
     const badRoute: string = "/index.html";
@@ -31,17 +33,24 @@ describe("Main Content Router", () => {
         return createComponent(context, route, store, props);
     }
 
-    it("renders correct routes", () => {
+    it("renders correct routes when authenticated", () => {
         const wrapper = shallow(<MainContentRouter />);
-        const pathMap = wrapper.find(Route).reduce((pathMap, route) => {
+        const pathMapSignedOut = wrapper.find(AllPagesRoute).reduce((pathMap, route) => {
             const routeProps = route.props();
             pathMap[routeProps.path] = routeProps.component;
             return pathMap;
         }, {});
 
-        expect(pathMap["/"]).toBe(HomePage);
-        expect(pathMap["/settings"]).toBe(SettingsPage);
-        expect(pathMap["/connections"]).toBe(ConnectionsPage);
+        const pathMapSignedIn = wrapper.find(SignInPageRoute).reduce((pathMap, route) => {
+            const routeProps = route.props();
+            pathMap[routeProps.path] = routeProps.component;
+            return pathMap;
+        }, {});
+
+        expect(pathMapSignedOut["/"]).toBe(HomePage);
+        expect(pathMapSignedOut["/settings"]).toBe(SettingsPage);
+        expect(pathMapSignedOut["/connections"]).toBe(ConnectionsPage);
+        expect(pathMapSignedIn["/sign-in"]).toBe(SignInPage);
     });
 
     it("renders a redirect when no route is matched", () => {

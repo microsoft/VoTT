@@ -60,6 +60,16 @@
       font-size: 0.95em;
     }
 
+    &-sign-out {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 0.95em;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-left: 1em;
+    }
+
     &-controls {
         display: flex;
         flex-direction: row;

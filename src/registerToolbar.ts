@@ -18,6 +18,7 @@ export enum ToolbarItemName {
     SaveProject = "saveProject",
     ExportProject = "exportProject",
     ActiveLearning = "activeLearning",
+    Magnifier = "magnifier",
 }
 
 export enum ToolbarItemGroup {
@@ -25,6 +26,7 @@ export enum ToolbarItemGroup {
     Regions = "regions",
     Navigation = "navigation",
     Project = "project",
+    Helper = "helper",
 }
 
 /**
@@ -147,4 +149,12 @@ export default function registerToolbar() {
         type: ToolbarItemType.Action,
         accelerators: ["CmdOrCtrl+E", "CmdOrCtrl+e"],
     }, ExportProject);
+
+    ToolbarItemFactory.register({
+        name: ToolbarItemName.Magnifier,
+        tooltip: strings.editorPage.toolbar.magnifier,
+        icon: "fas fa-search-plus",
+        group: ToolbarItemGroup.Helper,
+        type: ToolbarItemType.Action,
+    });
 }

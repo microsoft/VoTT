@@ -55,15 +55,15 @@ deploy-prod:
 
 push-qa: login
 	# update tags
-	git tag -f stag
+	git tag -f qa
 	git push --tags --force
 
 	# build docker image
-	DOCKER_TAG=stag PUBLIC_URL=vott-qa.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
-	DOCKER_TAG=stag docker-compose -f docker-compose.deploy.yml push
+	DOCKER_TAG=qa PUBLIC_URL=vott-qa.${DOMAIN} docker-compose -f docker-compose.deploy.yml build
+	DOCKER_TAG=qa docker-compose -f docker-compose.deploy.yml push
 
 deploy-qa:
-	DOCKER_TAG=stag \
+	DOCKER_TAG=qa \
 		SUBDOMAIN=vott-qa \
 		STACK_NAME=vott-qa \
 		DOMAIN=${DOMAIN} \

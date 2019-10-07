@@ -303,7 +303,7 @@ describe("Editor Page Component", () => {
         expect(editorPage.state().showInvalidRegionWarning).toBe(true);
 
         // Close the warning
-        wrapper.find(Alert).props().onClose();
+        wrapper.find(Alert).last().props().onClose();
 
         expect(editorPage.state().showInvalidRegionWarning).toBe(false);
     });
@@ -384,6 +384,29 @@ describe("Editor Page Component", () => {
 
         const matchingRootAsset = editorPage.state().assets.find((asset) => asset.id === imageAsset.id);
         expect(matchingRootAsset.state).toEqual(AssetState.Tagged);
+    });
+
+    it("displays modal when user clicks on magnifier icon in toolbar", async () => {
+        // create test project and asset
+        const testProject = MockFactory.createTestProject("TestProject");
+
+        // mock store and props
+        const store = createStore(testProject, true);
+        const props = MockFactory.editorPageProps(testProject.id);
+
+        // create mock editor page
+        const wrapper = createComponent(store, props);
+        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+
+        // Attempt to click on magnifier from toolbar
+        wrapper.find(`.${ToolbarItemName.Magnifier}`).simulate("click");
+
+        expect(editorPage.state().magnifierModalIsOpen).toBe(true);
+
+        // Close the warning
+        wrapper.find(Alert).first().props().onClose();
+
+        expect(editorPage.state().showInvalidRegionWarning).toBe(false);
     });
 
     describe("Editing Video Assets", () => {
@@ -874,7 +897,7 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
         appSettings: MockFactory.appSettings(),
         connections: [],
         recentProjects: [project],
-        auth: null,
+        auth: MockFactory.createTestAuth("token", "John Doe", false, 2),
     };
 
     return createReduxStore(initialState);

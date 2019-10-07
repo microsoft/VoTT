@@ -21,6 +21,7 @@ export const english: IAppStrings = {
         maximize: "Maximize",
         restore: "Restore",
         close: "Close",
+        signOut: "Sign out",
     },
     homePage: {
         newProject: "New Project",
@@ -233,6 +234,7 @@ export const english: IAppStrings = {
             saveProject: "Save Project",
             exportProject: "Export Project",
             activeLearning: "Active Learning",
+            magnifier: "Magnifier",
         },
         videoPlayer: {
             previousTaggedFrame: {

@@ -1,14 +1,23 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Menu, { MenuItem, SubMenu, Divider } from "rc-menu";
 import { PlatformType } from "../../../common/hostProcess";
 import "./titleBar.scss";
 import { strings } from "../../../common/strings";
-import { HelpMenu } from "./helpMenu";
+import IAuthActions, * as authActions from "../../../redux/actions/authActions";
+import { IApplicationState, IAuth } from "../../../models/applicationState";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import history from "../../../history";
+import { toast } from "react-toastify";
+import ITrackingActions, * as trackingActions from "../../../redux/actions/trackingActions";
 
 export interface ITitleBarProps extends React.Props<TitleBar> {
     icon?: string | JSX.Element;
     title?: string;
     fullName?: string;
+    actions?: IAuthActions;
+    trackingActions?: ITrackingActions;
+    auth?: IAuth;
 }
 
 export interface ITitleBarState {
@@ -17,6 +26,19 @@ export interface ITitleBarState {
     maximized: boolean;
     fullscreen: boolean;
     menu: Electron.Menu;
+}
+
+function mapStateToProps(state: IApplicationState) {
+    return {
+        auth: state.auth,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(authActions, dispatch),
+        trackingActions: bindActionCreators(trackingActions, dispatch),
+    };
 }
 
 export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
@@ -63,7 +85,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         if (this.state.fullscreen) {
             return null;
         }
-        const {fullName} = this.props;
+        const {fullName, auth} = this.props;
 
         return (
             <div className="title-bar bg-lighter-3">
@@ -86,9 +108,14 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 }
                 <div className="title-bar-main">{this.props.title || "Welcome"} - VoTT</div>
                 {fullName &&
-                <div className="title-bar-user-full-name">
-                   {fullName}
-                </div>
+                    <div className="title-bar-user-full-name">
+                        {fullName}
+                    </div>
+                }
+                {auth.accessToken &&
+                    <div className="title-bar-sign-out" onClick={this.onClickSignOut}>
+                        {strings.titleBar.signOut}
+                    </div>
                 }
                 <div className="title-bar-controls">
                     {this.props.children}
@@ -267,4 +294,16 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 return "CmdOrCtrl+-";
         }
     }
+
+    private onClickSignOut = async () => {
+        try {
+            await this.props.actions.signOut();
+            await this.props.trackingActions.trackingSignOut(this.props.auth.userId);
+            history.push("/sign-in");
+        } catch (error) {
+            toast.error("Sorry, we could not log you out.", { position: toast.POSITION.TOP_CENTER} );
+        }
+    }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(TitleBar);

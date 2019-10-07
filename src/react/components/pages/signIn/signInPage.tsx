@@ -1,9 +1,10 @@
 import * as React from "react";
 import { ISignIn, IAuth } from "../../../../models/applicationState";
 import { SignInForm } from "./signInForm";
-import { Route, Redirect } from "react-router-dom";
-import ApiService, { ILoginRequestPayload } from "../../../../services/apiService";
+import { Route } from "react-router-dom";
+import apiService, { ILoginRequestPayload, IApiService } from "../../../../services/apiService";
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
+import ITrackingActions, * as trackingActions from "../../../../redux/actions/trackingActions";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { IApplicationState } from "../../../../models/applicationState";
@@ -13,6 +14,7 @@ import { toast } from "react-toastify";
 export interface ISignInPageProps extends React.Props<SignInPage> {
     actions: IAuthActions;
     signIn: ISignIn;
+    trackingActions: ITrackingActions;
 }
 
 export interface ISignInPageState {
@@ -30,6 +32,7 @@ function mapStateToProps(state: IApplicationState) {
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(authActions, dispatch),
+        trackingActions: bindActionCreators(trackingActions, dispatch),
     };
 }
 
@@ -42,14 +45,13 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
             loginRequestPayload: null,
             auth: null,
         };
-        ApiService.removeToken();
         this.onFormSubmit = this.onFormSubmit;
     }
 
     public render() {
         return (
             <div className="app-sign-in-page-form">
-                <Route exact path="/login">
+                <Route exact path="/sign-in">
                     <div>
                         <SignInForm
                             signIn={this.state.signIn}
@@ -74,19 +76,20 @@ export default class SignInPage extends React.Component<ISignInPageProps, ISignI
 
     private async sendCredentials(rememberUser: boolean) {
         try {
-            const token = await ApiService.loginWithCredentials(this.state.loginRequestPayload);
-            localStorage.setItem("token", token.data.access_token);
-            const userInfo = await ApiService.getCurrentUser();
+            const token = await apiService.loginWithCredentials(this.state.loginRequestPayload);
             this.setState({
                 auth: {
                     accessToken: token.data.access_token,
-                    fullName: userInfo.data.full_name,
+                    fullName: null,
                     rememberUser,
+                    userId: null,
                 },
             });
             await this.props.actions.signIn(this.state.auth);
+            const userInfo = await apiService.getCurrentUser();
+            await this.props.actions.saveUserInfo({fullName: userInfo.data.full_name, userId: userInfo.data.id});
+            await this.props.trackingActions.trackingSignIn(userInfo.data.id);
             history.push("/");
-
         } catch (error) {
             let errorMessage;
             if (error.response) {

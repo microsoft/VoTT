@@ -24,6 +24,7 @@ export interface IAppStrings {
         maximize: string;
         restore: string;
         close: string;
+        signOut: string;
     };
     homePage: {
         newProject: string;
@@ -45,7 +46,7 @@ export interface IAppStrings {
         recentProjects: string,
         messages: {
             deleteSuccess: string,
-        },
+        }
     };
     appSettings: {
         title: string;
@@ -232,6 +233,7 @@ export interface IAppStrings {
             saveProject: string;
             exportProject: string;
             activeLearning: string;
+            magnifier: string;
         }
         videoPlayer: {
             nextTaggedFrame: {

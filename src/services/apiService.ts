@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosPromise } from "axios";
 import qs from "qs";
 import { Env } from "../common/environment";
 
@@ -7,7 +7,29 @@ export interface ILoginRequestPayload {
     password: string;
 }
 
-class ApiService {
+export interface IApiService {
+    loginWithCredentials(data: ILoginRequestPayload): AxiosPromise<IUserCredentials>;
+    testToken(): AxiosPromise<IUser>;
+    getCurrentUser(): AxiosPromise<IUser>;
+}
+
+interface IUserCredentials {
+    access_token: string;
+    token_type: string;
+}
+
+interface IUser {
+    email: string;
+    full_name: string;
+    is_active: boolean;
+    is_superuser: boolean;
+    city_id: number;
+    id: number;
+    created_at: string;
+    updated_at: string;
+  }
+
+export class ApiService implements IApiService {
     private client: AxiosInstance;
 
     constructor() {
@@ -21,7 +43,7 @@ class ApiService {
 
         this.client.interceptors.request.use(
             (config) => {
-                const token = localStorage.getItem("token");
+                const token = JSON.parse(localStorage.getItem("auth")).accessToken;
                 if (token) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
@@ -29,29 +51,20 @@ class ApiService {
             },
             (error) => Promise.reject(error),
         );
+
     }
 
-    public updateToken = (token: string) => {
-        localStorage.setItem("token", token);
-        this.client.interceptors.request.use(
-            async (config) => {
-                config.headers.Authorization = `Bearer ${token}`;
-                return config;
-            },
-            (error) => Promise.reject(error),
-        );
-    }
-
-    public getToken = (): string | null => localStorage.getItem("token");
-
-    public removeToken = (): void => localStorage.removeItem("token");
-
-    public loginWithCredentials = (data: ILoginRequestPayload) => {
+    public loginWithCredentials = (data: ILoginRequestPayload): AxiosPromise<IUserCredentials> => {
         const url = "api/v1/login/access-token";
         return this.client.post(url, qs.stringify(data));
     }
 
-    public getCurrentUser = () => {
+    public testToken = (): AxiosPromise<IUser> => {
+        const url = "api/v1/login/test-token";
+        return this.client.post(url);
+    }
+
+    public getCurrentUser = (): AxiosPromise<IUser> => {
         const url = "api/v1/users/me";
         return this.client.get(url);
     }

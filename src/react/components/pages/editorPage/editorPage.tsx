@@ -10,7 +10,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode,
+    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode, IAuth,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -31,13 +31,18 @@ import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 import { toast } from "react-toastify";
+import ITrackingActions, * as trackingActions from "../../../../redux/actions/trackingActions";
+import { MagnifierModalMessage } from "./MagnifierModalMessage";
 
 /**
  * Properties for Editor Page
  * @member project - Project being edited
  * @member recentProjects - Array of projects recently viewed/edited
+ * @member appSettings - Settings of the application
  * @member actions - Project actions
  * @member applicationActions - Application setting actions
+ * @member auth - Authentication of the user
+ * @member trackingActions - Tracking of user actions
  */
 export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorPage> {
     project: IProject;
@@ -45,6 +50,8 @@ export interface IEditorPageProps extends RouteComponentProps, React.Props<Edito
     appSettings: IAppSettings;
     actions: IProjectActions;
     applicationActions: IApplicationActions;
+    auth: IAuth;
+    trackingActions: ITrackingActions;
 }
 
 /**
@@ -78,6 +85,7 @@ export interface IEditorPageState {
     isValid: boolean;
     /** Whether the show invalid region warning alert should display */
     showInvalidRegionWarning: boolean;
+    magnifierModalIsOpen: boolean;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -85,6 +93,7 @@ function mapStateToProps(state: IApplicationState) {
         recentProjects: state.recentProjects,
         project: state.currentProject,
         appSettings: state.appSettings,
+        auth: state.auth,
     };
 }
 
@@ -92,6 +101,7 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
         applicationActions: bindActionCreators(applicationActions, dispatch),
+        trackingActions: bindActionCreators(trackingActions, dispatch),
     };
 }
 
@@ -115,6 +125,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
+        magnifierModalIsOpen: false,
     };
 
     private activeLearningService: ActiveLearningService = null;
@@ -260,6 +271,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                             onConfirm={this.onTagDeleted} />
                     </div>
                 </SplitPane>
+
+                <Alert show={this.state.magnifierModalIsOpen}
+                    title="Native Magnifier Instruction"
+                    // tslint:disable-next-line:max-line-length
+                    message={<MagnifierModalMessage />}
+                    closeButtonColor="info"
+                    onClose={this.closeNativeMagnifierModal} />
+
                 <Alert show={this.state.showInvalidRegionWarning}
                     title={strings.editorPage.messages.enforceTaggedRegions.title}
                     // tslint:disable-next-line:max-line-length
@@ -268,6 +287,18 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     onClose={() => this.setState({ showInvalidRegionWarning: false })} />
             </div>
         );
+    }
+
+    private closeNativeMagnifierModal = () => {
+        this.setState({
+            magnifierModalIsOpen: false,
+        });
+    }
+
+    private showNativeMagnifierModal = () => {
+        this.setState({
+            magnifierModalIsOpen: true,
+        });
     }
 
     private onPageClick = () => {
@@ -483,7 +514,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             };
         }
 
-        this.setState({ childAssets, assets, isValid: true });
+        this.setState({ childAssets, assets, isValid: true, selectedAsset: assetMetadata });
     }
 
     /**
@@ -561,6 +592,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             case ToolbarItemName.ActiveLearning:
                 await this.predictRegions();
                 break;
+            case ToolbarItemName.Magnifier:
+                this.showNativeMagnifierModal();
+                break;
         }
     }
 
@@ -621,17 +655,29 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
+        const { selectedAsset, isValid } = this.state;
+        const { auth, trackingActions, actions, project } = this.props;
         // Nothing to do if we are already on the same asset.
-        if (this.state.selectedAsset && this.state.selectedAsset.asset.id === asset.id) {
+        if (selectedAsset && selectedAsset.asset.id === asset.id) {
             return;
         }
 
-        if (!this.state.isValid) {
+        if (!isValid) {
             this.setState({ showInvalidRegionWarning: true });
             return;
         }
 
-        const assetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, asset);
+        /**
+         * Track user leaves the image
+         */
+        if (selectedAsset && selectedAsset.asset) {
+            await trackingActions.trackingImgOut(
+                auth.userId,
+                selectedAsset.asset.id,
+                selectedAsset.regions);
+        }
+
+        const assetMetadata = await actions.loadAssetMetadata(project, asset);
 
         try {
             if (!assetMetadata.asset.size) {
@@ -647,6 +693,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }, async () => {
             await this.onAssetMetadataChanged(assetMetadata);
         });
+
+        /**
+         * Track user enters on the image
+         */
+        await trackingActions.trackingImgIn(
+            auth.userId,
+            assetMetadata.asset.id,
+            assetMetadata.regions);
     }
 
     private loadProjectAssets = async (): Promise<void> => {
