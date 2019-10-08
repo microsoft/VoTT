@@ -8,9 +8,21 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSet
 import HtmlFileReader from "../../../../common/htmlFileReader";
 import { strings } from "../../../../common/strings";
 import {
-    AssetState, AssetType, EditorMode, IApplicationState,
-    IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode, IAuth,
+    AssetState,
+    AssetType,
+    EditorMode,
+    IApplicationState,
+    IAppSettings,
+    IAsset,
+    IAssetMetadata,
+    IProject,
+    IRegion,
+    ISize,
+    ITag,
+    IAdditionalPageSettings,
+    AppError,
+    ErrorCode,
+    IAuth
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -93,7 +105,7 @@ function mapStateToProps(state: IApplicationState) {
         recentProjects: state.recentProjects,
         project: state.currentProject,
         appSettings: state.appSettings,
-        auth: state.auth,
+        auth: state.auth
     };
 }
 
@@ -101,7 +113,7 @@ function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(projectActions, dispatch),
         applicationActions: bindActionCreators(applicationActions, dispatch),
-        trackingActions: bindActionCreators(trackingActions, dispatch),
+        trackingActions: bindActionCreators(trackingActions, dispatch)
     };
 }
 
@@ -109,7 +121,10 @@ function mapDispatchToProps(dispatch) {
  * @name - Editor Page
  * @description - Page for adding/editing/removing tags to assets
  */
-@connect(mapStateToProps, mapDispatchToProps)
+@connect(
+    mapStateToProps,
+    mapDispatchToProps
+)
 export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         selectedTag: null,
@@ -119,13 +134,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         childAssets: [],
         editorMode: EditorMode.Rectangle,
         additionalSettings: {
-            videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
-            activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
+            videoSettings: this.props.project ? this.props.project.videoSettings : null,
+            activeLearningSettings: this.props.project ? this.props.project.activeLearningSettings : null
         },
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
-        magnifierModalIsOpen: false,
+        magnifierModalIsOpen: false
     };
 
     private activeLearningService: ActiveLearningService = null;
@@ -140,7 +155,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (this.props.project) {
             await this.loadProjectAssets();
         } else if (projectId) {
-            const project = this.props.recentProjects.find((project) => project.id === projectId);
+            const project = this.props.recentProjects.find(project => project.id === projectId);
             await this.props.actions.loadProject(project);
         }
 
@@ -158,9 +173,9 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (this.props.project && !prevProps.project) {
             this.setState({
                 additionalSettings: {
-                    videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
-                    activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
-                },
+                    videoSettings: this.props.project ? this.props.project.videoSettings : null,
+                    activeLearningSettings: this.props.project ? this.props.project.activeLearningSettings : null
+                }
             });
         }
 
@@ -172,39 +187,47 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
-        const rootAssets = assets.filter((asset) => !asset.parent);
+        const rootAssets = assets.filter(asset => !asset.parent);
 
         if (!project) {
-            return (<div>Loading...</div>);
+            return <div>Loading...</div>;
         }
 
         return (
             <div className="editor-page">
-                {[...Array(10).keys()].map((index) => {
-                    return (<KeyboardBinding
-                        displayName={strings.editorPage.tags.hotKey.apply}
-                        key={index}
-                        keyEventType={KeyEventType.KeyDown}
-                        accelerators={[`${index}`]}
-                        icon={"fa-tag"}
-                        handler={this.handleTagHotKey} />);
+                {[...Array(10).keys()].map(index => {
+                    return (
+                        <KeyboardBinding
+                            displayName={strings.editorPage.tags.hotKey.apply}
+                            key={index}
+                            keyEventType={KeyEventType.KeyDown}
+                            accelerators={[`${index}`]}
+                            icon={"fa-tag"}
+                            handler={this.handleTagHotKey}
+                        />
+                    );
                 })}
-                {[...Array(10).keys()].map((index) => {
-                    return (<KeyboardBinding
-                        displayName={strings.editorPage.tags.hotKey.lock}
-                        key={index}
-                        keyEventType={KeyEventType.KeyDown}
-                        accelerators={[`CmdOrCtrl+${index}`]}
-                        icon={"fa-lock"}
-                        handler={this.handleCtrlTagHotKey} />);
+                {[...Array(10).keys()].map(index => {
+                    return (
+                        <KeyboardBinding
+                            displayName={strings.editorPage.tags.hotKey.lock}
+                            key={index}
+                            keyEventType={KeyEventType.KeyDown}
+                            accelerators={[`CmdOrCtrl+${index}`]}
+                            icon={"fa-lock"}
+                            handler={this.handleCtrlTagHotKey}
+                        />
+                    );
                 })}
-                <SplitPane split="vertical"
+                <SplitPane
+                    split="vertical"
                     defaultSize={this.state.thumbnailSize.width}
                     minSize={100}
                     maxSize={400}
                     paneStyle={{ display: "flex" }}
                     onChange={this.onSideBarResize}
-                    onDragFinished={this.onSideBarResizeComplete}>
+                    onDragFinished={this.onSideBarResizeComplete}
+                >
                     <div className="editor-page-sidebar bg-lighter-1">
                         <EditorSideBar
                             assets={rootAssets}
@@ -217,13 +240,15 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-header">
-                                <EditorToolbar project={this.props.project}
+                                <EditorToolbar
+                                    project={this.props.project}
                                     items={this.toolbarItems}
                                     actions={this.props.actions}
-                                    onToolbarItemSelected={this.onToolbarItemSelected} />
+                                    onToolbarItemSelected={this.onToolbarItemSelected}
+                                />
                             </div>
                             <div className="editor-page-content-main-body">
-                                {selectedAsset &&
+                                {selectedAsset && (
                                     <Canvas
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
@@ -233,7 +258,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                         editorMode={this.state.editorMode}
                                         selectionMode={this.state.selectionMode}
                                         project={this.props.project}
-                                        lockedTags={this.state.lockedTags}>
+                                        lockedTags={this.state.lockedTags}
+                                    >
                                         <AssetPreview
                                             additionalSettings={this.state.additionalSettings}
                                             autoPlay={true}
@@ -241,9 +267,10 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                             onBeforeAssetChanged={this.onBeforeAssetSelected}
                                             onChildAssetSelected={this.onChildAssetSelected}
                                             asset={this.state.selectedAsset.asset}
-                                            childAssets={this.state.childAssets} />
+                                            childAssets={this.state.childAssets}
+                                        />
                                     </Canvas>
-                                }
+                                )}
                             </div>
                         </div>
                         <div className="editor-page-right-sidebar">
@@ -259,66 +286,77 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 onTagDeleted={this.confirmTagDeleted}
                             />
                         </div>
-                        <Confirm title={strings.editorPage.tags.rename.title}
+                        <Confirm
+                            title={strings.editorPage.tags.rename.title}
                             ref={this.renameTagConfirm}
                             message={strings.editorPage.tags.rename.confirmation}
                             confirmButtonColor="danger"
-                            onConfirm={this.onTagRenamed} />
-                        <Confirm title={strings.editorPage.tags.delete.title}
+                            onConfirm={this.onTagRenamed}
+                        />
+                        <Confirm
+                            title={strings.editorPage.tags.delete.title}
                             ref={this.deleteTagConfirm}
                             message={strings.editorPage.tags.delete.confirmation}
                             confirmButtonColor="danger"
-                            onConfirm={this.onTagDeleted} />
+                            onConfirm={this.onTagDeleted}
+                        />
                     </div>
                 </SplitPane>
 
-                <Alert show={this.state.magnifierModalIsOpen}
+                <Alert
+                    show={this.state.magnifierModalIsOpen}
                     title="Native Magnifier Instruction"
                     // tslint:disable-next-line:max-line-length
                     message={<MagnifierModalMessage />}
                     closeButtonColor="info"
-                    onClose={this.closeNativeMagnifierModal} />
+                    onClose={this.closeNativeMagnifierModal}
+                />
 
-                <Alert show={this.state.showInvalidRegionWarning}
+                <Alert
+                    show={this.state.showInvalidRegionWarning}
                     title={strings.editorPage.messages.enforceTaggedRegions.title}
                     // tslint:disable-next-line:max-line-length
                     message={strings.editorPage.messages.enforceTaggedRegions.description}
                     closeButtonColor="info"
-                    onClose={() => this.setState({ showInvalidRegionWarning: false })} />
+                    onClose={() => this.setState({ showInvalidRegionWarning: false })}
+                />
             </div>
         );
     }
 
     private closeNativeMagnifierModal = () => {
         this.setState({
-            magnifierModalIsOpen: false,
+            magnifierModalIsOpen: false
         });
-    }
+    };
 
     private showNativeMagnifierModal = () => {
         this.setState({
-            magnifierModalIsOpen: true,
+            magnifierModalIsOpen: true
         });
-    }
+    };
 
     private onPageClick = () => {
         this.setState({
-            selectedRegions: [],
+            selectedRegions: []
         });
-    }
+    };
 
     /**
      * Called when the asset side bar is resized
      * @param newWidth The new sidebar width
      */
     private onSideBarResize = (newWidth: number) => {
-        this.setState({
-            thumbnailSize: {
-                width: newWidth,
-                height: newWidth / (4 / 3),
+        this.setState(
+            {
+                thumbnailSize: {
+                    width: newWidth,
+                    height: newWidth / (4 / 3)
+                }
             },
-        }, () => this.canvas.current.forceResize());
-    }
+            () => this.canvas.current.forceResize()
+        );
+    };
 
     /**
      * Called when the asset sidebar has been completed
@@ -326,29 +364,32 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     private onSideBarResizeComplete = () => {
         const appSettings = {
             ...this.props.appSettings,
-            thumbnailSize: this.state.thumbnailSize,
+            thumbnailSize: this.state.thumbnailSize
         };
 
         this.props.applicationActions.saveAppSettings(appSettings);
-    }
+    };
 
     /**
      * Called when a tag from footer is clicked
      * @param tag Tag clicked
      */
     private onTagClicked = (tag: ITag): void => {
-        this.setState({
-            selectedTag: tag.name,
-            lockedTags: [],
-        }, () => this.canvas.current.applyTag(tag.name));
-    }
+        this.setState(
+            {
+                selectedTag: tag.name,
+                lockedTags: []
+            },
+            () => this.canvas.current.applyTag(tag.name)
+        );
+    };
 
     /**
      * Open confirm dialog for tag renaming
      */
     private confirmTagRenamed = (tagName: string, newTagName: string): void => {
         this.renameTagConfirm.current.open(tagName, newTagName);
-    }
+    };
 
     /**
      * Renames tag in assets and project, and saves files
@@ -357,21 +398,21 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
         const assetUpdates = await this.props.actions.updateProjectTag(this.props.project, tagName, newTagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+        const selectedAsset = assetUpdates.find(am => am.asset.id === this.state.selectedAsset.asset.id);
 
         if (selectedAsset) {
             if (selectedAsset) {
                 this.setState({ selectedAsset });
             }
         }
-    }
+    };
 
     /**
      * Open Confirm dialog for tag deletion
      */
     private confirmTagDeleted = (tagName: string): void => {
         this.deleteTagConfirm.current.open(tagName);
-    }
+    };
 
     /**
      * Removes tag from assets and projects and saves files
@@ -379,20 +420,23 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private onTagDeleted = async (tagName: string): Promise<void> => {
         const assetUpdates = await this.props.actions.deleteProjectTag(this.props.project, tagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+        const selectedAsset = assetUpdates.find(am => am.asset.id === this.state.selectedAsset.asset.id);
 
         if (selectedAsset) {
             this.setState({ selectedAsset });
         }
-    }
+    };
 
     private onCtrlTagClicked = (tag: ITag): void => {
         const locked = this.state.lockedTags;
-        this.setState({
-            selectedTag: tag.name,
-            lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
-        }, () => this.canvas.current.applyTag(tag.name));
-    }
+        this.setState(
+            {
+                selectedTag: tag.name,
+                lockedTags: CanvasHelpers.toggleTag(locked, tag.name)
+            },
+            () => this.canvas.current.applyTag(tag.name)
+        );
+    };
 
     private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
         let key = parseInt(event.key, 10);
@@ -414,7 +458,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             return tags[index];
         }
         return null;
-    }
+    };
 
     /**
      * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
@@ -425,14 +469,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (tag) {
             this.onTagClicked(tag);
         }
-    }
+    };
 
     private handleCtrlTagHotKey = (event: KeyboardEvent): void => {
         const tag = this.getTagFromKeyboardEvent(event);
         if (tag) {
             this.onCtrlTagClicked(tag);
         }
-    }
+    };
 
     /**
      * Raised when a child asset is selected on the Asset Preview
@@ -442,14 +486,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (this.state.selectedAsset && this.state.selectedAsset.asset.id !== childAsset.id) {
             await this.selectAsset(childAsset);
         }
-    }
+    };
 
     /**
      * Returns a value indicating whether the current asset is taggable
      */
     private isTaggableAssetType = (asset: IAsset): boolean => {
         return asset.type !== AssetType.Unknown && asset.type !== AssetType.Video;
-    }
+    };
 
     /**
      * Raised when the selected asset has been changed.
@@ -457,7 +501,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
         // If the asset contains any regions without tags, don't proceed.
-        const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tags.length === 0);
+        const regionsWithoutTags = assetMetadata.regions.filter(region => region.tags.length === 0);
 
         if (regionsWithoutTags.length > 0) {
             this.setState({ isValid: false });
@@ -507,15 +551,15 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         // This forces the root assets that are displayed in the sidebar to
         // accurately show their correct state (not-visited, visited or tagged)
         const assets = [...this.state.assets];
-        const assetIndex = assets.findIndex((asset) => asset.id === rootAsset.id);
+        const assetIndex = assets.findIndex(asset => asset.id === rootAsset.id);
         if (assetIndex > -1) {
             assets[assetIndex] = {
-                ...rootAsset,
+                ...rootAsset
             };
         }
 
         this.setState({ childAssets, assets, isValid: true, selectedAsset: assetMetadata });
-    }
+    };
 
     /**
      * Raised when the asset binary has been painted onto the canvas tools rendering canvas
@@ -526,49 +570,49 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         if (this.props.project.activeLearningSettings.autoDetect && !this.state.selectedAsset.asset.predicted) {
             await this.predictRegions(canvas);
         }
-    }
+    };
 
     private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
         this.setState({ selectedRegions });
-    }
+    };
 
-    private onTagsChanged = async (tags) => {
+    private onTagsChanged = async tags => {
         const project = {
             ...this.props.project,
-            tags,
+            tags
         };
 
         await this.props.actions.saveProject(project);
-    }
+    };
 
     private onLockedTagsChanged = (lockedTags: string[]) => {
         this.setState({ lockedTags });
-    }
+    };
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
         switch (toolbarItem.props.name) {
             case ToolbarItemName.DrawRectangle:
                 this.setState({
                     selectionMode: SelectionMode.RECT,
-                    editorMode: EditorMode.Rectangle,
+                    editorMode: EditorMode.Rectangle
                 });
                 break;
             case ToolbarItemName.DrawPolygon:
                 this.setState({
                     selectionMode: SelectionMode.POLYGON,
-                    editorMode: EditorMode.Polygon,
+                    editorMode: EditorMode.Polygon
                 });
                 break;
             case ToolbarItemName.CopyRectangle:
                 this.setState({
                     selectionMode: SelectionMode.COPYRECT,
-                    editorMode: EditorMode.CopyRect,
+                    editorMode: EditorMode.CopyRect
                 });
                 break;
             case ToolbarItemName.SelectCanvas:
                 this.setState({
                     selectionMode: SelectionMode.NONE,
-                    editorMode: EditorMode.Select,
+                    editorMode: EditorMode.Select
                 });
                 break;
             case ToolbarItemName.PreviousAsset:
@@ -596,7 +640,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.showNativeMagnifierModal();
                 break;
         }
-    }
+    };
 
     private predictRegions = async (canvas?: HTMLCanvasElement) => {
         canvas = canvas || document.querySelector("canvas");
@@ -620,15 +664,17 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         // Predict and add regions to current asset
         try {
-            const updatedAssetMetadata = await this.activeLearningService
-                .predictRegions(canvas, this.state.selectedAsset);
+            const updatedAssetMetadata = await this.activeLearningService.predictRegions(
+                canvas,
+                this.state.selectedAsset
+            );
 
             await this.onAssetMetadataChanged(updatedAssetMetadata);
             this.setState({ selectedAsset: updatedAssetMetadata });
         } catch (e) {
             throw new AppError(ErrorCode.ActiveLearningPredictionError, "Error predicting regions");
         }
-    }
+    };
 
     /**
      * Navigates to the previous / next root asset on the sidebar
@@ -636,15 +682,14 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
      */
     private goToRootAsset = async (direction: number) => {
         const selectedRootAsset = this.state.selectedAsset.asset.parent || this.state.selectedAsset.asset;
-        const currentIndex = this.state.assets
-            .findIndex((asset) => asset.id === selectedRootAsset.id);
+        const currentIndex = this.state.assets.findIndex(asset => asset.id === selectedRootAsset.id);
 
         if (direction > 0) {
             await this.selectAsset(this.state.assets[Math.min(this.state.assets.length - 1, currentIndex + 1)]);
         } else {
             await this.selectAsset(this.state.assets[Math.max(0, currentIndex - 1)]);
         }
-    }
+    };
 
     private onBeforeAssetSelected = (): boolean => {
         if (!this.state.isValid) {
@@ -652,7 +697,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         }
 
         return this.state.isValid;
-    }
+    };
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
         const { selectedAsset, isValid } = this.state;
@@ -671,10 +716,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
          * Track user leaves the image
          */
         if (selectedAsset && selectedAsset.asset) {
-            await trackingActions.trackingImgOut(
-                auth.userId,
-                selectedAsset.asset.id,
-                selectedAsset.regions);
+            await trackingActions.trackingImgOut(auth.userId, selectedAsset.asset.id, selectedAsset.regions);
         }
 
         const assetMetadata = await actions.loadAssetMetadata(project, asset);
@@ -687,20 +729,20 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.warn("Error computing asset size");
         }
 
-        this.setState({
-            selectedAsset: assetMetadata,
-        }, async () => {
-            await this.onAssetMetadataChanged(assetMetadata);
-        });
+        this.setState(
+            {
+                selectedAsset: assetMetadata
+            },
+            async () => {
+                await this.onAssetMetadataChanged(assetMetadata);
+            }
+        );
 
         /**
          * Track user enters on the image
          */
-        await trackingActions.trackingImgIn(
-            auth.userId,
-            assetMetadata.asset.id,
-            assetMetadata.regions);
-    }
+        await trackingActions.trackingImgIn(auth.userId, assetMetadata.asset.id, assetMetadata.regions);
+    };
 
     private loadProjectAssets = async (): Promise<void> => {
         if (this.loadingProjectAssets || this.state.assets.length > 0) {
@@ -710,8 +752,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         this.loadingProjectAssets = true;
 
         // Get all root project assets
-        const rootProjectAssets = _.values(this.props.project.assets)
-            .filter((asset) => !asset.parent);
+        const rootProjectAssets = _.values(this.props.project.assets).filter(asset => !asset.parent);
 
         // Get all root assets from source asset provider
         const sourceAssets = await this.props.actions.loadAssets(this.props.project);
@@ -719,27 +760,30 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         // Merge and uniquify
         const rootAssets = _(rootProjectAssets)
             .concat(sourceAssets)
-            .uniqBy((asset) => asset.id)
+            .uniqBy(asset => asset.id)
             .value();
 
-        const lastVisited = rootAssets.find((asset) => asset.id === this.props.project.lastVisitedAssetId);
+        const lastVisited = rootAssets.find(asset => asset.id === this.props.project.lastVisitedAssetId);
 
-        this.setState({
-            assets: rootAssets,
-        }, async () => {
-            if (rootAssets.length > 0) {
-                await this.selectAsset(lastVisited ? lastVisited : rootAssets[0]);
+        this.setState(
+            {
+                assets: rootAssets
+            },
+            async () => {
+                if (rootAssets.length > 0) {
+                    await this.selectAsset(lastVisited ? lastVisited : rootAssets[0]);
+                }
+                this.loadingProjectAssets = false;
             }
-            this.loadingProjectAssets = false;
-        });
-    }
+        );
+    };
 
     /**
      * Updates the root asset list from the project assets
      */
     private updateRootAssets = () => {
         const updatedAssets = [...this.state.assets];
-        updatedAssets.forEach((asset) => {
+        updatedAssets.forEach(asset => {
             const projectAsset = this.props.project.assets[asset.id];
             if (projectAsset) {
                 asset.state = projectAsset.state;
@@ -747,5 +791,5 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         });
 
         this.setState({ assets: updatedAssets });
-    }
+    };
 }
