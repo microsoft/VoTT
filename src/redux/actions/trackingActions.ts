@@ -16,7 +16,7 @@ export default interface ITrackingActions {
     trackingSignIn(userId: number): Promise<void>;
     trackingSignOut(userId: number): Promise<void>;
     trackingImgIn(userId: number, imageId: string, regions: IRegion[]): Promise<void>;
-    trackingImgOut(userId: number, imageId: string, regions: IRegion[]): Promise<void>;
+    trackingImgOut(userId: number, imageId: string, regions: IRegion[], isModified: boolean): Promise<void>;
     trackingImgDelete(userId: number, imageId: string): Promise<void>;
 }
 
@@ -45,8 +45,11 @@ export function trackingSignOut(userId: number): (dispatch: Dispatch) => Promise
 /**
  * Tracks user enters on the image
  */
-export function trackingImgIn(userId: number, imageId: string, regions: IRegion[])
-: (dispatch: Dispatch) => Promise<void> {
+export function trackingImgIn(
+    userId: number,
+    imageId: string,
+    regions: IRegion[]
+): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
         const trackingAction = createTrackingAction(TrackingActionType.ImgIn, userId, imageId, regions);
         dispatch(trackingImgInAction(trackingAction));
@@ -57,10 +60,14 @@ export function trackingImgIn(userId: number, imageId: string, regions: IRegion[
 /**
  * Tracks user leaves the image
  */
-export function trackingImgOut(userId: number, imageId: string, regions: IRegion[])
-: (dispatch: Dispatch) => Promise<void> {
+export function trackingImgOut(
+    userId: number,
+    imageId: string,
+    regions: IRegion[],
+    isModified: boolean
+): (dispatch: Dispatch) => Promise<void> {
     return (dispatch: Dispatch) => {
-        const trackingAction = createTrackingAction(TrackingActionType.ImgOut, userId, imageId, regions);
+        const trackingAction = createTrackingAction(TrackingActionType.ImgOut, userId, imageId, regions, isModified);
         dispatch(trackingImgOutAction(trackingAction));
         return Promise.resolve();
     };
@@ -101,4 +108,6 @@ export const trackingSignInAction = createPayloadAction<ITrackingSignInAction>(A
 export const trackingSignOutAction = createPayloadAction<ITrackingSignOutAction>(ActionTypes.TRACK_SIGN_OUT_SUCCESS);
 export const trackingImgInAction = createPayloadAction<ITrackingImgInAction>(ActionTypes.TRACK_IMG_IN_SUCCESS);
 export const trackingImgOutAction = createPayloadAction<ITrackingImgOutAction>(ActionTypes.TRACK_IMG_OUT_SUCCESS);
-export const trackingImgDeleteAction = createPayloadAction<ITrackingImgDeleteAction>(ActionTypes.TRACK_IMG_DELETE_SUCCESS); // tslint:disable-line
+export const trackingImgDeleteAction = createPayloadAction<ITrackingImgDeleteAction>(
+    ActionTypes.TRACK_IMG_DELETE_SUCCESS
+);

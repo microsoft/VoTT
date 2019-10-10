@@ -97,7 +97,10 @@ export interface IEditorPageState {
     isValid: boolean;
     /** Whether the show invalid region warning alert should display */
     showInvalidRegionWarning: boolean;
+    /** Magnifier modal status */
     magnifierModalIsOpen: boolean;
+    /** Base metadata of selected asset */
+    selectedAssetBase?: IAssetMetadata;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -700,7 +703,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     };
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
-        const { selectedAsset, isValid } = this.state;
+        const { selectedAsset, isValid, selectedAssetBase } = this.state;
         const { auth, trackingActions, actions, project } = this.props;
         // Nothing to do if we are already on the same asset.
         if (selectedAsset && selectedAsset.asset.id === asset.id) {
@@ -716,7 +719,13 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
          * Track user leaves the image
          */
         if (selectedAsset && selectedAsset.asset) {
-            await trackingActions.trackingImgOut(auth.userId, selectedAsset.asset.id, selectedAsset.regions);
+            const isModified = JSON.stringify(selectedAssetBase.regions) !== JSON.stringify(selectedAsset.regions);
+            await trackingActions.trackingImgOut(
+                auth.userId,
+                selectedAsset.asset.id,
+                selectedAsset.regions,
+                isModified
+            );
         }
 
         const assetMetadata = await actions.loadAssetMetadata(project, asset);
@@ -729,9 +738,12 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
             console.warn("Error computing asset size");
         }
 
+        const assetService = new AssetService(project);
+        const newAssetMetadata = await assetService.getAssetMetadata(asset);
         this.setState(
             {
-                selectedAsset: assetMetadata
+                selectedAsset: assetMetadata,
+                selectedAssetBase: newAssetMetadata
             },
             async () => {
                 await this.onAssetMetadataChanged(assetMetadata);
@@ -741,7 +753,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         /**
          * Track user enters on the image
          */
-        await trackingActions.trackingImgIn(auth.userId, assetMetadata.asset.id, assetMetadata.regions);
+        await trackingActions.trackingImgIn(auth.userId, newAssetMetadata.asset.id, newAssetMetadata.regions);
     };
 
     private loadProjectAssets = async (): Promise<void> => {

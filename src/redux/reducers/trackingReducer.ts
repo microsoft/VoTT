@@ -9,7 +9,7 @@ export const reducer = (state: ITrackingAction[] = [], action: AnyAction): ITrac
         case ActionTypes.TRACK_IMG_IN_SUCCESS:
         case ActionTypes.TRACK_IMG_OUT_SUCCESS:
         case ActionTypes.TRACK_IMG_DELETE_SUCCESS:
-            return state.concat(action.payload);
+            return [...state, { ...action.payload }];
         default:
             return state;
     }
