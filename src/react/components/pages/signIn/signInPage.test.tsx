@@ -13,17 +13,19 @@ import history from "../../../../history";
 import ApiService from "../../../../services/apiService";
 import IAuthActions, * as authActions from "../../../../redux/actions/authActions";
 import ITrackingActions, * as trackingActions from "../../../../redux/actions/trackingActions";
+jest.mock("../../../../services/apiService");
 
 describe("Sign In Page", () => {
     function createComponent(
         store: Store<IApplicationState>,
-        props: ISignInPageProps = createProps()): ReactWrapper<ISignInPageProps> {
+        props: ISignInPageProps = createProps()
+    ): ReactWrapper<ISignInPageProps> {
         return mount(
             <Provider store={store}>
                 <Router>
                     <SignInPage {...props} />
                 </Router>
-            </Provider>,
+            </Provider>
         );
     }
 
@@ -58,7 +60,7 @@ describe("Sign In Page", () => {
             appSettings: null,
             connections: [],
             recentProjects: [],
-            auth,
+            auth
         };
 
         return createReduxStore(initialState);
@@ -70,25 +72,27 @@ describe("Sign In Page", () => {
             signIn: {
                 email: "some@email.com",
                 password: "somePassword",
-                rememberUser: false,
+                rememberUser: false
             },
-            trackingActions: (trackingActions as any) as ITrackingActions,
+            trackingActions: (trackingActions as any) as ITrackingActions
         };
     }
 
     function MockApiCalls(accessToken: string = null, userInfo: authActions.IUserInfo) {
-        jest.spyOn(ApiService, "loginWithCredentials")
-            .mockImplementationOnce(() => Promise.resolve({
+        jest.spyOn(ApiService, "loginWithCredentials").mockImplementationOnce(() =>
+            Promise.resolve({
                 data: {
-                    access_token: accessToken,
-                },
-            }));
-        jest.spyOn(ApiService, "getCurrentUser")
-            .mockImplementationOnce(() => Promise.resolve({
+                    access_token: accessToken
+                }
+            })
+        );
+        jest.spyOn(ApiService, "getCurrentUser").mockImplementationOnce(() =>
+            Promise.resolve({
                 data: {
                     full_name: userInfo.fullName,
-                    id: userInfo.userId,
-                },
-            }));
+                    id: userInfo.userId
+                }
+            })
+        );
     }
 });

@@ -6,6 +6,7 @@ import MockFactory from "../../common/mockFactory";
 import * as trackingActions from "./trackingActions";
 import { ActionTypes } from "./actionTypes";
 import { TrackingActionType, ITrackingAction, createTrackingAction } from "../../models/trackingAction";
+jest.mock("../../services/apiService");
 
 describe("Tracking Redux Actions", () => {
     const appSettings = MockFactory.appSettings();
