@@ -4,7 +4,6 @@ services:
     build: 
       context: ./
       dockerfile: Dockerfile-dev
-    image: vott-dev:latest
     env_file:
      - ./.env
     volumes:

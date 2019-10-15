@@ -110,6 +110,13 @@ ps:
 
 # docker shortcuts for development purpose
 
+pull: check-env
+	rm -rf build node_modules
+	docker-compose -f docker-compose.dev.yml build --pull
+
+build: check-env
+	docker-compose -f docker-compose.dev.yml build
+
 up: check-env
 	docker-compose -f docker-compose.dev.yml up -d
 
@@ -121,8 +128,4 @@ stop:
 
 logs:
 	docker-compose -f docker-compose.dev.yml logs --tail 20 -f
-
-build: check-env
-	rm -rf build node_modules
-	docker-compose -f docker-compose.dev.yml build --pull
 
