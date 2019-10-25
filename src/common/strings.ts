@@ -191,6 +191,34 @@ export interface IAppStrings {
                     description: string,
                 }
             },
+            awsS3Blob: {
+                title: string;
+                description: string,
+                bucketName: {
+                    title: string,
+                    description: string,
+                },
+                folderName: {
+                    title: string,
+                    description: string,
+                },
+                secret: {
+                    title: string,
+                    description: string,
+                },
+                token: {
+                    title: string,
+                    description: string,
+                },
+                region: {
+                    title: string,
+                    description: string,
+                }
+                createFolder: {
+                    title: string,
+                    description: string,
+                }
+            },
             bing: {
                 title: string;
                 options: string;
@@ -309,6 +337,65 @@ export interface IAppStrings {
                 displayName: string,
             },
             azureCV: {
+                displayName: string,
+                regions: {
+                    eastUs: string,
+                    eastUs2: string,
+                    northCentralUs: string,
+                    southCentralUs: string,
+                    westUs2: string,
+                    westEurope: string,
+                    northEurope: string,
+                    southeastAsia: string,
+                    australiaEast: string,
+                    centralIndia: string,
+                    ukSouth: string,
+                    japanEast: string,
+                },
+                properties: {
+                    apiKey: {
+                        title: string,
+                    },
+                    region: {
+                        title: string,
+                        description: string,
+                    },
+                    newOrExisting: {
+                        title: string,
+                        options: {
+                            new: string,
+                            existing: string,
+                        },
+                    },
+                    name: {
+                        title: string,
+                    },
+                    description: {
+                        title: string,
+                    },
+                    projectType: {
+                        title: string,
+                        options: {
+                            classification: string,
+                            objectDetection: string,
+                        },
+                    },
+                    classificationType: {
+                        title: string,
+                        options: {
+                            multiLabel: string,
+                            multiClass: string,
+                        },
+                    },
+                    domainId: {
+                        title: string,
+                    },
+                    projectId: {
+                        title: string,
+                    },
+                },
+            },
+            awsS3CV: {
                 displayName: string,
                 regions: {
                     eastUs: string,

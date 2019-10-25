@@ -172,6 +172,34 @@ export const english: IAppStrings = {
                           enabling CORS can be found in the {0}",
         azDocLinkText: "Azure Documentation.",
         providers: {
+            awsS3Blob: {
+                title: "AWS s3 Blob Storage",
+                description: "",
+                bucketName: {
+                    title: "Bucket Name",
+                    description: "",
+                },
+                folderName: {
+                    title: "Folder Name",
+                    description: "",
+                },
+                secret: {
+                    title: "secret",
+                    description: "",
+                },
+                token: {
+                    title: "token",
+                    description: "",
+                },
+                createFolder: {
+                    title: "create bucket",
+                    description: "Creates the bucket if it does not already exist",
+                },
+                region: {
+                    title: "region",
+                    description: "",
+                }
+            },
             azureBlob: {
                 title: "Azure Blob Storage",
                 description: "",
@@ -310,6 +338,65 @@ export const english: IAppStrings = {
             },
             vottJson: {
                 displayName: "VoTT JSON",
+            },
+            awsS3CV: {
+                displayName: "Azure Custom Vision Service",
+                regions: {
+                    australiaEast: "Australia East",
+                    centralIndia: "Central India",
+                    eastUs: "East US",
+                    eastUs2: "East US 2",
+                    japanEast: "Japan East",
+                    northCentralUs: "North Central US",
+                    northEurope: "North Europe",
+                    southCentralUs: "South Central US",
+                    southeastAsia: "Southeast Asia",
+                    ukSouth: "UK South",
+                    westUs2: "West US 2",
+                    westEurope: "West Europe",
+                },
+                properties: {
+                    apiKey: {
+                        title: "API Key",
+                    },
+                    region: {
+                        title: "Region",
+                        description: "The Azure region where your service is deployed",
+                    },
+                    classificationType: {
+                        title: "Classification Type",
+                        options: {
+                            multiLabel: "Multiple tags per image",
+                            multiClass: "Single tag per image",
+                        },
+                    },
+                    name: {
+                        title: "Project Name",
+                    },
+                    description: {
+                        title: "Project Description",
+                    },
+                    domainId: {
+                        title: "Domain",
+                    },
+                    newOrExisting: {
+                        title: "New or Existing Project",
+                        options: {
+                            new: "New Project",
+                            existing: "Existing Project",
+                        },
+                    },
+                    projectId: {
+                        title: "Project Name",
+                    },
+                    projectType: {
+                        title: "Project Type",
+                        options: {
+                            classification: "Classification",
+                            objectDetection: "Object Detection",
+                        },
+                    },
+                },
             },
             azureCV: {
                 displayName: "Azure Custom Vision Service",

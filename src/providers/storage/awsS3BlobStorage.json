@@ -1,0 +1,40 @@
+{
+    "title": "${strings.connections.providers.awsS3Blob.title}",
+    "description": "${strings.connections.providers.awsS3Blob.description}",
+    "required": [
+        "bucketName",
+        "folderName",
+        "secret",
+        "token"
+    ],
+    "type": "object",
+    "properties": {
+        "bucketName": {
+            "title": "${strings.connections.providers.awsS3Blob.bucketName.title}",
+            "type": "string"
+        },
+        "folderName": {
+            "title": "${strings.connections.providers.awsS3Blob.folderName.title}",
+            "type": "string"
+        },
+        "secret": {
+            "title": "${strings.connections.providers.awsS3Blob.secret.title}",
+            "description": "${strings.connections.providers.awsS3Blob.secret.description}",
+            "type": "string"
+        },
+        "token": {
+            "title": "${strings.connections.providers.awsS3Blob.token.title}",
+            "description": "${strings.connections.providers.awsS3Blob.token.description}",
+            "type": "string"
+        },
+        "createFolder": {
+            "title": "${strings.connections.providers.awsS3Blob.createFolder.title}",
+            "description": "${strings.connections.providers.awsS3Blob.createFolder.description}",
+            "type": "boolean"
+        },
+        "region": {
+            "type": "string"
+        }
+
+    }
+}

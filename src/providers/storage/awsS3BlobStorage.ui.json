@@ -1,0 +1,8 @@
+{
+    "secret": {
+        "ui:widget": "protectedInput"
+    },
+    "createFolder": {
+        "ui:widget": "checkbox"
+    }
+}

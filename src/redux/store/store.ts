@@ -1,10 +1,11 @@
-import { applyMiddleware, createStore, Store } from "redux";
+import { applyMiddleware, createStore, Store, compose } from "redux";
 import thunk from "redux-thunk";
 import rootReducer from "../reducers";
 import { IApplicationState } from "../../models/applicationState";
 import { mergeInitialState } from "../middleware/localStorage";
 import { createAppInsightsLogger } from "../middleware/appInsights";
 import { Env } from "../../common/environment";
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 /**
  * Creates initial redux store from initial application state
@@ -37,9 +38,13 @@ export default function createReduxStore(
         ];
     }
 
+    const composeEnhancers = composeWithDevTools({})
+
     return createStore(
         rootReducer,
         useLocalStorage ? mergeInitialState(initialState, paths) : initialState,
+        composeEnhancers(
         applyMiddleware(...middlewares),
+        )
     );
 }
