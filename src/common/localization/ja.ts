@@ -38,12 +38,12 @@ export const japanese: IAppStrings = {
         },
         importProject: {
             title: "プロジェクトをインポート",  // Import Project,
-            confirmation: "プロジェクト $ {project.file.name} プロジェクト設定を v2 形式に変換してもいいですか",
+            confirmation: "プロジェクト ${project.file.name} プロジェクト設定を v2 形式に変換してもいいですか",
             // Are you sure you want to conver project ${project.file.name} project settings to v2 format?
             // We recommend you backup the project file first."
         },
         messages: {
-            deleteSuccess: "$ {project.name} を削除しました",  // Successfully deleted ${project.name}"
+            deleteSuccess: "${project.name} を削除しました",  // Successfully deleted ${project.name}"
         },
     },
     appSettings: {
@@ -102,17 +102,17 @@ export const japanese: IAppStrings = {
         },
         addConnection: "接続を追加", // Add Connection,
         messages: {
-            saveSuccess: "$ {project.name} プロジェクト設定を正常に保存しました", // Successfully saved ${project.name} project settings"
+            saveSuccess: "${project.name} プロジェクト設定を正常に保存しました", // Successfully saved ${project.name} project settings"
         },
     },
     projectMetrics: {
         title: "プロジェクト メトリック",  // Project Metrics,
         assetsSectionTitle: "アセット",  // Assets,
         totalAssetCount: "すべてのアセット",  // Total Assets,
-        visitedAssets: "訪問済みアセット（$ {count}）", // Visited Assets (${count}),
-        taggedAssets: "タグ付きアセット（$ {count}）", // Tagged Assets (${count}),
-        nonTaggedAssets: "タグ付けされていないアセット（$ {count}）", // Not Tagged Assets (${count}),
-        nonVisitedAssets: "訪問されていないアセット（$ {count}）", // Not Visited Assets (${count}),
+        visitedAssets: "訪問済みアセット（${count}）", // Visited Assets (${count}),
+        taggedAssets: "タグ付きアセット（${count}）", // Tagged Assets (${count}),
+        nonTaggedAssets: "タグ付けされていないアセット（${count}）", // Not Tagged Assets (${count}),
+        nonVisitedAssets: "訪問されていないアセット（${count}）", // Not Visited Assets (${count}),
         tagsSectionTitle: "タグ", // Tags & Labels,
         totalRegionCount: "タグ付けされたすべての領域",  // Total Tagged Regions,
         totalTagCount: "すべてのタグ",  // Total Tags,
@@ -164,8 +164,8 @@ export const japanese: IAppStrings = {
         instructions: "編集する接続を選択してください", // Please select a connection to edit,
         save: "接続を保存", // Save Connection,
         messages: {
-            saveSuccess: "$ {connection.name} を保存しました",  // Successfully saved ${connection.name},
-            deleteSuccess: "$ {connection.name} を削除しました",  // Successfully deleted ${connection.name}"
+            saveSuccess: "${connection.name} を保存しました",  // Successfully saved ${connection.name},
+            deleteSuccess: "${connection.name} を削除しました",  // Successfully deleted ${connection.name}"
         },
         imageCorsWarning: "警告：Web ブラウザーで VoTT を使用する場合、CORS（クロス オリジン リソース共有）の制限により、" +
             "Bing 画像検索の一部のアセットが正しくエクスポートされない場合があります。",
