@@ -38,16 +38,18 @@ export const japanese: IAppStrings = {
         },
         importProject: {
             title: "プロジェクトをインポート",  // Import Project,
-            confirmation: "プロジェクト $ {project.file.name} プロジェクト設定を v2 形式に変換してもいいですか",  // Are you sure you want to conver project ${project.file.name} project settings to v2 format? We recommend you backup the project file first."
+            confirmation: "プロジェクト $ {project.file.name} プロジェクト設定を v2 形式に変換してもいいですか",
+            // Are you sure you want to conver project ${project.file.name} project settings to v2 format?
+            // We recommend you backup the project file first."
         },
         messages: {
             deleteSuccess: "$ {project.name} を削除しました",  // Successfully deleted ${project.name}"
-        }
+        },
     },
     appSettings: {
         title: "アプリケーション設定", // Application Settings,
         storageTitle: "ストレージ設定", // Storage Settings,
-        uiHelp: "設定の保存場所",// Where your settings are stored,
+        uiHelp: "設定の保存場所", // Where your settings are stored,
         save: "設定の保存", // Save Settings,
         securityToken: {
             name: {
@@ -55,11 +57,12 @@ export const japanese: IAppStrings = {
             },
             key: {
                 title: "キー", // Key"
-            }
+            },
         },
         securityTokens: {
             title: "セキュリティ トークン",  // Security Tokens,
-            description: "セキュリティ トークンは、プロジェクト構成内の機密データを暗号化するために使用されます",  // Security tokens are used to encryp sensitive data within your project configuration"
+            description: "セキュリティ トークンは、プロジェクト構成内の機密データを暗号化するために使用されます",
+            // Security tokens are used to encryp sensitive data within your project configuration"
         },
         version: {
             description: "バージョン：", // Version"
@@ -75,7 +78,7 @@ export const japanese: IAppStrings = {
         },
         messages: {
             saveSuccess: "アプリケーション設定を正常に保存しました", // Successfully saved application settings"
-        }
+        },
     },
     projectSettings: {
         title: "プロジェクト設定", // Project Settings,
@@ -100,7 +103,7 @@ export const japanese: IAppStrings = {
         addConnection: "接続を追加", // Add Connection,
         messages: {
             saveSuccess: "$ {project.name} プロジェクト設定を正常に保存しました", // Successfully saved ${project.name} project settings"
-        }
+        },
     },
     projectMetrics: {
         title: "プロジェクト メトリック",  // Project Metrics,
@@ -152,7 +155,7 @@ export const japanese: IAppStrings = {
             moveUp: "タグを上に移動", // Move tag up,
             moveDown: "タグを下に移動", // Move tag down,
             delete: "タグを削除", // Delete tag"
-        }
+        },
     },
     connections: {
         title: "接続", // Connections,
@@ -164,8 +167,13 @@ export const japanese: IAppStrings = {
             saveSuccess: "$ {connection.name} を保存しました",  // Successfully saved ${connection.name},
             deleteSuccess: "$ {connection.name} を削除しました",  // Successfully deleted ${connection.name}"
         },
-        imageCorsWarning: "警告：Web ブラウザーで VoTT を使用する場合、CORS（クロス オリジン リソース共有）の制限により、Bing 画像検索の一部のアセットが正しくエクスポートされない場合があります。",  // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may no export correctly due to CORS (Cross Origin Resource Sharing) restrictions.",
-        blobCorsWarning: "警告：ソースまたはターゲット接続として使用するには、Azure Blob Storage アカウントで CORS（クロス オリジン リソース共有）を有効にする必要があります。 ", // Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage account, in order to use i as a source or target connection. More information on enabling CORS can be found in the {0}",
+        imageCorsWarning: "警告：Web ブラウザーで VoTT を使用する場合、CORS（クロス オリジン リソース共有）の制限により、" +
+            "Bing 画像検索の一部のアセットが正しくエクスポートされない場合があります。",
+        // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may no export
+        // correctly due to CORS (Cross Origin Resource Sharing) restrictions.",
+        blobCorsWarning: "警告：ソースまたはターゲット接続として使用するには、Azure Blob Storage アカウントで CORS（クロス オリジン リソース共有）を有効にする必要があります。 ",
+        // Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage account, in order
+        // to use i as a source or target connection. More information on enabling CORS can be found in the {0}",
         azDocLinkText: "Azure ドキュメント",  // Azure Documentation.,
         providers: {
             azureBlob: {
@@ -173,20 +181,22 @@ export const japanese: IAppStrings = {
                 description: "",
                 accountName: {
                     title: "アカウント名", // Account Name,
-                    description: ""
+                    description: "",
                 },
                 containerName: {
                     title: "コンテナー名",  // Container Name,
-                    description: ""
+                    description: "",
                 },
                 sas: {
                     title: "SAS", // SAS,
-                    description: "Blob Storage アカウントの認証に使用される共有アクセス署名",  // Shared access signature used to authenticate to the blob storage account"
+                    description: "Blob Storage アカウントの認証に使用される共有アクセス署名",
+                    // Shared access signature used to authenticate to the blob storage account"
                 },
                 createContainer: {
                     title: "コンテナーを作成",  // Create Container,
-                    description: "Blob Storage コンテナーがまだ存在しない場合は作成します",  // Creates the blob container if it does not already exist"
-                }
+                    description: "Blob Storage コンテナーがまだ存在しない場合は作成します",
+                    // Creates the blob container if it does not already exist"
+                },
             },
             bing: {
                 title: "Bing 画像検索",  // Bing Image Search,
@@ -199,15 +209,15 @@ export const japanese: IAppStrings = {
                     square: "平方", // Square,
                     wide: "ワイド", // Wide,
                     tall: "背が高い", // Tall"
-                }
+                },
             },
             local: {
                 title: "ローカル ファイル システム",  // Local File System,
                 folderPath: "フォルダー パス",  // Folder Path,
                 selectFolder: "フォルダーを選択", // Select Folder,
                 chooseFolder: "フォルダーを選択", // Choose Folder"
-            }
-        }
+            },
+        },
     },
     editorPage: {
         width: "幅", // Width,
@@ -242,7 +252,7 @@ export const japanese: IAppStrings = {
             },
             nextExpectedFrame: {
                 tooltip: "次のフレーム", // Next Frame"
-            }
+            },
         },
         help: {
             title: "ヘルプ メニューの切り替え",  // Toggle Help Menu,
@@ -256,25 +266,29 @@ export const japanese: IAppStrings = {
             },
             rename: {
                 title: "タグの名前を変更", // Rename Tag,
-                confirmation: "このタグの名前を変更してもいいですか",  // Are you sure you want to rename this tag? It will be renamed throughout all assets"
+                confirmation: "このタグの名前を変更してもいいですか",
+                // Are you sure you want to rename this tag? It will be renamed throughout all assets"
             },
             delete: {
                 title: "タグを削除", // Delete Tag,
-                confirmation: "このタグを削除してもいいですか。このタグはすべてのアセットで削除され、これが唯一のタグであるあらゆる領域も削除されます" // Are you sure you want to delete this tag? It will be deleted throughout all assets and any regions where this is the only tag will also be deleted"
-            }
+                confirmation: "このタグを削除してもいいですか。このタグはすべてのアセットで削除され、これが唯一のタグであるあらゆる領域も削除されます",
+                // Are you sure you want to delete this tag? It will be deleted throughout all assets
+                // and any regions where this is the only tag will also be deleted"
+            },
         },
         canvas: {
             removeAllRegions: {
                 title: "すべてのリージョンを削除", // Remove All Regions,
                 confirmation: "すべてのリージョンを削除してもいいですか",  // Are you sure you want to remove all regions"
-            }
+            },
         },
         messages: {
             enforceTaggedRegions: {
                 title: "無効な領域が検出されました",  // Invalid region(s) detected,
-                description: "1 つ以上の領域にタグが付けられていません。次のアセットに進む前に、すべての領域をタグ付けしてください。",  // 1 or more regions have not been tagged.  Ensure all regions ar tagged before continuing to next asset."
-            }
-        }
+                description: "1 つ以上の領域にタグが付けられていません。次のアセットに進む前に、すべての領域をタグ付けしてください。",
+                // 1 or more regions have not been tagged. Ensure all regions ar tagged before continuing to next asset"
+            },
+        },
     },
     export: {
         title: "エクスポート",  // Export,
@@ -290,17 +304,19 @@ export const japanese: IAppStrings = {
                             all: "すべてのアセット",  // All Assets,
                             visited: "訪問済みのアセットのみ", // Only Visited Assets,
                             tagged: "タグ付きアセットのみ", // Only tagged Assets"
-                        }
+                        },
                     },
                     testTrainSplit: {
                         title: "テスト/トレーニング分割", // Test / Train Split,
-                        description: "エクスポートされたデータに使用するテスト/トレーニングの分割",  // The test train split to use for exported data"
+                        description: "エクスポートされたデータに使用するテスト/トレーニングの分割",
+                        // The test train split to use for exported data"
                     },
                     includeImages: {
                         title: "画像を含める", // Include Images,
-                        description: "ターゲット接続にバイナリ画像アセットを含めるかどうか", // Whether or not to include binary image assets in target connection"
-                    }
-                }
+                        description: "ターゲット接続にバイナリ画像アセットを含めるかどうか",
+                        // Whether or not to include binary image assets in target connection"
+                    },
+                },
             },
             vottJson: {
                 displayName: "VoTT JSON", // VoTT JSO"
@@ -334,7 +350,7 @@ export const japanese: IAppStrings = {
                         options: {
                             multiLabel: "画像ごとに複数のタグ", // Multiple tags per image,
                             multiClass: "画像ごとに単一のタグ", // Single tag per image"
-                        }
+                        },
                     },
                     name: {
                         title: "プロジェクト名", // Project Name"
@@ -350,7 +366,7 @@ export const japanese: IAppStrings = {
                         options: {
                             new: "新規プロジェクト",  // New Project,
                             existing: "既存プロジェクト",  // Existing Project"
-                        }
+                        },
                     },
                     projectId: {
                         title: "プロジェクト名", // Project Name"
@@ -360,9 +376,9 @@ export const japanese: IAppStrings = {
                         options: {
                             classification: "分類", // Classification,
                             objectDetection: "物体検出", // Object Detection"
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             },
             tfRecords: {
                 displayName: "TensorFlow レコード",  // Tensorflow Record"
@@ -371,19 +387,20 @@ export const japanese: IAppStrings = {
                 displayName: "Pascal VOC",  // Pascal VOC,
                 exportUnassigned: {
                     title: "未割り当てをエクスポート",  // Export Unassigned,
-                    description: "エクスポートされたデータに未割り当てのタグを含めるかどうか", // Whether or not to include unassigned tags in exported data"
-                }
+                    description: "エクスポートされたデータに未割り当てのタグを含めるかどうか",
+                    // Whether or not to include unassigned tags in exported data"
+                },
             },
             cntk: {
                 displayName: "Microsoft Cognitive Toolkit（CNTK）", // Microsoft Cognitive Toolkit (CNTK)"
             },
             csv: {
                 displayName: "コンマ区切り値（CSV）", // Comma Separated Values (CSV)"
-            }
+            },
         },
         messages: {
             saveSuccess: "エクスポート設定を保存しました", // Successfully saved export settings"
-        }
+        },
     },
     activeLearning: {
         title: "アクティブ ラーニング",  // Active Learning,
@@ -396,11 +413,12 @@ export const japanese: IAppStrings = {
                         preTrained: "事前トレーニング済みの Coco SSD", // Pre-trained Coco SSD,
                         customFilePath: "カスタム（ファイル パス）",  // Custom (File path),
                         customWebUrl: "カスタム（URL）",  // Custom (Url)"
-                    }
+                    },
                 },
                 autoDetect: {
                     title: "自動検出", // Auto Detect,
-                    description: "アセット間を移動するときに自動的に予測を行うかどうか", // Whether or not to automatically make predictions as you navigate between assets"
+                    description: "アセット間を移動するときに自動的に予測を行うかどうか",
+                    // Whether or not to automatically make predictions as you navigate between assets"
                 },
                 modelPath: {
                     title: "モデル パス",  // Model path,
@@ -413,14 +431,14 @@ export const japanese: IAppStrings = {
                 predictTag: {
                     title: "予測タグ", // Predict Tag,
                     description: "予測にタグを自動的に含めるかどうか", // Whether or not to automatically include tags in predictions"
-                }
-            }
+                },
+            },
         },
         messages: {
             loadingModel: "アクティブ ラーニング モデルを読み込んでいます...", // Loading active learning model...,
             errorLoadModel: "アクティブ ラーニング モデルの読み込みエラー", // Error loading active learning model,
             saveSuccess: "アクティブ ラーニング設定を保存しました",  // Successfully saved active learning settings"
-        }
+        },
     },
     profile: {
         settings: "プロファイル設定", // Profile Settings"
@@ -432,47 +450,62 @@ export const japanese: IAppStrings = {
         },
         projectUploadError: {
             title: "ファイルのアップロード エラー",  // Error Uploading File,
-            message: "ファイルのアップロード中にエラーが発生しました。", // There was an error uploading the file. Please verify the file is of the correct format and try again."
+            message: "ファイルのアップロード中にエラーが発生しました。",
+            // There was an error uploading the file. Please verify the file is of the correct format and try again."
         },
         genericRenderError: {
             title: "アプリケーションの読み込みエラー", // Error Loading Application,
-            message: "アプリケーションのレンダリング中にエラーが発生しました。", // An error occured while rendering the application. Please try again"
+            message: "アプリケーションのレンダリング中にエラーが発生しました。",
+            // An error occured while rendering the application. Please try again"
         },
         projectInvalidSecurityToken: {
             title: "プロジェクト ファイルの読み込みエラー",  // Error loading project file,
-            message: "プロジェクトが参照するセキュリティ トークンが無効です。",  // The security token referenced by the project is invalid. Verif that the security token for the project has been set correctly within your application settings"
+            message: "プロジェクトが参照するセキュリティ トークンが無効です。",
+            // The security token referenced by the project is invalid.
+            // Verify that the security token for the project has been set correctly within your application settings"
         },
         projectInvalidJson: {
             title: "プロジェクト ファイルの解析エラー",  // Error parsing project file,
-            message: "選択したプロジェクト ファイルに有効なJSONが含まれていません。",  // The selected project files does not contain valid JSON Please check the file any try again."
+            message: "選択したプロジェクト ファイルに有効なJSONが含まれていません。",
+            // The selected project files does not contain valid JSON Please check the file any try again."
         },
         projectDeleteError: {
             title: "プロジェクトの削除エラー", // Error deleting project,
-            message: "プロジェクトの削除中にエラーが発生しました。", // An error occured while deleting the project. Validate the project file an security token exist and try again"
+            message: "プロジェクトの削除中にエラーが発生しました。",
+            // An error occured while deleting the project.
+            // Validate the project file an security token exist and try again"
         },
         securityTokenNotFound: {
             title: "プロジェクト ファイルの読み込みエラー",  // Error loading project file,
-            message: "プロジェクトが参照するセキュリティ トークンが現在のアプリケーション設定に見つかりません。",  // The security token referenced by the project cannot be found in your current application settings. Verify the security token exists and try to reload the project."
+            message: "プロジェクトが参照するセキュリティ トークンが現在のアプリケーション設定に見つかりません。",
+            // The security token referenced by the project cannot be found in your current application settings.
+            // Verify the security token exists and try to reload the project."
         },
         canvasError: {
             title: "キャンバスの読み込みエラー", // Error loading canvas,
-            message: "キャンバスのロード中にエラーが発生しました。プロジェクトのアセットを確認して、再試行してください。", // There was an error loading the canvas, check the project's assets and try again."
+            message: "キャンバスのロード中にエラーが発生しました。プロジェクトのアセットを確認して、再試行してください。",
+            // There was an error loading the canvas, check the project's assets and try again."
         },
         importError: {
             title: "V1 プロジェクトのインポート エラー",  // Error importing V1 project,
-            message: "V1 プロジェクトのインポート中にエラーが発生しました。",  // There was an error importing the V1 project. Check the project file and try again"
+            message: "V1 プロジェクトのインポート中にエラーが発生しました。",
+            // There was an error importing the V1 project. Check the project file and try again"
         },
         pasteRegionTooBigError: {
             title: "領域の貼り付けエラー", // Error pasting region,
-            message: "このアセットには領域が大きすぎます。別のリージョンをコピーしてください",  // Region too big for this asset. Try copying another region"
+            message: "このアセットには領域が大きすぎます。別のリージョンをコピーしてください",
+            // Region too big for this asset. Try copying another region"
         },
         exportFormatNotFound: {
             title: "プロジェクトのエクスポート エラー",  // Error exporting project,
-            message: "プロジェクトにエクスポート形式がありません。", // Project is missing export format. Please select an export format in the export setting page."
+            message: "プロジェクトにエクスポート形式がありません。",
+            // Project is missing export format. Please select an export format in the export setting page."
         },
         activeLearningPredictionError: {
             title: "アクティブ ラーニングのエラー",  // Active Learning Error,
-            message: "現在のアセットの領域を予測中にエラーが発生しました。",  // An error occurred while predicting regions in the current asset. Pleas verify your active learning configuration and try again"
-        }
-    }
+            message: "現在のアセットの領域を予測中にエラーが発生しました。",
+            // An error occurred while predicting regions in the current asset.
+            // Please verify your active learning configuration and try again"
+        },
+    },
 };
