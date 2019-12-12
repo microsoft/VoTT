@@ -25,10 +25,10 @@ export const japanese: IAppStrings = {
     homePage: {
         newProject: "新規プロジェクト", // New Project,
         openLocalProject: {
-            title: "ローカル プロジェクトを開く", // Open Local Project"
+            title: "ローカルプロジェクトを開く", // Open Local Project"
         },
         openCloudProject: {
-            title: "クラウド プロジェクトを開く", // Open Cloud Project,
+            title: "クラウドプロジェクトを開く", // Open Cloud Project,
             selectConnection: "接続を選択", // Select a Connection"
         },
         recentProjects: "最近のプロジェクト", // Recent Projects,
@@ -62,7 +62,7 @@ export const japanese: IAppStrings = {
         securityTokens: {
             title: "セキュリティ トークン",  // Security Tokens,
             description: "セキュリティ トークンは、プロジェクト構成内の機密データを暗号化するために使用されます",
-            // Security tokens are used to encryp sensitive data within your project configuration"
+            // Security tokens are used to encrypt sensitive data within your project configuration"
         },
         version: {
             description: "バージョン：", // Version"
@@ -70,11 +70,11 @@ export const japanese: IAppStrings = {
         commit: "SHA をコミット",  // Commit SHA,
         devTools: {
             description: "問題の診断に役立つアプリケーション開発者ツールを開く", // Open application developer tools to help diagnose issues,
-            button: "開発者ツールの切り替え", // Toggle Developer Tools"
+            button: "開発者ツールを開く", // Toggle Developer Tools"
         },
         reload: {
             description: "現在の変更をすべて破棄して、アプリをリロード", // Reload the app discarding all current changes,
-            button: "アプリケーションを更新", // Refresh Application"
+            button: "アプリケーションをリフレッシュ", // Refresh Application"
         },
         messages: {
             saveSuccess: "アプリケーション設定を正常に保存しました", // Successfully saved application settings"
@@ -97,7 +97,7 @@ export const japanese: IAppStrings = {
         },
         videoSettings: {
             title: "ビデオ設定", // Video Settings,
-            description: "タグ付けのためにフレームが抽出されるレート",  // The rate at which frames are extracted for tagging.,
+            description: "タグ付けにおけるフレームの抽出割合",  // The rate at which frames are extracted for tagging.,
             frameExtractionRate: "フレーム抽出率（ビデオ 1 秒あたりのフレーム数）",  // Frame Extraction Rate (frames per a video second)"
         },
         addConnection: "接続を追加", // Add Connection,
@@ -112,7 +112,7 @@ export const japanese: IAppStrings = {
         visitedAssets: "訪問済みアセット（${count}）", // Visited Assets (${count}),
         taggedAssets: "タグ付きアセット（${count}）", // Tagged Assets (${count}),
         nonTaggedAssets: "タグ付けされていないアセット（${count}）", // Not Tagged Assets (${count}),
-        nonVisitedAssets: "訪問されていないアセット（${count}）", // Not Visited Assets (${count}),
+        nonVisitedAssets: " 未訪問ないアセット（${count}）", // Not Visited Assets (${count}),
         tagsSectionTitle: "タグ", // Tags & Labels,
         totalRegionCount: "タグ付けされたすべての領域",  // Total Tagged Regions,
         totalTagCount: "すべてのタグ",  // Total Tags,
@@ -206,9 +206,9 @@ export const japanese: IAppStrings = {
                 aspectRatio: {
                     title: "アスペクト比", // Aspect Ratio,
                     all: "すべて", // All,
-                    square: "平方", // Square,
-                    wide: "ワイド", // Wide,
-                    tall: "背が高い", // Tall"
+                    square: "正方形", // Square,
+                    wide: "横長", // Wide,
+                    tall: "縦長", // Tall"
                 },
             },
             local: {
@@ -223,7 +223,7 @@ export const japanese: IAppStrings = {
         width: "幅", // Width,
         height: "高さ", // Height,
         tagged: "タグ付き", // Tagged,
-        visited: "訪問した", // Visited,
+        visited: "訪問済み", // Visited,
         toolbar: {
             select: "選択（V）", // Select (V),
             pan: "パン", // Pan,
@@ -234,7 +234,7 @@ export const japanese: IAppStrings = {
             cut: "領域をカット",  // Cut Regions,
             paste: "領域を貼り付け", // Paste Regions,
             removeAllRegions: "すべてのリージョンを削除", // Remove All Regions,
-            previousAsset: "以前のアセット",  // Previous Asset,
+            previousAsset: "前のアセット",  // Previous Asset,
             nextAsset: "次のアセット",  // Next Asset,
             saveProject: "プロジェクトを保存", // Save Project,
             exportProject: "プロジェクトをエクスポート",  // Export Project,
@@ -256,7 +256,7 @@ export const japanese: IAppStrings = {
         },
         help: {
             title: "ヘルプ メニューの切り替え",  // Toggle Help Menu,
-            escape: "ヘルプ メニューのエスケープ",  // Escape Help Menu"
+            escape: "ヘルプメニューを抜ける",  // Escape Help Menu"
         },
         assetError: "アセットを読み込めません", // Unable to load asset,
         tags: {
@@ -271,7 +271,7 @@ export const japanese: IAppStrings = {
             },
             delete: {
                 title: "タグを削除", // Delete Tag,
-                confirmation: "このタグを削除してもいいですか。このタグはすべてのアセットで削除され、これが唯一のタグであるあらゆる領域も削除されます",
+                confirmation: "このタグを削除してもいいですか。このタグはすべてのアセットで削除され、このタグのみのあらゆる領域も削除されます",
                 // Are you sure you want to delete this tag? It will be deleted throughout all assets
                 // and any regions where this is the only tag will also be deleted"
             },
@@ -493,7 +493,7 @@ export const japanese: IAppStrings = {
         },
         pasteRegionTooBigError: {
             title: "領域の貼り付けエラー", // Error pasting region,
-            message: "このアセットには領域が大きすぎます。別のリージョンをコピーしてください",
+            message: "このアセットに対して領域が大きすぎます。別のリージョンをコピーしてください",
             // Region too big for this asset. Try copying another region"
         },
         exportFormatNotFound: {
