@@ -112,7 +112,7 @@ export const japanese: IAppStrings = {
         visitedAssets: "訪問済みアセット（${count}）", // Visited Assets (${count}),
         taggedAssets: "タグ付きアセット（${count}）", // Tagged Assets (${count}),
         nonTaggedAssets: "タグ付けされていないアセット（${count}）", // Not Tagged Assets (${count}),
-        nonVisitedAssets: " 未訪問ないアセット（${count}）", // Not Visited Assets (${count}),
+        nonVisitedAssets: "未訪問ないアセット（${count}）", // Not Visited Assets (${count}),
         tagsSectionTitle: "タグ", // Tags & Labels,
         totalRegionCount: "タグ付けされたすべての領域",  // Total Tagged Regions,
         totalTagCount: "すべてのタグ",  // Total Tags,
