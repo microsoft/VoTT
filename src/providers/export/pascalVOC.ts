@@ -6,6 +6,7 @@ import HtmlFileReader from "../../common/htmlFileReader";
 import { itemTemplate, annotationTemplate, objectTemplate } from "./pascalVOC/pascalVOCTemplates";
 import { interpolate } from "../../common/strings";
 import os from "os";
+import { splitTestAsset } from "./testAssetsSplitHelper";
 
 interface IObjectInfo {
     name: string;
@@ -253,40 +254,58 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
             }
         });
 
-        // Save ImageSets
-        await tags.forEachAsync(async (tag) => {
-            const tagInstances = tagUsage.get(tag.name) || 0;
-            if (!exportUnassignedTags && tagInstances === 0) {
-                return;
-            }
+        if (testSplit > 0 && testSplit <= 1) {
+            const tags = this.project.tags;
+            const testAssets: string[] = splitTestAsset(allAssets, tags, testSplit);
 
-            const assetList = [];
-            assetUsage.forEach((tags, assetName) => {
-                if (tags.has(tag.name)) {
-                    assetList.push(`${assetName} 1`);
-                } else {
-                    assetList.push(`${assetName} -1`);
+            await tags.forEachAsync(async (tag) => {
+                const tagInstances = tagUsage.get(tag.name) || 0;
+                if (!exportUnassignedTags && tagInstances === 0) {
+                    return;
                 }
-            });
-
-            if (testSplit > 0 && testSplit <= 1) {
-                // Split in Test and Train sets
-                const totalAssets = assetUsage.size;
-                const testCount = Math.ceil(totalAssets * testSplit);
-
-                const testArray = assetList.slice(0, testCount);
-                const trainArray = assetList.slice(testCount, totalAssets);
+                const testArray = [];
+                const trainArray = [];
+                assetUsage.forEach((tags, assetName) => {
+                    let assetString = "";
+                    if (tags.has(tag.name)) {
+                        assetString = `${assetName} 1`;
+                    } else {
+                        assetString = `${assetName} -1`;
+                    }
+                    if (testAssets.find((am) => am === assetName)) {
+                        testArray.push(assetString);
+                    } else {
+                        trainArray.push(assetString);
+                    }
+                });
 
                 const testImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_val.txt`;
                 await this.storageProvider.writeText(testImageSetFileName, testArray.join(os.EOL));
 
                 const trainImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_train.txt`;
                 await this.storageProvider.writeText(trainImageSetFileName, trainArray.join(os.EOL));
+            });
+        } else {
 
-            } else {
+            // Save ImageSets
+            await tags.forEachAsync(async (tag) => {
+                const tagInstances = tagUsage.get(tag.name) || 0;
+                if (!exportUnassignedTags && tagInstances === 0) {
+                    return;
+                }
+
+                const assetList = [];
+                assetUsage.forEach((tags, assetName) => {
+                    if (tags.has(tag.name)) {
+                        assetList.push(`${assetName} 1`);
+                    } else {
+                        assetList.push(`${assetName} -1`);
+                    }
+                });
+
                 const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
                 await this.storageProvider.writeText(imageSetFileName, assetList.join(os.EOL));
-            }
-        });
+            });
+        }
     }
 }

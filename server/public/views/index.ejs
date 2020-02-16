@@ -1,0 +1,14 @@
+<% if (!user) { %>
+	<h2>Welcome! Please log in.</h2>
+	<a href="/login">Log In</a></br>
+	<a href="https://myapps.microsoft.com">Manage your permissions (organization)</a></br>
+	<a href="https://account.live.com/consent/Manage">Manage account permissions (personal)</a>
+<% } else { %>
+	<h2>Hello, <%= user.displayName %></h2>
+	<a href="/account">Account Info</a></br>
+	<a href="/public/test.html">Run tests</a></br>
+	<a href="/endsession">End session</a></br>
+	<a href="/logout">Log Out</a></br>
+	<a href="https://myapps.microsoft.com">Manage your permissions (organization)</a></br>
+	<a href="https://account.live.com/consent/Manage">Manage account permissions (personal)</a>
+<% } %>
