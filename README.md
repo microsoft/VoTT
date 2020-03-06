@@ -59,7 +59,7 @@ VoTT helps facilitate an end-to-end machine learning pipeline:
 
 ## Getting Started
 
-VoTT can be installed as a native application or run from source. VoTT is also available as a [stand-alone Web application](https://vott.z5.web.core.windows.net) and can be used in any modern Web browser.
+VoTT can be installed as a native application or run from source. VoTT is also available as a [stand-alone Web application](https://vott.z22.web.core.windows.net) and can be used in any modern Web browser.
 
 ### Download and install a release package for your platform (recommended)
 
@@ -81,7 +81,7 @@ VoTT requires [NodeJS (>= 10.x, Dubnium) and NPM](https://github.com/nodejs/Rele
 
 ### Run as Web Application
 
-Using a modern Web browser, VoTT can be loaded from: [https://vott.z5.web.core.windows.net](https://vott.z5.web.core.windows.net)
+Using a modern Web browser, VoTT can be loaded from: [https://vott.z22.web.core.windows.net](https://vott.z22.web.core.windows.net)
 
 As noted above, the Web version of VoTT *cannot* access the local file system; all assets must be imported/exported through a Cloud project.
 
