@@ -1,7 +1,7 @@
 import { IAppStrings } from "../strings";
 
 /**
- * App Strings for Simplified Chinese (zh-tw)
+ * App Strings for Traditional Chinese (zh-tw)
  */
 export const chinesetw: IAppStrings = {
     appName: "視覺對象標記工具", // Visual Object Tagging Tool
