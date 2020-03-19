@@ -58,8 +58,8 @@ export const chinesetw: IAppStrings = {
             }
         },
         securityTokens: {
-            title: "安全令牌", // Security Tokens // Rex Todo
-            description: "安全令牌用於加密項目配置中的敏感數據" // Security tokens are used to encrypt sensitive data within your project configuration
+            title: "安全性權證", // Security Tokens
+            description: "安全性權證用於加密項目配置中的敏感數據" // Security tokens are used to encrypt sensitive data within your project configuration
         },
         version: {
             description: "版本：" // Version:
@@ -71,7 +71,7 @@ export const chinesetw: IAppStrings = {
         },
         reload: {
             description: "重新開始，放棄所有當前更改", // Reload the app discarding all current changes
-            button: "刷新程式" // Refresh Application
+            button: "重新整理應用程式" // Refresh Application
         },
         messages: {
             saveSuccess: "成功保存應用程式設定" // Successfully saved application settings
@@ -94,8 +94,8 @@ export const chinesetw: IAppStrings = {
         },
         videoSettings: {
             title: "影片設定", // Video Settings
-            description: "影像以進行標記的速率", // The rate at which frames are extracted for tagging.
-            frameExtractionRate: "影像提取率（每視頻每秒的畫面數）" // Frame Extraction Rate (frames per a video second)
+            description: "影片以進行標記的速率", // The rate at which frames are extracted for tagging.
+            frameExtractionRate: "影片提取率（每視頻每秒的畫面數）" // Frame Extraction Rate (frames per a video second)
         },
         addConnection: "新增連線", // Add Connection
         messages: {
@@ -103,7 +103,7 @@ export const chinesetw: IAppStrings = {
         }
     },
     projectMetrics: {
-        title: "項目指標", // Project Metrics
+        title: "專案指標", // Project Metrics
         assetsSectionTitle: "資產", // Assets
         totalAssetCount: "總資產", // Total Assets
         visitedAssets: "訪問的資產（$ {count}）", // Visited Assets (${count})
