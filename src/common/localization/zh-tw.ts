@@ -4,51 +4,51 @@ import { IAppStrings } from "../strings";
  * App Strings for Traditional Chinese (zh-tw)
  */
 export const chinesetw: IAppStrings = {
-    appName: "視覺對象標記工具", // Visual Object Tagging Tool
+    appName: "視覺物件標記工具", // Visual Object Tagging Tool
     common: {
-        displayName: "顯示名稱", // Display Name
-        description: "描述", // Description
-        submit: "提交", // Submit
+        displayName: "表示名稱", // Display Name
+        description: "說明", // Description
+        submit: "送出", // Submit
         cancel: "取消", // Cancel
         save: "保存", // Save
         delete: "刪除", // Delete
         provider: "提供者", // Provider
-        homePage: "主頁" // Home Page
+        homePage: "首頁" // Home Page
     },
     titleBar: {
-        help: "救命", // Help
+        help: "求助", // Help
         minimize: "最小化", // Minimize
         maximize: "最大化", // Maximize
-        restore: "恢復", // Restore
-        close: "關" // Close
+        restore: "回復", // Restore
+        close: "關閉" // Close
     },
     homePage: {
-        newProject: "新項目", // New Project
+        newProject: "新專案", // New Project
         openLocalProject: {
-            title: "打開本地項目" // Open Local Project
+            title: "打開本地專案" // Open Local Project
         },
         openCloudProject: {
-            title: "開放雲項目", // Open Cloud Project
-            selectConnection: "選擇一個連接" // Select a Connection
+            title: "打開雲端專案", // Open Cloud Project
+            selectConnection: "選擇連接" // Select a Connection
         },
-        recentProjects: "最近的項目", // Recent Projects
+        recentProjects: "最近的專案", // Recent Projects
         deleteProject: {
             title: "刪除專案", // Delete Project
-            confirmation: "確定要刪除項目嗎" // Are you sure you want to delete project
+            confirmation: "確定要刪除專案嗎" // Are you sure you want to delete project
         },
         importProject: {
-            title: "導入項目", // Import Project
-            confirmation: "您確定要將項目$ {project.file.name}項目設置轉換為v2格式嗎？我們建議您首先備份項目文件。" // Are you sure you want to convert project ${project.file.name} project settings to v2 format? We recommend you backup the project file first.
+            title: "匯入專案", // Import Project
+            confirmation: "您確定要將專案$ {project.file.name}轉換為v2格式嗎？我們建議您首先備份專案文件。" // Are you sure you want to convert project ${project.file.name} project settings to v2 format? We recommend you backup the project file first.
         },
         messages: {
             deleteSuccess: "已成功刪除$ {project.name}" // Successfully deleted ${project.name}
         }
     },
     appSettings: {
-        title: "應用程序設置", // Application Settings
+        title: "應用程式設定", // Application Settings
         storageTitle: "儲存設定", // Storage Settings
-        uiHelp: "您的設置存儲在哪裡", // Where your settings are stored
-        save: "保存設置", // Save Settings
+        uiHelp: "您的設定存儲在哪裡", // Where your settings are stored
+        save: "保存設定", // Save Settings
         securityToken: {
             name: {
                 title: "名稱" // Name
@@ -58,11 +58,11 @@ export const chinesetw: IAppStrings = {
             }
         },
         securityTokens: {
-            title: "安全令牌", // Security Tokens
+            title: "安全令牌", // Security Tokens // Rex Todo
             description: "安全令牌用於加密項目配置中的敏感數據" // Security tokens are used to encrypt sensitive data within your project configuration
         },
         version: {
-            description: "版：" // Version:
+            description: "版本：" // Version:
         },
         commit: "提交SHA", // Commit SHA
         devTools: {
@@ -70,36 +70,36 @@ export const chinesetw: IAppStrings = {
             button: "切換開發人員工具" // Toggle Developer Tools
         },
         reload: {
-            description: "重新加載應用，放棄所有當前更改", // Reload the app discarding all current changes
-            button: "刷新申請" // Refresh Application
+            description: "重新開始，放棄所有當前更改", // Reload the app discarding all current changes
+            button: "刷新程式" // Refresh Application
         },
         messages: {
-            saveSuccess: "成功保存應用程序設置" // Successfully saved application settings
+            saveSuccess: "成功保存應用程式設定" // Successfully saved application settings
         }
     },
     projectSettings: {
-        title: "項目設定", // Project Settings
+        title: "專案設定", // Project Settings
         securityToken: {
             title: "安全令牌", // Security Token
-            description: "用於加密項目文件中的敏感數據" // Used to encrypt sensitive data within project files
+            description: "用於加密專案文件中的敏感數據" // Used to encrypt sensitive data within project files
         },
-        save: "保存項目", // Save Project
+        save: "保存專案", // Save Project
         sourceConnection: {
-            title: "源連接", // Source Connection
-            description: "從何處加載資產" // Where to load assets from
+            title: "來源接續", // Source Connection
+            description: "從何處加載資料" // Where to load assets from
         },
         targetConnection: {
-            title: "目標連接", // Target Connection
-            description: "在哪裡保存項目和導出的數據" // Where to save the project and exported data
+            title: "目標接續", // Target Connection
+            description: "在哪裡保存專案和匯出的數據" // Where to save the project and exported data
         },
         videoSettings: {
             title: "影片設定", // Video Settings
-            description: "提取幀以進行標記的速率", // The rate at which frames are extracted for tagging.
-            frameExtractionRate: "幀提取率（每視頻每秒的幀數）" // Frame Extraction Rate (frames per a video second)
+            description: "影像以進行標記的速率", // The rate at which frames are extracted for tagging.
+            frameExtractionRate: "影像提取率（每視頻每秒的畫面數）" // Frame Extraction Rate (frames per a video second)
         },
-        addConnection: "添加連接", // Add Connection
+        addConnection: "新增連線", // Add Connection
         messages: {
-            saveSuccess: "成功保存$ {project.name}項目設置" // Successfully saved ${project.name} project settings
+            saveSuccess: "成功保存$ {project.name}專案設置" // Successfully saved ${project.name} project settings
         }
     },
     projectMetrics: {
