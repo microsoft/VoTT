@@ -4,7 +4,7 @@ import { IAppStrings } from "../strings";
  * App Strings for Traditional Chinese (zh-tw)
  */
 export const chinesetw: IAppStrings = {
-    appName: "視覺物件標記工具", // Visual Object Tagging Tool
+    appName: "VOTT視覺物件標記工具", // Visual Object Tagging Tool
     common: {
         displayName: "表示名稱", // Display Name
         description: "說明", // Description
@@ -16,10 +16,10 @@ export const chinesetw: IAppStrings = {
         homePage: "首頁" // Home Page
     },
     titleBar: {
-        help: "求助", // Help
+        help: "說明", // Help
         minimize: "最小化", // Minimize
         maximize: "最大化", // Maximize
-        restore: "回復", // Restore
+        restore: "還原", // Restore
         close: "關閉" // Close
     },
     homePage: {
@@ -66,22 +66,22 @@ export const chinesetw: IAppStrings = {
         },
         commit: "提交SHA", // Commit SHA
         devTools: {
-            description: "打開應用程序開發工具以幫助診斷問題", // Open application developer tools to help diagnose issues
+            description: "打開應用程式開發工具以幫助診斷問題", // Open application developer tools to help diagnose issues
             button: "切換開發工具" // Toggle Developer Tools
         },
         reload: {
-            description: "重新載入應用程式，放棄所有當前更改", // Reload the app discarding all current changes
+            description: "重新載入應用程式，放棄所有目前設定", // Reload the app discarding all current changes
             button: "重新整理應用程式" // Refresh Application
         },
         messages: {
-            saveSuccess: "成功保存應用程式設定" // Successfully saved application settings
+            saveSuccess: "已成功保存應用程式設定" // Successfully saved application settings
         }
     },
     projectSettings: {
         title: "專案設定", // Project Settings
         securityToken: {
             title: "安全性權證", // Security Token
-            description: "用於加密專案文件中的敏感數據" // Used to encrypt sensitive data within project files
+            description: "用於加密專案檔案中的敏感數據" // Used to encrypt sensitive data within project files
         },
         save: "保存專案", // Save Project
         sourceConnection: {
@@ -94,26 +94,26 @@ export const chinesetw: IAppStrings = {
         },
         videoSettings: {
             title: "影片設定", // Video Settings
-            description: "設定影片以進行標記的速率", // The rate at which frames are extracted for tagging.
+            description: "設定影片標記的速率", // The rate at which frames are extracted for tagging.
             frameExtractionRate: "影像取樣率（影像每秒的畫面數）" // Frame Extraction Rate (frames per a video second)
         },
         addConnection: "新增連線", // Add Connection
         messages: {
-            saveSuccess: "成功保存$ {project.name}專案設置" // Successfully saved ${project.name} project settings
+            saveSuccess: "已成功保存$ {project.name}專案設定" // Successfully saved ${project.name} project settings
         }
     },
     projectMetrics: {
-        title: "專案指標", // Project Metrics
-        assetsSectionTitle: "圖像數據", // Assets
+        title: "專案相關指標", // Project Metrics
+        assetsSectionTitle: "圖像數據", // Assets // As for this VOTT tool, translate "Assets" to "Image data" in Traditional Chinese, as "Asset" can be confusing if direct translated.
         totalAssetCount: "圖像數據總數", // Total Assets
-        visitedAssets: "已訪問的圖像數據（$ {count}）", // Visited Assets (${count})
+        visitedAssets: "已檢視的圖像數據（$ {count}）", // Visited Assets (${count})
         taggedAssets: "已標記的圖像數據（$ {count}）", // Tagged Assets (${count})
         nonTaggedAssets: "未標記的圖像數據（$ {count}）", // Not Tagged Assets (${count})
-        nonVisitedAssets: "未訪問的圖像數據（$ {count}）", // Not Visited Assets (${count})
-        tagsSectionTitle: "標記和標記", // Tags & Labels
-        totalRegionCount: "標記區域總數", // Total Tagged Regions
+        nonVisitedAssets: "未檢視的圖像數據（$ {count}）", // Not Visited Assets (${count})
+        tagsSectionTitle: "標記和標籤", // Tags & Labels
+        totalRegionCount: "已標記區域總數", // Total Tagged Regions
         totalTagCount: "標記總數", // Total Tags
-        avgTagCountPerAsset: "每個圖像數據的平均標記" // Average tags per asset
+        avgTagCountPerAsset: "每個圖像數據的平均標記數" // Average tags per asset
     },
     tags: {
         title: "標記", // Tags
@@ -141,14 +141,14 @@ export const chinesetw: IAppStrings = {
         },
         warnings: {
             existingName: "標記名稱已存在。選擇另一個名字", // Tag name already exists. Choose another name
-            emptyName: "標記名稱不能為空", // Cannot have an empty tag name
-            unknownTagName: "未知" // Unknown
+            emptyName: "標記名稱不能為空白", // Cannot have an empty tag name
+            unknownTagName: "未命名" // Unknown
         },
         toolbar: {
             add: "新增標記", // Add new tag
-            search: "搜索標記", // Search tags
+            search: "尋找標記", // Search tags
             edit: "編輯標記", // Edit tag
-            lock: "鎖標記", // Lock tag
+            lock: "鎖定標記", // Lock tag
             moveUp: "向上移動標記", // Move tag up
             moveDown: "向下移動標記", // Move tag down
             delete: "刪除標記" // Delete tag
@@ -161,7 +161,7 @@ export const chinesetw: IAppStrings = {
         instructions: "請選擇一個連接進行編輯", // Please select a connection to edit
         save: "保存連接", // Save Connection
         messages: {
-            saveSuccess: "成功保存$ {connection.name}", // Successfully saved ${connection.name}
+            saveSuccess: "已成功保存$ {connection.name}", // Successfully saved ${connection.name}
             deleteSuccess: "已成功刪除$ {connection.name}" // Successfully deleted ${connection.name}
         },
         imageCorsWarning: "警告：在Web瀏覽器中使用VoTT時，由於CORS（跨源資源共享）限制，來自Bing Image Search的某些圖像數據可能無法正確匯出。", // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may not export correctly due to CORS (Cross Origin Resource Sharing) restrictions.
@@ -181,22 +181,22 @@ export const chinesetw: IAppStrings = {
                 },
                 sas: {
                     title: "SAS", // SAS
-                    description: "用於驗證Blob存儲帳戶的共享訪問識別標誌" // Shared access signature used to authenticate to the blob storage account
+                    description: "用於驗證Blob存儲帳戶的共享存取簽名標記" // Shared access signature used to authenticate to the blob storage account
                 },
                 createContainer: {
                     title: "新增容器", // Create Container
-                    description: "新增blob容器（如果尚不存在）" // Creates the blob container if it does not already exist
+                    description: "新增blob容器（如果還不存在時）" // Creates the blob container if it does not already exist
                 }
             },
             bing: {
-                title: "BING圖片搜索", // Bing Image Search
-                options: "BING圖像搜索選項", // Bing Image Search Options
+                title: "BING 圖片搜索", // Bing Image Search
+                options: "BING 圖像搜索選項", // Bing Image Search Options
                 apiKey: "API密鑰", // API Key
-                query: "詢問", // Query
+                query: "查詢", // Query
                 aspectRatio: {
                     title: "長寬比", // Aspect Ratio
                     all: "所有", // All
-                    square: "方型", // Square
+                    square: "矩形", // Square
                     wide: "寬", // Wide
                     tall: "高" // Tall
                 }
@@ -205,7 +205,7 @@ export const chinesetw: IAppStrings = {
                 title: "本地檔案系統", // Local File System
                 folderPath: "資料夾路徑", // Folder Path
                 selectFolder: "選擇資料夾", // Select Folder
-                chooseFolder: "選擇資料夾" // Choose Folder
+                chooseFolder: "選取資料夾" // Choose Folder
             }
         }
     },
@@ -213,7 +213,7 @@ export const chinesetw: IAppStrings = {
         width: "寬度", // Width
         height: "高度", // Height
         tagged: "已標記", // Tagged
-        visited: "已訪問", // Visited
+        visited: "已檢視", // Visited
         toolbar: {
             select: "選擇 (V)", // Select (V)
             pan: "全景", // Pan
@@ -225,7 +225,7 @@ export const chinesetw: IAppStrings = {
             paste: "貼上區域", // Paste Regions
             removeAllRegions: "刪除所有區域", // Remove All Regions
             previousAsset: "以前的圖像數據", // Previous Asset
-            nextAsset: "下一項圖像數據", // Next Asset
+            nextAsset: "下一個圖像數據", // Next Asset
             saveProject: "保存專案", // Save Project
             exportProject: "匯出專案", // Export Project
             activeLearning: "主動學習" // Active Learning
@@ -245,22 +245,22 @@ export const chinesetw: IAppStrings = {
             }
         },
         help: {
-            title: "切換輔助選項", // Toggle Help Menu
-            escape: "離開輔助選項" // Escape Help Menu
+            title: "切換輔助說明選項", // Toggle Help Menu
+            escape: "離開輔助說明選項" // Escape Help Menu
         },
-        assetError: "無法加載圖像數據", // Unable to load asset
+        assetError: "無法載入圖像數據", // Unable to load asset
         tags: {
             hotKey: {
-                apply: "使用快捷鍵反應標記", // Apply Tag with Hot Key
-                lock: "用快捷鍵鎖定標記" // Lock Tag with Hot Key
+                apply: "使用快捷鍵來反應標記", // Apply Tag with Hot Key
+                lock: "用快捷鍵來鎖定標記" // Lock Tag with Hot Key
             },
             rename: {
-                title: "重命名標記", // Rename Tag
-                confirmation: "您確定要重命名此標記嗎？它將在所有圖像數據中重命名" // Are you sure you want to rename this tag? It will be renamed throughout all assets
+                title: "重新命名標記", // Rename Tag
+                confirmation: "您確定要重新命名此標記嗎？它將在所有圖像數據中被重新命名" // Are you sure you want to rename this tag? It will be renamed throughout all assets
             },
             delete: {
                 title: "刪除標記", // Delete Tag
-                confirmation: "您確定要刪除此標記嗎？它將在所有圖像數據中刪除，並且只有此標記存在的任何區域也將被刪除" // Are you sure you want to delete this tag? It will be deleted throughout all assets and any regions where this is the only tag will also be deleted
+                confirmation: "您確定要刪除此標記嗎？它將在所有圖像數據中被刪除，並且只有此標記存在的任何區域也將被刪除" // Are you sure you want to delete this tag? It will be deleted throughout all assets and any regions where this is the only tag will also be deleted
             }
         },
         canvas: {
@@ -288,7 +288,7 @@ export const chinesetw: IAppStrings = {
                         description: "匯出項目中包括哪些圖像數據", // Which assets to include in the export
                         options: {
                             all: "所有圖像數據", // All Assets
-                            visited: "只有已訪問的圖像數據", // Only Visited Assets
+                            visited: "只有已檢視的圖像數據", // Only Visited Assets
                             tagged: "只有已標記的圖像數據" // Only tagged Assets
                         }
                     },
@@ -298,7 +298,7 @@ export const chinesetw: IAppStrings = {
                     },
                     includeImages: {
                         title: "包含圖像", // Include Images
-                        description: "是否在目標連接中包括二進制圖像數據" // Whether or not to include binary image assets in target connection
+                        description: "是否在目標連接中包括二進位圖像數據" // Whether or not to include binary image assets in target connection
                     }
                 }
             },
@@ -327,7 +327,7 @@ export const chinesetw: IAppStrings = {
                     },
                     region: {
                         title: "區域", // Region
-                        description: "部署服務的Azure區域" // The Azure region where your service is deployed
+                        description: "部署服務的Azure地區" // The Azure region where your service is deployed
                     },
                     classificationType: {
                         title: "分類類型", // Classification Type
@@ -353,13 +353,13 @@ export const chinesetw: IAppStrings = {
                         }
                     },
                     projectId: {
-                        title: "專案名" // Project Name
+                        title: "專案名稱" // Project Name
                     },
                     projectType: {
                         title: "專案類型", // Project Type
                         options: {
                             classification: "分類", // Classification
-                            objectDetection: "物件檢測" // Object Detection
+                            objectDetection: "物件偵測" // Object Detection
                         }
                     }
                 }
@@ -370,8 +370,8 @@ export const chinesetw: IAppStrings = {
             pascalVoc: {
                 displayName: "Pascal VOC", // Pascal VOC
                 exportUnassigned: {
-                    title: "匯出未分配項目", // Export Unassigned
-                    description: "是否在已匯出的數據中包括未分配的標記" // Whether or not to include unassigned tags in exported data
+                    title: "匯出未指定的項目", // Export Unassigned
+                    description: "是否在已匯出的數據中包括未指定的標記" // Whether or not to include unassigned tags in exported data
                 }
             },
             cntk: {
@@ -408,7 +408,7 @@ export const chinesetw: IAppStrings = {
                 },
                 modelUrl: {
                     title: "模型網址", // Model URL
-                    description: "從公共網址加載模型" // Load your model from a public web URL
+                    description: "從公共網址載入模型" // Load your model from a public web URL
                 },
                 predictTag: {
                     title: "預測標記", // Predict Tag
@@ -428,51 +428,51 @@ export const chinesetw: IAppStrings = {
     errors: {
         unknown: {
             title: "未知錯誤", // Unknown Error
-            message: "該應用程序遇到未知錯誤。請再試一遍。" // The app encountered an unknown error. Please try again.
+            message: "該應用程式遇到未知錯誤。請再試一遍。" // The app encountered an unknown error. Please try again.
         },
         projectUploadError: {
-            title: "上傳文件時出現錯誤", // Error Uploading File
-            message: "上傳文件時出現錯誤。請確認檔案格式正確，然後重試。" // There was an error uploading the file. Please verify the file is of the correct format and try again.
+            title: "上傳檔案時出現錯誤", // Error Uploading File
+            message: "上傳檔案時出現錯誤。請確認檔案格式正確，然後重試。" // There was an error uploading the file. Please verify the file is of the correct format and try again.
         },
         genericRenderError: {
-            title: "載入應用程序時出錯", // Error Loading Application
+            title: "載入應用程序時出現錯誤", // Error Loading Application
             message: "描繪應用程序時發生錯誤。請再試一遍" // An error occured while rendering the application. Please try again
         },
         projectInvalidSecurityToken: {
-            title: "載入專案文件時出錯", // Error loading project file
-            message: "專案使用的安全性認證無效。請驗證是否在您的應用程序設定中正確的設定了專案的安全性認證" // The security token referenced by the project is invalid. Verify that the security token for the project has been set correctly within your application settings
+            title: "載入專案文件時出現錯誤", // Error loading project file
+            message: "專案使用的安全性認證無效。請驗證是否在您的應用程式設定中正確的設定了專案的安全性認證" // The security token referenced by the project is invalid. Verify that the security token for the project has been set correctly within your application settings
         },
         projectInvalidJson: {
-            title: "解析專案文件時出錯", // Error parsing project file
-            message: "所選的專案文件不包含有效的JSON格式。請確認剛專案檔案並且重試。" // The selected project files does not contain valid JSON. Please check the file any try again.
+            title: "解析專案文件時出現錯誤", // Error parsing project file
+            message: "所選擇的專案文件不包含有效的JSON格式。請確認該專案檔案並且重試。" // The selected project files does not contain valid JSON. Please check the file any try again.
         },
         projectDeleteError: {
-            title: "刪除專案時出錯", // Error deleting project
-            message: "刪除專案時發生錯誤。驗證專案檔案和安全性認證是否存在，然後重試" // An error occured while deleting the project. Validate the project file and security token exist and try again
+            title: "刪除專案時出現錯誤", // Error deleting project
+            message: "刪除專案時發生錯誤。請確認專案檔案和安全性認證是否存在，然後重試" // An error occured while deleting the project. Validate the project file and security token exist and try again
         },
         securityTokenNotFound: {
-            title: "加載專案文件時出錯", // Error loading project file
-            message: "在當前的應用程序設置中找不到該專案引用的安全性認證。驗證安全性認證是否存在，然後嘗試重新加載專案。" // The security token referenced by the project cannot be found in your current application settings. Verify the security token exists and try to reload the project.
+            title: "加載專案檔案時出現錯誤", // Error loading project file
+            message: "在當前的應用程式設定中找不到該專案所使用的安全性認證。請確認安全性認證是否存在，然後嘗試重新載入專案。" // The security token referenced by the project cannot be found in your current application settings. Verify the security token exists and try to reload the project.
         },
         canvasError: {
-            title: "加載畫佈時出錯", // Error loading canvas
-            message: "加載畫佈時發生錯誤，請檢查專案的圖像數據，然後重試。" // There was an error loading the canvas, check the project's assets and try again.
+            title: "載入畫面時出現錯誤", // Error loading canvas
+            message: "載入畫面時發生錯誤，請檢查專案的圖像數據，然後重試。" // There was an error loading the canvas, check the project's assets and try again.
         },
         importError: {
-            title: "導入V1專案時出錯", // Error importing V1 project
-            message: "導入V1專案時出錯。檢查專案檔案，然後重試" // There was an error importing the V1 project. Check the project file and try again
+            title: "匯入V1格式專案時出現錯誤", // Error importing V1 project
+            message: "匯入V1格式專案時出現錯誤。請檢查專案檔案，然後重試" // There was an error importing the V1 project. Check the project file and try again
         },
         pasteRegionTooBigError: {
             title: "貼上區域時發生錯誤", // Error pasting region
-            message: "此區域對於本圖像數據來說太大了。請嘗試複製其他區域" // Region too big for this asset. Try copying another region
+            message: "此區域對於本圖像數據來說太大了。請嘗試複製其他的區域" // Region too big for this asset. Try copying another region
         },
         exportFormatNotFound: {
-            title: "匯出專案時出錯", // Error exporting project
-            message: "專案缺少匯出格式。請在匯出設定頁面中選擇一種匯出格式。" // Project is missing export format.  Please select an export format in the export setting page.
+            title: "匯出專案時出現錯誤", // Error exporting project
+            message: "專案設定中缺少匯出格式。請在匯出設定畫面中選擇一種匯出格式。" // Project is missing export format.  Please select an export format in the export setting page.
         },
         activeLearningPredictionError: {
             title: "主動學習錯誤", // Active Learning Error
-            message: "預測當前圖像數據中的區域時發生錯誤。請驗證您的有效學習設定，然後重試" // An error occurred while predicting regions in the current asset. Please verify your active learning configuration and try again
+            message: "在預測當前圖像數據中的區域時發生錯誤。請確認您的主動學習相關設定，然後重試" // An error occurred while predicting regions in the current asset. Please verify your active learning configuration and try again
         },
     },
 };
