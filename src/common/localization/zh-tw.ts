@@ -113,7 +113,7 @@ export const chinesetw: IAppStrings = {
         tagsSectionTitle: "標記和標籤", // Tags & Labels, so it can actually be same translation to Tags and Labels in Traditional Chinese, to differentiate, having slightly different translation for both keywords.
         totalRegionCount: "已標記區域總數", // Total Tagged Regions
         totalTagCount: "標記總數", // Total Tags
-        avgTagCountPerAsset: "每個圖像數據的平均標記數" // Average tags per asset
+        avgTagCountPerAsset: "每個圖像數據的平均標記數" // Average tags per asset // testing gpg commit
     },
     tags: {
         title: "標記", // Tags
