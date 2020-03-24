@@ -104,13 +104,13 @@ export const chinesetw: IAppStrings = {
     },
     projectMetrics: {
         title: "專案相關指標", // Project Metrics
-        assetsSectionTitle: "圖像數據", // Assets // As for this VOTT tool, translate "Assets" to "Image data" in Traditional Chinese, as "Asset" can be confusing if direct translated.
+        assetsSectionTitle: "圖像數據", // Assets // As for this VOTT tool, translate "Assets" to "Image data" in Traditional Chinese, as "Asset" can be confusing if directly translated.
         totalAssetCount: "圖像數據總數", // Total Assets
         visitedAssets: "已檢視的圖像數據（$ {count}）", // Visited Assets (${count})
         taggedAssets: "已標記的圖像數據（$ {count}）", // Tagged Assets (${count})
         nonTaggedAssets: "未標記的圖像數據（$ {count}）", // Not Tagged Assets (${count})
         nonVisitedAssets: "未檢視的圖像數據（$ {count}）", // Not Visited Assets (${count})
-        tagsSectionTitle: "標記和標籤", // Tags & Labels
+        tagsSectionTitle: "標記和標籤", // Tags & Labels, so it can actually be same translation to Tags and Labels in Traditional Chinese, to differentiate, having slightly different translation for both keywords.
         totalRegionCount: "已標記區域總數", // Total Tagged Regions
         totalTagCount: "標記總數", // Total Tags
         avgTagCountPerAsset: "每個圖像數據的平均標記數" // Average tags per asset
