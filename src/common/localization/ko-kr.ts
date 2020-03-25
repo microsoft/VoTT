@@ -6,8 +6,8 @@ import { IAppStrings } from "../strings";
 export const korean: IAppStrings = {
     appName: "비주얼 객체 태깅 도구", // Visual Object Tagging Tool,
     common: {
-        displayName: "표시될 이름", // Display Name,
-        description: "기술", // Description,
+        displayName: "프로젝트 이름", // Display Name,
+        description: "설명", // Description,
         submit: "제출", // Submit,
         cancel: "취소", // Cancel,
         save: "저장", // Save,
@@ -38,12 +38,12 @@ export const korean: IAppStrings = {
         },
         importProject: {
             title: "프로젝트 가져 오기",  // Import Project,
-            confirmation: "$ {project.file.name} 프로젝트 설정을 v2 형식으로 수정 하시겠습니까? 수정하시기 전에 프로젝트 파일을 백업해두시기 바랍니다.",
+            confirmation: "${project.file.name} 프로젝트 설정을 v2 형식으로 수정 하시겠습니까? 수정하시기 전에 프로젝트 파일을 백업해두시기 바랍니다.",
             // Are you sure you want to conver project ${project.file.name} project settings to v2 format?
             // We recommend you backup the project file first."
         },
         messages: {
-            deleteSuccess: "$ {project.name}을 삭제했습니다",  // Successfully deleted ${project.name}"
+            deleteSuccess: "${project.name}을 삭제했습니다",  // Successfully deleted ${project.name}"
         },
     },
     appSettings: {
@@ -102,21 +102,21 @@ export const korean: IAppStrings = {
         },
         addConnection: "연결 추가", // Add Connection,
         messages: {
-            saveSuccess: "$ {project.name} 프로젝트 설정을 성공적으로 저장했습니다", // Successfully saved ${project.name} project settings
+            saveSuccess: "${project.name} 프로젝트 설정을 성공적으로 저장했습니다", // Successfully saved ${project.name} project settings
         },
     },
     projectMetrics: {
         title: "프로젝트 매트릭",  // Project Metrics,
-        assetsSectionTitle: "자산",  // Assets,
-        totalAssetCount: "총 자산",  // Total Assets,
-        visitedAssets: "방문 자산 ($ {count})", // Visited Assets (${count}),
-        taggedAssets: "태그 된 자산 ($ {count})", // Tagged Assets (${count}),
-        nonTaggedAssets: "태그가없는 자산 ($ {count})", // Not Tagged Assets (${count}),
-        nonVisitedAssets: "방문하지 않은 자산 ($ {count})", // Not Visited Assets (${count}),
+        assetsSectionTitle: "Asset",  // Assets,
+        totalAssetCount: "총 Asset",  // Total Assets,
+        visitedAssets: "검토한 Asset (${count})", // Visited Assets (${count}),
+        taggedAssets: "태그된 Asset (${count})", // Tagged Assets (${count}),
+        nonTaggedAssets: "태그가 없는 Asset (${count})", // Not Tagged Assets (${count}),
+        nonVisitedAssets: "검토하지 않은 Asset (${count})", // Not Visited Assets (${count}),
         tagsSectionTitle: "태그", // Tags & Labels,
-        totalRegionCount: "총 태그 지역",  // Total Tagged Regions,
-        totalTagCount: "총 태그",  // Total Tags,
-        avgTagCountPerAsset: "자산 당 평균 태그", // Average tags per asset"
+        totalRegionCount: "태그된 지역 수",  // Total Tagged Regions,
+        totalTagCount: "태그 숫자",  // Total Tags,
+        avgTagCountPerAsset: "Asset 당 평균 태그 숫자", // Average tags per asset"
     },
     tags: {
         title: "태그", // Tags,
@@ -130,7 +130,7 @@ export const korean: IAppStrings = {
             white: "하얀색",  // White,
             gray: "회색", // Gray,
             red: "빨간색", // Red,
-            maroon: "적갈색", // Maroon,
+            maroon: "밤색", // Maroon,
             yellow: "노랑색", // Yellow,
             olive: "올리브색", // Olive,
             lime: "라임색", // Lime,
@@ -139,13 +139,13 @@ export const korean: IAppStrings = {
             teal: "물오리", // Teal,
             blue: "파랑색", // Blue,
             navy: "군청색",  // Navy,
-            fuschia: "푸스 키아",  // Fuschia,
+            fuschia: "푸시아",  // Fuschia,
             purple: "보라색",  // Purple"
         },
         warnings: {
-            existingName: "태그 이름이 이미 존재합니다. 다른 이름을 선택하십시오",  // Tag name already exists. Choose another name,
+            existingName: "태그 이름이 이미 존재합니다. 다른 이름을 입력하십시오",  // Tag name already exists. Choose another name,
             emptyName: "빈 태그 이름을 가질 수 없습니다", // Cannot have an empty tag name,
-            unknownTagName: "알 수 없는",  // Unknown"
+            unknownTagName: "알 수 없는 태그 이름",  // Unknown"
         },
         toolbar: {
             add: "새 태그 추가", // Add new tag,
@@ -158,19 +158,19 @@ export const korean: IAppStrings = {
         },
     },
     connections: {
-        title: "연결 정보", // Connections,
-        details: "연결 세부 사항", // Connection Details,
-        settings: "연결 설정", // Connection Settings,
-        instructions: "편집 할 연결을 선택하십시오", // Please select a connection to edit,
-        save: "연결 저장", // Save Connection,
+        title: "연결 설정", // Connections,
+        details: "설명", // Connection Details,
+        settings: "설정", // Connection Settings,
+        instructions: "편집 할 연결 정보를 선택하십시오", // Please select a connection to edit,
+        save: "저장", // Save Connection,
         messages: {
-            saveSuccess: "$ {connection.name}을 성공적으로 저장했습니다",  // Successfully saved ${connection.name},
-            deleteSuccess: "$ {connection.name}을 삭제했습니다.",  // Successfully deleted ${connection.name}"
+            saveSuccess: "${connection.name}을 성공적으로 저장했습니다",  // Successfully saved ${connection.name},
+            deleteSuccess: "${connection.name}을 삭제했습니다.",  // Successfully deleted ${connection.name}"
         },
-        imageCorsWarning: "경고 : 웹 브라우저에서 VoTT를 사용하는 경우 CORS (Cross Origin Resource Sharing) 제한으로 인해 Bing Image Search의 일부 자산이 제대로 내보내지지 않을 수 있습니다.",
+        imageCorsWarning: "경고 : 웹 브라우저에서 VoTT를 사용하는 경우 CORS (Cross Origin Resource Sharing) 제한으로 인해 Bing Image Search의 일부 정보가 제대로 내보내지지 않을 수 있습니다.",
         // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may no export
         // correctly due to CORS (Cross Origin Resource Sharing) restrictions.",
-        blobCorsWarning: "경고 : i를 소스 또는 대상 연결로 사용하려면 Azure Blob Storage 계정에서 CORS (Cross Domain Resource Sharing)를 사용하도록 설정해야합니다. CORS 사용에 대한 자세한 정보는 {0}에서 찾을 수 있습니다.",
+        blobCorsWarning: "경고 : 소스 또는 대상 연결로 사용하려면, Azure Blob Storage 계정에서 CORS(Cross Domain Resource Sharing) 설정을 활성화 해야 합니다. CORS 설정에 대한 자세한 정보는 {0}에서 찾을 수 있습니다.",
         // Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage account, in order
         // to use i as a source or target connection. More information on enabling CORS can be found in the {0}",
         azDocLinkText: "Azure 설명서.",  // Azure Documentation.,
@@ -212,9 +212,9 @@ export const korean: IAppStrings = {
             },
             local: {
                 title: "로컬 파일 시스템",  // Local File System,
-                folderPath: "폴더 경로",  // Folder Path,
-                selectFolder: "폴더를 선택하십시오", // Select Folder,
-                chooseFolder: "폴더를 고르십시오", // Choose Folder"
+                folderPath: "경로",  // Folder Path,
+                selectFolder: "폴더 선택", // Select Folder,
+                chooseFolder: "선택", // Choose Folder"
             },
         },
     },
@@ -233,8 +233,8 @@ export const korean: IAppStrings = {
             cut: "영역 잘라내기",  // Cut Regions,
             paste: "영역 붙여 넣기", // Paste Regions,
             removeAllRegions: "모든 지역 제거", // Remove All Regions,
-            previousAsset: "이전 자산",  // Previous Asset,
-            nextAsset: "다음 자산",  // Next Asset,
+            previousAsset: "이전 Asset",  // Previous Asset,
+            nextAsset: "다음 Asset",  // Next Asset,
             saveProject: "프로젝트 저장", // Save Project,
             exportProject: "프로젝트 내보내기",  // Export Project,
             activeLearning: "Active Learning",  // Active Learning"
@@ -254,10 +254,10 @@ export const korean: IAppStrings = {
             },
         },
         help: {
-            title: "도움말 메뉴 전환",  // Toggle Help Menu,
-            escape: "탈출 도움말 메뉴",  // Escape Help Menu"
+            title: "도움말",  // Toggle Help Menu,
+            escape: "나가기",  // Escape Help Menu"
         },
-        assetError: "자산을로드 할 수 없습니다", // Unable to load asset,
+        assetError: "Asset을 불러올 수 없습니다", // Unable to load asset,
         tags: {
             hotKey: {
                 apply: "단축키로 태그 적용",  // Apply Tag with Hot Key,
@@ -265,12 +265,12 @@ export const korean: IAppStrings = {
             },
             rename: {
                 title: "태그 이름 바꾸기", // Rename Tag,
-                confirmation: "이 태그의 이름을 바꾸시겠습니까? 모든 자산에서 이름이 변경됩니다",
+                confirmation: "이 태그의 이름을 바꾸시겠습니까? 모든 Asset에서 이름이 변경됩니다",
                 // Are you sure you want to rename this tag? It will be renamed throughout all assets"
             },
             delete: {
                 title: "태그 삭제", // Delete Tag,
-                confirmation: "이 태그를 삭제 하시겠습니까? 모든 자산 및 태그가 유일한 지역 인 모든 지역에서 삭제됩니다.",
+                confirmation: "이 태그를 삭제 하시겠습니까? 모든 Asset 및 태그가 유일한 지역 인 모든 지역에서 삭제됩니다.",
                 // Are you sure you want to delete this tag? It will be deleted throughout all assets
                 // and any regions where this is the only tag will also be deleted"
             },
@@ -290,19 +290,19 @@ export const korean: IAppStrings = {
         },
     },
     export: {
-        title: "수출",  // Export,
+        title: "내보내기",  // Export,
         settings: "내보내기 설정", // Export Settings,
         saveSettings: "내보내기 설정 저장", // Save Export Settings,
         providers: {
             common: {
                 properties: {
                     assetState: {
-                        title: "자산 상태",  // Asset State,
-                        description: "수출에 포함 할 자산", // Which assets to include in the export,
+                        title: "Asset 상태",  // Asset State,
+                        description: "내보내기에 포함 할 Asset", // Which assets to include in the export,
                         options: {
-                            all: "모든 자산",  // All Assets,
-                            visited: "방문한 자산 만", // Only Visited Assets,
-                            tagged: "태그 된 자산 만", // Only tagged Assets"
+                            all: "모든 Asset",  // All Assets,
+                            visited: "방문한 Asset만", // Only Visited Assets,
+                            tagged: "태그된 Asset만", // Only tagged Assets"
                         },
                     },
                     testTrainSplit: {
@@ -312,7 +312,7 @@ export const korean: IAppStrings = {
                     },
                     includeImages: {
                         title: "이미지 포함", // Include Images,
-                        description: "대상 연결에 이진 이미지 자산을 포함할지 여부",
+                        description: "대상 연결에 이진 이미지 Asset을 포함할지 여부",
                         // Whether or not to include binary image assets in target connection"
                     },
                 },
@@ -355,7 +355,7 @@ export const korean: IAppStrings = {
                         title: "프로젝트 이름", // Project Name"
                     },
                     description: {
-                        title: "프로젝트 설명", // Project Description"
+                        title: "설명", // Project Description"
                     },
                     domainId: {
                         title: "도메인", // Domain"
@@ -416,7 +416,7 @@ export const korean: IAppStrings = {
                 },
                 autoDetect: {
                     title: "자동 감지", // Auto Detect,
-                    description: "자산 간을 탐색 할 때 자동 예측 여부",
+                    description: "Asset 간을 탐색 할 때 자동 예측 여부",
                     // Whether or not to automatically make predictions as you navigate between assets"
                 },
                 modelPath: {
@@ -482,7 +482,7 @@ export const korean: IAppStrings = {
         },
         canvasError: {
             title: "캔버스 불러 오기 오류", // Error loading canvas,
-            message: "캔버스를로드하는 중에 오류가 발생했습니다. 프로젝트 자산을 확인한 후 다시 시도하십시오.",
+            message: "캔버스를 로드하는 중에 오류가 발생했습니다. 프로젝트 Asset을 확인한 후 다시 시도하십시오.",
             // There was an error loading the canvas, check the project's assets and try again."
         },
         importError: {
@@ -492,7 +492,7 @@ export const korean: IAppStrings = {
         },
         pasteRegionTooBigError: {
             title: "지역 붙여 넣기 오류", // Error pasting region,
-            message: "이 자산에 비해 지역이 너무 큽니다. 다른 지역을 복사 해보십시오.",
+            message: "이 Asset에 비해 지역이 너무 큽니다. 다른 지역을 복사 해보십시오.",
             // Region too big for this asset. Try copying another region"
         },
         exportFormatNotFound: {
@@ -502,7 +502,7 @@ export const korean: IAppStrings = {
         },
         activeLearningPredictionError: {
             title: "Active Learning 오류",  // Active Learning Error,
-            message: "현재 자산의 지역을 예측하는 동안 오류가 발생했습니다. Active Learning 구성을 확인하고 다시 시도하십시오",
+            message: "현재 Asset의 지역을 예측하는 동안 오류가 발생했습니다. Active Learning 구성을 확인하고 다시 시도하십시오",
             // An error occurred while predicting regions in the current asset.
             // Please verify your active learning configuration and try again"
         },
