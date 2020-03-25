@@ -8,7 +8,7 @@ pr: none
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: 'pj-little-sub'
+  azureSubscription: fe7b93fe-e836-4a55-804c-883dbea6af24'
 
   # Web app name
   webAppName: 'vott'
