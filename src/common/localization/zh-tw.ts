@@ -10,7 +10,7 @@ export const chinesetw: IAppStrings = {
         description: "說明", // Description
         submit: "送出", // Submit
         cancel: "取消", // Cancel
-        save: "保存", // Save
+        save: "儲存", // Save
         delete: "刪除", // Delete
         provider: "提供者", // Provider
         homePage: "首頁", // Home Page
@@ -25,20 +25,20 @@ export const chinesetw: IAppStrings = {
     homePage: {
         newProject: "新專案", // New Project
         openLocalProject: {
-            title: "打開本地專案", // Open Local Project
+            title: "打開本機專案", // Open Local Project
         },
         openCloudProject: {
             title: "打開雲端專案", // Open Cloud Project
-            selectConnection: "選擇連接", // Select a Connection
+            selectConnection: "選擇連線", // Select a Connection
         },
         recentProjects: "最近的專案", // Recent Projects
         deleteProject: {
             title: "刪除專案", // Delete Project
-            confirmation: "確定要刪除專案嗎", // Are you sure you want to delete project
+            confirmation: "確定要刪除專案?", // Are you sure you want to delete project
         },
         importProject: {
             title: "匯入專案", // Import Project
-            confirmation: "您確定要將專案$ {project.file.name}轉換為v2格式嗎？我們建議您首先備份專案文件。",
+            confirmation: "您確定要將專案$ {project.file.name}的設定轉換為v2格式嗎？我們建議您首先備份專案文件。",
             // Are you sure you want to convert project ${project.file.name} project settings to v2 format?
             // We recommend you backup the project file first.
         },
@@ -73,7 +73,7 @@ export const chinesetw: IAppStrings = {
             button: "切換開發工具", // Toggle Developer Tools
         },
         reload: {
-            description: "重新載入應用程式，放棄所有目前設定", // Reload the app discarding all current changes
+            description: "重新載入應用程式，放棄所有目前做的修改", // Reload the app discarding all current changes
             button: "重新整理應用程式", // Refresh Application
         },
         messages: {
@@ -88,11 +88,11 @@ export const chinesetw: IAppStrings = {
         },
         save: "保存專案", // Save Project
         sourceConnection: {
-            title: "來源連接", // Source Connection
-            description: "從何處讀取資料", // Where to load assets from
+            title: "來源連線", // Source Connection
+            description: "從何處載入資料", // Where to load assets from
         },
         targetConnection: {
-            title: "目標連接", // Target Connection
+            title: "目標連線", // Target Connection
             description: "在哪裡保存專案和匯出的資料", // Where to save the project and exported data
         },
         videoSettings: {
@@ -147,7 +147,7 @@ export const chinesetw: IAppStrings = {
             purple: "紫色", // Purple
         },
         warnings: {
-            existingName: "標記名稱已存在。選擇另一個名字", // Tag name already exists. Choose another name
+            existingName: "標記名稱已存在。請選擇其他名字", // Tag name already exists. Choose another name
             emptyName: "標記名稱不能為空白", // Cannot have an empty tag name
             unknownTagName: "未命名", // Unknown
         },
@@ -162,13 +162,13 @@ export const chinesetw: IAppStrings = {
         },
     },
     connections: {
-        title: "連接", // Connections
-        details: "連接詳細", // Connection Details
-        settings: "連接設定", // Connection Settings
-        instructions: "請選擇一個連接進行編輯", // Please select a connection to edit
-        save: "保存連接", // Save Connection
+        title: "連線", // Connections
+        details: "連線細節", // Connection Details
+        settings: "連線設定", // Connection Settings
+        instructions: "請選擇一個連線進行編輯", // Please select a connection to edit
+        save: "保存連線", // Save Connection
         messages: {
-            saveSuccess: "已成功保存$ {connection.name}", // Successfully saved ${connection.name}
+            saveSuccess: "已成功儲存$ {connection.name}", // Successfully saved ${connection.name}
             deleteSuccess: "已成功刪除$ {connection.name}", // Successfully deleted ${connection.name}
         },
         imageCorsWarning: "警告：在Web瀏覽器中使用VoTT時，由於CORS（跨源資源共享）限制，來自Bing Image Search的某些圖像數據可能無法正確匯出。",
@@ -215,7 +215,7 @@ export const chinesetw: IAppStrings = {
                 },
             },
             local: {
-                title: "本地檔案系統", // Local File System
+                title: "本機檔案系統", // Local File System
                 folderPath: "資料夾路徑", // Folder Path
                 selectFolder: "選擇資料夾", // Select Folder
                 chooseFolder: "選取資料夾", // Choose Folder
@@ -239,7 +239,7 @@ export const chinesetw: IAppStrings = {
             removeAllRegions: "刪除所有區域", // Remove All Regions
             previousAsset: "以前的圖像數據", // Previous Asset
             nextAsset: "下一個圖像數據", // Next Asset
-            saveProject: "保存專案", // Save Project
+            saveProject: "儲存專案", // Save Project
             exportProject: "匯出專案", // Export Project
             activeLearning: "主動學習", // Active Learning
         },
@@ -258,13 +258,13 @@ export const chinesetw: IAppStrings = {
             },
         },
         help: {
-            title: "切換輔助說明選項", // Toggle Help Menu
-            escape: "離開輔助說明選項", // Escape Help Menu
+            title: "切換輔助說明選單", // Toggle Help Menu
+            escape: "離開輔助說明選單", // Escape Help Menu
         },
         assetError: "無法載入圖像數據", // Unable to load asset
         tags: {
             hotKey: {
-                apply: "使用快捷鍵來反應標記", // Apply Tag with Hot Key
+                apply: "使用快捷鍵來套用標記", // Apply Tag with Hot Key
                 lock: "用快捷鍵來鎖定標記", // Lock Tag with Hot Key
             },
             rename: {
@@ -274,7 +274,7 @@ export const chinesetw: IAppStrings = {
             },
             delete: {
                 title: "刪除標記", // Delete Tag
-                confirmation: "您確定要刪除此標記嗎？它將在所有圖像數據中被刪除，並且只有此標記存在的任何區域也將被刪除",
+                confirmation: "您確定要刪除此標記嗎？它將在所有圖像數據中被刪除，並且只有使用此標記的任何區域也將被刪除",
                 // Are you sure you want to delete this tag? It will be deleted throughout all assets
                 // and any regions where this is the only tag will also be deleted
             },
@@ -297,7 +297,7 @@ export const chinesetw: IAppStrings = {
     export: {
         title: "匯出", // Export
         settings: "匯出設定", // Export Settings
-        saveSettings: "保存匯出設定", // Save Export Settings
+        saveSettings: "儲存匯出設定", // Save Export Settings
         providers: {
             common: {
                 properties: {
@@ -325,7 +325,7 @@ export const chinesetw: IAppStrings = {
                 displayName: "VoTT JSON", // VoTT JSON
             },
             azureCV: {
-                displayName: "Azure客製化視覺服務", // Azure Custom Vision Service
+                displayName: "Azure自訂視覺服務", // Azure Custom Vision Service
                 regions: {
                     // reference to https://azure.microsoft.com/zh-tw/global-infrastructure/geographies/
                     // for official translation
@@ -348,7 +348,7 @@ export const chinesetw: IAppStrings = {
                     },
                     region: {
                         title: "區域", // Region
-                        description: "部署服務的Azure地區", // The Azure region where your service is deployed
+                        description: "部署服務的Azure區域", // The Azure region where your service is deployed
                     },
                     classificationType: {
                         title: "分類類型", // Classification Type
@@ -367,9 +367,9 @@ export const chinesetw: IAppStrings = {
                         title: "領域", // Domain
                     },
                     newOrExisting: {
-                        title: "新專案或既有專案", // New or Existing Project
+                        title: "新增專案或既有專案", // New or Existing Project
                         options: {
-                            new: "新專案", // New Project
+                            new: "新增專案", // New Project
                             existing: "既有專案", // Existing Project
                         },
                     },
@@ -403,7 +403,7 @@ export const chinesetw: IAppStrings = {
             },
         },
         messages: {
-            saveSuccess: "已成功保存匯出設定", // Successfully saved export settings
+            saveSuccess: "已成功儲存匯出設定", // Successfully saved export settings
         },
     },
     activeLearning: {
@@ -426,7 +426,7 @@ export const chinesetw: IAppStrings = {
                 },
                 modelPath: {
                     title: "模型路徑", // Model path
-                    description: "從本地檔案系統中選擇模型", // Select a model from your local file system
+                    description: "從本機檔案系統中選擇模型", // Select a model from your local file system
                 },
                 modelUrl: {
                     title: "模型網址", // Model URL
@@ -441,7 +441,7 @@ export const chinesetw: IAppStrings = {
         messages: {
             loadingModel: "正在載入主動學習模型...", // Loading active learning model...
             errorLoadModel: "載入主動學習模型時出現錯誤", // Error loading active learning model
-            saveSuccess: "已成功保存主動學習設定", // Successfully saved active learning settings
+            saveSuccess: "已成功儲存主動學習設定", // Successfully saved active learning settings
         },
     },
     profile: {
@@ -459,7 +459,7 @@ export const chinesetw: IAppStrings = {
         },
         genericRenderError: {
             title: "載入應用程序時出現錯誤", // Error Loading Application
-            message: "描繪應用程序時發生錯誤。請再試一遍", // An error occured while rendering the application. Please try again
+            message: "轉譯應用程序時發生錯誤。請再試一遍", // An error occured while rendering the application. Please try again
         },
         projectInvalidSecurityToken: {
             title: "載入專案文件時出現錯誤", // Error loading project file
@@ -479,7 +479,7 @@ export const chinesetw: IAppStrings = {
             // Validate the project file and security token exist and try again
         },
         securityTokenNotFound: {
-            title: "加載專案檔案時出現錯誤", // Error loading project file
+            title: "載入專案檔案時出現錯誤", // Error loading project file
             message: "在當前的應用程式設定中找不到該專案所使用的安全性認證。請確認安全性認證是否存在，然後嘗試重新載入專案。",
             // The security token referenced by the project cannot be found in your current application settings.
             // Verify the security token exists and try to reload the project.
@@ -496,7 +496,7 @@ export const chinesetw: IAppStrings = {
         },
         pasteRegionTooBigError: {
             title: "貼上區域時發生錯誤", // Error pasting region
-            message: "此區域對於本圖像數據來說太大了。請嘗試複製其他的區域",
+            message: "此區域對於這一個圖像數據太大了。請嘗試複製其他的區域",
             // Region too big for this asset. Try copying another region
         },
         exportFormatNotFound: {
