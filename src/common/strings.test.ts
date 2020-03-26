@@ -1,21 +1,10 @@
 import { strings, addLocValues, IAppStrings, interpolate, interpolateJson } from "./strings";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { japanese } from "./localization/ja";
-
-const languages = ["en", "es", "ja"];
-=======
 import { chinesetw } from "./localization/zh-tw";
 
-const languages = ["en", "es", "tw"];
->>>>>>> feat: Traditional Chinese language support
-=======
-import { chinesetw } from "./localization/zh-tw";
-
-const languages = ["en", "es", "tw"];
->>>>>>> 208cfb737eea75257ffb5bb20d860ba1c2762ab5
+const languages = ["en", "es", "ja", "tw"];
 
 describe("Localization tests", () => {
 
@@ -23,15 +12,8 @@ describe("Localization tests", () => {
         return {
             en: english,
             es: spanish,
-<<<<<<< HEAD
-<<<<<<< HEAD
             ja: japanese,
-=======
             tw: chinesetw
->>>>>>> feat: Traditional Chinese language support
-=======
-            tw: chinesetw
->>>>>>> 208cfb737eea75257ffb5bb20d860ba1c2762ab5
         }[language];
     }
 
