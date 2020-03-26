@@ -1,7 +1,10 @@
 import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
+<<<<<<< HEAD
 import { japanese } from "./localization/ja";
+=======
+>>>>>>> 208cfb737eea75257ffb5bb20d860ba1c2762ab5
 import { chinesetw } from "./localization/zh-tw";
 
 /**
@@ -456,7 +459,10 @@ interface IStrings extends LocalizedStringsMethods, IAppStrings { }
 export const strings: IStrings = new LocalizedStrings({
     en: english,
     es: spanish,
+<<<<<<< HEAD
     ja: japanese,
+=======
+>>>>>>> 208cfb737eea75257ffb5bb20d860ba1c2762ab5
     tw: chinesetw
 });
 
