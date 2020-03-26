@@ -6,7 +6,7 @@ import { IAppStrings } from "../strings";
 export const chinesetw: IAppStrings = {
     appName: "VOTT視覺物件標記工具", // Visual Object Tagging Tool
     common: {
-        displayName: "表示名稱", // Display Name
+        displayName: "顯示名稱", // Display Name
         description: "說明", // Description
         submit: "送出", // Submit
         cancel: "取消", // Cancel
