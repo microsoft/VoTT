@@ -167,10 +167,12 @@ export const korean: IAppStrings = {
             saveSuccess: "${connection.name}을 성공적으로 저장했습니다",  // Successfully saved ${connection.name},
             deleteSuccess: "${connection.name}을 삭제했습니다.",  // Successfully deleted ${connection.name}"
         },
-        imageCorsWarning: "경고 : 웹 브라우저에서 VoTT를 사용하는 경우 CORS (Cross Origin Resource Sharing) 제한으로 인해 Bing Image Search의 일부 정보가 제대로 내보내지지 않을 수 있습니다.",
+        imageCorsWarning: "경고 : 웹 브라우저에서 VoTT를 사용하는 경우 CORS (Cross Origin Resource Sharing) " +
+        "제한으로 인해 Bing Image Search의 일부 정보가 제대로 내보내지지 않을 수 있습니다.",
         // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may no export
         // correctly due to CORS (Cross Origin Resource Sharing) restrictions.",
-        blobCorsWarning: "경고 : 소스 또는 대상 연결로 사용하려면, Azure Blob Storage 계정에서 CORS(Cross Domain Resource Sharing) 설정을 활성화 해야 합니다. CORS 설정에 대한 자세한 정보는 {0}에서 찾을 수 있습니다.",
+        blobCorsWarning: "경고 : 소스 또는 대상 연결로 사용하려면, Azure Blob Storage 계정에서 CORS(Cross Domain Resource Sharing) " +
+        "설정을 활성화 해야 합니다. CORS 설정에 대한 자세한 정보는 {0}에서 찾을 수 있습니다.",
         // Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage account, in order
         // to use i as a source or target connection. More information on enabling CORS can be found in the {0}",
         azDocLinkText: "Azure 설명서.",  // Azure Documentation.,
