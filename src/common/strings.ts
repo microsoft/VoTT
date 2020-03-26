@@ -457,7 +457,7 @@ export const strings: IStrings = new LocalizedStrings({
     en: english,
     es: spanish,
     ja: japanese,
-    tw: chinesetw
+    tw: chinesetw,
 });
 
 /**

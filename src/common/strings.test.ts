@@ -13,7 +13,7 @@ describe("Localization tests", () => {
             en: english,
             es: spanish,
             ja: japanese,
-            tw: chinesetw
+            tw: chinesetw,
         }[language];
     }
 
