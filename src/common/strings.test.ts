@@ -1,9 +1,15 @@
 import { strings, addLocValues, IAppStrings, interpolate, interpolateJson } from "./strings";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
+<<<<<<< HEAD
 import { japanese } from "./localization/ja";
 
 const languages = ["en", "es", "ja"];
+=======
+import { chinesetw } from "./localization/zh-tw";
+
+const languages = ["en", "es", "tw"];
+>>>>>>> feat: Traditional Chinese language support
 
 describe("Localization tests", () => {
 
@@ -11,7 +17,11 @@ describe("Localization tests", () => {
         return {
             en: english,
             es: spanish,
+<<<<<<< HEAD
             ja: japanese,
+=======
+            tw: chinesetw
+>>>>>>> feat: Traditional Chinese language support
         }[language];
     }
 
