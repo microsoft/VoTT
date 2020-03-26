@@ -49,7 +49,7 @@ export const chinesetw: IAppStrings = {
     appSettings: {
         title: "應用程式設定", // Application Settings
         storageTitle: "儲存空間設定", // Storage Settings
-        uiHelp: "您的設定存儲在哪裡", // Where your settings are stored
+        uiHelp: "您的設定存放在哪裡", // Where your settings are stored
         save: "保存設定", // Save Settings
         securityToken: {
             name: {
@@ -60,8 +60,8 @@ export const chinesetw: IAppStrings = {
             },
         },
         securityTokens: {
-            title: "安全性權證", // Security Tokens
-            description: "安全性權證用於加密專案配置中的敏感數據",
+            title: "安全性權杖", // Security Tokens
+            description: "安全性權杖用於加密專案組態中的敏感資料",
             // Security tokens are used to encrypt sensitive data within your project configuration
         },
         version: {
@@ -83,8 +83,8 @@ export const chinesetw: IAppStrings = {
     projectSettings: {
         title: "專案設定", // Project Settings
         securityToken: {
-            title: "安全性權證", // Security Token
-            description: "用於加密專案檔案中的敏感數據", // Used to encrypt sensitive data within project files
+            title: "安全性權杖", // Security Token
+            description: "用於加密專案檔案中的敏感資料", // Used to encrypt sensitive data within project files
         },
         save: "保存專案", // Save Project
         sourceConnection: {
@@ -93,7 +93,7 @@ export const chinesetw: IAppStrings = {
         },
         targetConnection: {
             title: "目標連接", // Target Connection
-            description: "在哪裡保存專案和匯出的數據", // Where to save the project and exported data
+            description: "在哪裡保存專案和匯出的資料", // Where to save the project and exported data
         },
         videoSettings: {
             title: "影片設定", // Video Settings
@@ -174,17 +174,17 @@ export const chinesetw: IAppStrings = {
         imageCorsWarning: "警告：在Web瀏覽器中使用VoTT時，由於CORS（跨源資源共享）限制，來自Bing Image Search的某些圖像數據可能無法正確匯出。",
         // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may not export correctly
         // due to CORS (Cross Origin Resource Sharing) restrictions.
-        blobCorsWarning: "警告：必須在Azure Blob存儲帳戶上啟用CORS（跨域資源共享），才能將其用作來源或目標連接。 {0}中提供了有關啟用CORS的更多資訊。",
+        blobCorsWarning: "警告：必須在Azure Blob儲存體帳戶上啟用CORS（跨域資源共享），才能將其用作來源或目標連接。 {0}中提供了有關啟用CORS的更多資訊。",
         // Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage account,
         // in order to use it as a source or target connection.
         // More information on enabling CORS can be found in the {0}
         azDocLinkText: "Azure說明文件", // Azure Documentation.
         providers: {
             azureBlob: {
-                title: "Azure Blob存儲空間", // Azure Blob Storage
+                title: "Azure Blob 儲存體", // Azure Blob Storage
                 description: "",
                 accountName: {
-                    title: "帳號名", // Account Name
+                    title: "帳戶名", // Account Name
                     description: "",
                 },
                 containerName: {
@@ -193,7 +193,7 @@ export const chinesetw: IAppStrings = {
                 },
                 sas: {
                     title: "SAS", // SAS
-                    description: "用於驗證Blob存儲帳戶的共享存取簽名標記",
+                    description: "用於驗證Blob儲存體帳戶的共用存取簽章",
                     // Shared access signature used to authenticate to the blob storage account
                 },
                 createContainer: {
@@ -202,8 +202,8 @@ export const chinesetw: IAppStrings = {
                 },
             },
             bing: {
-                title: "BING 圖片搜索", // Bing Image Search
-                options: "BING 圖像搜索選項", // Bing Image Search Options
+                title: "Bing 影像搜尋", // Bing Image Search
+                options: "Bing 影像搜尋選項", // Bing Image Search Options
                 apiKey: "API密鑰", // API Key
                 query: "查詢", // Query
                 aspectRatio: {
@@ -245,16 +245,16 @@ export const chinesetw: IAppStrings = {
         },
         videoPlayer: {
             previousTaggedFrame: {
-                tooltip: "上一個標記的框架", // Previous Tagged Frame
+                tooltip: "上一個標記的畫面", // Previous Tagged Frame
             },
             nextTaggedFrame: {
-                tooltip: "下一個標記的框架", // Next Tagged Frame
+                tooltip: "下一個標記的畫面", // Next Tagged Frame
             },
             previousExpectedFrame: {
-                tooltip: "上一個框架", // Previous Frame
+                tooltip: "上一個畫面", // Previous Frame
             },
             nextExpectedFrame: {
-                tooltip: "下一個框架", // Next Frame
+                tooltip: "下一個畫面", // Next Frame
             },
         },
         help: {
@@ -415,8 +415,8 @@ export const chinesetw: IAppStrings = {
                     description: "從何處載入訓練模型", // Where to load the training model from
                     options: {
                         preTrained: "預先訓練Coco SSD", // Pre-trained Coco SSD
-                        customFilePath: "客製化定義（檔案路徑）", // Custom (File path)
-                        customWebUrl: "客製化 (URL)", // Custom (Url)
+                        customFilePath: "自訂（檔案路徑）", // Custom (File path)
+                        customWebUrl: "自訂 (URL)", // Custom (Url)
                     },
                 },
                 autoDetect: {
