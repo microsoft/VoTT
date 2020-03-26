@@ -16,11 +16,11 @@ export const chinese: IAppStrings = {
         homePage: "主页", // Home Page
     },
     titleBar: {
-        help: "救命", // Help
+        help: "帮助", // Help
         minimize: "最小化", // Minimize
         maximize: "最大化", // Maximize
         restore: "恢复", // Restore
-        close: "关", // Close
+        close: "关闭", // Close
     },
     homePage: {
         newProject: "新项目", // New Project
@@ -28,23 +28,22 @@ export const chinese: IAppStrings = {
             title: "打开本地项目", // Open Local Project
         },
         openCloudProject: {
-            title: "开放云项目", // Open Cloud Project
+            title: "打开云端项目", // Open Cloud Project
             selectConnection: "选择一个连接", // Select a Connection
         },
         recentProjects: "最近的项目", // Recent Projects
         deleteProject: {
-            title: "删除专案", // Delete Project
+            title: "删除项目", // Delete Project
             confirmation: "确定要删除项目吗", // Are you sure you want to delete project
         },
         importProject: {
             title: "导入项目", // Import Project
-            confirmation: "您确定要将项目$ {project.file.name}项目设置转换为v2格式吗？我们建议您首先备份项目文件。",
+            confirmation: "您确定要将项目$ {project.file.name}设置转换为v2格式吗？我们建议您首先备份项目文件。",
             // Are you sure you want to convert project ${project.file.name} project settings to v2 format?
             // We recommend you backup the project file first.
         },
         messages: {
-            deleteSuccess: "已成功删除$ {project.name}",
-            // Successfully deleted ${project.name}
+            deleteSuccess: "已成功删除$ {project.name}", // Successfully deleted ${project.name}
         },
     },
     appSettings: {
@@ -71,11 +70,11 @@ export const chinese: IAppStrings = {
         commit: "提交SHA", // Commit SHA
         devTools: {
             description: "打开应用程序开发人员工具以帮助诊断问题", // Open application developer tools to help diagnose issues
-            button: "切换开发人员工具", // Toggle Developer Tools
+            button: "切换至开发人员工具", // Toggle Developer Tools
         },
         reload: {
-            description: "重新加载应用，放弃所有当前更改", // Reload the app discarding all current changes
-            button: "刷新申请", // Refresh Application
+            description: "重新加载应用，放弃当前所有更改", // Reload the app discarding all current changes
+            button: "刷新应用", // Refresh Application
         },
         messages: {
             saveSuccess: "成功保存应用程序设置", // Successfully saved application settings
@@ -94,10 +93,10 @@ export const chinese: IAppStrings = {
         },
         targetConnection: {
             title: "目标连接", // Target Connection
-            description: "在哪里保存项目和导出的数据", // Where to save the project and exported data
+            description: "在哪里保存项目和导出数据", // Where to save the project and exported data
         },
         videoSettings: {
-            title: "影片设定", // Video Settings
+            title: "视频设定", // Video Settings
             description: "提取帧以进行标记的速率", // The rate at which frames are extracted for tagging.
             frameExtractionRate: "帧提取率（每视频每秒的帧数）", // Frame Extraction Rate (frames per a video second)
         },
@@ -133,18 +132,18 @@ export const chinese: IAppStrings = {
             red: "红色", // Red
             maroon: "栗色", // Maroon
             yellow: "黄色", // Yellow
-            olive: "橄榄", // Olive
-            lime: "酸橙", // Lime
+            olive: "橄榄色", // Olive
+            lime: "青色", // Lime
             green: "绿色", // Green
             aqua: "水色", // Aqua
             teal: "蓝绿色", // Teal
             blue: "蓝色", // Blue
-            navy: "海军", // Navy
+            navy: "海军蓝色", // Navy
             fuschia: "紫红色", // Fuschia
             purple: "紫色", // Purple
         },
         warnings: {
-            existingName: "标签名称已存在。选择另一个名字", // Tag name already exists. Choose another name
+            existingName: "标签名称已存在。请选择另一个名字", // Tag name already exists. Choose another name
             emptyName: "标签名称不能为空", // Cannot have an empty tag name
             unknownTagName: "未知", // Unknown
         },
@@ -152,7 +151,7 @@ export const chinese: IAppStrings = {
             add: "新增标签", // Add new tag
             search: "搜索标签", // Search tags
             edit: "编辑标签", // Edit tag
-            lock: "锁标签", // Lock tag
+            lock: "锁定标签", // Lock tag
             moveUp: "向上移动标签", // Move tag up
             moveDown: "向下移动标签", // Move tag down
             delete: "删除标签", // Delete tag
@@ -165,7 +164,7 @@ export const chinese: IAppStrings = {
         instructions: "请选择一个连接进行编辑", // Please select a connection to edit
         save: "保存连接", // Save Connection
         messages: {
-            saveSuccess: "成功保存$ {connection.name}", // Successfully saved ${connection.name}
+            saveSuccess: "已成功保存$ {connection.name}", // Successfully saved ${connection.name}
             deleteSuccess: "已成功删除$ {connection.name}", // Successfully deleted ${connection.name}
         },
         imageCorsWarning: "警告：在Web浏览器中使用VoTT时，由于CORS（跨源资源共享）限制，来自Bing Image Search的某些资产可能无法正确导出。",
@@ -203,20 +202,20 @@ export const chinese: IAppStrings = {
                 title: "必应图片搜索", // Bing Image Search
                 options: "必应图像搜索选项", // Bing Image Search Options
                 apiKey: "API密钥", // API Key
-                query: "询问", // Query
+                query: "查询", // Query
                 aspectRatio: {
                     title: "长宽比", // Aspect Ratio
                     all: "所有", // All
-                    square: "广场", // Square
+                    square: "正方形", // Square
                     wide: "宽", // Wide
                     tall: "高", // Tall
                 },
             },
             local: {
                 title: "本地文件系统", // Local File System
-                folderPath: "资料夹路径", // Folder Path
+                folderPath: "文件夹路径", // Folder Path
                 selectFolder: "选择文件夹", // Select Folder
-                chooseFolder: "选择资料夹", // Choose Folder
+                chooseFolder: "选择文件夹", // Choose Folder
             },
         },
     },
@@ -224,21 +223,21 @@ export const chinese: IAppStrings = {
         width: "宽度", // Width
         height: "高度", // Height
         tagged: "已标记", // Tagged
-        visited: "来过", // Visited
+        visited: "已访问", // Visited
         toolbar: {
             select: "选择[V]", // Select (V)
             pan: "泛", // Pan
-            drawRectangle: "画矩形", // Draw Rectangle
+            drawRectangle: "绘制矩形", // Draw Rectangle
             drawPolygon: "绘制多边形", // Draw Polygon
             copyRectangle: "复制矩形", // Copy Rectangle
             copy: "复制区域", // Copy Regions
-            cut: "切割区域", // Cut Regions
+            cut: "剪切区域", // Cut Regions
             paste: "粘贴区域", // Paste Regions
-            removeAllRegions: "删除所有地区", // Remove All Regions
+            removeAllRegions: "删除所有区域", // Remove All Regions
             previousAsset: "以前的资产", // Previous Asset
             nextAsset: "下一项资产", // Next Asset
             saveProject: "保存项目", // Save Project
-            exportProject: "出口项目", // Export Project
+            exportProject: "导出项目", // Export Project
             activeLearning: "主动学习", // Active Learning
         },
         videoPlayer: {
@@ -257,13 +256,13 @@ export const chinese: IAppStrings = {
         },
         help: {
             title: "切换帮助菜单", // Toggle Help Menu
-            escape: "逃生帮助菜单", // Escape Help Menu
+            escape: "退出帮助菜单", // Escape Help Menu
         },
         assetError: "无法加载资产", // Unable to load asset
         tags: {
             hotKey: {
                 apply: "使用热键应用标签", // Apply Tag with Hot Key
-                lock: "用热键锁定标签", // Lock Tag with Hot Key
+                lock: "使用热键锁定标签", // Lock Tag with Hot Key
             },
             rename: {
                 title: "重命名标签", // Rename Tag
@@ -272,14 +271,14 @@ export const chinese: IAppStrings = {
             },
             delete: {
                 title: "删除标签", // Delete Tag
-                confirmation: "您确定要删除此标签吗？它将在所有资产中删除，并且唯一标记的任何区域也将被删除",
+                confirmation: "您确定要删除此标签吗？它将在所有资产中删除，并且仅使用此标签标记的任何区域也将被删除",
                 // Are you sure you want to delete this tag? It will be deleted throughout all assets
                 // and any regions where this is the only tag will also be deleted
             },
         },
         canvas: {
             removeAllRegions: {
-                title: "删除所有地区", // Remove All Regions
+                title: "删除所有区域", // Remove All Regions
                 confirmation: "您确定要删除所有区域吗？", // Are you sure you want to remove all regions?
             },
         },
@@ -293,28 +292,28 @@ export const chinese: IAppStrings = {
         },
     },
     export: {
-        title: "出口", // Export
-        settings: "汇出设定", // Export Settings
+        title: "导出", // Export
+        settings: "导出设定", // Export Settings
         saveSettings: "保存导出设置", // Save Export Settings
         providers: {
             common: {
                 properties: {
                     assetState: {
                         title: "资产状态", // Asset State
-                        description: "出口中包括哪些资产", // Which assets to include in the export
+                        description: "导出中包括哪些资产", // Which assets to include in the export
                         options: {
                             all: "所有资产", // All Assets
                             visited: "仅已访问资产", // Only Visited Assets
-                            tagged: "仅标记资产", // Only tagged Assets
+                            tagged: "仅已标记资产", // Only tagged Assets
                         },
                     },
                     testTrainSplit: {
-                        title: "测试/火车分割", // Test / Train Split
-                        description: "测试列拆分以用于导出数据", // The test train split to use for exported data
+                        title: "测试/训练用数据分离", // Test / Train Split
+                        description: "导出时分离测试/训练用数据", // The test train split to use for exported data
                     },
                     includeImages: {
                         title: "包含图片", // Include Images
-                        description: "タ是否在目标连接中包括二进制映像资产",
+                        description: "是否在目标连接中包括二值化图像资产",
                         // Whether or not to include binary image assets in target connection
                     },
                 },
@@ -325,18 +324,18 @@ export const chinese: IAppStrings = {
             azureCV: {
                 displayName: "Azure自定义视觉服务", // Azure Custom Vision Service
                 regions: {
-                    australiaEast: "东澳大利亚", // Australia East
+                    australiaEast: "澳大利亚东部", // Australia East
                     centralIndia: "印度中部", // Central India
                     eastUs: "美国东部", // East US
                     eastUs2: "美国东部2", // East US 2
-                    japanEast: "东日本", // Japan East
+                    japanEast: "日本东部", // Japan East
                     northCentralUs: "美国中北部", // North Central US
-                    northEurope: "北欧", // North Europe
+                    northEurope: "欧州北部", // North Europe
                     southCentralUs: "美国中南部", // South Central US
                     southeastAsia: "东南亚", // Southeast Asia
                     ukSouth: "英国南部", // UK South
                     westUs2: "美国西部2", // West US 2
-                    westEurope: "西欧", // West Europe
+                    westEurope: "欧州西部", // West Europe
                 },
                 properties: {
                     apiKey: {
@@ -376,7 +375,7 @@ export const chinese: IAppStrings = {
                         title: "项目类型", // Project Type
                         options: {
                             classification: "分类", // Classification
-                            objectDetection: "物体检测", // Object Detection
+                            objectDetection: "物体识别", // Object Detection
                         },
                     },
                 },
@@ -416,24 +415,21 @@ export const chinese: IAppStrings = {
                     },
                 },
                 autoDetect: {
-                    title: "自动侦测", // Auto Detect
+                    title: "自动识别", // Auto Detect
                     description: "在资产之间导航时是否自动进行预测",
                     // Whether or not to automatically make predictions as you navigate between assets
                 },
                 modelPath: {
                     title: "模型路径", // Model path
-                    description: "从本地文件系统中选择模型",
-                    // Select a model from your local file system
+                    description: "从本地文件系统中选择模型", // Select a model from your local file system
                 },
                 modelUrl: {
                     title: "模型 URL", // Model URL
-                    description: "从公共网址加载模型",
-                    // Load your model from a public web URL
+                    description: "从公共网址加载模型", // Load your model from a public web URL
                 },
                 predictTag: {
                     title: "预测标签", // Predict Tag
-                    description: "是否在预测中自动包含标签",
-                    // Whether or not to automatically include tags in predictions
+                    description: "是否在预测中自动包含标签", // Whether or not to automatically include tags in predictions
                 },
             },
         },
@@ -458,13 +454,14 @@ export const chinese: IAppStrings = {
         },
         genericRenderError: {
             title: "加载应用程序时出错", // Error Loading Application
-            message: "呈现应用程序时发生错误。请再试一遍", // An error occured while rendering the application. Please try again
+            message: "呈现应用程序时发生错误。请再试一遍",
+            // An error occured while rendering the application. Please try again
         },
         projectInvalidSecurityToken: {
             title: "加载项目文件时出错", // Error loading project file
             message: "项目引用的安全令牌无效。验证是否在您的应用程序设置中正确设置了项目的安全令牌",
-            // The security token referenced by the project is invalid. Verify that the security token
-            // for the project has been set correctly within your application settings
+            // The security token referenced by the project is invalid.
+            // Verify that the security token for the project has been set correctly within your application settings
         },
         projectInvalidJson: {
             title: "解析项目文件时出错", // Error parsing project file
@@ -495,8 +492,7 @@ export const chinese: IAppStrings = {
         },
         pasteRegionTooBigError: {
             title: "错误粘贴区域", // Error pasting region
-            message: "该资产太大的区域。尝试复制其他地区",
-            // Region too big for this asset. Try copying another region
+            message: "该资产太大的区域。尝试复制其他地区", // Region too big for this asset. Try copying another region
         },
         exportFormatNotFound: {
             title: "导出项目时出错", // Error exporting project
