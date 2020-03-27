@@ -38,12 +38,12 @@ export const chinese: IAppStrings = {
         },
         importProject: {
             title: "导入项目", // Import Project
-            confirmation: "您确定要将项目$ {project.file.name}设置转换为v2格式吗？我们建议您首先备份项目文件。",
+            confirmation: "您确定要将项目${project.file.name}设置转换为v2格式吗？我们建议您首先备份项目文件。",
             // Are you sure you want to convert project ${project.file.name} project settings to v2 format?
             // We recommend you backup the project file first.
         },
         messages: {
-            deleteSuccess: "已成功删除$ {project.name}", // Successfully deleted ${project.name}
+            deleteSuccess: "已成功删除${project.name}", // Successfully deleted ${project.name}
         },
     },
     appSettings: {
@@ -102,17 +102,17 @@ export const chinese: IAppStrings = {
         },
         addConnection: "添加连接", // Add Connection
         messages: {
-            saveSuccess: "成功保存$ {project.name}项目设置", // Successfully saved ${project.name} project settings
+            saveSuccess: "成功保存${project.name}项目设置", // Successfully saved ${project.name} project settings
         },
     },
     projectMetrics: {
         title: "项目指标", // Project Metrics
         assetsSectionTitle: "资产", // Assets
         totalAssetCount: "总资产", // Total Assets
-        visitedAssets: "访问的资产（$ {count}）", // Visited Assets (${count})
-        taggedAssets: "标记资产（$ {count}）", // Tagged Assets (${count})
-        nonTaggedAssets: "未标记的资产（$ {count}）", // Not Tagged Assets (${count})
-        nonVisitedAssets: "未访问的资产（$ {count}）", // Not Visited Assets (${count})
+        visitedAssets: "访问的资产（${count}）", // Visited Assets (${count})
+        taggedAssets: "标记资产（${count}）", // Tagged Assets (${count})
+        nonTaggedAssets: "未标记的资产（${count}）", // Not Tagged Assets (${count})
+        nonVisitedAssets: "未访问的资产（${count}）", // Not Visited Assets (${count})
         tagsSectionTitle: "标签和标签", // Tags & Labels
         totalRegionCount: "标记区域总数", // Total Tagged Regions
         totalTagCount: "总标签", // Total Tags
@@ -164,8 +164,8 @@ export const chinese: IAppStrings = {
         instructions: "请选择一个连接进行编辑", // Please select a connection to edit
         save: "保存连接", // Save Connection
         messages: {
-            saveSuccess: "已成功保存$ {connection.name}", // Successfully saved ${connection.name}
-            deleteSuccess: "已成功删除$ {connection.name}", // Successfully deleted ${connection.name}
+            saveSuccess: "已成功保存${connection.name}", // Successfully saved ${connection.name}
+            deleteSuccess: "已成功删除${connection.name}", // Successfully deleted ${connection.name}
         },
         imageCorsWarning: "警告：在Web浏览器中使用VoTT时，由于CORS（跨源资源共享）限制，来自Bing Image Search的某些资产可能无法正确导出。",
         // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may not export correctly
