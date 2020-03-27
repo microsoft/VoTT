@@ -38,12 +38,12 @@ export const chinesetw: IAppStrings = {
         },
         importProject: {
             title: "匯入專案", // Import Project
-            confirmation: "您確定要將專案$ {project.file.name}的設定轉換為v2格式嗎？我們建議您首先備份專案文件。",
+            confirmation: "您確定要將專案${project.file.name}的設定轉換為v2格式嗎？我們建議您首先備份專案文件。",
             // Are you sure you want to convert project ${project.file.name} project settings to v2 format?
             // We recommend you backup the project file first.
         },
         messages: {
-            deleteSuccess: "已成功刪除$ {project.name}專案", // Successfully deleted ${project.name}
+            deleteSuccess: "已成功刪除${project.name}專案", // Successfully deleted ${project.name}
         },
     },
     appSettings: {
@@ -102,7 +102,7 @@ export const chinesetw: IAppStrings = {
         },
         addConnection: "新增連線", // Add Connection
         messages: {
-            saveSuccess: "已成功保存$ {project.name}專案設定", // Successfully saved ${project.name} project settings
+            saveSuccess: "已成功保存${project.name}專案設定", // Successfully saved ${project.name} project settings
         },
     },
     projectMetrics: {
@@ -111,10 +111,10 @@ export const chinesetw: IAppStrings = {
         // As for this VOTT tool, translate "Assets" to "Image data" in Traditional Chinese,
         // as "Asset" can be confusing if directly translated.
         totalAssetCount: "圖像數據總數", // Total Assets
-        visitedAssets: "已檢視的圖像數據（$ {count}）", // Visited Assets (${count})
-        taggedAssets: "已標記的圖像數據（$ {count}）", // Tagged Assets (${count})
-        nonTaggedAssets: "未標記的圖像數據（$ {count}）", // Not Tagged Assets (${count})
-        nonVisitedAssets: "未檢視的圖像數據（$ {count}）", // Not Visited Assets (${count})
+        visitedAssets: "已檢視的圖像數據（${count}）", // Visited Assets (${count})
+        taggedAssets: "已標記的圖像數據（${count}）", // Tagged Assets (${count})
+        nonTaggedAssets: "未標記的圖像數據（${count}）", // Not Tagged Assets (${count})
+        nonVisitedAssets: "未檢視的圖像數據（${count}）", // Not Visited Assets (${count})
         tagsSectionTitle: "標記和標籤",
         // Tags & Labels, so it can actually be same translation to Tags and Labels in Traditional Chinese,
         // to differentiate, having slightly different translation for both keywords.
@@ -168,8 +168,8 @@ export const chinesetw: IAppStrings = {
         instructions: "請選擇一個連線進行編輯", // Please select a connection to edit
         save: "保存連線", // Save Connection
         messages: {
-            saveSuccess: "已成功儲存$ {connection.name}", // Successfully saved ${connection.name}
-            deleteSuccess: "已成功刪除$ {connection.name}", // Successfully deleted ${connection.name}
+            saveSuccess: "已成功儲存${connection.name}", // Successfully saved ${connection.name}
+            deleteSuccess: "已成功刪除${connection.name}", // Successfully deleted ${connection.name}
         },
         imageCorsWarning: "警告：在Web瀏覽器中使用VoTT時，由於CORS（跨源資源共享）限制，來自Bing Image Search的某些圖像數據可能無法正確匯出。",
         // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may not export correctly
