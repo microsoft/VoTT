@@ -89,7 +89,7 @@ export const chinese: IAppStrings = {
         save: "保存项目", // Save Project
         sourceConnection: {
             title: "源连接", // Source Connection
-            description: "从何处加载资产", // Where to load assets from
+            description: "从何处加载素材", // Where to load assets from
         },
         targetConnection: {
             title: "目标连接", // Target Connection
@@ -107,16 +107,16 @@ export const chinese: IAppStrings = {
     },
     projectMetrics: {
         title: "项目指标", // Project Metrics
-        assetsSectionTitle: "资产", // Assets
-        totalAssetCount: "总资产", // Total Assets
-        visitedAssets: "访问的资产（${count}）", // Visited Assets (${count})
-        taggedAssets: "标记资产（${count}）", // Tagged Assets (${count})
-        nonTaggedAssets: "未标记的资产（${count}）", // Not Tagged Assets (${count})
-        nonVisitedAssets: "未访问的资产（${count}）", // Not Visited Assets (${count})
-        tagsSectionTitle: "标签和标签", // Tags & Labels
+        assetsSectionTitle: "素材", // Assets
+        totalAssetCount: "素材总数", // Total Assets
+        visitedAssets: "已访问素材（${count}）", // Visited Assets (${count})
+        taggedAssets: "已标记素材（${count}）", // Tagged Assets (${count})
+        nonTaggedAssets: "未标记素材（${count}）", // Not Tagged Assets (${count})
+        nonVisitedAssets: "未访问素材（${count}）", // Not Visited Assets (${count})
+        tagsSectionTitle: "标记与标签", // Tags & Labels
         totalRegionCount: "标记区域总数", // Total Tagged Regions
-        totalTagCount: "总标签", // Total Tags
-        avgTagCountPerAsset: "每个资产的平均标签", // Average tags per asset
+        totalTagCount: "标签总数", // Total Tags
+        avgTagCountPerAsset: "每个素材的平均标签数", // Average tags per asset
     },
     tags: {
         title: "标签", // Tags
@@ -167,7 +167,7 @@ export const chinese: IAppStrings = {
             saveSuccess: "已成功保存${connection.name}", // Successfully saved ${connection.name}
             deleteSuccess: "已成功删除${connection.name}", // Successfully deleted ${connection.name}
         },
-        imageCorsWarning: "警告：在Web浏览器中使用VoTT时，由于CORS（跨源资源共享）限制，来自Bing Image Search的某些资产可能无法正确导出。",
+        imageCorsWarning: "警告：在Web浏览器中使用VoTT时，由于CORS（跨源资源共享）限制，来自Bing Image Search的某些素材可能无法正确导出。",
         // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may not export correctly
         // due to CORS (Cross Origin Resource Sharing) restrictions.
         blobCorsWarning: "警告：必须在Azure Blob存储帐户上启用CORS（跨域资源共享），才能将其用作源或目标连接。 {0}中提供了有关启用CORS的更多信息。",
@@ -234,8 +234,8 @@ export const chinese: IAppStrings = {
             cut: "剪切区域", // Cut Regions
             paste: "粘贴区域", // Paste Regions
             removeAllRegions: "删除所有区域", // Remove All Regions
-            previousAsset: "以前的资产", // Previous Asset
-            nextAsset: "下一项资产", // Next Asset
+            previousAsset: "以前的素材", // Previous Asset
+            nextAsset: "下一项素材", // Next Asset
             saveProject: "保存项目", // Save Project
             exportProject: "导出项目", // Export Project
             activeLearning: "主动学习", // Active Learning
@@ -258,7 +258,7 @@ export const chinese: IAppStrings = {
             title: "切换帮助菜单", // Toggle Help Menu
             escape: "退出帮助菜单", // Escape Help Menu
         },
-        assetError: "无法加载资产", // Unable to load asset
+        assetError: "无法加载素材", // Unable to load asset
         tags: {
             hotKey: {
                 apply: "使用热键应用标签", // Apply Tag with Hot Key
@@ -266,12 +266,12 @@ export const chinese: IAppStrings = {
             },
             rename: {
                 title: "重新命名标签", // Rename Tag
-                confirmation: "您确定要重新命名此标签吗？它将在所有资产中被重新命名",
+                confirmation: "您确定要重新命名此标签吗？它将在所有素材中被重新命名",
                 // Are you sure you want to rename this tag? It will be renamed throughout all assets
             },
             delete: {
                 title: "删除标签", // Delete Tag
-                confirmation: "您确定要删除此标签吗？它将在所有资产中被删除，并且仅使用此标签标记的任何区域也将被删除",
+                confirmation: "您确定要删除此标签吗？它将在所有素材中被删除，并且仅使用此标签标记的任何区域也将被删除",
                 // Are you sure you want to delete this tag? It will be deleted throughout all assets
                 // and any regions where this is the only tag will also be deleted
             },
@@ -285,7 +285,7 @@ export const chinese: IAppStrings = {
         messages: {
             enforceTaggedRegions: {
                 title: "检测到无效的区域", // Invalid region(s) detected
-                description: "1个或多个区域尚未被标记。在继续下一个资产之前，请确保所有区域均已标记。",
+                description: "1个或多个区域尚未被标记。在继续下一个素材之前，请确保所有区域均已标记。",
                 // 1 or more regions have not been tagged.
                 // Ensure all regions are tagged before continuing to next asset.
             },
@@ -299,12 +299,12 @@ export const chinese: IAppStrings = {
             common: {
                 properties: {
                     assetState: {
-                        title: "资产状态", // Asset State
-                        description: "导出中包括哪些资产", // Which assets to include in the export
+                        title: "素材状态", // Asset State
+                        description: "导出中包括哪些素材", // Which assets to include in the export
                         options: {
-                            all: "所有资产", // All Assets
-                            visited: "仅已访问资产", // Only Visited Assets
-                            tagged: "仅已标记资产", // Only tagged Assets
+                            all: "所有素材", // All Assets
+                            visited: "仅已访问素材", // Only Visited Assets
+                            tagged: "仅已标记素材", // Only tagged Assets
                         },
                     },
                     testTrainSplit: {
@@ -313,7 +313,7 @@ export const chinese: IAppStrings = {
                     },
                     includeImages: {
                         title: "包含图片", // Include Images
-                        description: "是否在目标连接中包括二值化图像资产",
+                        description: "是否在目标连接中包括二值化图像素材",
                         // Whether or not to include binary image assets in target connection
                     },
                 },
@@ -416,7 +416,7 @@ export const chinese: IAppStrings = {
                 },
                 autoDetect: {
                     title: "自动识别", // Auto Detect
-                    description: "在资产之间导航时是否自动进行预测",
+                    description: "在素材之间导航时是否自动进行预测",
                     // Whether or not to automatically make predictions as you navigate between assets
                 },
                 modelPath: {
@@ -482,7 +482,7 @@ export const chinese: IAppStrings = {
         },
         canvasError: {
             title: "加载画布时出错", // Error loading canvas
-            message: "加载画布时发生错误，请检查项目的资产，然后重试。",
+            message: "加载画布时发生错误，请检查项目的素材，然后重试。",
             // There was an error loading the canvas, check the project's assets and try again.
         },
         importError: {
@@ -492,7 +492,7 @@ export const chinese: IAppStrings = {
         },
         pasteRegionTooBigError: {
             title: "错误粘贴区域", // Error pasting region
-            message: "该资产太大的区域。尝试复制其他地区", // Region too big for this asset. Try copying another region
+            message: "该素材太大的区域。尝试复制其他地区", // Region too big for this asset. Try copying another region
         },
         exportFormatNotFound: {
             title: "导出项目时出错", // Error exporting project
@@ -501,7 +501,7 @@ export const chinese: IAppStrings = {
         },
         activeLearningPredictionError: {
             title: "主动学习错误", // Active Learning Error
-            message: "预测当前资产中的区域时发生错误。请验证您的有效学习配置，然后重试",
+            message: "预测当前素材中的区域时发生错误。请验证您的有效学习配置，然后重试",
             // An error occurred while predicting regions in the current asset.
             // Please verify your active learning configuration and try again
         },
