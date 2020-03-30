@@ -265,13 +265,13 @@ export const chinese: IAppStrings = {
                 lock: "使用热键锁定标签", // Lock Tag with Hot Key
             },
             rename: {
-                title: "重命名标签", // Rename Tag
-                confirmation: "您确定要重命名此标签吗？它将在所有资产中重命名",
+                title: "重新命名标签", // Rename Tag
+                confirmation: "您确定要重新命名此标签吗？它将在所有资产中被重新命名",
                 // Are you sure you want to rename this tag? It will be renamed throughout all assets
             },
             delete: {
                 title: "删除标签", // Delete Tag
-                confirmation: "您确定要删除此标签吗？它将在所有资产中删除，并且仅使用此标签标记的任何区域也将被删除",
+                confirmation: "您确定要删除此标签吗？它将在所有资产中被删除，并且仅使用此标签标记的任何区域也将被删除",
                 // Are you sure you want to delete this tag? It will be deleted throughout all assets
                 // and any regions where this is the only tag will also be deleted
             },
