@@ -491,8 +491,8 @@ export const chinese: IAppStrings = {
             // There was an error importing the V1 project. Check the project file and try again
         },
         pasteRegionTooBigError: {
-            title: "错误粘贴区域", // Error pasting region
-            message: "该素材太大的区域。尝试复制其他地区", // Region too big for this asset. Try copying another region
+            title: "粘贴区域时出错", // Error pasting region
+            message: "区域对于该素材过大。请尝试复制其他区域", // Region too big for this asset. Try copying another region
         },
         exportFormatNotFound: {
             title: "导出项目时出错", // Error exporting project
