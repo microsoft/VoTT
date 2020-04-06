@@ -48,8 +48,8 @@ export const chinese: IAppStrings = {
     },
     appSettings: {
         title: "应用程序设置", // Application Settings
-        storageTitle: "储存设定", // Storage Settings
-        uiHelp: "您的设置存储在哪里", // Where your settings are stored
+        storageTitle: "储存设置", // Storage Settings
+        uiHelp: "您的设置储存在哪里", // Where your settings are stored
         save: "保存设置", // Save Settings
         securityToken: {
             name: {
@@ -293,7 +293,7 @@ export const chinese: IAppStrings = {
     },
     export: {
         title: "导出", // Export
-        settings: "导出设定", // Export Settings
+        settings: "导出设置", // Export Settings
         saveSettings: "保存导出设置", // Save Export Settings
         providers: {
             common: {
@@ -387,7 +387,7 @@ export const chinese: IAppStrings = {
                 displayName: "Pascal VOC", // Pascal VOC
                 exportUnassigned: {
                     title: "导出未分配", // Export Unassigned
-                    description: "是否在导出的数据中包括未分配的标签", // Whether or not to include unassigned tags in exported data
+                    description: "是否在导出的数据中包括未被分配的标签", // Whether or not to include unassigned tags in exported data
                 },
             },
             cntk: {
@@ -411,7 +411,7 @@ export const chinese: IAppStrings = {
                     options: {
                         preTrained: "预先训练 Coco SSD", // Pre-trained Coco SSD
                         customFilePath: "自定义（文件路径）", // Custom (File path)
-                        customWebUrl: "自订(URL)", // Custom (Url)
+                        customWebUrl: "自定义 (URL)", // Custom (Url)
                     },
                 },
                 autoDetect: {
@@ -445,7 +445,7 @@ export const chinese: IAppStrings = {
     errors: {
         unknown: {
             title: "未知错误", // Unknown Error
-            message: "该应用程序遇到未知错误。请再试一遍。", // The app encountered an unknown error. Please try again.
+            message: "该应用程序遇到未知错误。请重试。", // The app encountered an unknown error. Please try again.
         },
         projectUploadError: {
             title: "上传文件时出错", // Error Uploading File
@@ -454,18 +454,18 @@ export const chinese: IAppStrings = {
         },
         genericRenderError: {
             title: "加载应用程序时出错", // Error Loading Application
-            message: "呈现应用程序时发生错误。请再试一遍",
+            message: "呈现应用程序时发生错误。请重试",
             // An error occured while rendering the application. Please try again
         },
         projectInvalidSecurityToken: {
             title: "加载项目文件时出错", // Error loading project file
-            message: "项目引用的安全令牌无效。验证是否在您的应用程序设置中正确设置了项目的安全令牌",
+            message: "项目引用的安全令牌无效。请验证是否在您的应用程序设置中正确设置了项目的安全令牌",
             // The security token referenced by the project is invalid.
             // Verify that the security token for the project has been set correctly within your application settings
         },
         projectInvalidJson: {
             title: "解析项目文件时出错", // Error parsing project file
-            message: "所选的项目文件不包含有效的JSON。请重试该文件。",
+            message: "所选的项目文件不包含有效的JSON。请检查该文件, 然后重试。",
             // The selected project files does not contain valid JSON. Please check the file any try again.
         },
         projectDeleteError: {
@@ -501,7 +501,7 @@ export const chinese: IAppStrings = {
         },
         activeLearningPredictionError: {
             title: "主动学习错误", // Active Learning Error
-            message: "预测当前素材中的区域时发生错误。请验证您的有效学习配置，然后重试",
+            message: "预测当前素材中的区域时发生错误。请验证您的主动学习配置，然后重试",
             // An error occurred while predicting regions in the current asset.
             // Please verify your active learning configuration and try again
         },
