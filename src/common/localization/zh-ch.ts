@@ -19,7 +19,7 @@ export const chinese: IAppStrings = {
         help: "帮助", // Help
         minimize: "最小化", // Minimize
         maximize: "最大化", // Maximize
-        restore: "恢复", // Restore
+        restore: "复原", // Restore
         close: "关闭", // Close
     },
     homePage: {
@@ -56,7 +56,7 @@ export const chinese: IAppStrings = {
                 title: "名称", // Name
             },
             key: {
-                title: "键", // Key
+                title: "密钥", // Key
             },
         },
         securityTokens: {
@@ -65,7 +65,7 @@ export const chinese: IAppStrings = {
             // Security tokens are used to encrypt sensitive data within your project configuration
         },
         version: {
-            description: "版：", // Version:
+            description: "版本：", // Version:
         },
         commit: "提交SHA", // Commit SHA
         devTools: {
@@ -88,11 +88,11 @@ export const chinese: IAppStrings = {
         },
         save: "保存项目", // Save Project
         sourceConnection: {
-            title: "源连接", // Source Connection
+            title: "连接源", // Source Connection
             description: "从何处加载素材", // Where to load assets from
         },
         targetConnection: {
-            title: "目标连接", // Target Connection
+            title: "连接目标", // Target Connection
             description: "在哪里保存项目和导出数据", // Where to save the project and exported data
         },
         videoSettings: {
@@ -159,7 +159,7 @@ export const chinese: IAppStrings = {
     },
     connections: {
         title: "连接数", // Connections
-        details: "连接细节", // Connection Details
+        details: "连接详细信息", // Connection Details
         settings: "连接设定", // Connection Settings
         instructions: "请选择一个连接进行编辑", // Please select a connection to edit
         save: "保存连接", // Save Connection
