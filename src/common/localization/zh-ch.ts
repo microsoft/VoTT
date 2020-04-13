@@ -120,8 +120,8 @@ export const chinese: IAppStrings = {
     },
     tags: {
         title: "标签", // Tags
-        placeholder: "新增标签", // Add new tag
-        editor: "标签编辑器", // Tags Editor
+        placeholder: "添加标签", // Add new tag
+        editor: "编辑标签", // Tags Editor
         modal: {
             name: "标签名称", // Tag Name
             color: "标签颜色", // Tag Color
@@ -135,7 +135,7 @@ export const chinese: IAppStrings = {
             olive: "橄榄色", // Olive
             lime: "青色", // Lime
             green: "绿色", // Green
-            aqua: "水色", // Aqua
+            aqua: "浅绿色", // Aqua
             teal: "蓝绿色", // Teal
             blue: "蓝色", // Blue
             navy: "海军蓝色", // Navy
@@ -148,7 +148,7 @@ export const chinese: IAppStrings = {
             unknownTagName: "未知", // Unknown
         },
         toolbar: {
-            add: "新增标签", // Add new tag
+            add: "添加标签", // Add new tag
             search: "搜索标签", // Search tags
             edit: "编辑标签", // Edit tag
             lock: "锁定标签", // Lock tag
