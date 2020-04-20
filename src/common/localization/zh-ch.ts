@@ -69,8 +69,8 @@ export const chinese: IAppStrings = {
         },
         commit: "提交SHA", // Commit SHA
         devTools: {
-            description: "打开应用程序开发人员工具以帮助诊断问题", // Open application developer tools to help diagnose issues
-            button: "切换至开发人员工具", // Toggle Developer Tools
+            description: "打开应用程序开发者工具以帮助诊断问题", // Open application developer tools to help diagnose issues
+            button: "切换至开发者工具", // Toggle Developer Tools
         },
         reload: {
             description: "重新加载应用，放弃当前所有更改", // Reload the app discarding all current changes
@@ -88,11 +88,11 @@ export const chinese: IAppStrings = {
         },
         save: "保存项目", // Save Project
         sourceConnection: {
-            title: "连接源", // Source Connection
+            title: "源连接", // Source Connection
             description: "从何处加载素材", // Where to load assets from
         },
         targetConnection: {
-            title: "连接目标", // Target Connection
+            title: "目标连接", // Target Connection
             description: "在哪里保存项目和导出数据", // Where to save the project and exported data
         },
         videoSettings: {
@@ -242,10 +242,10 @@ export const chinese: IAppStrings = {
         },
         videoPlayer: {
             previousTaggedFrame: {
-                tooltip: "上一个标记的框架", // Previous Tagged Frame
+                tooltip: "上一个已标记的帧", // Previous Tagged Frame
             },
             nextTaggedFrame: {
-                tooltip: "下一个标记的框架", // Next Tagged Frame
+                tooltip: "下一个已标记的帧", // Next Tagged Frame
             },
             previousExpectedFrame: {
                 tooltip: "上一帧", // Previous Frame
@@ -261,8 +261,8 @@ export const chinese: IAppStrings = {
         assetError: "无法加载素材", // Unable to load asset
         tags: {
             hotKey: {
-                apply: "使用热键应用标签", // Apply Tag with Hot Key
-                lock: "使用热键锁定标签", // Lock Tag with Hot Key
+                apply: "使用快捷键应用标签", // Apply Tag with Hot Key
+                lock: "使用快捷键锁定标签", // Lock Tag with Hot Key
             },
             rename: {
                 title: "重新命名标签", // Rename Tag
