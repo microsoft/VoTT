@@ -2,6 +2,7 @@ import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
 import { japanese } from "./localization/ja";
+import { chinesetw } from "./localization/zh-tw";
 
 /**
  * Interface for all required strings in application
@@ -456,6 +457,7 @@ export const strings: IStrings = new LocalizedStrings({
     en: english,
     es: spanish,
     ja: japanese,
+    tw: chinesetw,
 });
 
 /**
