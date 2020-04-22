@@ -6,13 +6,12 @@ import { chinesetw } from "./localization/zh-tw";
 import { korean } from "./localization/ko-kr";
 
 const languages = [
-  "en", 
-  "es", 
-  "ja", 
+  "en",
+  "es",
+  "ja",
   "tw",
-  "ko"
+  "ko",
 ];
-
 
 describe("Localization tests", () => {
 
