@@ -460,7 +460,7 @@ export const strings: IStrings = new LocalizedStrings({
     es: spanish,
     ja: japanese,
     tw: chinesetw,
-    ko: korean
+    ko: korean,
 });
 
 /**
