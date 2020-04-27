@@ -3,8 +3,15 @@ import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
 import { japanese } from "./localization/ja";
 import { chinesetw } from "./localization/zh-tw";
+import { korean } from "./localization/ko-kr";
 
-const languages = ["en", "es", "ja", "tw"];
+const languages = [
+  "en",
+  "es",
+  "ja",
+  "tw",
+  "ko",
+];
 
 describe("Localization tests", () => {
 
@@ -14,6 +21,7 @@ describe("Localization tests", () => {
             es: spanish,
             ja: japanese,
             tw: chinesetw,
+            ko: korean,
         }[language];
     }
 
