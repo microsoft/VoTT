@@ -13,7 +13,7 @@ stages:
     cancelTimeoutInMinutes: 1 # time limit to wait for job to cancel
 
     pool:
-      vmImage: macOS-10.13 # ssh key was generated on a Mac so using the same type of OS here
+      vmImage: macOS-10.15 # ssh key was generated on a Mac so using the same type of OS here
 
     steps:
     - task: NodeTool@0
@@ -63,7 +63,7 @@ stages:
     parameters:
       name: Windows
       pool:
-        vmImage: vs2017-win2016
+        vmImage: "windows-2019"
       os: windows
       artifact: vott*.exe
 
@@ -71,7 +71,7 @@ stages:
     parameters:
       name: MacOS
       pool:
-        vmImage: macOS-10.13
+        vmImage: macOS-10.15
       os: mac
       artifact: vott*.dmg
 
