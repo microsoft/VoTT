@@ -4,6 +4,7 @@ import { spanish } from "./localization/es-cl";
 import { japanese } from "./localization/ja";
 import { chinesetw } from "./localization/zh-tw";
 import { korean } from "./localization/ko-kr";
+import { chinese } from "./localization/zh-ch";
 
 const languages = [
   "en",
@@ -11,6 +12,7 @@ const languages = [
   "ja",
   "tw",
   "ko",
+  "ch",
 ];
 
 describe("Localization tests", () => {
@@ -22,6 +24,7 @@ describe("Localization tests", () => {
             ja: japanese,
             tw: chinesetw,
             ko: korean,
+            ch: chinese,
         }[language];
     }
 
