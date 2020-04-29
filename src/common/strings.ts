@@ -1,6 +1,10 @@
 import LocalizedStrings, { LocalizedStringsMethods } from "react-localization";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
+import { japanese } from "./localization/ja";
+import { chinesetw } from "./localization/zh-tw";
+import { korean } from "./localization/ko-kr";
+import { chinese } from "./localization/zh-ch";
 
 /**
  * Interface for all required strings in application
@@ -452,8 +456,13 @@ interface IErrorMetadata {
 interface IStrings extends LocalizedStringsMethods, IAppStrings { }
 
 export const strings: IStrings = new LocalizedStrings({
+// TODO: Need to comment out other languages which will not be used
     en: english,
     es: spanish,
+    ja: japanese,
+    tw: chinesetw,
+    ko: korean,
+    ch: chinese,
 });
 
 /**

@@ -1,0 +1,88 @@
+trigger: none # manual queue only when we're ready to release
+pr: none # disable CI build for PR
+
+stages:
+- stage: version_bump_commit
+  jobs:
+  - job: "version_bump"
+
+    variables:
+    - group: GitHub-Deploy-Creds
+
+    timeoutInMinutes: 30 # timeout on job if deploy is not completed in 30 minutes
+    cancelTimeoutInMinutes: 1 # time limit to wait for job to cancel
+
+    pool:
+      vmImage: macOS-10.15 # ssh key was generated on a Mac so using the same type of OS here
+
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: 10.x
+      displayName: 'Install Node.js'
+
+    # Download secure file
+    # Download a secure file to the agent machine
+    - task: DownloadSecureFile@1
+      # name: sshKey # The name with which to reference the secure file's path on the agent, like $(mySecureFile.secureFilePath)
+      inputs:
+        secureFile: vott_id_rsa
+
+    # Install an SSH key prior to a build or deployment
+    - task: InstallSSHKey@0 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/install-ssh-key?view=azure-devops
+      inputs:
+        knownHostsEntry: $(KNOWN_HOSTS_ENTRY)
+        sshPublicKey: $(SSH_PUBLIC_KEY)
+        #sshPassphrase: # Optional
+        sshKeySecureFile: vott_id_rsa
+      env:
+        KNOWN_HOSTS_ENTRY: $(KNOWN_HOSTS_ENTRY)
+        SSH_PUBLIC_KEY: $(SSH_PUBLIC_KEY)  # map to the right format (camelCase) that Azure credentials understand
+
+    - task: Bash@3
+      name: BumpNpmVersion
+      displayName: Bump NPM Prerelease Version
+      inputs:
+        targetType: filePath
+        filePath: ./scripts/version-bump-commit.sh
+      env:
+        SOURCE_BRANCH: $(Build.SourceBranch)
+
+- stage: package_build
+  dependsOn: version_bump_commit
+  jobs:
+  - template: azure-pipelines/templates/build-artifact.yml
+    parameters:
+      name: Linux
+      pool:
+        vmImage: ubuntu-16.04
+      os: linux
+      artifact: vott*.snap
+
+  - template: azure-pipelines/templates/build-artifact.yml
+    parameters:
+      name: Windows
+      pool:
+        vmImage: "windows-2019"
+      os: windows
+      artifact: vott*.exe
+
+  - template: azure-pipelines/templates/build-artifact.yml
+    parameters:
+      name: MacOS
+      pool:
+        vmImage: macOS-10.15
+      os: mac
+      artifact: vott*.dmg
+
+- stage: github_release
+  dependsOn: package_build
+  jobs:
+  - template: azure-pipelines/templates/create-github-release.yml
+    parameters:
+      GitHubConnection: 'GitHub connection' # defaults for any parameters that aren't specified
+      repositoryName: 'Microsoft/VoTT'
+      releaseNotesSource: input
+      addChangeLog: false
+      isPreRelease: true
+      isDraft: false

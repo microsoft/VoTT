@@ -1,0 +1,48 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "linterOptions": {
+        "exclude": [
+            "lib",
+            "public",
+            "src/routes",
+            "jest.config.js"
+        ]
+    },
+    "jsRules": {},
+    "rules": {
+        "no-console": false,
+        "arrow-parens": false,
+        "max-classes-per-file": false,
+        "ordered-imports": false,
+        "object-literal-sort-keys": false,
+        "align": false,
+        "interface-name": false,
+        "quotemark": [
+            true,
+            "single",
+            "avoid-escape",
+            "avoid-template"
+        ],
+        "max-line-length": {
+            "severity": "warning",
+            "options": [
+                160,
+                {
+                    "ignore-pattern": "^import |^export {(.*?)} | //"
+                }
+            ]
+        },
+        "variable-name": {
+            "options": [
+                "ban-keywords",
+                "check-format",
+                "allow-leading-underscore",
+                "allow-pascal-case",
+                "allow-snake-case"
+            ]
+        }
+    }
+}

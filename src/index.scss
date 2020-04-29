@@ -22,12 +22,10 @@ input[type=file] {
     box-shadow: inset 0 0 6px $darker-3;
     background-color: $lighter-1;
     border-radius: 10px;
-    border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
     border-radius: 10px;
 	background: $lighter-4;
     box-shadow:  0 0 6px $darker-3;
