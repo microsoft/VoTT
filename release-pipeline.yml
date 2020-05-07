@@ -16,7 +16,7 @@ jobs:
 - job: MacOS
   condition: succeeded()
   pool:
-    vmImage: macOS-10.13
+    vmImage: macOS-10.15
   timeoutInMinutes: 60 # how long to run the job before automatically cancelling
   steps:
   - checkout: self # self represents the repo where the initial Pipelines YAML file was found
@@ -26,7 +26,7 @@ jobs:
 - job: Windows
   condition: succeeded()
   pool:
-    vmImage: vs2017-win2016
+    vmImage: "windows-2019"
   timeoutInMinutes: 60 # how long to run the job before automatically cancelling
   steps:
   - checkout: self # self represents the repo where the initial Pipelines YAML file was found

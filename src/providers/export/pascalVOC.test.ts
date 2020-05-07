@@ -69,7 +69,9 @@ describe("PascalVOC Json Export Provider", () => {
         beforeEach(() => {
             const assetServiceMock = AssetService as jest.Mocked<typeof AssetService>;
             assetServiceMock.prototype.getAssetMetadata = jest.fn((asset) => {
-                const mockTag = MockFactory.createTestTag();
+                const mockTag1 = MockFactory.createTestTag("1");
+                const mockTag2 = MockFactory.createTestTag("2");
+                const mockTag = Number(asset.id.split("-")[1]) > 7 ? mockTag1 : mockTag2;
                 const mockRegion1 = MockFactory.createTestRegion("region-1", [mockTag.name]);
                 const mockRegion2 = MockFactory.createTestRegion("region-2", [mockTag.name]);
 
@@ -352,27 +354,70 @@ describe("PascalVOC Json Export Provider", () => {
                 };
 
                 const testProject = { ...baseTestProject };
-                const testAssets = MockFactory.createTestAssets(10, 0);
+                const testAssets = MockFactory.createTestAssets(13, 0);
                 testAssets.forEach((asset) => asset.state = AssetState.Tagged);
                 testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
-                testProject.tags = [MockFactory.createTestTag("1")];
+                testProject.tags = MockFactory.createTestTags(3);
 
                 const exportProvider = new PascalVOCExportProvider(testProject, options);
+                const getAssetsSpy = jest.spyOn(exportProvider, "getAssetsForExport");
+
                 await exportProvider.export();
 
                 const storageProviderMock = LocalFileSystemProxy as any;
                 const writeTextFileCalls = storageProviderMock.mock.instances[0].writeText.mock.calls as any[];
 
-                const valDataIndex = writeTextFileCalls
+                const valDataIndex1 = writeTextFileCalls
                     .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_val.txt"));
-                const trainDataIndex = writeTextFileCalls
+                const trainDataIndex1 = writeTextFileCalls
                     .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 1_train.txt"));
+                const valDataIndex2 = writeTextFileCalls
+                    .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_val.txt"));
+                const trainDataIndex2 = writeTextFileCalls
+                    .findIndex((args) => args[0].endsWith("/ImageSets/Main/Tag 2_train.txt"));
 
-                const expectedTrainCount = (testTrainSplit / 100) * testAssets.length;
-                const expectedTestCount = ((100 - testTrainSplit) / 100) * testAssets.length;
+                const assetsToExport = await getAssetsSpy.mock.results[0].value;
+                const trainArray = [];
+                const testArray = [];
+                const tagsAssestList: {
+                    [index: string]: {
+                        assetSet: Set<string>,
+                        testArray: string[],
+                        trainArray: string[],
+                    },
+                } = {};
+                testProject.tags.forEach((tag) =>
+                    tagsAssestList[tag.name] = {
+                        assetSet: new Set(), testArray: [],
+                        trainArray: [],
+                    });
+                assetsToExport.forEach((assetMetadata) => {
+                    assetMetadata.regions.forEach((region) => {
+                        region.tags.forEach((tagName) => {
+                            if (tagsAssestList[tagName]) {
+                                tagsAssestList[tagName].assetSet.add(assetMetadata.asset.name);
+                            }
+                        });
+                    });
+                });
 
-                expect(writeTextFileCalls[valDataIndex][1].split("\n")).toHaveLength(expectedTestCount);
-                expect(writeTextFileCalls[trainDataIndex][1].split("\n")).toHaveLength(expectedTrainCount);
+                for (const tagKey of Object.keys(tagsAssestList)) {
+                    const assetSet = tagsAssestList[tagKey].assetSet;
+                    const testCount = Math.ceil(((100 - testTrainSplit) / 100) * assetSet.size);
+                    tagsAssestList[tagKey].testArray = Array.from(assetSet).slice(0, testCount);
+                    tagsAssestList[tagKey].trainArray = Array.from(assetSet).slice(testCount, assetSet.size);
+                    testArray.push(...tagsAssestList[tagKey].testArray);
+                    trainArray.push(...tagsAssestList[tagKey].trainArray);
+                }
+
+                expect(writeTextFileCalls[valDataIndex1][1].split(/\r?\n/).filter((line) =>
+                    line.endsWith(" 1"))).toHaveLength(tagsAssestList["Tag 1"].testArray.length);
+                expect(writeTextFileCalls[trainDataIndex1][1].split(/\r?\n/).filter((line) =>
+                    line.endsWith(" 1"))).toHaveLength(tagsAssestList["Tag 1"].trainArray.length);
+                expect(writeTextFileCalls[valDataIndex2][1].split(/\r?\n/).filter((line) =>
+                    line.endsWith(" 1"))).toHaveLength(tagsAssestList["Tag 2"].testArray.length);
+                expect(writeTextFileCalls[trainDataIndex2][1].split(/\r?\n/).filter((line) =>
+                    line.endsWith(" 1"))).toHaveLength(tagsAssestList["Tag 2"].trainArray.length);
             }
 
             it("Correctly generated files based on 50/50 test / train split", async () => {

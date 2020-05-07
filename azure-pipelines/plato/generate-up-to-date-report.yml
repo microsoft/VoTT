@@ -51,7 +51,7 @@ steps:
 - task: AzureCLI@1
   displayName: "Pull down old report and add updates"
   inputs:
-    azureSubscription: 'PELITTLE TEAM - CSE DWR (d36d0808-a967-4f73-9fdc-32ea232fc81d)'
+    azureSubscription: 'pj-little-sub'
     scriptLocation: inlineScript
     inlineScript: './scripts/update-report.sh'
 

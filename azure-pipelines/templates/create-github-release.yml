@@ -1,0 +1,32 @@
+  parameters:
+    GitHubConnection: '' # defaults for any parameters that aren't specified
+    repositoryName: ''
+    releaseNotesSource: input
+    addChangeLog: false
+    isPreRelease: true
+    isDraft: true
+
+  jobs:
+  - job: Create_Github_Release
+    timeoutInMinutes: 30 # timeout on job if deploy is not completed in 30 minutes
+    pool:
+      vmImage: ubuntu-16.04
+    steps:
+    - checkout: none # we already have the artifacts built, don't need the code
+
+    - download: current
+
+    - task: GitHubRelease@0
+      displayName: 'GitHub release (create)'
+      inputs:
+        gitHubConnection: ${{ parameters.GitHubConnection }}
+        repositoryName: ${{ parameters.repositoryName }}
+        releaseNotesSource: ${{ parameters.releaseNotesSource }}
+        target: $(Build.SourceBranch)
+        assets: |
+          ../linux/*
+          ../windows/*
+          ../mac/*
+        addChangeLog: ${{ parameters.addChangeLog }}
+        isDraft: true # for testing, change to true when ready to merge
+        isPreRelease: ${{ parameters.isPrelease }}

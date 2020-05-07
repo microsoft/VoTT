@@ -1,0 +1,13 @@
+version: 1
+
+update_configs:
+  target_branch: "develop"
+
+  # Keep package.json (& lockfiles) up to date weekly
+  - package_manager: "javascript"
+    directory: "/"
+    update_schedule: "weekly"
+
+    default_labels:
+    - "dependencies"
+    - "dependabot"

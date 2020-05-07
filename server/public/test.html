@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple Integration Tests</title>
+</head>
+
+<body>
+    <h2>Simple integration tests</h2>
+    <p>You must be logged in to use tests</p>
+    <button onclick="test_get_me()">GET /api/v1.0/me</button><br />
+    <button onclick="test_get_profile()">GET /api/v1.0/profile</button><br />
+    <button onclick="test_put_profile()">PUT /api/v1.0/profile { "foo": "bar" }</button><br />
+    <br />
+    <button onclick="test_get_connection()">GET /api/v1.0/cloudconnections/connection1</button><br />
+    <button onclick="test_put_connection()">PUT /api/v1.0/cloudconnections/connection1 { "foo": "bar" }</button><br />
+    <button onclick="test_put_connection_alt()">PUT /api/v1.0/cloudconnections/connection1 { "foo": "baz" }</button><br />
+    <button onclick="test_patch_connection()">PATCH /api/v1.0/cloudconnections/connection1 { "updated": ${now} }</button><br />
+    <button onclick="test_delete_connection()">DELETE /api/v1.0/cloudconnections/connection1</button><br />
+
+    <pre id='result'></pre>
+
+    <script>
+        function fetchOptions(method, thing) {
+            return { method, body: JSON.stringify(thing), headers: { 'Content-Type': 'application/json' } };
+        }
+
+        async function displayResponse(response) {
+            let json = null;
+            try { json = await response.json().catch(); } catch (err) { }
+            let result = (response.ok ? '*success*' : '*failed*') + '\n' + (json ? JSON.stringify(json, undefined, 2) : '');
+            document.getElementById("result").innerHTML = result;
+        }
+
+        async function test_get_me(e) {
+            let response = await fetch('/api/v1.0/me');
+            displayResponse(response);
+        }
+        async function test_get_profile(e) {
+            let response = await fetch('/api/v1.0/profile');
+            displayResponse(response);
+        }
+        async function test_put_profile(e) {
+            let response = await fetch('/api/v1.0/profile', fetchOptions("PUT", { foo: "bar" }));
+            displayResponse(response);
+        }
+        async function test_get_connection(e) {
+            let response = await fetch('/api/v1.0/cloudconnections/connection1');
+            displayResponse(response);
+        }
+        async function test_put_connection(e) {
+            let response = await fetch('/api/v1.0/cloudconnections/connection1', fetchOptions("PUT", { foo: "bar" }));
+            displayResponse(response);
+        }
+        async function test_put_connection_alt(e) {
+            let response = await fetch('/api/v1.0/cloudconnections/connection1', fetchOptions("PUT", { foo: "baz" }));
+            displayResponse(response);
+        }
+        async function test_patch_connection(e) {
+            let now = (new Date(Date.now())).toISOString();
+            let response = await fetch('/api/v1.0/cloudconnections/connection1', fetchOptions("PATCH", { updated: now }));
+            displayResponse(response);
+        }
+        async function test_delete_connection(e) {
+            let response = await fetch('/api/v1.0/cloudconnections/connection1', fetchOptions("DELETE", undefined));
+            displayResponse(response);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,8 +1,19 @@
 import { strings, addLocValues, IAppStrings, interpolate, interpolateJson } from "./strings";
 import { english } from "./localization/en-us";
 import { spanish } from "./localization/es-cl";
+import { japanese } from "./localization/ja";
+import { chinesetw } from "./localization/zh-tw";
+import { korean } from "./localization/ko-kr";
+import { chinese } from "./localization/zh-ch";
 
-const languages = ["en", "es"];
+const languages = [
+  "en",
+  "es",
+  "ja",
+  "tw",
+  "ko",
+  "ch",
+];
 
 describe("Localization tests", () => {
 
@@ -10,6 +21,10 @@ describe("Localization tests", () => {
         return {
             en: english,
             es: spanish,
+            ja: japanese,
+            tw: chinesetw,
+            ko: korean,
+            ch: chinese,
         }[language];
     }
 

@@ -136,7 +136,7 @@ export default class HtmlFileReader {
                 canvas.width = video.videoWidth;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(resolve);
+                canvas.toBlob(resolve, "image/jpeg", 1.0);
             };
             video.onerror = reject;
             if (refresh) {
