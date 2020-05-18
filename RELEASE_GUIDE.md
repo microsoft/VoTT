@@ -8,6 +8,12 @@ Instruction on how to create new GitHub & Web Releases.
 
 ![alt text](./docs/images/release-process.png "Create Release Process")
 
+### AzDO Tasks
+
+[GitHub Release Task](https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1)
+
+[Azure File Copy](https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/AzureFileCopyV3)
+
 ## Versioning
 
 Follow [NPM Semantic Versioning](https://docs.npmjs.com/about-semantic-versioning#incrementing-semantic-versions-in-published-packages)
@@ -23,7 +29,7 @@ Follow [NPM Semantic Versioning](https://docs.npmjs.com/about-semantic-versionin
 
 The pipeline use [npm-version](https://docs.npmjs.com/cli/version) to update version
 
-### Pre
+#### Pre
 
 All version with `pre`, ie. `preminor` will bump the appropriate didgit & append `-0` to the new version
 
@@ -39,7 +45,7 @@ Examples:
 1. v2.3.0 --> v2.4.0-0
 1. v2.4.0-0 --> v2.5.0-0
 
-#### Exception
+##### Exception
 
 `prerelease` behave similar to prepatch, but would increment the last digit.
 
@@ -51,10 +57,10 @@ v2.3.0 --> v2.3.1-0
 
 v2.3.0-0 --> v2.3.0-1
 
-### Major
+#### Major
 
 v2.x.x --> v3.0.0
 
-### Minor
+#### Minor
 
 v2.2.0 --> v2.3.0

@@ -55,5 +55,3 @@ jobs:
           echo "Prod url: $PROD_URL"
         displayName: "Prod URL"
         condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
-
-

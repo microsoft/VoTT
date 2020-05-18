@@ -1,7 +1,7 @@
 parameters:
   GitHubConnection: '' # defaults for any parameters that aren't specified
   repositoryName: ''
-  isPreRelease: true
+  isPreRelease: false
   isDraft: false
 
 jobs:
@@ -46,20 +46,24 @@ jobs:
     - bash: |
         set -e
 
+        echo
+        echo "======> Set commit sha"
+        COMMIT_SHA=$(git rev-parse --short HEAD)
+        echo "COMMIT SHA: $COMMIT_SHA"
+        echo "##vso[task.setvariable variable=COMMIT_SHA]$COMMIT_SHA"
+
         ###
         # These variables were set in the "Version Bump" stage.  There are
         # currently no way to pass variables between stages, hence this workaround.
         ###
+        echo
+        echo "======> Set version variables"
         CURRENT_VERSION=$(cat $(Pipeline.Workspace)/variables/CURRENT_VERSION)
         echo "##vso[task.setvariable variable=CURRENT_VERSION]$CURRENT_VERSION"
 
         NEXT_VERSION=$(cat $(Pipeline.Workspace)/variables/NEXT_VERSION)
         echo "##vso[task.setvariable variable=NEXT_VERSION]$NEXT_VERSION"
-      displayName: "Retrieve version variables"
-
-    - bash: |
-        printenv | sort
-      displayName: "Print Env Variables"
+      displayName: "Set variables for release task"
 
     - task: GitHubRelease@1
       displayName: 'GitHub release (create)'
