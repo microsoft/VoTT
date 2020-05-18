@@ -1,0 +1,8 @@
+steps:
+  - task: Bash@3
+    displayName: 'Pull latest from branch'
+    inputs:
+      targetType: filePath
+      filePath: './scripts/git-pull-current-branch.sh'
+    env:
+      SOURCE_BRANCH: $(Build.SourceBranch)

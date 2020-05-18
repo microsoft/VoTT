@@ -4,6 +4,8 @@ jobs:
   pool: ${{ parameters.pool }}
   timeoutInMinutes: 15 # how long to run the job before automatically cancelling
   steps:
+    - template: git-pull-current-branch.yml
+
     - task: NodeTool@0
       displayName: 'Use Node 10.x'
       inputs:

@@ -1,0 +1,60 @@
+parameters:
+  versionType: ''
+
+jobs:
+- job: "version_bump"
+
+  variables:
+  - group: GitHub-Deploy-Creds
+
+  timeoutInMinutes: 30 # timeout on job if deploy is not completed in 30 minutes
+  cancelTimeoutInMinutes: 1 # time limit to wait for job to cancel
+
+  pool:
+    vmImage: macOS-latest # ssh key was generated on a Mac so using the same type of OS here
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: 10.x
+    displayName: 'Install Node.js'
+
+  # Download secure file
+  # Download a secure file to the agent machine
+  - task: DownloadSecureFile@1
+    # name: sshKey # The name with which to reference the secure file's path on the agent, like $(mySecureFile.secureFilePath)
+    inputs:
+      secureFile: vott_id_rsa
+
+  # Install an SSH key prior to a build or deployment
+  - task: InstallSSHKey@0 # https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/install-ssh-key?view=azure-devops
+    inputs:
+      knownHostsEntry: $(KNOWN_HOSTS_ENTRY)
+      sshPublicKey: $(SSH_PUBLIC_KEY)
+      #sshPassphrase: # Optional
+      sshKeySecureFile: vott_id_rsa
+    env:
+      KNOWN_HOSTS_ENTRY: $(KNOWN_HOSTS_ENTRY)
+      SSH_PUBLIC_KEY: $(SSH_PUBLIC_KEY)  # map to the right format (camelCase) that Azure credentials understand
+
+  - task: Bash@3
+    name: BumpNpmVersion
+    displayName: Bump NPM Version
+    inputs:
+      targetType: filePath
+      filePath: ./scripts/version-bump-commit.sh
+      arguments:
+        ${{ parameters.versionType }}
+    env:
+      SOURCE_BRANCH: $(Build.SourceBranch)
+
+  - bash: |
+      printenv | sort
+      mkdir -p $(System.DefaultWorkingDirectory)/variables
+      echo "$NEXT_VERSION" > $(System.DefaultWorkingDirectory)/variables/NEXT_VERSION
+      echo "$CURRENT_VERSION" > $(System.DefaultWorkingDirectory)/variables/CURRENT_VERSION
+    displayName: "Prep variables for publishing"
+
+  # Publish the variables folder as pipeline artifact
+  - publish: $(System.DefaultWorkingDirectory)/variables
+    artifact: variables
