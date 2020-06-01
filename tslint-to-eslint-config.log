@@ -1,0 +1,26 @@
+7 ESLint rules behave differently from their TSLint counterparts:
+  * @typescript-eslint/no-unused-expressions:
+    - The TSLint optional config "allow-new" is the default ESLint behavior and will no longer be ignored.
+  * camelcase:
+    - Leading and trailing underscores (_) in variable names will now be ignored.
+    - ESLint's camel-case rule does not allow pascal or snake case variable names. Those cases are reserved for class names and static methods.
+  * eqeqeq:
+    - Option "smart" allows for comparing two literal values, evaluating the value of typeof and null comparisons.
+  * no-invalid-this:
+    - Functions in methods will no longer be ignored.
+  * no-underscore-dangle:
+    - Leading or trailing underscores (_) on identifiers will now be forbidden.
+  * prefer-arrow/prefer-arrow-functions:
+    - ESLint does not support allowing standalone function declarations.
+    - ESLint does not support allowing named functions defined with the function keyword.
+  * space-before-function-paren:
+    - Option "constructor" is not supported by ESLint.
+    - Option "method" is not supported by ESLint.
+
+2 rules are not known by tslint-to-eslint-config to have ESLint equivalents:
+  * tslint-to-eslint-config does not know the ESLint equivalent for TSLint's "import-spacing".
+  * tslint-to-eslint-config does not know the ESLint equivalent for TSLint's "whitespace".
+
+1 editor setting is not known by tslint-to-eslint-config to have an ESLint equivalent:
+  * tslint-to-eslint-config does not know the ESLint equivalent for TSLint's "editor.formatOnSave".
+

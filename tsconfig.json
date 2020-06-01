@@ -14,16 +14,8 @@
         "noEmit": true,
         "jsx": "preserve",
         "experimentalDecorators": true,
-        "lib": [
-            "es2015",
-            "dom"
-        ],
-        "typeRoots": [
-            "./typings",
-            "./node_modules/@types"
-        ],
+        "lib": ["es2015", "dom"],
+        "typeRoots": ["./typings", "./node_modules/@types"]
     },
-    "include": [
-        "src"
-    ]
+    "include": ["src"]
 }

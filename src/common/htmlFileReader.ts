@@ -149,7 +149,7 @@ export default class HtmlFileReader {
 
     private static readVideoAttributes(url: string): Promise<{ width: number, height: number, duration: number }> {
         return new Promise((resolve, reject) => {
-            const video = document.createElement("video") as HTMLVideoElement;
+            const video = document.createElement("video");
             video.onloadedmetadata = () => {
                 resolve({
                     width: video.videoWidth,
@@ -164,7 +164,7 @@ export default class HtmlFileReader {
 
     private static readImageAttributes(url: string): Promise<{ width: number, height: number }> {
         return new Promise((resolve, reject) => {
-            const image = document.createElement("img") as HTMLImageElement;
+            const image = document.createElement("img");
             image.onload = () => {
                 resolve({
                     width: image.naturalWidth,

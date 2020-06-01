@@ -20,7 +20,7 @@ export class HelpMenu extends React.Component<IHelpMenuProps, IHelpMenuState> {
     public state = {
         show: false,
     };
-    private icon: string = "fa-question-circle";
+    private icon = "fa-question-circle";
 
     public render() {
         return (

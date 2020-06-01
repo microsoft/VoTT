@@ -1,5 +1,9 @@
 import React from "react";
-import Form, { Widget, IChangeEvent, FormValidation } from "react-jsonschema-form";
+import Form, {
+    Widget,
+    IChangeEvent,
+    FormValidation
+} from "react-jsonschema-form";
 import { IConnection } from "../../../../models/applicationState";
 import LocalFolderPicker from "../../common/localFolderPicker/localFolderPicker";
 import { strings, addLocValues } from "../../../../common/strings";
@@ -46,16 +50,19 @@ export interface IConnectionFormState {
 /**
  * Form for viewing, creating and editing connections
  */
-export default class ConnectionForm extends React.Component<IConnectionFormProps, IConnectionFormState> {
+export default class ConnectionForm extends React.Component<
+    IConnectionFormProps,
+    IConnectionFormState
+> {
     private widgets = {
         localFolderPicker: (LocalFolderPicker as any) as Widget,
         connectionProviderPicker: (ConnectionProviderPicker as any) as Widget,
         protectedInput: (ProtectedInput as any) as Widget,
-        checkbox: CustomWidget(Checkbox, (props) => ({
+        checkbox: CustomWidget(Checkbox, props => ({
             checked: props.value,
-            onChange: (value) => props.onChange(value.target.checked),
-            disabled: props.disabled,
-        })),
+            onChange: value => props.onChange(value.target.checked),
+            disabled: props.disabled
+        }))
     };
 
     constructor(props, context) {
@@ -65,8 +72,10 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
             classNames: ["needs-validation"],
             formSchema: { ...formSchema },
             uiSchema: { ...uiSchema },
-            providerName: this.props.connection ? this.props.connection.providerType : null,
-            formData: this.props.connection,
+            providerName: this.props.connection
+                ? this.props.connection.providerType
+                : null,
+            formData: this.props.connection
         };
 
         if (this.props.connection) {
@@ -88,27 +97,39 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         return (
             <div className="app-connections-page-detail m-3">
                 <h3>
-                    <i className="fas fa-plug fa-1x"></i>
-                    <span className="px-2">
-                        {strings.connections.settings}
-                    </span>
+                    <i className="fas fa-plug fa-1x" />
+                    <span className="px-2">{strings.connections.settings}</span>
                 </h3>
                 <div className="m-3">
-                    { isBrowser() && this.state.providerName === "bingImageSearch" &&
-                    <div className="alert alert-warning" role="alert">
-                        <i className="fas fa-exclamation-circle mr-1" aria-hidden="true"></i>
-                        { strings.connections.imageCorsWarning }
-                    </div>
-                    }
-                    { isBrowser() && this.state.providerName === "azureBlobStorage" &&
-                    <div className="alert alert-warning" role="alert">
-                        <i className="fas fa-exclamation-circle mr-1" aria-hidden="true"></i>
-                        { strings.formatString(
-                            strings.connections.blobCorsWarning,
-                            <a href="https://aka.ms/blob-cors" target="_blank">{strings.connections.azDocLinkText}</a>)
-                        }
-                    </div>
-                    }
+                    {isBrowser() &&
+                        this.state.providerName === "bingImageSearch" && (
+                            <div className="alert alert-warning" role="alert">
+                                <i
+                                    className="fas fa-exclamation-circle mr-1"
+                                    aria-hidden="true"
+                                />
+                                {strings.connections.imageCorsWarning}
+                            </div>
+                        )}
+                    {isBrowser() &&
+                        this.state.providerName === "azureBlobStorage" && (
+                            <div className="alert alert-warning" role="alert">
+                                <i
+                                    className="fas fa-exclamation-circle mr-1"
+                                    aria-hidden="true"
+                                />
+                                {strings.formatString(
+                                    strings.connections.blobCorsWarning,
+                                    <a
+                                        href="https://aka.ms/blob-cors"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        {strings.connections.azDocLinkText}
+                                    </a>
+                                )}
+                            </div>
+                        )}
                     <Form
                         className={this.state.classNames.join(" ")}
                         showErrorList={false}
@@ -121,12 +142,22 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
                         uiSchema={this.state.uiSchema}
                         formData={this.state.formData}
                         onChange={this.onFormChange}
-                        onSubmit={(form) => this.props.onSubmit(form.formData)}>
+                        onSubmit={form => this.props.onSubmit(form.formData)}
+                    >
                         <div>
-                            <button className="btn btn-success mr-1" type="submit">{strings.connections.save}</button>
-                            <button className="btn btn-secondary btn-cancel"
+                            <button
+                                className="btn btn-success mr-1"
+                                type="submit"
+                            >
+                                {strings.connections.save}
+                            </button>
+                            <button
+                                className="btn btn-secondary btn-cancel"
                                 type="button"
-                                onClick={this.onFormCancel}>{strings.common.cancel}</button>
+                                onClick={this.onFormCancel}
+                            >
+                                {strings.common.cancel}
+                            </button>
                         </div>
                     </Form>
                 </div>
@@ -141,7 +172,7 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
 
         if (this.state.classNames.indexOf("was-validated") === -1) {
             this.setState({
-                classNames: [...this.state.classNames, "was-validated"],
+                classNames: [...this.state.classNames, "was-validated"]
             });
         }
 
@@ -155,10 +186,10 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
             this.bindForm(args.formData, true);
         } else {
             this.setState({
-                formData: args.formData,
+                formData: args.formData
             });
         }
-    }
+    };
 
     private onFormCancel() {
         if (this.props.onCancel) {
@@ -166,14 +197,18 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
         }
     }
 
-    private bindForm(connection: IConnection, resetProviderOptions: boolean = false) {
+    private bindForm(connection: IConnection, resetProviderOptions = false) {
         const providerType = connection ? connection.providerType : null;
         let newFormSchema: any = this.state.formSchema;
         let newUiSchema: any = this.state.uiSchema;
 
         if (providerType) {
-            const providerSchema = addLocValues(require(`../../../../providers/storage/${providerType}.json`));
-            const providerUiSchema = addLocValues(require(`../../../../providers/storage/${providerType}.ui.json`));
+            const providerSchema = addLocValues(
+                require(`../../../../providers/storage/${providerType}.json`)
+            );
+            const providerUiSchema = addLocValues(
+                require(`../../../../providers/storage/${providerType}.ui.json`)
+            );
 
             newFormSchema = { ...formSchema };
             newFormSchema.properties["providerOptions"] = providerSchema;
@@ -199,7 +234,7 @@ export default class ConnectionForm extends React.Component<IConnectionFormProps
             providerName: providerType,
             formSchema: newFormSchema,
             uiSchema: newUiSchema,
-            formData,
+            formData
         });
     }
 }

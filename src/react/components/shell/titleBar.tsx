@@ -32,7 +32,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
     private currentWindow: Electron.BrowserWindow;
 
     public componentDidMount() {
-        const isElectron: boolean = !!window["require"];
+        const isElectron = !!window["require"];
 
         if (isElectron) {
             this.remote = (window as any).require("electron").remote as Electron.Remote;

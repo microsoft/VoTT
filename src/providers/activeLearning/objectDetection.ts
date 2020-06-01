@@ -21,7 +21,7 @@ export type ImageObject = tf.Tensor3D | ImageData | HTMLImageElement | HTMLCanva
  * Object Dectection loads active learning models and predicts regions
  */
 export class ObjectDetection {
-    private modelLoaded: boolean = false;
+    private modelLoaded = false;
 
     get loaded(): boolean {
         return this.modelLoaded;
@@ -130,7 +130,7 @@ export class ObjectDetection {
      * locations. Defaults to 20.
      *
      */
-    public async detect(img: ImageObject, maxNumBoxes: number = 20): Promise<DetectedObject[]> {
+    public async detect(img: ImageObject, maxNumBoxes = 20): Promise<DetectedObject[]> {
         if (this.model) {
             return this.infer(img, maxNumBoxes);
         }
@@ -147,7 +147,7 @@ export class ObjectDetection {
      * objects. There can be multiple objects of the same class, but at different
      * locations. Defaults to 20.
      */
-    private async infer(img: ImageObject, maxNumBoxes: number = 20): Promise<DetectedObject[]> {
+    private async infer(img: ImageObject, maxNumBoxes = 20): Promise<DetectedObject[]> {
         const batched = tf.tidy(() => {
             if (!(img instanceof tf.Tensor)) {
                 img = tf.browser.fromPixels(img);

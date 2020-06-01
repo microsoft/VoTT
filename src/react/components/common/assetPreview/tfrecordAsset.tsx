@@ -51,7 +51,7 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
             const base64ImageData = await this.getTFRecordBase64Image(this.props.asset);
             this.setState({
                 tfRecordImage64: base64ImageData,
-                hasError: !(!!base64ImageData),
+                hasError: !(base64ImageData),
             });
         } catch (e) {
             this.setState({

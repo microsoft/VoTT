@@ -102,7 +102,7 @@ describe("Import Service", () => {
         const v2Project = await importService.convertProject({ file, content });
         const results = await importService.generateAssets(fileInfo, v2Project);
 
-        const parentAssets = results.filter((assetMetadata) => !(!!assetMetadata.asset.parent));
+        const parentAssets = results.filter((assetMetadata) => !(assetMetadata.asset.parent));
         const childAssets = results.filter((assetMetadata) => !!assetMetadata.asset.parent);
 
         expect(parentAssets).toHaveLength(1);

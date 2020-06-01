@@ -1,5 +1,9 @@
 import React from "react";
-import { IAppError, ErrorCode, AppError } from "../../../../models/applicationState";
+import {
+    IAppError,
+    ErrorCode,
+    AppError
+} from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import Alert from "../alert/alert";
 import { Env } from "../../../../common/environment";
@@ -27,12 +31,19 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
 
     public componentDidMount() {
         window.addEventListener("error", this.onWindowError, true);
-        window.addEventListener("unhandledrejection", this.onUnhandedRejection, true);
+        window.addEventListener(
+            "unhandledrejection",
+            this.onUnhandedRejection,
+            true
+        );
     }
 
-    public componentWillMount() {
+    public UNSAFE_componentWillMount() {
         window.removeEventListener("error", this.onWindowError);
-        window.removeEventListener("unhandledrejection", this.onUnhandedRejection);
+        window.removeEventListener(
+            "unhandledrejection",
+            this.onUnhandedRejection
+        );
     }
 
     public render() {
@@ -47,11 +58,13 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         }
 
         return (
-            <Alert title={localizedError ? localizedError.title : ""}
+            <Alert
+                title={localizedError ? localizedError.title : ""}
                 message={localizedError ? localizedError.message : ""}
                 closeButtonColor="secondary"
                 show={showError}
-                onClose={this.props.onClearError} />
+                onClose={this.props.onClearError}
+            />
         );
     }
 
@@ -92,11 +105,11 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         }
         let appError: IAppError = null;
         // Promise rejection with reason
-        if (typeof (error) === "string") {
+        if (typeof error === "string") {
             // Promise rejection with string base reason
             appError = {
                 errorCode: ErrorCode.Unknown,
-                message: error || this.getUnknownErrorMessage(error),
+                message: error || this.getUnknownErrorMessage(error)
             };
         } else if (error instanceof AppError) {
             // Promise rejection with AppError
@@ -104,21 +117,21 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
             appError = {
                 title: reason.title || strings.errors.unknown.title,
                 errorCode: reason.errorCode,
-                message: reason.message || this.getUnknownErrorMessage(error),
+                message: reason.message || this.getUnknownErrorMessage(error)
             };
         } else if (error instanceof Error) {
             // Promise rejection with other error like object
-            const reason = error as Error;
+            const reason = error;
             appError = {
                 title: reason.name || strings.errors.unknown.title,
                 errorCode: ErrorCode.Unknown,
-                message: reason.message || this.getUnknownErrorMessage(error),
+                message: reason.message || this.getUnknownErrorMessage(error)
             };
         } else {
             appError = {
                 title: strings.errors.unknown.title,
                 errorCode: ErrorCode.Unknown,
-                message: this.getUnknownErrorMessage(error),
+                message: this.getUnknownErrorMessage(error)
             };
         }
 
@@ -130,7 +143,7 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
 
     private getUnknownErrorMessage(e) {
         if (Env.get() !== "production") {
-            return (<pre>{JSON.stringify(e, null, 2)}</pre>);
+            return <pre>{JSON.stringify(e, null, 2)}</pre>;
         } else {
             return strings.errors.unknown.message;
         }
@@ -151,11 +164,15 @@ export class ErrorHandler extends React.Component<IErrorHandlerProps> {
         return {
             errorCode: appError.errorCode,
             message: localizedError.message,
-            title: localizedError.title,
+            title: localizedError.title
         };
     }
 
     private isReactDnDError(e) {
-        return e && e.name === "Invariant Violation" && e.message === "Expected to find a valid target.";
+        return (
+            e &&
+            e.name === "Invariant Violation" &&
+            e.message === "Expected to find a valid target."
+        );
     }
 }

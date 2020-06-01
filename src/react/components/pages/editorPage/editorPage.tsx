@@ -118,7 +118,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
     };
 
     private activeLearningService: ActiveLearningService = null;
-    private loadingProjectAssets: boolean = false;
+    private loadingProjectAssets = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();

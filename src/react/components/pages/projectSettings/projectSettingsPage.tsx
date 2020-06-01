@@ -124,7 +124,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     }
 
     private onFormSubmit = async (project: IProject) => {
-        const isNew = !(!!project.id);
+        const isNew = !(project.id);
 
         await this.props.applicationActions.ensureSecurityToken(project);
         await this.props.projectActions.saveProject(project);
@@ -148,7 +148,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
      * Checks whether a project is partially populated
      */
     private isPartialProject = (project: IProject): boolean => {
-        return project && !(!!project.id) &&
+        return project && !(project.id) &&
             (
                 !!project.name
                 || !!project.description
