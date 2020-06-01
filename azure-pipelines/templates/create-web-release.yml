@@ -1,0 +1,56 @@
+jobs:
+  - job: "Web_Release"
+    pool:
+      vmImage: 'windows-latest'
+
+    steps:
+      - template: git-pull-current-branch.yml
+
+      - task: NodeTool@0
+        displayName: 'Use Node 10.x'
+        inputs:
+          versionSpec: 10.x
+
+      - task: Npm@1
+        displayName: 'npm ci'
+        inputs:
+          command: custom
+          workingDir: .
+          verbose: false
+          customCommand: ci
+
+      - task: Bash@3
+        displayName: 'Create artifact'
+        inputs:
+          targetType: filePath
+          filePath: './scripts/generate-web-artifact.sh'
+
+      - task: AzureFileCopy@3
+        displayName: 'AzureBlob File Copy to $DEV_STORAGE_ACCOUNT'
+        inputs:
+          SourcePath: './build'
+          azureSubscription: $(azureSubscription)
+          destination: azureBlob
+          storage: $(DEV_STORAGE_ACCOUNT)
+          containerName: '$web'
+
+      - task: AzureFileCopy@3
+        displayName: 'AzureBlob File Copy to $PROD_STORAGE_ACCOUNT'
+        inputs:
+          SourcePath: './build'
+          azureSubscription: $(azureSubscription)
+          destination: azureBlob
+          storage: $(PROD_STORAGE_ACCOUNT)
+          containerName: '$web'
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+
+      - bash: |
+          echo
+          echo "Dev url: $DEV_URL"
+        displayName: "Dev URL"
+
+      - bash: |
+          echo
+          echo "Prod url: $PROD_URL"
+        displayName: "Prod URL"
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')

@@ -1,0 +1,74 @@
+name: $(Date:yyyyMMdd).$(Hours)$(Minutes)$(Seconds)
+variables:
+  AZURE_STORAGE_ACCOUNT: vottv2
+  azureSubscription: 'pj-little-sub'
+  REPORT_URL: 'https://vottv2.z22.web.core.windows.net/'
+
+trigger:
+  - dev*
+  - master
+
+pr: none # disable CI build for PR
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+  - bash: |
+      set -e
+
+      COMMIT_SHA=`echo ${BUILD_SOURCEVERSION} | cut -c1-8`
+      echo "sha: " $COMMIT_SHA
+
+      # rewrite build number
+      echo "##vso[build.updatebuildnumber]Report-${COMMIT_SHA}-${BUILD_BUILDNUMBER}"
+    displayName: "Rewrite build number"
+
+  - bash: |
+      set -e
+
+      ACCOUNT=$(AZURE_STORAGE_ACCOUNT)
+      if [[ -z "${ACCOUNT}" ]]; then
+        echo "Need to set AZURE_STORAGE_ACCOUNT"
+        exit 1
+      fi
+    displayName: "Verify storage account cred exists"
+
+  - task: NodeTool@0
+    displayName: "Use Node 10.x"
+    inputs:
+      versionSpec: 10.x
+
+  - task: Npm@1
+    displayName: 'Run `npm ci`'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: ci
+
+  - task: AzureCLI@1
+    displayName: "Pull down old report and add updates"
+    inputs:
+      azureSubscription: $(azureSubscription)
+      scriptLocation: inlineScript
+      inlineScript: './scripts/update-report.sh'
+
+  - bash: |
+      set -e
+
+      cat /tmp/download.log
+    displayName: "print download log"
+    condition: succeededOrFailed()
+
+  - task: AzureFileCopy@3
+    displayName: 'AzureBlob File Copy to $(AZURE_STORAGE_ACCOUNT)'
+    inputs:
+      SourcePath: './report'
+      azureSubscription: $(azureSubscription)
+      destination: azureBlob
+      storage: $(AZURE_STORAGE_ACCOUNT)
+      containerName: '$web'
+
+  - bash: |
+      echo "See report: $(REPORT_URL) "
+    displayName: "Report URl"

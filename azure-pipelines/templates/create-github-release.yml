@@ -1,32 +1,96 @@
-  parameters:
-    GitHubConnection: '' # defaults for any parameters that aren't specified
-    repositoryName: ''
-    releaseNotesSource: input
-    addChangeLog: false
-    isPreRelease: true
-    isDraft: true
+parameters:
+  GitHubConnection: '' # defaults for any parameters that aren't specified
+  repositoryName: ''
+  isPreRelease: false
+  isDraft: false
 
-  jobs:
+jobs:
+  - template: build-artifact.yml
+    parameters:
+      name: LinuxArtifact
+      pool:
+        vmImage: ubuntu-16.04
+      os: linux
+      artifact: vott*.snap
+
+  - template: build-artifact.yml
+    parameters:
+      name: WindowsArtifact
+      pool:
+        vmImage: "windows-2019"
+      os: windows
+      artifact: vott*.exe
+
+  - template: build-artifact.yml
+    parameters:
+      name: MacOSArtifact
+      pool:
+        vmImage: macOS-10.15
+      os: mac
+      artifact: vott*.dmg
+
   - job: Create_Github_Release
     timeoutInMinutes: 30 # timeout on job if deploy is not completed in 30 minutes
+    dependsOn:
+      - LinuxArtifact
+      - WindowsArtifact
+      - MacOSArtifact
+
     pool:
       vmImage: ubuntu-16.04
+
     steps:
-    - checkout: none # we already have the artifacts built, don't need the code
-
     - download: current
+    - template: git-pull-current-branch.yml
 
-    - task: GitHubRelease@0
+    - bash: |
+        set -e
+
+        echo
+        echo "======> Set commit sha"
+        COMMIT_SHA=$(git rev-parse --short HEAD)
+        echo "COMMIT SHA: $COMMIT_SHA"
+        echo "##vso[task.setvariable variable=COMMIT_SHA]$COMMIT_SHA"
+
+        ###
+        # These variables were set in the "Version Bump" stage.  There are
+        # currently no way to pass variables between stages, hence this workaround.
+        ###
+        echo
+        echo "======> Set version variables"
+        CURRENT_VERSION=$(cat $(Pipeline.Workspace)/variables/CURRENT_VERSION)
+        echo "##vso[task.setvariable variable=CURRENT_VERSION]$CURRENT_VERSION"
+
+        NEXT_VERSION=$(cat $(Pipeline.Workspace)/variables/NEXT_VERSION)
+        echo "##vso[task.setvariable variable=NEXT_VERSION]$NEXT_VERSION"
+      displayName: "Set variables for release task"
+
+    - task: GitHubRelease@1
       displayName: 'GitHub release (create)'
       inputs:
         gitHubConnection: ${{ parameters.GitHubConnection }}
-        repositoryName: ${{ parameters.repositoryName }}
-        releaseNotesSource: ${{ parameters.releaseNotesSource }}
-        target: $(Build.SourceBranch)
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceBranch)'
+        tagSource: 'userSpecifiedTag'
+        tag: $(NEXT_VERSION)
+        releaseNotesSource: 'inline'
+        releaseNotesInline: |
+          ## Web Release
+          ### Dev
+          $(DEV_URL)
+
+          ### Prod
+          $(PROD_URL)
+
+          ## Docs
+          https://github.com/Microsoft/VoTT/blob/$(Build.SourceBranch)/README.md
         assets: |
           ../linux/*
           ../windows/*
           ../mac/*
-        addChangeLog: ${{ parameters.addChangeLog }}
-        isDraft: true # for testing, change to true when ready to merge
+        isDraft: ${{ parameters.isDraft }}
         isPreRelease: ${{ parameters.isPrelease }}
+        changeLogCompareToRelease: 'lastNonDraftReleaseByTag'
+        changeLogCompareToReleaseTag: $(CURRENT_VERSION)
+        changeLogType: 'commitBased'

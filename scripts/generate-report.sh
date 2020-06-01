@@ -49,8 +49,15 @@ echo "commit=${COMMIT_SHA}"
 # these are just needed for the reports; just install ad-hoc and don't save to package.json
 npm install es6-plato eslint-plugin-react command-line-args --no-save
 
+echo
+echo "------> Finish installing dependencies"
+
+echo
+echo "------> Transpile TS to ES6"
 # we can't do complexity analysis on TypeScript directly; transpile to ES6
 rm -rf ${ES6_SRC}
 tsc --noEmit false --outDir ${ES6_SRC}
 
+echo
+echo "------> Running complexity analasis ..."
 node ${BASEDIR}/complexity-analysis.js --src ${ES6_SRC} --output ${REPORT_DIR} --version ${VERSION} --commit ${COMMIT_SHA}
