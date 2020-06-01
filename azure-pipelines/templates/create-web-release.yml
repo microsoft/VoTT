@@ -33,7 +33,6 @@ jobs:
           destination: azureBlob
           storage: $(DEV_STORAGE_ACCOUNT)
           containerName: '$web'
-        # condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
 
       - task: AzureFileCopy@3
         displayName: 'AzureBlob File Copy to $PROD_STORAGE_ACCOUNT'
