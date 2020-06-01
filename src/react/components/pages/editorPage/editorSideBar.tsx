@@ -42,7 +42,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
 
     public render() {
         return (
-            <div className="editor-page-bottombar-nav">
+            <div className="editor-page-sidebar-nav">
                 <AutoSizer>
                     {({ height, width }) => (
                         <List
