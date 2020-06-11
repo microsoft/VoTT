@@ -4,16 +4,22 @@ import { mount, ReactWrapper } from "enzyme";
 import { BrowserRouter as Router } from "react-router-dom";
 
 describe("Conditional Nav Link", () => {
-    function createLink(to: string, disabled: boolean, props: any): ReactWrapper {
+    function createLink(
+        to: string,
+        disabled: boolean,
+        props: any
+    ): ReactWrapper {
         return mount(
             <Router>
                 <ConditionalNavLink
                     disabled={disabled}
                     to={to}
-                    title={props.title}>
-                    <i className="fas fa-user" /> /* Example of child components */
+                    title={props.title}
+                >
+                    <i className="fas fa-user" />{" "}
+                    {/* Example of child components */}
                 </ConditionalNavLink>
-            </Router>,
+            </Router>
         );
     }
 

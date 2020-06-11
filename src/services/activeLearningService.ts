@@ -6,7 +6,7 @@ import { Env } from "../common/environment";
 
 export class ActiveLearningService {
     private objectDetection: ObjectDetection;
-    private modelLoaded: boolean = false;
+    private modelLoaded = false;
 
     constructor(private settings: IActiveLearningSettings) {
         Guard.null(settings);

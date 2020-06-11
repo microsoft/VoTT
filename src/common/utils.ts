@@ -143,5 +143,5 @@ function decryptProviderOptions<T = IProviderOptions>(providerOptions: IProvider
         return providerOptions as T;
     }
 
-    return decryptObject(providerOptions.encrypted, secret) as T;
+    return decryptObject(providerOptions.encrypted, secret);
 }

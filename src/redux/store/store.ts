@@ -13,7 +13,7 @@ import { Env } from "../../common/environment";
  */
 export default function createReduxStore(
     initialState?: IApplicationState,
-    useLocalStorage: boolean = false): Store {
+    useLocalStorage = false): Store {
     const paths: string[] = ["appSettings", "connections", "recentProjects"];
 
     let middlewares = [thunk, createAppInsightsLogger()];

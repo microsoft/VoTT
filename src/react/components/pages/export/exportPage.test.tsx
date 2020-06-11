@@ -139,7 +139,7 @@ function createProps(projectId: string): IExportPageProps {
     };
 }
 
-function createStore(project: IProject, setCurrentProject: boolean = false): Store<any, AnyAction> {
+function createStore(project: IProject, setCurrentProject = false): Store<any, AnyAction> {
     const initialState: IApplicationState = {
         currentProject: setCurrentProject ? project : null,
         appSettings: MockFactory.appSettings(),

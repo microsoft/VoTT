@@ -46,8 +46,8 @@ export default class MockFactory {
      */
     public static createAppError(
         errorCode: ErrorCode = ErrorCode.Unknown,
-        title: string = "",
-        message: string = ""): IAppError {
+        title = "",
+        message = ""): IAppError {
         return {
             errorCode,
             title,
@@ -63,11 +63,11 @@ export default class MockFactory {
      * @param assetType Type of asset
      */
     public static createTestAsset(
-        name: string = "test",
+        name = "test",
         assetState: AssetState = AssetState.NotVisited,
         path: string = encodeFileURI(`C:\\Desktop\\asset${name}.jpg`),
         assetType: AssetType = AssetType.Image,
-        timestamp: number = 0): IAsset {
+        timestamp = 0): IAsset {
         let testAsset = null;
         switch (assetType) {
             case AssetType.Video:
@@ -208,7 +208,7 @@ export default class MockFactory {
      * @param rootAsset The parent video asset
      * @param count The number of child assets to create (default 10)
      */
-    public static createChildVideoAssets(rootAsset: IAsset, count: number = 10): IAsset[] {
+    public static createChildVideoAssets(rootAsset: IAsset, count = 10): IAsset[] {
         return [...Array(count).keys()].map((index) => {
             return this.createChildVideoAsset(rootAsset, index);
         });
@@ -219,7 +219,7 @@ export default class MockFactory {
      * @param count Number of assets to create (default: 10)
      * @param startIndex The index that the assets should start at (default: 1)
      */
-    public static createTestAssets(count: number = 10, startIndex: number = 1): IAsset[] {
+    public static createTestAssets(count = 10, startIndex = 1): IAsset[] {
         const assets: IAsset[] = [];
         for (let i = startIndex; i < (count + startIndex); i++) {
             assets.push(MockFactory.createTestAsset(i.toString()));
@@ -256,7 +256,7 @@ export default class MockFactory {
      * Creates array of fake IProject
      * @param count Number of projects
      */
-    public static createTestProjects(count: number = 10): IProject[] {
+    public static createTestProjects(count = 10): IProject[] {
         const projects: IProject[] = [];
         for (let i = 1; i <= count; i++) {
             projects.push(MockFactory.createTestProject(i.toString()));
@@ -270,7 +270,7 @@ export default class MockFactory {
      * @param name Name of project. project.id = `project-${name}` and project.name = `Project ${name}`
      * @param tagCount number of tags to create for project
      */
-    public static createTestProject(name: string = "test", tagCount: number = 5): IProject {
+    public static createTestProject(name = "test", tagCount = 5): IProject {
         const connection = MockFactory.createTestConnection(name);
 
         return {
@@ -299,7 +299,7 @@ export default class MockFactory {
      * Creates fake IV1Project
      * @param name Name of project.
      */
-    public static createTestV1Project(frameCount: number = 10): IV1Project {
+    public static createTestV1Project(frameCount = 10): IV1Project {
         const frames: { [frameName: string]: IV1Region[]; } = {};
         for (let i = 0; i < frameCount; i++) {
             const name = `testFrame${i}.jpg`;
@@ -321,7 +321,7 @@ export default class MockFactory {
      * Creates fake IV1Project
      * @param name Name of project.
      */
-    public static createTestV1VideoProject(frameCount: number = 10): IV1Project {
+    public static createTestV1VideoProject(frameCount = 10): IV1Project {
         const frames: { [frameName: string]: IV1Region[]; } = {};
         for (let i = 0; i < frameCount; i++) {
             const name = `${i + 1}`;
@@ -342,7 +342,7 @@ export default class MockFactory {
     /**
      * Creates fake IV1Region
      */
-    public static createTestV1Regions(count: number = 3): IV1Region[] {
+    public static createTestV1Regions(count = 3): IV1Region[] {
         const regions: IV1Region[] = [];
         const left = randomIntInRange(0, 511);
         const top = randomIntInRange(0, 383);
@@ -414,7 +414,7 @@ export default class MockFactory {
      * Creates fake Azure containers
      * @param count Number of containers
      */
-    public static createAzureContainers(count: number = 3) {
+    public static createAzureContainers(count = 3) {
         const result = [];
         for (let i = 0; i < count; i++) {
             result.push({
@@ -458,7 +458,7 @@ export default class MockFactory {
      * @param id ID of blob
      * @param count Number of blobs
      */
-    public static createAzureBlobs(id: number = 1, count: number = 10) {
+    public static createAzureBlobs(id = 1, count = 10) {
         const result = [];
         for (let i = 0; i < count; i++) {
             result.push({
@@ -472,7 +472,7 @@ export default class MockFactory {
      * Create array of fake ITag
      * @param count Number of tags
      */
-    public static createTestTags(count: number = 5): ITag[] {
+    public static createTestTags(count = 5): ITag[] {
         const tags: ITag[] = [];
         for (let i = 0; i < count; i++) {
             tags.push(MockFactory.createTestTag(i.toString()));
@@ -484,7 +484,7 @@ export default class MockFactory {
      * Create fake ITag with random color
      * @param name Name of tag
      */
-    public static createTestTag(name: string = "1"): ITag {
+    public static createTestTag(name = "1"): ITag {
         return {
             name: `Tag ${name}`,
             color: MockFactory.randomColor(),
@@ -495,7 +495,7 @@ export default class MockFactory {
      * Create array of IConnection, half Azure Blob connections, half Local File Storage connections
      * @param count Number of connections
      */
-    public static createTestConnections(count: number = 10): IConnection[] {
+    public static createTestConnections(count = 10): IConnection[] {
         const connections: IConnection[] = [];
         for (let i = 1; i <= (count / 2); i++) {
             connections.push(MockFactory.createTestCloudConnection(i.toString()));
@@ -510,7 +510,7 @@ export default class MockFactory {
      *
      * @param name Name of connection
      */
-    public static createTestCloudConnection(name: string = "test"): IConnection {
+    public static createTestCloudConnection(name = "test"): IConnection {
         return MockFactory.createTestConnection(name, "azureBlobStorage");
     }
 
@@ -518,7 +518,7 @@ export default class MockFactory {
      * Create array of IConnection of type Bing Image Search
      * @param count Number of connections
      */
-    public static createTestBingConnections(count: number = 10): IConnection[] {
+    public static createTestBingConnections(count = 10): IConnection[] {
         const connections: IConnection[] = [];
         for (let i = 1; i <= count; i++) {
             connections.push(MockFactory.createTestConnection(i.toString(), "bingImageSearch"));
@@ -532,7 +532,7 @@ export default class MockFactory {
      * @param providerType Type of Connection - default local file system
      */
     public static createTestConnection(
-        name: string = "test", providerType: string = "localFileSystemProxy"): IConnection {
+        name = "test", providerType = "localFileSystemProxy"): IConnection {
         return {
             id: `connection-${name}`,
             name: `Connection ${name}`,
@@ -653,7 +653,7 @@ export default class MockFactory {
      * Create array of IStorageProviderRegistrationOptions
      * @param count Number of storage provider registrations to create
      */
-    public static createStorageProviderRegistrations(count: number = 10): IStorageProviderRegistrationOptions[] {
+    public static createStorageProviderRegistrations(count = 10): IStorageProviderRegistrationOptions[] {
         const registrations: IStorageProviderRegistrationOptions[] = [];
         for (let i = 1; i <= count; i++) {
             registrations.push(MockFactory.createStorageProviderRegistration(i.toString()));
@@ -666,7 +666,7 @@ export default class MockFactory {
      * Create array of IAssetProviderRegistrationOptions
      * @param count Number of Asset Provider Registrations to create
      */
-    public static createAssetProviderRegistrations(count: number = 10): IAssetProviderRegistrationOptions[] {
+    public static createAssetProviderRegistrations(count = 10): IAssetProviderRegistrationOptions[] {
         const registrations: IAssetProviderRegistrationOptions[] = [];
         for (let i = 1; i <= count; i++) {
             registrations.push(MockFactory.createAssetProviderRegistration(i.toString()));
@@ -722,7 +722,7 @@ export default class MockFactory {
      * Creates an array of test regions
      * @param count The number of regions to create (deafult: 5)
      */
-    public static createTestRegions(count: number = 5) {
+    public static createTestRegions(count = 5) {
         const regions: IRegion[] = [];
         for (let i = 1; i <= count; i++) {
             regions.push(MockFactory.createTestRegion(`test${i}`));
@@ -873,7 +873,7 @@ export default class MockFactory {
      * Creates test security tokens
      * @param count The number of tokens to generate (default: 10)
      */
-    public static createSecurityTokens(count: number = 10): ISecurityToken[] {
+    public static createSecurityTokens(count = 10): ISecurityToken[] {
         const securityTokens: ISecurityToken[] = [];
         for (let i = 1; i <= 10; i++) {
             securityTokens.push(MockFactory.createSecurityToken(i.toString()));
@@ -956,7 +956,7 @@ export default class MockFactory {
      * @param predicate The predicate to evaluate the condition
      * @param interval The interval to check the value
      */
-    public static waitForCondition(predicate: () => boolean, interval: number = 100): Promise<void> {
+    public static waitForCondition(predicate: () => boolean, interval = 100): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const handle = setInterval(() => {
                 try {
@@ -971,7 +971,7 @@ export default class MockFactory {
         });
     }
 
-    public static createAzureCustomVisionTags(count: number = 10): IAzureCustomVisionTag[] {
+    public static createAzureCustomVisionTags(count = 10): IAzureCustomVisionTag[] {
         const tags: IAzureCustomVisionTag[] = [];
         for (let i = 1; i <= count; i++) {
             tags.push(MockFactory.createAzureCustomVisionTag(`Tag ${i}`));
@@ -989,7 +989,7 @@ export default class MockFactory {
         };
     }
 
-    public static createAzureCustomVisionRegions(count: number = 10): IAzureCustomVisionRegion[] {
+    public static createAzureCustomVisionRegions(count = 10): IAzureCustomVisionRegion[] {
         const regions: IAzureCustomVisionRegion[] = [];
         for (let i = 1; i <= count; i++) {
             regions.push(MockFactory.createAzureCustomVisionRegion());

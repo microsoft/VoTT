@@ -5,7 +5,7 @@ import Guard from "./guard";
  * Generates a random base64 encoded key to be used for encryption
  * @param keySize The key size to use, defaults to 32bit
  */
-export function generateKey(keySize: number = 32): string {
+export function generateKey(keySize = 32): string {
     return lib.WordArray.random(keySize).toString(enc.Base64);
 }
 

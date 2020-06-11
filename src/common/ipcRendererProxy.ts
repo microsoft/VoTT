@@ -49,5 +49,5 @@ export class IpcRendererProxy {
         return deferred.promise;
     }
     private static ipcRenderer;
-    private static initialized: boolean = false;
+    private static initialized = false;
 }

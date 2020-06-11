@@ -19,8 +19,8 @@ import ConnectionPage, { IConnectionPageProps } from "./connectionsPage";
 import { toast } from "react-toastify";
 
 describe("Connections Page", () => {
-    const connectionsRoute: string = "/connections";
-    const connectionCreateRoute: string = "/connections/create";
+    const connectionsRoute = "/connections";
+    const connectionCreateRoute = "/connections/create";
 
     function createComponent(routerContext, route, store, props: IConnectionPageProps): ReactWrapper {
         return mount(

@@ -272,7 +272,7 @@ export class AzureBlobStorage implements IStorageProvider {
         // tslint:disable-next-line:variable-name
         _length?: number,
     ): Promise<string> {
-        const blob = await response.blobBody!;
+        const blob = await response.blobBody;
         return this.blobToString(blob);
     }
 
