@@ -60,7 +60,7 @@ export const english: IAppStrings = {
         },
         securityTokens: {
             title: "Sicherheits-Token",
-            description: "Security tokens werden verwendet, um Security tokens werden verwendet, um sensible Daten innerhalb Ihrer Projektkonfiguration zu verschlüsseln",
+            description: "Sicherheits-Token werden verwendet, um sensible Daten innerhalb Ihrer Projektkonfiguration zu verschlüsseln",
         },
         version: {
             description: "Version:",
