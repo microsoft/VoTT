@@ -447,8 +447,8 @@ export const english: IAppStrings = {
         },
         projectInvalidSecurityToken: {
             title: "Fehler beim Laden der Projektdatei",
-            message: `The security token referenced by the project is invalid.
-                Verify that the security token for the project has been set correctly within your application settings`,
+            message: `Der Sicherheits-Token der im Projekt referenziert wird ist ungültig.
+                Prüfen Sie, dass der Sicherheits-Token richtig in den Programmeinstellungen hinterlegt ist`,
         },
         projectInvalidJson: {
             title: "Fehler beim Lesen der Projektdatei",
