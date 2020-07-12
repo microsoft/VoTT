@@ -60,7 +60,7 @@ export const german: IAppStrings = {
         },
         securityTokens: {
             title: "Sicherheits-Token",
-            description: "Sicherheits-Token werden verwendet, um sensible Daten innerhalb Ihrer Projektkonfiguration zu verschlüsseln",
+            description: "Sicherheits-Token verschlüsseln sensible Daten Ihrer Projektkonfiguration",
         },
         version: {
             description: "Version:",
@@ -166,7 +166,7 @@ export const german: IAppStrings = {
             deleteSuccess: "${connection.name} erfolgreich entfernt",
         },
         imageCorsWarning: "Warnung: Wenn VoTT im Internetbrowser verwendet wird, können einige Objekte von Bing Bilder \
-                          möglicherweise nicht richtig exportiert werden. Grund dafür sind CORS (Cross Origin Resource Sharing) Einschränkungen.",
+                          ggf. nicht richtig exportiert werden. Grund dafür sind CORS (Cross Origin Resource Sharing) Beschränkungen.",
         blobCorsWarning: "Warnung: CORS (Cross Domain Resource Sharing) muss im Azure Blob Speicher aktiviert sein, \
                           damit es als Quell- oder Zielverbindung genutzt werden kann. Mehr Informationen zum \
                           Aktivieren von CORS finden Sie hier: {0}",
@@ -260,7 +260,7 @@ export const german: IAppStrings = {
             },
             rename: {
                 title: "Tag umbenennen",
-                confirmation: "Sind Sie sicher, dass Sie den Tag umbenennen möchten? Er wird in allen Objekten umbenannt.",
+                confirmation: "Möchten Sie den Tag wirklich umbenennen? Er wird in allen Objekten umbenannt.",
             },
             delete: {
                 title: "Tag entfernen",
@@ -277,7 +277,7 @@ export const german: IAppStrings = {
         messages: {
             enforceTaggedRegions: {
                 title: "Ungültige Region(en) entdeckt",
-                description: "1 oder mehr Regionen wurden nicht getagged.  Stellen Sie sicher, dass alle Regionen getagged sind, \
+                description: "1 oder mehr Regionen haben keinen Tag.  Alle Regionen müssen getaggt sein, \
                     bevor Sie zum nächsten Objekt gehen.",
             },
         },
@@ -406,7 +406,7 @@ export const german: IAppStrings = {
                 },
                 autoDetect: {
                     title: "Automatische Erkennung",
-                    description: "Ob beim Navigieren zwischen Anlagen automatisch Vorhersagen gemacht werden sollen oder nicht",
+                    description: "Beim Navigieren zwischen Anlagen automatisch Vorhersagen machen",
                 },
                 modelPath: {
                     title: "Modellpfad",
@@ -452,7 +452,7 @@ export const german: IAppStrings = {
         },
         projectInvalidJson: {
             title: "Fehler beim Lesen der Projektdatei",
-            message: "Die gewählte Projektdatei ist in keinem gültigen JSON Format. Bitte prüfen Sie die Datei und versuchen es erneut.",
+            message: "Das ist keine gültige JSON Datei. Bitte prüfen Sie die Datei und versuchen es erneut.",
         },
         projectDeleteError: {
             title: "Fehler beim Löschen des Projektes",
@@ -461,16 +461,16 @@ export const german: IAppStrings = {
         },
         securityTokenNotFound: {
             title: "Fehler beim Laden der Projektdatei",
-            message: `Der Sicherheitstoken die in dem Projekt referenziert ist, kann nicht in den aktuellen Programmeinstellungen gefunden werden.
+            message: `Der Sicherheitstoken die in dem Projekt referenziert ist, kann nicht gefunden werden.
                 Stellen Sie sicher, dass der Sicherheitstoken existiert und versuchen es erneut`,
         },
         canvasError: {
             title: "Fehler beim Laden des Canvas",
-            message: "Es gab einen Fehler beim Laden des Canvas, prüfen Sie die Objekte des Projektes und versuchen es erneut.",
+            message: "Es gab einen Fehler beim Laden des Canvas, prüfen Sie die Objekte und versuchen es erneut.",
         },
         importError: {
             title: "Fehler beim Importieren des V1 Projektes",
-            message: "Es gab einen Fehler beim Importieren des V1 Projektes. Überprüfen Sie die Projektdatei und versuchen es erneut",
+            message: "Fehler beim Importieren des V1 Projektes. Prüfen Sie die Projektdatei und versuchen es erneut",
         },
         pasteRegionTooBigError: {
             title: "Fehler beim Region Einfügen",
