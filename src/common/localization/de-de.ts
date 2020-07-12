@@ -166,7 +166,7 @@ export const german: IAppStrings = {
             deleteSuccess: "${connection.name} erfolgreich entfernt",
         },
         imageCorsWarning: "Warnung: Wenn VoTT im Internetbrowser verwendet wird, können einige Objekte von Bing Bilder \
-                          ggf. nicht richtig exportiert werden. Grund dafür sind CORS (Cross Origin Resource Sharing) Beschränkungen.",
+                          ggf. wegen CORS (Cross Origin Resource Sharing) Beschränkungen nicht exportiert werden.",
         blobCorsWarning: "Warnung: CORS (Cross Domain Resource Sharing) muss im Azure Blob Speicher aktiviert sein, \
                           damit es als Quell- oder Zielverbindung genutzt werden kann. Mehr Informationen zum \
                           Aktivieren von CORS finden Sie hier: {0}",
