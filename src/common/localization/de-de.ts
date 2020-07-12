@@ -3,7 +3,7 @@ import { IAppStrings } from "../strings";
 /**
  * App Strings for German language
  */
-export const english: IAppStrings = {
+export const german: IAppStrings = {
     appName: "Visual Object Tagging Tool",
     common: {
         displayName: "Anzeigename",
