@@ -464,6 +464,7 @@ export const strings: IStrings = new LocalizedStrings({
     tw: chinesetw,
     ko: korean,
     ch: chinese,
+    de: german,
 });
 
 /**
