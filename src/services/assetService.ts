@@ -177,6 +177,25 @@ export class AssetService {
     }
 
     /**
+     * Validate export file name
+     * @param asset - asset to process
+     */
+    public validateFileName(asset: IAsset) {
+        try {
+            var newAssetName = asset.name.replace(/[*\\\/:?<>|]/g, m => "%" + m.charCodeAt(0).toString(16));
+
+            if (!newAssetName.toLowerCase().endsWith(asset.format))
+                newAssetName = newAssetName + '.' + asset.format;
+
+            if (newAssetName != asset.name) {
+                //console.log(`convert invalid file name '${asset.name}' to '${newAssetName}'`);
+                asset.name = newAssetName;
+            }
+        } catch (err) {
+        }
+    }
+
+    /**
      * Get metadata for asset
      * @param asset - Asset for which to retrieve metadata
      */
@@ -184,9 +203,14 @@ export class AssetService {
         Guard.null(asset);
 
         const fileName = `${asset.id}${constants.assetMetadataFileExtension}`;
+
+        this.validateFileName(asset);
+
         try {
             const json = await this.storageProvider.readText(fileName);
-            return JSON.parse(json) as IAssetMetadata;
+            const iAssetMetadata = JSON.parse(json) as IAssetMetadata;
+            this.validateFileName(iAssetMetadata.asset);
+            return iAssetMetadata;
         } catch (err) {
             if (asset.type === AssetType.TFRecord) {
                 return {
