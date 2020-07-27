@@ -182,16 +182,18 @@ export class AssetService {
      */
     public validateFileName(asset: IAsset) {
         try {
-            var validFileName = asset.name.replace(/[*\\\/:?<>|]/g, m => "%" + m.charCodeAt(0).toString(16));
+            let validFileName = asset.name.replace(/[*\\\/:?<>|]/g, (c) => "%" + c.charCodeAt(0).toString(16));
 
-            if (!validFileName.endsWith(asset.format))
-                validFileName = validFileName + '.' + asset.format;
+            if (!validFileName.endsWith(asset.format)) {
+                validFileName = validFileName + "." + asset.format;
+            }
 
-            if (validFileName != asset.name) {
-                //console.log(`convert invalid file name '${asset.name}' to '${newAssetName}'`);
+            if (validFileName !== asset.name) {
+                // console.log(`convert invalid file name '${asset.name}' to '${validFileName}'`);
                 asset.name = validFileName;
             }
         } catch (err) {
+            console.log(err);
         }
     }
 
