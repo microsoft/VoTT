@@ -182,7 +182,7 @@ export class AssetService {
      */
     public validateFileName(asset: IAsset) {
         try {
-            let validFileName = asset.name.replace(/[*\\\/:?<>|]/g, (c) => "%" + c.charCodeAt(0).toString(16));
+            let validFileName = asset.name.replace(/[*\\\/:?<>|&]/g, (c) => "%" + c.charCodeAt(0).toString(16));
 
             if (!validFileName.endsWith(asset.format)) {
                 validFileName = validFileName + "." + asset.format;
