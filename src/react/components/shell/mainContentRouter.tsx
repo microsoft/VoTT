@@ -7,6 +7,7 @@ import ConnectionPage from "../pages/connections/connectionsPage";
 import EditorPage from "../pages/editorPage/editorPage";
 import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
+import EditorMetadataPage from "../pages/metadataEditorPage/editorMetadataPage";
 
 /**
  * @name - Main Content Router
@@ -21,6 +22,7 @@ export default function MainContentRouter() {
                 <Route path="/connections/:connectionId" component={ConnectionPage} />
                 <Route path="/connections" exact component={ConnectionPage} />
                 <Route path="/projects/:projectId/edit" component={EditorPage} />
+                <Route path="/projects/:projectId/editSeg" component={EditorMetadataPage} />
                 <Route path="/projects/create" component={ProjectSettingsPage} />
                 <Route path="/projects/:projectId/settings" component={ProjectSettingsPage} />
                 <Route path="/projects/:projectId/export" component={ExportPage} />

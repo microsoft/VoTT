@@ -119,7 +119,8 @@ export const english: IAppStrings = {
     tags: {
         title: "Tags",
         placeholder: "Add new tag",
-        editor: "Tags Editor",
+        editor: "Annotation",
+        editorSuperpixel: "Superpixel Annotation",
         modal: {
             name: "Tag Name",
             color: "Tag Color",
@@ -223,6 +224,7 @@ export const english: IAppStrings = {
             pan: "Pan",
             drawRectangle: "Draw Rectangle",
             drawPolygon: "Draw Polygon",
+            drawPolyline: "Draw Polyline",
             copyRectangle: "Copy Rectangle",
             copy: "Copy Regions",
             cut: "Cut Regions",

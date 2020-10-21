@@ -8,6 +8,7 @@ export enum ToolbarItemName {
     SelectCanvas = "selectCanvas",
     DrawRectangle = "drawRectangle",
     DrawPolygon = "drawPolygon",
+    DrawPolyline = "drawPolyline",
     CopyRectangle = "copyRectangle",
     CopyRegions = "copyRegions",
     CutRegions = "cutRegions",
@@ -56,6 +57,15 @@ export default function registerToolbar() {
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["P", "p"],
+    });
+
+    ToolbarItemFactory.register({
+        name: ToolbarItemName.DrawPolyline,
+        tooltip: strings.editorPage.toolbar.drawPolyline,
+        icon: "fa-draw-polyline",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.State,
+        accelerators: ["L", "l"],
     });
 
     ToolbarItemFactory.register({

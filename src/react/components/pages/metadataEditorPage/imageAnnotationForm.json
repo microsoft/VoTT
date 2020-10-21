@@ -1,0 +1,25 @@
+{
+    "title": "Image annotation",
+    "type": "object",
+    "required": ["title"],
+    "properties": {
+        "id" : {"type": "number", "title": "ID"},
+        "file name": {"type": "string", "title": "File name"},
+        "frame_number": {"type": "number", "title": "Frame number"},
+        "date_captured": {"type": "string", "title": "Date captured"},
+        "source_video_id": {"type": "number", "title": "Source video ID"},
+        "port": {"type": "string", "title": "Port"},
+        "latitude": {"type": "string", "title": "Latitude"},
+        "longitude": {"type": "string", "title": "Longitude"},
+        "season": {"type": "string", "title": "Season"},
+        "weather": {"type": "string", "title": "Weather"},
+        "wave_height": {"type": "number", "title": "Wave height"},
+        "wind_speed": {"type": "number", "title": "Wind speed"},
+        "visible_distance": {"type": "number", "title": "Visible distance"},
+        "width": {"type": "number", "title": "Width"},
+        "height": {"type": "number", "title": "Height"},
+        "date_created": {"type": "string", "title": "Date created"},
+        "date_updated": {"type": "string", "title": "Date updated"},
+        "license": {"type": "number", "title": "License"}
+    }
+}

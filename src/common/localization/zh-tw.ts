@@ -126,6 +126,7 @@ export const chinesetw: IAppStrings = {
         title: "標記", // Tags
         placeholder: "新增標記", // Add new tag
         editor: "標記編輯器", // Tags Editor
+        editorSuperpixel: "Superpixel Annotation",
         modal: {
             name: "標記名稱", // Tag Name
             color: "標記顏色", // Tag Color
@@ -232,6 +233,7 @@ export const chinesetw: IAppStrings = {
             pan: "全景", // Pan
             drawRectangle: "繪製矩形", // Draw Rectangle
             drawPolygon: "繪製多邊形", // Draw Polygon
+            drawPolyline: "Draw Polyline",
             copyRectangle: "複製矩形", // Copy Rectangle
             copy: "複製區域", // Copy Regions
             cut: "剪下區域", // Cut Regions

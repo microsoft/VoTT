@@ -121,6 +121,7 @@ export const spanish: IAppStrings = {
         title: "Etiquetas",
         placeholder: "Agregar nuevo etiqueta",
         editor: "Editor de Etiquetas",
+        editorSuperpixel: "Superpixel Annotation",
         modal: {
             name: "Nombre de Etiqueta",
             color: "Color de Etiqueta",
@@ -225,6 +226,7 @@ export const spanish: IAppStrings = {
             pan: "Pan",
             drawRectangle: "Dibujar Rectángulo",
             drawPolygon: "Dibujar Polígono",
+            drawPolyline: "Draw Polyline",
             copyRectangle: "Copia rectángulo",
             copy: "Copiar regiones",
             cut: "Cortar regiones",

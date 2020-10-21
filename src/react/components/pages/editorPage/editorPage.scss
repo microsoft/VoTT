@@ -29,6 +29,11 @@
     display: flex;
     margin-left: auto;
   }
+    &-right-sidebar-json {
+        display: flex;
+        margin-left: auto;
+        width: 100%;
+    }
 
   &-content {
     flex-grow: 1;

@@ -6,7 +6,7 @@ import SplitPane from "react-split-pane";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import { strings } from "../../../../common/strings";
+import {addLocValues, strings} from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
@@ -22,15 +22,18 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { TagInput } from "../../common/tagInput/tagInput";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
-import Canvas from "./canvas";
-import CanvasHelpers from "./canvasHelpers";
-import "./editorPage.scss";
-import EditorSideBar from "./editorSideBar";
-import { EditorToolbar } from "./editorToolbar";
+import Canvas from "../editorPage/canvas";
+import CanvasHelpers from "../editorPage/canvasHelpers";
+import "../editorPage/editorPage.scss";
+import EditorSideBar from "../editorPage/editorSideBar";
+import { EditorToolbar } from "../editorPage/editorToolbar";
 import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 import { toast } from "react-toastify";
+import EditorPage from "../editorPage/editorPage";
+import Form from "react-jsonschema-form";
+import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
 
 /**
  * Properties for Editor Page
@@ -78,6 +81,8 @@ export interface IEditorPageState {
     isValid: boolean;
     /** Whether the show invalid region warning alert should display */
     showInvalidRegionWarning: boolean;
+    uiSchema: any;
+    formSchema: any;
 }
 
 function mapStateToProps(state: IApplicationState) {
@@ -99,8 +104,14 @@ function mapDispatchToProps(dispatch) {
  * @name - Editor Page
  * @description - Page for adding/editing/removing tags to assets
  */
+
+// tslint:disable-next-line:no-var-requires
+const formSchema = addLocValues(require("./imageAnnotationForm.json"));
+// tslint:disable-next-line:no-var-requires
+const uiSchema = addLocValues(require("./imageAnnotationForm.ui.json"));
+
 @connect(mapStateToProps, mapDispatchToProps)
-export default class EditorPage extends React.Component<IEditorPageProps, IEditorPageState> {
+export default class EditorMetadataPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         selectedTag: null,
         lockedTags: [],
@@ -115,6 +126,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
+        uiSchema: { ...uiSchema },
+        formSchema: { ...formSchema },
     };
 
     private activeLearningService: ActiveLearningService = null;
@@ -205,12 +218,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     </div>
                     <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-main">
-                            <div className="editor-page-content-main-header">
-                                <EditorToolbar project={this.props.project}
-                                    items={this.toolbarItems}
-                                    actions={this.props.actions}
-                                    onToolbarItemSelected={this.onToolbarItemSelected} />
-                            </div>
                             <div className="editor-page-content-main-body">
                                 {selectedAsset &&
                                     <Canvas
@@ -220,7 +227,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                         onCanvasRendered={this.onCanvasRendered}
                                         onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                         editorMode={this.state.editorMode}
-                                        selectionMode={this.state.selectionMode}
+                                        selectionMode={SelectionMode.NONE}
                                         project={this.props.project}
                                         lockedTags={this.state.lockedTags}>
                                         <AssetPreview
@@ -235,18 +242,8 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                 }
                             </div>
                         </div>
-                        <div className="editor-page-right-sidebar">
-                            <TagInput
-                                tags={this.props.project.tags}
-                                lockedTags={this.state.lockedTags}
-                                selectedRegions={this.state.selectedRegions}
-                                onChange={this.onTagsChanged}
-                                onLockedTagsChange={this.onLockedTagsChanged}
-                                onTagClick={this.onTagClicked}
-                                onCtrlTagClick={this.onCtrlTagClicked}
-                                onTagRenamed={this.confirmTagRenamed}
-                                onTagDeleted={this.confirmTagDeleted}
-                            />
+                        <div className="editor-page-right-sidebar-json">
+                            <Form schema={this.state.formSchema} uiSchema={this.state.uiSchema} />
                         </div>
                         <Confirm title={strings.editorPage.tags.rename.title}
                             ref={this.renameTagConfirm}
@@ -526,12 +523,6 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                 this.setState({
                     selectionMode: SelectionMode.POLYGON,
                     editorMode: EditorMode.Polygon,
-                });
-                break;
-            case ToolbarItemName.DrawPolyline:
-                this.setState({
-                    selectionMode: SelectionMode.POLYLINE,
-                    editorMode: EditorMode.Polyline,
                 });
                 break;
             case ToolbarItemName.CopyRectangle:

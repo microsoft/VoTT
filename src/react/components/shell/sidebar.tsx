@@ -30,6 +30,13 @@ export default function Sidebar({ project }) {
                 </li>
                 <li>
                     <ConditionalNavLink disabled={!projectId}
+                                        title={strings.tags.editorSuperpixel}
+                                        to={`/projects/${projectId}/editSeg`}>
+                        <i className="fas fa-bookmark"></i>
+                    </ConditionalNavLink>
+                </li>
+                <li>
+                    <ConditionalNavLink disabled={!projectId}
                         title={strings.projectSettings.title}
                         to={`/projects/${projectId}/settings`}>
                         <i className="fas fa-sliders-h"></i>

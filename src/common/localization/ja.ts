@@ -122,6 +122,7 @@ export const japanese: IAppStrings = {
         title: "タグ", // Tags,
         placeholder: "新しいタグを追加", // Add new tag,
         editor: "タグ エディター",  // Tags Editor,
+        editorSuperpixel: "Superpixel Annotation",
         modal: {
             name: "タグ名", // Tag Name,
             color: "タグの色", // Tag Color"
@@ -229,6 +230,7 @@ export const japanese: IAppStrings = {
             pan: "パン", // Pan,
             drawRectangle: "長方形を描く", // Draw Rectangle,
             drawPolygon: "ポリゴンを描く", // Draw Polygon,
+            drawPolyline: "Draw Polyline",
             copyRectangle: "長方形をコピー", // Copy Rectangle,
             copy: "領域をコピー", // Copy Regions,
             cut: "領域をカット",  // Cut Regions,

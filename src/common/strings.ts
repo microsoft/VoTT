@@ -126,6 +126,7 @@ export interface IAppStrings {
         title: string;
         placeholder: string;
         editor: string;
+        editorSuperpixel: string;
         modal: {
             name: string;
             color: string;
@@ -226,6 +227,7 @@ export interface IAppStrings {
             pan: string;
             drawRectangle: string;
             drawPolygon: string;
+            drawPolyline: string;
             copyRectangle: string;
             copy: string;
             cut: string;

@@ -121,7 +121,8 @@ export const korean: IAppStrings = {
     tags: {
         title: "태그", // Tags,
         placeholder: "새 태그 추가", // Add new tag,
-        editor: "태그 편집기",  // Tags Editor,
+        editor: "어노테이션 편집기",  // Tags Editor,
+        editorSuperpixel: "슈퍼픽셀 어노테이션",
         modal: {
             name: "태그 이름", // Tag Name,
             color: "태그 색상", // Tag Color"
@@ -230,6 +231,7 @@ export const korean: IAppStrings = {
             pan: "팬", // Pan,
             drawRectangle: "사각형 그리기", // Draw Rectangle,
             drawPolygon: "다각형 그리기", // Draw Polygon,
+            drawPolyline: "선 그리기",
             copyRectangle: "사각형 복사", // Copy Rectangle,
             copy: "영역 복사", // Copy Regions,
             cut: "영역 잘라내기",  // Cut Regions,

@@ -122,6 +122,7 @@ export const chinese: IAppStrings = {
         title: "标签", // Tags
         placeholder: "添加标签", // Add new tag
         editor: "编辑标签", // Tags Editor
+        editorSuperpixel: "Superpixel Annotation",
         modal: {
             name: "标签名称", // Tag Name
             color: "标签颜色", // Tag Color
@@ -229,6 +230,7 @@ export const chinese: IAppStrings = {
             pan: "泛", // Pan
             drawRectangle: "绘制矩形", // Draw Rectangle
             drawPolygon: "绘制多边形", // Draw Polygon
+            drawPolyline: "Draw Polyline",
             copyRectangle: "复制矩形", // Copy Rectangle
             copy: "复制区域", // Copy Regions
             cut: "剪切区域", // Cut Regions
