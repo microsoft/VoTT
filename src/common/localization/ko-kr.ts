@@ -123,6 +123,7 @@ export const korean: IAppStrings = {
         placeholder: "새 태그 추가", // Add new tag,
         editor: "어노테이션 편집기",  // Tags Editor,
         editorSuperpixel: "슈퍼픽셀 어노테이션",
+        editorMetadata: "메타데이터 편집기",
         modal: {
             name: "태그 이름", // Tag Name,
             color: "태그 색상", // Tag Color"

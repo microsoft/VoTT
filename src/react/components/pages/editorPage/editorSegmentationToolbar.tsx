@@ -32,7 +32,7 @@ export interface IEditorToolbarState {
  * @name - Editor Toolbar
  * @description - Collection of buttons that perform actions in toolbar on editor page
  */
-export class EditorSuperpixelToolbar extends React.Component<IEditorToolbarProps, IEditorToolbarState> {
+export class EditorSegmentationToolbar extends React.Component<IEditorToolbarProps, IEditorToolbarState> {
 
     public state = {
         selectedItem: ToolbarItemName.SelectCanvas,

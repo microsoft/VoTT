@@ -123,6 +123,7 @@ export const japanese: IAppStrings = {
         placeholder: "新しいタグを追加", // Add new tag,
         editor: "タグ エディター",  // Tags Editor,
         editorSuperpixel: "Superpixel Annotation",
+        editorMetadata: "Metadata editor",
         modal: {
             name: "タグ名", // Tag Name,
             color: "タグの色", // Tag Color"

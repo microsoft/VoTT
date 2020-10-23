@@ -127,6 +127,7 @@ export const chinesetw: IAppStrings = {
         placeholder: "新增標記", // Add new tag
         editor: "標記編輯器", // Tags Editor
         editorSuperpixel: "Superpixel Annotation",
+        editorMetadata: "Metadata editor",
         modal: {
             name: "標記名稱", // Tag Name
             color: "標記顏色", // Tag Color

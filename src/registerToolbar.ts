@@ -19,6 +19,9 @@ export enum ToolbarItemName {
     SaveProject = "saveProject",
     ExportProject = "exportProject",
     ActiveLearning = "activeLearning",
+    ShowSegBoundary = "showSegBoundary",
+    AnnotateSegments = "annotateSegments",
+    ExecuteSegmentation = "executeSegmentation",
 }
 
 export enum ToolbarItemGroup {
@@ -62,7 +65,7 @@ export default function registerToolbar() {
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawPolyline,
         tooltip: strings.editorPage.toolbar.drawPolyline,
-        icon: "fa-draw-polyline",
+        icon: "fa-draw-line",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["L", "l"],

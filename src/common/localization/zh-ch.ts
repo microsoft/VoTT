@@ -123,6 +123,7 @@ export const chinese: IAppStrings = {
         placeholder: "添加标签", // Add new tag
         editor: "编辑标签", // Tags Editor
         editorSuperpixel: "Superpixel Annotation",
+        editorMetadata: "Metadata editor",
         modal: {
             name: "标签名称", // Tag Name
             color: "标签颜色", // Tag Color

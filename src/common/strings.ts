@@ -127,6 +127,7 @@ export interface IAppStrings {
         placeholder: string;
         editor: string;
         editorSuperpixel: string;
+        editorMetadata: string;
         modal: {
             name: string;
             color: string;

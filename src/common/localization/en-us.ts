@@ -121,6 +121,7 @@ export const english: IAppStrings = {
         placeholder: "Add new tag",
         editor: "Annotation",
         editorSuperpixel: "Superpixel Annotation",
+        editorMetadata: "Metadata editor",
         modal: {
             name: "Tag Name",
             color: "Tag Color",

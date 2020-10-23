@@ -122,6 +122,7 @@ export const spanish: IAppStrings = {
         placeholder: "Agregar nuevo etiqueta",
         editor: "Editor de Etiquetas",
         editorSuperpixel: "Superpixel Annotation",
+        editorMetadata: "Metadata editor",
         modal: {
             name: "Nombre de Etiqueta",
             color: "Color de Etiqueta",
