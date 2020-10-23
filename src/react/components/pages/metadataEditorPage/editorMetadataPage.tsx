@@ -132,7 +132,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
-    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems();
     private canvas: RefObject<Canvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();

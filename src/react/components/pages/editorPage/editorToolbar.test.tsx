@@ -23,7 +23,7 @@ describe("Editor Toolbar", () => {
         return {
             actions: MockFactory.projectActions(),
             project: MockFactory.createTestProject("TestProject"),
-            items: ToolbarItemFactory.getToolbarItems(),
+            items: ToolbarItemFactory.getToolbarItems("geometry"),
             onToolbarItemSelected: (toolbarItem: ToolbarItem) => null,
         };
     }
@@ -44,7 +44,7 @@ describe("Editor Toolbar", () => {
 
     it("Renders toolbar items in groups", () => {
         const toolbarGroups = wrapper.find(".btn-group");
-        const toolbarRegistry = ToolbarItemFactory.getToolbarItems();
+        const toolbarRegistry = ToolbarItemFactory.getToolbarItems("geometry");
         const groups = _(toolbarRegistry).groupBy("config.group").values().value();
 
         expect(toolbarGroups.length).toEqual(groups.length);
@@ -52,7 +52,7 @@ describe("Editor Toolbar", () => {
 
     it("Renders toolbar items", () => {
         const items = wrapper.find(".toolbar-btn");
-        const toolbarRegistry = ToolbarItemFactory.getToolbarItems();
+        const toolbarRegistry = ToolbarItemFactory.getToolbarItems("geometry");
         expect(items.length).toEqual(toolbarRegistry.length);
     });
 
@@ -67,7 +67,7 @@ describe("Editor Toolbar", () => {
     it("Sets correct keyboard binding when accelerator is defined", () => {
         const toolbar = wrapper.find(EditorToolbar) as ReactWrapper<IEditorToolbarProps, IEditorToolbarState>;
         const select = toolbar.props().items[0];
-        const toolbarRegistry = ToolbarItemFactory.getToolbarItems();
+        const toolbarRegistry = ToolbarItemFactory.getToolbarItems("geometry");
         expect(select.config).toHaveProperty("accelerators", ["V", "v" ]);
         expect(select.config).toEqual(toolbarRegistry[0].config);
     });

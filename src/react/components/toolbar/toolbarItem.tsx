@@ -8,6 +8,7 @@ import { ToolbarItemName, ToolbarItemGroup } from "../../../registerToolbar";
 /**
  * Toolbar Item Metadata
  * @member name - Name of Toolbar Item
+ * @member context - Context of toolbar usage
  * @member icon - Icon for toolbar item
  * @member tooltip - Tooltip to apply upon selection
  * @member group - Name of item group in which to include item
@@ -16,6 +17,7 @@ import { ToolbarItemName, ToolbarItemGroup } from "../../../registerToolbar";
  */
 export interface IToolbarItemMetadata {
     name: ToolbarItemName;
+    context: string[];
     icon: string;
     tooltip: string;
     group: ToolbarItemGroup;

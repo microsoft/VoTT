@@ -11,6 +11,7 @@ class TestToolbarItem extends ToolbarItem {
 describe("Toolbar Item Factory", () => {
     const testToolbarItemConfig: IToolbarItemMetadata = {
         name: ToolbarItemName.SelectCanvas,
+        context: ["geometry"],
         group: ToolbarItemGroup.Canvas,
         icon: "fa-test",
         tooltip: "Test Component",
@@ -18,11 +19,11 @@ describe("Toolbar Item Factory", () => {
     };
 
     it("Register add a new component registration to the registry", () => {
-        const existingItems = ToolbarItemFactory.getToolbarItems();
+        const existingItems = ToolbarItemFactory.getToolbarItems("geometry");
         expect(existingItems.length).toEqual(0);
 
         ToolbarItemFactory.register(testToolbarItemConfig, TestToolbarItem);
-        const newItems = ToolbarItemFactory.getToolbarItems();
+        const newItems = ToolbarItemFactory.getToolbarItems("geometry");
         expect(newItems.length).toEqual(1);
         expect(newItems[0].config).toEqual(testToolbarItemConfig);
         expect(newItems[0].component).toEqual(TestToolbarItem);
@@ -37,10 +38,10 @@ describe("Toolbar Item Factory", () => {
     it("Calling 'getToolbarItems' returns a copy of the component registry", () => {
         ToolbarItemFactory.reset();
 
-        const itemsResult1 = ToolbarItemFactory.getToolbarItems();
+        const itemsResult1 = ToolbarItemFactory.getToolbarItems("geometry");
         registerToolbar();
-        const itemsResult2 = ToolbarItemFactory.getToolbarItems();
-        const itemsResult3 = ToolbarItemFactory.getToolbarItems();
+        const itemsResult2 = ToolbarItemFactory.getToolbarItems("geometry");
+        const itemsResult3 = ToolbarItemFactory.getToolbarItems("geometry");
 
         expect(itemsResult1.length).toEqual(0);
         expect(itemsResult2.length).toBeGreaterThan(0);

@@ -12,7 +12,7 @@ import {
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
     ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode,
 } from "../../../../models/applicationState";
-import { IToolbarItemRegistration } from "../../../../providers/toolbar/toolbarItemFactory";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
 import { ToolbarItemName } from "../../../../registerToolbar";
@@ -26,12 +26,11 @@ import Canvas from "./canvas";
 import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
-import { EditorSegmentationToolbar } from "./editorSegmentationToolbar";
 import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 import { toast } from "react-toastify";
-import { ToolbarItemFactory4Segmentation } from "../../../../providers/toolbar/toolbarItemFactory4Segmentation";
+import { EditorToolbar } from "./editorToolbar";
 
 /**
  * Properties for Editor Page
@@ -120,7 +119,7 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
-    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory4Segmentation.getToolbarItems();
+    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems("segmentation");
     private canvas: RefObject<Canvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
@@ -207,7 +206,7 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
                     <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-header">
-                                <EditorSegmentationToolbar project={this.props.project}
+                                <EditorToolbar project={this.props.project}
                                     items={this.toolbarItems}
                                     actions={this.props.actions}
                                     onToolbarItemSelected={this.onToolbarItemSelected} />

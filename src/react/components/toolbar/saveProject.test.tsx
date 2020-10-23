@@ -22,6 +22,7 @@ describe("Save Project Toolbar Item", () => {
     function createProps(): IToolbarItemProps {
         return {
             name: ToolbarItemName.SaveProject,
+            context: ["geometry"],
             tooltip: "Save Project",
             icon: "fa-save",
             group: ToolbarItemGroup.Project,

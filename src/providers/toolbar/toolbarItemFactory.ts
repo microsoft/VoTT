@@ -30,8 +30,18 @@ export class ToolbarItemFactory {
     /**
      * Get all registered Toolbar Items
      */
+    /*
     public static getToolbarItems() {
         return [...ToolbarItemFactory.componentRegistry];
+    }
+    */
+
+    /**
+     * Get all registered Toolbar Items
+     */
+    public static getToolbarItems(context: string) {
+        Guard.null(context);
+        return [...ToolbarItemFactory.componentRegistry].filter((item :IToolbarItemRegistration) =>{ return item.config.context.indexOf(context) > -1; });
     }
 
     /**

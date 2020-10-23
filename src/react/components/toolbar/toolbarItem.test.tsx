@@ -21,6 +21,7 @@ describe("Toolbar Item", () => {
     function createProps(): IToolbarItemProps {
         return {
             actions: MockFactory.projectActions(),
+            context: ["geometry"],
             project: MockFactory.createTestProject("TestProject"),
             active: false,
             group: ToolbarItemGroup.Canvas,

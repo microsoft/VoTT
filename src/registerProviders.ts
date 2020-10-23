@@ -9,7 +9,6 @@ import { BingImageSearch } from "./providers/storage/bingImageSearch";
 import { LocalFileSystemProxy } from "./providers/storage/localFileSystemProxy";
 import { StorageProviderFactory } from "./providers/storage/storageProviderFactory";
 import registerToolbar from "./registerToolbar";
-import registerSegmentationToolbar from "./registerSegmentationToolbar";
 import { strings } from "./common/strings";
 import { HostProcessType } from "./common/hostProcess";
 import { AzureCustomVisionProvider } from "./providers/export/azureCustomVision";
@@ -83,5 +82,4 @@ export default function registerProviders() {
     });
 
     registerToolbar();
-    registerSegmentationToolbar();
 }
