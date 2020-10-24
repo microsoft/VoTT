@@ -365,6 +365,8 @@ export enum AssetState {
     NotVisited = 0,
     Visited = 1,
     Tagged = 2,
+    SegmentAnnotated = 3,
+    MetadataEdited = 4,
 }
 
 /**
@@ -409,4 +411,10 @@ export interface ITFRecordMetadata {
     xmaxArray: number[];
     ymaxArray: number[];
     textArray: string[];
+}
+
+export enum EditorContext {
+    Geometry = "geometry",
+    Segmentation = "segmentation",
+    Metadata = "metadata",
 }
