@@ -1,0 +1,15 @@
+{
+    "[typescript]": {
+      "editor.tabSize": 4
+    },
+    "[typescriptreact]": {
+        "editor.tabSize": 4
+    },
+    "[json]": {
+        "editor.quickSuggestions": {
+            "strings": true
+        },
+          "editor.suggest.insertMode": "replace",
+          "editor.tabSize": 4
+    }
+}

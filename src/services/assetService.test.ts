@@ -1,92 +1,118 @@
-import { AssetService } from "./assetService";
-import { AssetType, IAssetMetadata, AssetState, IAsset, IProject } from "../models/applicationState";
+import _ from "lodash";
+import { constants } from "../common/constants";
+import HtmlFileReader from "../common/htmlFileReader";
 import MockFactory from "../common/mockFactory";
+import { encodeFileURI } from "../common/utils";
+import { AssetState, AssetType, IAsset, IAssetMetadata, IProject } from "../models/applicationState";
+import { FeatureType, TFRecordsBuilder } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
-import { constants } from "../common/constants";
-import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
-import HtmlFileReader from "../common/htmlFileReader";
-import { encodeFileURI } from "../common/utils";
-import _ from "lodash";
 import registerMixins from "../registerMixins";
+import { AssetService } from "./assetService";
+import MD5 from "md5.js";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
+        const projectFilePath = "C:\\dir1\\project.vott";
+
         it("creates an asset from a file path", () => {
-            const path = "C:\\dir1\\dir2\\asset1.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "C:\\dir1\\dir2\\asset 1.jpg";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
+
+            const expectedPath = "file:dir2/asset%201.jpg";
+            const expectedHash = new MD5().update(expectedPath).digest("hex");
 
             expect(asset).not.toBeNull();
-            expect(asset.id).toEqual(expect.any(String));
-            expect(asset.name).toEqual("asset1.jpg");
+            expect(asset.id).toEqual(expectedHash);
+            expect(asset.name).toEqual("asset 1.jpg");
             expect(asset.type).toEqual(AssetType.Image);
-            expect(asset.path).toEqual(encodeFileURI(path));
+            expect(asset.path).toEqual(expectedPath);
             expect(asset.format).toEqual("jpg");
         });
 
-        it("creates an asset from an encoded file", () => {
-            const path = "C:\\dir1\\dir2\\asset%201.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+        it("creates an asset from an encoded asset file", () => {
+            const assetPath = "C:\\dir1\\dir2\\asset%201.jpg";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
+
+            const expectedPath = "file:dir2/asset%201.jpg";
+            const expectedHash = new MD5().update(expectedPath).digest("hex");
 
             expect(asset).not.toBeNull();
-            expect(asset.id).toEqual(expect.any(String));
-            expect(asset.name).toEqual("asset%25201.jpg");
+            expect(asset.id).toEqual(expectedHash);
+            expect(asset.name).toEqual("asset 1.jpg");
             expect(asset.type).toEqual(AssetType.Image);
-            expect(asset.path).toEqual(encodeFileURI(path));
+            expect(asset.path).toEqual(expectedPath);
             expect(asset.format).toEqual("jpg");
         });
 
-        it("creates an asset from a http source", () => {
-            const path = "http://my.server.com/asset1.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+        it("creates an asset from a prefixed asset file and prefixed project file", () => {
+            const assetPath = "file:C:\\dir1\\dir2\\asset%201.jpg";
+            const asset = AssetService.createAssetFromFilePath(assetPath, `file:${projectFilePath}`);
+
+            const expectedPath = "file:dir2/asset%201.jpg";
+            const expectedHash = new MD5().update(expectedPath).digest("hex");
 
             expect(asset).not.toBeNull();
-            expect(asset.id).toEqual(expect.any(String));
-            expect(asset.name).toEqual("asset1.jpg");
+            expect(asset.id).toEqual(expectedHash);
+            expect(asset.name).toEqual("asset 1.jpg");
             expect(asset.type).toEqual(AssetType.Image);
-            expect(asset.path).toEqual(path);
+            expect(asset.path).toEqual(expectedPath);
+            expect(asset.format).toEqual("jpg");
+        });
+
+        it("creates an asset from an http source", () => {
+            const assetPath = "http://my.server.com/asset%201.jpg";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
+
+            const expectedHash = new MD5().update(assetPath).digest("hex");
+
+            expect(asset).not.toBeNull();
+            expect(asset.id).toEqual(expectedHash);
+            expect(asset.name).toEqual("asset 1.jpg");
+            expect(asset.type).toEqual(AssetType.Image);
+            expect(asset.path).toEqual(assetPath);
             expect(asset.format).toEqual("jpg");
         });
 
         it("detects an image asset by common file extension", () => {
-            const path = "C:\\dir1\\dir2\\asset1.png";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "C:\\dir1\\dir2\\asset1.png";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
             expect(asset.type).toEqual(AssetType.Image);
         });
 
         it("detects a video asset by common file extension", () => {
-            const path = "C:\\dir1\\dir2\\asset1.mp4";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "C:\\dir1\\dir2\\asset1.mp4";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
             expect(asset.type).toEqual(AssetType.Video);
         });
 
         it("detects a video asset by common file extension", () => {
-            const path = "file:C:/dir1/dir2/asset1.mp4#t=5";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "file:C:/dir1/dir2/asset1.mp4#t=5";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
             expect(asset.type).toEqual(AssetType.Video);
         });
 
         it("detects a tfrecord asset by common file extension", () => {
-            const path = "C:\\dir1\\dir2\\asset1.tfrecord";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "C:\\dir1\\dir2\\asset1.tfrecord";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
             expect(asset.type).toEqual(AssetType.TFRecord);
         });
 
         it("detects an asset as unkonwn if it doesn't match well known file extensions", () => {
-            const path = "C:\\dir1\\dir2\\asset1.docx";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "C:\\dir1\\dir2\\asset1.docx";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
             expect(asset.type).toEqual(AssetType.Unknown);
         });
 
         it("detects an asset in case asset name contains other file extension in the middle", () => {
-            const path = "C:\\dir1\\dir2\\asset1.docx.jpg";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "C:\\dir1\\dir2\\asset1.docx.jpg";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
             expect(asset.type).toEqual(AssetType.Image);
         });
 
         it("detects an asset in case asset name contains other file extension in the middle", () => {
-            const path = "C:\\dir1\\dir2\\asset1.jpg.docx";
-            const asset = AssetService.createAssetFromFilePath(path);
+            const assetPath = "C:\\dir1\\dir2\\asset1.jpg.docx";
+            const asset = AssetService.createAssetFromFilePath(assetPath, projectFilePath);
             expect(asset.type).toEqual(AssetType.Unknown);
         });
     });

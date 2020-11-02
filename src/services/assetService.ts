@@ -14,90 +14,13 @@ import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlo
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import { appInfo } from "../common/appInfo";
 import { encodeFileURI } from "../common/utils";
+import { basename, extname, relative, dirname, normalize } from "path";
 
 /**
  * @name - Asset Service
  * @description - Functions for dealing with project assets
  */
 export class AssetService {
-
-    /**
-     * Create IAsset from filePath
-     * @param filePath - filepath of asset
-     * @param fileName - name of asset
-     */
-    public static createAssetFromFilePath(filePath: string, fileName?: string): IAsset {
-        Guard.empty(filePath);
-
-        const normalizedPath = filePath.toLowerCase();
-
-        // If the path is not already prefixed with a protocol
-        // then assume it comes from the local file system
-        if (!normalizedPath.startsWith("http://") &&
-            !normalizedPath.startsWith("https://") &&
-            !normalizedPath.startsWith("file:")) {
-            // First replace \ character with / the do the standard url encoding then encode unsupported characters
-            filePath = encodeFileURI(filePath, true);
-        }
-
-        const md5Hash = new MD5().update(filePath).digest("hex");
-        const pathParts = filePath.split(/[\\\/]/);
-        // Example filename: video.mp4#t=5
-        // fileNameParts[0] = "video"
-        // fileNameParts[1] = "mp4"
-        // fileNameParts[2] = "t=5"
-        fileName = fileName || pathParts[pathParts.length - 1];
-        const fileNameParts = fileName.split(".");
-        const extensionParts = fileNameParts[fileNameParts.length - 1].split(/[\?#]/);
-        const assetFormat = extensionParts[0];
-
-        const assetType = this.getAssetType(assetFormat);
-
-        return {
-            id: md5Hash,
-            format: assetFormat,
-            state: AssetState.NotVisited,
-            type: assetType,
-            name: fileName,
-            path: filePath,
-            size: null,
-        };
-    }
-
-    /**
-     * Get Asset Type from format (file extension)
-     * @param format - File extension of asset
-     */
-    public static getAssetType(format: string): AssetType {
-        switch (format.toLowerCase()) {
-            case "gif":
-            case "jpg":
-            case "jpeg":
-            case "tif":
-            case "tiff":
-            case "png":
-            case "bmp":
-                return AssetType.Image;
-            case "mp4":
-            case "mov":
-            case "avi":
-            case "m4v":
-            case "mpg":
-            case "wmv":
-                return AssetType.Video;
-            case "tfrecord":
-                return AssetType.TFRecord;
-            default:
-                return AssetType.Unknown;
-        }
-    }
-
-    private assetProviderInstance: IAssetProvider;
-    private storageProviderInstance: IStorageProvider;
-
-    constructor(private project: IProject) {
-        Guard.null(project);
-    }
 
     /**
      * Get Asset Provider from project's source connction
@@ -125,6 +48,100 @@ export class AssetService {
         }
 
         return this.storageProviderInstance;
+    }
+
+    /**
+     * Create IAsset from filePath
+     * @param assetFilePath - filepath of asset
+     * @param assetFileName - name of asset
+     */
+    public static createAssetFromFilePath(
+            assetFilePath: string,
+            projectFilePath: string,
+            assetFileName?: string): IAsset {
+        Guard.empty(assetFilePath);
+        Guard.empty(projectFilePath);
+        assetFilePath = decodeURIComponent(assetFilePath);
+
+        const format = this.getAssetFormat(assetFilePath);
+        const assetPath = this.getAssetPath(projectFilePath, assetFilePath);
+
+        return {
+            id: this.getAssetHash(assetPath),
+            format,
+            state: AssetState.NotVisited,
+            type: this.getAssetType(format),
+            name: assetFileName || this.getAssetName(assetFilePath),
+            path: assetPath,
+            size: null,
+        };
+    }
+
+    public static getAssetFormat(filePath: string): string {
+        const fileName = basename(filePath);
+        const extension = extname(fileName).replace(".", "");
+        const extensionParts = extension.split(/[\?#]/);
+        return extensionParts[0].toLowerCase();
+    }
+
+    /**
+     * Get Asset Type from format (file extension)
+     * @param format - File extension of asset
+     */
+    public static getAssetType(assetFormat: string): AssetType {
+        switch (assetFormat.toLowerCase()) {
+            case "gif":
+            case "jpg":
+            case "jpeg":
+            case "tif":
+            case "tiff":
+            case "png":
+            case "bmp":
+                return AssetType.Image;
+            case "mp4":
+            case "mov":
+            case "avi":
+            case "m4v":
+            case "mpg":
+            case "wmv":
+                return AssetType.Video;
+            case "tfrecord":
+                return AssetType.TFRecord;
+            default:
+                return AssetType.Unknown;
+        }
+    }
+
+    private static normalizePath(filePath: string): string {
+        return filePath
+            .toLowerCase()
+            .replace(/^file:/, "");
+    }
+
+    private static getAssetName(assetFilePath: string): string {
+        return decodeURIComponent(basename(assetFilePath));
+    }
+
+    private static getAssetHash(assetPath: string): string {
+        return new MD5().update(assetPath).digest("hex");
+    }
+
+    private static getAssetPath(projectFilePath: string, assetFilePath: string): string {
+        if (assetFilePath.match(/^https?:\/\//)) {
+            return encodeURI(assetFilePath);
+        }
+        assetFilePath = this.normalizePath(assetFilePath);
+        projectFilePath = this.normalizePath(projectFilePath);
+        const projectDirName = dirname(projectFilePath);
+        const relativePath = relative(projectDirName, assetFilePath);
+        return encodeFileURI(relativePath);
+    }
+
+    private assetProviderInstance: IAssetProvider;
+    private storageProviderInstance: IStorageProvider;
+
+    constructor(private project: IProject) {
+        Guard.null(project);
     }
 
     /**
