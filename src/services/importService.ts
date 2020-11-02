@@ -57,6 +57,7 @@ export default class ImportService implements IImportService {
             id: shortid.generate(),
             name: projectInfo.file.name.split(".")[0],
             version: packageJson.version,
+            useSecurityToken: true,
             securityToken: `${projectInfo.file.name.split(".")[0]} Token`,
             description: "Converted V1 Project",
             tags: parsedTags,

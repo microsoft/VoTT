@@ -59,7 +59,7 @@ export function encodeFileURI(path: string, additionalEncodings?: boolean): stri
     const encodings = {
         "\#": "%23",
         "\?": "%3F",
-        };
+    };
     const encodedURI = `file:${encodeURI(normalizeSlashes(path))}`;
     if (additionalEncodings) {
         return encodedURI.replace(matchString, (match) => encodings[match]);
@@ -77,6 +77,10 @@ export function normalizeSlashes(path: string): string {
  * @param securityToken The security token used to encrypt the project
  */
 export function encryptProject(project: IProject, securityToken: ISecurityToken): IProject {
+    if (!project.useSecurityToken) {
+        return { ...project };
+    }
+
     const encrypted: IProject = {
         ...project,
         sourceConnection: { ...project.sourceConnection },
@@ -103,6 +107,10 @@ export function encryptProject(project: IProject, securityToken: ISecurityToken)
  * @param securityToken The security token used to decrypt the project
  */
 export function decryptProject(project: IProject, securityToken: ISecurityToken): IProject {
+    if (!project.useSecurityToken) {
+        return { ...project };
+    }
+
     const decrypted: IProject = {
         ...project,
         sourceConnection: { ...project.sourceConnection },
