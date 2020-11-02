@@ -9,8 +9,14 @@ import { AssetType } from "../../models/applicationState";
 
 describe("Azure blob functions", () => {
 
+    const globalCloudRoot = `https://account.blob.core.windows.net`;
+    const chinacCloudRoot = `https://blob.core.chinacloudapi.cn`;
+
     const ad = MockFactory.createAzureData();
-    const options = ad.options;
+    const optionsForGlobalBlob = ad.options;
+    optionsForGlobalBlob.blobEndpoint = globalCloudRoot;
+    const optionsForChinaBlob = ad.options;
+    optionsForChinaBlob.blobEndpoint = chinacCloudRoot;
 
     const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
     serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers));
@@ -33,7 +39,7 @@ describe("Azure blob functions", () => {
             blobBody: Promise.resolve(blob),
         }));
 
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
         const content = await provider.readText(ad.blobName);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
@@ -57,7 +63,7 @@ describe("Azure blob functions", () => {
             blobBody: Promise.resolve(blob),
         }));
 
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
         const content = await provider.readBinary(ad.blobName);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
@@ -78,7 +84,7 @@ describe("Azure blob functions", () => {
             blobBody: Promise.resolve(blob),
         }));
 
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
         provider.writeText(ad.blobName, ad.blobText);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
@@ -99,7 +105,7 @@ describe("Azure blob functions", () => {
     it("Writes a buffer to a blob", () => {
         const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
 
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
         provider.writeText(ad.blobName, Buffer.from(ad.blobText));
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
@@ -118,7 +124,7 @@ describe("Azure blob functions", () => {
     });
 
     it("Lists the blobs within a container", async () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         const blobs = await provider.listFiles(null);
         expect(containerURL.prototype.listBlobFlatSegment).toBeCalled();
         expect(blobs).toEqual(ad.blobs.segment.blobItems.map((element) => element.name));
@@ -127,7 +133,7 @@ describe("Azure blob functions", () => {
     it("Deletes a blob within a container", async () => {
         const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
 
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
         provider.deleteFile(ad.blobName);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
@@ -142,14 +148,14 @@ describe("Azure blob functions", () => {
     });
 
     it("Lists the containers within an account", async () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         const containers = await provider.listContainers(null);
         expect(serviceURL.prototype.listContainersSegment).toBeCalled();
         expect(containers).toEqual(ad.containers.containerItems.map((element) => element.name));
     });
 
     it("Creates a container in the account", async () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         await expect(provider.createContainer(null)).resolves.not.toBeNull();
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
@@ -163,7 +169,7 @@ describe("Azure blob functions", () => {
             return Promise.reject({ statusCode: 409 });
         });
 
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         await expect(provider.createContainer(null)).resolves.not.toBeNull();
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
@@ -173,7 +179,7 @@ describe("Azure blob functions", () => {
     });
 
     it("Deletes a container in the account", () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         provider.deleteContainer(null);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
@@ -183,7 +189,7 @@ describe("Azure blob functions", () => {
     });
 
     it("getAssets", async () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         AssetService.createAssetFromFilePath = jest.fn(() => {
             return {
                 type: AssetType.Image,
@@ -196,15 +202,23 @@ describe("Azure blob functions", () => {
     });
 
     it("get file name from url", async () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
-        const url = "https://account.blob.core.windows.net/container/filename.jpg?aBcDeFGHiJkLMnoP";
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
+        const url = `${globalCloudRoot}/container/filename.jpg?aBcDeFGHiJkLMnoP`;
+        const fileName = provider.getFileName(url);
+        expect(fileName).toEqual("filename.jpg");
+    });
+
+    // TODO figure out if can pass parameters to a test
+    it("get file name from non global url", async () => {
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
+        const url =  `${chinacCloudRoot}/container/filename.jpg?aBcDeFGHiJkLMnoP`;
         const fileName = provider.getFileName(url);
         expect(fileName).toEqual("filename.jpg");
     });
 
     it("creates a container when specified in options", () => {
         const newOptions = {
-            ...options,
+            ...optionsForGlobalBlob,
             containerName: "newContainer",
             createContainer: true,
         };
@@ -218,7 +232,7 @@ describe("Azure blob functions", () => {
     });
 
     it("does not create a container when not specified", async () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(options);
+        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         await provider.initialize();
         expect(serviceURL.prototype.listContainersSegment).toBeCalled();
     });
@@ -226,7 +240,7 @@ describe("Azure blob functions", () => {
     it("throws an error if container not found and not created", async () => {
         const newContainerName = "newContainer";
         const provider: AzureBlobStorage = new AzureBlobStorage({
-            ...options,
+            ...optionsForGlobalBlob,
             containerName: newContainerName,
         });
         try {
