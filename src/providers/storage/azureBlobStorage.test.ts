@@ -12,20 +12,20 @@ describe("Azure blob functions", () => {
     const globalCloudRoot = `https://account.blob.core.windows.net`;
     const chinacCloudRoot = `https://blob.core.chinacloudapi.cn`;
 
-    const ad = MockFactory.createAzureData();
-    const optionsForGlobalBlob = ad.options;
+    const azureData = MockFactory.createAzureData();
+    const optionsForGlobalBlob = azureData.options;
     optionsForGlobalBlob.blobEndpoint = globalCloudRoot;
-    const optionsForChinaBlob = ad.options;
+    const optionsForChinaBlob = azureData.options;
     optionsForChinaBlob.blobEndpoint = chinacCloudRoot;
 
     const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
-    serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers));
+    serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(azureData.containers));
 
     ContainerURL.fromServiceURL = jest.fn(() => new ContainerURL(null, null));
     const containerURL = ContainerURL as jest.Mocked<typeof ContainerURL>;
     containerURL.prototype.create = jest.fn(() => Promise.resolve({ statusCode: 201 }));
     containerURL.prototype.delete = jest.fn(() => Promise.resolve({ statusCode: 204 }));
-    containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(ad.blobs));
+    containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(azureData.blobs));
 
     BlockBlobURL.fromContainerURL = jest.fn(() => new BlockBlobURL(null, null));
 
@@ -34,30 +34,30 @@ describe("Azure blob functions", () => {
     it("Reads text from a blob", async () => {
         const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
 
-        const blob = MockFactory.blob(ad.blobName, ad.blobText, ad.fileType);
+        const blob = MockFactory.blob(azureData.blobName, azureData.blobText, azureData.fileType);
         blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
             blobBody: Promise.resolve(blob),
         }));
 
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
-        const content = await provider.readText(ad.blobName);
+        const content = await provider.readText(azureData.blobName);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
             expect.any(ContainerURL),
-            ad.blobName,
+            azureData.blobName,
         );
-        expect(content).toEqual(ad.blobText);
+        expect(content).toEqual(azureData.blobText);
     });
 
     it("Reads buffer from a blob", async () => {
         const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
 
         const blob = MockFactory.blob(
-            ad.blobName, Buffer.from(ad.blobText), ad.fileType,
+            azureData.blobName, Buffer.from(azureData.blobText), azureData.fileType,
         );
         blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
             blobBody: Promise.resolve(blob),
@@ -65,40 +65,40 @@ describe("Azure blob functions", () => {
 
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
-        const content = await provider.readBinary(ad.blobName);
+        const content = await provider.readBinary(azureData.blobName);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
             expect.any(ContainerURL),
-            ad.blobName,
+            azureData.blobName,
         );
-        expect(content).toEqual(Buffer.from(ad.blobText));
+        expect(content).toEqual(Buffer.from(azureData.blobText));
     });
 
     it("Writes text to a blob", () => {
         const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;
-        const blob = MockFactory.blob(ad.blobName, ad.blobText, ad.fileType);
+        const blob = MockFactory.blob(azureData.blobName, azureData.blobText, azureData.fileType);
         blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
             blobBody: Promise.resolve(blob),
         }));
 
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
-        provider.writeText(ad.blobName, ad.blobText);
+        provider.writeText(azureData.blobName, azureData.blobText);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
             expect.any(ContainerURL),
-            ad.blobName,
+            azureData.blobName,
         );
         expect(blockBlobURL.prototype.upload).toBeCalledWith(
             Aborter.none,
-            ad.blobText,
-            ad.blobText.length,
+            azureData.blobText,
+            azureData.blobText.length,
         );
     });
 
@@ -107,19 +107,19 @@ describe("Azure blob functions", () => {
 
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
-        provider.writeText(ad.blobName, Buffer.from(ad.blobText));
+        provider.writeText(azureData.blobName, Buffer.from(azureData.blobText));
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
             expect.any(ContainerURL),
-            ad.blobName,
+            azureData.blobName,
         );
         expect(blockBlobURL.prototype.upload).toBeCalledWith(
             Aborter.none,
-            Buffer.from(ad.blobText),
-            ad.blobText.length,
+            Buffer.from(azureData.blobText),
+            azureData.blobText.length,
         );
     });
 
@@ -127,7 +127,7 @@ describe("Azure blob functions", () => {
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         const blobs = await provider.listFiles(null);
         expect(containerURL.prototype.listBlobFlatSegment).toBeCalled();
-        expect(blobs).toEqual(ad.blobs.segment.blobItems.map((element) => element.name));
+        expect(blobs).toEqual(azureData.blobs.segment.blobItems.map((element) => element.name));
     });
 
     it("Deletes a blob within a container", async () => {
@@ -135,14 +135,14 @@ describe("Azure blob functions", () => {
 
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
 
-        provider.deleteFile(ad.blobName);
+        provider.deleteFile(azureData.blobName);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(BlockBlobURL.fromContainerURL).toBeCalledWith(
             expect.any(ContainerURL),
-            ad.blobName,
+            azureData.blobName,
         );
         expect(blockBlobURL.prototype.delete).toBeCalledWith(Aborter.none);
     });
@@ -151,7 +151,7 @@ describe("Azure blob functions", () => {
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
         const containers = await provider.listContainers(null);
         expect(serviceURL.prototype.listContainersSegment).toBeCalled();
-        expect(containers).toEqual(ad.containers.containerItems.map((element) => element.name));
+        expect(containers).toEqual(azureData.containers.containerItems.map((element) => element.name));
     });
 
     it("Creates a container in the account", async () => {
@@ -159,7 +159,7 @@ describe("Azure blob functions", () => {
         await expect(provider.createContainer(null)).resolves.not.toBeNull();
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(containerURL.prototype.create).toBeCalled();
     });
@@ -173,7 +173,7 @@ describe("Azure blob functions", () => {
         await expect(provider.createContainer(null)).resolves.not.toBeNull();
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(containerURL.prototype.create).toBeCalled();
     });
@@ -183,7 +183,7 @@ describe("Azure blob functions", () => {
         provider.deleteContainer(null);
         expect(ContainerURL.fromServiceURL).toBeCalledWith(
             expect.any(ServiceURL),
-            ad.containerName,
+            azureData.containerName,
         );
         expect(containerURL.prototype.delete).toBeCalled();
     });
@@ -198,7 +198,7 @@ describe("Azure blob functions", () => {
         provider.getFileName = jest.fn();
         const assets = await provider.getAssets();
         expect(provider.getFileName).toBeCalled();
-        expect(assets).toHaveLength(ad.blobs.segment.blobItems.length);
+        expect(assets).toHaveLength(azureData.blobs.segment.blobItems.length);
     });
 
     it("get file name from url", async () => {
