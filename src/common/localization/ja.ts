@@ -226,6 +226,8 @@ export const japanese: IAppStrings = {
         height: "高さ", // Height,
         tagged: "タグ付き", // Tagged,
         visited: "訪問済み", // Visited,
+        segmentAnnotated: "Segment annotated",
+        metadataEdited: "Metadata edited",
         toolbar: {
             select: "選択（V）", // Select (V),
             pan: "パン", // Pan,

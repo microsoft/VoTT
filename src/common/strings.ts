@@ -223,6 +223,8 @@ export interface IAppStrings {
         height: string;
         tagged: string;
         visited: string;
+        segmentAnnotated: string;
+        metadataEdited: string;
         toolbar: {
             select: string;
             pan: string;

@@ -60,7 +60,7 @@ export default function Sidebar({ project }) {
                     <ConditionalNavLink disabled={!projectId}
                         title={strings.activeLearning.title}
                         to={`/projects/${projectId}/active-learning`}>
-                        <i className="fas fa-graduation-cap"></i>
+                        <i className="fas fa-address-book"></i>
                     </ConditionalNavLink>
                 </li>
                 <li>

@@ -10,7 +10,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode,
+    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode, EditorContext,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -119,7 +119,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
-    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems("geometry");
+    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(EditorContext.Geometry);
     private canvas: RefObject<Canvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();

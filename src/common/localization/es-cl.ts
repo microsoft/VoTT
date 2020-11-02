@@ -222,6 +222,8 @@ export const spanish: IAppStrings = {
         height: "Altura",
         tagged: "Etiquetado",
         visited: "Visitado",
+        segmentAnnotated: "Segment annotated",
+        metadataEdited: "Metadata edited",
         toolbar: {
             select: "Seleccionar",
             pan: "Pan",

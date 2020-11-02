@@ -3,6 +3,7 @@ import { ExportProject } from "./react/components/toolbar/exportProject";
 import { SaveProject } from "./react/components/toolbar/saveProject";
 import { ToolbarItemType } from "./react/components/toolbar/toolbarItem";
 import { strings } from "./common/strings";
+import { EditorContext } from "./models/applicationState";
 
 export enum ToolbarItemName {
     SelectCanvas = "selectCanvas",
@@ -37,7 +38,7 @@ export enum ToolbarItemGroup {
 export default function registerToolbar() {
     ToolbarItemFactory.register({
         name: ToolbarItemName.SelectCanvas,
-        context: ["geometry", "segmentation"],
+        context: [EditorContext.Geometry, EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.select,
         icon: "fa-mouse-pointer",
         group: ToolbarItemGroup.Canvas,
@@ -47,7 +48,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawRectangle,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.drawRectangle,
         icon: "fa-vector-square",
         group: ToolbarItemGroup.Canvas,
@@ -57,7 +58,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawPolygon,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.drawPolygon,
         icon: "fa-draw-polygon",
         group: ToolbarItemGroup.Canvas,
@@ -67,9 +68,9 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.DrawPolyline,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.drawPolyline,
-        icon: "fa-draw-line",
+        icon: "fa-draw-polygon",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["L", "l"],
@@ -77,7 +78,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.CopyRectangle,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.copyRectangle,
         icon: "far fa-clone",
         group: ToolbarItemGroup.Canvas,
@@ -87,7 +88,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.CopyRegions,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.copy,
         icon: "fa-copy",
         group: ToolbarItemGroup.Regions,
@@ -97,7 +98,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.CutRegions,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.cut,
         icon: "fa-cut",
         group: ToolbarItemGroup.Regions,
@@ -107,7 +108,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.PasteRegions,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.paste,
         icon: "fa-paste",
         group: ToolbarItemGroup.Regions,
@@ -117,7 +118,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.RemoveAllRegions,
-        context: ["geometry"],
+        context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.removeAllRegions,
         icon: "fa-ban",
         group: ToolbarItemGroup.Regions,
@@ -127,9 +128,9 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.AnnotateSegments,
-        context: ["segmentation"],
+        context: [EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.nextAsset,
-        icon: "fas fa-arrow-circle-down",
+        icon: "fa-mouse-pointer",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["A", "a"],
@@ -137,9 +138,9 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.ShowSegBoundary,
-        context: ["segmentation"],
+        context: [EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.nextAsset,
-        icon: "fas fa-arrow-circle-down",
+        icon: "fa-mouse-pointer",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["B", "b"],
@@ -147,9 +148,9 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.ExecuteSegmentation,
-        context: ["segmentation"],
+        context: [EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.nextAsset,
-        icon: "fas fa-arrow-circle-down",
+        icon: "fa-mouse-pointer",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["E", "e"],
@@ -157,7 +158,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.ActiveLearning,
-        context: ["geometry", "segmentation"],
+        context: [EditorContext.Geometry, EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.activeLearning,
         icon: "fas fa-graduation-cap",
         group: ToolbarItemGroup.Canvas,
@@ -167,7 +168,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.PreviousAsset,
-        context: ["geometry", "segmentation"],
+        context: [EditorContext.Geometry, EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.previousAsset,
         icon: "fas fa-arrow-circle-up",
         group: ToolbarItemGroup.Navigation,
@@ -177,7 +178,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.NextAsset,
-        context: ["geometry", "segmentation"],
+        context: [EditorContext.Geometry, EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.nextAsset,
         icon: "fas fa-arrow-circle-down",
         group: ToolbarItemGroup.Navigation,
@@ -187,7 +188,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.SaveProject,
-        context: ["geometry", "segmentation"],
+        context: [EditorContext.Geometry, EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.saveProject,
         icon: "fa-save",
         group: ToolbarItemGroup.Project,
@@ -197,7 +198,7 @@ export default function registerToolbar() {
 
     ToolbarItemFactory.register({
         name: ToolbarItemName.ExportProject,
-        context: ["geometry", "segmentation"],
+        context: [EditorContext.Geometry, EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.exportProject,
         icon: "fa-external-link-square-alt",
         group: ToolbarItemGroup.Project,

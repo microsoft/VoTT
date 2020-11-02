@@ -227,6 +227,8 @@ export const korean: IAppStrings = {
         height: "높이", // Height,
         tagged: "태그", // Tagged,
         visited: "방문", // Visited,
+        segmentAnnotated: "세그멘테이션",
+        metadataEdited: "메타데이터",
         toolbar: {
             select: "선택 (V)", // Select (V),
             pan: "팬", // Pan,

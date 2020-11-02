@@ -220,6 +220,8 @@ export const english: IAppStrings = {
         height: "Height",
         tagged: "Tagged",
         visited: "Visited",
+        segmentAnnotated: "Segment annotated",
+        metadataEdited: "Metadata edited",
         toolbar: {
             select: "Select (V)",
             pan: "Pan",

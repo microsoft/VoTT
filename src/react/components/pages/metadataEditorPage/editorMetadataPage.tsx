@@ -34,6 +34,7 @@ import { toast } from "react-toastify";
 import EditorPage from "../editorPage/editorPage";
 import Form from "react-jsonschema-form";
 import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+import Preview from "./preview";
 
 /**
  * Properties for Editor Page
@@ -132,7 +133,7 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
-    private canvas: RefObject<Canvas> = React.createRef();
+    private canvas: RefObject<Preview> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -219,12 +220,11 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
                         <div className="editor-page-content-main">
                             <div className="editor-page-content-main-body">
                                 {selectedAsset &&
-                                    <Canvas
+                                    <Preview
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
                                         onCanvasRendered={this.onCanvasRendered}
-                                        onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                         editorMode={this.state.editorMode}
                                         selectionMode={SelectionMode.NONE}
                                         project={this.props.project}
@@ -237,7 +237,7 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
                                             onChildAssetSelected={this.onChildAssetSelected}
                                             asset={this.state.selectedAsset.asset}
                                             childAssets={this.state.childAssets} />
-                                    </Canvas>
+                                    </Preview>
                                 }
                             </div>
                         </div>
@@ -272,93 +272,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         });
     }
 
-    /**
-     * Called when the asset side bar is resized
-     * @param newWidth The new sidebar width
-     */
-    private onSideBarResize = (newWidth: number) => {
-        this.setState({
-            thumbnailSize: {
-                width: newWidth,
-                height: newWidth / (4 / 3),
-            },
-        }, () => this.canvas.current.forceResize());
-    }
-
-    /**
-     * Called when the asset sidebar has been completed
-     */
-    private onSideBarResizeComplete = () => {
-        const appSettings = {
-            ...this.props.appSettings,
-            thumbnailSize: this.state.thumbnailSize,
-        };
-
-        this.props.applicationActions.saveAppSettings(appSettings);
-    }
-
-    /**
-     * Called when a tag from footer is clicked
-     * @param tag Tag clicked
-     */
-    private onTagClicked = (tag: ITag): void => {
-        this.setState({
-            selectedTag: tag.name,
-            lockedTags: [],
-        }, () => this.canvas.current.applyTag(tag.name));
-    }
-
-    /**
-     * Open confirm dialog for tag renaming
-     */
-    private confirmTagRenamed = (tagName: string, newTagName: string): void => {
-        this.renameTagConfirm.current.open(tagName, newTagName);
-    }
-
-    /**
-     * Renames tag in assets and project, and saves files
-     * @param tagName Name of tag to be renamed
-     * @param newTagName New name of tag
-     */
-    private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
-        const assetUpdates = await this.props.actions.updateProjectTag(this.props.project, tagName, newTagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
-
-        if (selectedAsset) {
-            if (selectedAsset) {
-                this.setState({ selectedAsset });
-            }
-        }
-    }
-
-    /**
-     * Open Confirm dialog for tag deletion
-     */
-    private confirmTagDeleted = (tagName: string): void => {
-        this.deleteTagConfirm.current.open(tagName);
-    }
-
-    /**
-     * Removes tag from assets and projects and saves files
-     * @param tagName Name of tag to be deleted
-     */
-    private onTagDeleted = async (tagName: string): Promise<void> => {
-        const assetUpdates = await this.props.actions.deleteProjectTag(this.props.project, tagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
-
-        if (selectedAsset) {
-            this.setState({ selectedAsset });
-        }
-    }
-
-    private onCtrlTagClicked = (tag: ITag): void => {
-        const locked = this.state.lockedTags;
-        this.setState({
-            selectedTag: tag.name,
-            lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
-        }, () => this.canvas.current.applyTag(tag.name));
-    }
-
     private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
         let key = parseInt(event.key, 10);
         if (isNaN(key)) {
@@ -388,14 +301,75 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
     private handleTagHotKey = (event: KeyboardEvent): void => {
         const tag = this.getTagFromKeyboardEvent(event);
         if (tag) {
-            this.onTagClicked(tag);
+            //this.onTagClicked(tag);
         }
     }
 
     private handleCtrlTagHotKey = (event: KeyboardEvent): void => {
         const tag = this.getTagFromKeyboardEvent(event);
         if (tag) {
-            this.onCtrlTagClicked(tag);
+            //this.onCtrlTagClicked(tag);
+        }
+    }
+
+    /**
+     * Removes tag from assets and projects and saves files
+     * @param tagName Name of tag to be deleted
+     */
+    private onTagDeleted = async (tagName: string): Promise<void> => {
+        const assetUpdates = await this.props.actions.deleteProjectTag(this.props.project, tagName);
+        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+
+        if (selectedAsset) {
+            this.setState({ selectedAsset });
+        }
+    }
+
+    /**
+     * Called when the asset side bar is resized
+     * @param newWidth The new sidebar width
+     */
+    private onSideBarResize = (newWidth: number) => {
+        this.setState({
+            thumbnailSize: {
+                width: newWidth,
+                height: newWidth / (4 / 3),
+            },
+        }, () => this.canvas.current.forceResize());
+    }
+
+    /**
+     * Called when the asset sidebar has been completed
+     */
+    private onSideBarResizeComplete = () => {
+        const appSettings = {
+            ...this.props.appSettings,
+            thumbnailSize: this.state.thumbnailSize,
+        };
+
+        this.props.applicationActions.saveAppSettings(appSettings);
+    }
+
+    /**
+     * Open confirm dialog for tag renaming
+     */
+    private confirmTagRenamed = (tagName: string, newTagName: string): void => {
+        this.renameTagConfirm.current.open(tagName, newTagName);
+    }
+
+    /**
+     * Renames tag in assets and project, and saves files
+     * @param tagName Name of tag to be renamed
+     * @param newTagName New name of tag
+     */
+    private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
+        const assetUpdates = await this.props.actions.updateProjectTag(this.props.project, tagName, newTagName);
+        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+
+        if (selectedAsset) {
+            if (selectedAsset) {
+                this.setState({ selectedAsset });
+            }
         }
     }
 
@@ -488,108 +462,7 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
     private onCanvasRendered = async (canvas: HTMLCanvasElement) => {
         // When active learning auto-detect is enabled
         // run predictions when asset changes
-        if (this.props.project.activeLearningSettings.autoDetect && !this.state.selectedAsset.asset.predicted) {
-            await this.predictRegions(canvas);
-        }
-    }
-
-    private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
-        this.setState({ selectedRegions });
-    }
-
-    private onTagsChanged = async (tags) => {
-        const project = {
-            ...this.props.project,
-            tags,
-        };
-
-        await this.props.actions.saveProject(project);
-    }
-
-    private onLockedTagsChanged = (lockedTags: string[]) => {
-        this.setState({ lockedTags });
-    }
-
-    private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
-        switch (toolbarItem.props.name) {
-            case ToolbarItemName.DrawRectangle:
-                this.setState({
-                    selectionMode: SelectionMode.RECT,
-                    editorMode: EditorMode.Rectangle,
-                });
-                break;
-            case ToolbarItemName.DrawPolygon:
-                this.setState({
-                    selectionMode: SelectionMode.POLYGON,
-                    editorMode: EditorMode.Polygon,
-                });
-                break;
-            case ToolbarItemName.CopyRectangle:
-                this.setState({
-                    selectionMode: SelectionMode.COPYRECT,
-                    editorMode: EditorMode.CopyRect,
-                });
-                break;
-            case ToolbarItemName.SelectCanvas:
-                this.setState({
-                    selectionMode: SelectionMode.NONE,
-                    editorMode: EditorMode.Select,
-                });
-                break;
-            case ToolbarItemName.PreviousAsset:
-                await this.goToRootAsset(-1);
-                break;
-            case ToolbarItemName.NextAsset:
-                await this.goToRootAsset(1);
-                break;
-            case ToolbarItemName.CopyRegions:
-                this.canvas.current.copyRegions();
-                break;
-            case ToolbarItemName.CutRegions:
-                this.canvas.current.cutRegions();
-                break;
-            case ToolbarItemName.PasteRegions:
-                this.canvas.current.pasteRegions();
-                break;
-            case ToolbarItemName.RemoveAllRegions:
-                this.canvas.current.confirmRemoveAllRegions();
-                break;
-            case ToolbarItemName.ActiveLearning:
-                await this.predictRegions();
-                break;
-        }
-    }
-
-    private predictRegions = async (canvas?: HTMLCanvasElement) => {
-        canvas = canvas || document.querySelector("canvas");
-        if (!canvas) {
-            return;
-        }
-
-        // Load the configured ML model
-        if (!this.activeLearningService.isModelLoaded()) {
-            let toastId: number = null;
-            try {
-                toastId = toast.info(strings.activeLearning.messages.loadingModel, { autoClose: false });
-                await this.activeLearningService.ensureModelLoaded();
-            } catch (e) {
-                toast.error(strings.activeLearning.messages.errorLoadModel);
-                return;
-            } finally {
-                toast.dismiss(toastId);
-            }
-        }
-
-        // Predict and add regions to current asset
-        try {
-            const updatedAssetMetadata = await this.activeLearningService
-                .predictRegions(canvas, this.state.selectedAsset);
-
-            await this.onAssetMetadataChanged(updatedAssetMetadata);
-            this.setState({ selectedAsset: updatedAssetMetadata });
-        } catch (e) {
-            throw new AppError(ErrorCode.ActiveLearningPredictionError, "Error predicting regions");
-        }
+        
     }
 
     /**

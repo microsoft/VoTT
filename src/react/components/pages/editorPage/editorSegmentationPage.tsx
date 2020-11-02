@@ -10,7 +10,7 @@ import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode,
+    ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode, EditorContext,
 } from "../../../../models/applicationState";
 import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
@@ -22,7 +22,6 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { TagInput } from "../../common/tagInput/tagInput";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
-import Canvas from "./canvas";
 import CanvasHelpers from "./canvasHelpers";
 import "./editorPage.scss";
 import EditorSideBar from "./editorSideBar";
@@ -31,6 +30,7 @@ import Confirm from "../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 import { toast } from "react-toastify";
 import { EditorToolbar } from "./editorToolbar";
+import SegmentCanvas from "./segmentCanvas";
 
 /**
  * Properties for Editor Page
@@ -119,8 +119,8 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
-    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems("segmentation");
-    private canvas: RefObject<Canvas> = React.createRef();
+    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(EditorContext.Segmentation);
+    private canvas: RefObject<SegmentCanvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -213,7 +213,7 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
                             </div>
                             <div className="editor-page-content-main-body">
                                 {selectedAsset &&
-                                    <Canvas
+                                    <SegmentCanvas
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
@@ -231,7 +231,7 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
                                             onChildAssetSelected={this.onChildAssetSelected}
                                             asset={this.state.selectedAsset.asset}
                                             childAssets={this.state.childAssets} />
-                                    </Canvas>
+                                    </SegmentCanvas>
                                 }
                             </div>
                         </div>

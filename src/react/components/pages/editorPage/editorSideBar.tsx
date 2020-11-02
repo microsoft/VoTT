@@ -1,6 +1,6 @@
 import React from "react";
 import { AutoSizer, List } from "react-virtualized";
-import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
+import { IAsset, AssetState, ISize, EditorContext } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import { strings } from "../../../../common/strings";
 
@@ -17,6 +17,7 @@ export interface IEditorSideBarProps {
     onBeforeAssetSelected?: () => boolean;
     selectedAsset?: IAsset;
     thumbnailSize?: ISize;
+    editorContext?: EditorContext;
 }
 
 /**
@@ -142,6 +143,20 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                         <i className="fas fa-eye"></i>
                     </span>
                 );
+            case AssetState.SegmentAnnotated:
+                return (
+                    <span title={strings.editorPage.visited}
+                        className="badge badge-visited">
+                        <i className="fas fa-eye"></i>
+                    </span>
+                );
+            case AssetState.MetadataEdited:
+            return (
+                <span title={strings.editorPage.visited}
+                    className="badge badge-visited">
+                    <i className="fas fa-eye"></i>
+                </span>
+            );
             default:
                 return null;
         }

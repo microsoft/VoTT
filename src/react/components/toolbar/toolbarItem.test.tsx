@@ -5,6 +5,7 @@ import MockFactory from "../../../common/mockFactory";
 import { KeyboardBinding } from "../common/keyboardBinding/keyboardBinding";
 import { KeyboardManager } from "../common/keyboardManager/keyboardManager";
 import { ToolbarItemGroup, ToolbarItemName } from "../../../registerToolbar";
+import { EditorContext } from "../../../models/applicationState";
 
 describe("Toolbar Item", () => {
     let onClickHandler = jest.fn();
@@ -21,7 +22,7 @@ describe("Toolbar Item", () => {
     function createProps(): IToolbarItemProps {
         return {
             actions: MockFactory.projectActions(),
-            context: ["geometry"],
+            context: [EditorContext.Geometry],
             project: MockFactory.createTestProject("TestProject"),
             active: false,
             group: ToolbarItemGroup.Canvas,
