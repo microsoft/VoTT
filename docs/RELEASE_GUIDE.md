@@ -6,7 +6,7 @@ Instruction on how to create new GitHub & Web Releases.
 
 ## Release Process
 
-![alt text](./docs/images/release-process.png "Create Release Process")
+![alt text](./images/release-process.png "Create Release Process")
 
 ### AzDO Tasks
 
