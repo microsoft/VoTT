@@ -16,7 +16,7 @@
     "main": "build/main.js",
     "dependencies": {
         "@azure/storage-blob": "10.3.0",
-        "@tensorflow/tfjs": "^1.0.3",
+        "@tensorflow/tfjs": "^2.7.0",
         "@types/react-router": "^5.0.0",
         "@types/snapsvg": "^0.4.35",
         "axios": "^0.18.0",
@@ -124,8 +124,8 @@
         "@types/redux-logger": "^3.0.6",
         "@types/redux-mock-store": "^1.0.0",
         "cross-env": "^5.2.0",
-        "electron": "^3.0.13",
-        "electron-builder": "^22.6.0",
+        "electron": "^3.1.13",
+        "electron-builder": "^22.9.1",
         "enzyme": "^3.7.0",
         "enzyme-adapter-react-16": "^1.7.0",
         "foreman": "^3.0.1",
@@ -138,7 +138,8 @@
         "redux-mock-store": "^1.5.3",
         "ts-loader": "^5.3.0",
         "tslint": "^5.11.0",
-        "typescript": "^3.4.5"
+        "typescript": "^3.4.5",
+        "webpack-cli": "^4.1.0"
     },
     "engines": {
         "node": ">=10.14.2",
