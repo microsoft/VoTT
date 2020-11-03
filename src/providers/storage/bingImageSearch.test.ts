@@ -4,41 +4,60 @@ import { IAsset, AssetType, AssetState } from "../../models/applicationState";
 import MD5 from "md5.js";
 
 describe("Bing Image Search", () => {
-    const options: IBingImageSearchOptions = {
+    const bingImageSearchOptionsBasic: IBingImageSearchOptions = {
         apiKey: "ABC123",
         query: "Waterfalls",
         aspectRatio: BingImageSearchAspectRatio.All,
     };
-    const provider = new BingImageSearch(options);
+    const providerBasic = new BingImageSearch(bingImageSearchOptionsBasic);
 
-    const assets = [
+    const assetsBasic = [
         { contentUrl: "http://images.com/image1.jpg" },
         { contentUrl: "http://images.com/image2.jpg" },
         { contentUrl: "http://images.com/image3.jpg" },
         { contentUrl: "http://images.com/image4.jpg" },
     ];
 
+    const bingImageSearchOptionsOldApi: IBingImageSearchOptions = {
+        apiKey: "",
+        query: "Waterfalls",
+        aspectRatio: BingImageSearchAspectRatio.All,
+    };
+    const providerOldApi = new BingImageSearch(bingImageSearchOptionsOldApi);
+
+    const bingImageSearchOptionsNewApi: IBingImageSearchOptions = {
+        apiKey: "",
+        query: "Waterfalls",
+        aspectRatio: BingImageSearchAspectRatio.All,
+    };
+    const providerNewApi = new BingImageSearch(bingImageSearchOptionsNewApi);
+
     axios.get = jest.fn(() => {
         return Promise.resolve({
             data: {
-                value: assets,
+                value: assetsBasic,
             },
         });
     });
 
-    it("calls the Bing image search API", async () => {
-        // tslint:disable-next-line:max-line-length
-        const expectedUrl = `https://api.cognitive.microsoft.com/bing/v7.0/images/search?q=${options.query}&aspect=${options.aspectRatio}`;
-        const expectedHeaders = {
-            headers: {
-                "Ocp-Apim-Subscription-Key": options.apiKey,
-                "Accept": "application/json",
-            },
-        };
+    it.each([
+        [providerBasic, bingImageSearchOptionsBasic],
+        [providerOldApi, bingImageSearchOptionsOldApi],
+        [providerNewApi, bingImageSearchOptionsNewApi]])
+        ("calls the Bing image search API", async (provider, options) => {
 
-        await provider.getAssets();
-        expect(axios.get).toBeCalledWith(expectedUrl, expectedHeaders);
-    });
+            // tslint:disable-next-line:max-line-length
+            const expectedUrl = `https://api.cognitive.microsoft.com/bing/v7.0/images/search?q=${options.query}&aspect=${options.aspectRatio}`;
+            const expectedHeaders = {
+                headers: {
+                    "Ocp-Apim-Subscription-Key": options.apiKey,
+                    "Accept": "application/json",
+                },
+            };
+
+            await provider.getAssets();
+            expect(axios.get).toBeCalledWith(expectedUrl, expectedHeaders);
+        });
 
     it("returns parsed image assets", async () => {
         const expectedAsset: IAsset = {
@@ -51,7 +70,7 @@ describe("Bing Image Search", () => {
             size: null,
         };
 
-        const assets = await provider.getAssets();
+        const assets = await providerBasic.getAssets();
         expect(assets.length).toEqual(assets.length);
         expect(assets[0]).toEqual(expectedAsset);
     });
