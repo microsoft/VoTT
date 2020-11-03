@@ -2,7 +2,7 @@ import { Action, Dispatch } from "redux";
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { ActionTypes } from "./actionTypes";
 import { createPayloadAction, createAction, IPayloadAction } from "./actionCreators";
-import { IAppSettings, ISecurityToken } from "../../models/applicationState";
+import { IAppSettings } from "../../models/applicationState";
 import { IProject, IApplicationState } from "../../models/applicationState";
 import { generateKey } from "../../common/crypto";
 
@@ -61,21 +61,17 @@ export function ensureSecurityToken(project: IProject):
     (dispatch: Dispatch, getState: () => IApplicationState) => Promise<IAppSettings> {
     return async (dispatch: Dispatch, getState: () => IApplicationState) => {
         const appState = getState();
-        let securityToken: ISecurityToken;
+        let securityToken = appState.appSettings.securityTokens
+            .find((st) => st.name === project.securityToken);
 
-        if (project.useSecurityToken) {
-            securityToken = appState.appSettings.securityTokens
-                .find((st) => st.name === project.securityToken);
-
-            if (securityToken) {
-                return appState.appSettings;
-            }
-
-            securityToken = {
-                name: `${project.name} Token`,
-                key: generateKey(),
-            };
+        if (securityToken) {
+            return appState.appSettings;
         }
+
+        securityToken = {
+            name: `${project.name} Token`,
+            key: generateKey(),
+        };
 
         const updatedAppSettings: IAppSettings = {
             devToolsEnabled: appState.appSettings.devToolsEnabled,
@@ -84,9 +80,8 @@ export function ensureSecurityToken(project: IProject):
 
         await this.saveAppSettings(updatedAppSettings);
 
-        project.securityToken = project.useSecurityToken ? securityToken.name : null;
+        project.securityToken = securityToken.name;
         dispatch(ensureSecurityTokenAction(updatedAppSettings));
-
         return updatedAppSettings;
     };
 }

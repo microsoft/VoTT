@@ -53,7 +53,9 @@ export default class ProjectService implements IProjectService {
         Guard.null(project);
 
         try {
-            const loadedProject = decryptProject(project, securityToken);
+            const loadedProject = project.useSecurityToken
+                ? decryptProject(project, securityToken)
+                : { ...project };
 
             // Ensure tags is always initialized to an array
             if (!loadedProject.tags) {
@@ -110,7 +112,9 @@ export default class ProjectService implements IProjectService {
 
         const storageProvider = StorageProviderFactory.createFromConnection(project.targetConnection);
         await this.saveExportSettings(project);
-        project = encryptProject(project, securityToken);
+        project = project.useSecurityToken
+            ? encryptProject(project, securityToken)
+            : { ...project };
 
         await storageProvider.writeText(
             `${project.name}${constants.projectFileExtension}`,
