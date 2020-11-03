@@ -1,7 +1,7 @@
 import Guard from "../../common/guard";
 import {
     IProject, IExportFormat, IAssetMetadata, IAsset,
-    AssetState, AssetType, IExportProviderOptions,
+    AssetState, AssetType, IExportProviderOptions, EditorContext,
 } from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
@@ -67,6 +67,7 @@ export abstract class ExportProvider
 
     public abstract export(): Promise<void> | Promise<IExportResults>;
 
+
     /**
      * Gets the assets that are configured to be exported based on the configured asset state
      */
@@ -85,12 +86,14 @@ export abstract class ExportProvider
 
         let getAssetsFunc: () => Promise<IAsset[]> = getProjectAssets;
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         switch (this.options.assetState) {
             case ExportAssetState.Visited:
-                predicate = (asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
+                predicate = (asset) => asset.state[EditorContext.Geometry] === AssetState.Visited || asset.state[EditorContext.Geometry] === AssetState.Tagged;
                 break;
             case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state === AssetState.Tagged;
+                predicate = (asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged;
                 break;
             case ExportAssetState.All:
             default:

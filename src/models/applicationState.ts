@@ -265,7 +265,7 @@ export interface IAssetVideoSettings {
 export interface IAsset {
     id: string;
     type: AssetType;
-    state: AssetState;
+    state: Record<string, AssetState>;
     name: string;
     path: string;
     size: ISize;
@@ -365,8 +365,6 @@ export enum AssetState {
     NotVisited = 0,
     Visited = 1,
     Tagged = 2,
-    SegmentAnnotated = 3,
-    MetadataEdited = 4,
 }
 
 /**

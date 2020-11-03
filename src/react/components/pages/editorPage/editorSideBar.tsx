@@ -14,10 +14,10 @@ import { strings } from "../../../../common/strings";
 export interface IEditorSideBarProps {
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
+    editorContext: EditorContext;
     onBeforeAssetSelected?: () => boolean;
     selectedAsset?: IAsset;
     thumbnailSize?: ISize;
-    editorContext?: EditorContext;
 }
 
 /**
@@ -112,7 +112,7 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                 className={this.getAssetCssClassNames(asset, selectedAsset)}
                 onClick={() => this.onAssetClicked(asset)}>
                 <div className="asset-item-image">
-                    {this.renderBadges(asset)}
+                    {this.renderBadges(asset, this.props.editorContext)}
                     <AssetPreview asset={asset} />
                 </div>
                 <div className="asset-item-metadata">
@@ -127,8 +127,11 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
         );
     }
 
-    private renderBadges = (asset: IAsset): JSX.Element => {
-        switch (asset.state) {
+    private renderBadges = (asset: IAsset, context: EditorContext): JSX.Element => {
+        if (context === undefined){
+            return null;
+        }
+        switch (asset.state[context]) {
             case AssetState.Tagged:
                 return (
                     <span title={strings.editorPage.tagged}
@@ -143,20 +146,6 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                         <i className="fas fa-eye"></i>
                     </span>
                 );
-            case AssetState.SegmentAnnotated:
-                return (
-                    <span title={strings.editorPage.visited}
-                        className="badge badge-visited">
-                        <i className="fas fa-eye"></i>
-                    </span>
-                );
-            case AssetState.MetadataEdited:
-            return (
-                <span title={strings.editorPage.visited}
-                    className="badge badge-visited">
-                    <i className="fas fa-eye"></i>
-                </span>
-            );
             default:
                 return null;
         }

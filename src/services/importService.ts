@@ -2,7 +2,7 @@ import shortid from "shortid";
 import {
     IProject, ITag, IConnection, AppError, ErrorCode,
     IAssetMetadata, IRegion, RegionType, AssetState, IFileInfo,
-    IAsset, AssetType, ModelPathType,
+    IAsset, AssetType, ModelPathType, EditorContext,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import packageJson from "../../package.json";
@@ -119,6 +119,8 @@ export default class ImportService implements IImportService {
         });
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Generate assets for V1 Video Project frames and regions
      * @param v1Project - v1 Project content and file information
@@ -138,7 +140,7 @@ export default class ImportService implements IImportService {
         });
 
         const taggedAssets = videoFrameAssets
-            .filter((assetMetadata) => assetMetadata.asset.state === AssetState.Tagged);
+            .filter((assetMetadata) => assetMetadata.asset.state[EditorContext.Geometry] === AssetState.Tagged);
         const parentAssetState = taggedAssets.length > 0 ? AssetState.Tagged : AssetState.Visited;
         const parentAssetMetadata = await this.createAssetMetadata(parentVideoAsset, parentAssetState, []);
 
@@ -157,6 +159,8 @@ export default class ImportService implements IImportService {
         return fileNameParts[1] && AssetService.getAssetType(fileNameParts[1]) === AssetType.Video;
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Generate parent asset based on V1 Project video assets
      * @param v1Project - V1 Project Content and File Information
@@ -167,7 +171,7 @@ export default class ImportService implements IImportService {
         const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
 
         parentAsset.size = { height: assetProps.height, width: assetProps.width };
-        parentAsset.state = AssetState.Visited;
+        parentAsset.state[EditorContext.Geometry] = AssetState.Visited;
 
         return parentAsset;
     }
@@ -261,6 +265,8 @@ export default class ImportService implements IImportService {
         return frame.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Creates an asset metadata for the specified asset
      * @param asset The converted v2 asset
@@ -276,7 +282,7 @@ export default class ImportService implements IImportService {
     ): Promise<IAssetMetadata> {
         const metadata = await this.assetService.getAssetMetadata(asset);
         this.addRegions(metadata, frameRegions);
-        metadata.asset.state = assetState;
+        metadata.asset.state[EditorContext.Geometry] = assetState;
 
         if (parent) {
             metadata.asset.parent = parent;

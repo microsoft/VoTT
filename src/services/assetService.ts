@@ -4,7 +4,7 @@ import * as shortid from "shortid";
 import Guard from "../common/guard";
 import {
     IAsset, AssetType, IProject, IAssetMetadata, AssetState,
-    IRegion, RegionType, ITFRecordMetadata,
+    IRegion, RegionType, ITFRecordMetadata, EditorContext,
 } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
@@ -53,10 +53,16 @@ export class AssetService {
 
         const assetType = this.getAssetType(assetFormat);
 
+        const fieldGeometry = EditorContext.Geometry.toString();
+        const fieldSegmentation = EditorContext.Segmentation.toString();
+        const fieldMetadata = EditorContext.Metadata.toString();
+
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         return {
             id: md5Hash,
             format: assetFormat,
-            state: AssetState.NotVisited,
+            state: { fieldGeometry: AssetState.NotVisited, fieldSegmentation: AssetState.NotVisited, fieldMetadata: AssetState.NotVisited, },
             type: assetType,
             name: fileName,
             path: filePath,
@@ -151,6 +157,8 @@ export class AssetService {
             .sort((a, b) => a.timestamp - b.timestamp);
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Save metadata for asset
      * @param metadata - Metadata for asset
@@ -162,7 +170,7 @@ export class AssetService {
 
         // Only save asset metadata if asset is in a tagged state
         // Otherwise primary asset information is already persisted in the project file.
-        if (metadata.asset.state === AssetState.Tagged) {
+        if (metadata.asset.state[EditorContext.Geometry] === AssetState.Tagged) {
             await this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
         } else {
             // If the asset is no longer tagged, then it doesn't contain any regions
@@ -240,6 +248,8 @@ export class AssetService {
         return updates.filter((assetMetadata) => !!assetMetadata);
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Update tag within asset metadata object
      * @param assetMetadata Asset metadata to update
@@ -261,7 +271,7 @@ export class AssetService {
         }
         if (foundTag) {
             assetMetadata.regions = assetMetadata.regions.filter((region) => region.tags.length > 0);
-            assetMetadata.asset.state = (assetMetadata.regions.length) ? AssetState.Tagged : AssetState.Visited;
+            assetMetadata.asset.state[EditorContext.Geometry] = (assetMetadata.regions.length) ? AssetState.Tagged : AssetState.Visited;
             return true;
         }
 

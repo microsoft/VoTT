@@ -31,6 +31,8 @@ import { ActiveLearningService } from "../../../../services/activeLearningServic
 import { toast } from "react-toastify";
 import { EditorToolbar } from "./editorToolbar";
 import SegmentCanvas from "./segmentCanvas";
+import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from './editorPage';
+import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 /**
  * Properties for Editor Page
@@ -39,61 +41,6 @@ import SegmentCanvas from "./segmentCanvas";
  * @member actions - Project actions
  * @member applicationActions - Application setting actions
  */
-export interface IEditorPageProps extends RouteComponentProps, React.Props<EditorSegmentationPage> {
-    project: IProject;
-    recentProjects: IProject[];
-    appSettings: IAppSettings;
-    actions: IProjectActions;
-    applicationActions: IApplicationActions;
-}
-
-/**
- * State for Editor Page
- */
-export interface IEditorPageState {
-    /** Array of assets in project */
-    assets: IAsset[];
-    /** The editor mode to set for canvas tools */
-    editorMode: EditorMode;
-    /** The selection mode to set for canvas tools */
-    selectionMode: SelectionMode;
-    /** The selected asset for the primary editing experience */
-    selectedAsset?: IAssetMetadata;
-    /** Currently selected region on current asset */
-    selectedRegions?: IRegion[];
-    /** The child assets used for nest asset typs */
-    childAssets?: IAsset[];
-    /** Additional settings for asset previews */
-    additionalSettings?: IAdditionalPageSettings;
-    /** Most recently selected tag */
-    selectedTag: string;
-    /** Tags locked for region labeling */
-    lockedTags: string[];
-    /** Size of the asset thumbnails to display in the side bar */
-    thumbnailSize: ISize;
-    /**
-     * Whether or not the editor is in a valid state
-     * State is invalid when a region has not been tagged
-     */
-    isValid: boolean;
-    /** Whether the show invalid region warning alert should display */
-    showInvalidRegionWarning: boolean;
-}
-
-function mapStateToProps(state: IApplicationState) {
-    return {
-        recentProjects: state.recentProjects,
-        project: state.currentProject,
-        appSettings: state.appSettings,
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        actions: bindActionCreators(projectActions, dispatch),
-        applicationActions: bindActionCreators(applicationActions, dispatch),
-    };
-}
 
 /**
  * @name - Editor Page
@@ -115,6 +62,7 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
+        context: EditorContext.Segmentation,
     };
 
     private activeLearningService: ActiveLearningService = null;
@@ -198,6 +146,7 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
                         <EditorSideBar
                             assets={rootAssets}
                             selectedAsset={selectedAsset ? selectedAsset.asset : null}
+                            editorContext={this.state.context}
                             onBeforeAssetSelected={this.onBeforeAssetSelected}
                             onAssetSelected={this.selectAsset}
                             thumbnailSize={this.state.thumbnailSize}
@@ -433,16 +382,16 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
             return;
         }
 
-        const initialState = assetMetadata.asset.state;
+        const initialState = assetMetadata.asset.state[this.state.context];
 
         // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
         // asset selected from the side bar (image/video).
         const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
 
         if (this.isTaggableAssetType(assetMetadata.asset)) {
-            assetMetadata.asset.state = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
-        } else if (assetMetadata.asset.state === AssetState.NotVisited) {
-            assetMetadata.asset.state = AssetState.Visited;
+            assetMetadata.asset.state[this.state.context] = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+        } else if (assetMetadata.asset.state[this.state.context] === AssetState.NotVisited) {
+            assetMetadata.asset.state[this.state.context] = AssetState.Visited;
         }
 
         // Update root asset if not already in the "Tagged" state
@@ -450,20 +399,20 @@ export default class EditorSegmentationPage extends React.Component<IEditorPageP
         // We want to ensure that in this case the root video asset state is accurately
         // updated to match that state of the asset.
         if (rootAsset.id === assetMetadata.asset.id) {
-            rootAsset.state = assetMetadata.asset.state;
+            rootAsset.state[this.state.context] = assetMetadata.asset.state[this.state.context];
         } else {
             const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
 
-            if (rootAssetMetadata.asset.state !== AssetState.Tagged) {
-                rootAssetMetadata.asset.state = assetMetadata.asset.state;
+            if (rootAssetMetadata.asset.state[this.state.context] !== AssetState.Tagged) {
+                rootAssetMetadata.asset.state[this.state.context] = assetMetadata.asset.state[this.state.context];
                 await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
             }
 
-            rootAsset.state = rootAssetMetadata.asset.state;
+            rootAsset.state[this.state.context] = rootAssetMetadata.asset.state[this.state.context];
         }
 
         // Only update asset metadata if state changes or is different
-        if (initialState !== assetMetadata.asset.state || this.state.selectedAsset !== assetMetadata) {
+        if (initialState !== assetMetadata.asset.state[this.state.context] || this.state.selectedAsset !== assetMetadata) {
             await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         }
 

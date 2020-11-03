@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { IProject, AssetState } from "../../../models/applicationState";
+import { IProject, AssetState, EditorContext } from "../../../models/applicationState";
 import { strings, interpolate } from "../../../common/strings";
 
 export interface IStatusBarMetricsProps {
@@ -15,11 +15,13 @@ export class StatusBarMetrics extends React.Component<IStatusBarMetricsProps> {
             return null;
         }
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         const projectAssets = _.values(project.assets);
         const visitedAssets = projectAssets
-            .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+            .filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Visited || asset.state[EditorContext.Geometry] === AssetState.Tagged);
         const taggedAssets = projectAssets
-            .filter((asset) => asset.state === AssetState.Tagged);
+            .filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged);
 
         return (
             <ul>

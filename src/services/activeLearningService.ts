@@ -52,12 +52,14 @@ export class ActiveLearningService {
             }
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         return {
             ...assetMetadata,
             regions: updatedRegions,
             asset: {
                 ...assetMetadata.asset,
-                state: updatedRegions.length > 0 ? AssetState.Tagged : AssetState.Visited,
+                state: {"geometry": updatedRegions.length > 0 ? AssetState.Tagged : AssetState.Visited},
                 predicted: true,
             },
         } as IAssetMetadata;

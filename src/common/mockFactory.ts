@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType, ModelPathType,
+    IPoint, IRegion, RegionType, ModelPathType, EditorContext,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -177,7 +177,7 @@ export default class MockFactory {
             format: "mp4",
             name: `videoasset${name}`,
             path: encodeFileURI(`C:\\Desktop\\videoasset${name}.mp4`),
-            state: assetState,
+            state: { "geometry": assetState },
             type: AssetType.Video,
             size: {
                 width: 800,
@@ -195,7 +195,7 @@ export default class MockFactory {
         const childPath = `${rootAsset.path}#t=${timestamp}`;
         const childAsset = AssetService.createAssetFromFilePath(childPath);
         childAsset.type = AssetType.VideoFrame;
-        childAsset.state = AssetState.Tagged;
+        childAsset.state = { "geometry": AssetState.Tagged };
         childAsset.parent = rootAsset;
         childAsset.timestamp = timestamp;
         childAsset.size = { ...rootAsset.size };

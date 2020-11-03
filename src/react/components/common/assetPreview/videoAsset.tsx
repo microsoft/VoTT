@@ -6,7 +6,7 @@ import {
     TimeDivider, PlaybackRateMenuButton, VolumeMenuButton,
 } from "video-react";
 import { IAssetProps } from "./assetPreview";
-import { IAsset, AssetType, AssetState } from "../../../../models/applicationState";
+import { IAsset, AssetType, AssetState, EditorContext } from "../../../../models/applicationState";
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 import { strings } from "../../../../common/strings";
@@ -148,6 +148,9 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         }
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
+
     /**
      * Bound to the "Previous Tagged Frame" button
      * Seeks the user to the previous tagged video frame
@@ -156,13 +159,15 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         const currentTime = this.getVideoPlayerState().currentTime;
         const previousFrame = _
             .reverse(this.props.childAssets)
-            .find((asset) => asset.state === AssetState.Tagged && asset.timestamp < currentTime);
+            .find((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged && asset.timestamp < currentTime);
 
         if (previousFrame) {
             this.seekToTime(previousFrame.timestamp);
         }
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Bound to the "Next Tagged Frame" button
      * Seeks the user to the next tagged video frame
@@ -170,7 +175,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
     private moveNextTaggedFrame = () => {
         const currentTime = this.getVideoPlayerState().currentTime;
         const nextFrame = this.props.childAssets
-            .find((asset) => asset.state === AssetState.Tagged && asset.timestamp > currentTime);
+            .find((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged && asset.timestamp > currentTime);
 
         if (nextFrame) {
             this.seekToTime(nextFrame.timestamp);
@@ -262,6 +267,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         });
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Raises the "childAssetSelected" event if available
      */
@@ -270,7 +277,7 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
             const rootAsset = this.props.asset.parent || this.props.asset;
             const childPath = `${rootAsset.path}#t=${state.currentTime}`;
             const childAsset = AssetService.createAssetFromFilePath(childPath);
-            childAsset.state = AssetState.NotVisited;
+            childAsset.state[EditorContext.Geometry] = AssetState.NotVisited;
             childAsset.type = AssetType.VideoFrame;
             childAsset.parent = rootAsset;
             childAsset.timestamp = state.currentTime;
@@ -368,13 +375,15 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         );
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     /**
      * Renders a timeline marker for the specified child asset
      * @param childAsset The child asset to render
      * @param videoDuration The total video duration
      */
     private renderChildAssetMarker = (childAsset: IAsset, videoDuration: number) => {
-        const className = childAsset.state === AssetState.Tagged ? "video-timeline-tagged" : "video-timeline-visited";
+        const className = childAsset.state[EditorContext.Geometry] === AssetState.Tagged ? "video-timeline-tagged" : "video-timeline-visited";
         const childPosition: number = (childAsset.timestamp / videoDuration);
         const style = { left: `${childPosition * 100}%` };
 

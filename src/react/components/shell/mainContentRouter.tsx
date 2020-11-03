@@ -5,7 +5,7 @@ import ActiveLearningPage from "../pages/activeLearning/activeLearningPage";
 import AppSettingsPage from "../pages/appSettings/appSettingsPage";
 import ConnectionPage from "../pages/connections/connectionsPage";
 import EditorSegmentationPage from "../pages/editorPage/editorSegmentationPage";
-import EditorPage from "../pages/editorPage/editorPage";
+import EditorGeometryPage from "../pages/editorPage/editorGeometryPage";
 import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
 import EditorMetadataPage from "../pages/metadataEditorPage/editorMetadataPage";
@@ -22,7 +22,7 @@ export default function MainContentRouter() {
                 <Route path="/settings" component={AppSettingsPage} />
                 <Route path="/connections/:connectionId" component={ConnectionPage} />
                 <Route path="/connections" exact component={ConnectionPage} />
-                <Route path="/projects/:projectId/edit" component={EditorPage} />
+                <Route path="/projects/:projectId/edit" component={EditorGeometryPage} />
                 <Route path="/projects/:projectId/editSeg" component={EditorSegmentationPage} />
                 <Route path="/projects/:projectId/editMetadata" component={EditorMetadataPage} />
                 <Route path="/projects/create" component={ProjectSettingsPage} />

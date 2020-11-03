@@ -6,7 +6,7 @@ import SplitPane from "react-split-pane";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import HtmlFileReader from "../../../../common/htmlFileReader";
-import {addLocValues, strings} from "../../../../common/strings";
+import { strings } from "../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
@@ -22,19 +22,16 @@ import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
 import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
 import { TagInput } from "../../common/tagInput/tagInput";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
-import Canvas from "../editorPage/canvas";
-import CanvasHelpers from "../editorPage/canvasHelpers";
-import "../editorPage/editorPage.scss";
-import EditorSideBar from "../editorPage/editorSideBar";
-import { EditorToolbar } from "../editorPage/editorToolbar";
+import Canvas from "./canvas";
+import CanvasHelpers from "./canvasHelpers";
+import "./editorPage.scss";
+import EditorSideBar from "./editorSideBar";
+import { EditorToolbar } from "./editorToolbar";
 import Alert from "../../common/alert/alert";
 import Confirm from "../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 import { toast } from "react-toastify";
-import Form from "react-jsonschema-form";
-import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
-import Preview from "./preview";
-import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from '../editorPage/editorPage';
+import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from './editorPage';
 
 /**
  * Properties for Editor Page
@@ -48,21 +45,15 @@ import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps
  * @name - Editor Page
  * @description - Page for adding/editing/removing tags to assets
  */
-
-// tslint:disable-next-line:no-var-requires
-const formSchema = addLocValues(require("./imageAnnotationForm.json"));
-// tslint:disable-next-line:no-var-requires
-const uiSchema = addLocValues(require("./imageAnnotationForm.ui.json"));
-
 @connect(mapStateToProps, mapDispatchToProps)
-export default class EditorMetadataPage extends React.Component<IEditorPageProps, IEditorPageState> {
+export default class EditorGeometryPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         selectedTag: null,
         lockedTags: [],
-        selectionMode: SelectionMode.RECT,
+        selectionMode: SelectionMode.NONE,
         assets: [],
         childAssets: [],
-        editorMode: EditorMode.Rectangle,
+        editorMode: EditorMode.Select,
         additionalSettings: {
             videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
             activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
@@ -70,11 +61,13 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
-        context: EditorContext.Metadata,
+        context: EditorContext.Geometry,
     };
 
+    private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
-    private canvas: RefObject<Preview> = React.createRef();
+    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(EditorContext.Geometry);
+    private canvas: RefObject<Canvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -86,6 +79,8 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
             const project = this.props.recentProjects.find((project) => project.id === projectId);
             await this.props.actions.loadProject(project);
         }
+
+        this.activeLearningService = new ActiveLearningService(this.props.project.activeLearningSettings);
     }
 
     public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
@@ -158,15 +153,22 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
                     </div>
                     <div className="editor-page-content" onClick={this.onPageClick}>
                         <div className="editor-page-content-main">
+                            <div className="editor-page-content-main-header">
+                                <EditorToolbar project={this.props.project}
+                                    items={this.toolbarItems}
+                                    actions={this.props.actions}
+                                    onToolbarItemSelected={this.onToolbarItemSelected} />
+                            </div>
                             <div className="editor-page-content-main-body">
                                 {selectedAsset &&
-                                    <Preview
+                                    <Canvas
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
                                         onCanvasRendered={this.onCanvasRendered}
+                                        onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                         editorMode={this.state.editorMode}
-                                        selectionMode={SelectionMode.NONE}
+                                        selectionMode={this.state.selectionMode}
                                         project={this.props.project}
                                         lockedTags={this.state.lockedTags}>
                                         <AssetPreview
@@ -177,12 +179,22 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
                                             onChildAssetSelected={this.onChildAssetSelected}
                                             asset={this.state.selectedAsset.asset}
                                             childAssets={this.state.childAssets} />
-                                    </Preview>
+                                    </Canvas>
                                 }
                             </div>
                         </div>
-                        <div className="editor-page-right-sidebar-json">
-                            <Form schema={formSchema} uiSchema={uiSchema} />
+                        <div className="editor-page-right-sidebar">
+                            <TagInput
+                                tags={this.props.project.tags}
+                                lockedTags={this.state.lockedTags}
+                                selectedRegions={this.state.selectedRegions}
+                                onChange={this.onTagsChanged}
+                                onLockedTagsChange={this.onLockedTagsChanged}
+                                onTagClick={this.onTagClicked}
+                                onCtrlTagClick={this.onCtrlTagClicked}
+                                onTagRenamed={this.confirmTagRenamed}
+                                onTagDeleted={this.confirmTagDeleted}
+                            />
                         </div>
                         <Confirm title={strings.editorPage.tags.rename.title}
                             ref={this.renameTagConfirm}
@@ -210,6 +222,93 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         this.setState({
             selectedRegions: [],
         });
+    }
+
+    /**
+     * Called when the asset side bar is resized
+     * @param newWidth The new sidebar width
+     */
+    private onSideBarResize = (newWidth: number) => {
+        this.setState({
+            thumbnailSize: {
+                width: newWidth,
+                height: newWidth / (4 / 3),
+            },
+        }, () => this.canvas.current.forceResize());
+    }
+
+    /**
+     * Called when the asset sidebar has been completed
+     */
+    private onSideBarResizeComplete = () => {
+        const appSettings = {
+            ...this.props.appSettings,
+            thumbnailSize: this.state.thumbnailSize,
+        };
+
+        this.props.applicationActions.saveAppSettings(appSettings);
+    }
+
+    /**
+     * Called when a tag from footer is clicked
+     * @param tag Tag clicked
+     */
+    private onTagClicked = (tag: ITag): void => {
+        this.setState({
+            selectedTag: tag.name,
+            lockedTags: [],
+        }, () => this.canvas.current.applyTag(tag.name));
+    }
+
+    /**
+     * Open confirm dialog for tag renaming
+     */
+    private confirmTagRenamed = (tagName: string, newTagName: string): void => {
+        this.renameTagConfirm.current.open(tagName, newTagName);
+    }
+
+    /**
+     * Renames tag in assets and project, and saves files
+     * @param tagName Name of tag to be renamed
+     * @param newTagName New name of tag
+     */
+    private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
+        const assetUpdates = await this.props.actions.updateProjectTag(this.props.project, tagName, newTagName);
+        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+
+        if (selectedAsset) {
+            if (selectedAsset) {
+                this.setState({ selectedAsset });
+            }
+        }
+    }
+
+    /**
+     * Open Confirm dialog for tag deletion
+     */
+    private confirmTagDeleted = (tagName: string): void => {
+        this.deleteTagConfirm.current.open(tagName);
+    }
+
+    /**
+     * Removes tag from assets and projects and saves files
+     * @param tagName Name of tag to be deleted
+     */
+    private onTagDeleted = async (tagName: string): Promise<void> => {
+        const assetUpdates = await this.props.actions.deleteProjectTag(this.props.project, tagName);
+        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
+
+        if (selectedAsset) {
+            this.setState({ selectedAsset });
+        }
+    }
+
+    private onCtrlTagClicked = (tag: ITag): void => {
+        const locked = this.state.lockedTags;
+        this.setState({
+            selectedTag: tag.name,
+            lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
+        }, () => this.canvas.current.applyTag(tag.name));
     }
 
     private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
@@ -241,75 +340,14 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
     private handleTagHotKey = (event: KeyboardEvent): void => {
         const tag = this.getTagFromKeyboardEvent(event);
         if (tag) {
-            //this.onTagClicked(tag);
+            this.onTagClicked(tag);
         }
     }
 
     private handleCtrlTagHotKey = (event: KeyboardEvent): void => {
         const tag = this.getTagFromKeyboardEvent(event);
         if (tag) {
-            //this.onCtrlTagClicked(tag);
-        }
-    }
-
-    /**
-     * Removes tag from assets and projects and saves files
-     * @param tagName Name of tag to be deleted
-     */
-    private onTagDeleted = async (tagName: string): Promise<void> => {
-        const assetUpdates = await this.props.actions.deleteProjectTag(this.props.project, tagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
-
-        if (selectedAsset) {
-            this.setState({ selectedAsset });
-        }
-    }
-
-    /**
-     * Called when the asset side bar is resized
-     * @param newWidth The new sidebar width
-     */
-    private onSideBarResize = (newWidth: number) => {
-        this.setState({
-            thumbnailSize: {
-                width: newWidth,
-                height: newWidth / (4 / 3),
-            },
-        }, () => this.canvas.current.forceResize());
-    }
-
-    /**
-     * Called when the asset sidebar has been completed
-     */
-    private onSideBarResizeComplete = () => {
-        const appSettings = {
-            ...this.props.appSettings,
-            thumbnailSize: this.state.thumbnailSize,
-        };
-
-        this.props.applicationActions.saveAppSettings(appSettings);
-    }
-
-    /**
-     * Open confirm dialog for tag renaming
-     */
-    private confirmTagRenamed = (tagName: string, newTagName: string): void => {
-        this.renameTagConfirm.current.open(tagName, newTagName);
-    }
-
-    /**
-     * Renames tag in assets and project, and saves files
-     * @param tagName Name of tag to be renamed
-     * @param newTagName New name of tag
-     */
-    private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
-        const assetUpdates = await this.props.actions.updateProjectTag(this.props.project, tagName, newTagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
-
-        if (selectedAsset) {
-            if (selectedAsset) {
-                this.setState({ selectedAsset });
-            }
+            this.onCtrlTagClicked(tag);
         }
     }
 
@@ -343,7 +381,7 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
             return;
         }
 
-        const initialState = assetMetadata.asset.state[this.state.context];
+        const initialState = assetMetadata.asset.state;
 
         // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
         // asset selected from the side bar (image/video).
@@ -373,7 +411,7 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         }
 
         // Only update asset metadata if state changes or is different
-        if (initialState !== assetMetadata.asset.state[this.state.context] || this.state.selectedAsset !== assetMetadata) {
+        if (initialState !== assetMetadata.asset.state || this.state.selectedAsset !== assetMetadata) {
             await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         }
 
@@ -402,7 +440,114 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
     private onCanvasRendered = async (canvas: HTMLCanvasElement) => {
         // When active learning auto-detect is enabled
         // run predictions when asset changes
-        
+        if (this.props.project.activeLearningSettings.autoDetect && !this.state.selectedAsset.asset.predicted) {
+            await this.predictRegions(canvas);
+        }
+    }
+
+    private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
+        this.setState({ selectedRegions });
+    }
+
+    private onTagsChanged = async (tags) => {
+        const project = {
+            ...this.props.project,
+            tags,
+        };
+
+        await this.props.actions.saveProject(project);
+    }
+
+    private onLockedTagsChanged = (lockedTags: string[]) => {
+        this.setState({ lockedTags });
+    }
+
+    private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
+        switch (toolbarItem.props.name) {
+            case ToolbarItemName.DrawRectangle:
+                this.setState({
+                    selectionMode: SelectionMode.RECT,
+                    editorMode: EditorMode.Rectangle,
+                });
+                break;
+            case ToolbarItemName.DrawPolygon:
+                this.setState({
+                    selectionMode: SelectionMode.POLYGON,
+                    editorMode: EditorMode.Polygon,
+                });
+                break;
+            case ToolbarItemName.DrawPolyline:
+                this.setState({
+                    selectionMode: SelectionMode.POLYLINE,
+                    editorMode: EditorMode.Polyline,
+                });
+                break;
+            case ToolbarItemName.CopyRectangle:
+                this.setState({
+                    selectionMode: SelectionMode.COPYRECT,
+                    editorMode: EditorMode.CopyRect,
+                });
+                break;
+            case ToolbarItemName.SelectCanvas:
+                this.setState({
+                    selectionMode: SelectionMode.NONE,
+                    editorMode: EditorMode.Select,
+                });
+                break;
+            case ToolbarItemName.PreviousAsset:
+                await this.goToRootAsset(-1);
+                break;
+            case ToolbarItemName.NextAsset:
+                await this.goToRootAsset(1);
+                break;
+            case ToolbarItemName.CopyRegions:
+                this.canvas.current.copyRegions();
+                break;
+            case ToolbarItemName.CutRegions:
+                this.canvas.current.cutRegions();
+                break;
+            case ToolbarItemName.PasteRegions:
+                this.canvas.current.pasteRegions();
+                break;
+            case ToolbarItemName.RemoveAllRegions:
+                this.canvas.current.confirmRemoveAllRegions();
+                break;
+            case ToolbarItemName.ActiveLearning:
+                await this.predictRegions();
+                break;
+        }
+    }
+
+    private predictRegions = async (canvas?: HTMLCanvasElement) => {
+        canvas = canvas || document.querySelector("canvas");
+        if (!canvas) {
+            return;
+        }
+
+        // Load the configured ML model
+        if (!this.activeLearningService.isModelLoaded()) {
+            let toastId: number = null;
+            try {
+                toastId = toast.info(strings.activeLearning.messages.loadingModel, { autoClose: false });
+                await this.activeLearningService.ensureModelLoaded();
+            } catch (e) {
+                toast.error(strings.activeLearning.messages.errorLoadModel);
+                return;
+            } finally {
+                toast.dismiss(toastId);
+            }
+        }
+
+        // Predict and add regions to current asset
+        try {
+            const updatedAssetMetadata = await this.activeLearningService
+                .predictRegions(canvas, this.state.selectedAsset);
+
+            await this.onAssetMetadataChanged(updatedAssetMetadata);
+            this.setState({ selectedAsset: updatedAssetMetadata });
+        } catch (e) {
+            throw new AppError(ErrorCode.ActiveLearningPredictionError, "Error predicting regions");
+        }
     }
 
     /**
