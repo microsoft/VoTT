@@ -8,7 +8,7 @@ import {
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
-import { decryptProject, encryptProject } from "../common/utils";
+import { decryptProject, encodeFileURI, encryptProject } from "../common/utils";
 import packageJson from "../../package.json";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IExportFormat } from "vott-react";
@@ -48,7 +48,7 @@ export default class ProjectService implements IProjectService {
     public static getProjectSourceFolderPath(project: IProject): string {
         const { providerType, providerOptions } = project.sourceConnection;
         if (providerType === AssetProviders.LocalFileSystemProxy) {
-            return `file:${(providerOptions as IProviderOptions).folderPath}/`;
+            return encodeFileURI((providerOptions as IProviderOptions).folderPath);
         }
     }
     /**

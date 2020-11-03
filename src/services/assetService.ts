@@ -14,7 +14,7 @@ import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlo
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import { appInfo } from "../common/appInfo";
 import { encodeFileURI } from "../common/utils";
-import { basename, extname, relative, dirname, normalize } from "path";
+import { basename, extname, relative, dirname, normalize, join } from "path";
 import ProjectService from "./projectService";
 
 /**
@@ -89,7 +89,7 @@ export class AssetService {
             return assetPath;
         }
         const projectFolderPath = ProjectService.getProjectSourceFolderPath(project);
-        return projectFolderPath + assetPath.replace(/^file:/, "");
+        return join(projectFolderPath, assetPath.replace(/^file:/, ""));
     }
 
     /**
