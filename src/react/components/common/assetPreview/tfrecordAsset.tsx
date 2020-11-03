@@ -81,7 +81,7 @@ export class TFRecordAsset extends React.Component<IAssetProps, ITFRecordState> 
     }
 
     private async getTFRecordBase64Image(asset: IAsset): Promise<string> {
-        const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
+        const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset, this.props.project));
         const reader = new TFRecordsReader(tfrecords);
         const buffer = reader.getFeature(0, "image/encoded", FeatureType.Binary) as Uint8Array;
 

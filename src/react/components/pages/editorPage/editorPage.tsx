@@ -331,9 +331,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
         const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
 
         if (selectedAsset) {
-            if (selectedAsset) {
-                this.setState({ selectedAsset });
-            }
+            this.setState({ selectedAsset });
         }
     }
 
@@ -637,7 +635,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
 
         try {
             if (!assetMetadata.asset.size) {
-                const assetProps = await HtmlFileReader.readAssetAttributes(asset);
+                const assetProps = await HtmlFileReader.readAssetAttributes(asset, this.props.project);
                 assetMetadata.asset.size = { width: assetProps.width, height: assetProps.height };
             }
         } catch (err) {

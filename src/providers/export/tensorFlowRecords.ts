@@ -45,19 +45,19 @@ export class TFRecordsExportProvider extends ExportProvider {
         await this.storageProvider.createContainer(exportFolderName);
 
         await this.exportPBTXT(exportFolderName, this.project);
-        await this.exportRecords(exportFolderName, allAssets);
+        await this.exportRecords(exportFolderName, allAssets, this.project);
     }
 
-    private async exportRecords(exportFolderName: string, allAssets: IAssetMetadata[]) {
+    private async exportRecords(exportFolderName: string, allAssets: IAssetMetadata[], project: IProject) {
         return await allAssets.mapAsync(async (element) => {
-            return await this.exportSingleRecord(exportFolderName, element);
+            return await this.exportSingleRecord(exportFolderName, element, project);
         });
     }
 
-    private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata): Promise<void> {
+    private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata, project: IProject): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
-                const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset);
+                const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset, project);
                 const imageBuffer = new Uint8Array(arrayBuffer);
 
                 // Get Base64

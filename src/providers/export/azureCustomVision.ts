@@ -170,7 +170,7 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
      * @param tags - The global tag list from custom vision service
      */
     private async uploadAsset(assetMetadata: IAssetMetadata, tags: ITagList): Promise<void> {
-        const blob = await HtmlFileReader.getAssetBlob(assetMetadata.asset);
+        const blob = await HtmlFileReader.getAssetBlob(assetMetadata.asset, this.project);
 
         // Upload new image to the custom vision service
         const newImage = await this.customVisionService.createImage(this.options.projectId, blob);

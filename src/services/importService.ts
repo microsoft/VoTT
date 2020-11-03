@@ -94,9 +94,9 @@ export default class ImportService implements IImportService {
         });
 
         if (this.isVideoProject(v1Project)) {
-            generatedAssetMetadata = await this.generateVideoAssets(v1Project, frames);
+            generatedAssetMetadata = await this.generateVideoAssets(v1Project, frames, v2Project);
         } else {
-            generatedAssetMetadata = await this.generateImageAssets(v1Project, frames);
+            generatedAssetMetadata = await this.generateImageAssets(v1Project, frames, v2Project);
         }
 
         return generatedAssetMetadata;
@@ -107,7 +107,7 @@ export default class ImportService implements IImportService {
      * @param v1Project - v1 Project content and file information
      * @param frames - Array of frames in v1 project
      */
-    private async generateImageAssets(v1Project: IFileInfo, frames: IV1Frame[]): Promise<IAssetMetadata[]> {
+    private async generateImageAssets(v1Project: IFileInfo, frames: IV1Frame[], v2Project: IProject): Promise<IAssetMetadata[]> {
         const projectPath = normalizeSlashes(v1Project.file.path.replace(/\.[^/.]+$/, ""));
 
         return await frames.mapAsync(async (frame) => {
@@ -115,7 +115,7 @@ export default class ImportService implements IImportService {
             const asset = AssetService.createAssetFromFilePath(filePath);
             const assetState = this.getAssetState(frame);
 
-            return await this.createAssetMetadata(asset, assetState, frame.regions);
+            return await this.createAssetMetadata(asset, assetState, frame.regions, v2Project);
         });
     }
 
@@ -124,7 +124,7 @@ export default class ImportService implements IImportService {
      * @param v1Project - v1 Project content and file information
      * @param frames - Array of frames in v1 project
      */
-    private async generateVideoAssets(v1Project: IFileInfo, frames: IV1Frame[]): Promise<IAssetMetadata[]> {
+    private async generateVideoAssets(v1Project: IFileInfo, frames: IV1Frame[], v2Project: IProject): Promise<IAssetMetadata[]> {
         const parentVideoAsset = await this.createParentVideoAsset(v1Project);
         const originalProject = JSON.parse(v1Project.content as string);
 
@@ -134,13 +134,13 @@ export default class ImportService implements IImportService {
             const asset = this.createVideoFrameAsset(parentVideoAsset, timestamp);
             const assetState = this.getAssetState(frame);
 
-            return await this.createAssetMetadata(asset, assetState, frame.regions, parentVideoAsset);
+            return await this.createAssetMetadata(asset, assetState, frame.regions, v2Project, parentVideoAsset);
         });
 
         const taggedAssets = videoFrameAssets
             .filter((assetMetadata) => assetMetadata.asset.state === AssetState.Tagged);
         const parentAssetState = taggedAssets.length > 0 ? AssetState.Tagged : AssetState.Visited;
-        const parentAssetMetadata = await this.createAssetMetadata(parentVideoAsset, parentAssetState, []);
+        const parentAssetMetadata = await this.createAssetMetadata(parentVideoAsset, parentAssetState, [], v2Project);
 
         return [parentAssetMetadata].concat(videoFrameAssets);
     }
@@ -162,9 +162,10 @@ export default class ImportService implements IImportService {
      * @param v1Project - V1 Project Content and File Information
      */
     private async createParentVideoAsset(v1Project: IFileInfo): Promise<IAsset> {
+        const v2Project = await this.convertProject(v1Project);
         const filePath = v1Project.file.path.replace(/\.[^/.]+$/, "");
         const parentAsset = AssetService.createAssetFromFilePath(filePath, filePath.replace(/^.*[\\\/]/, ""));
-        const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset);
+        const assetProps = await HtmlFileReader.readAssetAttributes(parentAsset, v2Project);
 
         parentAsset.size = { height: assetProps.height, width: assetProps.width };
         parentAsset.state = AssetState.Visited;
@@ -272,6 +273,7 @@ export default class ImportService implements IImportService {
         asset: IAsset,
         assetState: AssetState,
         frameRegions: IV1Region[],
+        project: IProject,
         parent?: IAsset,
     ): Promise<IAssetMetadata> {
         const metadata = await this.assetService.getAssetMetadata(asset);
@@ -283,7 +285,7 @@ export default class ImportService implements IImportService {
         }
 
         if (!metadata.asset.size) {
-            metadata.asset.size = await HtmlFileReader.readAssetAttributes(asset);
+            metadata.asset.size = await HtmlFileReader.readAssetAttributes(asset, project);
         }
 
         return metadata;

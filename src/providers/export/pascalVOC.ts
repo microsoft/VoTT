@@ -83,7 +83,7 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
 
     private async exportSingleImage(jpegImagesFolderName: string, assetMetadata: IAssetMetadata): Promise<void> {
         try {
-            const arrayBuffer = await HtmlFileReader.getAssetArray(assetMetadata.asset);
+            const arrayBuffer = await HtmlFileReader.getAssetArray(assetMetadata.asset, this.project);
             const buffer = Buffer.from(arrayBuffer);
             const imageFileName = `${jpegImagesFolderName}/${assetMetadata.asset.name}`;
 

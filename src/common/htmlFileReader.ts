@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { IAsset, AssetType, IFileInfo } from "../models/applicationState";
+import { IAsset, AssetType, IFileInfo, IProject } from "../models/applicationState";
 import Guard from "./guard";
 import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlowReader";
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
+import { AssetService } from "../services/assetService";
 
 /**
  * Helper class for reading HTML files
@@ -46,17 +47,19 @@ export default class HtmlFileReader {
      * Reads attributes from asset depending on type (video or image)
      * @param asset Asset to read from
      */
-    public static async readAssetAttributes(asset: IAsset)
+    public static async readAssetAttributes(asset: IAsset, project: IProject)
         : Promise<{ width: number, height: number, duration?: number }> {
         Guard.null(asset);
 
+        const assetPath = AssetService.getAssetAbsolutePath(asset.path, project);
+
         switch (asset.type) {
             case AssetType.Image:
-                return await this.readImageAttributes(asset.path);
+                return await this.readImageAttributes(assetPath);
             case AssetType.Video:
-                return await this.readVideoAttributes(asset.path);
+                return await this.readVideoAttributes(assetPath);
             case AssetType.TFRecord:
-                return await this.readTFRecordAttributes(asset);
+                return await this.readTFRecordAttributes(asset, project);
             default:
                 throw new Error("Asset not supported");
         }
@@ -73,7 +76,7 @@ export default class HtmlFileReader {
      * Downloads the binary blob from the asset path
      * @param asset The asset to download
      */
-    public static async getAssetBlob(asset: IAsset): Promise<Blob> {
+    public static async getAssetBlob(asset: IAsset, project: IProject): Promise<Blob> {
         Guard.null(asset);
 
         const config: AxiosRequestConfig = {
@@ -82,10 +85,11 @@ export default class HtmlFileReader {
 
         let data = null;
         if (asset.type === AssetType.VideoFrame) {
-            data = await this.getAssetFrameImage(asset);
+            data = await this.getAssetFrameImage(asset, project);
         } else {
+            const assetPath = AssetService.getAssetAbsolutePath(asset.path, project);
             // Download the asset binary from the storage provider
-            const response = await axios.get<Blob>(asset.path, config);
+            const response = await axios.get<Blob>(assetPath, config);
             if (response.status !== 200) {
                 throw new Error("Error downloading asset binary");
             }
@@ -99,8 +103,8 @@ export default class HtmlFileReader {
      * Downloads the binary array from the asset path
      * @param asset The asset to download
      */
-    public static async getAssetArray(asset: IAsset): Promise<ArrayBuffer> {
-        const blob = await this.getAssetBlob(asset);
+    public static async getAssetArray(asset: IAsset, project: IProject): Promise<ArrayBuffer> {
+        const blob = await this.getAssetBlob(asset, project);
         return await new Response(blob).arrayBuffer();
     }
 
@@ -108,7 +112,7 @@ export default class HtmlFileReader {
      * Extracts the specified image frame from a video asset
      * @param asset The asset video frame to retrieve from the parent video
      */
-    public static async getAssetFrameImage(asset: IAsset): Promise<Blob> {
+    public static async getAssetFrameImage(asset: IAsset, project: IProject): Promise<Blob> {
         return new Promise<Blob>((resolve, reject) => {
             const cachingEnabled = false;
             let refresh = !cachingEnabled;
@@ -140,7 +144,7 @@ export default class HtmlFileReader {
             };
             video.onerror = reject;
             if (refresh) {
-                video.src = asset.parent.path;
+                video.src = AssetService.getAssetAbsolutePath(asset.parent.path, project);
             } else {
                 video.currentTime = asset.timestamp;
             }
@@ -176,9 +180,9 @@ export default class HtmlFileReader {
         });
     }
 
-    private static async readTFRecordAttributes(asset: IAsset): Promise<{ width: number, height: number }> {
+    private static async readTFRecordAttributes(asset: IAsset, project: IProject): Promise<{ width: number, height: number }> {
         // Get from TFRecord Reader
-        const tfrecords = new Buffer(await this.getAssetArray(asset));
+        const tfrecords = new Buffer(await this.getAssetArray(asset, project));
         const reader = new TFRecordsReader(tfrecords);
         const width = reader.getFeature(0, "image/width", FeatureType.Int64) as number;
         const height = reader.getFeature(0, "image/height", FeatureType.Int64) as number;

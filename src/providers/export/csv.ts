@@ -33,7 +33,7 @@ export class CsvExportProvider extends ExportProvider<ICsvExportProviderOptions>
         await results.forEachAsync(async (assetMetadata) => {
             if (this.options.includeImages) {
                 // Write Image
-                const arrayBuffer = await HtmlFileReader.getAssetArray(assetMetadata.asset);
+                const arrayBuffer = await HtmlFileReader.getAssetArray(assetMetadata.asset, this.project);
                 const assetFilePath = `vott-csv-export/${assetMetadata.asset.name}`;
                 await this.storageProvider.writeBinary(assetFilePath, Buffer.from(arrayBuffer));
             }

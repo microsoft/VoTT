@@ -323,7 +323,7 @@ export class AssetService {
     }
 
     private async getTFRecordMetadata(asset: IAsset): Promise<ITFRecordMetadata> {
-        const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset));
+        const tfrecords = new Buffer(await HtmlFileReader.getAssetArray(asset, this.project));
         const reader = new TFRecordsReader(tfrecords);
 
         const width = reader.getFeature(0, "image/width", FeatureType.Int64) as number;

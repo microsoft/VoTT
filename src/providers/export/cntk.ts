@@ -48,7 +48,7 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
                     ? ExportSplit.Test
                     : ExportSplit.Train;
 
-                await this.exportAssetFrame(assetMetadata, exportSplit);
+                await this.exportAssetFrame(assetMetadata, exportSplit, this.project);
                 return {
                     asset: assetMetadata,
                     success: true,
@@ -69,7 +69,7 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
         };
     }
 
-    private async exportAssetFrame(assetMetadata: IAssetMetadata, exportSplit: ExportSplit) {
+    private async exportAssetFrame(assetMetadata: IAssetMetadata, exportSplit: ExportSplit, project: IProject) {
         const labelData = [];
         const boundingBoxData = [];
 
@@ -81,7 +81,7 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
             });
         });
 
-        const buffer = await HtmlFileReader.getAssetArray(assetMetadata.asset);
+        const buffer = await HtmlFileReader.getAssetArray(assetMetadata.asset, project);
         const folderName = exportSplit === ExportSplit.Train ? "positive" : "testImages";
         const labelsPath = `${this.exportFolderName}/${folderName}/${assetMetadata.asset.name}.bboxes.labels.tsv`;
         const boundingBoxPath = `${this.exportFolderName}/${folderName}/${assetMetadata.asset.name}.bboxes.tsv`;
