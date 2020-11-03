@@ -5,12 +5,12 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '12.x'
   displayName: 'Install Node.js'
 
-- bash: | 
+- bash: |
     set -e
-    
+
     export DISPLAY=:99.0
 
     npm ci  # do a clean install
