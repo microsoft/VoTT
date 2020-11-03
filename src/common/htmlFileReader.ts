@@ -180,7 +180,8 @@ export default class HtmlFileReader {
         });
     }
 
-    private static async readTFRecordAttributes(asset: IAsset, project: IProject): Promise<{ width: number, height: number }> {
+    private static async readTFRecordAttributes(asset: IAsset, project: IProject)
+            : Promise<{ width: number, height: number }> {
         // Get from TFRecord Reader
         const tfrecords = new Buffer(await this.getAssetArray(asset, project));
         const reader = new TFRecordsReader(tfrecords);

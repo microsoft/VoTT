@@ -7,6 +7,9 @@ import { AssetState, IAsset } from "../models/applicationState";
 
 describe("Html File Reader", () => {
     const assetTestCache = new Map<string, IAsset>();
+    const sourcePath = "C:\\MySource";
+    const project = MockFactory.createTestProject();
+    project.sourceConnection.providerOptions["folderPath"] = sourcePath;
 
     beforeEach(() => {
         assetTestCache.clear();
@@ -27,28 +30,28 @@ describe("Html File Reader", () => {
     });
 
     it("Loads attributes for HTML 5 video", async () => {
-        const videoAsset = AssetService.createAssetFromFilePath("https://server.com/video.mp4");
+        const videoAsset = AssetService.createAssetFromFilePath("https://server.com/video.mp4", sourcePath);
         videoAsset.size = {
             width: 1920,
             height: 1080,
         };
         assetTestCache.set(videoAsset.path, videoAsset);
 
-        const result = await HtmlFileReader.readAssetAttributes(videoAsset);
+        const result = await HtmlFileReader.readAssetAttributes(videoAsset, project);
 
         expect(result.width).toEqual(videoAsset.size.width);
         expect(result.height).toEqual(videoAsset.size.height);
     });
 
     it("Loads attributes for an image asset", async () => {
-        const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+        const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", sourcePath);
         imageAsset.size = {
             width: 1920,
             height: 1080,
         };
         assetTestCache.set(imageAsset.path, imageAsset);
 
-        const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+        const result = await HtmlFileReader.readAssetAttributes(imageAsset, project);
 
         expect(result.width).toEqual(imageAsset.size.width);
         expect(result.height).toEqual(imageAsset.size.height);
@@ -56,7 +59,7 @@ describe("Html File Reader", () => {
 
     describe("Download asset binaries", () => {
         it("Downloads a blob from the asset path", async () => {
-            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", sourcePath);
             axios.get = jest.fn((url, config) => {
                 return Promise.resolve<AxiosResponse>({
                     config,
@@ -67,14 +70,14 @@ describe("Html File Reader", () => {
                 });
             });
 
-            const result = await HtmlFileReader.getAssetBlob(asset);
+            const result = await HtmlFileReader.getAssetBlob(asset, project);
             expect(result).not.toBeNull();
             expect(result).toBeInstanceOf(Blob);
             expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
 
         it("Rejects the promise when request receives non 200 result", async () => {
-            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", sourcePath);
             axios.get = jest.fn((url, config) => {
                 return Promise.resolve<AxiosResponse>({
                     config,
@@ -85,7 +88,7 @@ describe("Html File Reader", () => {
                 });
             });
 
-            await expect(HtmlFileReader.getAssetBlob(asset)).rejects.not.toBeNull();
+            await expect(HtmlFileReader.getAssetBlob(asset, project)).rejects.not.toBeNull();
             expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
     });
@@ -104,17 +107,18 @@ describe("Html File Reader", () => {
         });
 
         it("Downloads a byte array from the asset path", async () => {
-            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
-            const result = await HtmlFileReader.getAssetArray(asset);
+            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg", sourcePath);
+            const result = await HtmlFileReader.getAssetArray(asset, project);
             expect(result).not.toBeNull();
             expect(result).toBeInstanceOf(ArrayBuffer);
             expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
 
         it("Test non valid asset type", async () => {
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported");
+            const imageAsset = AssetService.createAssetFromFilePath(
+                "https://server.com/image.notsupported", sourcePath);
             try {
-                const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+                const result = await HtmlFileReader.readAssetAttributes(imageAsset, project);
             } catch (error) {
                 expect(error).toEqual(new Error("Asset not supported"));
             }
@@ -144,8 +148,8 @@ describe("Html File Reader", () => {
                 });
             });
 
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
-            const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord", sourcePath);
+            const result = await HtmlFileReader.readAssetAttributes(imageAsset, project);
 
             expect(result.width).toEqual(expected.width);
             expect(result.height).toEqual(expected.height);
@@ -175,8 +179,8 @@ describe("Html File Reader", () => {
                 });
             });
 
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
-            const result = await HtmlFileReader.readAssetAttributes(imageAsset);
+            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord", sourcePath);
+            const result = await HtmlFileReader.readAssetAttributes(imageAsset, project);
 
             expect(result.width).toEqual(expected.width);
             expect(result.height).toEqual(expected.height);
@@ -186,42 +190,42 @@ describe("Html File Reader", () => {
     describe("Extracting video frames", () => {
         it("Gets a blob for the requested video frame", async () => {
             const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-1", AssetState.Tagged);
-            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 123.456);
+            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 123.456, sourcePath);
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
-            const blob = await HtmlFileReader.getAssetFrameImage(videoFrame);
+            const blob = await HtmlFileReader.getAssetFrameImage(videoFrame, project);
             expect(blob).not.toBeNull();
             expect(blob).toBeInstanceOf(Blob);
         });
 
         it("Appends jpg file extension on specified video frame asset", async () => {
             const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-2", AssetState.Tagged);
-            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789);
+            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789, sourcePath);
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
             expect(videoFrame.name.endsWith(".jpg")).toBe(false);
-            await HtmlFileReader.getAssetFrameImage(videoFrame);
+            await HtmlFileReader.getAssetFrameImage(videoFrame, project);
             expect(videoFrame.name.endsWith(".jpg")).toBe(true);
         });
 
         it("Does not duplicate jpg file extension on specified video frame asset", async () => {
             const videoAsset = MockFactory.createVideoTestAsset("VideoTestAsset-3", AssetState.Tagged);
-            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789);
+            const videoFrame = MockFactory.createChildVideoAsset(videoAsset, 456.789, sourcePath);
             videoFrame.name += ".jpg";
             assetTestCache.set(videoFrame.parent.path, videoFrame);
 
             expect(videoFrame.name.endsWith(".jpg")).toBe(true);
-            await HtmlFileReader.getAssetFrameImage(videoFrame);
+            await HtmlFileReader.getAssetFrameImage(videoFrame, project);
             expect(videoFrame.name.endsWith(".jpg")).toBe(true);
             expect(videoFrame.name.endsWith(".jpg.jpg")).toBe(false);
         });
 
         it("Throws an error when a video error occurs", async () => {
             const videoErrorAsset = MockFactory.createVideoTestAsset("VideoErrorAsset", AssetState.Tagged);
-            const videoErrorFrame = MockFactory.createChildVideoAsset(videoErrorAsset, 123.456);
+            const videoErrorFrame = MockFactory.createChildVideoAsset(videoErrorAsset, 123.456, sourcePath);
             assetTestCache.set(videoErrorAsset.path, videoErrorFrame);
 
-            await expect(HtmlFileReader.getAssetFrameImage(videoErrorFrame)).rejects.not.toBeNull();
+            await expect(HtmlFileReader.getAssetFrameImage(videoErrorFrame, project)).rejects.not.toBeNull();
         });
     });
 });

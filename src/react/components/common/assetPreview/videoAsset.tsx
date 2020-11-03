@@ -10,6 +10,7 @@ import { IAsset, AssetType, AssetState } from "../../../../models/applicationSta
 import { AssetService } from "../../../../services/assetService";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 import { strings } from "../../../../common/strings";
+import ProjectService from "../../../../services/projectService";
 
 /**
  * VideoAsset component properties
@@ -270,7 +271,8 @@ export class VideoAsset extends React.Component<IVideoAssetProps> {
         if (this.props.onChildAssetSelected) {
             const rootAsset = this.props.asset.parent || this.props.asset;
             const childPath = `${rootAsset.path}#t=${state.currentTime}`;
-            const childAsset = AssetService.createAssetFromFilePath(childPath);
+            const projectSourcePath = ProjectService.getProjectSourceFolderPath(this.props.project);
+            const childAsset = AssetService.createAssetFromFilePath(childPath, projectSourcePath);
             childAsset.state = AssetState.NotVisited;
             childAsset.type = AssetType.VideoFrame;
             childAsset.parent = rootAsset;

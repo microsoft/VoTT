@@ -10,7 +10,7 @@ import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { generateKey } from "../common/crypto";
 import { encryptProject, decryptProject } from "../common/utils";
-import { ExportAssetState } from "../providers/export/exportProvider";
+import { ExportAssetState } from "../providers/export/models";
 import { IVottJsonExportProviderOptions } from "../providers/export/vottJson";
 import { IPascalVOCExportProviderOptions } from "../providers/export/pascalVOC";
 

@@ -10,7 +10,7 @@ import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { decryptProject, encodeFileURI, encryptProject } from "../common/utils";
 import packageJson from "../../package.json";
-import { ExportAssetState } from "../providers/export/exportProvider";
+import { ExportAssetState } from "../providers/export/models";
 import { IExportFormat } from "vott-react";
 import { AssetProviders } from "../providers/storage/assetProviders";
 

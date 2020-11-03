@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { PascalVOCExportProvider, IPascalVOCExportProviderOptions } from "./pascalVOC";
-import { ExportAssetState } from "./exportProvider";
+import { ExportAssetState } from "./models";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import {

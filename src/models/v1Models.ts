@@ -1,4 +1,4 @@
-import { ExportAssetState } from "../providers/export/exportProvider";
+import { ExportAssetState } from "../providers/export/models";
 import { IPoint } from "./applicationState";
 /**
  * @name - V1 Project

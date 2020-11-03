@@ -1,5 +1,6 @@
 import _ from "lodash";
-import { ExportProvider, ExportAssetState, IExportResults } from "./exportProvider";
+import { ExportProvider } from "./exportProvider";
+import { ExportAssetState, IExportResults } from "./models";
 import Guard from "../../common/guard";
 import {
     IProject, IExportFormat, IAssetMetadata,

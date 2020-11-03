@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { CsvExportProvider, ICsvExportProviderOptions } from "./csv";
 import registerProviders from "../../registerProviders";
-import { ExportAssetState } from "./exportProvider";
+import { ExportAssetState } from "./models";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import {
     IProject, IAssetMetadata, AssetState, IExportProviderOptions,

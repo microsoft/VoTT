@@ -1,4 +1,4 @@
-import { ExportAssetState } from "../providers/export/exportProvider";
+import { ExportAssetState } from "../providers/export/models";
 import { IAssetPreviewSettings } from "../react/components/common/assetPreview/assetPreview";
 
 /**

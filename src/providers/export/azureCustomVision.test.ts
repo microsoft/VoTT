@@ -11,7 +11,7 @@ import {
     IProject, AssetState, IAsset, IAssetMetadata,
     RegionType, IRegion, IExportProviderOptions,
 } from "../../models/applicationState";
-import { ExportAssetState } from "./exportProvider";
+import { ExportAssetState } from "./models";
 jest.mock("./azureCustomVision/azureCustomVisionService");
 import {
     AzureCustomVisionService, IAzureCustomVisionProject,

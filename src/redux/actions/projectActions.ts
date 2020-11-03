@@ -12,7 +12,7 @@ import {
     IProject,
 } from "../../models/applicationState";
 import { createAction, createPayloadAction, IPayloadAction } from "./actionCreators";
-import { ExportAssetState, IExportResults } from "../../providers/export/exportProvider";
+import { ExportAssetState, IExportResults } from "../../providers/export/models";
 import { appInfo } from "../../common/appInfo";
 import { strings } from "../../common/strings";
 import { IExportFormat } from "vott-react";

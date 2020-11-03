@@ -5,6 +5,8 @@ import { IVideoAssetProps, VideoAsset, IVideoPlayerState, IVideoAssetState } fro
 import MockFactory from "../../../../common/mockFactory";
 import { CustomVideoPlayerButton } from "../../common/videoPlayer/customVideoPlayerButton";
 import { AssetType, AssetState, IAsset } from "../../../../models/applicationState";
+import { relative } from "path";
+import { VottRegex } from "../../../../common/regex";
 
 describe("Video Asset Component", () => {
     let wrapper: ReactWrapper<IVideoAssetProps, IVideoAssetState> = null;
@@ -22,9 +24,13 @@ describe("Video Asset Component", () => {
     const onDeactivatedHandler = jest.fn();
     const onChildSelectedHandler = jest.fn();
     const onBeforeAssetChangedHandler = jest.fn(() => true);
+    const projectFolder = "C:\\desktop";
+    const project = MockFactory.createTestProject();
+    project.sourceConnection.providerOptions["folderPath"] = projectFolder;
+    const asset = MockFactory.createVideoTestAsset("test-video");
     const defaultProps: IVideoAssetProps = {
-        project: MockFactory.createTestProject(),
-        asset: MockFactory.createVideoTestAsset("test-video"),
+        project,
+        asset,
         autoPlay: true,
         controlsEnabled: true,
         timestamp: 0,
@@ -132,7 +138,7 @@ describe("Video Asset Component", () => {
         let childAssets: IAsset[];
 
         beforeEach(() => {
-            childAssets = MockFactory.createChildVideoAssets(defaultProps.asset);
+            childAssets = MockFactory.createChildVideoAssets(defaultProps.asset, projectFolder);
         });
 
         function setupMoveFrameTest(currentAsset: IAsset) {
@@ -273,9 +279,10 @@ describe("Video Asset Component", () => {
         mockPaused(expectedTime);
 
         expect(onDeactivatedHandler).toBeCalledWith(expect.any(HTMLVideoElement));
+        const relativePath = relative(projectFolder, defaultProps.asset.path.replace(VottRegex.FilePrefix, ""));
         expect(onChildSelectedHandler).toBeCalledWith(expect.objectContaining({
             type: AssetType.VideoFrame,
-            path: `${defaultProps.asset.path}#t=${expectedTime}`,
+            path: `file:${relativePath}#t=${expectedTime}`,
             timestamp: expectedTime,
             parent: defaultProps.asset,
         }));

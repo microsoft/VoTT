@@ -14,8 +14,9 @@ import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlo
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import { appInfo } from "../common/appInfo";
 import { encodeFileURI } from "../common/utils";
-import { basename, extname, relative, dirname, normalize, join } from "path";
+import { basename, extname, relative, dirname, normalize, join, isAbsolute } from "path";
 import ProjectService from "./projectService";
+import { VottRegex } from "../common/regex";
 
 /**
  * @name - Asset Service
@@ -58,13 +59,13 @@ export class AssetService {
      */
     public static createAssetFromFilePath(
             assetFilePath: string,
-            projectFolderPath?: string,
+            projectSourceFolderPath: string,
             assetFileName?: string): IAsset {
         Guard.empty(assetFilePath);
         assetFilePath = decodeURIComponent(assetFilePath);
 
         const format = this.getAssetFormat(assetFilePath);
-        const assetPath = this.getAssetPath(assetFilePath, projectFolderPath);
+        const assetPath = this.getAssetPath(assetFilePath, projectSourceFolderPath);
 
         return {
             id: this.getAssetHash(assetPath),
@@ -85,8 +86,12 @@ export class AssetService {
     }
 
     public static getAssetAbsolutePath(assetPath: string, project: IProject) {
-        if (!assetPath.startsWith("file:")) {
+        if (assetPath.match(VottRegex.HttpPrefix)) {
             return assetPath;
+        }
+        assetPath = assetPath.replace(/^file:/, "");
+        if (isAbsolute(assetPath)) {
+            return `file:${assetPath}`;
         }
         const projectFolderPath = ProjectService.getProjectSourceFolderPath(project);
         return join(projectFolderPath, assetPath.replace(/^file:/, ""));

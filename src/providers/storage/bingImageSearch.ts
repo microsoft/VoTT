@@ -58,7 +58,7 @@ export class BingImageSearch implements IAssetProvider {
         const items = response.data.value.map((item) => item.contentUrl);
 
         return items
-            .map((filePath) => AssetService.createAssetFromFilePath(filePath))
+            .map((filePath) => AssetService.createAssetFromFilePath(filePath, ""))
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
 }

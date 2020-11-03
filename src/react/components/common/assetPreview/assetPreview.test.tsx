@@ -186,7 +186,7 @@ describe("Asset Preview Component", () => {
             asset: MockFactory.createVideoTestAsset("test-video-asset"),
         };
         wrapper = createComponent(props);
-        const childAsset = MockFactory.createChildVideoAsset(props.asset, 10);
+        const childAsset = MockFactory.createChildVideoAsset(props.asset, 10, "");
         wrapper.find(VideoAsset).props().onChildAssetSelected(childAsset);
 
         expect(onChildAssetSelectedHandler).toBeCalledWith(childAsset);
@@ -206,7 +206,7 @@ describe("Asset Preview Component", () => {
 
     it("blocks onChildAssetSelected", () => {
         const videoAsset = MockFactory.createVideoTestAsset("test-video-asset");
-        const childAsset = MockFactory.createChildVideoAsset(videoAsset, 2);
+        const childAsset = MockFactory.createChildVideoAsset(videoAsset, 2, "");
         onBeforeAssetChangedHandler.mockImplementationOnce(() => false);
 
         const props: IAssetPreviewProps = {

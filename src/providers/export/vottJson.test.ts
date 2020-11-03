@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { VottJsonExportProvider, IVottJsonExportProviderOptions } from "./vottJson";
 import registerProviders from "../../registerProviders";
-import { ExportAssetState } from "./exportProvider";
+import { ExportAssetState } from "./models";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";

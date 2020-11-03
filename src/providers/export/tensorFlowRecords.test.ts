@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { TFRecordsExportProvider } from "./tensorFlowRecords";
-import { ExportAssetState } from "./exportProvider";
+import { ExportAssetState } from "./models";
 import registerProviders from "../../registerProviders";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import {

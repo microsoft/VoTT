@@ -166,7 +166,7 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                     onDeactivated={onDeactivated} />;
             case AssetType.Video:
             case AssetType.VideoFrame:
-                return <VideoAsset 
+                return <VideoAsset
                     project={project}
                     asset={rootAsset}
                     controlsEnabled={controlsEnabled}
@@ -181,7 +181,7 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
                     onActivated={onActivated}
                     onDeactivated={onDeactivated} />;
             case AssetType.TFRecord:
-                return <TFRecordAsset 
+                return <TFRecordAsset
                     project={project}
                     asset={asset}
                     onLoaded={this.onAssetLoad}

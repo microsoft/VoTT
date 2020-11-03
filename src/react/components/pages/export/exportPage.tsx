@@ -6,7 +6,7 @@ import IProjectActions, * as projectActions from "../../../../redux/actions/proj
 import ExportForm from "./exportForm";
 import { IProject, IApplicationState, IExportFormat } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
-import { ExportAssetState } from "../../../../providers/export/exportProvider";
+import { ExportAssetState } from "../../../../providers/export/models";
 import { toast } from "react-toastify";
 
 /**

@@ -1,5 +1,6 @@
 import os from "os";
-import { ExportProvider, IExportResults } from "./exportProvider";
+import { ExportProvider } from "./exportProvider";
+import { IExportResults } from "./models";
 import { IAssetMetadata, IExportProviderOptions, IProject } from "../../models/applicationState";
 import HtmlFileReader from "../../common/htmlFileReader";
 import Guard from "../../common/guard";

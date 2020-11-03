@@ -3,7 +3,7 @@ import os from "os";
 import { CntkExportProvider, ICntkExportProviderOptions } from "./cntk";
 import { IProject, AssetState, IAssetMetadata } from "../../models/applicationState";
 import { AssetProviderFactory } from "../storage/assetProviderFactory";
-import { ExportAssetState } from "./exportProvider";
+import { ExportAssetState } from "./models";
 import MockFactory from "../../common/mockFactory";
 import registerMixins from "../../registerMixins";
 import registerProviders from "../../registerProviders";

@@ -1,4 +1,5 @@
-import { ExportProvider, ExportAssetState } from "./exportProvider";
+import { ExportProvider } from "./exportProvider";
+import { ExportAssetState } from "./models";
 import { IProject, AssetState, AssetType, IExportProviderOptions, IAsset } from "../../models/applicationState";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";

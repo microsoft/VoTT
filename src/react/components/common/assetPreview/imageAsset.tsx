@@ -1,6 +1,6 @@
 import React from "react";
 import { IAssetProps } from "./assetPreview";
-import { AssetService } from "../../../../services/assetService"
+import { AssetService } from "../../../../services/assetService";
 
 /**
  * ImageAsset component used to render all image assets

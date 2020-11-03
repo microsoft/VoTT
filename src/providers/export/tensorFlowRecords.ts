@@ -54,7 +54,8 @@ export class TFRecordsExportProvider extends ExportProvider {
         });
     }
 
-    private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata, project: IProject): Promise<void> {
+    private async exportSingleRecord(exportFolderName: string, element: IAssetMetadata, project: IProject)
+            : Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 const arrayBuffer = await HtmlFileReader.getAssetArray(element.asset, project);

@@ -5,6 +5,8 @@ import { AssetState, RegionType, AssetType } from "../models/applicationState";
 import HtmlFileReader from "../common/htmlFileReader";
 import { IAsset } from "../models/applicationState";
 import registerMixins from "../registerMixins";
+import { relative } from "path";
+import { VottRegex } from "../common/regex";
 jest.mock("../common/htmlFileReader");
 
 describe("Import Service", () => {
@@ -110,7 +112,11 @@ describe("Import Service", () => {
 
         childAssets.forEach((assetMetadata) => {
             const expectedState = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
-            const expectedPath = `${assetMetadata.asset.parent.path}#t=${assetMetadata.asset.timestamp}`;
+            const relativePath = relative(
+                v2Project.sourceConnection.providerOptions["folderPath"],
+                assetMetadata.asset.parent.path.replace(VottRegex.FilePrefix, ""));
+            const expectedPath = `file:${relativePath}#t=${assetMetadata.asset.timestamp}`
+                .replace(/\\/g, "/");
             expect(assetMetadata.asset.state).toEqual(expectedState);
             expect(assetMetadata.asset.parent).not.toBeNull();
             expect(assetMetadata.asset.timestamp).not.toBeNull();

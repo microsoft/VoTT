@@ -2,7 +2,7 @@ import React from "react";
 import ExportForm, { IExportFormProps, IExportFormState } from "./exportForm";
 import { mount } from "enzyme";
 import { IExportFormat } from "../../../../models/applicationState";
-import { ExportAssetState } from "../../../../providers/export/exportProvider";
+import { ExportAssetState } from "../../../../providers/export/models";
 import MockFactory from "../../../../common/mockFactory";
 
 jest.mock("../../../../providers/export/exportProviderFactory");

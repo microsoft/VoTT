@@ -1,5 +1,5 @@
 import Guard from "../../common/guard";
-import { IExportProvider } from "./exportProvider";
+import { IExportProvider } from "./models";
 import { IProject } from "../../models/applicationState";
 
 export interface IExportProviderRegistrationOptions {

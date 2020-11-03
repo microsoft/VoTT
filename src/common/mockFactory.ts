@@ -6,7 +6,6 @@ import {
     IPoint, IRegion, RegionType, ModelPathType,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
-import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetProvider, IAssetProviderRegistrationOptions } from "../providers/storage/assetProviderFactory";
 import { IAzureCloudStorageOptions } from "../providers/storage/azureBlobStorage";
 import { IStorageProvider, IStorageProviderRegistrationOptions } from "../providers/storage/storageProviderFactory";
@@ -34,6 +33,7 @@ import { IKeyboardBindingProps } from "../react/components/common/keyboardBindin
 import { KeyEventType } from "../react/components/common/keyboardManager/keyboardManager";
 import { IKeyboardRegistrations } from "../react/components/common/keyboardManager/keyboardRegistrationManager";
 import { IActiveLearningPageProps } from "../react/components/pages/activeLearning/activeLearningPage";
+import { ExportAssetState } from "../providers/export/models";
 
 export default class MockFactory {
 
@@ -191,9 +191,9 @@ export default class MockFactory {
      * @param rootAsset The parent video asset
      * @param timestamp The timestamp to generate child asset
      */
-    public static createChildVideoAsset(rootAsset: IAsset, timestamp: number): IAsset {
+    public static createChildVideoAsset(rootAsset: IAsset, timestamp: number, projectFilePath: string): IAsset {
         const childPath = `${rootAsset.path}#t=${timestamp}`;
-        const childAsset = AssetService.createAssetFromFilePath(childPath);
+        const childAsset = AssetService.createAssetFromFilePath(childPath, projectFilePath);
         childAsset.type = AssetType.VideoFrame;
         childAsset.state = AssetState.Tagged;
         childAsset.parent = rootAsset;
@@ -208,9 +208,9 @@ export default class MockFactory {
      * @param rootAsset The parent video asset
      * @param count The number of child assets to create (default 10)
      */
-    public static createChildVideoAssets(rootAsset: IAsset, count: number = 10): IAsset[] {
+    public static createChildVideoAssets(rootAsset: IAsset, sourceFolderPath: string, count: number = 10): IAsset[] {
         return [...Array(count).keys()].map((index) => {
-            return this.createChildVideoAsset(rootAsset, index);
+            return this.createChildVideoAsset(rootAsset, index, sourceFolderPath);
         });
     }
 
