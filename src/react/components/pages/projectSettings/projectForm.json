@@ -41,8 +41,8 @@
             "type": "array"
         },
         "useSecurityToken": {
-            "title": "Use Security Token",
-            "description": "When enabled will encrypt sensitive data within provider configuration",
+            "title": "${strings.projectSettings.useSecurityToken.title}",
+            "description": "${strings.projectSettings.useSecurityToken.description}",
             "type": "boolean",
             "default": true
         }

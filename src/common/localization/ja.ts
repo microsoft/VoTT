@@ -86,6 +86,11 @@ export const japanese: IAppStrings = {
             title: "セキュリティ トークン",  // Security Token,
             description: "プロジェクト ファイル内の機密データを暗号化するために使用されます",  // Used to encrypt sensitive data within project file"
         },
+        useSecurityToken: {
+            title: "セキュリティ トークン", // Use Security Token
+            description: "有効にすると、プロバイダー構成内の機密データが暗号化されます。",
+            // When enabled will encrypt sensitive data within provider configuration
+        },
         save: "プロジェクトを保存", // Save Project,
         sourceConnection: {
             title: "ソース接続", // Source Connection,

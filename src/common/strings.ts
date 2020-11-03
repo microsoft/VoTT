@@ -90,6 +90,10 @@ export interface IAppStrings {
             title: string;
             description: string;
         },
+        useSecurityToken: {
+            title: string;
+            description: string;
+        },
         save: string;
         sourceConnection: {
             title: string;
