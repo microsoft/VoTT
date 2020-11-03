@@ -47,7 +47,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-const projectFormTempKey = "projectForm";
+const projectFormKey = "projectForm";
 
 /**
  * @name - Project Settings Page
@@ -64,14 +64,17 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
         // If we are creating a new project check to see if there is a partial
         // project already created in local storage
         if (this.props.match.url === "/projects/create") {
-            const projectJson = localStorage.getItem(projectFormTempKey);
+            const projectJson = localStorage.getItem(projectFormKey);
             if (projectJson) {
                 this.setState({ project: JSON.parse(projectJson) });
             }
         } else if (!this.props.project && projectId) {
             const projectToLoad = this.props.recentProjects.find((project) => project.id === projectId);
             if (projectToLoad) {
-                await this.props.applicationActions.ensureSecurityToken(projectToLoad);
+                if (projectToLoad.useSecurityToken) {
+                    await this.props.applicationActions.ensureSecurityToken(projectToLoad);
+                }
+
                 await this.props.projectActions.loadProject(projectToLoad);
             }
         }
@@ -119,16 +122,19 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
      */
     private onFormChange = (project: IProject) => {
         if (this.isPartialProject(project)) {
-            localStorage.setItem(projectFormTempKey, JSON.stringify(project));
+            localStorage.setItem(projectFormKey, JSON.stringify(project));
         }
     }
 
     private onFormSubmit = async (project: IProject) => {
         const isNew = !(!!project.id);
 
-        await this.props.applicationActions.ensureSecurityToken(project);
+        if (project.useSecurityToken) {
+            await this.props.applicationActions.ensureSecurityToken(project);
+        }
+
         await this.props.projectActions.saveProject(project);
-        localStorage.removeItem(projectFormTempKey);
+        localStorage.removeItem(projectFormKey);
 
         toast.success(interpolate(strings.projectSettings.messages.saveSuccess, { project }));
 
@@ -140,7 +146,7 @@ export default class ProjectSettingsPage extends React.Component<IProjectSetting
     }
 
     private onFormCancel = () => {
-        localStorage.removeItem(projectFormTempKey);
+        localStorage.removeItem(projectFormKey);
         this.props.history.goBack();
     }
 

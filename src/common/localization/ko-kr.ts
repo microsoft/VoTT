@@ -86,6 +86,11 @@ export const korean: IAppStrings = {
             title: "보안 토큰",  // Security Token,
             description: "프로젝트 파일 내에서 중요한 데이터를 암호화하는 데 사용",  // Used to encrypt sensitive data within project file
         },
+        useSecurityToken: {
+            title: "보안 토큰 사용", // Use Security Token
+            description: "활성화되면 공급자 구성 내에서 중요한 데이터를 암호화합니다.",
+            // When enabled will encrypt sensitive data within provider configuration
+        },
         save: "프로젝트 저장", // Save Project,
         sourceConnection: {
             title: "소스 연결", // Source Connection,

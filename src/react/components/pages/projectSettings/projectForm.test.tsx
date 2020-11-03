@@ -263,8 +263,8 @@ describe("Project Form Component", () => {
                 onCancel: onCancelHandler,
             });
             const newTagName = "My new tag";
-            wrapper.find("input").last().simulate("change", { target: { value: newTagName } });
-            wrapper.find("input").last().simulate("keyDown", { keyCode: 13 });
+            wrapper.find("input#tagInputField").last().simulate("change", { target: { value: newTagName } });
+            wrapper.find("input#tagInputField").last().simulate("keyDown", { keyCode: 13 });
 
             const tags = wrapper.state().formData.tags;
             expect(tags).toHaveLength(1);

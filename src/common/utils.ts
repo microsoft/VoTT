@@ -59,7 +59,7 @@ export function encodeFileURI(path: string, additionalEncodings?: boolean): stri
     const encodings = {
         "\#": "%23",
         "\?": "%3F",
-        };
+    };
     const encodedURI = `file:${encodeURI(normalizeSlashes(path))}`;
     if (additionalEncodings) {
         return encodedURI.replace(matchString, (match) => encodings[match]);

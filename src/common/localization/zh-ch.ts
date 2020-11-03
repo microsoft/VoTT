@@ -86,6 +86,11 @@ export const chinese: IAppStrings = {
             title: "安全令牌", // Security Token
             description: "用于加密项目文件中的敏感数据", // Used to encrypt sensitive data within project files
         },
+        useSecurityToken: {
+            title: "使用安全令牌", // Use Security Token
+            description: "启用后将在提供者配置内加密敏感数据",
+            // When enabled will encrypt sensitive data within provider configuration
+        },
         save: "保存项目", // Save Project
         sourceConnection: {
             title: "源连接", // Source Connection

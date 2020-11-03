@@ -86,6 +86,11 @@ export const chinesetw: IAppStrings = {
             title: "安全性權杖", // Security Token
             description: "用於加密專案檔案中的敏感資料", // Used to encrypt sensitive data within project files
         },
+        useSecurityToken: {
+            title: "使用安全令牌", // Use Security Token
+            description: "啟用後將在提供者配置內加密敏感數據",
+            // When enabled will encrypt sensitive data within provider configuration
+        },
         save: "保存專案", // Save Project
         sourceConnection: {
             title: "來源連線", // Source Connection

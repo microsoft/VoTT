@@ -2,6 +2,9 @@
     "securityToken": {
         "ui:field": "securityToken"
     },
+    "useSecurityToken": {
+        "ui:widget": "checkbox"
+    },
     "description": {
         "ui:widget": "textarea"
     },

@@ -6,11 +6,6 @@
             "type": "string",
             "pattern": "^[^\\\\\\\\/:*?\\\\\\\"<>|]*$"
         },
-        "securityToken": {
-            "title": "${strings.projectSettings.securityToken.title}",
-            "description": "${strings.projectSettings.securityToken.description}",
-            "type": "string"
-        },
         "sourceConnection": {
             "title": "${strings.projectSettings.sourceConnection.title}",
             "description": "${strings.projectSettings.sourceConnection.description}",
@@ -44,6 +39,41 @@
         "tags": {
             "title": "${strings.tags.title}",
             "type": "array"
+        },
+        "useSecurityToken": {
+            "title": "${strings.projectSettings.useSecurityToken.title}",
+            "description": "${strings.projectSettings.useSecurityToken.description}",
+            "type": "boolean",
+            "default": true
+        }
+    },
+    "dependencies": {
+        "useSecurityToken": {
+            "oneOf": [
+                {
+                    "properties": {
+                        "useSecurityToken": {
+                            "enum": [
+                                true
+                            ]
+                        },
+                        "securityToken": {
+                            "title": "${strings.projectSettings.securityToken.title}",
+                            "description": "${strings.projectSettings.securityToken.description}",
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "useSecurityToken": {
+                            "enum": [
+                                false
+                            ]
+                        }
+                    }
+                }
+            ]
         }
     },
     "required": [
