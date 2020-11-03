@@ -1,9 +1,10 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import HtmlFileReader from "./htmlFileReader";
 import { AssetService } from "../services/assetService";
 import { TFRecordsBuilder, FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import MockFactory from "./mockFactory";
 import { AssetState, IAsset } from "../models/applicationState";
+import nock from 'nock';
 
 describe("Html File Reader", () => {
     const assetTestCache = new Map<string, IAsset>();
@@ -57,62 +58,41 @@ describe("Html File Reader", () => {
     describe("Download asset binaries", () => {
         it("Downloads a blob from the asset path", async () => {
             const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
-            axios.get = jest.fn((url, config) => {
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 200,
-                    statusText: "OK",
-                    data: new Blob(["Some binary data"]),
-                });
-            });
+            nock("https://server.com")
+                .get("/image.jpg")
+                .reply(200, new Blob(["Some binary data"]));
 
             const result = await HtmlFileReader.getAssetBlob(asset);
             expect(result).not.toBeNull();
             expect(result).toBeInstanceOf(Blob);
-            expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
 
         it("Rejects the promise when request receives non 200 result", async () => {
             const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
-            axios.get = jest.fn((url, config) => {
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 404,
-                    statusText: "Not Found",
-                    data: null,
-                });
-            });
+            nock("https://server.com").get("/image.jpg").reply(404, null);
 
             await expect(HtmlFileReader.getAssetBlob(asset)).rejects.not.toBeNull();
-            expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
     });
 
     describe("Download asset binaries array", () => {
-        beforeEach(() => {
-            axios.get = jest.fn((url, config) => {
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 200,
-                    statusText: "OK",
-                    data: [1, 2, 3],
-                });
-            });
-        });
-
         it("Downloads a byte array from the asset path", async () => {
-            const asset = AssetService.createAssetFromFilePath("https://server.com/image.jpg");
+            const imagePath = "https://server.com/image.jpg";
+            nock("https://server.com")
+                .get("/image.jpg")
+                .reply(200, [1, 2, 3]);
+
+            const asset = AssetService.createAssetFromFilePath(imagePath);
             const result = await HtmlFileReader.getAssetArray(asset);
             expect(result).not.toBeNull();
             expect(result).toBeInstanceOf(ArrayBuffer);
-            expect(axios.get).toBeCalledWith(asset.path, { responseType: "blob" });
         });
 
         it("Test non valid asset type", async () => {
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.notsupported");
+            const imagePath = "https://server.com/image.notsupported";
+            axiosMock.onGet(imagePath).reply(200, [1, 2, 3]);
+
+            const imageAsset = AssetService.createAssetFromFilePath(imagePath);
             try {
                 const result = await HtmlFileReader.readAssetAttributes(imageAsset);
             } catch (error) {
@@ -128,23 +108,16 @@ describe("Html File Reader", () => {
                 height: 1080,
             };
 
-            axios.get = jest.fn((url, config) => {
-                const builder = new TFRecordsBuilder();
-                builder.addFeature("image/height", FeatureType.Int64, expected.height);
-                builder.addFeature("image/width", FeatureType.Int64, expected.width);
-                const buffer = builder.build();
-                const tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
+            const builder = new TFRecordsBuilder();
+            builder.addFeature("image/height", FeatureType.Int64, expected.height);
+            builder.addFeature("image/width", FeatureType.Int64, expected.width);
+            const buffer = builder.build();
+            const tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
 
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 200,
-                    statusText: "OK",
-                    data: tfrecords,
-                });
-            });
+            const assetPath = "https://server.com/image.tfrecord"
+            axiosMock.onGet(assetPath).reply(200, tfrecords);
 
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
+            const imageAsset = AssetService.createAssetFromFilePath(assetPath);
             const result = await HtmlFileReader.readAssetAttributes(imageAsset);
 
             expect(result.width).toEqual(expected.width);
@@ -159,23 +132,16 @@ describe("Html File Reader", () => {
                 height: 1080,
             };
 
-            axios.get = jest.fn((url, config) => {
-                const builder = new TFRecordsBuilder();
-                builder.addFeature("image/height", FeatureType.Int64, expected.height);
-                builder.addFeature("image/width", FeatureType.Int64, expected.width);
-                const buffer = builder.build();
-                const tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
+            const builder = new TFRecordsBuilder();
+            builder.addFeature("image/height", FeatureType.Int64, expected.height);
+            builder.addFeature("image/width", FeatureType.Int64, expected.width);
+            const buffer = builder.build();
+            const tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
 
-                return Promise.resolve<AxiosResponse>({
-                    config,
-                    headers: null,
-                    status: 200,
-                    statusText: "OK",
-                    data: tfrecords,
-                });
-            });
+            const assetPath = "https://server.com/image.tfrecord"
+            axiosMock.onGet(assetPath).reply(200, tfrecords);
 
-            const imageAsset = AssetService.createAssetFromFilePath("https://server.com/image.tfrecord");
+            const imageAsset = AssetService.createAssetFromFilePath(assetPath);
             const result = await HtmlFileReader.readAssetAttributes(imageAsset);
 
             expect(result.width).toEqual(expected.width);

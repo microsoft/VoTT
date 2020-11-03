@@ -2,6 +2,7 @@ import axios from "axios";
 import { BingImageSearch, IBingImageSearchOptions, BingImageSearchAspectRatio } from "./bingImageSearch";
 import { IAsset, AssetType, AssetState } from "../../models/applicationState";
 import MD5 from "md5.js";
+import MockAdapter from "axios-mock-adapter";
 
 describe("Bing Image Search", () => {
     const options: IBingImageSearchOptions = {
@@ -18,26 +19,21 @@ describe("Bing Image Search", () => {
         { contentUrl: "http://images.com/image4.jpg" },
     ];
 
-    axios.get = jest.fn(() => {
-        return Promise.resolve({
-            data: {
-                value: assets,
-            },
-        });
-    });
+    const axiosMock = new MockAdapter(axios);
 
     it("calls the Bing image search API", async () => {
         // tslint:disable-next-line:max-line-length
         const expectedUrl = `https://api.cognitive.microsoft.com/bing/v7.0/images/search?q=${options.query}&aspect=${options.aspectRatio}`;
+        axiosMock.onGet(expectedUrl).reply(200, { value: assets, });
+
         const expectedHeaders = {
-            headers: {
-                "Ocp-Apim-Subscription-Key": options.apiKey,
-                "Accept": "application/json",
-            },
+            "Ocp-Apim-Subscription-Key": options.apiKey,
+            "Accept": "application/json",
         };
 
         await provider.getAssets();
-        expect(axios.get).toBeCalledWith(expectedUrl, expectedHeaders);
+        expect(axiosMock.history.get[0].url).toEqual(expectedUrl);
+        expect(axiosMock.history.get[0].headers).toEqual(expectedHeaders);
     });
 
     it("returns parsed image assets", async () => {
