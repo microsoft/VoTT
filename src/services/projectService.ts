@@ -3,7 +3,7 @@ import shortid from "shortid";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import {
     IProject, ISecurityToken, AppError,
-    ErrorCode, ModelPathType, IActiveLearningSettings,
+    ErrorCode, ModelPathType, IActiveLearningSettings, IProviderOptions,
 } from "../models/applicationState";
 import Guard from "../common/guard";
 import { constants } from "../common/constants";
@@ -12,6 +12,7 @@ import { decryptProject, encryptProject } from "../common/utils";
 import packageJson from "../../package.json";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IExportFormat } from "vott-react";
+import { AssetProviders } from "../providers/storage/assetProviders";
 
 /**
  * Functions required for a project service
@@ -44,6 +45,12 @@ const defaultExportOptions: IExportFormat = {
  * @description - Functions for dealing with projects
  */
 export default class ProjectService implements IProjectService {
+    public static getProjectSourceFolderPath(project: IProject): string {
+        const { providerType, providerOptions } = project.sourceConnection;
+        if (providerType === AssetProviders.LocalFileSystemProxy) {
+            return `file:${(providerOptions as IProviderOptions).folderPath}/`;
+        }
+    }
     /**
      * Loads a project
      * @param project The project JSON to load

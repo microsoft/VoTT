@@ -15,6 +15,7 @@ describe("Image Asset Component", () => {
 
     MockFactory.createTestAsset("test");
     const defaultProps: IAssetProps = {
+        project: MockFactory.createTestProject(),
         asset: {
             ...MockFactory.createTestAsset("test"),
             path: dataUri,

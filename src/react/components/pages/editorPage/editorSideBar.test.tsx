@@ -14,6 +14,7 @@ describe("Editor SideBar", () => {
 
     it("Component renders correctly", () => {
         const props: IEditorSideBarProps = {
+            project: MockFactory.createTestProject(),
             assets: testAssets,
             onAssetSelected: onSelectAssetHandler,
         };
@@ -26,6 +27,7 @@ describe("Editor SideBar", () => {
 
     it("Initializes state without asset selected", () => {
         const props: IEditorSideBarProps = {
+            project: MockFactory.createTestProject(),
             assets: testAssets,
             onAssetSelected: onSelectAssetHandler,
         };
@@ -39,6 +41,7 @@ describe("Editor SideBar", () => {
         const selectedAssetIndex = 3;
 
         const props: IEditorSideBarProps = {
+            project: MockFactory.createTestProject(),
             assets: testAssets,
             selectedAsset: testAssets[selectedAssetIndex],
             onAssetSelected: onSelectAssetHandler,
@@ -51,6 +54,7 @@ describe("Editor SideBar", () => {
 
     it("Updates states after props have changed", (done) => {
         const props: IEditorSideBarProps = {
+            project: MockFactory.createTestProject(),
             assets: testAssets,
             selectedAsset: null,
             onAssetSelected: onSelectAssetHandler,
@@ -74,6 +78,7 @@ describe("Editor SideBar", () => {
 
     it("Correctly switches between assets", async () => {
         const props: IEditorSideBarProps = {
+            project: MockFactory.createTestProject(),
             assets: testAssets,
             selectedAsset: testAssets[0],
             onAssetSelected: onSelectAssetHandler,
@@ -108,6 +113,7 @@ describe("Editor SideBar", () => {
 
     it("Updates row sizes when thumbnail size is changed", () => {
         const props: IEditorSideBarProps = {
+            project: MockFactory.createTestProject(),
             assets: testAssets,
             onAssetSelected: onSelectAssetHandler,
             thumbnailSize: {

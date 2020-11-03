@@ -23,6 +23,7 @@ describe("Video Asset Component", () => {
     const onChildSelectedHandler = jest.fn();
     const onBeforeAssetChangedHandler = jest.fn(() => true);
     const defaultProps: IVideoAssetProps = {
+        project: MockFactory.createTestProject(),
         asset: MockFactory.createVideoTestAsset("test-video"),
         autoPlay: true,
         controlsEnabled: true,

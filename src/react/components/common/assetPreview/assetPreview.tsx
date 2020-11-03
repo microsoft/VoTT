@@ -1,5 +1,5 @@
 import React, { SyntheticEvent } from "react";
-import { IAsset, AssetType, IProjectVideoSettings } from "../../../../models/applicationState";
+import { IAsset, AssetType, IProjectVideoSettings, IProject } from "../../../../models/applicationState";
 import { strings } from "../../../../common/strings";
 import { ImageAsset } from "./imageAsset";
 import { VideoAsset } from "./videoAsset";
@@ -19,6 +19,8 @@ export type ContentSource = HTMLImageElement | HTMLVideoElement | IGenericConten
  * AssetPreview component properties
  */
 export interface IAssetProps {
+    /** Project */
+    project: IProject;
     /** The Asset to preview */
     asset: IAsset;
     /** The child assets (ex. video frames) of the parent asset */
@@ -75,6 +77,7 @@ export interface IAssetPreviewSettings {
 export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPreviewState> {
     /** Default properties for component if not defined */
     public static defaultProps: IAssetPreviewProps = {
+        project: null,
         asset: null,
         childAssets: [],
         autoPlay: false,
@@ -137,37 +140,54 @@ export class AssetPreview extends React.Component<IAssetPreviewProps, IAssetPrev
     }
 
     private renderAsset = () => {
-        const { asset, childAssets, autoPlay } = this.props;
+        const {
+            project,
+            asset,
+            childAssets,
+            autoPlay,
+            additionalSettings,
+            controlsEnabled,
+            onActivated,
+            onDeactivated,
+            onBeforeAssetChanged,
+            onChildAssetSelected,
+        } = this.props;
         const rootAsset = asset.parent || asset;
 
         switch (asset.type) {
             case AssetType.Image:
-                return <ImageAsset asset={rootAsset}
-                    additionalSettings={this.props.additionalSettings}
+                return <ImageAsset
+                    project={project}
+                    asset={rootAsset}
+                    additionalSettings={additionalSettings}
                     onLoaded={this.onAssetLoad}
                     onError={this.onError}
-                    onActivated={this.props.onActivated}
-                    onDeactivated={this.props.onDeactivated} />;
+                    onActivated={onActivated}
+                    onDeactivated={onDeactivated} />;
             case AssetType.Video:
             case AssetType.VideoFrame:
-                return <VideoAsset asset={rootAsset}
-                    controlsEnabled={this.props.controlsEnabled}
-                    additionalSettings={this.props.additionalSettings}
+                return <VideoAsset 
+                    project={project}
+                    asset={rootAsset}
+                    controlsEnabled={controlsEnabled}
+                    additionalSettings={additionalSettings}
                     childAssets={childAssets}
                     timestamp={asset.timestamp}
                     autoPlay={autoPlay}
                     onLoaded={this.onAssetLoad}
                     onError={this.onError}
-                    onBeforeAssetChanged={this.props.onBeforeAssetChanged}
+                    onBeforeAssetChanged={onBeforeAssetChanged}
                     onChildAssetSelected={this.onChildAssetSelected}
-                    onActivated={this.props.onActivated}
-                    onDeactivated={this.props.onDeactivated} />;
+                    onActivated={onActivated}
+                    onDeactivated={onDeactivated} />;
             case AssetType.TFRecord:
-                return <TFRecordAsset asset={asset}
+                return <TFRecordAsset 
+                    project={project}
+                    asset={asset}
                     onLoaded={this.onAssetLoad}
                     onError={this.onError}
-                    onActivated={this.props.onActivated}
-                    onDeactivated={this.props.onDeactivated} />;
+                    onActivated={onActivated}
+                    onDeactivated={onDeactivated} />;
             default:
                 return <div className="asset-error">{strings.editorPage.assetError}</div>;
         }

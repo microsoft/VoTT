@@ -20,6 +20,7 @@ describe("Asset Preview Component", () => {
     const onBeforeAssetChangedHandler = jest.fn(() => true);
 
     const defaultProps: IAssetPreviewProps = {
+        project: MockFactory.createTestProject(),
         asset: {
             ...MockFactory.createTestAsset("test-image-asset"),
             path: dataUri,

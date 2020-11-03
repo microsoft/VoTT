@@ -37,6 +37,7 @@ describe("TFRecord Asset Component", () => {
     });
 
     const defaultProps: IAssetProps = {
+        project: MockFactory.createTestProject(),
         asset: {
             ...MockFactory.createTestAsset("test"),
             path: "abc",

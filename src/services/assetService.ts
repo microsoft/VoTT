@@ -15,6 +15,7 @@ import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBui
 import { appInfo } from "../common/appInfo";
 import { encodeFileURI } from "../common/utils";
 import { basename, extname, relative, dirname, normalize } from "path";
+import ProjectService from "./projectService";
 
 /**
  * @name - Asset Service
@@ -57,14 +58,13 @@ export class AssetService {
      */
     public static createAssetFromFilePath(
             assetFilePath: string,
-            projectFilePath: string,
+            projectFolderPath?: string,
             assetFileName?: string): IAsset {
         Guard.empty(assetFilePath);
-        Guard.empty(projectFilePath);
         assetFilePath = decodeURIComponent(assetFilePath);
 
         const format = this.getAssetFormat(assetFilePath);
-        const assetPath = this.getAssetPath(projectFilePath, assetFilePath);
+        const assetPath = this.getAssetPath(assetFilePath, projectFolderPath);
 
         return {
             id: this.getAssetHash(assetPath),
@@ -82,6 +82,14 @@ export class AssetService {
         const extension = extname(fileName).replace(".", "");
         const extensionParts = extension.split(/[\?#]/);
         return extensionParts[0].toLowerCase();
+    }
+
+    public static getAssetAbsolutePath(assetPath: string, project: IProject) {
+        if (!assetPath.startsWith("file:")) {
+            return assetPath;
+        }
+        const projectFolderPath = ProjectService.getProjectSourceFolderPath(project);
+        return projectFolderPath + assetPath.replace(/^file:/, "");
     }
 
     /**
@@ -126,14 +134,13 @@ export class AssetService {
         return new MD5().update(assetPath).digest("hex");
     }
 
-    private static getAssetPath(projectFilePath: string, assetFilePath: string): string {
+    private static getAssetPath(assetFilePath: string, projectFolderPath: string): string {
         if (assetFilePath.match(/^https?:\/\//)) {
             return encodeURI(assetFilePath);
         }
         assetFilePath = this.normalizePath(assetFilePath);
-        projectFilePath = this.normalizePath(projectFilePath);
-        const projectDirName = dirname(projectFilePath);
-        const relativePath = relative(projectDirName, assetFilePath);
+        projectFolderPath = this.normalizePath(projectFolderPath);
+        const relativePath = relative(projectFolderPath, assetFilePath);
         return encodeFileURI(relativePath);
     }
 

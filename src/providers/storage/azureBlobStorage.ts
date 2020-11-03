@@ -197,7 +197,7 @@ export class AzureBlobStorage implements IStorageProvider {
         const result: IAsset[] = [];
         for (const file of files) {
             const url = this.getUrl(file);
-            const asset = AssetService.createAssetFromFilePath(url, this.getFileName(url));
+            const asset = AssetService.createAssetFromFilePath(url, null, this.getFileName(url));
             if (asset.type !== AssetType.Unknown) {
                 result.push(asset);
             }

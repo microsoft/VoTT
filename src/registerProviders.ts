@@ -13,6 +13,8 @@ import { strings } from "./common/strings";
 import { HostProcessType } from "./common/hostProcess";
 import { AzureCustomVisionProvider } from "./providers/export/azureCustomVision";
 import { CntkExportProvider } from "./providers/export/cntk";
+import { StorageProviders } from "./providers/storage/storageProviders";
+import { AssetProviders } from "./providers/storage/assetProviders";
 
 /**
  * Registers storage, asset and export providers, as well as all toolbar items
@@ -20,31 +22,31 @@ import { CntkExportProvider } from "./providers/export/cntk";
 export default function registerProviders() {
     // Storage Providers
     StorageProviderFactory.register({
-        name: "localFileSystemProxy",
+        name: StorageProviders.LocalFileSystemProxy,
         displayName: strings.connections.providers.local.title,
         platformSupport: HostProcessType.Electron,
         factory: (options) => new LocalFileSystemProxy(options),
     });
     StorageProviderFactory.register({
-        name: "azureBlobStorage",
+        name: StorageProviders.AzureBlobStorage,
         displayName: strings.connections.providers.azureBlob.title,
         factory: (options) => new AzureBlobStorage(options),
     });
 
     // Asset Providers
     AssetProviderFactory.register({
-        name: "localFileSystemProxy",
+        name: AssetProviders.LocalFileSystemProxy,
         displayName: strings.connections.providers.local.title,
         platformSupport: HostProcessType.Electron,
         factory: (options) => new LocalFileSystemProxy(options),
     });
     AssetProviderFactory.register({
-        name: "azureBlobStorage",
+        name: AssetProviders.AzureBlobStorage,
         displayName: strings.connections.providers.azureBlob.title,
         factory: (options) => new AzureBlobStorage(options),
     });
     AssetProviderFactory.register({
-        name: "bingImageSearch",
+        name: AssetProviders.BingImageSearch,
         displayName: strings.connections.providers.bing.title,
         factory: (options) => new BingImageSearch(options),
     });

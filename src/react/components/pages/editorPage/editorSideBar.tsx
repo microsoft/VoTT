@@ -1,6 +1,6 @@
 import React from "react";
 import { AutoSizer, List } from "react-virtualized";
-import { IAsset, AssetState, ISize } from "../../../../models/applicationState";
+import { IAsset, AssetState, ISize, IProject } from "../../../../models/applicationState";
 import { AssetPreview } from "../../common/assetPreview/assetPreview";
 import { strings } from "../../../../common/strings";
 
@@ -12,6 +12,7 @@ import { strings } from "../../../../common/strings";
  * @member thumbnailSize - The size of the asset thumbnails
  */
 export interface IEditorSideBarProps {
+    project: IProject;
     assets: IAsset[];
     onAssetSelected: (asset: IAsset) => void;
     onBeforeAssetSelected?: () => boolean;
@@ -112,7 +113,9 @@ export default class EditorSideBar extends React.Component<IEditorSideBarProps, 
                 onClick={() => this.onAssetClicked(asset)}>
                 <div className="asset-item-image">
                     {this.renderBadges(asset)}
-                    <AssetPreview asset={asset} />
+                    <AssetPreview
+                        asset={asset}
+                        project={this.props.project} />
                 </div>
                 <div className="asset-item-metadata">
                     <span className="asset-filename" title={asset.name}>{asset.name}</span>

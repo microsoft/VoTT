@@ -196,6 +196,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                     onDragFinished={this.onSideBarResizeComplete}>
                     <div className="editor-page-sidebar bg-lighter-1">
                         <EditorSideBar
+                            project={this.props.project}
                             assets={rootAssets}
                             selectedAsset={selectedAsset ? selectedAsset.asset : null}
                             onBeforeAssetSelected={this.onBeforeAssetSelected}
@@ -224,6 +225,7 @@ export default class EditorPage extends React.Component<IEditorPageProps, IEdito
                                         project={this.props.project}
                                         lockedTags={this.state.lockedTags}>
                                         <AssetPreview
+                                            project={this.props.project}
                                             additionalSettings={this.state.additionalSettings}
                                             autoPlay={true}
                                             controlsEnabled={this.state.isValid}
