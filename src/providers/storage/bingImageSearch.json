@@ -18,7 +18,7 @@
         "query": {
             "type": "string",
             "title": "${strings.connections.providers.bing.query}",
-            "description": "The "
+            "description": "The Bing image search query"
         },
         "aspectRatio": {
             "type": "string",

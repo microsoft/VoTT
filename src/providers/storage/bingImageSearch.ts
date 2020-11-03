@@ -17,7 +17,7 @@ export interface IBingImageSearchOptions {
     apiKey: string;
     query: string;
     aspectRatio: BingImageSearchAspectRatio;
-    size?: BingImageSearchSize,
+    size?: BingImageSearchSize;
     licenseType?: BingImageSearchLicenseType;
 }
 

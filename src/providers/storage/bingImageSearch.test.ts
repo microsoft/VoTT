@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BingImageSearch, IBingImageSearchOptions, BingImageSearchAspectRatio } from "./bingImageSearch";
+import { BingImageSearch, IBingImageSearchOptions, BingImageSearchAspectRatio, BingImageSearchSize, BingImageSearchLicenseType } from "./bingImageSearch";
 import { IAsset, AssetType, AssetState } from "../../models/applicationState";
 import MD5 from "md5.js";
 
@@ -8,6 +8,8 @@ describe("Bing Image Search", () => {
         apiKey: "ABC123",
         query: "Waterfalls",
         aspectRatio: BingImageSearchAspectRatio.All,
+        size: BingImageSearchSize.All,
+        licenseType: BingImageSearchLicenseType.All,
     };
     const provider = new BingImageSearch(options);
 
@@ -28,7 +30,7 @@ describe("Bing Image Search", () => {
 
     it("calls the Bing image search API", async () => {
         // tslint:disable-next-line:max-line-length
-        const expectedUrl = `https://api.cognitive.microsoft.com/bing/v7.0/images/search?q=${options.query}&aspect=${options.aspectRatio}`;
+        const expectedUrl = `https://api.cognitive.microsoft.com/bing/v7.0/images/search?q=${options.query}&aspect=${options.aspectRatio}&license=${options.licenseType}&size=${options.size}`;
         const expectedHeaders = {
             headers: {
                 "Ocp-Apim-Subscription-Key": options.apiKey,
