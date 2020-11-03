@@ -94,7 +94,7 @@ describe("Azure Custom Vision Export Provider", () => {
 
         expect(customVisionMock).toBeCalledWith({
             apiKey: providerOptions.apiKey,
-            baseUrl: `https://${providerOptions.region}.api.cognitive.microsoft.com/customvision/v2.2/Training`,
+            baseUrl: `https://${providerOptions.region}.api.cognitive.microsoft.com/customvision/v3.3/Training`,
         });
     });
 
