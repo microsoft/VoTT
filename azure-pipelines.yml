@@ -5,6 +5,9 @@ pr:
   - dev* # kick off for pr targeting dev or prefix dev
   - master # trigger build for pr targeting master
 
+variables:
+- group: CODE_COV
+
 jobs:
 - job: Linux
   pool:
