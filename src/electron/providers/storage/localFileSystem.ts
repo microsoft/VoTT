@@ -14,7 +14,7 @@ export default class LocalFileSystem implements IStorageProvider {
 
     public selectContainer(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
-            const filePaths = dialog.showOpenDialog(this.browserWindow, {
+            const filePaths = dialog.showOpenDialogSync(this.browserWindow, {
                 title: strings.connections.providers.local.selectFolder,
                 buttonLabel: strings.connections.providers.local.chooseFolder,
                 properties: ["openDirectory", "createDirectory"],
