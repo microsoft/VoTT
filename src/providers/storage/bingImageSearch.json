@@ -3,13 +3,22 @@
     "title": "${strings.connections.providers.bing.options}",
     "required": ["apiKey","query"],
     "properties": {
+        "endpoint": {
+            "type": "string",
+            "title": "Endpoint",
+            "description": "The endpoint from your Bing Search Azure resource",
+            "default": "https://api.bing.microsoft.com/",
+            "pattern": "^https?\\\\://[a-zA-Z0-9\\\\-\\\\.]+\\\\.[a-zA-Z]{2,3}(/\\\\S*)?$"
+        },
         "apiKey": {
             "type": "string",
-            "title": "${strings.connections.providers.bing.apiKey}"
+            "title": "${strings.connections.providers.bing.apiKey}",
+            "description": "The key from your Bing Search Azure resource"
         },
         "query": {
             "type": "string",
-            "title": "${strings.connections.providers.bing.query}"
+            "title": "${strings.connections.providers.bing.query}",
+            "description": "The "
         },
         "aspectRatio": {
             "type": "string",
@@ -26,6 +35,48 @@
                 "${strings.connections.providers.bing.aspectRatio.square}",
                 "${strings.connections.providers.bing.aspectRatio.wide}",
                 "${strings.connections.providers.bing.aspectRatio.tall}"
+            ]
+        },
+        "size": {
+            "type": "string",
+            "title": "Size",
+            "enum": [
+                "All",
+                "Small",
+                "Medium",
+                "Large",
+                "Wallpaper"
+            ],
+            "default": "All",
+            "enumNames": [
+                "All",
+                "Small (Less than 200x200)",
+                "Medium (Less than 500x500)",
+                "Large (Greater than 500x500)",
+                "Wallpaper (Extra large images)"
+            ]
+        },
+        "licenseType": {
+            "type": "string",
+            "title": "License Type",
+            "enum": [
+                "All",
+                "Any",
+                "Public",
+                "Share",
+                "ShareCommercially",
+                "Modify",
+                "ModifyCommercially"
+            ],
+            "default": "All",
+            "enumNames": [
+                "All (does not filter any images)",
+                "Any images with any license type",
+                "Public domain",
+                "Free to share and use",
+                "Free to share and use commercially",
+                "Free to modify, share and use",
+                "Free to modify, share and ues commercially"
             ]
         }
     }
