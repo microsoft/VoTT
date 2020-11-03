@@ -13,6 +13,10 @@ import {
  * @member createContainer - Option for creating container in `initialize()`
  * @member sas - Shared Access Signature (SAS) token for accessing Azure Blob Storage
  * @member oauthToken - Not yet implemented. Optional token for accessing Azure Blob Storage
+ * @member blobEndpoint - Endpoint of the blob
+ * @member defaultEndpointsProtocol - https or http
+ * @member accountKey - Account access key
+ * @member endpointSuffix - Account access key
  */
 export interface IAzureCloudStorageOptions {
     accountName: string;
@@ -20,6 +24,12 @@ export interface IAzureCloudStorageOptions {
     createContainer: boolean;
     sas?: string;
     oauthToken?: string;
+    
+    blobEndpoint?: string;
+
+    accountKey?: string;
+    defaultEndpointsProtocol?: string;
+    endpointSuffix?: string;
 }
 
 /**
@@ -217,7 +227,8 @@ export class AzureBlobStorage implements IStorageProvider {
      * @returns - URL for Azure Blob Storage account with SAS token appended if specified
      */
     public getAccountUrl(): string {
-        return `https://${this.options.accountName}.blob.core.windows.net` + (this.options.sas || "");
+        return (this.options.blobEndpoint || `https://${this.options.accountName}.blob.core.windows.net`) +
+            (this.options.sas || "");
     }
 
     /**

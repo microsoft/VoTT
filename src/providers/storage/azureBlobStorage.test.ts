@@ -14,7 +14,7 @@ describe("Azure blob functions", () => {
 
     const azureData = MockFactory.createAzureData();
     const optionsForGlobalBlob = azureData.options;
-    optionsForGlobalBlob.blobEndpoint = globalCloudRoot;
+    optionsForGlobalBlob.blobEndpoint = globalCloudRoot; // may not be used if using sas
     const optionsForChinaBlob = azureData.options;
     optionsForChinaBlob.blobEndpoint = chinacCloudRoot;
 
@@ -201,17 +201,9 @@ describe("Azure blob functions", () => {
         expect(assets).toHaveLength(azureData.blobs.segment.blobItems.length);
     });
 
-    it("get file name from url", async () => {
+    it.each([globalCloudRoot, chinacCloudRoot])("get file name from non global url", async (path) => {
         const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
-        const url = `${globalCloudRoot}/container/filename.jpg?aBcDeFGHiJkLMnoP`;
-        const fileName = provider.getFileName(url);
-        expect(fileName).toEqual("filename.jpg");
-    });
-
-    // TODO figure out if can pass parameters to a test
-    it("get file name from non global url", async () => {
-        const provider: AzureBlobStorage = new AzureBlobStorage(optionsForGlobalBlob);
-        const url =  `${chinacCloudRoot}/container/filename.jpg?aBcDeFGHiJkLMnoP`;
+        const url =  `${path}/container/filename.jpg?aBcDeFGHiJkLMnoP`;
         const fileName = provider.getFileName(url);
         expect(fileName).toEqual("filename.jpg");
     });
