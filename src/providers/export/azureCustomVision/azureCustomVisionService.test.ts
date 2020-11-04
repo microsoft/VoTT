@@ -68,13 +68,12 @@ describe("Azure Custom Vision Service", () => {
                 });
             });
 
+            await expect(customVisionService.create(testProject)).rejects.not.toBeNull();
             expect(axios.post).toBeCalledWith(
                 expect.stringContaining(`${customVisionOptions.baseUrl}/projects?`),
                 null,
                 expect.anything(),
             );
-
-            await expect(customVisionService.create(testProject)).rejects.not.toBeNull();
         });
     });
 
