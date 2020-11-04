@@ -42,7 +42,7 @@ describe("CSV Format Export Provider", () => {
 
     const expectedFileName = "vott-csv-export/" + testProject.name.replace(" ", "-") + "-export.csv";
 
-    beforeAll(() => {
+    beforeEach(() => {
         HtmlFileReader.getAssetBlob = jest.fn(() => {
             return Promise.resolve(new Blob(["Some binary data"]));
         });
@@ -52,9 +52,7 @@ describe("CSV Format Export Provider", () => {
                 getAssets: jest.fn(() => Promise.resolve(testAssets)),
             };
         });
-    });
 
-    beforeEach(() => {
         registerProviders();
     });
 

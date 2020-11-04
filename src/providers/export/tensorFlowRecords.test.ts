@@ -35,17 +35,15 @@ describe("TFRecords Json Export Provider", () => {
 
     const tagLengthInPbtxt = 31;
 
-    HtmlFileReader.getAssetArray = jest.fn(() => Promise.resolve(new Uint8Array([1, 2, 3]).buffer));
+    beforeEach(() => {
+        HtmlFileReader.getAssetArray = jest.fn(() => Promise.resolve(new Uint8Array([1, 2, 3]).buffer));
 
-    beforeAll(() => {
         AssetProviderFactory.create = jest.fn(() => {
             return {
                 getAssets: jest.fn(() => Promise.resolve(testAssets)),
             };
         });
-    });
 
-    beforeEach(() => {
         registerProviders();
     });
 

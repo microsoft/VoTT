@@ -39,7 +39,7 @@ describe("VoTT Json Export Provider", () => {
 
     const expectedFileName = "vott-json-export/" + testProject.name.replace(" ", "-") + constants.exportFileExtension;
 
-    beforeAll(() => {
+    beforeEach(() => {
         HtmlFileReader.getAssetBlob = jest.fn(() => {
             return Promise.resolve(new Blob(["Some binary data"]));
         });
@@ -49,9 +49,7 @@ describe("VoTT Json Export Provider", () => {
                 getAssets: jest.fn(() => Promise.resolve(testAssets)),
             };
         });
-    });
 
-    beforeEach(() => {
         registerProviders();
     });
 

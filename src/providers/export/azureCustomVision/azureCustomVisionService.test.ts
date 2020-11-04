@@ -17,9 +17,7 @@ describe("Azure Custom Vision Service", () => {
             apiKey: "ABC123",
         };
         customVisionService = new AzureCustomVisionService(customVisionOptions);
-    });
 
-    beforeAll(() => {
         axios.get = jest.fn();
         axios.post = jest.fn();
         getMock = axios.get as jest.Mock;
