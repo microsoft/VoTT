@@ -66,7 +66,7 @@ describe("Editor Canvas", () => {
 
     const editorMock = Editor as any;
 
-    beforeAll(() => {
+    beforeEach(() => {
         let selectionMode = {
             mode: SelectionMode.NONE,
             template: null,
