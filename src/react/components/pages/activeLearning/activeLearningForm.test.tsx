@@ -72,16 +72,16 @@ describe("Active Learning Form", () => {
         };
 
         // Set type to URL
-        wrapper.find(Form).props().onChange({ formData: { modelPathType: ModelPathType.Url } });
+        wrapper.find(Form).props().onChange({ formData: { modelPathType: ModelPathType.Url } } as any);
         // Set the remaining settings
-        wrapper.find(Form).props().onChange({ formData });
+        wrapper.find(Form).props().onChange({ formData } as any);
         expect(wrapper.state().formData).toEqual(formData);
         expect(onChangeHandler).toBeCalledWith(formData);
     });
 
     it("submits form data to the registered submit handler", () => {
         const wrapper = createComponent();
-        wrapper.find(Form).props().onSubmit({ formData: defaultProps.settings });
+        wrapper.find(Form).props().onSubmit({ formData: defaultProps.settings } as any);
 
         expect(onSubmitHandler).toBeCalledWith(defaultProps.settings);
     });

@@ -67,7 +67,7 @@ VoTT is available for Windows, Linux and OSX. Download the appropriate platform 
 
 ### Build and run from source
 
-VoTT requires [NodeJS (>= 10.x, Dubnium) and NPM](https://github.com/nodejs/Release)
+VoTT requires [NodeJS (>= 12.x, Dubnium) and NPM](https://github.com/nodejs/Release)
 
    ```bash
     git clone https://github.com/Microsoft/VoTT.git
