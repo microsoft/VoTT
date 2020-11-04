@@ -30,8 +30,8 @@ describe("Project Service", () => {
         save: jest.fn((exportFormat: IExportFormat) => Promise.resolve(exportFormat.providerOptions)),
     };
 
-    StorageProviderFactory.create = jest.fn(() => storageProviderMock);
-    ExportProviderFactory.create = jest.fn(() => exportProviderMock);
+    StorageProviderFactory.create = jest.fn(() => storageProviderMock) as any;
+    ExportProviderFactory.create = jest.fn(() => exportProviderMock) as any;
 
     beforeEach(() => {
         securityToken = {

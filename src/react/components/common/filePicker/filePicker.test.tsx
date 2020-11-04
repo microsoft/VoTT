@@ -28,7 +28,7 @@ describe("File Picker Component", () => {
 
     it("Calls the onChange handler on successfull file upload", (done) => {
         const expectedContent = "test file content";
-        HtmlFileReader.readAsText = jest.fn(() => Promise.resolve(expectedContent));
+        HtmlFileReader.readAsText = jest.fn(() => Promise.resolve(expectedContent)) as any;
         const event: any = {
             target: {
                 files: ["text.txt"],

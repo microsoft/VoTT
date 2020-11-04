@@ -13,13 +13,13 @@ describe("Azure blob functions", () => {
     const options = ad.options;
 
     const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
-    serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers));
+    serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers)) as any;
 
     ContainerURL.fromServiceURL = jest.fn(() => new ContainerURL(null, null));
     const containerURL = ContainerURL as jest.Mocked<typeof ContainerURL>;
-    containerURL.prototype.create = jest.fn(() => Promise.resolve({ statusCode: 201 }));
-    containerURL.prototype.delete = jest.fn(() => Promise.resolve({ statusCode: 204 }));
-    containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(ad.blobs));
+    containerURL.prototype.create = jest.fn(() => Promise.resolve({ statusCode: 201 })) as any;
+    containerURL.prototype.delete = jest.fn(() => Promise.resolve({ statusCode: 204 })) as any;
+    containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(ad.blobs)) as any;
 
     BlockBlobURL.fromContainerURL = jest.fn(() => new BlockBlobURL(null, null));
 
@@ -31,7 +31,7 @@ describe("Azure blob functions", () => {
         const blob = MockFactory.blob(ad.blobName, ad.blobText, ad.fileType);
         blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
             blobBody: Promise.resolve(blob),
-        }));
+        })) as any;
 
         const provider: AzureBlobStorage = new AzureBlobStorage(options);
 
@@ -55,7 +55,7 @@ describe("Azure blob functions", () => {
         );
         blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
             blobBody: Promise.resolve(blob),
-        }));
+        })) as any;
 
         const provider: AzureBlobStorage = new AzureBlobStorage(options);
 
@@ -76,7 +76,7 @@ describe("Azure blob functions", () => {
         const blob = MockFactory.blob(ad.blobName, ad.blobText, ad.fileType);
         blockBlobURL.prototype.download = jest.fn(() => Promise.resolve({
             blobBody: Promise.resolve(blob),
-        }));
+        })) as any;
 
         const provider: AzureBlobStorage = new AzureBlobStorage(options);
 
@@ -188,7 +188,7 @@ describe("Azure blob functions", () => {
             return {
                 type: AssetType.Image,
             };
-        });
+        }) as any;
         provider.getFileName = jest.fn();
         const assets = await provider.getAssets();
         expect(provider.getFileName).toBeCalled();

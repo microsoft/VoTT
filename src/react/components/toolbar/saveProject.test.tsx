@@ -40,7 +40,7 @@ describe("Save Project Toolbar Item", () => {
     });
 
     it("Calls save project action with successfull result", async () => {
-        actions.saveProject = jest.fn(() => Promise.resolve());
+        actions.saveProject = jest.fn(() => Promise.resolve()) as any;
         const props = createProps();
         wrapper = createComponent(props);
 

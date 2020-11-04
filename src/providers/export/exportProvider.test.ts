@@ -26,7 +26,7 @@ describe("Export Provider Base", () => {
                 asset: { ...asset },
                 regions: [],
             };
-        });
+        }) as any;
 
         testProject = {
             ...MockFactory.createTestProject("TestProject"),

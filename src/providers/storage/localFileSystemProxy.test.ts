@@ -27,7 +27,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
 
         it("selectContainer", async () => {
             const expectedFolderPath = "/test";
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedFolderPath));
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedFolderPath)) as any;
 
             const actualFolderPath = await provider.selectContainer();
             expect(IpcRendererProxy.send).toBeCalledWith("LocalFileSystem:selectContainer");
@@ -35,7 +35,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
         });
 
         it("writeText", async () => {
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve());
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve()) as any;
 
             const fileName = "test.txt";
             const contents = "Hello World!";
@@ -47,7 +47,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
 
         it("readText", async () => {
             const expectedContents = "Hello World!";
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedContents));
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedContents)) as any;
 
             const fileName = "test.txt";
             const expectedFilePath = [options.folderPath, fileName].join("/");
@@ -58,7 +58,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
         });
 
         it("deleteFile", async () => {
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve());
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve()) as any;
 
             const fileName = "test.txt";
             const expectedFilePath = [options.folderPath, fileName].join("/");
@@ -68,7 +68,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
         });
 
         it("createContainer", async () => {
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve());
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve()) as any;
 
             const containerName = "test";
             const expectedFolderPath = [options.folderPath, containerName].join("/");
@@ -78,7 +78,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
         });
 
         it("deleteContainer", async () => {
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve());
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve()) as any;
 
             const containerName = "test";
             const expectedContainerPath = [options.folderPath, containerName].join("/");
@@ -95,7 +95,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
                 "/test/file4.txt",
             ];
 
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedFiles));
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedFiles)) as any;
 
             const containerName = "test";
             const expectedContainerPath = [options.folderPath, containerName].join("/");
@@ -113,7 +113,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
                 "/test/folder4",
             ];
 
-            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedFolders));
+            IpcRendererProxy.send = jest.fn(() => Promise.resolve(expectedFolders)) as any;
 
             const containerName = "test";
             const expectedContainerPath = [options.folderPath, containerName].join("/");

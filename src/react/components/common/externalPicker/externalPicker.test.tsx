@@ -45,7 +45,7 @@ describe("External Picker", () => {
             return Promise.resolve({
                 data: testResponse,
             });
-        });
+        }) as any;
     });
 
     it("Renders select element with default option", () => {
