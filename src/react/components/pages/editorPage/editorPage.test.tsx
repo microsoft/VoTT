@@ -15,8 +15,6 @@ import createReduxStore from "../../../../redux/store/store";
 import { AssetService } from "../../../../services/assetService";
 import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
 import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyboardManager";
-
-jest.mock("../../../../services/projectService");
 import ProjectService from "../../../../services/projectService";
 
 jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
@@ -34,6 +32,8 @@ import { TagInput } from "../../common/tagInput/tagInput";
 import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
+import { StorageProviders } from "../../../../providers/storage/storageProviders";
+import { AssetProviders } from "../../../../providers/storage/assetProviders";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
     return mount(
@@ -388,27 +388,24 @@ describe("Editor Page Component", () => {
 
     describe("Editing Video Assets", () => {
         let wrapper: ReactWrapper;
-        let videoAsset: IAsset;
-        let videoFrames: IAsset[];
+        const videoAsset = MockFactory.createVideoTestAsset("TestVideo");
+        const testProject = MockFactory.createTestProject("TestProject");
+        testProject.sourceConnection.providerType = AssetProviders.LocalFileSystemProxy;
+        testProject.sourceConnection.providerOptions["folderPath"] = "c:/desktop";
+        const projectSourceFolderPath = ProjectService.getProjectSourceFolderPath(testProject);
+        const videoFrames = MockFactory.createChildVideoAssets(videoAsset, projectSourceFolderPath);
+        const projectAssets = [videoAsset].concat(videoFrames);
+        testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
+        const store = createStore(testProject, true);
+        const props = MockFactory.editorPageProps(testProject.id);
 
         beforeEach(async () => {
-            const testProject = MockFactory.createTestProject("TestProject");
-            videoAsset = MockFactory.createVideoTestAsset("TestVideo");
-            videoFrames = MockFactory.createChildVideoAssets(
-                videoAsset, ProjectService.getProjectSourceFolderPath(testProject));
-            const projectAssets = [videoAsset].concat(videoFrames);
-            testProject.assets = _.keyBy(projectAssets, (asset) => asset.id);
-
-            const store = createStore(testProject, true);
-            const props = MockFactory.editorPageProps(testProject.id);
-
             wrapper = createComponent(store, props);
-
             await MockFactory.flushUi();
             wrapper.update();
         });
 
-        it("Child assets are not included within editor page state", () => {
+        it("Child assets are not included within editor page state", async () => {
             const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
             expect(editorPage.state().assets.length).toEqual(testAssets.length + 1);
