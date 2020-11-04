@@ -5,29 +5,8 @@ import ExternalPicker, { IExternalPickerProps, IExternalPickerState, FilterOpera
 import MockFactory from "../../../../common/mockFactory";
 
 describe("External Picker", () => {
-    const onChangeHandler = jest.fn();
-    const defaultProps = createProps({
-        id: "my-custom-control",
-        value: "",
-        schema: {
-            title: "Item Name",
-        },
-        formContext: {
-            providerOptions: {
-                apiKey: "",
-                region: "",
-            },
-        },
-        onChange: onChangeHandler,
-        options: {
-            method: "GET",
-            url: "https://${props.formContext.providerOptions.region}.server.com/api",
-            keySelector: "${item.key}",
-            valueSelector: "${item.value}",
-            authHeaderName: "Authorization",
-            authHeaderValue: "${props.formContext.providerOptions.apiKey}",
-        },
-    });
+    let onChangeHandler = null;
+    let defaultProps = null;
 
     const testResponse = [
         { key: "1", value: "Option 1" },
@@ -40,7 +19,31 @@ describe("External Picker", () => {
         return mount(<ExternalPicker {...props} />);
     }
 
-    beforeAll(() => {
+    beforeEach(() => {
+        onChangeHandler = jest.fn();
+        defaultProps = createProps({
+            id: "my-custom-control",
+            value: "",
+            schema: {
+                title: "Item Name",
+            },
+            formContext: {
+                providerOptions: {
+                    apiKey: "",
+                    region: "",
+                },
+            },
+            onChange: onChangeHandler,
+            options: {
+                method: "GET",
+                url: "https://${props.formContext.providerOptions.region}.server.com/api",
+                keySelector: "${item.key}",
+                valueSelector: "${item.value}",
+                authHeaderName: "Authorization",
+                authHeaderValue: "${props.formContext.providerOptions.apiKey}",
+            },
+        });
+
         axios.request = jest.fn(() => {
             return Promise.resolve({
                 data: testResponse,

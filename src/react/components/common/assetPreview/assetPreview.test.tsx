@@ -11,29 +11,15 @@ describe("Asset Preview Component", () => {
     let wrapper: ReactWrapper<IAssetPreviewProps, IAssetPreviewState> = null;
     // tslint:disable-next-line:max-line-length
     const dataUri = "data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
-    const onLoadedHandler = jest.fn();
-    const onErrorHandler = jest.fn();
-    const onActivatedHandler = jest.fn();
-    const onDeactivatedHandler = jest.fn();
-    const onChildAssetSelectedHandler = jest.fn();
-    const onAssetChangedHandler = jest.fn();
-    const onBeforeAssetChangedHandler = jest.fn(() => true);
+    let onLoadedHandler = null;
+    let onErrorHandler = null;
+    let onActivatedHandler = null;
+    let onDeactivatedHandler = null;
+    let onChildAssetSelectedHandler = null;
+    let onAssetChangedHandler = null;
+    let onBeforeAssetChangedHandler = null;
 
-    const defaultProps: IAssetPreviewProps = {
-        asset: {
-            ...MockFactory.createTestAsset("test-image-asset"),
-            path: dataUri,
-        },
-        autoPlay: false,
-        controlsEnabled: true,
-        onLoaded: onLoadedHandler,
-        onError: onErrorHandler,
-        onActivated: onActivatedHandler,
-        onDeactivated: onDeactivatedHandler,
-        onBeforeAssetChanged: onBeforeAssetChangedHandler,
-        onAssetChanged: onAssetChangedHandler,
-        onChildAssetSelected: onChildAssetSelectedHandler,
-    };
+    let defaultProps: IAssetPreviewProps = null;
 
     function createComponent(props?: IAssetPreviewProps): ReactWrapper<IAssetPreviewProps, IAssetPreviewState> {
         props = props || defaultProps;
@@ -41,6 +27,31 @@ describe("Asset Preview Component", () => {
     }
 
     beforeEach(() => {
+        onLoadedHandler = jest.fn();
+        onErrorHandler = jest.fn();
+        onActivatedHandler = jest.fn();
+        onDeactivatedHandler = jest.fn();
+        onChildAssetSelectedHandler = jest.fn();
+        onAssetChangedHandler = jest.fn();
+        onBeforeAssetChangedHandler = jest.fn(() => true);
+
+        defaultProps = {
+            asset: {
+                ...MockFactory.createTestAsset("test-image-asset"),
+                path: dataUri,
+            },
+            autoPlay: false,
+            controlsEnabled: true,
+            onLoaded: onLoadedHandler,
+            onError: onErrorHandler,
+            onActivated: onActivatedHandler,
+            onDeactivated: onDeactivatedHandler,
+            onBeforeAssetChanged: onBeforeAssetChangedHandler,
+            onAssetChanged: onAssetChangedHandler,
+            onChildAssetSelected: onChildAssetSelectedHandler,
+        };
+
+
         onLoadedHandler.mockClear();
         onErrorHandler.mockClear();
         onActivatedHandler.mockClear();

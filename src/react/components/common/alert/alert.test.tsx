@@ -3,17 +3,22 @@ import { mount, ReactWrapper } from "enzyme";
 import Alert, { IAlertProps, IAlertState } from "./alert";
 
 describe("Alert component", () => {
-    const modalCloseHandler = jest.fn();
-    const defaultProps: IAlertProps = {
-        title: "Test Title",
-        message: "Test Message",
-        onClose: modalCloseHandler,
-        show: false,
-    };
+    let modalCloseHandler = null;
+    let defaultProps: IAlertProps = null;
 
     function createComponent(props: IAlertProps): ReactWrapper<IAlertProps, IAlertState, Alert> {
         return mount(<Alert {...props}></Alert>);
     }
+
+    beforeEach(() => {
+        modalCloseHandler = jest.fn();
+        defaultProps = {
+            title: "Test Title",
+            message: "Test Message",
+            onClose: modalCloseHandler,
+            show: false,
+        };
+    });
 
     it("Is defined", () => {
         expect(Alert).toBeDefined();
@@ -21,7 +26,7 @@ describe("Alert component", () => {
 
     it("Renders nothing if not activated", () => {
         const wrapper = createComponent(defaultProps);
-        expect(wrapper.html()).toBeNull();
+        expect(wrapper.html()).toEqual("");
     });
 
     it("Renders modal when activated", () => {
@@ -52,7 +57,7 @@ describe("Alert component", () => {
     });
 
     it("Calls onClose handler when clicking positive button", () => {
-        const arg = {value: "test"};
+        const arg = { value: "test" };
         const wrapper = createComponent(defaultProps);
 
         wrapper.instance().open(arg);

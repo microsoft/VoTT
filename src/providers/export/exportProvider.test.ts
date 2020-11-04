@@ -14,7 +14,7 @@ describe("Export Provider Base", () => {
     let testProject: IProject = null;
     const testAssets = MockFactory.createTestAssets(10, 1);
 
-    beforeAll(() => {
+    beforeEach(() => {
         AssetProviderFactory.create = jest.fn(() => {
             return {
                 getAssets: jest.fn(() => Promise.resolve(testAssets)),

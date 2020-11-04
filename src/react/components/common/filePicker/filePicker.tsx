@@ -42,7 +42,7 @@ export default class FilePicker extends React.Component<IFilePickerProps> {
 
     private onFileUploaded = (e) => {
         if (e.target.files.length === 0) {
-            this.props.onError(e, "No files were selected");
+            return this.props.onError(e, "No files were selected");
         }
 
         HtmlFileReader.readAsText(e.target.files[0])

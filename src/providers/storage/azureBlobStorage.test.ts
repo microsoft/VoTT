@@ -8,22 +8,28 @@ import { AssetService } from "../../services/assetService";
 import { AssetType } from "../../models/applicationState";
 
 describe("Azure blob functions", () => {
-
-    const ad = MockFactory.createAzureData();
-    const options = ad.options;
-
-    const serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
-    serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers)) as any;
-
-    ContainerURL.fromServiceURL = jest.fn(() => new ContainerURL(null, null));
-    const containerURL = ContainerURL as jest.Mocked<typeof ContainerURL>;
-    containerURL.prototype.create = jest.fn(() => Promise.resolve({ statusCode: 201 })) as any;
-    containerURL.prototype.delete = jest.fn(() => Promise.resolve({ statusCode: 204 })) as any;
-    containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(ad.blobs)) as any;
-
-    BlockBlobURL.fromContainerURL = jest.fn(() => new BlockBlobURL(null, null));
+    let ad = null;
+    let options = null;
+    let serviceURL = null;
+    let containerURL = null;
 
     registerProviders();
+
+    beforeEach(() => {
+        ad = MockFactory.createAzureData();
+        options = ad.options;
+
+        serviceURL = ServiceURL as jest.Mocked<typeof ServiceURL>;
+        serviceURL.prototype.listContainersSegment = jest.fn(() => Promise.resolve(ad.containers)) as any;
+
+        ContainerURL.fromServiceURL = jest.fn(() => new ContainerURL(null, null));
+        containerURL = ContainerURL as jest.Mocked<typeof ContainerURL>;
+        containerURL.prototype.create = jest.fn(() => Promise.resolve({ statusCode: 201 })) as any;
+        containerURL.prototype.delete = jest.fn(() => Promise.resolve({ statusCode: 204 })) as any;
+        containerURL.prototype.listBlobFlatSegment = jest.fn(() => Promise.resolve(ad.blobs)) as any;
+
+        BlockBlobURL.fromContainerURL = jest.fn(() => new BlockBlobURL(null, null));
+    });
 
     it("Reads text from a blob", async () => {
         const blockBlobURL = BlockBlobURL as jest.Mocked<typeof BlockBlobURL>;

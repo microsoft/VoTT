@@ -8,24 +8,27 @@ jest.mock("../../../../providers/export/exportProviderFactory");
 import { ExportProviderFactory } from "../../../../providers/export/exportProviderFactory";
 
 describe("Export Provider Picker", () => {
-    const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
-
+    let exportProviderRegistrations = null;
     let wrapper: ReactWrapper;
-
-    const onChangeHandler = jest.fn();
-    const defaultProps: IExportProviderPickerProps = {
-        id: "test-export-provider-picker",
-        value: "azureCustomVision",
-        onChange: onChangeHandler,
-    };
+    let onChangeHandler = null;
+    let defaultProps: IExportProviderPickerProps = null;
 
     function createComponent(props: IExportProviderPickerProps) {
         return mount(<ExportProviderPicker {...props} />);
     }
 
-    beforeAll(() => {
+    beforeEach(() => {
+        exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
+        onChangeHandler = jest.fn();
+        defaultProps = {
+            id: "test-export-provider-picker",
+            value: "azureCustomVision",
+            onChange: onChangeHandler,
+        };
+
         Object.defineProperty(ExportProviderFactory, "providers", {
             get: jest.fn(() => exportProviderRegistrations),
+            configurable: true
         });
     });
 

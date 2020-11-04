@@ -1,12 +1,13 @@
-import React, { RefObject } from "react";
+import React from "react";
 import { ReactWrapper, mount } from "enzyme";
 import FilePicker from "./filePicker";
 import HtmlFileReader from "../../../../common/htmlFileReader";
+import MockFactory from "../../../../common/mockFactory";
 
 describe("File Picker Component", () => {
     let wrapper: ReactWrapper = null;
-    const onChangeHandler = jest.fn();
-    const onErrorHandler = jest.fn();
+    let onChangeHandler = null;
+    let onErrorHandler = null;
 
     function createComponent(): ReactWrapper {
         return mount(
@@ -17,6 +18,8 @@ describe("File Picker Component", () => {
     }
 
     beforeEach(() => {
+        onChangeHandler = jest.fn();
+        onErrorHandler = jest.fn();
         wrapper = createComponent();
     });
 
@@ -26,7 +29,7 @@ describe("File Picker Component", () => {
         expect(input.prop("type")).toEqual("file");
     });
 
-    it("Calls the onChange handler on successfull file upload", (done) => {
+    it("Calls the onChange handler on successfully file upload", (done) => {
         const expectedContent = "test file content";
         HtmlFileReader.readAsText = jest.fn(() => Promise.resolve(expectedContent)) as any;
         const event: any = {
@@ -43,7 +46,7 @@ describe("File Picker Component", () => {
         });
     });
 
-    it("Calls the onError handler on errored / cancelled file upload", (done) => {
+    it("Calls the onError handler on error / cancelled file upload", async () => {
         const event: any = {
             target: {
                 files: [],
@@ -52,9 +55,7 @@ describe("File Picker Component", () => {
 
         wrapper.find("input").first().simulate("change", event);
 
-        setImmediate(() => {
-            expect(onErrorHandler).toBeCalledWith(expect.anything(), "No files were selected");
-            done();
-        });
+        await MockFactory.flushUi();
+        expect(onErrorHandler).toBeCalledWith(expect.anything(), "No files were selected");
     });
 });

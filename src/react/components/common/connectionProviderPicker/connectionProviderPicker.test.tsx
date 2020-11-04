@@ -10,29 +10,35 @@ jest.mock("../../../../providers/storage/assetProviderFactory");
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 
 describe("Connection Provider Picker", () => {
-    const storageProviderRegistrations = MockFactory.createStorageProviderRegistrations();
-    const assetProviderRegistrations = MockFactory.createAssetProviderRegistrations();
-
+    let storageProviderRegistrations = [];
+    let assetProviderRegistrations = [];
     let wrapper: ReactWrapper;
-
-    const onChangeHandler = jest.fn();
-    const defaultProps: IConnectionProviderPickerProps = {
-        id: "test-connection-provider-picker",
-        value: "",
-        onChange: onChangeHandler,
-    };
+    let onChangeHandler = null;
+    let defaultProps: IConnectionProviderPickerProps = null;
 
     function createComponent(props: IConnectionProviderPickerProps) {
         return mount(<ConnectionProviderPicker {...props} />);
     }
 
-    beforeAll(() => {
+    beforeEach(() => {
+        storageProviderRegistrations = MockFactory.createStorageProviderRegistrations();
+        assetProviderRegistrations = MockFactory.createAssetProviderRegistrations();
+
+        onChangeHandler = jest.fn();
+        defaultProps = {
+            id: "test-connection-provider-picker",
+            value: "",
+            onChange: onChangeHandler,
+        };
+
         Object.defineProperty(StorageProviderFactory, "providers", {
             get: jest.fn(() => storageProviderRegistrations),
+            configurable: true,
         });
 
         Object.defineProperty(AssetProviderFactory, "providers", {
             get: jest.fn(() => assetProviderRegistrations),
+            configurable: true,
         });
     });
 
@@ -61,7 +67,7 @@ describe("Connection Provider Picker", () => {
             expect(picker.find("option").length).toEqual(allProviders.length + 1);
         });
 
-        it("Calls registred onChange handler when value changes", async () => {
+        it("Calls registered onChange handler when value changes", async () => {
             await MockFactory.flushUi(() => {
                 wrapper.find("select").simulate("change", { target: { value: assetProviderRegistrations[1].name } });
             });
