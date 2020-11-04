@@ -173,11 +173,11 @@ export const korean: IAppStrings = {
             deleteSuccess: "${connection.name}을 삭제했습니다.",  // Successfully deleted ${connection.name}"
         },
         imageCorsWarning: "경고 : 웹 브라우저에서 VoTT를 사용하는 경우 CORS (Cross Origin Resource Sharing) " +
-        "제한으로 인해 Bing Image Search의 일부 정보가 제대로 내보내지지 않을 수 있습니다.",
+            "제한으로 인해 Bing Image Search의 일부 정보가 제대로 내보내지지 않을 수 있습니다.",
         // Warning: When using VoTT in a Web browser, some assets from Bing Image Search may no export
         // correctly due to CORS (Cross Origin Resource Sharing) restrictions.",
         blobCorsWarning: "경고 : 소스 또는 대상 연결로 사용하려면, Azure Blob Storage 계정에서 CORS(Cross Domain Resource Sharing) " +
-        "설정을 활성화 해야 합니다. CORS 설정에 대한 자세한 정보는 {0}에서 찾을 수 있습니다.",
+            "설정을 활성화 해야 합니다. CORS 설정에 대한 자세한 정보는 {0}에서 찾을 수 있습니다.",
         // Warning: CORS (Cross Domain Resource Sharing) must be enabled on the Azure Blob Storage account, in order
         // to use i as a source or target connection. More information on enabling CORS can be found in the {0}",
         azDocLinkText: "Azure 설명서.",  // Azure Documentation.,
@@ -206,15 +206,54 @@ export const korean: IAppStrings = {
             },
             bing: {
                 title: "Bing 이미지 검색",  // Bing Image Search,
-                options: "Bing 이미지 검색 옵션",  // Bing Image Search Options,
-                apiKey: "API 키", // API Key,
-                query: "쿼리",  // Query,
+                options: {
+                    title: "Bing 이미지 검색 옵션",
+                },  // Bing Image Search Options,
+                endpoint: {
+                    title: "끝점",
+                    description: "Bing 검색 Azure 리소스 내에 나열된 끝점",
+                },
+                apiKey: {
+                    title: "API 키",
+                    description: "Bing 검색 Azure 리소스 내에 나열된 API 키",
+                }, // API Key,
+                query: {
+                    title: "쿼리",
+                    description: "연결을 채우는 데 사용되는 검색 쿼리",
+                },  // Query,
                 aspectRatio: {
                     title: "종횡비", // Aspect Ratio,
-                    all: "모두", // All,
-                    square: "정사각형", // Square,
-                    wide: "넓은", // Wide,
-                    tall: "긴", // Tall"
+                    description: "지정된 종횡비로 결과를 필터링합니다.",
+                    options: {
+                        all: "모두", // All,
+                        square: "정사각형", // Square,
+                        wide: "넓은", // Wide,
+                        tall: "긴", // Tall"
+                    },
+                },
+                licenseType: {
+                    title: "라이센스 유형",
+                    description: "지정된 라이센스 유형으로 결과 필터링",
+                    options: {
+                        all: "모든 (이미지를 필터링하지 않음)",
+                        any: "라이센스 유형이 있는 모든 이미지",
+                        public: "퍼블릭 도메인",
+                        share: "무료 공유 및 사용",
+                        shareCommercially: "상업적으로 자유롭게 공유하고 사용할 수 있습니다.",
+                        modify: "자유롭게 수정, 공유 및 사용",
+                        modifyCommercially: "상업적으로 자유롭게 수정, 공유 및 사용",
+                    },
+                },
+                size: {
+                    title: "크기",
+                    description: "지정된 크기로 결과를 필터링합니다.",
+                    options: {
+                        all: "모든",
+                        small: "스몰(200x200 미만)",
+                        medium: "중간(500x500 미만)",
+                        large: "대형(500x500 이상)",
+                        wallpaper: "배경 화면 (초대형 이미지)",
+                    },
                 },
             },
             local: {

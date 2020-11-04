@@ -1,6 +1,6 @@
 {
     "type": "object",
-    "title": "${strings.connections.providers.bing.options}",
+    "title": "${strings.connections.providers.bing.options.title}",
     "required": ["apiKey","query"],
     "properties": {
         "endpoint": {
@@ -12,17 +12,18 @@
         },
         "apiKey": {
             "type": "string",
-            "title": "${strings.connections.providers.bing.apiKey}",
-            "description": "The key from your Bing Search Azure resource"
+            "title": "${strings.connections.providers.bing.apiKey.title}",
+            "description": "${strings.connections.providers.bing.apiKey.description}"
         },
         "query": {
             "type": "string",
-            "title": "${strings.connections.providers.bing.query}",
-            "description": "The Bing image search query"
+            "title": "${strings.connections.providers.bing.query.title}",
+            "description": "${strings.connections.providers.bing.query.description}"
         },
         "aspectRatio": {
             "type": "string",
             "title": "${strings.connections.providers.bing.aspectRatio.title}",
+            "description": "${strings.connections.providers.bing.aspectRatio.description}",
             "enum": [
                 "all",
                 "square",
@@ -31,15 +32,16 @@
             ],
             "default": "all",
             "enumNames": [
-                "${strings.connections.providers.bing.aspectRatio.all}",
-                "${strings.connections.providers.bing.aspectRatio.square}",
-                "${strings.connections.providers.bing.aspectRatio.wide}",
-                "${strings.connections.providers.bing.aspectRatio.tall}"
+                "${strings.connections.providers.bing.aspectRatio.options.all}",
+                "${strings.connections.providers.bing.aspectRatio.options.square}",
+                "${strings.connections.providers.bing.aspectRatio.options.wide}",
+                "${strings.connections.providers.bing.aspectRatio.options.tall}"
             ]
         },
         "size": {
             "type": "string",
-            "title": "Size",
+            "title": "${strings.connections.providers.bing.size.title}",
+            "description": "${strings.connections.providers.bing.size.description}",
             "enum": [
                 "All",
                 "Small",
@@ -49,16 +51,17 @@
             ],
             "default": "All",
             "enumNames": [
-                "All",
-                "Small (Less than 200x200)",
-                "Medium (Less than 500x500)",
-                "Large (Greater than 500x500)",
-                "Wallpaper (Extra large images)"
+                "${strings.connections.providers.bing.size.options.all}",
+                "${strings.connections.providers.bing.size.options.small}",
+                "${strings.connections.providers.bing.size.options.medium}",
+                "${strings.connections.providers.bing.size.options.large}",
+                "${strings.connections.providers.bing.size.options.wallpaper}"
             ]
         },
         "licenseType": {
             "type": "string",
-            "title": "License Type",
+            "title": "${strings.connections.providers.bing.licenseType.title}",
+            "description": "${strings.connections.providers.bing.licenseType.description}",
             "enum": [
                 "All",
                 "Any",
@@ -70,13 +73,13 @@
             ],
             "default": "All",
             "enumNames": [
-                "All (does not filter any images)",
-                "Any images with any license type",
-                "Public domain",
-                "Free to share and use",
-                "Free to share and use commercially",
-                "Free to modify, share and use",
-                "Free to modify, share and ues commercially"
+                "${strings.connections.providers.bing.licenseType.options.all}",
+                "${strings.connections.providers.bing.licenseType.options.any}",
+                "${strings.connections.providers.bing.licenseType.options.public}",
+                "${strings.connections.providers.bing.licenseType.options.share}",
+                "${strings.connections.providers.bing.licenseType.options.shareCommercially}",
+                "${strings.connections.providers.bing.licenseType.options.modify}",
+                "${strings.connections.providers.bing.licenseType.options.modifyCommercially}"
             ]
         }
     }

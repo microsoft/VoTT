@@ -200,15 +200,54 @@ export const spanish: IAppStrings = {
             },
             bing: {
                 title: "Búsqueda de Imágenes Bing",
-                options: "Opciones de Búsqueda de Imágenes Bing",
-                apiKey: "Clave API",
-                query: "Consulta",
+                options: {
+                    title: "Opciones de Búsqueda de Imágenes Bing",
+                },
+                endpoint: {
+                    title: "Extremo",
+                    description: "El punto de conexión que aparece en el recurso de Bing Search Azure",
+                },
+                apiKey: {
+                    title: "Clave API",
+                    description: "Una clave de API que aparece en el recurso de Bing Search Azure",
+                },
+                query: {
+                    title: "Consulta",
+                    description: "La consulta de búsqueda utilizada para rellenar la conexión",
+                },
                 aspectRatio: {
                     title: "Relación de Aspecto",
-                    all: "Todos",
-                    square: "Cuadrado",
-                    wide: "Ancho",
-                    tall: "Alto",
+                    description: "Filtra los resultados por la relación de aspecto especificada",
+                    options: {
+                        all: "Todos",
+                        square: "Cuadrado",
+                        wide: "Ancho",
+                        tall: "Alto",
+                    },
+                },
+                licenseType: {
+                    title: "Tipo de licencia",
+                    description: "Filtra los resultados según el tipo de licencia especificado",
+                    options: {
+                        all: "Todos (no filtra ninguna imagen)",
+                        any: "Cualquier imagen con cualquier tipo de licencia",
+                        public: "Dominio público",
+                        share: "Libre para compartir y usar",
+                        shareCommercially: "Libre para compartir y usar comercialmente",
+                        modify: "Libre de modificar, compartir y usar",
+                        modifyCommercially: "Libre de modificar, compartir y ues comercialmente",
+                    },
+                },
+                size: {
+                    title: "Tamaño",
+                    description: "Filtra los resultados según el tamaño especificado",
+                    options: {
+                        all: "Todo",
+                        small: "Pequeño (Menos de 200x200)",
+                        medium: "Medio (Menos de 500x500)",
+                        large: "Grande (mayor de 500x500)",
+                        wallpaper: "Fondo de pantalla (imágenes extra grandes)",
+                    },
                 },
             },
             local: {

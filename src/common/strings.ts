@@ -200,17 +200,56 @@ export interface IAppStrings {
                 }
             },
             bing: {
-                title: string;
-                options: string;
-                apiKey: string;
-                query: string;
+                title: string,
+                endpoint: {
+                    title: string,
+                    description?: string,
+                },
+                apiKey: {
+                    title: string,
+                    description?: string,
+                },
+                query: {
+                    title: string,
+                    description?: string,
+                },
+                options: {
+                    title: string,
+                },
                 aspectRatio: {
                     title: string;
-                    all: string;
-                    square: string;
-                    wide: string;
-                    tall: string;
-                }
+                    description?: string,
+                    options: {
+                        all: string;
+                        square: string;
+                        wide: string;
+                        tall: string;
+                    }
+                },
+                size: {
+                    title: string,
+                    description?: string,
+                    options: {
+                        all: string,
+                        small: string,
+                        medium: string,
+                        large: string,
+                        wallpaper: string,
+                    },
+                },
+                licenseType: {
+                    title: string,
+                    description?: string,
+                    options: {
+                        all: string,
+                        any: string,
+                        public: string,
+                        share: string,
+                        shareCommercially: string,
+                        modify: string,
+                        modifyCommercially: string,
+                    },
+                },
             },
             local: {
                 title: string;
@@ -460,7 +499,7 @@ interface IErrorMetadata {
 interface IStrings extends LocalizedStringsMethods, IAppStrings { }
 
 export const strings: IStrings = new LocalizedStrings({
-// TODO: Need to comment out other languages which will not be used
+    // TODO: Need to comment out other languages which will not be used
     en: english,
     es: spanish,
     ja: japanese,

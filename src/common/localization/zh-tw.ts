@@ -208,15 +208,54 @@ export const chinesetw: IAppStrings = {
             },
             bing: {
                 title: "Bing 影像搜尋", // Bing Image Search
-                options: "Bing 影像搜尋選項", // Bing Image Search Options
-                apiKey: "API密鑰", // API Key
-                query: "查詢", // Query
+                options: {
+                    title: "Bing 影像搜尋選項",
+                }, // Bing Image Search Options
+                endpoint: {
+                    title: "Endpoint",
+                    description: "必應搜索 Azure 資源中列出的終結點",
+                },
+                apiKey: {
+                    title: "API密鑰",
+                    description: "必應搜索 Azure 資源中列出的 API 金鑰",
+                }, // API Key
+                query: {
+                    title: "查詢",
+                    description: "用於填充連接的搜索查詢",
+                }, // Query
                 aspectRatio: {
                     title: "長寬比", // Aspect Ratio
-                    all: "所有", // All
-                    square: "矩形", // Square
-                    wide: "寬", // Wide
-                    tall: "高", // Tall
+                    description: "按指定的縱橫比篩選結果",
+                    options: {
+                        all: "所有", // All
+                        square: "矩形", // Square
+                        wide: "寬", // Wide
+                        tall: "高", // Tall
+                    },
+                },
+                licenseType: {
+                    title: "許可證類型",
+                    description: "按指定的許可證類型篩選結果",
+                    options: {
+                        all: "全部(不過濾任何影像)",
+                        any: "任何許可證類型的圖像",
+                        public: "公有領域",
+                        share: "免費分享和使用",
+                        shareCommercially: "免費共用和使用商業",
+                        modify: "免費修改、共用和使用",
+                        modifyCommercially: "可自由修改、共用和在商業上使用",
+                    },
+                },
+                size: {
+                    title: "大小",
+                    description: "按指定大小篩選結果",
+                    options: {
+                        all: "所有",
+                        small: "小(小於200x200)",
+                        medium: "中等(小於 500x500)",
+                        large: "大(大於 500x500)",
+                        wallpaper: "桌布(超大影像)",
+                    },
                 },
             },
             local: {
