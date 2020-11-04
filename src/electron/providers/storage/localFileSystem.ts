@@ -3,9 +3,10 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import { IStorageProvider } from "../../../providers/storage/storageProviderFactory";
-import { IAsset, AssetType, StorageType } from "../../../models/applicationState";
+import { IAsset, AssetType, StorageType, IConnection } from "../../../models/applicationState";
 import { AssetService } from "../../../services/assetService";
 import { strings } from "../../../common/strings";
+import { ILocalFileSystemProxyOptions } from "../../../providers/storage/localFileSystemProxy";
 
 export default class LocalFileSystem implements IStorageProvider {
     public storageType: StorageType.Local;
@@ -136,9 +137,12 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public async getAssets(folderPath?: string): Promise<IAsset[]> {
-        return (await this.listFiles(path.normalize(folderPath)))
-            .map((filePath) => AssetService.createAssetFromFilePath(filePath))
+    public async getAssets(sourceConnectionFolderPath?: string, relativePath: boolean = false): Promise<IAsset[]> {
+        return (await this.listFiles(path.normalize(sourceConnectionFolderPath)))
+            .map((filePath) => AssetService.createAssetFromFilePath(
+                filePath,
+                undefined,
+                relativePath ? path.relative(sourceConnectionFolderPath, filePath) : filePath))
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
 
