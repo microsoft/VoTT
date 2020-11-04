@@ -74,7 +74,7 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
 
         const cusomVisionServiceOptions: IAzureCustomVisionServiceOptions = {
             apiKey: options.apiKey,
-            baseUrl: `https://${options.region}.api.cognitive.microsoft.com/customvision/v2.2/Training`,
+            baseUrl: `https://${options.region}.api.cognitive.microsoft.com/customvision/v3.3/Training`,
         };
         this.customVisionService = new AzureCustomVisionService(cusomVisionServiceOptions);
     }
