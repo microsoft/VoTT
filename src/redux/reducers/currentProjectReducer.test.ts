@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { reducer } from "./currentProjectReducer";
-import { IProject, IAssetMetadata, AssetState, ITag } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState, ITag, EditorContext } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 import {
     loadProjectAction,
@@ -99,7 +99,7 @@ describe("Current Project Reducer", () => {
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...testAssets[0],
-                state: { "geometry": AssetState.Visited, },
+                state: { [EditorContext.Geometry]: AssetState.Visited, },
                 size: {
                     width: 1024,
                     height: 768,

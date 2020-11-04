@@ -4,7 +4,7 @@ import MockFactory from "../common/mockFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import {
     IProject, IExportFormat, ISecurityToken,
-    AssetState, IActiveLearningSettings, ModelPathType,
+    AssetState, IActiveLearningSettings, ModelPathType, EditorContext,
 } from "../models/applicationState";
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
@@ -196,7 +196,7 @@ describe("Project Service", () => {
     it("deletes all asset metadata files when project is deleted", async () => {
         const assets = MockFactory.createTestAssets(10);
         assets.forEach((asset) => {
-            asset.state = { "geometry": AssetState.Tagged, } ;
+            asset.state = { [EditorContext.Geometry]: AssetState.Tagged, } ;
         });
 
         testProject.assets = _.keyBy(assets, (asset) => asset.id);

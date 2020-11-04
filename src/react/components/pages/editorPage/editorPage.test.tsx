@@ -9,7 +9,7 @@ import EditorGeometryPage from "./geometry/editorGeometryPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
-    EditorMode, IAsset, AssetState, ISize, IActiveLearningSettings, ModelPathType,
+    EditorMode, IAsset, AssetState, ISize, IActiveLearningSettings, ModelPathType, EditorContext,
 } from "../../../../models/applicationState";
 import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
 import createReduxStore from "../../../../redux/store/store";
@@ -444,7 +444,7 @@ describe("Editor Page Component", () => {
             const expectedRootVideoMetadata: IAssetMetadata = {
                 asset: {
                     ...videoAsset,
-                    state: { "geometry": AssetState.Tagged, },
+                    state: { [EditorContext.Geometry]: AssetState.Tagged, },
                 },
                 regions: [],
                 version: appInfo.version,

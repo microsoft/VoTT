@@ -1,4 +1,4 @@
-import { IAssetMetadata, ModelPathType, IActiveLearningSettings, AssetState } from "../models/applicationState";
+import { IAssetMetadata, ModelPathType, IActiveLearningSettings, AssetState, EditorContext } from "../models/applicationState";
 import { ObjectDetection } from "../providers/activeLearning/objectDetection";
 import Guard from "../common/guard";
 import { isElectron } from "../common/hostProcess";
@@ -59,7 +59,7 @@ export class ActiveLearningService {
             regions: updatedRegions,
             asset: {
                 ...assetMetadata.asset,
-                state: {"geometry": updatedRegions.length > 0 ? AssetState.Tagged : AssetState.Visited},
+                state: {[EditorContext.Geometry]: updatedRegions.length > 0 ? AssetState.Tagged : AssetState.Visited},
                 predicted: true,
             },
         } as IAssetMetadata;

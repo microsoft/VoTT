@@ -1,5 +1,5 @@
 import { AssetService } from "./assetService";
-import { AssetType, IAssetMetadata, AssetState, IAsset, IProject } from "../models/applicationState";
+import { AssetType, IAssetMetadata, AssetState, IAsset, IProject, EditorContext } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
@@ -153,7 +153,7 @@ describe("Asset Service", () => {
             const assetMetadata: IAssetMetadata = {
                 asset: {
                     ...testAssets[0],
-                    state: { "geometry": AssetState.Tagged, },
+                    state: { [EditorContext.Geometry]: AssetState.Tagged, },
                 },
                 regions: [],
                 version: "",
@@ -174,7 +174,7 @@ describe("Asset Service", () => {
             const assetMetadata: IAssetMetadata = {
                 asset: {
                     ...testAssets[0],
-                    state: { "geometry": AssetState.Visited, },
+                    state: { [EditorContext.Geometry]: AssetState.Visited, },
                 },
                 regions: [],
                 version: "",
@@ -338,7 +338,7 @@ describe("Asset Service", () => {
             }
             const assets = MockFactory.createTestAssets(assetCount);
             assets.forEach((asset) => {
-                asset.state = { "geometry": AssetState.Tagged, };
+                asset.state = { [EditorContext.Geometry]: AssetState.Tagged, };
             });
 
             project.assets = _.keyBy(assets, (asset) => asset.id);
@@ -355,7 +355,7 @@ describe("Asset Service", () => {
             const region = MockFactory.createTestRegion(undefined, [tag1, tag2]);
             const asset: IAsset = {
                 ...MockFactory.createTestAsset("1"),
-                state: { "geometry": AssetState.Tagged, },
+                state: { [EditorContext.Geometry]: AssetState.Tagged, },
             };
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
@@ -387,7 +387,7 @@ describe("Asset Service", () => {
             const region = MockFactory.createTestRegion(undefined, [tag1]);
             const asset: IAsset = {
                 ...MockFactory.createTestAsset("1"),
-                state: {"geometry": AssetState.Tagged, },
+                state: { [EditorContext.Geometry]: AssetState.Tagged, },
             };
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
@@ -409,7 +409,7 @@ describe("Asset Service", () => {
             const region = MockFactory.createTestRegion(undefined, [tag1]);
             const asset: IAsset = {
                 ...MockFactory.createTestAsset("1"),
-                state: { "geometry": AssetState.Tagged, } ,
+                state: { [EditorContext.Geometry]: AssetState.Tagged, } ,
             };
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));

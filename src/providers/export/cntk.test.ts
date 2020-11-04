@@ -44,10 +44,8 @@ describe("CNTK Export Provider", () => {
     beforeEach(() => {
         jest.resetAllMocks();
 
-        ////////////////////////////////////////////////////////////////
-        // WARNING: should be updated
         testAssets.forEach((asset) => {
-            asset.state[EditorContext.Geometry] = AssetState.Tagged;
+            asset.state = { [EditorContext.Geometry]: AssetState.Tagged};
         });
 
         testProject = {

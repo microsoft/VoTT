@@ -387,12 +387,11 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
         // asset selected from the side bar (image/video).
         const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
 
-        const contextString = this.state.context;
         if (this.isTaggableAssetType(assetMetadata.asset)) {
             assetMetadata.asset.state = {... assetMetadata.asset.state,
-                contextString : assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited };
+                [this.state.context] : assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited };
         } else if (assetMetadata.asset.state[this.state.context] === AssetState.NotVisited) {
-            assetMetadata.asset.state = {... assetMetadata.asset.state, contextString: AssetState.Visited };
+            assetMetadata.asset.state = {... assetMetadata.asset.state, [this.state.context]: AssetState.Visited };
         }
 
         // Update root asset if not already in the "Tagged" state

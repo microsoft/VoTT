@@ -1,5 +1,5 @@
 import { ActiveLearningService } from "./activeLearningService";
-import { IActiveLearningSettings, ModelPathType, IAssetMetadata, AssetState } from "../models/applicationState";
+import { IActiveLearningSettings, ModelPathType, IAssetMetadata, AssetState, EditorContext } from "../models/applicationState";
 import MockFactory from "../common/mockFactory";
 import { appInfo } from "../common/appInfo";
 import { ObjectDetection } from "../providers/activeLearning/objectDetection";
@@ -43,7 +43,7 @@ describe("Active Learning Service", () => {
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...asset,
-                state: { "geometry": AssetState.Tagged, },
+                state: { [EditorContext.Geometry]: AssetState.Tagged, },
             },
             regions: [],
             version: appInfo.version,
@@ -73,7 +73,7 @@ describe("Active Learning Service", () => {
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...asset,
-                state: { "geometry": AssetState.Tagged, },
+                state: { [EditorContext.Geometry]: AssetState.Tagged, },
             },
             regions: [
                 uniqueRegion,
