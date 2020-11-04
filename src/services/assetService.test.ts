@@ -296,10 +296,10 @@ describe("Asset Service", () => {
 
             const buffer = builder.build();
             tfrecords = TFRecordsBuilder.buildTFRecords([buffer]);
-        });
 
-        HtmlFileReader.getAssetArray = jest.fn((asset) => {
-            return Promise.resolve<ArrayBuffer>(new Uint8Array(tfrecords).buffer);
+            HtmlFileReader.getAssetArray = jest.fn((asset) => {
+                return Promise.resolve<ArrayBuffer>(new Uint8Array(tfrecords).buffer);
+            });
         });
 
         it("Loads the asset metadata from the tfrecord file", async () => {
