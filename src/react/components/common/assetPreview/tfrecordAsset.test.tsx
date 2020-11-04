@@ -14,13 +14,21 @@ describe("TFRecord Asset Component", () => {
 
     let wrapper: ReactWrapper<IAssetProps> = null;
 
-    const onLoadHandler = jest.fn();
-    const onActivatedHandler = jest.fn();
-    const onDeactivatedHandler = jest.fn();
-    const onErrorHandler = jest.fn();
+    let onLoadHandler = null;
+    let onActivatedHandler = null;
+    let onDeactivatedHandler = null;
+    let onErrorHandler = null;
 
     let tfRecords: Buffer;
+
+    let defaultProps: IAssetProps = null;
+
     beforeEach(() => {
+        onLoadHandler = jest.fn();
+        onActivatedHandler = jest.fn();
+        onDeactivatedHandler = jest.fn();
+        onErrorHandler = jest.fn();
+
         let builder: TFRecordsBuilder;
         builder = new TFRecordsBuilder();
         builder.addFeature("image/encoded", FeatureType.Binary, dataImage);
@@ -30,22 +38,22 @@ describe("TFRecord Asset Component", () => {
 
         onLoadHandler.mockClear();
         onErrorHandler.mockClear();
-    });
 
-    HtmlFileReader.getAssetArray = jest.fn((asset) => {
-        return Promise.resolve<ArrayBuffer>(new Uint8Array(tfRecords).buffer);
-    });
+        HtmlFileReader.getAssetArray = jest.fn((asset) => {
+            return Promise.resolve<ArrayBuffer>(new Uint8Array(tfRecords).buffer);
+        });
 
-    const defaultProps: IAssetProps = {
-        asset: {
-            ...MockFactory.createTestAsset("test"),
-            path: "abc",
-        },
-        onLoaded: onLoadHandler,
-        onActivated: onActivatedHandler,
-        onDeactivated: onDeactivatedHandler,
-        onError: onErrorHandler,
-    };
+        defaultProps = {
+            asset: {
+                ...MockFactory.createTestAsset("test"),
+                path: "abc",
+            },
+            onLoaded: onLoadHandler,
+            onActivated: onActivatedHandler,
+            onDeactivated: onDeactivatedHandler,
+            onError: onErrorHandler,
+        };
+    });
 
     function createComponent(props?: IAssetProps): ReactWrapper<IAssetProps, ITFRecordState> {
         props = props || defaultProps;
