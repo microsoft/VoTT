@@ -3,16 +3,18 @@ import _ from "lodash";
 import { mount, ReactWrapper } from "enzyme";
 import { StatusBarMetrics, IStatusBarMetricsProps } from "./statusBarMetrics";
 import MockFactory from "../../../common/mockFactory";
-import { AssetState } from "../../../models/applicationState";
+import { AssetState, EditorContext } from "../../../models/applicationState";
 
+////////////////////////////////////////////////////////////////
+// WARNING: should be updated
 describe("StatusBarMetrics Component", () => {
     const testProject = MockFactory.createTestProject("TestProject");
     const testAssets = MockFactory.createTestAssets();
-    testAssets[0].state = AssetState.Tagged;
-    testAssets[1].state = AssetState.Tagged;
-    testAssets[2].state = AssetState.Tagged;
-    testAssets[3].state = AssetState.Visited;
-    testAssets[4].state = AssetState.Visited;
+    testAssets[0].state[EditorContext.Geometry] = AssetState.Tagged;
+    testAssets[1].state[EditorContext.Geometry] = AssetState.Tagged;
+    testAssets[2].state[EditorContext.Geometry] = AssetState.Tagged;
+    testAssets[3].state[EditorContext.Geometry] = AssetState.Visited;
+    testAssets[4].state[EditorContext.Geometry] = AssetState.Visited;
     testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
 
     function createComponent(props: IStatusBarMetricsProps) {

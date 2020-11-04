@@ -1,7 +1,7 @@
 import _ from "lodash";
 import {
     IAssetMetadata, AssetState, IRegion,
-    RegionType, IPoint, IExportProviderOptions,
+    RegionType, IPoint, IExportProviderOptions, EditorContext,
 } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 import { splitTestAsset } from "./testAssetsSplitHelper";
@@ -9,11 +9,13 @@ import { appInfo } from "../../common/appInfo";
 
 describe("splitTestAsset Helper tests", () => {
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     describe("Test Train Splits", () => {
         async function testTestTrainSplit(testTrainSplit: number): Promise<void> {
             const assetArray = MockFactory.createTestAssets(13, 0);
             const tags = MockFactory.createTestTags(2);
-            assetArray.forEach((asset) => asset.state = AssetState.Tagged);
+            assetArray.forEach((asset) => asset.state[EditorContext.Geometry] = AssetState.Tagged);
 
             const testSplit = (100 - testTrainSplit) / 100;
             const testCount = Math.ceil(testSplit * assetArray.length);

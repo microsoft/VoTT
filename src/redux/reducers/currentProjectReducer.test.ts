@@ -89,6 +89,8 @@ describe("Current Project Reducer", () => {
         expect(result.lastVisitedAssetId).toEqual(assetMetadata.asset.id);
     });
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     it("Save Asset Metadata updates project asset state", () => {
         const state: IProject = MockFactory.createTestProject("TestProject");
         const testAssets = MockFactory.createTestAssets();
@@ -97,7 +99,7 @@ describe("Current Project Reducer", () => {
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...testAssets[0],
-                state: AssetState.Visited,
+                state: { "geometry": AssetState.Visited, },
                 size: {
                     width: 1024,
                     height: 768,

@@ -5,16 +5,16 @@ import { RegionData } from "vott-ct/lib/js/CanvasTools/Core/RegionData";
 import {
     EditorMode, IAssetMetadata,
     IProject, IRegion, RegionType,
-} from "../../../../models/applicationState";
-import CanvasHelpers from "./canvasHelpers";
-import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
+} from "../../../../../models/applicationState";
+import CanvasHelpers from "../canvasHelpers";
+import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetPreview";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import Clipboard from "../../../../common/clipboard";
-import Confirm from "../../common/confirm/confirm";
-import { strings } from "../../../../common/strings";
+import Clipboard from "../../../../../common/clipboard";
+import Confirm from "../../../common/confirm/confirm";
+import { strings } from "../../../../../common/strings";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
-import { createContentBoundingBox } from "../../../../common/layout";
+import { createContentBoundingBox } from "../../../../../common/layout";
 
 export interface ICanvasProps extends React.Props<SegmentCanvas> {
     selectedAsset: IAssetMetadata;

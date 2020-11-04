@@ -1,7 +1,7 @@
 import _ from "lodash";
 import os from "os";
 import { CntkExportProvider, ICntkExportProviderOptions } from "./cntk";
-import { IProject, AssetState, IAssetMetadata } from "../../models/applicationState";
+import { IProject, AssetState, IAssetMetadata, EditorContext } from "../../models/applicationState";
 import { AssetProviderFactory } from "../storage/assetProviderFactory";
 import { ExportAssetState } from "./exportProvider";
 import MockFactory from "../../common/mockFactory";
@@ -44,8 +44,10 @@ describe("CNTK Export Provider", () => {
     beforeEach(() => {
         jest.resetAllMocks();
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         testAssets.forEach((asset) => {
-            asset.state = AssetState.Tagged;
+            asset.state[EditorContext.Geometry] = AssetState.Tagged;
         });
 
         testProject = {

@@ -9,7 +9,7 @@ import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
 import {
     IProject, AssetState, IAsset, IAssetMetadata,
-    RegionType, IRegion, IExportProviderOptions,
+    RegionType, IRegion, IExportProviderOptions, EditorContext,
 } from "../../models/applicationState";
 import { ExportAssetState } from "./exportProvider";
 jest.mock("./azureCustomVision/azureCustomVisionService");
@@ -172,9 +172,11 @@ describe("Azure Custom Vision Export Provider", () => {
                     },
                 ];
 
+                ////////////////////////////////////////////////////////////////
+                // WARNING: should be updated
                 return Promise.resolve<IAssetMetadata>({
                     asset,
-                    regions: asset.state === AssetState.Tagged ? regions : [],
+                    regions: asset.state[EditorContext.Geometry] === AssetState.Tagged ? regions : [],
                     version: appInfo.version,
                 });
             });
@@ -207,11 +209,13 @@ describe("Azure Custom Vision Export Provider", () => {
             AzureCustomVisionService.prototype.getProjectTags = jest.fn(() => Promise.resolve([]));
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         it("Uploads binaries, regions & tags for all assets", async () => {
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.All;
             const provider = createProvider(testProject);
             const allAssets = await provider.getAssetsForExport();
-            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
+            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged);
             const results = await provider.export();
 
             expect(results).not.toBeNull();
@@ -221,14 +225,16 @@ describe("Azure Custom Vision Export Provider", () => {
             expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         it("Uploads binaries, regions & tags for visited assets", async () => {
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.Visited;
             const visitedAssets = _
                 .values(testProject.assets)
-                .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+                .filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Visited || asset.state[EditorContext.Geometry] === AssetState.Tagged);
             const taggedAssets = _
                 .values(testProject.assets)
-                .filter((asset) => asset.state === AssetState.Tagged);
+                .filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged);
 
             const provider = createProvider(testProject);
             const results = await provider.export();
@@ -240,9 +246,11 @@ describe("Azure Custom Vision Export Provider", () => {
             expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         it("Uploads binaries, regions & tags for tagged assets", async () => {
             (testProject.exportFormat.providerOptions as IExportProviderOptions).assetState = ExportAssetState.Tagged;
-            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
+            const taggedAssets = _.values(testProject.assets).filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged);
             const provider = createProvider(testProject);
             const results = await provider.export();
 

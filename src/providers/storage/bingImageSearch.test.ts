@@ -40,6 +40,8 @@ describe("Bing Image Search", () => {
         expect(axios.get).toBeCalledWith(expectedUrl, expectedHeaders);
     });
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     it("returns parsed image assets", async () => {
         const expectedAsset: IAsset = {
             id: new MD5().update("http://images.com/image1.jpg").digest("hex"),
@@ -47,7 +49,7 @@ describe("Bing Image Search", () => {
             name: "image1.jpg",
             path: "http://images.com/image1.jpg",
             type: AssetType.Image,
-            state: AssetState.NotVisited,
+            state: { "geometry": AssetState.NotVisited, },
             size: null,
         };
 

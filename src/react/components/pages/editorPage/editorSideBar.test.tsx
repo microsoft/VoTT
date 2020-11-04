@@ -3,6 +3,7 @@ import EditorSideBar, { IEditorSideBarProps, IEditorSideBarState } from "./edito
 import { ReactWrapper, mount } from "enzyme";
 import { AutoSizer, List } from "react-virtualized";
 import MockFactory from "../../../../common/mockFactory";
+import { EditorContext } from "../../../../models/applicationState";
 
 describe("Editor SideBar", () => {
     const onSelectAssetHandler = jest.fn();
@@ -16,6 +17,7 @@ describe("Editor SideBar", () => {
         const props: IEditorSideBarProps = {
             assets: testAssets,
             onAssetSelected: onSelectAssetHandler,
+            editorContext: EditorContext.Geometry,
         };
 
         const wrapper = createComponent(props);
@@ -28,6 +30,7 @@ describe("Editor SideBar", () => {
         const props: IEditorSideBarProps = {
             assets: testAssets,
             onAssetSelected: onSelectAssetHandler,
+            editorContext: EditorContext.Geometry,
         };
 
         const wrapper = createComponent(props);
@@ -42,6 +45,7 @@ describe("Editor SideBar", () => {
             assets: testAssets,
             selectedAsset: testAssets[selectedAssetIndex],
             onAssetSelected: onSelectAssetHandler,
+            editorContext: EditorContext.Geometry,
         };
 
         const wrapper = createComponent(props);
@@ -54,6 +58,7 @@ describe("Editor SideBar", () => {
             assets: testAssets,
             selectedAsset: null,
             onAssetSelected: onSelectAssetHandler,
+            editorContext: EditorContext.Geometry,
         };
 
         const wrapper = createComponent(props);
@@ -77,6 +82,7 @@ describe("Editor SideBar", () => {
             assets: testAssets,
             selectedAsset: testAssets[0],
             onAssetSelected: onSelectAssetHandler,
+            editorContext: EditorContext.Geometry,
         };
 
         const wrapper = createComponent(props);
@@ -114,6 +120,7 @@ describe("Editor SideBar", () => {
                 width: 175,
                 height: 155,
             },
+            editorContext: EditorContext.Geometry,
         };
 
         const wrapper = createComponent(props);

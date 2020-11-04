@@ -35,13 +35,15 @@ describe("Active Learning Service", () => {
     it("Predicts new regions to the asset metadata", async () => {
         objectDetectionMock.prototype.predictImage = jest.fn(() => Promise.resolve(expectedRegions));
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         const expectedRegions = MockFactory.createTestRegions(2);
         const canvas = MockFactory.mockCanvas()();
         const asset = MockFactory.createTestAsset("TestAsset", AssetState.Visited);
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...asset,
-                state: AssetState.Tagged,
+                state: { "geometry": AssetState.Tagged, },
             },
             regions: [],
             version: appInfo.version,
@@ -59,6 +61,8 @@ describe("Active Learning Service", () => {
         });
     });
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
     it("Predicts non matching regions to the asset metadata", async () => {
         objectDetectionMock.prototype.predictImage = jest.fn(() => Promise.resolve(expectedRegions));
 
@@ -69,7 +73,7 @@ describe("Active Learning Service", () => {
         const assetMetadata: IAssetMetadata = {
             asset: {
                 ...asset,
-                state: AssetState.Tagged,
+                state: { "geometry": AssetState.Tagged, },
             },
             regions: [
                 uniqueRegion,

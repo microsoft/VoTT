@@ -147,11 +147,13 @@ describe("Asset Service", () => {
             expect(result.asset).toEqual(asset);
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         it("Saves asset JSON to underlying storage provider", async () => {
             const assetMetadata: IAssetMetadata = {
                 asset: {
                     ...testAssets[0],
-                    state: AssetState.Tagged,
+                    state: { "geometry": AssetState.Tagged, },
                 },
                 regions: [],
                 version: "",
@@ -166,11 +168,13 @@ describe("Asset Service", () => {
             expect(result).toBe(assetMetadata);
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         it("Deletes asset JSON from the storage provider if asset has not been tagged", async () => {
             const assetMetadata: IAssetMetadata = {
                 asset: {
                     ...testAssets[0],
-                    state: AssetState.Visited,
+                    state: { "geometry": AssetState.Visited, },
                 },
                 regions: [],
                 version: "",
@@ -334,7 +338,7 @@ describe("Asset Service", () => {
             }
             const assets = MockFactory.createTestAssets(assetCount);
             assets.forEach((asset) => {
-                asset.state = AssetState.Tagged;
+                asset.state = { "geometry": AssetState.Tagged, };
             });
 
             project.assets = _.keyBy(assets, (asset) => asset.id);
@@ -351,7 +355,7 @@ describe("Asset Service", () => {
             const region = MockFactory.createTestRegion(undefined, [tag1, tag2]);
             const asset: IAsset = {
                 ...MockFactory.createTestAsset("1"),
-                state: AssetState.Tagged,
+                state: { "geometry": AssetState.Tagged, },
             };
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
@@ -376,12 +380,14 @@ describe("Asset Service", () => {
             expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         it("Deletes empty regions after deleting only tag from region", async () => {
             const tag1 = "tag1";
             const region = MockFactory.createTestRegion(undefined, [tag1]);
             const asset: IAsset = {
                 ...MockFactory.createTestAsset("1"),
-                state: AssetState.Tagged,
+                state: {"geometry": AssetState.Tagged, },
             };
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));
@@ -395,13 +401,15 @@ describe("Asset Service", () => {
             expect(assetUpdates[0]).toEqual(expectedAssetMetadata);
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         it("Updates renamed tag within all assets", async () => {
             const tag1 = "tag1";
             const newTag = "tag2";
             const region = MockFactory.createTestRegion(undefined, [tag1]);
             const asset: IAsset = {
                 ...MockFactory.createTestAsset("1"),
-                state: AssetState.Tagged,
+                state: { "geometry": AssetState.Tagged, } ,
             };
             const assetMetadata = MockFactory.createTestAssetMetadata(asset, [region]);
             AssetService.prototype.getAssetMetadata = jest.fn((asset: IAsset) => Promise.resolve(assetMetadata));

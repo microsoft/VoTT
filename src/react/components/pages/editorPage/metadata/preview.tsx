@@ -3,13 +3,13 @@ import { CanvasTools } from "vott-ct";
 import {
     EditorMode, IAssetMetadata,
     IProject,
-} from "../../../../models/applicationState";
-import { AssetPreview, ContentSource } from "../../common/assetPreview/assetPreview";
+} from "../../../../../models/applicationState";
+import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetPreview";
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import Confirm from "../../common/confirm/confirm";
+import Confirm from "../../../common/confirm/confirm";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
-import { createContentBoundingBox } from "../../../../common/layout";
+import { createContentBoundingBox } from "../../../../../common/layout";
 
 export interface IPreviewProps extends React.Props<Preview> {
     selectedAsset: IAssetMetadata;

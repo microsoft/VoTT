@@ -5,36 +5,36 @@ import { RouteComponentProps } from "react-router-dom";
 import SplitPane from "react-split-pane";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
-import HtmlFileReader from "../../../../common/htmlFileReader";
-import {addLocValues, strings} from "../../../../common/strings";
+import HtmlFileReader from "../../../../../common/htmlFileReader";
+import {addLocValues, strings} from "../../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
     ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode, EditorContext,
-} from "../../../../models/applicationState";
-import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import { ToolbarItemName } from "../../../../registerToolbar";
-import { AssetService } from "../../../../services/assetService";
-import { AssetPreview } from "../../common/assetPreview/assetPreview";
-import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
-import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
-import { TagInput } from "../../common/tagInput/tagInput";
-import { ToolbarItem } from "../../toolbar/toolbarItem";
-import Canvas from "../editorPage/canvas";
-import CanvasHelpers from "../editorPage/canvasHelpers";
-import "../editorPage/editorPage.scss";
-import EditorSideBar from "../editorPage/editorSideBar";
-import { EditorToolbar } from "../editorPage/editorToolbar";
-import Alert from "../../common/alert/alert";
-import Confirm from "../../common/confirm/confirm";
-import { ActiveLearningService } from "../../../../services/activeLearningService";
+} from "../../../../../models/applicationState";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../../providers/toolbar/toolbarItemFactory";
+import IApplicationActions, * as applicationActions from "../../../../../redux/actions/applicationActions";
+import IProjectActions, * as projectActions from "../../../../../redux/actions/projectActions";
+import { ToolbarItemName } from "../../../../../registerToolbar";
+import { AssetService } from "../../../../../services/assetService";
+import { AssetPreview } from "../../../common/assetPreview/assetPreview";
+import { KeyboardBinding } from "../../../common/keyboardBinding/keyboardBinding";
+import { KeyEventType } from "../../../common/keyboardManager/keyboardManager";
+import { TagInput } from "../../../common/tagInput/tagInput";
+import { ToolbarItem } from "../../../toolbar/toolbarItem";
+import Canvas from "../canvas";
+import CanvasHelpers from "../canvasHelpers";
+import "../editorPage.scss";
+import EditorSideBar from "../editorSideBar";
+import { EditorToolbar } from "../editorToolbar";
+import Alert from "../../../common/alert/alert";
+import Confirm from "../../../common/confirm/confirm";
+import { ActiveLearningService } from "../../../../../services/activeLearningService";
 import { toast } from "react-toastify";
 import Form from "react-jsonschema-form";
-import CustomFieldTemplate from "../../common/customField/customFieldTemplate";
+import CustomFieldTemplate from "../../../common/customField/customFieldTemplate";
 import Preview from "./preview";
-import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from '../editorPage/editorPage';
+import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from '../editorPage';
 
 /**
  * Properties for Editor Page
@@ -349,10 +349,12 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         // asset selected from the side bar (image/video).
         const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
 
+        const contextString = this.state.context;
         if (this.isTaggableAssetType(assetMetadata.asset)) {
-            assetMetadata.asset.state[this.state.context] = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+            assetMetadata.asset.state = {... assetMetadata.asset.state,
+                contextString : assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited };
         } else if (assetMetadata.asset.state[this.state.context] === AssetState.NotVisited) {
-            assetMetadata.asset.state[this.state.context] = AssetState.Visited;
+            assetMetadata.asset.state = {... assetMetadata.asset.state, contextString: AssetState.Visited };
         }
 
         // Update root asset if not already in the "Tagged" state
@@ -360,16 +362,19 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         // We want to ensure that in this case the root video asset state is accurately
         // updated to match that state of the asset.
         if (rootAsset.id === assetMetadata.asset.id) {
-            rootAsset.state[this.state.context] = assetMetadata.asset.state[this.state.context];
+            const assetMetadataObject = assetMetadata.asset.state[this.state.context];
+            rootAsset.state = { ... rootAsset.state, assetMetadataObject};
         } else {
             const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
 
             if (rootAssetMetadata.asset.state[this.state.context] !== AssetState.Tagged) {
-                rootAssetMetadata.asset.state[this.state.context] = assetMetadata.asset.state[this.state.context];
+                const assetMetadataObject = assetMetadata.asset.state[this.state.context];
+                rootAssetMetadata.asset.state = { ... rootAssetMetadata.asset.state, assetMetadataObject};
                 await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
             }
 
-            rootAsset.state[this.state.context] = rootAssetMetadata.asset.state[this.state.context];
+            const rootAssetMetadataObject = rootAssetMetadata.asset.state[this.state.context];
+            rootAsset.state = { ... rootAsset.state, rootAssetMetadataObject};
         }
 
         // Only update asset metadata if state changes or is different

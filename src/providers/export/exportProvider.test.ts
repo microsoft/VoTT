@@ -1,5 +1,5 @@
 import { ExportProvider, ExportAssetState } from "./exportProvider";
-import { IProject, AssetState, AssetType, IExportProviderOptions, IAsset } from "../../models/applicationState";
+import { IProject, AssetState, AssetType, IExportProviderOptions, IAsset, EditorContext } from "../../models/applicationState";
 import { ExportProviderFactory } from "./exportProviderFactory";
 import MockFactory from "../../common/mockFactory";
 import registerProviders from "../../registerProviders";
@@ -78,11 +78,13 @@ describe("Export Provider Base", () => {
             factory: (project) => new TestExportProvider(project, { assetState: ExportAssetState.Visited }),
         });
 
+        ////////////////////////////////////////////////////////////////
+        // WARNING: should be updated
         const exportProvider = ExportProviderFactory.create("test", testProject) as TestExportProvider;
         const assetsToExport = await exportProvider.getAssetsForExport();
         const visitedAssets = _
             .values(testProject.assets)
-            .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+            .filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Visited || asset.state[EditorContext.Geometry] === AssetState.Tagged);
         expect(assetsToExport.length).toEqual(visitedAssets.length);
     });
 
@@ -99,7 +101,7 @@ describe("Export Provider Base", () => {
         const assetsToExport = await exportProvider.getAssetsForExport();
         const taggedAssets = _
             .values(testProject.assets)
-            .filter((asset) => asset.state === AssetState.Tagged);
+            .filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged);
         expect(assetsToExport.length).toEqual(taggedAssets.length);
     });
 });

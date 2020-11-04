@@ -5,33 +5,34 @@ import { RouteComponentProps } from "react-router-dom";
 import SplitPane from "react-split-pane";
 import { bindActionCreators } from "redux";
 import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSettings";
-import HtmlFileReader from "../../../../common/htmlFileReader";
-import { strings } from "../../../../common/strings";
+import HtmlFileReader from "../../../../../common/htmlFileReader";
+import { strings } from "../../../../../common/strings";
 import {
     AssetState, AssetType, EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
     ISize, ITag, IAdditionalPageSettings, AppError, ErrorCode, EditorContext,
-} from "../../../../models/applicationState";
-import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../providers/toolbar/toolbarItemFactory";
-import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
-import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
-import { ToolbarItemName } from "../../../../registerToolbar";
-import { AssetService } from "../../../../services/assetService";
-import { AssetPreview } from "../../common/assetPreview/assetPreview";
-import { KeyboardBinding } from "../../common/keyboardBinding/keyboardBinding";
-import { KeyEventType } from "../../common/keyboardManager/keyboardManager";
-import { TagInput } from "../../common/tagInput/tagInput";
-import { ToolbarItem } from "../../toolbar/toolbarItem";
-import Canvas from "./canvas";
-import CanvasHelpers from "./canvasHelpers";
-import "./editorPage.scss";
-import EditorSideBar from "./editorSideBar";
-import { EditorToolbar } from "./editorToolbar";
-import Alert from "../../common/alert/alert";
-import Confirm from "../../common/confirm/confirm";
-import { ActiveLearningService } from "../../../../services/activeLearningService";
+} from "../../../../../models/applicationState";
+import { IToolbarItemRegistration, ToolbarItemFactory } from "../../../../../providers/toolbar/toolbarItemFactory";
+import IApplicationActions, * as applicationActions from "../../../../../redux/actions/applicationActions";
+import IProjectActions, * as projectActions from "../../../../../redux/actions/projectActions";
+import { ToolbarItemName } from "../../../../../registerToolbar";
+import { AssetService } from "../../../../../services/assetService";
+import { AssetPreview } from "../../../common/assetPreview/assetPreview";
+import { KeyboardBinding } from "../../../common/keyboardBinding/keyboardBinding";
+import { KeyEventType } from "../../../common/keyboardManager/keyboardManager";
+import { TagInput } from "../../../common/tagInput/tagInput";
+import { ToolbarItem } from "../../../toolbar/toolbarItem";
+import CanvasHelpers from "../canvasHelpers";
+import "../editorPage.scss";
+import EditorSideBar from "../editorSideBar";
+import Alert from "../../../common/alert/alert";
+import Confirm from "../../../common/confirm/confirm";
+import { ActiveLearningService } from "../../../../../services/activeLearningService";
 import { toast } from "react-toastify";
-import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from './editorPage';
+import { EditorToolbar } from "../editorToolbar";
+import SegmentCanvas from "./segmentCanvas";
+import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from '../editorPage';
+import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 /**
  * Properties for Editor Page
@@ -46,7 +47,7 @@ import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps
  * @description - Page for adding/editing/removing tags to assets
  */
 @connect(mapStateToProps, mapDispatchToProps)
-export default class EditorGeometryPage extends React.Component<IEditorPageProps, IEditorPageState> {
+export default class EditorSegmentationPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         selectedTag: null,
         lockedTags: [],
@@ -61,13 +62,13 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
         thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
         isValid: true,
         showInvalidRegionWarning: false,
-        context: EditorContext.Geometry,
+        context: EditorContext.Segmentation,
     };
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
-    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(EditorContext.Geometry);
-    private canvas: RefObject<Canvas> = React.createRef();
+    private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(EditorContext.Segmentation);
+    private canvas: RefObject<SegmentCanvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -161,7 +162,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
                             </div>
                             <div className="editor-page-content-main-body">
                                 {selectedAsset &&
-                                    <Canvas
+                                    <SegmentCanvas
                                         ref={this.canvas}
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
@@ -179,7 +180,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
                                             onChildAssetSelected={this.onChildAssetSelected}
                                             asset={this.state.selectedAsset.asset}
                                             childAssets={this.state.childAssets} />
-                                    </Canvas>
+                                    </SegmentCanvas>
                                 }
                             </div>
                         </div>
@@ -381,16 +382,19 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
             return;
         }
 
-        const initialState = assetMetadata.asset.state;
+        const initialState = assetMetadata.asset.state[this.state.context];
 
         // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
         // asset selected from the side bar (image/video).
         const rootAsset = { ...(assetMetadata.asset.parent || assetMetadata.asset) };
 
+        const contextString = this.state.context;
         if (this.isTaggableAssetType(assetMetadata.asset)) {
-            assetMetadata.asset.state[this.state.context] = assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited;
+            assetMetadata.asset.state = {... assetMetadata.asset.state,
+                contextString : assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited };
+
         } else if (assetMetadata.asset.state[this.state.context] === AssetState.NotVisited) {
-            assetMetadata.asset.state[this.state.context] = AssetState.Visited;
+            assetMetadata.asset.state = {... assetMetadata.asset.state, contextString: AssetState.Visited };
         }
 
         // Update root asset if not already in the "Tagged" state
@@ -398,20 +402,23 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
         // We want to ensure that in this case the root video asset state is accurately
         // updated to match that state of the asset.
         if (rootAsset.id === assetMetadata.asset.id) {
-            rootAsset.state[this.state.context] = assetMetadata.asset.state[this.state.context];
+            const assetMetadataObject = assetMetadata.asset.state[this.state.context];
+            rootAsset.state = { ... rootAsset.state, assetMetadataObject};
         } else {
             const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
 
             if (rootAssetMetadata.asset.state[this.state.context] !== AssetState.Tagged) {
-                rootAssetMetadata.asset.state[this.state.context] = assetMetadata.asset.state[this.state.context];
+                const assetMetadataObject = assetMetadata.asset.state[this.state.context];
+                rootAssetMetadata.asset.state = { ... rootAssetMetadata.asset.state, assetMetadataObject};
                 await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
             }
 
-            rootAsset.state[this.state.context] = rootAssetMetadata.asset.state[this.state.context];
+            const rootAssetMetadataObject = rootAssetMetadata.asset.state[this.state.context];
+            rootAsset.state = { ... rootAsset.state, rootAssetMetadataObject};
         }
 
         // Only update asset metadata if state changes or is different
-        if (initialState !== assetMetadata.asset.state || this.state.selectedAsset !== assetMetadata) {
+        if (initialState !== assetMetadata.asset.state[this.state.context] || this.state.selectedAsset !== assetMetadata) {
             await this.props.actions.saveAssetMetadata(this.props.project, assetMetadata);
         }
 
@@ -468,24 +475,6 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
                 this.setState({
                     selectionMode: SelectionMode.RECT,
                     editorMode: EditorMode.Rectangle,
-                });
-                break;
-            case ToolbarItemName.DrawPolygon:
-                this.setState({
-                    selectionMode: SelectionMode.POLYGON,
-                    editorMode: EditorMode.Polygon,
-                });
-                break;
-            case ToolbarItemName.DrawPolyline:
-                this.setState({
-                    selectionMode: SelectionMode.POLYLINE,
-                    editorMode: EditorMode.Polyline,
-                });
-                break;
-            case ToolbarItemName.CopyRectangle:
-                this.setState({
-                    selectionMode: SelectionMode.COPYRECT,
-                    editorMode: EditorMode.CopyRect,
                 });
                 break;
             case ToolbarItemName.SelectCanvas:

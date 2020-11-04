@@ -4,7 +4,8 @@ import _ from "lodash";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
-import EditorPage, { IEditorPageProps, IEditorPageState } from "./editorPage";
+import { IEditorPageProps, IEditorPageState } from "./editorPage";
+import EditorGeometryPage from "./geometry/editorGeometryPage";
 import MockFactory from "../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
@@ -35,12 +36,12 @@ import { EditorToolbar } from "./editorToolbar";
 import { ToolbarItem } from "../../toolbar/toolbarItem";
 import { ActiveLearningService } from "../../../../services/activeLearningService";
 
-function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorPage> {
+function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorGeometryPage> {
     return mount(
         <Provider store={store}>
             <KeyboardManager>
                 <Router>
-                    <EditorPage {...props} />
+                    <EditorGeometryPage {...props} />
                 </Router>
             </KeyboardManager>
         </Provider>,
@@ -48,7 +49,7 @@ function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPa
 }
 
 function getState(wrapper): IEditorPageState {
-    return wrapper.find(EditorPage).childAt(0).state() as IEditorPageState;
+    return wrapper.find(EditorGeometryPage).childAt(0).state() as IEditorPageState;
 }
 
 function dispatchKeyEvent(key: string, eventType: KeyEventType = KeyEventType.KeyDown) {
@@ -124,7 +125,7 @@ describe("Editor Page Component", () => {
         const loadProjectSpy = jest.spyOn(props.actions, "loadProject");
 
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0);
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0);
 
         expect(loadProjectSpy).not.toBeCalled();
         expect(editorPage.prop("project")).toEqual(testProject);
@@ -140,7 +141,7 @@ describe("Editor Page Component", () => {
         props.project = null;
 
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0);
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0);
 
         editorPage.props().project = testProject;
         await MockFactory.flushUi();
@@ -156,7 +157,7 @@ describe("Editor Page Component", () => {
         const props = MockFactory.editorPageProps(testProject.id);
 
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         const partialProject = {
             id: testProject.id,
@@ -192,7 +193,7 @@ describe("Editor Page Component", () => {
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         await MockFactory.flushUi();
         wrapper.update();
@@ -230,7 +231,7 @@ describe("Editor Page Component", () => {
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         await MockFactory.flushUi();
         wrapper.update();
@@ -278,7 +279,7 @@ describe("Editor Page Component", () => {
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         await MockFactory.flushUi();
         wrapper.update();
@@ -324,7 +325,7 @@ describe("Editor Page Component", () => {
 
         // create mock editor page
         const wrapper = createComponent(store, props);
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         await MockFactory.flushUi();
 
@@ -370,7 +371,7 @@ describe("Editor Page Component", () => {
         wrapper.find(Canvas).props().onAssetMetadataChanged(editedImageAsset);
         await MockFactory.flushUi();
 
-        const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+        const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
         // Image asset is updated
         expect(assetServiceMock.prototype.save).toBeCalledWith({
@@ -408,7 +409,7 @@ describe("Editor Page Component", () => {
         });
 
         it("Child assets are not included within editor page state", () => {
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+            const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
             expect(editorPage.state().assets.length).toEqual(testAssets.length + 1);
             expect(editorPage.state().selectedAsset.asset).toEqual({
@@ -436,12 +437,14 @@ describe("Editor Page Component", () => {
             wrapper.find(Canvas).props().onAssetMetadataChanged(editedVideoFrame);
             await MockFactory.flushUi();
 
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
+            const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps, IEditorPageState>;
 
+            ////////////////////////////////////////////////////////////////
+            // WARNING: should be updated
             const expectedRootVideoMetadata: IAssetMetadata = {
                 asset: {
                     ...videoAsset,
-                    state: AssetState.Tagged,
+                    state: { "geometry": AssetState.Tagged, },
                 },
                 regions: [],
                 version: appInfo.version,
@@ -488,7 +491,7 @@ describe("Editor Page Component", () => {
             const props = MockFactory.editorPageProps(testProject.id);
             wrapper = createComponent(store, props);
 
-            editorPage = wrapper.find(EditorPage).childAt(0);
+            editorPage = wrapper.find(EditorGeometryPage).childAt(0);
             await waitForSelectedAsset(wrapper);
             wrapper.update();
             const canvas = wrapper.find(Canvas).instance() as Canvas;
@@ -665,7 +668,7 @@ describe("Editor Page Component", () => {
             await MockFactory.flushUi();
             wrapper.update();
 
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps>;
             const projectTags = editorPage.props().project.tags;
 
             expect(projectTags).toHaveLength(updatedTags.length);
@@ -692,7 +695,7 @@ describe("Editor Page Component", () => {
             await MockFactory.flushUi();
             wrapper.update();
 
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps>;
             const projectTags = editorPage.props().project.tags;
 
             expect(projectTags).toHaveLength(project.tags.length - 1);
@@ -712,7 +715,7 @@ describe("Editor Page Component", () => {
             wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-            const newEditorPage = wrapper.find(EditorPage).childAt(0);
+            const newEditorPage = wrapper.find(EditorGeometryPage).childAt(0);
             expect(newEditorPage.state().lockedTags).toEqual([project.tags[0].name]);
         });
 
@@ -730,14 +733,14 @@ describe("Editor Page Component", () => {
             wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-            let editorPage = wrapper.find(EditorPage).childAt(0);
+            let editorPage = wrapper.find(EditorGeometryPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([project.tags[0].name]);
 
             wrapper.update();
             wrapper.find("span.tag-name-text")
                 .first()
                 .simulate("click", { target: { innerText: project.tags[0].name }, ctrlKey: true });
-            editorPage = wrapper.find(EditorPage).childAt(0);
+            editorPage = wrapper.find(EditorGeometryPage).childAt(0);
             expect(editorPage.state().lockedTags).toEqual([]);
         });
     });
@@ -766,12 +769,12 @@ describe("Editor Page Component", () => {
         });
 
         it("loads default thumbnail size from app settings", () => {
-            const editorPage = wrapper.find(EditorPage).childAt(0);
+            const editorPage = wrapper.find(EditorGeometryPage).childAt(0);
             expect(editorPage.state().thumbnailSize).toEqual(defaultThumbnailSize);
         });
 
         it("resizes child components", () => {
-            const editorPage = wrapper.find(EditorPage).childAt(0);
+            const editorPage = wrapper.find(EditorGeometryPage).childAt(0);
             const canvas = editorPage.find(Canvas).instance() as Canvas;
             const resizeSpy = jest.spyOn(canvas, "forceResize");
             const newThumbnailWidth = 300;
@@ -785,7 +788,7 @@ describe("Editor Page Component", () => {
         });
 
         it("Saves thumbnail size to app settings", () => {
-            const editorPage = wrapper.find(EditorPage).childAt(0) as ReactWrapper<IEditorPageProps>;
+            const editorPage = wrapper.find(EditorGeometryPage).childAt(0) as ReactWrapper<IEditorPageProps>;
             const saveSettingsSpy = jest.spyOn(editorPage.props().applicationActions, "saveAppSettings");
             const newThumbnailWidth = 300;
 
@@ -829,7 +832,7 @@ describe("Editor Page Component", () => {
             wrapper = createComponent(store, MockFactory.editorPageProps());
             await waitForSelectedAsset(wrapper);
             wrapper.update();
-            editorPage = wrapper.find(EditorPage).childAt(0);
+            editorPage = wrapper.find(EditorGeometryPage).childAt(0);
         }
 
         it("predicts regions when auto detect has been enabled", async () => {
@@ -882,7 +885,7 @@ function createStore(project: IProject, setCurrentProject: boolean = false): Sto
 async function waitForSelectedAsset(wrapper: ReactWrapper) {
     await MockFactory.waitForCondition(() => {
         const editorPage = wrapper
-            .find(EditorPage)
+            .find(EditorGeometryPage)
             .childAt(0);
 
         return !!editorPage.state().selectedAsset;

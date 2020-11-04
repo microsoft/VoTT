@@ -4,11 +4,11 @@ import HomePage from "../pages/homepage/homePage";
 import ActiveLearningPage from "../pages/activeLearning/activeLearningPage";
 import AppSettingsPage from "../pages/appSettings/appSettingsPage";
 import ConnectionPage from "../pages/connections/connectionsPage";
-import EditorSegmentationPage from "../pages/editorPage/editorSegmentationPage";
-import EditorGeometryPage from "../pages/editorPage/editorGeometryPage";
+import EditorSegmentationPage from "../pages/editorPage/segment/editorSegmentationPage";
+import EditorGeometryPage from "../pages/editorPage/geometry/editorGeometryPage";
 import ExportPage from "../pages/export/exportPage";
 import ProjectSettingsPage from "../pages/projectSettings/projectSettingsPage";
-import EditorMetadataPage from "../pages/metadataEditorPage/editorMetadataPage";
+import EditorMetadataPage from "../pages/editorPage/metadata/editorMetadataPage";
 
 /**
  * @name - Main Content Router

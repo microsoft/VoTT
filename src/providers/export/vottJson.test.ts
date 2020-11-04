@@ -3,7 +3,7 @@ import { VottJsonExportProvider, IVottJsonExportProviderOptions } from "./vottJs
 import registerProviders from "../../registerProviders";
 import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
-import { IProject, IAssetMetadata, AssetState } from "../../models/applicationState";
+import { IProject, IAssetMetadata, AssetState, EditorContext } from "../../models/applicationState";
 import MockFactory from "../../common/mockFactory";
 
 jest.mock("../../services/assetService");
@@ -127,9 +127,11 @@ describe("VoTT Json Export Provider", () => {
             const exportJson = storageProviderMock.mock.instances[0].writeText.mock.calls[0][1];
             const exportObject = JSON.parse(exportJson);
 
+            ////////////////////////////////////////////////////////////////
+            // WARNING: should be updated
             const exportedAssets = _.values(exportObject.assets);
             const expectedAssets = _.values(testProject.assets)
-                .filter((asset) => asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+                .filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Visited || asset.state[EditorContext.Geometry] === AssetState.Tagged);
 
             // Ensure provider information not included in export JSON
             expect(exportObject.sourceConnection).toBeUndefined();
@@ -156,7 +158,7 @@ describe("VoTT Json Export Provider", () => {
             const exportObject = JSON.parse(exportJson);
 
             const exportedAssets = _.values(exportObject.assets);
-            const expectedAssets = _.values(testProject.assets).filter((asset) => asset.state === AssetState.Tagged);
+            const expectedAssets = _.values(testProject.assets).filter((asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged);
 
             // Ensure provider information not included in export JSON
             expect(exportObject.sourceConnection).toBeUndefined();
