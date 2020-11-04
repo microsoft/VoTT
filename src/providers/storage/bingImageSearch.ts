@@ -53,7 +53,7 @@ export enum BingImageSearchSize {
  * Asset Provider for Bing Image Search
  */
 export class BingImageSearch implements IAssetProvider {
-    private static SEARCH_URL = "https://api.cognitive.microsoft.com/bing";
+    public static DefaultApiUrl = "https://api.cognitive.microsoft.com/bing";
 
     constructor(private options: IBingImageSearchOptions) {
         Guard.null(options);
@@ -70,7 +70,7 @@ export class BingImageSearch implements IAssetProvider {
             size: this.options.size || BingImageSearchSize.All,
         };
 
-        const baseUrl = this.options.endpoint || BingImageSearch.SEARCH_URL;
+        const baseUrl = this.options.endpoint || BingImageSearch.DefaultApiUrl;
         const apiUrl = `${baseUrl}/v7.0/images/search?${createQueryString(query)}`;
 
         const response = await axios.get(apiUrl, {
