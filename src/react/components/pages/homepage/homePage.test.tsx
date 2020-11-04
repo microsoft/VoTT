@@ -36,7 +36,7 @@ describe("Homepage Component", () => {
         writeText: jest.fn((project) => Promise.resolve(project)),
         deleteFile: jest.fn(() => Promise.resolve()),
     };
-    StorageProviderFactory.create = jest.fn(() => storageProviderMock);
+    StorageProviderFactory.create = jest.fn(() => storageProviderMock) as any;
 
     function createComponent(store, props: IHomePageProps): ReactWrapper {
         return mount(

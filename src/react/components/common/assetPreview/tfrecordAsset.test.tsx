@@ -98,7 +98,7 @@ describe("TFRecord Asset Component", () => {
     });
 
     it("raises onError handler when there is an error reading image data from tf record", async () => {
-        HtmlFileReader.getAssetArray = jest.fn(() => Promise.resolve());
+        HtmlFileReader.getAssetArray = jest.fn(() => Promise.resolve()) as any;
 
         wrapper = createComponent();
         await MockFactory.flushUi();
