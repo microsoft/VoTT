@@ -4,37 +4,37 @@ import _ from "lodash";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AnyAction, Store } from "redux";
-import { IEditorPageProps, IEditorPageState } from "./editorPage";
-import EditorGeometryPage from "./geometry/editorGeometryPage";
-import MockFactory from "../../../../common/mockFactory";
+import { IEditorPageProps, IEditorPageState } from "../editorPage";
+import EditorGeometryPage from "./editorGeometryPage";
+import MockFactory from "../../../../../common/mockFactory";
 import {
     IApplicationState, IAssetMetadata, IProject,
     EditorMode, IAsset, AssetState, ISize, IActiveLearningSettings, ModelPathType, EditorContext,
-} from "../../../../models/applicationState";
-import { AssetProviderFactory } from "../../../../providers/storage/assetProviderFactory";
-import createReduxStore from "../../../../redux/store/store";
-import { AssetService } from "../../../../services/assetService";
-import registerToolbar, { ToolbarItemName } from "../../../../registerToolbar";
-import { KeyboardManager, KeyEventType } from "../../common/keyboardManager/keyboardManager";
+} from "../../../../../models/applicationState";
+import { AssetProviderFactory } from "../../../../../providers/storage/assetProviderFactory";
+import createReduxStore from "../../../../../redux/store/store";
+import { AssetService } from "../../../../../services/assetService";
+import registerToolbar, { ToolbarItemName } from "../../../../../registerToolbar";
+import { KeyboardManager, KeyEventType } from "../../../common/keyboardManager/keyboardManager";
 
 jest.mock("../../../../services/projectService");
-import ProjectService from "../../../../services/projectService";
+import ProjectService from "../../../../../services/projectService";
 
 jest.mock("vott-ct/lib/js/CanvasTools/CanvasTools.Editor");
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
 
 jest.mock("vott-ct/lib/js/CanvasTools/Region/RegionsManager");
 import { RegionsManager } from "vott-ct/lib/js/CanvasTools/Region/RegionsManager";
-import Canvas from "./canvas";
-import { appInfo } from "../../../../common/appInfo";
+import Canvas from "../canvas";
+import { appInfo } from "../../../../../common/appInfo";
 import SplitPane from "react-split-pane";
-import EditorSideBar from "./editorSideBar";
-import Alert from "../../common/alert/alert";
-import registerMixins from "../../../../registerMixins";
-import { TagInput } from "../../common/tagInput/tagInput";
-import { EditorToolbar } from "./editorToolbar";
-import { ToolbarItem } from "../../toolbar/toolbarItem";
-import { ActiveLearningService } from "../../../../services/activeLearningService";
+import EditorSideBar from "../editorSideBar";
+import Alert from "../../../common/alert/alert";
+import registerMixins from "../../../../../registerMixins";
+import { TagInput } from "../../../common/tagInput/tagInput";
+import { EditorToolbar } from "../editorToolbar";
+import { ToolbarItem } from "../../../toolbar/toolbarItem";
+import { ActiveLearningService } from "../../../../../services/activeLearningService";
 
 function createComponent(store, props: IEditorPageProps): ReactWrapper<IEditorPageProps, IEditorPageState, EditorGeometryPage> {
     return mount(

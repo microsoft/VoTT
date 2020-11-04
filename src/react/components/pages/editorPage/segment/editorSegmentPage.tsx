@@ -47,7 +47,7 @@ import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
  * @description - Page for adding/editing/removing tags to assets
  */
 @connect(mapStateToProps, mapDispatchToProps)
-export default class EditorSegmentationPage extends React.Component<IEditorPageProps, IEditorPageState> {
+export default class EditorSegmentPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         selectedTag: null,
         lockedTags: [],

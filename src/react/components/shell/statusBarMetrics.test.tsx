@@ -10,11 +10,11 @@ import { AssetState, EditorContext } from "../../../models/applicationState";
 describe("StatusBarMetrics Component", () => {
     const testProject = MockFactory.createTestProject("TestProject");
     const testAssets = MockFactory.createTestAssets();
-    testAssets[0].state[EditorContext.Geometry] = AssetState.Tagged;
-    testAssets[1].state[EditorContext.Geometry] = AssetState.Tagged;
-    testAssets[2].state[EditorContext.Geometry] = AssetState.Tagged;
-    testAssets[3].state[EditorContext.Geometry] = AssetState.Visited;
-    testAssets[4].state[EditorContext.Geometry] = AssetState.Visited;
+    testAssets[0].state = { [EditorContext.Geometry]: AssetState.Tagged };
+    testAssets[1].state = { [EditorContext.Geometry]: AssetState.Tagged };
+    testAssets[2].state = { [EditorContext.Geometry]: AssetState.Tagged };
+    testAssets[3].state = { [EditorContext.Geometry]: AssetState.Visited };
+    testAssets[4].state = { [EditorContext.Geometry]: AssetState.Visited };
     testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
 
     function createComponent(props: IStatusBarMetricsProps) {

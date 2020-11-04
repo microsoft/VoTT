@@ -289,7 +289,7 @@ describe("PascalVOC Json Export Provider", () => {
             // WARNING: should be updated
             const testProject = { ...baseTestProject };
             const testAssets = MockFactory.createTestAssets(10, 0);
-            testAssets.forEach((asset) => asset.state[EditorContext.Geometry] = AssetState.Tagged);
+            testAssets.forEach((asset) => asset.state = {[EditorContext.Geometry]: AssetState.Tagged});
             testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
             testProject.tags = MockFactory.createTestTags(3);
 
@@ -325,7 +325,7 @@ describe("PascalVOC Json Export Provider", () => {
                 // WARNING: should be updated
                 const testProject = { ...baseTestProject };
                 const testAssets = MockFactory.createTestAssets(10, 0);
-                testAssets.forEach((asset) => asset.state = { [EditorContext.Geometry] : AssetState.Tagged, });
+                testAssets.forEach((asset) => asset.state = { [EditorContext.Geometry] : AssetState.Tagged });
                 testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
                 testProject.tags = [MockFactory.createTestTag("1")];
 
@@ -363,7 +363,7 @@ describe("PascalVOC Json Export Provider", () => {
                 // WARNING: should be updated
                 const testProject = { ...baseTestProject };
                 const testAssets = MockFactory.createTestAssets(13, 0);
-                testAssets.forEach((asset) => asset.state = { [EditorContext.Geometry] : AssetState.Tagged, });
+                testAssets.forEach((asset) => asset.state = { [EditorContext.Geometry] : AssetState.Tagged });
                 testProject.assets = _.keyBy(testAssets, (asset) => asset.id);
                 testProject.tags = MockFactory.createTestTags(3);
 
