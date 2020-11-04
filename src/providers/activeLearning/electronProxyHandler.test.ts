@@ -18,7 +18,7 @@ describe("Load default model from filesystem with TF io.IOHandler", () => {
             return Promise.resolve([]);
         });
 
-        const handler = new ElectronProxyHandler("folder");
+        const handler = new ElectronProxyHandler("folder", false);
         try {
             const model = await tf.loadGraphModel(handler);
         } catch (_) {

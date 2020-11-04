@@ -10,6 +10,7 @@ import getHostProcess, { HostProcessType } from "../../common/hostProcess";
 export interface IAssetProvider {
     initialize?(): Promise<void>;
     getAssets(containerName?: string): Promise<IAsset[]>;
+    addDefaultPropsToNewConnection?(connection: IConnection): IConnection;
 }
 
 /**
