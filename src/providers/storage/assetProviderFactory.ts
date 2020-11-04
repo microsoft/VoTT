@@ -89,7 +89,7 @@ export class AssetProviderFactory {
      * @param connection - Connection for an Asset Provider
      */
     public static createFromConnection(connection: IConnection): IAssetProvider {
-        return this.create(connection.providerType, connection.providerOptions);
+        return AssetProviderFactory.create(connection.providerType, connection.providerOptions);
     }
 
     /**

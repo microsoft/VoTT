@@ -101,7 +101,7 @@ export class StorageProviderFactory {
      * @param connection Connection for a Storage Provider
      */
     public static createFromConnection(connection: IConnection) {
-        return this.create(connection.providerType, connection.providerOptions);
+        return StorageProviderFactory.create(connection.providerType, connection.providerOptions);
     }
 
     /**
