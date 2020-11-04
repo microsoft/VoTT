@@ -27,7 +27,7 @@ export interface IStorageProvider extends IAssetProvider {
     writeText(filePath: string, contents: string): Promise<void>;
     writeBinary(filePath: string, contents: Buffer): Promise<void>;
 
-    listFiles(folderPath?: string, ext?: string): Promise<string[]>;
+    listFiles(folderPath?: string, ext?: string, recursive?: boolean): Promise<string[]>;
     listContainers(folderPath?: string): Promise<string[]>;
 
     createContainer(folderPath: string): Promise<void>;
