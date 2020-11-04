@@ -8,19 +8,22 @@ import { IConnection } from "../../../../models/applicationState";
 describe("CloudFilePicker", () => {
 
     const mockFiles = MockFactory.createFileList();
-
-    const mockStorageProvider = MockFactory.createStorageProvider();
-    StorageProviderFactory.createFromConnection = jest.fn(
-        (connection: IConnection) => MockFactory.createStorageProviderFromConnection(connection));
+    let mockStorageProvider = null;
 
     function createComponent(props: ICloudFilePickerProps):
-            ReactWrapper<ICloudFilePickerProps, ICloudFilePickerState, CloudFilePicker> {
-        return mount(<CloudFilePicker {...props}/>);
+        ReactWrapper<ICloudFilePickerProps, ICloudFilePickerState, CloudFilePicker> {
+        return mount(<CloudFilePicker {...props} />);
     }
 
     function flushPromises() {
         return new Promise((resolve) => setImmediate(resolve));
     }
+
+    beforeEach(() => {
+        mockStorageProvider = MockFactory.createStorageProvider();
+        StorageProviderFactory.createFromConnection = jest.fn(
+            (connection: IConnection) => MockFactory.createStorageProviderFromConnection(connection));
+    });
 
     it("modal is visible", async () => {
         const connections = MockFactory.createTestConnections();

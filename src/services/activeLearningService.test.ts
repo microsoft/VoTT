@@ -13,20 +13,19 @@ describe("Active Learning Service", () => {
     };
 
     let activeLearningService: ActiveLearningService = null;
-
-    const electronMock = {
-        remote: {
-            app: {
-                getAppPath: jest.fn(),
-            },
-        },
-    };
-
-    beforeAll(() => {
-        window["require"] = jest.fn(() => electronMock) as any;
-    });
+    let electronMock = null;
 
     beforeEach(() => {
+        electronMock = {
+            remote: {
+                app: {
+                    getAppPath: jest.fn(),
+                },
+            },
+        };
+
+        window["require"] = jest.fn(() => electronMock) as any;
+
         activeLearningService = new ActiveLearningService(defaultSettings);
         objectDetectionMock.prototype.load = jest.fn(() => Promise.resolve());
         objectDetectionMock.prototype.predictImage = jest.fn(() => Promise.resolve([]));

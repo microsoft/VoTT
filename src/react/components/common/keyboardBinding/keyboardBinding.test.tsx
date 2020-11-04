@@ -8,19 +8,12 @@ import { KeyboardRegistrationManager } from "../keyboardManager/keyboardRegistra
 
 describe("Keyboard Binding Component", () => {
     let wrapper: ReactWrapper = null;
-    const onKeyDownHandler = jest.fn();
-    const deregisterFunc = jest.fn();
-
+    let onKeyDownHandler = null;
+    let deregisterFunc = null;
+    let defaultProps: IKeyboardBindingProps = null
     const accelerators = ["CmdOrCtrl+1"];
-    const defaultProps: IKeyboardBindingProps = {
-        displayName: "Keyboard binding",
-        keyEventType: KeyEventType.KeyDown,
-        accelerators,
-        handler: onKeyDownHandler,
-    };
 
-    const registrationMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
-    registrationMock.prototype.registerBinding = jest.fn(() => deregisterFunc);
+    let registrationMock = null;
 
     function createComponent(props?: IKeyboardBindingProps): ReactWrapper {
         props = props || defaultProps;
@@ -31,6 +24,21 @@ describe("Keyboard Binding Component", () => {
             </KeyboardManager>,
         );
     }
+
+    beforeEach(() => {
+        onKeyDownHandler = jest.fn();
+        deregisterFunc = jest.fn();
+
+        defaultProps = {
+            displayName: "Keyboard binding",
+            keyEventType: KeyEventType.KeyDown,
+            accelerators,
+            handler: onKeyDownHandler,
+        };
+
+        registrationMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+        registrationMock.prototype.registerBinding = jest.fn(() => deregisterFunc);
+    });
 
     it("is defined", () => {
         wrapper = createComponent();
