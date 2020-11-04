@@ -7,7 +7,11 @@ describe("Connection Service", () => {
 
     const storageProvider = MockFactory.createStorageProvider();
 
-    AssetProviderFactory.create = jest.fn(() => storageProvider);
+
+    beforeEach(() => {
+        AssetProviderFactory.create = jest.fn(() => storageProvider);
+
+    });
 
     it("Saves connections", async () => {
         const connection = {
