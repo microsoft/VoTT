@@ -93,17 +93,15 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public async listFiles(folderPath: string, ext?: string, recursive: boolean = false): Promise<string[]> {
+    public async listFiles(folderPath: string): Promise<string[]> {
         const normalizedPath = path.normalize(folderPath);
         console.log(`Listing files from ${normalizedPath}`);
         const files = await this.listItems(normalizedPath, (stats) => !stats.isDirectory());
-        if (recursive) {
-            const directories = await this.listItems(normalizedPath, (stats) => stats.isDirectory());
-            await directories.forEachAsync(async (directory) => {
-                const directoryFiles = await this.listFiles(directory, ext, recursive);
-                directoryFiles.forEach((file) => files.push(file));
-            });
-        }
+        const directories = await this.listItems(normalizedPath, (stats) => stats.isDirectory());
+        await directories.forEachAsync(async (directory) => {
+            const directoryFiles = await this.listFiles(directory);
+            directoryFiles.forEach((file) => files.push(file));
+        });
         return files;
     }
 
@@ -147,11 +145,8 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public async getAssets(
-            sourceConnectionFolderPath?: string,
-            relativePath: boolean = false,
-            recursive: boolean = true): Promise<IAsset[]> {
-        const files = await this.listFiles(path.normalize(sourceConnectionFolderPath), undefined, recursive);
+    public async getAssets(sourceConnectionFolderPath?: string, relativePath: boolean = false): Promise<IAsset[]> {
+        const files = await this.listFiles(path.normalize(sourceConnectionFolderPath));
         return files.map((filePath) => AssetService.createAssetFromFilePath(
                 filePath,
                 undefined,

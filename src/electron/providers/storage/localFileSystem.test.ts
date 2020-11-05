@@ -137,40 +137,9 @@ describe("LocalFileSystem Storage Provider", () => {
         await expect(localFileSystem.deleteFile("/path/to/fake/file.txt")).resolves.not.toBeNull();
     });
 
-    it("getAssets uses an absolute path when relative not specified", async () => {
-        AssetService.createAssetFromFilePath = jest.fn(() => []);
-        await localFileSystem.getAssets(sourcePath, false, false);
-        const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
-        expect(calls).toHaveLength(2);
-        calls.forEach((call, index) => {
-            const absolutePath = path.join(sourcePath, `file${index + 1}.jpg`);
-            expect(call).toEqual([
-                absolutePath,
-                undefined,
-                absolutePath,
-            ]);
-        });
-    });
-
-    it("getAssets uses a path relative to the source connection when specified", async () => {
-        AssetService.createAssetFromFilePath = jest.fn(() => []);
-        await localFileSystem.getAssets(sourcePath, true, false);
-        const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
-        expect(calls).toHaveLength(2);
-        calls.forEach((call, index) => {
-            const relativePath = `file${index + 1}.jpg`;
-            const absolutePath = path.join(sourcePath, relativePath);
-            expect(call).toEqual([
-                absolutePath,
-                undefined,
-                relativePath,
-            ]);
-        });
-    });
-
     it("getAssets gets all files recursively using path relative to the source", async () => {
         AssetService.createAssetFromFilePath = jest.fn(() => []);
-        await localFileSystem.getAssets(sourcePath, true, true);
+        await localFileSystem.getAssets(sourcePath, true);
         const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
         expect(calls).toHaveLength(8);
         expect(calls).toEqual(sourceFilePaths.map((path) => [
@@ -180,7 +149,7 @@ describe("LocalFileSystem Storage Provider", () => {
 
     it("getAssets gets all files recursively using absolute path", async () => {
         AssetService.createAssetFromFilePath = jest.fn(() => []);
-        await localFileSystem.getAssets(sourcePath, false, true);
+        await localFileSystem.getAssets(sourcePath, false);
         const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
         expect(calls).toHaveLength(8);
         expect(calls).toEqual(sourceFilePaths.map((path) => [path, undefined, path]));

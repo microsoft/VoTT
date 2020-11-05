@@ -3,9 +3,6 @@ import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "./localFileS
 import { StorageProviderFactory } from "./storageProviderFactory";
 import registerProviders from "../../registerProviders";
 import MockFactory from "../../common/mockFactory";
-import registerMixins from "../../registerMixins";
-
-registerMixins();
 
 describe("LocalFileSystem Proxy Storage Provider", () => {
     it("Provider is registered with the StorageProviderFactory", () => {
