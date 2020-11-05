@@ -93,8 +93,16 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public listFiles(folderPath: string): Promise<string[]> {
-        return this.listItems(path.normalize(folderPath), (stats) => !stats.isDirectory());
+    public async listFiles(folderPath: string): Promise<string[]> {
+        const normalizedPath = path.normalize(folderPath);
+        console.log(`Listing files from ${normalizedPath}`);
+        const files = await this.listItems(normalizedPath, (stats) => !stats.isDirectory());
+        const directories = await this.listItems(normalizedPath, (stats) => stats.isDirectory());
+        await directories.forEachAsync(async (directory) => {
+            const directoryFiles = await this.listFiles(directory);
+            directoryFiles.forEach((file) => files.push(file));
+        });
+        return files;
     }
 
     public listContainers(folderPath: string): Promise<string[]> {
@@ -138,8 +146,8 @@ export default class LocalFileSystem implements IStorageProvider {
     }
 
     public async getAssets(sourceConnectionFolderPath?: string, relativePath: boolean = false): Promise<IAsset[]> {
-        return (await this.listFiles(path.normalize(sourceConnectionFolderPath)))
-            .map((filePath) => AssetService.createAssetFromFilePath(
+        const files = await this.listFiles(path.normalize(sourceConnectionFolderPath));
+        return files.map((filePath) => AssetService.createAssetFromFilePath(
                 filePath,
                 undefined,
                 relativePath ? path.relative(sourceConnectionFolderPath, filePath) : filePath))

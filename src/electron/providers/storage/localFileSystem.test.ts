@@ -1,8 +1,10 @@
 import fs from "fs";
-import path, { relative } from "path";
+import path, { relative, sep } from "path";
 import shortid from "shortid";
 import LocalFileSystem from "./localFileSystem";
 import mockFs from "mock-fs";
+import { AssetService } from "../../../services/assetService";
+import registerMixins from "../../../registerMixins";
 
 jest.mock("electron", () => ({
     dialog: {
@@ -10,11 +12,22 @@ jest.mock("electron", () => ({
     },
 }));
 import { dialog } from "electron";
-import { AssetService } from "../../../services/assetService";
+
+registerMixins();
 
 describe("LocalFileSystem Storage Provider", () => {
     let localFileSystem: LocalFileSystem = null;
     const sourcePath = path.join("path", "to", "my", "source");
+    const sourceFilePaths = [
+        path.join(sourcePath, "file1.jpg"),
+        path.join(sourcePath, "file2.jpg"),
+        path.join(sourcePath, "subDir1", "file3.jpg"),
+        path.join(sourcePath, "subDir1", "file4.jpg"),
+        path.join(sourcePath, "subDir2", "file5.jpg"),
+        path.join(sourcePath, "subDir2", "file6.jpg"),
+        path.join(sourcePath, "subDir2", "subSubDir2", "file7.jpg"),
+        path.join(sourcePath, "subDir2", "subSubDir2", "file8.jpg"),
+    ];
 
     beforeEach(() => {
         localFileSystem = new LocalFileSystem(null);
@@ -28,7 +41,18 @@ describe("LocalFileSystem Storage Provider", () => {
                         source: {
                             "file1.jpg": "contents",
                             "file2.jpg": "contents",
-                            "file3.jpg": "contents",
+                            "subDir1": {
+                                "file3.jpg": "contents",
+                                "file4.jpg": "contents",
+                            },
+                            "subDir2": {
+                                "file5.jpg": "contents",
+                                "file6.jpg": "contents",
+                                "subSubDir2": {
+                                    "file7.jpg": "contents",
+                                    "file8.jpg": "contents",
+                                },
+                            },
                         },
                     },
                 },
@@ -113,34 +137,21 @@ describe("LocalFileSystem Storage Provider", () => {
         await expect(localFileSystem.deleteFile("/path/to/fake/file.txt")).resolves.not.toBeNull();
     });
 
-    it("getAssets uses an absolute path when relative not specified", async () => {
-        AssetService.createAssetFromFilePath = jest.fn(() => []);
-        await localFileSystem.getAssets(sourcePath);
-        const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
-        expect(calls).toHaveLength(3);
-        calls.forEach((call, index) => {
-            const absolutePath = path.join(sourcePath, `file${index + 1}.jpg`);
-            expect(call).toEqual([
-                absolutePath,
-                undefined,
-                absolutePath,
-            ]);
-        });
-    });
-
-    it("getAssets uses a path relative to the source connection when specified", async () => {
+    it("getAssets gets all files recursively using path relative to the source", async () => {
         AssetService.createAssetFromFilePath = jest.fn(() => []);
         await localFileSystem.getAssets(sourcePath, true);
         const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
-        expect(calls).toHaveLength(3);
-        calls.forEach((call, index) => {
-            const relativePath = `file${index + 1}.jpg`;
-            const absolutePath = path.join(sourcePath, relativePath);
-            expect(call).toEqual([
-                absolutePath,
-                undefined,
-                relativePath,
-            ]);
-        });
+        expect(calls).toHaveLength(8);
+        expect(calls).toEqual(sourceFilePaths.map((path) => [
+            path, undefined, path.replace(`${sourcePath}${sep}`, ""),
+        ]));
+    });
+
+    it("getAssets gets all files recursively using absolute path", async () => {
+        AssetService.createAssetFromFilePath = jest.fn(() => []);
+        await localFileSystem.getAssets(sourcePath, false);
+        const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
+        expect(calls).toHaveLength(8);
+        expect(calls).toEqual(sourceFilePaths.map((path) => [path, undefined, path]));
     });
 });
