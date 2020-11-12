@@ -25,6 +25,7 @@
         "dotenv": "^7.0.0",
         "express-request-id": "^1.4.1",
         "google-protobuf": "^3.6.1",
+        "jimp": "^0.16.1",
         "jpeg-js": "^0.3.4",
         "json2csv": "^4.5.0",
         "lodash": "^4.17.11",

@@ -14,6 +14,8 @@ import { TFRecordsReader } from "../providers/export/tensorFlowRecords/tensorFlo
 import { FeatureType } from "../providers/export/tensorFlowRecords/tensorFlowBuilder";
 import { appInfo } from "../common/appInfo";
 import { encodeFileURI } from "../common/utils";
+import Jimp from "jimp";
+import path from "path";
 
 /**
  * @name - Asset Service
@@ -27,9 +29,9 @@ export class AssetService {
      * @param assetFileName - name of asset
      */
     public static createAssetFromFilePath(
-            assetFilePath: string,
-            assetFileName?: string,
-            assetIdentifier?: string): IAsset {
+        assetFilePath: string,
+        assetFileName?: string,
+        assetIdentifier?: string): IAsset {
         Guard.empty(assetFilePath);
         const normalizedPath = assetFilePath.toLowerCase();
 
@@ -188,6 +190,17 @@ export class AssetService {
 
         const fileName = `${asset.id}${constants.assetMetadataFileExtension}`;
         try {
+            console.log('Jimp start');
+            const readBuffer = await this.storageProvider.readBinary(fileName);
+            const jimp = await Jimp.read(readBuffer);
+            const writeBuffer = await jimp.resize(256, 256)
+                .quality(60)
+                .greyscale()
+                .getBufferAsync(Jimp.MIME_JPEG);
+
+            await this.storageProvider.writeBinary(`${path.dirname(fileName)}/test.jpg`, writeBuffer);
+            console.log('jimp end');
+
             const json = await this.storageProvider.readText(fileName);
             return JSON.parse(json) as IAssetMetadata;
         } catch (err) {
