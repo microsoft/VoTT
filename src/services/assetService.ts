@@ -53,16 +53,10 @@ export class AssetService {
 
         const assetType = this.getAssetType(assetFormat);
 
-        const fieldGeometry = EditorContext.Geometry.toString();
-        const fieldSegmentation = EditorContext.Segmentation.toString();
-        const fieldMetadata = EditorContext.Metadata.toString();
-
-        ////////////////////////////////////////////////////////////////
-        // WARNING: should be updated
         return {
             id: md5Hash,
             format: assetFormat,
-            state: { fieldGeometry: AssetState.NotVisited, fieldSegmentation: AssetState.NotVisited, fieldMetadata: AssetState.NotVisited, },
+            state: { [EditorContext.Geometry]: AssetState.NotVisited, [EditorContext.Segmentation]: AssetState.NotVisited, [EditorContext.Metadata]: AssetState.NotVisited, },
             type: assetType,
             name: fileName,
             path: filePath,

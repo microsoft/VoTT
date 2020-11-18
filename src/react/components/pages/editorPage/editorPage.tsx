@@ -26,6 +26,12 @@ export interface IEditorPageProps extends RouteComponentProps {
     applicationActions: IApplicationActions;
 }
 
+export enum SegmentSelectionMode {
+    NONE = 0,
+    ANNOTATING = 1,
+    DEANNOTATING = 2,
+}
+
 /**
  * State for Editor Page
  */
@@ -36,6 +42,8 @@ export interface IEditorPageState {
     editorMode: EditorMode;
     /** The selection mode to set for canvas tools */
     selectionMode: SelectionMode;
+    /** The selection mode to set for canvas tools */
+    segmentSelectionMode: SegmentSelectionMode;
     /** The selected asset for the primary editing experience */
     selectedAsset?: IAssetMetadata;
     /** Currently selected region on current asset */

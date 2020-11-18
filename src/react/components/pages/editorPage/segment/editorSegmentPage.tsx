@@ -30,9 +30,10 @@ import Confirm from "../../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../../services/activeLearningService";
 import { toast } from "react-toastify";
 import { EditorToolbar } from "../editorToolbar";
-import SegmentCanvas from "./segmentCanvas";
-import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from '../editorPage';
+import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps, SegmentSelectionMode } from '../editorPage';
 import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
+import SegmentView from "./segmentCanvas";
+import SegmentCanvas from "./segmentCanvas";
 
 /**
  * Properties for Editor Page
@@ -52,6 +53,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
         selectedTag: null,
         lockedTags: [],
         selectionMode: SelectionMode.NONE,
+        segmentSelectionMode: SegmentSelectionMode.NONE,
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Select,
@@ -68,7 +70,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(EditorContext.Segmentation);
-    private canvas: RefObject<SegmentCanvas> = React.createRef();
+    private canvas: RefObject<SegmentView> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -167,9 +169,8 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
                                         onCanvasRendered={this.onCanvasRendered}
-                                        onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                                         editorMode={this.state.editorMode}
-                                        selectionMode={this.state.selectionMode}
+                                        selectionMode={this.state.segmentSelectionMode}
                                         project={this.props.project}
                                         lockedTags={this.state.lockedTags}>
                                         <AssetPreview
@@ -488,17 +489,8 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
             case ToolbarItemName.NextAsset:
                 await this.goToRootAsset(1);
                 break;
-            case ToolbarItemName.CopyRegions:
-                this.canvas.current.copyRegions();
-                break;
-            case ToolbarItemName.CutRegions:
-                this.canvas.current.cutRegions();
-                break;
-            case ToolbarItemName.PasteRegions:
-                this.canvas.current.pasteRegions();
-                break;
             case ToolbarItemName.RemoveAllRegions:
-                this.canvas.current.confirmRemoveAllRegions();
+                //this.canvas.current.confirmRemoveAllRegions();
                 break;
             case ToolbarItemName.ActiveLearning:
                 await this.predictRegions();

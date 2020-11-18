@@ -1,3 +1,4 @@
+import { IMetadata } from "@azure/storage-blob/typings/lib/models";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetPreviewSettings } from "../react/components/common/assetPreview/assetPreview";
 
@@ -280,10 +281,13 @@ export interface IAsset {
  * @description - Format to store asset metadata for each asset within a project
  * @member asset - References an asset within the project
  * @member regions - The list of regions drawn on the asset
+ * @member segments - The list of segments constituting the asset
  */
 export interface IAssetMetadata {
     asset: IAsset;
-    regions: IRegion[];
+    regions?: IRegion[];
+    segments?: ISegment[];
+    metadata?: IMetadata;
     version: string;
 }
 
@@ -311,6 +315,19 @@ export interface IRegion {
     type: RegionType;
     tags: string[];
     points?: IPoint[];
+    boundingBox?: IBoundingBox;
+}
+
+/**
+ * @name - Segment
+ * @description - Defines a segment generated from a segmentation algorithm
+ * @member id - Unique identifier for this segment
+ * @member pixels - Defines a list of points that define a segment
+ * @member boundingBox - Defines a bounding box of the segment
+ */
+export interface ISegment {
+    id: string;
+    pixels: IPoint[];
     boundingBox?: IBoundingBox;
 }
 

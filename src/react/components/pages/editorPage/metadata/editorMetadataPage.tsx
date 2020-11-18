@@ -34,7 +34,7 @@ import { toast } from "react-toastify";
 import Form from "react-jsonschema-form";
 import CustomFieldTemplate from "../../../common/customField/customFieldTemplate";
 import Preview from "./preview";
-import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps } from '../editorPage';
+import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps, SegmentSelectionMode } from '../editorPage';
 
 /**
  * Properties for Editor Page
@@ -59,7 +59,8 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
     public state: IEditorPageState = {
         selectedTag: null,
         lockedTags: [],
-        selectionMode: SelectionMode.RECT,
+        selectionMode: SelectionMode.NONE,
+        segmentSelectionMode: SegmentSelectionMode.NONE,
         assets: [],
         childAssets: [],
         editorMode: EditorMode.Rectangle,
