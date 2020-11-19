@@ -38,6 +38,8 @@ export interface ITagInputProps {
     showTagInputBox?: boolean;
     /** Always show tag search box */
     showSearchBox?: boolean;
+    /** Support instant tag application */
+    instantTagClick: boolean;
 }
 
 export interface ITagInputState {
@@ -380,13 +382,22 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                 showColorPicker: false,
             });
 
-            // Only fire click event if a region is selected
-            if (this.props.selectedRegions &&
-                this.props.selectedRegions.length > 0 &&
-                this.props.onTagClick &&
-                !inEditMode) {
-                this.props.onTagClick(tag);
+            // If instant tag click is required
+            if (this.props.instantTagClick === true){
+                if (this.props.onTagClick &&
+                    !inEditMode) {
+                    this.props.onTagClick(tag);
+                }
             }
+            else{
+                // Only fire click event if a region is selected
+                if (this.props.selectedRegions &&
+                    this.props.selectedRegions.length > 0 &&
+                    this.props.onTagClick &&
+                    !inEditMode) {
+                    this.props.onTagClick(tag);
+                }
+            }            
         }
     }
 

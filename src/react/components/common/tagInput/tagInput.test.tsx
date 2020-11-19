@@ -22,6 +22,7 @@ describe("Tag Input Component", () => {
             onLockedTagsChange: jest.fn(),
             onTagClick: jest.fn(),
             onCtrlTagClick: jest.fn(),
+            instantTagClick: false,
         };
     }
 

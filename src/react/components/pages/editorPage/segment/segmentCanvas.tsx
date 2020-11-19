@@ -11,6 +11,7 @@ import { SegmentSelectionMode } from "../editorPage";
 import { Annotation } from "./superpixel";
 import { CanvasSuperpixel } from "./canvasSuperpixel";
 import data from "./test.jpg.json";
+import { ITag } from "vott-react";
 
 export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     selectedAsset: IAssetMetadata;
@@ -77,7 +78,20 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     public setSelectionMode(segmentSelectionMode: SegmentSelectionMode){
-        console.log(segmentSelectionMode);
+        if(segmentSelectionMode === SegmentSelectionMode.NONE){
+            this.updateAnnotating(0, "black");
+        }
+        else if(segmentSelectionMode === SegmentSelectionMode.DEANNOTATING){
+            this.updateAnnotating(-1, "black");
+        }
+    }
+
+    public updateAnnotating(tagIndex: number, tagColor: string){
+        const svg = document.getElementById("mainCanvas");
+        if(svg !== undefined){
+            svg.setAttribute("name", String(tagIndex));
+            svg.setAttribute("color-profile", tagColor);
+        }        
     }
 
     ////////////////////////////////////////////////////////////////
@@ -86,39 +100,14 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
      * Toggles tag on all selected regions
      * @param selectedTag Tag name
      */
-    public applyTag = (tag: string) => {
-        /*
-        const selectedRegions = this.getSelectedRegions();
-        const lockedTags = this.props.lockedTags;
-        const lockedTagsEmpty = !lockedTags || !lockedTags.length;
-        const regionsEmpty = !selectedRegions || !selectedRegions.length;
-        if ((!tag && lockedTagsEmpty) || regionsEmpty) {
-            return;
-        }
-        let transformer: (tags: string[], tag: string) => string[];
-        if (lockedTagsEmpty) {
-            // Tag selected while region(s) selected
-            transformer = CanvasHelpers.toggleTag;
-        } else if (lockedTags.find((t) => t === tag)) {
-            // Tag added to locked tags while region(s) selected
-            transformer = CanvasHelpers.addIfMissing;
-        } else {
-            // Tag removed from locked tags while region(s) selected
-            transformer = CanvasHelpers.removeIfContained;
-        }
-        for (const selectedRegion of selectedRegions) {
-            selectedRegion.tags = transformer(selectedRegion.tags, tag);
-        }
-        this.updateRegions(selectedRegions);
-        if (this.props.onSelectedRegionsChanged) {
-            this.props.onSelectedRegionsChanged(selectedRegions);
-        }
-        */
+    public applyTag = (tag: ITag) => {
+        this.updateAnnotating(1, tag.color);
     }
 
     public render = () => {
         const className = this.state.enabled ? "canvas-enabled" : "canvas-disabled";
         const annotatedList: Annotation[] = []; // [ new Annotation(1,"red", 1), new Annotation(2,"blue", 2) ];
+        console.log("Rendered");
         return (
             <Fragment>
                 <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
@@ -135,6 +124,10 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public forceResize = (): void => {
         this.onWindowResize();
+    }
+
+    public onAnnotationUpdate = (tag: number, color: string) => {
+
     }
 
     private renderChildren = () => {

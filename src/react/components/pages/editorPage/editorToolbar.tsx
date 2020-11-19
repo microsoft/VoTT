@@ -67,7 +67,6 @@ export class EditorToolbar extends React.Component<IEditorToolbarProps, IEditorT
     }
 
     private onToolbarItemSelected = (toolbarItem: ToolbarItem) => {
-        console.log(toolbarItem.props.name);
         this.setState({
             selectedItem: toolbarItem.props.name,
         }, () => {

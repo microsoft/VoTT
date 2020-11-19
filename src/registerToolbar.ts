@@ -22,6 +22,7 @@ export enum ToolbarItemName {
     ActiveLearning = "activeLearning",
     ShowSegBoundary = "showSegBoundary",
     AnnotateSegments = "annotateSegments",
+    RemoveAnnotation = "removeAnnotation",
     ExecuteSegmentation = "executeSegmentation",
 }
 
@@ -130,17 +131,27 @@ export default function registerToolbar() {
         name: ToolbarItemName.AnnotateSegments,
         context: [EditorContext.Segmentation],
         tooltip: strings.editorPage.toolbar.nextAsset,
-        icon: "fa-mouse-pointer",
+        icon: "fa-paste",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["A", "a"],
     });
 
     ToolbarItemFactory.register({
+        name: ToolbarItemName.RemoveAnnotation,
+        context: [EditorContext.Segmentation],
+        tooltip: strings.editorPage.toolbar.removeAllRegions,
+        icon: "fa-ban",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.State,
+        accelerators: ["Z", "z"],
+    });
+
+    ToolbarItemFactory.register({
         name: ToolbarItemName.ShowSegBoundary,
         context: [EditorContext.Segmentation],
-        tooltip: strings.editorPage.toolbar.nextAsset,
-        icon: "fa-mouse-pointer",
+        tooltip: strings.editorPage.toolbar.copy,
+        icon: "fa-copy",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["B", "b"],

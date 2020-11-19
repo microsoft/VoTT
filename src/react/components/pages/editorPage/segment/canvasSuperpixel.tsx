@@ -34,7 +34,7 @@ export const CanvasSuperpixel: React.FC<CanvasSuperpixelProps> = ({
 }) => {
     const canvasRef = useRef<SVGSVGElement>(null);
 
-    const updateAnnotating = (tag: number, color: string) => {
+    const onAnnotatingUpdated = (tag: number, color: string) => {
         //setAnnotating({ tag: index, color: color }); // computationally intensive requiring re-rendering
         canvasRef.current.setAttribute("name", tag.toString());
         canvasRef.current.setAttribute("color-profile", color);

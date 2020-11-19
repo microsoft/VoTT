@@ -196,6 +196,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
                                 onCtrlTagClick={this.onCtrlTagClicked}
                                 onTagRenamed={this.confirmTagRenamed}
                                 onTagDeleted={this.confirmTagDeleted}
+                                instantTagClick={true}                                
                             />
                         </div>
                         <Confirm title={strings.editorPage.tags.rename.title}
@@ -259,7 +260,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
         this.setState({
             selectedTag: tag.name,
             lockedTags: [],
-        }, () => this.canvas.current.applyTag(tag.name));
+        }, () => this.canvas.current.applyTag(tag));
     }
 
     /**
@@ -310,7 +311,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
         this.setState({
             selectedTag: tag.name,
             lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
-        }, () => this.canvas.current.applyTag(tag.name));
+        }, () => this.canvas.current.applyTag(tag));
     }
 
     private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
@@ -471,16 +472,24 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {
         switch (toolbarItem.props.name) {
-            case ToolbarItemName.DrawRectangle:
+            case ToolbarItemName.AnnotateSegments:
                 this.setState({
-                    selectionMode: SelectionMode.RECT,
-                    editorMode: EditorMode.Rectangle,
+                    segmentSelectionMode: SegmentSelectionMode.ANNOTATING,
                 });
                 break;
             case ToolbarItemName.SelectCanvas:
                 this.setState({
-                    selectionMode: SelectionMode.NONE,
-                    editorMode: EditorMode.Select,
+                    segmentSelectionMode: SegmentSelectionMode.NONE,
+                });
+                break;
+            case ToolbarItemName.RemoveAnnotation:
+                this.setState({
+                    segmentSelectionMode: SegmentSelectionMode.DEANNOTATING,
+                });
+                break;
+            case ToolbarItemName.ShowSegBoundary:
+                this.setState({
+                    segmentSelectionMode: SegmentSelectionMode.NONE,
                 });
                 break;
             case ToolbarItemName.PreviousAsset:
@@ -488,9 +497,6 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
                 break;
             case ToolbarItemName.NextAsset:
                 await this.goToRootAsset(1);
-                break;
-            case ToolbarItemName.RemoveAllRegions:
-                //this.canvas.current.confirmRemoveAllRegions();
                 break;
             case ToolbarItemName.ActiveLearning:
                 await this.predictRegions();

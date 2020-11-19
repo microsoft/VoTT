@@ -195,6 +195,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
                                 onCtrlTagClick={this.onCtrlTagClicked}
                                 onTagRenamed={this.confirmTagRenamed}
                                 onTagDeleted={this.confirmTagDeleted}
+                                instantTagClick={false}
                             />
                         </div>
                         <Confirm title={strings.editorPage.tags.rename.title}
@@ -255,6 +256,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
      * @param tag Tag clicked
      */
     private onTagClicked = (tag: ITag): void => {
+        console.log(tag);
         this.setState({
             selectedTag: tag.name,
             lockedTags: [],
