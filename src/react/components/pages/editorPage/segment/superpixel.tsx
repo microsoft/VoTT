@@ -1,5 +1,8 @@
 import { useRef } from "react";
 
+export const NOT_TAGGED = "empty";
+export const DEANNOTATING = "deannotating";
+
 const React = require("react");
 const { useState, useEffect } = require("react");
 const Snap = require("snapsvg-cjs");
@@ -14,7 +17,7 @@ export interface IPoint{
 }
 
 export interface IAnnotation{
-    tag: number,
+    tag: string,
     color: string,
     index?: number,
 }
@@ -27,11 +30,11 @@ export interface ICoordinates{
 }
 
 export class Annotation implements IAnnotation {
-    tag: number
+    tag: string
     color: string
     index?: number
 
-    constructor(tag: number, color: string, index?:number){
+    constructor(tag: string, color: string, index?:number){
         this.tag = tag;
         this.color = color;
         this.index = index;
@@ -39,14 +42,12 @@ export class Annotation implements IAnnotation {
 }
 
 const coloringPixel = (component: Snap.Element, color: string, opacity: number, strokeWidth: number) => {
-    component.animate(
-      {
+    
+   component.attr({
         fill: color,
         opacity: opacity,
         strokeWidth: strokeWidth
-      },
-      0
-    );
+    });
   }
 
 const Direction = {
@@ -154,41 +155,42 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
         if(s.children().length <= 2){ // must be updated to check the inclusion of 'path' within children
             var pathString = getPathFromPoints(pixels, canvasWidth, canvasHeight);
             var pixel = s.path( pathString );
-            pixel.attr({ stroke: "white", strokeWidth: 0, fill: annotation.color, opacity: annotation.tag < 0 ? defaultOpacity : annotatedOpacity });
+            pixel.attr({ stroke: "white", strokeWidth: 0, fill: annotation.color, opacity: annotation.tag.length > 0 ? defaultOpacity : annotatedOpacity });
 
             const setAndColoring = () => {
-                const fillColor: string = pixelref.current.parentElement.getAttribute("color-profile")!;
-                if(fillColor === 'remove'){
-                    pixelref.current.setAttribute("name", String(-1));
+                const annotatingTag: string = pixelref.current.parentElement.getAttribute("name")!;
+                if(annotatingTag === DEANNOTATING){
+                    pixelref.current.setAttribute("name", NOT_TAGGED);
                     pixelref.current.setAttribute("color-profile", defaultcolor);
-                    coloringPixel(pixel, annotation.color, defaultOpacity, 0);
+                    coloringPixel(pixel, defaultcolor, defaultOpacity, 0);
                 }else{
-                    pixelref.current.setAttribute("name", String(pixelref.current.parentElement.getAttribute("name")));
+                    const fillColor: string = pixelref.current.parentElement.getAttribute("color-profile")!;
+                    pixelref.current.setAttribute("name", pixelref.current.parentElement.getAttribute("name"));
                     pixelref.current.setAttribute("color-profile",fillColor);
                     coloringPixel(pixel, fillColor!, annotatedOpacity, 0);
                 }
             }
             pixel.mouseover( (event: MouseEvent) => {
-               const annotatingTag = parseInt(pixelref.current.parentElement.getAttribute("name").toString()!);
-               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag >= 0){
+               const annotatingTag = pixelref.current.parentElement.getAttribute("name");
+               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== NOT_TAGGED){
                 coloringPixel(pixel, pixelref.current.parentElement.getAttribute("color-profile")!, annotatingOpacity, 1);
                }
               })
               .mouseout(function (event: MouseEvent) {
-               const annotatingTag = parseInt(pixelref.current.parentElement.getAttribute("name").toString()!);
-               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag >= 0){
-                coloringPixel(pixel, pixelref.current.getAttribute("color-profile")!, annotation.tag >= 0 ? annotatedOpacity : defaultOpacity, 0);
+               const annotatingTag = pixelref.current.parentElement.getAttribute("name");
+               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== NOT_TAGGED){
+                coloringPixel(pixel, pixelref.current.getAttribute("color-profile")!, annotation.tag.length > 0 ? annotatedOpacity : defaultOpacity, 0);
                }
               })
               .mousemove(function (event: MouseEvent) {
-                const annotatingTag = parseInt(pixelref.current.parentElement.getAttribute("name").toString()!);
-                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag >= 0){
+                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
+                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== NOT_TAGGED){
                     setAndColoring();
                 }
               })
               .mousedown(function (event: MouseEvent) {
-                const annotatingTag = parseInt(pixelref.current.parentElement.getAttribute("name").toString()!);
-                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag >= 0){
+                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
+                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== NOT_TAGGED){
                     setAndColoring();
                 }
               });

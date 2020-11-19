@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Annotation } from "./superpixel";
+import { Annotation, NOT_TAGGED } from "./superpixel";
 import { Superpixel } from "./superpixel";
 
 const keys: number[] = [];
@@ -34,13 +34,13 @@ export const CanvasSuperpixel: React.FC<CanvasSuperpixelProps> = ({
 }) => {
     const canvasRef = useRef<SVGSVGElement>(null);
 
-    const onAnnotatingUpdated = (tag: number, color: string) => {
+    const onAnnotatingUpdated = (tag: string, color: string) => {
         //setAnnotating({ tag: index, color: color }); // computationally intensive requiring re-rendering
-        canvasRef.current.setAttribute("name", tag.toString());
+        canvasRef.current.setAttribute("name", tag);
         canvasRef.current.setAttribute("color-profile", color);
     };
 
-    const [annotating] = useState(new Annotation(-1, "white"));
+    const [annotating] = useState(new Annotation(NOT_TAGGED, "white"));
     if (keys.length === 0){
       for (let k in segmentationData) keys.push(parseInt(k));
     }

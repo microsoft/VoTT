@@ -327,7 +327,8 @@ export interface IRegion {
  */
 export interface ISegment {
     id: string;
-    pixels: IPoint[];
+    tag: string;
+    pixels?: IPoint[];
     boundingBox?: IBoundingBox;
 }
 

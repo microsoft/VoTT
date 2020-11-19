@@ -2,13 +2,14 @@ import React, { Fragment, ReactElement } from "react";
 import {
     EditorMode, IAssetMetadata,
     IProject,
+    ISegment,
 } from "../../../../../models/applicationState";
 import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetPreview";
 import Confirm from "../../../common/confirm/confirm";
 import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 import { createContentBoundingBox } from "../../../../../common/layout";
 import { SegmentSelectionMode } from "../editorPage";
-import { Annotation } from "./superpixel";
+import { Annotation, NOT_TAGGED } from "./superpixel";
 import { CanvasSuperpixel } from "./canvasSuperpixel";
 import data from "./test.jpg.json";
 import { ITag } from "vott-react";
@@ -66,6 +67,11 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             this.setSelectionMode(this.props.selectionMode);
         }
 
+        // When the project tags change re-apply tags to regions
+        if (this.props.project.tags !== prevProps.project.tags) {
+            this.updateCanvasToolsRegionTags();
+        }
+
         // Handles when the canvas is enabled & disabled
         if (prevState.enabled !== this.state.enabled) {
             // When the canvas is ready to display
@@ -77,21 +83,27 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         }
     }
 
+    ////////////////////////////////////////////////////////////////
+    // WARNING: this should be updated
+    public updateCanvasToolsRegionTags = (): void => {
+        console.log("test");
+    }
+
     public setSelectionMode(segmentSelectionMode: SegmentSelectionMode){
         if(segmentSelectionMode === SegmentSelectionMode.NONE){
-            this.updateAnnotating(0, "black");
+            this.updateAnnotating(NOT_TAGGED, "black");
         }
         else if(segmentSelectionMode === SegmentSelectionMode.DEANNOTATING){
-            this.updateAnnotating(-1, "black");
+            this.updateAnnotating(NOT_TAGGED, "black");
         }
     }
 
-    public updateAnnotating(tagIndex: number, tagColor: string){
+    public updateAnnotating(tag: string, color: string){
         const svg = document.getElementById("mainCanvas");
-        if(svg !== undefined){
-            svg.setAttribute("name", String(tagIndex));
-            svg.setAttribute("color-profile", tagColor);
-        }        
+        if(svg){
+            svg.setAttribute("name", tag);
+            svg.setAttribute("color-profile", color);
+        }
     }
 
     ////////////////////////////////////////////////////////////////
@@ -101,13 +113,12 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
      * @param selectedTag Tag name
      */
     public applyTag = (tag: ITag) => {
-        this.updateAnnotating(1, tag.color);
+        this.updateAnnotating(tag.name, tag.color);
     }
 
     public render = () => {
         const className = this.state.enabled ? "canvas-enabled" : "canvas-disabled";
         const annotatedList: Annotation[] = []; // [ new Annotation(1,"red", 1), new Annotation(2,"blue", 2) ];
-        console.log("Rendered");
         return (
             <Fragment>
                 <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
@@ -120,6 +131,29 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 {this.renderChildren()}
             </Fragment>
         );
+    }
+
+    private onSegmentUpdate = (id: number, tag: string) => {
+        const currentSegments = [...this.state.currentAsset.segments, ];
+
+        this.updateAssetSegments(currentSegments)
+    }
+
+    /**
+     * Update regions within the current asset
+     * @param segments
+     * @param selectedRegions
+     */
+    private updateAssetSegments = (segments: ISegment[]) => {
+        const currentAsset: IAssetMetadata = {
+            ...this.state.currentAsset,
+            segments,
+        };
+        this.setState({
+            currentAsset,
+        }, () => {
+            this.props.onAssetMetadataChanged(currentAsset);
+        });
     }
 
     public forceResize = (): void => {
