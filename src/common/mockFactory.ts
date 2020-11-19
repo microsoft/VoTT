@@ -639,7 +639,7 @@ export default class MockFactory {
 
     /**
      * Creates array of IExportProviderRegistrationOptions for the different providers
-     * vottJson, PascalVOC, azureCustomVision, csv
+     * vottJson, PascalVOC, azureCustomVision, csv, moadJson
      */
     public static createExportProviderRegistrations(): IExportProviderRegistrationOptions[] {
         const registrations: IExportProviderRegistrationOptions[] = [];
@@ -647,6 +647,7 @@ export default class MockFactory {
         registrations.push(MockFactory.createExportProviderRegistration("pascalVOC"));
         registrations.push(MockFactory.createExportProviderRegistration("azureCustomVision"));
         registrations.push(MockFactory.createExportProviderRegistration("csv"));
+        registrations.push(MockFactory.createExportProviderRegistration("moadJson"));
         return registrations;
     }
 

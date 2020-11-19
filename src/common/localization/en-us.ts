@@ -391,6 +391,9 @@ export const english: IAppStrings = {
             csv: {
                 displayName: "Comma Separated Values (CSV)",
             },
+            moadJson: {
+                displayName: "MOAD (Marine Object AI Dataset) JSON",
+            },
         },
         messages: {
             saveSuccess: "Successfully saved export settings",

@@ -2,6 +2,7 @@ import { ExportProviderFactory } from "./providers/export/exportProviderFactory"
 import { PascalVOCExportProvider } from "./providers/export/pascalVOC";
 import { TFRecordsExportProvider } from "./providers/export/tensorFlowRecords";
 import { VottJsonExportProvider } from "./providers/export/vottJson";
+import { MoadJsonExportProvider } from "./providers/export/moadJson";
 import { CsvExportProvider } from "./providers/export/csv";
 import { AssetProviderFactory } from "./providers/storage/assetProviderFactory";
 import { AzureBlobStorage } from "./providers/storage/azureBlobStorage";
@@ -79,6 +80,11 @@ export default function registerProviders() {
         name: "csv",
         displayName: strings.export.providers.csv.displayName,
         factory: (project, options) => new CsvExportProvider(project, options),
+    });
+    ExportProviderFactory.register({
+        name: "moadJson",
+        displayName: strings.export.providers.moadJson.displayName,
+        factory: (project, options) => new MoadJsonExportProvider(project, options),
     });
 
     registerToolbar();

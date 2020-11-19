@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { VottJsonExportProvider, IVottJsonExportProviderOptions } from "./vottJson";
+import { MoadJsonExportProvider, IMoadJsonExportProviderOptions } from "./moadJson";
 import registerProviders from "../../registerProviders";
 import { ExportAssetState } from "./exportProvider";
 import { ExportProviderFactory } from "./exportProviderFactory";
@@ -19,7 +19,7 @@ import { AssetProviderFactory } from "../storage/assetProviderFactory";
 
 registerMixins();
 
-describe("VoTT Json Export Provider", () => {
+describe("MOAD Json Export Provider", () => {
     const testAssets = MockFactory.createTestAssets(10, 1);
     const testProject: IProject = {
         ...MockFactory.createTestProject(),
@@ -37,7 +37,7 @@ describe("VoTT Json Export Provider", () => {
         },
     };
 
-    const expectedFileName = "vott-json-export/" + testProject.name.replace(" ", "-") + constants.exportFileExtension;
+    const expectedFileName = "moad-json-export/" + testProject.name.replace(" ", "-") + constants.exportFileExtension;
 
     beforeAll(() => {
         HtmlFileReader.getAssetBlob = jest.fn(() => {
@@ -56,17 +56,17 @@ describe("VoTT Json Export Provider", () => {
     });
 
     it("Is defined", () => {
-        expect(VottJsonExportProvider).toBeDefined();
+        expect(MoadJsonExportProvider).toBeDefined();
     });
 
     it("Can be instantiated through the factory", () => {
-        const options: IVottJsonExportProviderOptions = {
+        const options: IMoadJsonExportProviderOptions = {
             assetState: ExportAssetState.All,
             includeImages: true,
         };
-        const exportProvider = ExportProviderFactory.create("vottJson", testProject, options);
+        const exportProvider = ExportProviderFactory.create("moadJson", testProject, options);
         expect(exportProvider).not.toBeNull();
-        expect(exportProvider).toBeInstanceOf(VottJsonExportProvider);
+        expect(exportProvider).toBeInstanceOf(MoadJsonExportProvider);
     });
 
     describe("Export variations", () => {
@@ -90,12 +90,12 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports all assets", async () => {
-            const options: IVottJsonExportProviderOptions = {
+            const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.All,
                 includeImages: true,
             };
 
-            const exportProvider = new VottJsonExportProvider(testProject, options);
+            const exportProvider = new MoadJsonExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -116,12 +116,12 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports only visited assets (includes tagged)", async () => {
-            const options: IVottJsonExportProviderOptions = {
+            const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
                 includeImages: true,
             };
 
-            const exportProvider = new VottJsonExportProvider(testProject, options);
+            const exportProvider = new MoadJsonExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -146,12 +146,12 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Exports only tagged assets", async () => {
-            const options: IVottJsonExportProviderOptions = {
+            const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
                 includeImages: true,
             };
 
-            const exportProvider = new VottJsonExportProvider(testProject, options);
+            const exportProvider = new MoadJsonExportProvider(testProject, options);
             await exportProvider.export();
 
             const storageProviderMock = LocalFileSystemProxy as any;
@@ -173,12 +173,12 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Includes images in export when option is selected", async () => {
-            const options: IVottJsonExportProviderOptions = {
+            const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.All,
                 includeImages: true,
             };
 
-            const exportProvider = new VottJsonExportProvider(testProject, options);
+            const exportProvider = new MoadJsonExportProvider(testProject, options);
             await exportProvider.export();
 
             expect(LocalFileSystemProxy.prototype.writeText).toBeCalledTimes(1);
@@ -186,12 +186,12 @@ describe("VoTT Json Export Provider", () => {
         });
 
         it("Does not include images in export when option is not selected", async () => {
-            const options: IVottJsonExportProviderOptions = {
+            const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.All,
                 includeImages: false,
             };
 
-            const exportProvider = new VottJsonExportProvider(testProject, options);
+            const exportProvider = new MoadJsonExportProvider(testProject, options);
             await exportProvider.export();
 
             expect(LocalFileSystemProxy.prototype.writeText).toBeCalledTimes(1);

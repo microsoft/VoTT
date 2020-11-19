@@ -1,0 +1,8 @@
+{
+    "includeImages": {
+        "ui:widget": "checkbox"
+    },
+    "individualFileExport": {
+        "ui:widget": "checkbox"
+    }
+}

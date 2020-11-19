@@ -403,6 +403,9 @@ export const korean: IAppStrings = {
             csv: {
                 displayName: "쉼표로 구분 된 값（CSV）", // Comma Separated Values (CSV)"
             },
+            moadJson: {
+                displayName: "MOAD (Marine Object AI Dataset) JSON",
+            },
         },
         messages: {
             saveSuccess: "내보내기 설정이 성공적으로 저장되었습니다", // Successfully saved export settings"

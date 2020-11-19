@@ -401,6 +401,9 @@ export const chinese: IAppStrings = {
             csv: {
                 displayName: "逗号分隔值 (CSV)", // Comma Separated Values (CSV)
             },
+            moadJson: {
+                displayName: "MOAD (Marine Object AI Dataset) JSON",
+            },
         },
         messages: {
             saveSuccess: "成功保存导出设置", // Successfully saved export settings

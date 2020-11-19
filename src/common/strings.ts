@@ -392,6 +392,9 @@ export interface IAppStrings {
             csv: {
                 displayName: string,
             },
+            moadJson: {
+                displayName: string,
+            },
         },
         messages: {
             saveSuccess: string;
