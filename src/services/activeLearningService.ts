@@ -17,6 +17,10 @@ export class ActiveLearningService {
         return this.modelLoaded;
     }
 
+    public async predictSegments(canvas: HTMLCanvasElement, assetMetadata: IAssetMetadata): Promise<IAssetMetadata> {
+        return ;
+    }
+
     public async predictRegions(canvas: HTMLCanvasElement, assetMetadata: IAssetMetadata): Promise<IAssetMetadata> {
         Guard.null(canvas);
         Guard.null(assetMetadata);

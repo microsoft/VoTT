@@ -98,6 +98,7 @@ describe("Editor Page Component", () => {
             const assetMetadata: IAssetMetadata = {
                 asset: { ...asset },
                 regions: [],
+                segments: [],
                 version: appInfo.version,
             };
 
@@ -241,6 +242,7 @@ describe("Editor Page Component", () => {
         const assetMetadata: IAssetMetadata = {
             asset: defaultAsset,
             regions: [newRegion],
+            segments: [],
             version: appInfo.version,
         };
 
@@ -289,6 +291,7 @@ describe("Editor Page Component", () => {
         const assetMetadata: IAssetMetadata = {
             asset: defaultAsset,
             regions: [newRegion],
+            segments: [],
             version: appInfo.version,
         };
 
@@ -362,6 +365,7 @@ describe("Editor Page Component", () => {
         const editedImageAsset: IAssetMetadata = {
             asset: imageAsset,
             regions: [MockFactory.createTestRegion("editedImageAsset", ["test"])],
+            segments: [],
             version: appInfo.version,
         };
 
@@ -428,6 +432,7 @@ describe("Editor Page Component", () => {
             const editedVideoFrame: IAssetMetadata = {
                 asset: videoFrames[0],
                 regions: [MockFactory.createTestRegion("region1", ["test"])],
+                segments: [],
                 version: appInfo.version,
             };
 
@@ -447,6 +452,7 @@ describe("Editor Page Component", () => {
                     state: { [EditorContext.Geometry]: AssetState.Tagged, },
                 },
                 regions: [],
+                segments: [],
                 version: appInfo.version,
             };
 

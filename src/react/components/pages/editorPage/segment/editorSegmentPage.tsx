@@ -31,9 +31,8 @@ import { ActiveLearningService } from "../../../../../services/activeLearningSer
 import { toast } from "react-toastify";
 import { EditorToolbar } from "../editorToolbar";
 import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps, SegmentSelectionMode } from '../editorPage';
-import { Editor } from "vott-ct/lib/js/CanvasTools/CanvasTools.Editor";
-import SegmentView from "./segmentCanvas";
 import SegmentCanvas from "./segmentCanvas";
+import { AnnotationTag } from "./superpixel";
 
 /**
  * Properties for Editor Page
@@ -70,7 +69,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(EditorContext.Segmentation);
-    private canvas: RefObject<SegmentView> = React.createRef();
+    private canvas: RefObject<SegmentCanvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -376,10 +375,11 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
-        // If the asset contains any regions without tags, don't proceed.
-        const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tags.length === 0);
+        // If the asset contains any segments without tags, don't proceed.
+        if(assetMetadata.segments){
+            const segmentsWithoutTags = assetMetadata.segments.filter((segment) => segment.tag === AnnotationTag.EMPTY);
 
-        if (regionsWithoutTags.length > 0) {
+        if (segmentsWithoutTags.length > 0) {
             this.setState({ isValid: false });
             return;
         }
@@ -392,7 +392,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
 
         if (this.isTaggableAssetType(assetMetadata.asset)) {
             assetMetadata.asset.state = {... assetMetadata.asset.state,
-                [this.state.context] : assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited };
+                [this.state.context] : assetMetadata.segments.length > 0 ? AssetState.Tagged : AssetState.Visited };
 
         } else if (assetMetadata.asset.state[this.state.context] === AssetState.NotVisited) {
             assetMetadata.asset.state = {... assetMetadata.asset.state, [this.state.context]: AssetState.Visited };
@@ -440,6 +440,8 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
         }
 
         this.setState({ childAssets, assets, isValid: true });
+        }
+        
     }
 
     /**
@@ -448,13 +450,11 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
     private onCanvasRendered = async (canvas: HTMLCanvasElement) => {
         // When active learning auto-detect is enabled
         // run predictions when asset changes
+        /*
         if (this.props.project.activeLearningSettings.autoDetect && !this.state.selectedAsset.asset.predicted) {
             await this.predictRegions(canvas);
         }
-    }
-
-    private onSelectedRegionsChanged = (selectedRegions: IRegion[]) => {
-        this.setState({ selectedRegions });
+        */
     }
 
     private onTagsChanged = async (tags) => {
@@ -499,12 +499,12 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
                 await this.goToRootAsset(1);
                 break;
             case ToolbarItemName.ActiveLearning:
-                await this.predictRegions();
+                await this.predictSegments();
                 break;
         }
     }
 
-    private predictRegions = async (canvas?: HTMLCanvasElement) => {
+    private predictSegments = async (canvas?: HTMLCanvasElement) => {
         canvas = canvas || document.querySelector("canvas");
         if (!canvas) {
             return;
@@ -527,7 +527,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
         // Predict and add regions to current asset
         try {
             const updatedAssetMetadata = await this.activeLearningService
-                .predictRegions(canvas, this.state.selectedAsset);
+                .predictSegments(canvas, this.state.selectedAsset);
 
             await this.onAssetMetadataChanged(updatedAssetMetadata);
             this.setState({ selectedAsset: updatedAssetMetadata });

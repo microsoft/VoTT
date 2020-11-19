@@ -256,7 +256,6 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
      * @param tag Tag clicked
      */
     private onTagClicked = (tag: ITag): void => {
-        console.log(tag);
         this.setState({
             selectedTag: tag.name,
             lockedTags: [],

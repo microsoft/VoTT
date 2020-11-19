@@ -4,7 +4,7 @@ import * as shortid from "shortid";
 import Guard from "../common/guard";
 import {
     IAsset, AssetType, IProject, IAssetMetadata, AssetState,
-    IRegion, RegionType, ITFRecordMetadata, EditorContext,
+    IRegion, RegionType, ITFRecordMetadata, EditorContext, ISegment,
 } from "../models/applicationState";
 import { AssetProviderFactory, IAssetProvider } from "../providers/storage/assetProviderFactory";
 import { StorageProviderFactory, IStorageProvider } from "../providers/storage/storageProviderFactory";
@@ -194,12 +194,14 @@ export class AssetService {
                 return {
                     asset: { ...asset },
                     regions: await this.getRegionsFromTFRecord(asset),
+                    segments: await this.getSegmentsFromTFRecord(asset),
                     version: appInfo.version,
                 };
             } else {
                 return {
                     asset: { ...asset },
                     regions: [],
+                    segments: [],
                     version: appInfo.version,
                 };
             }
@@ -270,6 +272,12 @@ export class AssetService {
         }
 
         return false;
+    }
+
+    ////////////////////////////////////////////////////////////////
+    // WARNING: should be updated
+    private async getSegmentsFromTFRecord(asset: IAsset): Promise<ISegment[]> {
+        return [];
     }
 
     private async getRegionsFromTFRecord(asset: IAsset): Promise<IRegion[]> {

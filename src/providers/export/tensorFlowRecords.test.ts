@@ -88,6 +88,7 @@ describe("TFRecords Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion],
+                    segments: [],
                     version: appInfo.version,
                 };
 

@@ -74,10 +74,12 @@ describe("PascalVOC Json Export Provider", () => {
                 const mockTag = Number(asset.id.split("-")[1]) > 7 ? mockTag1 : mockTag2;
                 const mockRegion1 = MockFactory.createTestRegion("region-1", [mockTag.name]);
                 const mockRegion2 = MockFactory.createTestRegion("region-2", [mockTag.name]);
-
+                const mockSegment1 = MockFactory.createTestSegment("segment-1", mockTag.name);
+                const mockSegment2 = MockFactory.createTestSegment("segment-2", mockTag.name);
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion1, mockRegion2],
+                    segments: [mockSegment1, mockSegment2],
                     version: appInfo.version,
                 };
 

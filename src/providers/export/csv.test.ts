@@ -90,6 +90,7 @@ describe("CSV Format Export Provider", () => {
                             },
                         },
                     ],
+                    segments: [],
                     version: appInfo.version,
                 };
 

@@ -203,6 +203,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            segments: [...canvas.props.selectedAsset.segments],
             version: appInfo.version,
         };
 
@@ -302,6 +303,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            segments: [...canvas.props.selectedAsset.segments],
             version: appInfo.version,
         };
 
@@ -337,6 +339,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            segments: [...canvas.props.selectedAsset.segments],
             version: appInfo.version,
         };
 
@@ -359,6 +362,7 @@ describe("Editor Canvas", () => {
         const original: IAssetMetadata = {
             asset: { ...canvas.props.selectedAsset.asset },
             regions: [...canvas.props.selectedAsset.regions],
+            segments: [...canvas.props.selectedAsset.segments],
             version: appInfo.version,
         };
         expect(wrapper.state().currentAsset.regions.length).toEqual(original.regions.length);

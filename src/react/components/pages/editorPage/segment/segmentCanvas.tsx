@@ -6,11 +6,10 @@ import {
 } from "../../../../../models/applicationState";
 import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetPreview";
 import Confirm from "../../../common/confirm/confirm";
-import { Rect } from "vott-ct/lib/js/CanvasTools/Core/Rect";
 import { createContentBoundingBox } from "../../../../../common/layout";
 import { SegmentSelectionMode } from "../editorPage";
-import { Annotation, NOT_TAGGED } from "./superpixel";
-import { CanvasSuperpixel } from "./canvasSuperpixel";
+import { Annotation, AnnotationTag } from "./superpixel";
+import { SegmentAnnotator } from "./segmentAnnotator";
 import data from "./test.jpg.json";
 import { ITag } from "vott-react";
 
@@ -43,13 +42,29 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     public state: ISegmentCanvasState = {
         currentAsset: this.props.selectedAsset,
         contentSource: null,
-        enabled: false,
+        enabled: true,
     };
+
+    public editor: SegmentAnnotator;
+
+    public defaultColor = "black";
+
+    private previousAnnotating = new Annotation( AnnotationTag.EMPTY, this.defaultColor);
 
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
 
     public componentDidMount = () => {
         window.addEventListener("resize", this.onWindowResize);
+        this.editor = new SegmentAnnotator({
+            keyId: "mainCanvas",
+            selectedAsset: this.props.selectedAsset,
+            segmentationData: data,
+            width: 1024,
+            height: 768,
+            defaultcolor: "black",
+            annotationData: [],
+            onSegmentUpdated: this.onSegmentUpdated
+        });
     }
 
     public componentWillUnmount() {
@@ -61,6 +76,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         if (this.props.selectedAsset !== prevProps.selectedAsset) {
             this.setState({ currentAsset: this.props.selectedAsset });
         }
+        console.log(this.state.currentAsset);
 
         // Handle selection mode changes
         if (this.props.selectionMode !== prevProps.selectionMode) {
@@ -91,10 +107,10 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public setSelectionMode(segmentSelectionMode: SegmentSelectionMode){
         if(segmentSelectionMode === SegmentSelectionMode.NONE){
-            this.updateAnnotating(NOT_TAGGED, "black");
+            this.updateAnnotating(AnnotationTag.EMPTY, "black");
         }
         else if(segmentSelectionMode === SegmentSelectionMode.DEANNOTATING){
-            this.updateAnnotating(NOT_TAGGED, "black");
+            this.updateAnnotating(AnnotationTag.EMPTY, "black");
         }
     }
 
@@ -103,6 +119,9 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         if(svg){
             svg.setAttribute("name", tag);
             svg.setAttribute("color-profile", color);
+            if(tag !== AnnotationTag.EMPTY && tag !== AnnotationTag.DEANNOTATING){
+                this.previousAnnotating = new Annotation(tag, color);
+            }
         }
     }
 
@@ -124,7 +143,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
                     <div id="selection-zone">
         <div id="editor-zone" className="full-size">
-            {this.state.enabled? <CanvasSuperpixel keyId={"mainCanvas"} segmentationData={data} annotationData={annotatedList} width={1024} height={768} defaultcolor={"black"}/> : <></>}
+            { (this.editor && this.state.enabled) ? this.editor.render() : <></>}
         </div>
                     </div>
                 </div>
@@ -133,10 +152,9 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         );
     }
 
-    private onSegmentUpdate = (id: number, tag: string) => {
-        const currentSegments = [...this.state.currentAsset.segments, ];
-
-        this.updateAssetSegments(currentSegments)
+    private onSegmentUpdated = (segment: ISegment) => {
+        const currentSegments = [...this.state.currentAsset.segments, segment];
+        this.updateAssetSegments(currentSegments);
     }
 
     /**

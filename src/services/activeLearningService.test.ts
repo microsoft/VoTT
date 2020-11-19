@@ -46,6 +46,7 @@ describe("Active Learning Service", () => {
                 state: { [EditorContext.Geometry]: AssetState.Tagged, },
             },
             regions: [],
+            segments: [],
             version: appInfo.version,
         };
 
@@ -80,6 +81,7 @@ describe("Active Learning Service", () => {
                 expectedRegions[0],
                 expectedRegions[1],
             ],
+            segments: [],
             version: appInfo.version,
         };
 
@@ -103,6 +105,7 @@ describe("Active Learning Service", () => {
         const assetMetadata: IAssetMetadata = {
             asset: MockFactory.createTestAsset("TestAsset", AssetState.Visited),
             regions: [],
+            segments: [],
             version: appInfo.version,
         };
 

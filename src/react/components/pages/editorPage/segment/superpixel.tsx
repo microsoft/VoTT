@@ -1,7 +1,9 @@
 import { useRef } from "react";
 
-export const NOT_TAGGED = "empty";
-export const DEANNOTATING = "deannotating";
+export enum AnnotationTag{
+    EMPTY = "empty",
+    DEANNOTATING = "deannotating"
+} 
 
 const React = require("react");
 const { useState, useEffect } = require("react");
@@ -142,10 +144,10 @@ function getPathFromPoints(points: any, canvasWidth: number, canvasHeight :numbe
 }
 
 interface SuperpixelProps {
-    keyId: number, pixels: any, canvasWidth: number, canvasHeight: number, initialAnnotation: Annotation, defaultcolor: string,
+    keyId: number, pixels: any, canvasWidth: number, canvasHeight: number, initialAnnotation: Annotation, defaultcolor: string, onSegmentUpdated: (...params: any[]) => void;
 }
 
-export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWidth, canvasHeight, initialAnnotation, defaultcolor } ) => {
+export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWidth, canvasHeight, initialAnnotation, defaultcolor, onSegmentUpdated } ) => {
     const [ annotation ] = useState(new Annotation(initialAnnotation.tag, initialAnnotation.color, keyId));
     const pixelref = useRef<SVGSVGElement>(null);
 
@@ -159,38 +161,39 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
 
             const setAndColoring = () => {
                 const annotatingTag: string = pixelref.current.parentElement.getAttribute("name")!;
-                if(annotatingTag === DEANNOTATING){
-                    pixelref.current.setAttribute("name", NOT_TAGGED);
+                if(annotatingTag === AnnotationTag.DEANNOTATING){
+                    pixelref.current.setAttribute("name", AnnotationTag.EMPTY);
                     pixelref.current.setAttribute("color-profile", defaultcolor);
                     coloringPixel(pixel, defaultcolor, defaultOpacity, 0);
                 }else{
                     const fillColor: string = pixelref.current.parentElement.getAttribute("color-profile")!;
-                    pixelref.current.setAttribute("name", pixelref.current.parentElement.getAttribute("name"));
+                    pixelref.current.setAttribute("name", annotatingTag);
                     pixelref.current.setAttribute("color-profile",fillColor);
                     coloringPixel(pixel, fillColor!, annotatedOpacity, 0);
+                    onSegmentUpdated({id: keyId, tag: annotatingTag});
                 }
             }
             pixel.mouseover( (event: MouseEvent) => {
                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== NOT_TAGGED){
+               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== AnnotationTag.EMPTY){
                 coloringPixel(pixel, pixelref.current.parentElement.getAttribute("color-profile")!, annotatingOpacity, 1);
                }
               })
               .mouseout(function (event: MouseEvent) {
                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== NOT_TAGGED){
+               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== AnnotationTag.EMPTY){
                 coloringPixel(pixel, pixelref.current.getAttribute("color-profile")!, annotation.tag.length > 0 ? annotatedOpacity : defaultOpacity, 0);
                }
               })
               .mousemove(function (event: MouseEvent) {
                 const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== NOT_TAGGED){
+                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== AnnotationTag.EMPTY){
                     setAndColoring();
                 }
               })
               .mousedown(function (event: MouseEvent) {
                 const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== NOT_TAGGED){
+                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== AnnotationTag.EMPTY){
                     setAndColoring();
                 }
               });

@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType, ModelPathType, EditorContext,
+    IPoint, IRegion, RegionType, ModelPathType, EditorContext, ISegment,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -244,10 +244,11 @@ export default class MockFactory {
      * Creates fake IAssetMetadata
      * @param asset Test asset
      */
-    public static createTestAssetMetadata(asset?: IAsset, regions?: IRegion[]): IAssetMetadata {
+    public static createTestAssetMetadata(asset?: IAsset, regions?: IRegion[], segments?: ISegment[]): IAssetMetadata {
         return {
             asset: asset || MockFactory.createTestAsset(),
             regions: regions || [],
+            segments: segments || [],
             version: appInfo.version,
         };
     }
@@ -761,6 +762,19 @@ export default class MockFactory {
             ],
             tags,
             type: RegionType.Rectangle,
+        };
+    }
+
+    /**
+     * Creates a test segment with the optional specified id
+     * @param id The id to assign to the region
+     * @param tags the tags used in this region
+     */
+    public static createTestSegment(id = null, tag: string = "empty"): ISegment {
+        
+        return {
+            id,
+            tag,
         };
     }
 

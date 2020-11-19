@@ -177,6 +177,7 @@ describe("Azure Custom Vision Export Provider", () => {
                 return Promise.resolve<IAssetMetadata>({
                     asset,
                     regions: asset.state[EditorContext.Geometry] === AssetState.Tagged ? regions : [],
+                    segments: [],
                     version: appInfo.version,
                 });
             });

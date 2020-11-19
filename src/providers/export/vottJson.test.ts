@@ -76,6 +76,7 @@ describe("VoTT Json Export Provider", () => {
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [],
+                    segments: [],
                     version: appInfo.version,
                 };
 

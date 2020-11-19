@@ -108,6 +108,7 @@ describe("Asset Service", () => {
                     const assetMetadata: IAssetMetadata = {
                         asset: testAssets[0],
                         regions: [],
+                        segments: [],
                         version: "",
                     };
 
@@ -156,6 +157,7 @@ describe("Asset Service", () => {
                     state: { [EditorContext.Geometry]: AssetState.Tagged, },
                 },
                 regions: [],
+                segments: [],
                 version: "",
             };
 
@@ -177,6 +179,7 @@ describe("Asset Service", () => {
                     state: { [EditorContext.Geometry]: AssetState.Visited, },
                 },
                 regions: [],
+                segments: [],
                 version: "",
             };
 
@@ -235,6 +238,7 @@ describe("Asset Service", () => {
                     const assetMetadata: IAssetMetadata = {
                         asset: testAssets[0],
                         regions: [],
+                        segments: [],
                         version: "",
                     };
 

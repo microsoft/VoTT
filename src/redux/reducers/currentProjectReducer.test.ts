@@ -106,6 +106,7 @@ describe("Current Project Reducer", () => {
                 },
             },
             regions: [],
+            segments: [],
             version: "",
         };
 
