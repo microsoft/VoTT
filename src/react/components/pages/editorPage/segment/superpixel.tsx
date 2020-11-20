@@ -165,6 +165,7 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
                     pixelref.current.setAttribute("name", AnnotationTag.EMPTY);
                     pixelref.current.setAttribute("color-profile", defaultcolor);
                     coloringPixel(pixel, defaultcolor, defaultOpacity, 0);
+                    onSegmentUpdated({id: keyId, tag: AnnotationTag.DEANNOTATING});
                 }else{
                     const fillColor: string = pixelref.current.parentElement.getAttribute("color-profile")!;
                     pixelref.current.setAttribute("name", annotatingTag);

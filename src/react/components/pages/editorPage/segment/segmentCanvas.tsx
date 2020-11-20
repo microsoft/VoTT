@@ -61,7 +61,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             segmentationData: data,
             width: 1024,
             height: 768,
-            defaultcolor: "black",
+            defaultcolor: this.defaultColor,
             annotationData: [],
             onSegmentUpdated: this.onSegmentUpdated
         });
@@ -76,7 +76,6 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         if (this.props.selectedAsset !== prevProps.selectedAsset) {
             this.setState({ currentAsset: this.props.selectedAsset });
         }
-        console.log(this.state.currentAsset);
 
         // Handle selection mode changes
         if (this.props.selectionMode !== prevProps.selectionMode) {
@@ -107,10 +106,13 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public setSelectionMode(segmentSelectionMode: SegmentSelectionMode){
         if(segmentSelectionMode === SegmentSelectionMode.NONE){
-            this.updateAnnotating(AnnotationTag.EMPTY, "black");
+            this.updateAnnotating(AnnotationTag.EMPTY, this.defaultColor);
         }
         else if(segmentSelectionMode === SegmentSelectionMode.DEANNOTATING){
-            this.updateAnnotating(AnnotationTag.EMPTY, "black");
+            this.updateAnnotating(AnnotationTag.DEANNOTATING, this.defaultColor);
+        }
+        else if(segmentSelectionMode === SegmentSelectionMode.ANNOTATING){
+            this.updateAnnotating(this.previousAnnotating.tag, this.previousAnnotating.color);
         }
     }
 
@@ -155,10 +157,20 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
 
     private onSegmentUpdated = (segment: ISegment) => {
-        const duplicated = this.state.currentAsset.segments.filter((element) => (element.id === segment.id));
-        const currentSegments = duplicated.length === 0 ? [...this.state.currentAsset.segments, segment] : this.state.currentAsset.segments.map((element): ISegment=> {return { id:element.id, tag: (element.id === segment.id ? segment.tag : element.tag)};});
+        // addition
+        if (segment.tag !== AnnotationTag.DEANNOTATING){
+            const duplicated = this.state.currentAsset.segments.filter((element) => (element.id === segment.id));
+            const currentSegments = 
+                duplicated.length === 0 ? [...this.state.currentAsset.segments, segment] : 
+                this.state.currentAsset.segments.map((element): ISegment => {
+                    return { id:element.id, tag: (element.id === segment.id ? segment.tag : element.tag)};
+                });
 
-        this.updateAssetSegments(currentSegments);
+            this.updateAssetSegments(currentSegments);
+        }
+        else {
+            this.updateAssetSegments(this.state.currentAsset.segments.filter((element) => (element.id !== segment.id)));
+        }        
     }
 
     /**

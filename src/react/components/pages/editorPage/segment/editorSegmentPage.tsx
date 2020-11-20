@@ -256,10 +256,12 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
      * @param tag Tag clicked
      */
     private onTagClicked = (tag: ITag): void => {
-        this.setState({
-            selectedTag: tag.name,
-            lockedTags: [],
-        }, () => this.canvas.current.applyTag(tag));
+        if(this.state.segmentSelectionMode === SegmentSelectionMode.ANNOTATING){
+            this.setState({
+                selectedTag: tag.name,
+                lockedTags: [],
+            }, () => this.canvas.current.applyTag(tag));
+        }
     }
 
     /**
