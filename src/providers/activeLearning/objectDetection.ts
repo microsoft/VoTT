@@ -90,7 +90,7 @@ export class ObjectDetection {
             regions.push({
                 id: shortid.generate(),
                 type: RegionType.Rectangle,
-                tags: predictTag ? [prediction.class] : [],
+                tag: predictTag ? [prediction.class][0] : "",
                 boundingBox: {
                     left,
                     top,
@@ -113,6 +113,10 @@ export class ObjectDetection {
                     x: left,
                     y: top + height,
                 }],
+                area: 0,
+                isobscured: 0,
+                istruncated: 0,
+                risk: "safe",
             });
         });
 

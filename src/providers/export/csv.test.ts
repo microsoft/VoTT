@@ -81,16 +81,22 @@ describe("CSV Format Export Provider", () => {
                         {
                             id: "1",
                             type: RegionType.Rectangle,
-                            tags: ["a", "b"],
+                            tag: "a",
                             boundingBox: {
                                 left: 1,
                                 top: 2,
                                 width: 3,
                                 height: 4,
                             },
+                            points: [],
+                            area: 0,
+                            isobscured: 0,
+                            istruncated: 0,
+                            risk: "safe",
                         },
                     ],
                     segments: [],
+                    metadata: { fileName: "" },
                     version: appInfo.version,
                 };
 

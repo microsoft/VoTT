@@ -45,17 +45,16 @@ export class CsvExportProvider extends ExportProvider<ICsvExportProviderOptions>
             // image_1.jpg,599,528,612,541,car
             // image_2.jpg,393,477,430,552,dog
             assetMetadata.regions.forEach((region) => {
-                region.tags.forEach((tag) => {
-                    const dataItem = {
-                        image: assetMetadata.asset.name,
-                        xmin: region.boundingBox.left,
-                        ymin: region.boundingBox.top,
-                        xmax: region.boundingBox.left + region.boundingBox.width,
-                        ymax: region.boundingBox.top + region.boundingBox.height,
-                        label: tag,
-                    };
-                    dataItems.push(dataItem);
-                });
+                const tag = region.tag;
+                const dataItem = {
+                    image: assetMetadata.asset.name,
+                    xmin: region.boundingBox.left,
+                    ymin: region.boundingBox.top,
+                    xmax: region.boundingBox.left + region.boundingBox.width,
+                    ymax: region.boundingBox.top + region.boundingBox.height,
+                    label: tag,
+                };
+                dataItems.push(dataItem);
             });
         });
 

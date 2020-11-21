@@ -171,7 +171,7 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
                     pixelref.current.setAttribute("name", annotatingTag);
                     pixelref.current.setAttribute("color-profile",fillColor);
                     coloringPixel(pixel, fillColor!, annotatedOpacity, 0);
-                    onSegmentUpdated({id: keyId, tag: annotatingTag});
+                    onSegmentUpdated({id: keyId, tag: annotatingTag });
                 }
             }
             pixel.mouseover( (event: MouseEvent) => {

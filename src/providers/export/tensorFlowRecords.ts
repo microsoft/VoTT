@@ -146,22 +146,21 @@ export class TFRecordsExportProvider extends ExportProvider {
     private updateAssetTagArrays(element: IAssetMetadata, imageInfo: IImageInfo) {
         element.regions.filter((region) => region.boundingBox)
             .forEach((region) => {
-                region.tags.forEach((tagName) => {
-                    const index = this.project.tags
-                        .findIndex((projectTag) => projectTag.name === tagName);
+                const tagName = region.tag;
+                const index = this.project.tags
+                    .findIndex((projectTag) => projectTag.name === tagName);
 
-                    imageInfo.text.push(tagName);
-                    imageInfo.label.push(index);
-                    imageInfo.xmin.push(region.boundingBox.left / imageInfo.width);
-                    imageInfo.ymin.push(region.boundingBox.top / imageInfo.height);
-                    imageInfo.xmax.push((region.boundingBox.left + region.boundingBox.width)
-                        / imageInfo.width);
-                    imageInfo.ymax.push((region.boundingBox.top + region.boundingBox.height)
-                        / imageInfo.height);
-                    imageInfo.difficult.push(0);
-                    imageInfo.truncated.push(0);
-                    imageInfo.view.push("Unspecified");
-                });
+                imageInfo.text.push(tagName);
+                imageInfo.label.push(index);
+                imageInfo.xmin.push(region.boundingBox.left / imageInfo.width);
+                imageInfo.ymin.push(region.boundingBox.top / imageInfo.height);
+                imageInfo.xmax.push((region.boundingBox.left + region.boundingBox.width)
+                    / imageInfo.width);
+                imageInfo.ymax.push((region.boundingBox.top + region.boundingBox.height)
+                    / imageInfo.height);
+                imageInfo.difficult.push(0);
+                imageInfo.truncated.push(0);
+                imageInfo.view.push("Unspecified");
             });
     }
 

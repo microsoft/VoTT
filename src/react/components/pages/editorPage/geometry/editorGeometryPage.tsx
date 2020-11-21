@@ -32,6 +32,7 @@ import Confirm from "../../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../../services/activeLearningService";
 import { toast } from "react-toastify";
 import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps, SegmentSelectionMode } from '../editorPage';
+import { AnnotationTag } from "../segment/superpixel";
 
 /**
  * Properties for Editor Page
@@ -376,7 +377,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
         // If the asset contains any regions without tags, don't proceed.
-        const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tags.length === 0);
+        const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tag ? region.tag.length === 0 : undefined);
 
         if (regionsWithoutTags.length > 0) {
             this.setState({ isValid: false });

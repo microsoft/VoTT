@@ -365,7 +365,7 @@ export default class ProjectMetrics extends React.Component<IProjectMetricsProps
 
         const tags = [];
         regions.forEach((r) => {
-            tags.push(r.tags);
+            tags.push(r.tag);
         });
 
         return _.flatten<string>(tags);

@@ -162,7 +162,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             transformer = CanvasHelpers.removeIfContained;
         }
         for (const selectedRegion of selectedRegions) {
-            selectedRegion.tags = transformer(selectedRegion.tags, tag);
+            selectedRegion.tag = tag;
         }
         this.updateRegions(selectedRegions);
         if (this.props.onSelectedRegionsChanged) {
@@ -291,7 +291,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         const newRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
-            tags: lockedTags || [],
+            tag: lockedTags[lockedTags.length - 1],
             boundingBox: {
                 height: scaledRegionData.height,
                 width: scaledRegionData.width,
@@ -299,6 +299,10 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
                 top: scaledRegionData.y,
             },
             points: scaledRegionData.points,
+            area: 0,
+            isobscured: 0,
+            istruncated: 0,
+            risk: "safe",
         };
         if (lockedTags && lockedTags.length) {
             this.editor.RM.updateTagsById(id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, newRegion));
@@ -394,12 +398,16 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.template = new Rect(selectedRegionsData.width, selectedRegionsData.height);
         }
 
+        /*
         if (this.props.lockedTags && this.props.lockedTags.length) {
             for (const selectedRegion of selectedRegions) {
-                selectedRegion.tags = CanvasHelpers.addAllIfMissing(selectedRegion.tags, this.props.lockedTags);
+                if (selectedRegion.tag)
+                selectedRegion.tag = CanvasHelpers.addIfMissing([selectedRegion.tag], this.props.lockedTags);
             }
             this.updateRegions(selectedRegions);
         }
+        */
+        this.updateRegions(selectedRegions);
     }
 
     private renderChildren = () => {

@@ -119,7 +119,11 @@ export default class CanvasHelpers {
                 height: regionData.height,
             },
             points: regionData.points.map((point) => new Point2D(point.x, point.y)),
-            tags: [],
+            tag: "",
+            area: 0,
+            isobscured: 0,
+            istruncated: 0,
+            risk: "safe",
         };
     }
 
@@ -137,14 +141,17 @@ export default class CanvasHelpers {
         }
         Guard.null(region);
 
+        /*
         const tags = region.tags
             .map((tagName) => {
                 const projectTag = projectTags.find((projectTag) => projectTag.name === tagName);
                 return projectTag ? new Tag(projectTag.name, projectTag.color) : null;
             })
             .filter((tag) => tag !== null);
+        */
+        const projectTag = projectTags.find((projectTag) => projectTag.name === region.tag);
 
-        return new TagsDescriptor(tags);
+        return new TagsDescriptor(projectTag ? [new Tag(projectTag.name, projectTag.color)] : []);
     }
 
     /**

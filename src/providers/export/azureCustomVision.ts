@@ -184,18 +184,16 @@ export class AzureCustomVisionProvider extends ExportProvider<IAzureCustomVision
         // Generate the regions for Azure Custom Vision
         assetMetadata.regions.forEach((region) => {
             if (region.boundingBox) {
-                region.tags.forEach((tagName) => {
-                    const customVisionTag = tags[tagName];
-                    if (customVisionTag) {
-                        const boundingBox = this.getBoundingBoxValue(assetMetadata.asset.size, region.boundingBox);
-                        const newRegion: IAzureCustomVisionRegion = {
-                            imageId: newImage.id,
-                            tagId: customVisionTag.id,
-                            ...boundingBox,
-                        };
-                        allRegions.push(newRegion);
-                    }
-                });
+                const customVisionTag = tags[region.tag];
+                if (customVisionTag) {
+                    const boundingBox = this.getBoundingBoxValue(assetMetadata.asset.size, region.boundingBox);
+                    const newRegion: IAzureCustomVisionRegion = {
+                        imageId: newImage.id,
+                        tagId: customVisionTag.id,
+                        ...boundingBox,
+                    };
+                    allRegions.push(newRegion);
+                }
             }
         });
 

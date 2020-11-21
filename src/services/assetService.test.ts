@@ -109,6 +109,7 @@ describe("Asset Service", () => {
                         asset: testAssets[0],
                         regions: [],
                         segments: [],
+                        metadata: { fileName: "" },
                         version: "",
                     };
 
@@ -158,6 +159,7 @@ describe("Asset Service", () => {
                 },
                 regions: [],
                 segments: [],
+                metadata: { fileName: "" },
                 version: "",
             };
 
@@ -180,6 +182,7 @@ describe("Asset Service", () => {
                 },
                 regions: [],
                 segments: [],
+                metadata: { fileName: "" },
                 version: "",
             };
 
@@ -239,6 +242,7 @@ describe("Asset Service", () => {
                         asset: testAssets[0],
                         regions: [],
                         segments: [],
+                        metadata: { fileName: "" },
                         version: "",
                     };
 
@@ -317,15 +321,13 @@ describe("Asset Service", () => {
             expect(result.asset).toEqual(testAsset);
 
             expect(result.regions.length).toEqual(2);
-            expect(result.regions[0].tags.length).toEqual(1);
-            expect(result.regions[0].tags[0]).toEqual("a");
+            expect(result.regions[0].tag).toEqual("a");
             expect(result.regions[0].points.length).toEqual(2);
             expect(result.regions[0].points[0].x).toEqual(0);
             expect(result.regions[0].points[0].y).toEqual(0);
             expect(result.regions[0].points[1].x).toEqual(300);
             expect(result.regions[0].points[1].y).toEqual(400);
-            expect(result.regions[1].tags.length).toEqual(1);
-            expect(result.regions[1].tags[0]).toEqual("b");
+            expect(result.regions[1].tag).toEqual("b");
             expect(result.regions[1].points.length).toEqual(2);
             expect(Math.floor(result.regions[1].points[0].x)).toEqual(60);
             expect(Math.floor(result.regions[1].points[0].y)).toEqual(80);
@@ -370,7 +372,7 @@ describe("Asset Service", () => {
                     [
                         {
                             ...region,
-                            tags: [tag2],
+                            tag: tag2,
                         },
                     ],
                 ),
@@ -411,6 +413,7 @@ describe("Asset Service", () => {
             const tag1 = "tag1";
             const newTag = "tag2";
             const region = MockFactory.createTestRegion(undefined, [tag1]);
+            const segment = MockFactory.createTestSegment(undefined, tag1);
             const asset: IAsset = {
                 ...MockFactory.createTestAsset("1"),
                 state: { [EditorContext.Geometry]: AssetState.Tagged, } ,
@@ -424,7 +427,8 @@ describe("Asset Service", () => {
                     [
                         {
                             ...region,
-                            tags: [newTag],
+                            ...segment,
+                            tag: newTag,
                         },
                     ],
                 ),

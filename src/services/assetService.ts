@@ -195,6 +195,7 @@ export class AssetService {
                     asset: { ...asset },
                     regions: await this.getRegionsFromTFRecord(asset),
                     segments: await this.getSegmentsFromTFRecord(asset),
+                    metadata: { fileName: "" },
                     version: appInfo.version,
                 };
             } else {
@@ -202,6 +203,7 @@ export class AssetService {
                     asset: { ...asset },
                     regions: [],
                     segments: [],
+                    metadata: { fileName: "" },
                     version: appInfo.version,
                 };
             }
@@ -260,13 +262,12 @@ export class AssetService {
         let foundTag = false;
 
         for (const region of assetMetadata.regions) {
-            if (region.tags.find((t) => t === tagName)) {
+            if (region.tag === tagName) {
                 foundTag = true;
-                region.tags = transformer(region.tags);
             }
         }
         if (foundTag) {
-            assetMetadata.regions = assetMetadata.regions.filter((region) => region.tags.length > 0);
+            assetMetadata.regions = assetMetadata.regions.filter((region) => region.tag ? region.tag.length === 0 : undefined);
             assetMetadata.asset.state[EditorContext.Geometry] = (assetMetadata.regions.length) ? AssetState.Tagged : AssetState.Visited;
             return true;
         }
@@ -289,7 +290,7 @@ export class AssetService {
             regions.push({
                 id: shortid.generate(),
                 type: RegionType.Rectangle,
-                tags: [objectArray.textArray[index]],
+                tag: objectArray.textArray[index],
                 boundingBox: {
                     left: objectArray.xminArray[index] * objectArray.width,
                     top: objectArray.yminArray[index] * objectArray.height,
@@ -304,6 +305,10 @@ export class AssetService {
                     x: objectArray.xmaxArray[index] * objectArray.width,
                     y: objectArray.ymaxArray[index] * objectArray.height,
                 }],
+                area: 0,
+                isobscured: 0,
+                istruncated: 0,
+                risk: "safe",
             });
         }
 

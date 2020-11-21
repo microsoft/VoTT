@@ -224,7 +224,7 @@ export default class ImportService implements IImportService {
             const generatedRegion: IRegion = {
                 id: region.UID,
                 type: RegionType.Rectangle,
-                tags: region.tags,
+                tag: region.tags.length > 0 ? region.tags[region.tags.length - 1] : "",
                 points: [
                     { x: region.x1, y: region.y1 },
                     { x: region.x1, y: region.y2 },
@@ -237,6 +237,10 @@ export default class ImportService implements IImportService {
                     left: region.x1,
                     top: region.y1,
                 },
+                area: 0,
+                isobscured: 0,
+                istruncated: 0,
+                risk: "safe",
             };
             metadata.regions.push(generatedRegion);
         });

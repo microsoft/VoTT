@@ -399,7 +399,7 @@ describe("Tag Input Component", () => {
         const wrapper = createComponent(props);
 
         const selectedRegion = MockFactory.createTestRegion();
-        selectedRegion.tags = [tags[0].name, tags[1].name];
+        selectedRegion.tag = tags[0].name;
 
         wrapper.setProps({
             selectedRegions: [selectedRegion],

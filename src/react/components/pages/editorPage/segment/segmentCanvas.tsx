@@ -163,7 +163,15 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             const currentSegments = 
                 duplicated.length === 0 ? [...this.state.currentAsset.segments, segment] : 
                 this.state.currentAsset.segments.map((element): ISegment => {
-                    return { id:element.id, tag: (element.id === segment.id ? segment.tag : element.tag)};
+                    return { 
+                        id: element.id, 
+                        tag: (element.id === segment.id ? segment.tag : element.tag),
+                        area: 0,
+                        superpixel: [],
+                        boundingBox: { left: 0, top: 0, width: 0, height: 0},
+                        iscrowd: 0,
+                        risk: "safe",
+                    };
                 });
 
             this.updateAssetSegments(currentSegments);

@@ -81,14 +81,20 @@ describe("TFRecords Json Export Provider", () => {
                 const mockRegion: IRegion = {
                     id: "id",
                     type: RegionType.Rectangle,
-                    tags: [mockTag.name],
+                    tag: mockTag.name,
+                    boundingBox: { left: 0, top: 0, width: 0, height: 0},
                     points: [mockStartPoint, mockEndPoint],
+                    area: 0,
+                    isobscured: 0,
+                    istruncated: 0,
+                    risk: "safe",
                 };
 
                 const assetMetadata: IAssetMetadata = {
                     asset,
                     regions: [mockRegion],
                     segments: [],
+                    metadata: { fileName: "" },
                     version: appInfo.version,
                 };
 

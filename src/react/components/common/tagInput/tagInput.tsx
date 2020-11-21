@@ -341,9 +341,8 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         const result = new Set<string>();
         if (this.props.selectedRegions) {
             for (const region of this.props.selectedRegions) {
-                for (const tag of region.tags) {
-                    result.add(tag);
-                }
+                const tag = region.tag;
+                result.add(tag);
             }
         }
         return result;

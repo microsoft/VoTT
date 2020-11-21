@@ -160,15 +160,18 @@ describe("Azure Custom Vision Export Provider", () => {
                     {
                         id: shortid.generate(),
                         type: RegionType.Rectangle,
-                        tags: [
-                            testProject.tags[0].name,
-                        ],
+                        tag: testProject.tags[0].name,
                         boundingBox: {
                             left: 10,
                             top: 10,
                             height: 100,
                             width: 100,
                         },
+                        points: [],
+                        area: 0,
+                        isobscured: 0,
+                        istruncated: 0,
+                        risk: "safe",
                     },
                 ];
 
@@ -178,6 +181,7 @@ describe("Azure Custom Vision Export Provider", () => {
                     asset,
                     regions: asset.state[EditorContext.Geometry] === AssetState.Tagged ? regions : [],
                     segments: [],
+                    metadata: { fileName: "" },
                     version: appInfo.version,
                 });
             });

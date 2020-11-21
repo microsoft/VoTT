@@ -118,17 +118,16 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
     private getAssetTagArray(element: IAssetMetadata): IObjectInfo[] {
         const tagObjects = [];
         element.regions.forEach((region) => {
-            region.tags.forEach((tagName) => {
-                const objectInfo: IObjectInfo = {
-                    name: tagName,
-                    xmin: region.boundingBox.left,
-                    ymin: region.boundingBox.top,
-                    xmax: region.boundingBox.left + region.boundingBox.width,
-                    ymax: region.boundingBox.top + region.boundingBox.height,
-                };
+            const tagName = region.tag;
+            const objectInfo: IObjectInfo = {
+                name: tagName,
+                xmin: region.boundingBox.left,
+                ymin: region.boundingBox.top,
+                xmax: region.boundingBox.left + region.boundingBox.width,
+                ymax: region.boundingBox.top + region.boundingBox.height,
+            };
 
-                tagObjects.push(objectInfo);
-            });
+            tagObjects.push(objectInfo);
         });
 
         return tagObjects;
@@ -245,7 +244,7 @@ export class PascalVOCExportProvider extends ExportProvider<IPascalVOCExportProv
                 assetMetadata.regions.forEach((region) => {
                     tags.forEach((tag) => {
                         let tagInstances = tagUsage.get(tag.name) || 0;
-                        if (region.tags.filter((tagName) => tagName === tag.name).length > 0) {
+                        if (region.tag === tag.name) {
                             appliedTags.add(tag.name);
                             tagUsage.set(tag.name, tagInstances += 1);
                         }

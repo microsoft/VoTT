@@ -182,7 +182,7 @@ describe("CNTK Export Provider", () => {
         const writeBoxesCall = writeTextFileCalls
             .find((args: string[]) => args[0].indexOf(`${assetMetadata.asset.name}.bboxes.tsv`) >= 0);
 
-        const expectedLabelData = `${assetMetadata.regions[0].tags[0]}${os.EOL}${assetMetadata.regions[1].tags[0]}`;
+        const expectedLabelData = `${assetMetadata.regions[0].tag}${os.EOL}${assetMetadata.regions[1].tag}`;
         expect(writeLabelsCall[1]).toEqual(expectedLabelData);
 
         const expectedBoxData = [];

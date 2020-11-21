@@ -38,9 +38,9 @@ describe("splitTestAsset Helper tests", () => {
             expect(trainAssetsArray.length + testAssetsArray.length).toEqual(assetMetadatas.length);
             expect(testAssetsArray).toHaveLength(expectedTestCount);
 
-            expect(testAssetsArray.filter((assetMetadata) => assetMetadata.regions[0].tags[0] === tags[0].name).length)
+            expect(testAssetsArray.filter((assetMetadata) => assetMetadata.regions[0].tag === tags[0].name).length)
                 .toBeGreaterThan(0);
-            expect(testAssetsArray.filter((assetMetadata) => assetMetadata.regions[0].tags[0] === tags[1].name).length)
+            expect(testAssetsArray.filter((assetMetadata) => assetMetadata.regions[0].tag === tags[1].name).length)
                 .toBeGreaterThan(0);
         }
 

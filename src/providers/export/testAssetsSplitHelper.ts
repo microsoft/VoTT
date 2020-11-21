@@ -13,11 +13,10 @@ export function splitTestAsset(allAssets: IAssetMetadata[], tags: ITag[], testSp
     tags.forEach((tag) => tagsAssetDict[tag.name] = { assetList: new Set() });
     allAssets.forEach((assetMetadata) => {
         assetMetadata.regions.forEach((region) => {
-            region.tags.forEach((tagName) => {
-                if (tagsAssetDict[tagName]) {
-                    tagsAssetDict[tagName].assetList.add(assetMetadata.asset.name);
-                }
-            });
+            const tagName = region.tag;
+            if (tagsAssetDict[tagName]) {
+                tagsAssetDict[tagName].assetList.add(assetMetadata.asset.name);
+            }
         });
     });
 

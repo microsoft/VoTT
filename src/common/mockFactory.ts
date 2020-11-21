@@ -3,7 +3,7 @@ import {
     AssetState, AssetType, IApplicationState, IAppSettings, IAsset, IAssetMetadata,
     IConnection, IExportFormat, IProject, ITag, StorageType, ISecurityToken,
     EditorMode, IAppError, IProjectVideoSettings, ErrorCode,
-    IPoint, IRegion, RegionType, ModelPathType, EditorContext, ISegment,
+    IPoint, IRegion, RegionType, ModelPathType, EditorContext, ISegment, IBoundingBox, IImageMetadata,
 } from "../models/applicationState";
 import { IV1Project, IV1Region } from "../models/v1Models";
 import { ExportAssetState } from "../providers/export/exportProvider";
@@ -244,11 +244,12 @@ export default class MockFactory {
      * Creates fake IAssetMetadata
      * @param asset Test asset
      */
-    public static createTestAssetMetadata(asset?: IAsset, regions?: IRegion[], segments?: ISegment[]): IAssetMetadata {
+    public static createTestAssetMetadata(asset?: IAsset, regions?: IRegion[], segments?: ISegment[], metadata?: IImageMetadata): IAssetMetadata {
         return {
             asset: asset || MockFactory.createTestAsset(),
             regions: regions || [],
             segments: segments || [],
+            metadata: metadata || {fileName: ""},
             version: appInfo.version,
         };
     }
@@ -761,8 +762,12 @@ export default class MockFactory {
                 { x: origin.x, y: origin.y + size.height }, // Bottom Left
                 { x: origin.x + size.width, y: origin.y + size.height }, // Bottom Right
             ],
-            tags,
+            tag: tags[tags.length - 1],
             type: RegionType.Rectangle,
+            area: 0,
+            isobscured: 0,
+            istruncated: 0,
+            risk: "safe",
         };
     }
 
@@ -771,11 +776,16 @@ export default class MockFactory {
      * @param id The id to assign to the region
      * @param tags the tags used in this region
      */
-    public static createTestSegment(id = null, tag: string = "empty"): ISegment {
+    public static createTestSegment(id = null, tag: string = "empty", boundingBox: IBoundingBox = { left: 0, top: 0, width: 0, height: 0,}): ISegment {
         
         return {
             id,
             tag,
+            area: 0,
+            superpixel: [],
+            boundingBox,
+            iscrowd: 0,
+            risk: "safe",
         };
     }
 

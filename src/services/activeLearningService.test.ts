@@ -47,6 +47,7 @@ describe("Active Learning Service", () => {
             },
             regions: [],
             segments: [],
+            metadata: { fileName: "" },
             version: appInfo.version,
         };
 
@@ -82,6 +83,7 @@ describe("Active Learning Service", () => {
                 expectedRegions[1],
             ],
             segments: [],
+            metadata: { fileName: "" },
             version: appInfo.version,
         };
 
@@ -106,6 +108,7 @@ describe("Active Learning Service", () => {
             asset: MockFactory.createTestAsset("TestAsset", AssetState.Visited),
             regions: [],
             segments: [],
+            metadata: { fileName: "" },
             version: appInfo.version,
         };
 

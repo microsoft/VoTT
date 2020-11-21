@@ -74,11 +74,9 @@ export class CntkExportProvider extends ExportProvider<ICntkExportProviderOption
         const boundingBoxData = [];
 
         assetMetadata.regions.forEach((region) => {
-            region.tags.forEach((tagName) => {
-                labelData.push(tagName);
-                // tslint:disable-next-line:max-line-length
-                boundingBoxData.push(`${region.boundingBox.left}\t${region.boundingBox.left + region.boundingBox.width}\t${region.boundingBox.top}\t${region.boundingBox.top + region.boundingBox.height}`);
-            });
+            labelData.push(region.tag);
+            // tslint:disable-next-line:max-line-length
+            boundingBoxData.push(`${region.boundingBox.left}\t${region.boundingBox.left + region.boundingBox.width}\t${region.boundingBox.top}\t${region.boundingBox.top + region.boundingBox.height}`);
         });
 
         const buffer = await HtmlFileReader.getAssetArray(assetMetadata.asset);

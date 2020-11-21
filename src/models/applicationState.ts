@@ -285,9 +285,9 @@ export interface IAsset {
  */
 export interface IAssetMetadata {
     asset: IAsset;
-    regions?: IRegion[];
-    segments?: ISegment[];
-    metadata?: IMetadata;
+    regions: IRegion[];
+    segments: ISegment[];
+    metadata: IImageMetadata;
     version: string;
 }
 
@@ -312,10 +312,14 @@ export interface ISize {
  */
 export interface IRegion {
     id: string;
+    tag: string;
     type: RegionType;
-    tags: string[];
-    points?: IPoint[];
-    boundingBox?: IBoundingBox;
+    points: IPoint[];
+    area: number;
+    boundingBox: IBoundingBox;
+    isobscured: number;
+    istruncated: number;
+    risk: string;
 }
 
 /**
@@ -328,8 +332,15 @@ export interface IRegion {
 export interface ISegment {
     id: string;
     tag: string;
-    pixels?: IPoint[];
-    boundingBox?: IBoundingBox;
+    superpixel: number[];
+    area: number;
+    boundingBox: IBoundingBox;
+    iscrowd: number;
+    risk: string;
+}
+
+export interface IImageMetadata {
+    fileName: string;
 }
 
 /**

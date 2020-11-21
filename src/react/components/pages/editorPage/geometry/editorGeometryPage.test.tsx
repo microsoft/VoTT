@@ -99,6 +99,7 @@ describe("Editor Page Component", () => {
                 asset: { ...asset },
                 regions: [],
                 segments: [],
+                metadata: { fileName: "" },
                 version: appInfo.version,
             };
 
@@ -243,6 +244,7 @@ describe("Editor Page Component", () => {
             asset: defaultAsset,
             regions: [newRegion],
             segments: [],
+            metadata: { fileName: "" },
             version: appInfo.version,
         };
 
@@ -257,7 +259,7 @@ describe("Editor Page Component", () => {
         expect(saveProjectSpy).not.toBeCalled();
 
         // Apply tag to region
-        newRegion.tags = ["test"];
+        newRegion.tag = "test";
         wrapper.find(Canvas).props().onAssetMetadataChanged(assetMetadata);
 
         await MockFactory.flushUi();
@@ -292,6 +294,7 @@ describe("Editor Page Component", () => {
             asset: defaultAsset,
             regions: [newRegion],
             segments: [],
+            metadata: { fileName: "" },
             version: appInfo.version,
         };
 
@@ -366,6 +369,7 @@ describe("Editor Page Component", () => {
             asset: imageAsset,
             regions: [MockFactory.createTestRegion("editedImageAsset", ["test"])],
             segments: [],
+            metadata: { fileName: "" },
             version: appInfo.version,
         };
 
@@ -433,6 +437,7 @@ describe("Editor Page Component", () => {
                 asset: videoFrames[0],
                 regions: [MockFactory.createTestRegion("region1", ["test"])],
                 segments: [],
+                metadata: { fileName: "" },
                 version: appInfo.version,
             };
 
@@ -453,6 +458,7 @@ describe("Editor Page Component", () => {
                 },
                 regions: [],
                 segments: [],
+                metadata: { fileName: "" },
                 version: appInfo.version,
             };
 
