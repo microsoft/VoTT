@@ -235,6 +235,7 @@ export const spanish: IAppStrings = {
             cut: "Cortar regiones",
             paste: "Pegar regiones",
             removeAllRegions: "Eliminar Todas Las Regiones",
+            removeAllSegments: "Remove All Segments",
             previousAsset: "Activo anterior",
             nextAsset: "Siguiente activo",
             saveProject: "Guardar Proyecto",

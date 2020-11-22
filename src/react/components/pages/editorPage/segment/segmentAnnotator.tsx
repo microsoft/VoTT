@@ -1,7 +1,7 @@
 import React from "react";
-import { IAssetMetadata, ISegmentOffset } from "../../../../../models/applicationState";
-import { Annotation, AnnotationTag, SPId2number } from "./superpixel";
-import { Superpixel } from "./superpixel";
+import { IAssetMetadata, IProject, ISegment, ISegmentOffset } from "../../../../../models/applicationState";
+import { Annotation, AnnotationTag, number2SPId, SPId2number } from "./superpixel";
+import { Superpixel, deleteSuperpixelAnnotation } from "./superpixel";
 
 const keys: number[] = [];
 
@@ -10,8 +10,8 @@ const getAnnotationData = (
     array: Annotation[],
     defaultAnnotating: Annotation
 ): Annotation => {
-    for (var e of array) {
-        if (e.index === key) return { tag: e.tag, color: e.color };
+    for (const e of array) {
+        if (e.index === key) return e;
     }
     return defaultAnnotating;
 };
@@ -23,7 +23,7 @@ export interface ISegmentAnnotatorProps {
     width: number;
     height: number;
     defaultcolor: string;
-    annotationData: Annotation[];
+    project: IProject;
     onSegmentUpdated?: (segment: ISegmentOffset) => void;
 }
 
@@ -43,8 +43,8 @@ export class SegmentAnnotator extends React.Component<
         segmentationData: undefined,
         width: 0,
         height: 0,
+        project: null,
         defaultcolor: "black",
-        annotationData: [],
     };
 
     public state: ISegmentAnnotatorState = {
@@ -57,8 +57,10 @@ export class SegmentAnnotator extends React.Component<
         this.canvasRef = React.createRef<SVGSVGElement>();
     };
 
-    public deleteSegmentById = (id: string) => {
-        console.log(document.getElementById(id));
+    public deleteSegmentById = (id: number) => {
+        const spid = number2SPId(id);
+        const area = parseInt(document.getElementById(spid).getAttribute("current-scale"));
+        deleteSuperpixelAnnotation(spid, this.props.defaultcolor, area, this.props.onSegmentUpdated);
     }
 
     public render = () => {
@@ -68,7 +70,8 @@ export class SegmentAnnotator extends React.Component<
         const viewBoxString = [0, 0, this.props.width, this.props.height].join(
             " "
         );
-        const annotatedIndices = this.props.annotationData.map(
+        const givenAnnotatedData = this.decomposeSegment(this.state.currentAsset.segments);
+        const annotatedIndices = givenAnnotatedData.map(
             element => element.index
         );
         if (keys.length === 0) {
@@ -87,8 +90,8 @@ export class SegmentAnnotator extends React.Component<
                     const initialAnnotation = annotatedIndices.includes(key)
                         ? getAnnotationData(
                               key,
-                              this.props.annotationData,
-                              this.state.annotating
+                              givenAnnotatedData,
+                              this.state.annotating,
                           )
                         : new Annotation(AnnotationTag.EMPTY, AnnotationTag.EMPTY, SPId2number(this.props.keyId));
                     return (
@@ -109,6 +112,19 @@ export class SegmentAnnotator extends React.Component<
             </svg>
         );
     };
+
+    private decomposeSegment = (segments: ISegment[]): Annotation[] => {
+        const annotation = [];
+        for (const s of segments){
+            for (const superpixel of s.superpixel){
+                const tag = this.props.project.tags.filter((tag) => tag.name === s.tag);
+                if(tag.length > 0){
+                    annotation.push(new Annotation(s.tag, tag[0].color, superpixel));
+                }
+            }
+        }
+        return annotation;
+    }
 
     private canvasRef: React.RefObject<SVGSVGElement>;
 }

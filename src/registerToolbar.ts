@@ -23,6 +23,7 @@ export enum ToolbarItemName {
     ShowSegBoundary = "showSegBoundary",
     AnnotateSegments = "annotateSegments",
     RemoveAnnotation = "removeAnnotation",
+    RemoveAllSegments = "removeAllSegments",
     ExecuteSegmentation = "executeSegmentation",
 }
 
@@ -165,6 +166,16 @@ export default function registerToolbar() {
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["E", "e"],
+    });
+
+    ToolbarItemFactory.register({
+        name: ToolbarItemName.RemoveAllSegments,
+        context: [EditorContext.Segmentation],
+        tooltip: strings.editorPage.toolbar.removeAllSegments,
+        icon: "fa-ban",
+        group: ToolbarItemGroup.Canvas,
+        type: ToolbarItemType.Action,
+        accelerators: ["CmdOrCtrl+Delete", "CmdOrCtrl+Backspace"],
     });
 
     ToolbarItemFactory.register({

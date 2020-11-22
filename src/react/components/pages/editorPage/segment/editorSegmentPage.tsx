@@ -195,7 +195,7 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
                                 onCtrlTagClick={this.onCtrlTagClicked}
                                 onTagRenamed={this.confirmTagRenamed}
                                 onTagDeleted={this.confirmTagDeleted}
-                                instantTagClick={true}                                
+                                instantTagClick={true}
                             />
                         </div>
                         <Confirm title={strings.editorPage.tags.rename.title}
@@ -499,6 +499,9 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
                 break;
             case ToolbarItemName.NextAsset:
                 await this.goToRootAsset(1);
+                break;
+            case ToolbarItemName.RemoveAllSegments:
+                this.canvas.current.confirmRemoveAllSegments();
                 break;
             case ToolbarItemName.ActiveLearning:
                 await this.predictSegments();

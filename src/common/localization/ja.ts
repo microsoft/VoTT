@@ -239,6 +239,7 @@ export const japanese: IAppStrings = {
             cut: "領域をカット",  // Cut Regions,
             paste: "領域を貼り付け", // Paste Regions,
             removeAllRegions: "すべてのリージョンを削除", // Remove All Regions,
+            removeAllSegments: "Remove All Segments",
             previousAsset: "前のアセット",  // Previous Asset,
             nextAsset: "次のアセット",  // Next Asset,
             saveProject: "プロジェクトを保存", // Save Project,

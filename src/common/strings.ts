@@ -236,6 +236,7 @@ export interface IAppStrings {
             cut: string;
             paste: string;
             removeAllRegions: string;
+            removeAllSegments: string;
             previousAsset: string;
             nextAsset: string;
             saveProject: string;

@@ -242,6 +242,7 @@ export const chinesetw: IAppStrings = {
             cut: "剪下區域", // Cut Regions
             paste: "貼上區域", // Paste Regions
             removeAllRegions: "刪除所有區域", // Remove All Regions
+            removeAllSegments: "Remove All Segments",
             previousAsset: "以前的圖像數據", // Previous Asset
             nextAsset: "下一個圖像數據", // Next Asset
             saveProject: "儲存專案", // Save Project

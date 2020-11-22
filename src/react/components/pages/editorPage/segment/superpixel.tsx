@@ -194,7 +194,8 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
         if(s.children().length <= 2){ // must be updated to check the inclusion of 'path' within children
             var pathString = getPathFromPoints(pixels, canvasWidth, canvasHeight);
             var superpixel = s.path( pathString );
-            superpixel.attr({ stroke: "white", strokeWidth: 0, fill: annotation.color, opacity: annotation.tag.length > 0 ? defaultOpacity : annotatedOpacity });
+            superpixel.attr({ stroke: "white", strokeWidth: 0, fill: annotation.color, opacity: annotation.tag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity });
+            pixelref.current.setAttribute("current-scale", area);
             const paintAndUpdateState = (event, onSegmentUpdated) => {
                 const annotatingTag = pixelref.current.parentElement.getAttribute("name");
                 if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== AnnotationTag.EMPTY){
@@ -204,11 +205,11 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
                     pixelref.current.parentElement.setAttribute("content-script-type", fillColor); // storing color
                 }
                 else if(event.buttons === 2 && pixelref.current.getAttribute("name")){ // removing
-                    deleteSuperpixelAnnotation(idKey, defaultcolor, 0, onSegmentUpdated); // area should be updated
+                    deleteSuperpixelAnnotation(idKey, defaultcolor, area, onSegmentUpdated); // area should be updated
                     pixelref.current.parentElement.setAttribute("content-script-type", defaultcolor); // storing color
                 }
             };
-            superpixel.mouseover( (event: MouseEvent) => {
+            superpixel.mouseover( () => {
                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
                const currentColor = pixelref.current.getAttribute("color-profile");
                const fillColor = pixelref.current.parentElement.getAttribute("color-profile")!;
@@ -220,7 +221,7 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
                         1);
                }
               })
-              .mouseout( (event: MouseEvent) => {
+              .mouseout( () => {
                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
                const currentColor = pixelref.current.getAttribute("color-profile");
                if(annotatingTag !== AnnotationTag.EMPTY){

@@ -233,6 +233,7 @@ export const english: IAppStrings = {
             cut: "Cut Regions",
             paste: "Paste Regions",
             removeAllRegions: "Remove All Regions",
+            removeAllSegments: "Remove All Segments",
             previousAsset: "Previous Asset",
             nextAsset: "Next Asset",
             saveProject: "Save Project",

@@ -239,6 +239,7 @@ export const chinese: IAppStrings = {
             cut: "剪切区域", // Cut Regions
             paste: "粘贴区域", // Paste Regions
             removeAllRegions: "删除所有区域", // Remove All Regions
+            removeAllSegments: "Remove All Segments",
             previousAsset: "以前的素材", // Previous Asset
             nextAsset: "下一项素材", // Next Asset
             saveProject: "保存项目", // Save Project

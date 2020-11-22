@@ -240,6 +240,7 @@ export const korean: IAppStrings = {
             cut: "영역 잘라내기",  // Cut Regions,
             paste: "영역 붙여 넣기", // Paste Regions,
             removeAllRegions: "모든 지역 제거", // Remove All Regions,
+            removeAllSegments: "모든 세그먼트 제거", // Remove all segments,
             previousAsset: "이전 Asset",  // Previous Asset,
             nextAsset: "다음 Asset",  // Next Asset,
             saveProject: "프로젝트 저장", // Save Project,

@@ -1,6 +1,7 @@
 import React, { Fragment, ReactElement } from "react";
 import {
     EditorMode, IAssetMetadata,
+    IBoundingBox,
     IProject,
     ISegment,
     ISegmentOffset,
@@ -9,7 +10,7 @@ import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetP
 import Confirm from "../../../common/confirm/confirm";
 import { createContentBoundingBox } from "../../../../../common/layout";
 import { SegmentSelectionMode } from "../editorPage";
-import { Annotation, AnnotationTag } from "./superpixel";
+import { Annotation, AnnotationTag, number2SPId, Superpixel } from "./superpixel";
 import { SegmentAnnotator } from "./segmentAnnotator";
 import data from "./test.jpg.json";
 import { ITag } from "vott-react";
@@ -61,11 +62,11 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         this.editor = new SegmentAnnotator({
             keyId: "mainCanvas",
             selectedAsset: this.props.selectedAsset,
+            project: this.props.project,
             segmentationData: data,
             width: 1024,
             height: 768,
             defaultcolor: this.defaultColor,
-            annotationData: [],
             onSegmentUpdated: this.onSegmentUpdated
         });
     }
@@ -104,7 +105,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     ////////////////////////////////////////////////////////////////
     // WARNING: this should be updated
     public updateCanvasToolsRegionTags = (): void => {
-        console.log("test");
+        console.log("To be updated");
     }
 
     public setSelectionMode(segmentSelectionMode: SegmentSelectionMode){
@@ -146,7 +147,6 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public render = () => {
         const className = this.state.enabled ? "canvas-enabled" : "canvas-disabled";
-        const annotatedList: Annotation[] = []; // [ new Annotation(1,"red", 1), new Annotation(2,"blue", 2) ];
         return (
             <Fragment>
                 <Confirm title={strings.editorPage.canvas.removeAllSegments.title}
@@ -168,10 +168,11 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     private removeAllSegments = () => {
-        const ids = this.state.currentAsset.segments.map((s) => s.id);
-        for (const id of ids) {
-            this.editor.deleteSegmentById(id);
-        }
+        this.state.currentAsset.segments.map((s) => {
+            for (const superpixel of s.superpixel){
+                this.editor.deleteSegmentById(superpixel);
+            }
+        });
         this.deleteSegmentsFromAsset(this.state.currentAsset.segments);
     }
 
@@ -182,30 +183,58 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         this.updateAssetSegments(filteredSegments);
     }
 
-    private onSegmentUpdated = (segment: ISegmentOffset) => {
-        // addition
-        /*
-        if (segment.tag !== AnnotationTag.DEANNOTATING){
-            const duplicated = this.state.currentAsset.segments.filter((element) => (element.id === segment.id));
-            const currentSegments =
-                duplicated.length === 0 ? [...this.state.currentAsset.segments, segment] : 
-                this.state.currentAsset.segments.map((element): ISegment => {
-                    return {
-                        id: element.id,
-                        tag: (element.id === segment.id ? segment.tag : element.tag),
-                        area: segment.area ? segment.area : 0,
-                        superpixel: [],
-                        boundingBox: segment.boundingBox ? segment.boundingBox : { left: 0, top: 0, width: 0, height: 0 },
+    private getInitialSegment = (id: number, tag: string, superpixelId: number, area: number, bbox: IBoundingBox): ISegment => {
+        return { id: id.toString(), tag, superpixel: [superpixelId], area, boundingBox: bbox, iscrowd: 0, risk: "safe" };
+    }
+
+    private projectSegmentOffset = (segments: ISegment[], offset: ISegmentOffset, addition: boolean): ISegment[] => {
+        if (addition){
+            if (segments.filter((e) => e.tag === offset.tag && e.superpixel.includes(offset.superpixelId)).length > 0){ // already contains
+                return segments;
+            }
+            let founded = 0;
+            const processedSegments = segments.map((element): ISegment => {
+                if (element.tag === offset.tag){
+                    founded = 1;
+                    return {... element, area: element.area + offset.area,
+                        superpixel: [...element.superpixel, offset.superpixelId],
+                        boundingBox: { left: 0, top: 0, width: 0, height: 0 },
                         iscrowd: 0,
                         risk: "safe",
                     };
-                });
-            this.updateAssetSegments(currentSegments);
+                }
+                else{
+                    return element;
+                }
+            });
+            return founded === 1 ? processedSegments : [...segments,
+                this.getInitialSegment(segments.length, offset.tag, offset.superpixelId, offset.area, { left:0, top: 0, width:0, height: 0 })];
         }
-        else {
-            this.updateAssetSegments(this.state.currentAsset.segments.filter((element) => (element.id !== segment.id)));
+        else{ // subtraction
+            let emptyId = "";
+            const processedSegments = segments.map((element): ISegment => {
+                if (element.superpixel.includes(offset.superpixelId)){
+                    if (element.area - offset.area === 0 || (element.superpixel.length===1 && element.superpixel.includes(offset.superpixelId))){
+                        emptyId = element.id;
+                    }
+                    return {... element, area: element.area - offset.area,
+                        superpixel: element.superpixel.filter((element) => element !== offset.superpixelId),
+                        boundingBox: { left: 0, top: 0, width: 0, height: 0 },
+                        iscrowd: 0,
+                        risk: "safe",
+                    };
+                }
+                else {
+                    return element;
+                }
+            });
+            return emptyId === "" ? processedSegments : segments.filter((element) => (element.id !== emptyId));
         }
-        */
+    }
+
+    private onSegmentUpdated = (segment: ISegmentOffset) => {
+        const currentSegments = this.projectSegmentOffset(this.state.currentAsset.segments, segment, segment.tag !== AnnotationTag.DEANNOTATING);
+        this.updateAssetSegments(currentSegments);
     }
 
     /**
