@@ -287,6 +287,10 @@ export const korean: IAppStrings = {
                 title: "모든 지역 제거", // Remove All Regions,
                 confirmation: "모든 지역을 삭제 하시겠습니까?",  // Are you sure you want to remove all regions"
             },
+            removeAllSegments: {
+                title: "모든 세그먼트 제거",
+                confirmation: "모든 세그먼트를 삭제 하시겠습니까?",
+            },
         },
         messages: {
             enforceTaggedRegions: {

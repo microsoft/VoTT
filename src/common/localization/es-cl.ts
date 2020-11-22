@@ -281,6 +281,10 @@ export const spanish: IAppStrings = {
                 title: "Borrar Regiones",
                 confirmation: "¿Está seguro que quiere borrar todas las regiones?",
             },
+            removeAllSegments: {
+                title: "Remove All Segments",
+                confirmation: "Are you sure you want to remove all segments?",
+            },
         },
         messages: {
             enforceTaggedRegions: {

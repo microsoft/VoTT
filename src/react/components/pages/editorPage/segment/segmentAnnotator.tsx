@@ -1,6 +1,6 @@
 import React from "react";
-import { IAssetMetadata, ISegment } from "../../../../../models/applicationState";
-import { Annotation, AnnotationTag } from "./superpixel";
+import { IAssetMetadata, ISegmentOffset } from "../../../../../models/applicationState";
+import { Annotation, AnnotationTag, SPId2number } from "./superpixel";
 import { Superpixel } from "./superpixel";
 
 const keys: number[] = [];
@@ -24,7 +24,7 @@ export interface ISegmentAnnotatorProps {
     height: number;
     defaultcolor: string;
     annotationData: Annotation[];
-    onSegmentUpdated?: (segment: ISegment) => void;
+    onSegmentUpdated?: (segment: ISegmentOffset) => void;
 }
 
 export interface ISegmentAnnotatorState {
@@ -57,8 +57,8 @@ export class SegmentAnnotator extends React.Component<
         this.canvasRef = React.createRef<SVGSVGElement>();
     };
 
-    public componentWillUnmount = () => {
-        
+    public deleteSegmentById = (id: string) => {
+        console.log(document.getElementById(id));
     }
 
     public render = () => {
@@ -81,6 +81,7 @@ export class SegmentAnnotator extends React.Component<
                 viewBox={viewBoxString}
                 name={this.state.annotating.tag}
                 colorProfile={this.state.annotating.color}
+                contentScriptType={this.props.defaultcolor} // for color backup
             >
                 {keys.map(key => {
                     const initialAnnotation = annotatedIndices.includes(key)
@@ -89,7 +90,7 @@ export class SegmentAnnotator extends React.Component<
                               this.props.annotationData,
                               this.state.annotating
                           )
-                        : this.state.annotating;
+                        : new Annotation(AnnotationTag.EMPTY, AnnotationTag.EMPTY, SPId2number(this.props.keyId));
                     return (
                         <Superpixel
                             keyId={key}
@@ -107,12 +108,6 @@ export class SegmentAnnotator extends React.Component<
                 })}
             </svg>
         );
-    };
-
-    private onAnnotatingUpdated = (tag: string, color: string) => {
-        //setAnnotating({ tag: index, color: color }); // computationally intensive requiring re-rendering
-        this.canvasRef.current.setAttribute("name", tag);
-        this.canvasRef.current.setAttribute("color-profile", color);
     };
 
     private canvasRef: React.RefObject<SVGSVGElement>;

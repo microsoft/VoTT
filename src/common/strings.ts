@@ -280,6 +280,10 @@ export interface IAppStrings {
                 title: string;
                 confirmation: string;
             },
+            removeAllSegments: {
+                title: string;
+                confirmation: string;
+            },
         },
         messages: {
             enforceTaggedRegions: {

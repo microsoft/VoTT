@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { ISegmentOffset } from "../../../../../models/applicationState";
 
 export enum AnnotationTag{
     EMPTY = "empty",
@@ -31,6 +32,8 @@ export interface ICoordinates{
     canvasHeight: number,
 }
 
+type ISegmentStateCallback = (segment: ISegmentOffset) => void;
+
 export class Annotation implements IAnnotation {
     tag: string
     color: string
@@ -43,12 +46,11 @@ export class Annotation implements IAnnotation {
     }
 }
 
-const coloringPixel = (component: Snap.Element, color: string, opacity: number, strokeWidth: number) => {
-    
-   component.attr({
-        fill: color,
-        opacity: opacity,
-        strokeWidth: strokeWidth
+const updateSuperpixelSVG = (component: Snap.Element, fill: string, opacity: number, strokeWidth: number) => {
+       component.attr({
+        fill,
+        opacity,
+        strokeWidth,
     });
   }
 
@@ -147,59 +149,93 @@ interface SuperpixelProps {
     keyId: number, pixels: any, canvasWidth: number, canvasHeight: number, initialAnnotation: Annotation, defaultcolor: string, onSegmentUpdated: (...params: any[]) => void;
 }
 
+const updateSuperpixelHTML = (component: HTMLElement, tag: string, color: string) => {
+    component.setAttribute("name", tag);
+    component.setAttribute("color-profile", color);
+}
+
+export const paintSuperpixel =
+        (id: string, tag: string, color: string, area: number, onSegmentUpdated: ISegmentStateCallback) => {
+    if (tag === AnnotationTag.EMPTY || color === AnnotationTag.EMPTY) {
+        return ;
+    }
+    const component = document.getElementById(id);
+    const superpixel = Snap("#" + id);
+    if (component && superpixel){
+        const coloringTag = tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : tag;
+        updateSuperpixelHTML(component, coloringTag, tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : color);
+        updateSuperpixelSVG(superpixel.select('path'), color, coloringTag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity, 0);
+        onSegmentUpdated({tag, area, superpixelId: SPId2number(id) });
+    }
+    else{
+        console.log("ERROR: " + id + " was not able to find!");
+    }
+}
+
+export const deleteSuperpixelAnnotation = (id: string, defaultcolor: string, area: number, onSegmentUpdated: ISegmentStateCallback) => {
+    paintSuperpixel(id, AnnotationTag.DEANNOTATING, defaultcolor, area, onSegmentUpdated);
+}
+
+export const number2SPId = (id: number): string => {
+    return "sp" + id.toString();
+}
+
+export const SPId2number = (spId: string): number => {
+    return spId.startsWith("sp") ? parseInt(spId.substr(2)) : -1;
+}
+
 export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWidth, canvasHeight, initialAnnotation, defaultcolor, onSegmentUpdated } ) => {
     const [ annotation ] = useState(new Annotation(initialAnnotation.tag, initialAnnotation.color, keyId));
     const [ area ] = useState(pixels.length);
     const pixelref = useRef<SVGSVGElement>(null);
-
-    const idKey = "pixel" + keyId.toString();
+    const idKey = number2SPId(keyId);
     useEffect(() => {
-        var s = Snap("#pixel" + keyId.toString());
+        var s = Snap("#" + number2SPId(keyId));
         if(s.children().length <= 2){ // must be updated to check the inclusion of 'path' within children
             var pathString = getPathFromPoints(pixels, canvasWidth, canvasHeight);
-            var pixel = s.path( pathString );
-            pixel.attr({ stroke: "white", strokeWidth: 0, fill: annotation.color, opacity: annotation.tag.length > 0 ? defaultOpacity : annotatedOpacity });
-            const setAndColoring = () => {
-                const annotatingTag: string = pixelref.current.parentElement.getAttribute("name")!;
-                if(annotatingTag === AnnotationTag.DEANNOTATING){
-                    pixelref.current.setAttribute("name", AnnotationTag.EMPTY);
-                    pixelref.current.setAttribute("color-profile", defaultcolor);
-                    coloringPixel(pixel, defaultcolor, defaultOpacity, 0);
-                    onSegmentUpdated({id: keyId, tag: AnnotationTag.DEANNOTATING});
-                }else{
+            var superpixel = s.path( pathString );
+            superpixel.attr({ stroke: "white", strokeWidth: 0, fill: annotation.color, opacity: annotation.tag.length > 0 ? defaultOpacity : annotatedOpacity });
+            const paintAndUpdateState = (event, onSegmentUpdated) => {
+                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
+                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== AnnotationTag.EMPTY){
+                    const annotatingTag: string = pixelref.current.parentElement.getAttribute("name")!;
                     const fillColor: string = pixelref.current.parentElement.getAttribute("color-profile")!;
-                    pixelref.current.setAttribute("name", annotatingTag);
-                    pixelref.current.setAttribute("color-profile",fillColor);
-                    coloringPixel(pixel, fillColor!, annotatedOpacity, 0);
-                    const bbox = Snap.path.getBBox(pixel); // get bounding box
-                    onSegmentUpdated({id: keyId, tag: annotatingTag, area,
-                        boundingBox: bbox? { left: bbox.x, top: bbox.y, width: bbox.width, height: bbox.height, } : 
-                        { left: 0, top: 0, width: 0, height: 0, } });
+                    paintSuperpixel(idKey, annotatingTag, fillColor, area, onSegmentUpdated);
+                    pixelref.current.parentElement.setAttribute("content-script-type", fillColor); // storing color
                 }
-            }
-            pixel.mouseover( (event: MouseEvent) => {
+                else if(event.buttons === 2 && pixelref.current.getAttribute("name")){ // removing
+                    deleteSuperpixelAnnotation(idKey, defaultcolor, 0, onSegmentUpdated); // area should be updated
+                    pixelref.current.parentElement.setAttribute("content-script-type", defaultcolor); // storing color
+                }
+            };
+            superpixel.mouseover( (event: MouseEvent) => {
                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== AnnotationTag.EMPTY){
-                coloringPixel(pixel, pixelref.current.parentElement.getAttribute("color-profile")!, annotatingOpacity, 1);
+               const currentColor = pixelref.current.getAttribute("color-profile");
+               const fillColor = pixelref.current.parentElement.getAttribute("color-profile")!;
+               if( annotatingTag !== AnnotationTag.EMPTY ){
+                    pixelref.current.parentElement.setAttribute("content-script-type", currentColor); // storing color
+                    updateSuperpixelSVG(superpixel,
+                        annotatingTag === AnnotationTag.DEANNOTATING ? defaultcolor : fillColor,
+                        annotatingOpacity,
+                        1);
                }
               })
-              .mouseout(function (event: MouseEvent) {
+              .mouseout( (event: MouseEvent) => {
                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-               if(parseInt(pixelref.current.getAttribute("name")!) < 0 && annotatingTag !== AnnotationTag.EMPTY){
-                coloringPixel(pixel, pixelref.current.getAttribute("color-profile")!, annotation.tag.length > 0 ? annotatedOpacity : defaultOpacity, 0);
+               const currentColor = pixelref.current.getAttribute("color-profile");
+               if(annotatingTag !== AnnotationTag.EMPTY){
+                   const backupColor = pixelref.current.parentElement.getAttribute("content-script-type");
+                   updateSuperpixelSVG(superpixel,
+                        backupColor,
+                        currentColor === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity,
+                        0);
                }
               })
-              .mousemove(function (event: MouseEvent) {
-                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== AnnotationTag.EMPTY){
-                    setAndColoring();
-                }
+              .mousemove( (event: MouseEvent) => {
+                paintAndUpdateState(event, onSegmentUpdated);
               })
-              .mousedown(function (event: MouseEvent) {
-                const annotatingTag = pixelref.current.parentElement.getAttribute("name");
-                if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== AnnotationTag.EMPTY){
-                    setAndColoring();
-                }
+              .mousedown( (event: MouseEvent) => {
+                paintAndUpdateState(event, onSegmentUpdated);
               });
         }
         // eslint-disable-next-line

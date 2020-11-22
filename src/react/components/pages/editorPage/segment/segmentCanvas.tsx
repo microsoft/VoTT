@@ -3,6 +3,7 @@ import {
     EditorMode, IAssetMetadata,
     IProject,
     ISegment,
+    ISegmentOffset,
 } from "../../../../../models/applicationState";
 import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetPreview";
 import Confirm from "../../../common/confirm/confirm";
@@ -12,6 +13,7 @@ import { Annotation, AnnotationTag } from "./superpixel";
 import { SegmentAnnotator } from "./segmentAnnotator";
 import data from "./test.jpg.json";
 import { ITag } from "vott-react";
+import { strings } from "../../../../../common/strings";
 
 export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     selectedAsset: IAssetMetadata;
@@ -52,6 +54,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     private previousAnnotating = new Annotation( AnnotationTag.EMPTY, this.defaultColor);
 
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
+    private clearConfirm: React.RefObject<Confirm> = React.createRef();
 
     public componentDidMount = () => {
         window.addEventListener("resize", this.onWindowResize);
@@ -127,6 +130,10 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         }
     }
 
+    public confirmRemoveAllSegments = () => {
+        this.clearConfirm.current.open();
+    }
+
     ////////////////////////////////////////////////////////////////
     // WARNING: this should be updated
     /**
@@ -142,6 +149,12 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         const annotatedList: Annotation[] = []; // [ new Annotation(1,"red", 1), new Annotation(2,"blue", 2) ];
         return (
             <Fragment>
+                <Confirm title={strings.editorPage.canvas.removeAllSegments.title}
+                    ref={this.clearConfirm as any}
+                    message={strings.editorPage.canvas.removeAllSegments.confirmation}
+                    confirmButtonColor="danger"
+                    onConfirm={this.removeAllSegments}
+                />
                 <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
                     <div id="selection-zone">
         <div id="editor-zone" className="full-size">
@@ -154,17 +167,31 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         );
     }
 
+    private removeAllSegments = () => {
+        const ids = this.state.currentAsset.segments.map((s) => s.id);
+        for (const id of ids) {
+            this.editor.deleteSegmentById(id);
+        }
+        this.deleteSegmentsFromAsset(this.state.currentAsset.segments);
+    }
 
+    private deleteSegmentsFromAsset = (segments: ISegment[]) => {
+        const filteredSegments = this.state.currentAsset.segments.filter((assetSegment) => {
+            return !segments.find((s) => s.id === assetSegment.id);
+        });
+        this.updateAssetSegments(filteredSegments);
+    }
 
-    private onSegmentUpdated = (segment: ISegment) => {
+    private onSegmentUpdated = (segment: ISegmentOffset) => {
         // addition
+        /*
         if (segment.tag !== AnnotationTag.DEANNOTATING){
             const duplicated = this.state.currentAsset.segments.filter((element) => (element.id === segment.id));
-            const currentSegments = 
+            const currentSegments =
                 duplicated.length === 0 ? [...this.state.currentAsset.segments, segment] : 
                 this.state.currentAsset.segments.map((element): ISegment => {
-                    return { 
-                        id: element.id, 
+                    return {
+                        id: element.id,
                         tag: (element.id === segment.id ? segment.tag : element.tag),
                         area: segment.area ? segment.area : 0,
                         superpixel: [],
@@ -178,6 +205,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         else {
             this.updateAssetSegments(this.state.currentAsset.segments.filter((element) => (element.id !== segment.id)));
         }
+        */
     }
 
     /**

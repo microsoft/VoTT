@@ -286,6 +286,10 @@ export const japanese: IAppStrings = {
                 title: "すべてのリージョンを削除", // Remove All Regions,
                 confirmation: "すべてのリージョンを削除してもいいですか",  // Are you sure you want to remove all regions"
             },
+            removeAllSegments: {
+                title: "Remove All Segments",
+                confirmation: "Are you sure you want to remove all segments?",
+            },
         },
         messages: {
             enforceTaggedRegions: {

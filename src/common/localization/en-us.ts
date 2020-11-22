@@ -278,6 +278,10 @@ export const english: IAppStrings = {
                 title: "Remove All Regions",
                 confirmation: "Are you sure you want to remove all regions?",
             },
+            removeAllSegments: {
+                title: "Remove All Segments",
+                confirmation: "Are you sure you want to remove all segments?",
+            },
         },
         messages: {
             enforceTaggedRegions: {

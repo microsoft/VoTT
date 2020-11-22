@@ -339,6 +339,12 @@ export interface ISegment {
     risk: string;
 }
 
+export interface ISegmentOffset {
+    tag: string;
+    superpixelId: number;
+    area: number;
+}
+
 export interface IImageMetadata {
     fileName: string;
 }

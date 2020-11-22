@@ -286,6 +286,10 @@ export const chinese: IAppStrings = {
                 title: "删除所有区域", // Remove All Regions
                 confirmation: "您确定要删除所有区域吗？", // Are you sure you want to remove all regions?
             },
+            removeAllSegments: {
+                title: "Remove All Segments",
+                confirmation: "Are you sure you want to remove all segments?",
+            },
         },
         messages: {
             enforceTaggedRegions: {
