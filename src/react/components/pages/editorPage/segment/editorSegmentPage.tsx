@@ -381,9 +381,9 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
         if(assetMetadata.segments){
             const segmentsWithoutTags = assetMetadata.segments.filter((segment) => segment.tag === AnnotationTag.EMPTY);
 
-        if (segmentsWithoutTags.length > 0) {
-            this.setState({ isValid: false });
-            return;
+            if (segmentsWithoutTags.length > 0) {
+                this.setState({ isValid: false });
+                return;
         }
 
         const initialState = assetMetadata.asset.state[this.state.context];

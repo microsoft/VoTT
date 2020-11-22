@@ -166,19 +166,18 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                     return { 
                         id: element.id, 
                         tag: (element.id === segment.id ? segment.tag : element.tag),
-                        area: 0,
+                        area: segment.area ? segment.area : 0,
                         superpixel: [],
-                        boundingBox: { left: 0, top: 0, width: 0, height: 0},
+                        boundingBox: segment.boundingBox ? segment.boundingBox : { left: 0, top: 0, width: 0, height: 0 },
                         iscrowd: 0,
                         risk: "safe",
                     };
                 });
-
             this.updateAssetSegments(currentSegments);
         }
         else {
             this.updateAssetSegments(this.state.currentAsset.segments.filter((element) => (element.id !== segment.id)));
-        }        
+        }
     }
 
     /**

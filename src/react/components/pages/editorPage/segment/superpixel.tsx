@@ -149,6 +149,7 @@ interface SuperpixelProps {
 
 export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWidth, canvasHeight, initialAnnotation, defaultcolor, onSegmentUpdated } ) => {
     const [ annotation ] = useState(new Annotation(initialAnnotation.tag, initialAnnotation.color, keyId));
+    const [ area ] = useState(pixels.length);
     const pixelref = useRef<SVGSVGElement>(null);
 
     const idKey = "pixel" + keyId.toString();
@@ -158,7 +159,6 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
             var pathString = getPathFromPoints(pixels, canvasWidth, canvasHeight);
             var pixel = s.path( pathString );
             pixel.attr({ stroke: "white", strokeWidth: 0, fill: annotation.color, opacity: annotation.tag.length > 0 ? defaultOpacity : annotatedOpacity });
-
             const setAndColoring = () => {
                 const annotatingTag: string = pixelref.current.parentElement.getAttribute("name")!;
                 if(annotatingTag === AnnotationTag.DEANNOTATING){
@@ -171,7 +171,10 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
                     pixelref.current.setAttribute("name", annotatingTag);
                     pixelref.current.setAttribute("color-profile",fillColor);
                     coloringPixel(pixel, fillColor!, annotatedOpacity, 0);
-                    onSegmentUpdated({id: keyId, tag: annotatingTag });
+                    const bbox = Snap.path.getBBox(pixel); // get bounding box
+                    onSegmentUpdated({id: keyId, tag: annotatingTag, area,
+                        boundingBox: bbox? { left: bbox.x, top: bbox.y, width: bbox.width, height: bbox.height, } : 
+                        { left: 0, top: 0, width: 0, height: 0, } });
                 }
             }
             pixel.mouseover( (event: MouseEvent) => {
