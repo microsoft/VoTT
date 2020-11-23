@@ -168,7 +168,6 @@ export default class EditorSegmentPage extends React.Component<IEditorPageProps,
                                         selectedAsset={this.state.selectedAsset}
                                         onAssetMetadataChanged={this.onAssetMetadataChanged}
                                         onCanvasRendered={this.onCanvasRendered}
-                                        editorMode={this.state.editorMode}
                                         selectionMode={this.state.segmentSelectionMode}
                                         project={this.props.project}
                                         lockedTags={this.state.lockedTags}>

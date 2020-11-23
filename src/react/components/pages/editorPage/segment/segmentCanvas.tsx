@@ -18,7 +18,6 @@ import { strings } from "../../../../../common/strings";
 
 export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     selectedAsset: IAssetMetadata;
-    editorMode: EditorMode;
     selectionMode: SegmentSelectionMode;
     project: IProject;
     lockedTags: string[];
@@ -36,7 +35,6 @@ export interface ISegmentCanvasState {
 export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, ISegmentCanvasState> {
     public static defaultProps: ISegmentCanvasProps = {
         selectionMode: SegmentSelectionMode.NONE,
-        editorMode: EditorMode.None,
         selectedAsset: null,
         project: null,
         lockedTags: [],
@@ -63,6 +61,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             keyId: "mainCanvas",
             selectedAsset: this.props.selectedAsset,
             project: this.props.project,
+            annotatedData: this.decomposeSegment(this.props.selectedAsset.segments),
             segmentationData: data,
             width: 1024,
             height: 768,
@@ -86,15 +85,24 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             this.setSelectionMode(this.props.selectionMode);
         }
 
-        // When the project tags change re-apply tags to regions
+        const assetIdChanged = this.state.currentAsset.asset.id !== prevState.currentAsset.asset.id;
+
+        // When the selected asset has changed but is still the same asset id
+        if (!assetIdChanged && this.state.currentAsset !== prevState.currentAsset) {
+            this.refreshCanvasToolsSegments();
+        }
+
+
+        // When the project tags change re-apply tags to segments
         if (this.props.project.tags !== prevProps.project.tags) {
-            this.updateCanvasToolsRegionTags();
+            this.updateCanvasToolsSegmentTags();
         }
 
         // Handles when the canvas is enabled & disabled
         if (prevState.enabled !== this.state.enabled) {
             // When the canvas is ready to display
             if (this.state.enabled) {
+                this.refreshCanvasToolsSegments();
                 this.setSelectionMode(this.props.selectionMode);
             } else { // When the canvas has been disabled
                 this.setSelectionMode(SegmentSelectionMode.NONE);
@@ -104,8 +112,16 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     ////////////////////////////////////////////////////////////////
     // WARNING: this should be updated
-    public updateCanvasToolsRegionTags = (): void => {
+    public updateCanvasToolsSegmentTags = (): void => {
         console.log("To be updated");
+        for (const segment of this.state.currentAsset.segments) {
+            /*
+            this.editor.updateTagsById(
+                segment.id,
+                CanvasHelpers.getTagsDescriptor(this.props.project.tags, region),
+            );
+            */
+        }
     }
 
     public setSelectionMode(segmentSelectionMode: SegmentSelectionMode){
@@ -147,6 +163,9 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public render = () => {
         const className = this.state.enabled ? "canvas-enabled" : "canvas-disabled";
+        if (this.editor){ // force to get up-to-date data
+            this.editor.updateByNewAsset(data, this.decomposeSegment(this.state.currentAsset.segments));
+        }
         return (
             <Fragment>
                 <Confirm title={strings.editorPage.canvas.removeAllSegments.title}
@@ -167,13 +186,32 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         );
     }
 
-    private removeAllSegments = () => {
-        this.state.currentAsset.segments.map((s) => {
+    private decomposeSegment = (segments: ISegment[]): Annotation[] => {
+        const annotation = [];
+        for (const s of segments){
             for (const superpixel of s.superpixel){
-                this.editor.deleteSegmentById(superpixel);
+                const tag = this.props.project.tags.filter((tag) => tag.name === s.tag);
+                if(tag.length > 0){
+                    annotation.push(new Annotation(s.tag, tag[0].color, superpixel));
+                }
+            }
+        }
+        return annotation;
+    }
+
+    private removeAllSegments = (removeState: boolean = true) => {
+        /*
+        this.state.currentAsset.segments.map((s) => {
+            console.log(s.superpixel);
+            for (const superpixelId of s.superpixel){
+                console.log(superpixelId);
+                //this.editor.deleteSegmentById(superpixelId);
             }
         });
-        this.deleteSegmentsFromAsset(this.state.currentAsset.segments);
+        */
+        if (removeState) {
+            this.deleteSegmentsFromAsset(this.state.currentAsset.segments);
+        }
     }
 
     private deleteSegmentsFromAsset = (segments: ISegment[]) => {
@@ -181,6 +219,16 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             return !segments.find((s) => s.id === assetSegment.id);
         });
         this.updateAssetSegments(filteredSegments);
+    }
+
+    private refreshCanvasToolsSegments = () => {
+        /*
+        // the function currently not used
+        if (!this.state.currentAsset.segments || this.state.currentAsset.segments.length === 0) {
+            return;
+        }
+        //this.removeAllSegments(false);
+        */
     }
 
     private getInitialSegment = (id: number, tag: string, superpixelId: number, area: number, bbox: IBoundingBox): ISegment => {

@@ -68,7 +68,7 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
             videoSettings: (this.props.project) ? this.props.project.videoSettings : null,
             activeLearningSettings: (this.props.project) ? this.props.project.activeLearningSettings : null,
         },
-        thumbnailSize: this.props.appSettings.thumbnailSize || { width: 175, height: 155 },
+        thumbnailSize: this.props.appSettings.thumbnailSize || { width: 220, height: 165 },
         isValid: true,
         showInvalidRegionWarning: false,
         context: EditorContext.Metadata,

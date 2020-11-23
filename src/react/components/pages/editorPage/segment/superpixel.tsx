@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ISegmentOffset } from "../../../../../models/applicationState";
+import { ISegment, ISegmentOffset } from "../../../../../models/applicationState";
 
 export enum AnnotationTag{
     EMPTY = "empty",
@@ -155,16 +155,16 @@ const updateSuperpixelHTML = (component: HTMLElement, tag: string, color: string
 }
 
 export const paintSuperpixel =
-        (id: string, tag: string, color: string, area: number, onSegmentUpdated: ISegmentStateCallback) => {
+        (id: string, snapElement: Snap.Element, tag: string, color: string, onSegmentUpdated: ISegmentStateCallback) => {
     if (tag === AnnotationTag.EMPTY || color === AnnotationTag.EMPTY) {
         return ;
     }
     const component = document.getElementById(id);
-    const superpixel = Snap("#" + id);
-    if (component && superpixel){
+    const area = parseInt(component.getAttribute("current-scale"));
+    if (component && snapElement){
         const coloringTag = tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : tag;
         updateSuperpixelHTML(component, coloringTag, tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : color);
-        updateSuperpixelSVG(superpixel.select('path'), color, coloringTag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity, 0);
+        updateSuperpixelSVG(snapElement, color, coloringTag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity, 0);
         onSegmentUpdated({tag, area, superpixelId: SPId2number(id) });
     }
     else{
@@ -172,8 +172,8 @@ export const paintSuperpixel =
     }
 }
 
-export const deleteSuperpixelAnnotation = (id: string, defaultcolor: string, area: number, onSegmentUpdated: ISegmentStateCallback) => {
-    paintSuperpixel(id, AnnotationTag.DEANNOTATING, defaultcolor, area, onSegmentUpdated);
+export const deleteSuperpixelAnnotation = (id: string, snapElement: Snap.Element, defaultcolor: string, onSegmentUpdated: ISegmentStateCallback) => {
+    paintSuperpixel(id, snapElement, AnnotationTag.DEANNOTATING, defaultcolor, onSegmentUpdated);
 }
 
 export const number2SPId = (id: number): string => {
@@ -201,11 +201,11 @@ export const Superpixel: React.FC<SuperpixelProps> = ({ keyId, pixels, canvasWid
                 if(event.buttons === 1 && pixelref.current.getAttribute("name") && annotatingTag !== AnnotationTag.EMPTY){
                     const annotatingTag: string = pixelref.current.parentElement.getAttribute("name")!;
                     const fillColor: string = pixelref.current.parentElement.getAttribute("color-profile")!;
-                    paintSuperpixel(idKey, annotatingTag, fillColor, area, onSegmentUpdated);
+                    paintSuperpixel(idKey, superpixel, annotatingTag, fillColor, onSegmentUpdated);
                     pixelref.current.parentElement.setAttribute("content-script-type", fillColor); // storing color
                 }
                 else if(event.buttons === 2 && pixelref.current.getAttribute("name")){ // removing
-                    deleteSuperpixelAnnotation(idKey, defaultcolor, area, onSegmentUpdated); // area should be updated
+                    deleteSuperpixelAnnotation(idKey, superpixel, defaultcolor, onSegmentUpdated); // area should be updated
                     pixelref.current.parentElement.setAttribute("content-script-type", defaultcolor); // storing color
                 }
             };
