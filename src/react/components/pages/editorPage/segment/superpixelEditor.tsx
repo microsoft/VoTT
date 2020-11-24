@@ -1,6 +1,5 @@
 import { useRef } from "react";
-import Tag from "reactstrap/lib/Tag";
-import { ISegment, ISegmentOffset } from "../../../../../models/applicationState";
+import { ISegmentOffset } from "../../../../../models/applicationState";
 
 export enum AnnotationTag{
     EMPTY = "empty",
