@@ -57,6 +57,10 @@
         position: relative;
         overflow: hidden;
         background-color: $darker-5;
+
+        &-metadata {
+          width: 100%;
+        }
       }
     }
 

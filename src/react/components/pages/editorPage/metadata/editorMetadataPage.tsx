@@ -76,8 +76,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
 
     private loadingProjectAssets: boolean = false;
     private canvas: RefObject<Preview> = React.createRef();
-    private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
-    private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
     public async componentDidMount() {
         const projectId = this.props.match.params["projectId"];
@@ -87,6 +85,8 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
             const project = this.props.recentProjects.find((project) => project.id === projectId);
             await this.props.actions.loadProject(project);
         }
+
+        window.addEventListener("resize", this.onWindowResize);
     }
 
     public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
@@ -122,24 +122,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
 
         return (
             <div className="editor-page">
-                {[...Array(10).keys()].map((index) => {
-                    return (<KeyboardBinding
-                        displayName={strings.editorPage.tags.hotKey.apply}
-                        key={index}
-                        keyEventType={KeyEventType.KeyDown}
-                        accelerators={[`${index}`]}
-                        icon={"fa-tag"}
-                        handler={this.handleTagHotKey} />);
-                })}
-                {[...Array(10).keys()].map((index) => {
-                    return (<KeyboardBinding
-                        displayName={strings.editorPage.tags.hotKey.lock}
-                        key={index}
-                        keyEventType={KeyEventType.KeyDown}
-                        accelerators={[`CmdOrCtrl+${index}`]}
-                        icon={"fa-lock"}
-                        handler={this.handleCtrlTagHotKey} />);
-                })}
                 <SplitPane split="vertical"
                     defaultSize={this.state.thumbnailSize.width}
                     minSize={100}
@@ -157,113 +139,25 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
                             thumbnailSize={this.state.thumbnailSize}
                         />
                     </div>
-                    <div className="editor-page-content" onClick={this.onPageClick}>
+                    <div className="editor-page-content">
                         <div className="editor-page-content-main">
-                            <div className="editor-page-content-main-body">
+                            <div className="editor-page-content-main-body" style={{ overflowY: "scroll" }}>
                                 {selectedAsset &&
-                                    <Preview
-                                        ref={this.canvas}
-                                        selectedAsset={this.state.selectedAsset}
-                                        onAssetMetadataChanged={this.onAssetMetadataChanged}
-                                        onCanvasRendered={this.onCanvasRendered}
-                                        editorMode={this.state.editorMode}
-                                        selectionMode={SelectionMode.NONE}
-                                        project={this.props.project}
-                                        lockedTags={this.state.lockedTags}>
-                                        <AssetPreview
-                                            additionalSettings={this.state.additionalSettings}
-                                            autoPlay={true}
-                                            controlsEnabled={this.state.isValid}
-                                            onBeforeAssetChanged={this.onBeforeAssetSelected}
-                                            onChildAssetSelected={this.onChildAssetSelected}
-                                            asset={this.state.selectedAsset.asset}
-                                            childAssets={this.state.childAssets} />
-                                    </Preview>
-                                }
+                                    <Form className="editor-page-content-main-body-metadata" schema={formSchema} uiSchema={uiSchema} onSubmit={() => alert("submitted")}/>}
                             </div>
                         </div>
-                        <div className="editor-page-right-sidebar-json">
-                            <Form schema={formSchema} uiSchema={uiSchema} />
-                        </div>
-                        <Confirm title={strings.editorPage.tags.rename.title}
-                            ref={this.renameTagConfirm}
-                            message={strings.editorPage.tags.rename.confirmation}
-                            confirmButtonColor="danger"
-                            onConfirm={this.onTagRenamed} />
-                        <Confirm title={strings.editorPage.tags.delete.title}
-                            ref={this.deleteTagConfirm}
-                            message={strings.editorPage.tags.delete.confirmation}
-                            confirmButtonColor="danger"
-                            onConfirm={this.onTagDeleted} />
                     </div>
                 </SplitPane>
-                <Alert show={this.state.showInvalidRegionWarning}
-                    title={strings.editorPage.messages.enforceTaggedRegions.title}
-                    // tslint:disable-next-line:max-line-length
-                    message={strings.editorPage.messages.enforceTaggedRegions.description}
-                    closeButtonColor="info"
-                    onClose={() => this.setState({ showInvalidRegionWarning: false })} />
             </div>
         );
     }
 
-    private onPageClick = () => {
-        this.setState({
-            selectedRegions: [],
-        });
-    }
-
-    private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
-        let key = parseInt(event.key, 10);
-        if (isNaN(key)) {
-            try {
-                key = parseInt(event.key.split("+")[1], 10);
-            } catch (e) {
-                return;
-            }
-        }
-        let index: number;
-        const tags = this.props.project.tags;
-        if (key === 0 && tags.length >= 10) {
-            index = 9;
-        } else if (key < 10) {
-            index = key - 1;
-        }
-        if (index < tags.length) {
-            return tags[index];
-        }
-        return null;
-    }
-
     /**
-     * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
-     * @param event KeyDown event
+     * Resizes and re-renders the canvas when the application window size changes
      */
-    private handleTagHotKey = (event: KeyboardEvent): void => {
-        const tag = this.getTagFromKeyboardEvent(event);
-        if (tag) {
-            //this.onTagClicked(tag);
-        }
-    }
+    private onWindowResize = async () => {
 
-    private handleCtrlTagHotKey = (event: KeyboardEvent): void => {
-        const tag = this.getTagFromKeyboardEvent(event);
-        if (tag) {
-            //this.onCtrlTagClicked(tag);
-        }
-    }
-
-    /**
-     * Removes tag from assets and projects and saves files
-     * @param tagName Name of tag to be deleted
-     */
-    private onTagDeleted = async (tagName: string): Promise<void> => {
-        const assetUpdates = await this.props.actions.deleteProjectTag(this.props.project, tagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
-
-        if (selectedAsset) {
-            this.setState({ selectedAsset });
-        }
+        console.log(this);
     }
 
     /**
@@ -289,29 +183,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         };
 
         this.props.applicationActions.saveAppSettings(appSettings);
-    }
-
-    /**
-     * Open confirm dialog for tag renaming
-     */
-    private confirmTagRenamed = (tagName: string, newTagName: string): void => {
-        this.renameTagConfirm.current.open(tagName, newTagName);
-    }
-
-    /**
-     * Renames tag in assets and project, and saves files
-     * @param tagName Name of tag to be renamed
-     * @param newTagName New name of tag
-     */
-    private onTagRenamed = async (tagName: string, newTagName: string): Promise<void> => {
-        const assetUpdates = await this.props.actions.updateProjectTag(this.props.project, tagName, newTagName);
-        const selectedAsset = assetUpdates.find((am) => am.asset.id === this.state.selectedAsset.asset.id);
-
-        if (selectedAsset) {
-            if (selectedAsset) {
-                this.setState({ selectedAsset });
-            }
-        }
     }
 
     /**
@@ -399,15 +270,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
         }
 
         this.setState({ childAssets, assets, isValid: true });
-    }
-
-    /**
-     * Raised when the asset binary has been painted onto the canvas tools rendering canvas
-     */
-    private onCanvasRendered = async (canvas: HTMLCanvasElement) => {
-        // When active learning auto-detect is enabled
-        // run predictions when asset changes
-        
     }
 
     /**

@@ -293,21 +293,6 @@ export default class EditorSegmentPage extends React.Component<
                         />
                     </div>
                 </SplitPane>
-                <Alert
-                    show={this.state.showInvalidRegionWarning}
-                    title={
-                        strings.editorPage.messages.enforceTaggedRegions.title
-                    }
-                    // tslint:disable-next-line:max-line-length
-                    message={
-                        strings.editorPage.messages.enforceTaggedRegions
-                            .description
-                    }
-                    closeButtonColor="info"
-                    onClose={() =>
-                        this.setState({ showInvalidRegionWarning: false })
-                    }
-                />
             </div>
         );
     }

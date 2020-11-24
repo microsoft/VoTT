@@ -1,25 +1,303 @@
 {
-    "title": "Image annotation",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
     "type": "object",
-    "required": ["title"],
+    "title": "이미지 메타 정보",
+    "description": "MOAD 과제에서 활용되는 이미지 메타 정보",
+    "default": {},
+    "examples": [
+        {
+            "id": 3231444,
+            "file_name": "000000037777.jpg",
+            "frame_number": 10,
+            "date_captured": "2020-11-14 20:55:31",
+            "source_video_id": 241234,
+            "included_classes_list": [
+                "sea",
+                "sky",
+                "ship"
+            ],
+            "labeling_object_list": [
+                "ship"
+            ],
+            "port": "Busan",
+            "latitude": "35.111",
+            "longitude": "129.057",
+            "season": "fall",
+            "weather": "sunny",
+            "wave_height": 1,
+            "wind_speed": 14,
+            "visible_distance": 2,
+            "width": 3840,
+            "height": 2160,
+            "date_created": "2020-12-14 20:55:31",
+            "date_updated": "2020-12-14 20:55:31",
+            "license": 1
+        }
+    ],
+    "required": [
+        "id",
+        "file_name",
+        "frame_number",
+        "date_captured",
+        "source_video_id",
+        "included_classes_list",
+        "labeling_object_list",
+        "port",
+        "latitude",
+        "longitude",
+        "season",
+        "weather",
+        "wave_height",
+        "wind_speed",
+        "visible_distance",
+        "width",
+        "height",
+        "date_created",
+        "date_updated",
+        "license"
+    ],
     "properties": {
-        "id" : {"type": "number", "title": "ID"},
-        "file name": {"type": "string", "title": "File name"},
-        "frame_number": {"type": "number", "title": "Frame number"},
-        "date_captured": {"type": "string", "title": "Date captured"},
-        "source_video_id": {"type": "number", "title": "Source video ID"},
-        "port": {"type": "string", "title": "Port"},
-        "latitude": {"type": "string", "title": "Latitude"},
-        "longitude": {"type": "string", "title": "Longitude"},
-        "season": {"type": "string", "title": "Season"},
-        "weather": {"type": "string", "title": "Weather"},
-        "wave_height": {"type": "number", "title": "Wave height"},
-        "wind_speed": {"type": "number", "title": "Wind speed"},
-        "visible_distance": {"type": "number", "title": "Visible distance"},
-        "width": {"type": "number", "title": "Width"},
-        "height": {"type": "number", "title": "Height"},
-        "date_created": {"type": "string", "title": "Date created"},
-        "date_updated": {"type": "string", "title": "Date updated"},
-        "license": {"type": "number", "title": "License"}
-    }
+        "id": {
+            "$id": "#/properties/id",
+            "type": "integer",
+            "title": "이미지 고유 식별 번호",
+            "description": "",
+            "default": 0,
+            "examples": [
+                3231444
+            ]
+        },
+        "file_name": {
+            "$id": "#/properties/file_name",
+            "type": "string",
+            "title": "이미지 파일 이름",
+            "description": "",
+            "default": "",
+            "examples": [
+                "000000037777.jpg"
+            ]
+        },
+        "frame_number": {
+            "$id": "#/properties/frame_number",
+            "type": "integer",
+            "title": "이미지의 영상 내 프레임 번호",
+            "description": "",
+            "default": 0,
+            "examples": [
+                10
+            ]
+        },
+        "date_captured": {
+            "$id": "#/properties/date_captured",
+            "type": "string",
+            "title": "이미지 촬영 시간",
+            "description": "",
+            "default": "",
+            "examples": [
+                "2020-11-14 20:55:31"
+            ]
+        },
+        "source_video_id": {
+            "$id": "#/properties/source_video_id",
+            "type": "integer",
+            "title": "소스 영상 아이디",
+            "description": "",
+            "default": 0,
+            "examples": [
+                241234
+            ]
+        },
+        "included_classes_list": {
+            "$id": "#/properties/included_classes_list",
+            "type": "array",
+            "title": "이미지 내 포함된 객체 클래스 목록",
+            "description": "",
+            "default": [],
+            "examples": [
+                [
+                    "sea",
+                    "sky"
+                ]
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/included_classes_list/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/included_classes_list/items/anyOf/0",
+                        "type": "string",
+                        "title": "객체 클래스",
+                        "description": "",
+                        "default": "",
+                        "examples": [
+                            "sea",
+                            "sky"
+                        ]
+                    }
+                ]
+            }
+        },
+        "labeling_object_list": {
+            "$id": "#/properties/labeling_object_list",
+            "type": "array",
+            "title": "이미지 내 포함된 라벨링 객체 정보",
+            "description": "",
+            "default": [],
+            "examples": [
+                [
+                    "ship"
+                ]
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/labeling_object_list/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/labeling_object_list/items/anyOf/0",
+                        "type": "string",
+                        "title": "객체 정보",
+                        "description": "",
+                        "default": "",
+                        "examples": [
+                            "ship"
+                        ]
+                    }
+                ]
+            }
+        },
+        "port": {
+            "$id": "#/properties/port",
+            "type": "string",
+            "title": "촬영 해역 항만",
+            "description": "",
+            "default": "",
+            "examples": [
+                "Busan"
+            ]
+        },
+        "latitude": {
+            "$id": "#/properties/latitude",
+            "type": "string",
+            "title": "자선 위도",
+            "description": "",
+            "default": "",
+            "examples": [
+                "35.111"
+            ]
+        },
+        "longitude": {
+            "$id": "#/properties/longitude",
+            "type": "string",
+            "title": "자선 경도",
+            "description": "",
+            "default": "",
+            "examples": [
+                "129.057"
+            ]
+        },
+        "season": {
+            "$id": "#/properties/season",
+            "type": "string",
+            "enum": ["spring", "summer", "fall", "winter"],
+            "title": "이미지가 촬영된 계절",
+            "description": "",
+            "default": "",
+            "examples": [
+                "fall"
+            ]
+        },
+        "weather": {
+            "$id": "#/properties/weather",
+            "type": "string",
+            "enum": ["sunny", "cloudy", "raining", "snowing", "windy", "misty" ],
+            "title": "이미지 촬영 날씨",
+            "description": "",
+            "default": "",
+            "examples": [
+                "sunny"
+            ]
+        },
+        "wave_height": {
+            "$id": "#/properties/wave_height",
+            "type": "integer",
+            "title": "영상 촬영 시 파고(m)",
+            "description": "",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "wind_speed": {
+            "$id": "#/properties/wind_speed",
+            "type": "integer",
+            "title": "영상 촬영 시 풍속(m/s)",
+            "description": "",
+            "default": 0,
+            "examples": [
+                14
+            ]
+        },
+        "visible_distance": {
+            "$id": "#/properties/visible_distance",
+            "type": "integer",
+            "title": "영상 내 가시거리(km)",
+            "description": "",
+            "default": 0,
+            "examples": [
+                2
+            ]
+        },
+        "width": {
+            "$id": "#/properties/width",
+            "type": "integer",
+            "title": "영상 넓이",
+            "description": "",
+            "default": 0,
+            "examples": [
+                3840
+            ]
+        },
+        "height": {
+            "$id": "#/properties/height",
+            "type": "integer",
+            "title": "영상 높이",
+            "description": "",
+            "default": 0,
+            "examples": [
+                2160
+            ]
+        },
+        "date_created": {
+            "$id": "#/properties/date_created",
+            "type": "string",
+            "title": "메타 파일 생성 시간",
+            "description": "",
+            "default": "",
+            "examples": [
+                "2020-12-14 20:55:31"
+            ]
+        },
+        "date_updated": {
+            "$id": "#/properties/date_updated",
+            "type": "string",
+            "title": "메타 파일 수정 시간",
+            "description": "",
+            "default": "",
+            "examples": [
+                "2020-12-14 20:55:31"
+            ]
+        },
+        "license": {
+            "$id": "#/properties/license",
+            "type": "integer",
+            "title": "라이선스 아이디",
+            "description": "",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        }
+    },
+    "additionalProperties": true
 }
