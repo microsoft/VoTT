@@ -10,11 +10,11 @@ import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetP
 import Confirm from "../../../common/confirm/confirm";
 import { createContentBoundingBox } from "../../../../../common/layout";
 import { SegmentSelectionMode } from "../editorPage";
-import { Annotation, AnnotationTag, number2SPId, Superpixel } from "./superpixel";
-import { SegmentAnnotator } from "./segmentAnnotator";
+import { Annotation, AnnotationTag } from "./superpixelEditor";
 import data from "./test.jpg.json";
 import { ITag } from "vott-react";
 import { strings } from "../../../../../common/strings";
+import { SuperpixelEditor } from "./superpixelEditor";
 
 export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     selectedAsset: IAssetMetadata;
@@ -30,6 +30,7 @@ export interface ISegmentCanvasState {
     currentAsset: IAssetMetadata;
     contentSource: ContentSource;
     enabled: boolean;
+    annotatedData: Annotation[];
 }
 
 export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, ISegmentCanvasState> {
@@ -44,12 +45,12 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         currentAsset: this.props.selectedAsset,
         contentSource: null,
         enabled: true,
+        annotatedData: null,
     };
-
-    public editor: SegmentAnnotator;
 
     public defaultColor = "black";
 
+    private currentAnnotating = new Annotation( AnnotationTag.EMPTY, this.defaultColor);
     private previousAnnotating = new Annotation( AnnotationTag.EMPTY, this.defaultColor);
 
     private canvasZone: React.RefObject<HTMLDivElement> = React.createRef();
@@ -57,17 +58,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public componentDidMount = () => {
         window.addEventListener("resize", this.onWindowResize);
-        this.editor = new SegmentAnnotator({
-            keyId: "mainCanvas",
-            selectedAsset: this.props.selectedAsset,
-            project: this.props.project,
-            annotatedData: this.decomposeSegment(this.props.selectedAsset.segments),
-            segmentationData: data,
-            width: 1024,
-            height: 768,
-            defaultcolor: this.defaultColor,
-            onSegmentUpdated: this.onSegmentUpdated
-        });
+        this.setState({... this.state, annotatedData: this.decomposeSegment(this.state.currentAsset.segments)});
     }
 
     public componentWillUnmount() {
@@ -77,7 +68,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     public componentDidUpdate = async (prevProps: Readonly<ISegmentCanvasProps>, prevState: Readonly<ISegmentCanvasState>) => {
         // Handles asset changing
         if (this.props.selectedAsset !== prevProps.selectedAsset) {
-            this.setState({ currentAsset: this.props.selectedAsset });
+            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments) });
         }
 
         // Handle selection mode changes
@@ -108,6 +99,8 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 this.setSelectionMode(SegmentSelectionMode.NONE);
             }
         }
+
+        //this.setState({... this.state, annotatedData: this.decomposeSegment(this.state.currentAsset.segments)});
     }
 
     ////////////////////////////////////////////////////////////////
@@ -139,8 +132,8 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     public updateAnnotating(tag: string, color: string){
         const svg = document.getElementById("mainCanvas");
         if(svg){
-            svg.setAttribute("name", tag);
-            svg.setAttribute("color-profile", color);
+            svg.setAttribute("color-profile", tag);
+            svg.setAttribute("name", color);
             if(tag !== AnnotationTag.EMPTY && tag !== AnnotationTag.DEANNOTATING){
                 this.previousAnnotating = new Annotation(tag, color);
             }
@@ -163,9 +156,6 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public render = () => {
         const className = this.state.enabled ? "canvas-enabled" : "canvas-disabled";
-        if (this.editor){ // force to get up-to-date data
-            this.editor.updateByNewAsset(data, this.decomposeSegment(this.state.currentAsset.segments));
-        }
         return (
             <Fragment>
                 <Confirm title={strings.editorPage.canvas.removeAllSegments.title}
@@ -177,7 +167,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
                     <div id="selection-zone">
         <div id="editor-zone" className="full-size">
-            { (this.editor && this.state.enabled) ? this.editor.render() : <></>}
+            <SuperpixelEditor id={"mainCanvas"} canvasWidth={1024} canvasHeight={768} segmentationData={data} annotatedData={this.decomposeSegment(this.state.currentAsset.segments)} defaultcolor={this.defaultColor} annotating={this.currentAnnotating} onSegmentUpdated={this.onSegmentUpdated} />
         </div>
                     </div>
                 </div>
@@ -222,6 +212,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     private refreshCanvasToolsSegments = () => {
+        //forceEditorUpdate();
         /*
         // the function currently not used
         if (!this.state.currentAsset.segments || this.state.currentAsset.segments.length === 0) {
@@ -229,6 +220,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         }
         //this.removeAllSegments(false);
         */
+       this.setState({... this.state, annotatedData: this.decomposeSegment(this.state.currentAsset.segments)});
     }
 
     private getInitialSegment = (id: number, tag: string, superpixelId: number, area: number, bbox: IBoundingBox): ISegment => {

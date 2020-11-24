@@ -32,7 +32,6 @@ import Confirm from "../../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../../services/activeLearningService";
 import { toast } from "react-toastify";
 import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps, SegmentSelectionMode } from '../editorPage';
-import { AnnotationTag } from "../segment/superpixel";
 
 /**
  * Properties for Editor Page
