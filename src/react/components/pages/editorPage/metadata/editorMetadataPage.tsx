@@ -85,8 +85,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
             const project = this.props.recentProjects.find((project) => project.id === projectId);
             await this.props.actions.loadProject(project);
         }
-
-        window.addEventListener("resize", this.onWindowResize);
     }
 
     public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
@@ -150,14 +148,6 @@ export default class EditorMetadataPage extends React.Component<IEditorPageProps
                 </SplitPane>
             </div>
         );
-    }
-
-    /**
-     * Resizes and re-renders the canvas when the application window size changes
-     */
-    private onWindowResize = async () => {
-
-        console.log(this);
     }
 
     /**

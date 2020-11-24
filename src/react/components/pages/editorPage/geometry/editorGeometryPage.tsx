@@ -376,7 +376,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
      */
     private onAssetMetadataChanged = async (assetMetadata: IAssetMetadata): Promise<void> => {
         // If the asset contains any regions without tags, don't proceed.
-        const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tag ? region.tag.length === 0 : undefined);
+        const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tag === undefined);
 
         if (regionsWithoutTags.length > 0) {
             this.setState({ isValid: false });
