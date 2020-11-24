@@ -1,0 +1,445 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "Pixel segmentation annotation for MOAD project",
+    "description": "세그먼테이션 기반 라벨링 데이터 형식",
+    "default": {},
+    "required": [
+        "segment_info",
+        "segmentation_methods",
+        "categories"
+    ],
+    "properties": {
+        "segment_info": {
+            "$id": "#/properties/segment_info",
+            "type": "array",
+            "title": "세그먼트 라벨링 정보 목록",
+            "description": "",
+            "default": [],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/segment_info/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/segment_info/items/anyOf/0",
+                        "type": "object",
+                        "title": "세그먼트 라벨링 정보",
+                        "description": "",
+                        "default": {},
+                        "examples": [
+                            {
+                                "id": 4242344,
+                                "image_id": 3231444,
+                                "category_id": 3,
+                                "segmentation_method_id": 1,
+                                "superpixel": [
+                                    0,
+                                    15,
+                                    24,
+                                    30,
+                                    56
+                                ],
+                                "area": 1340,
+                                "bbox": [
+                                    0,
+                                    0,
+                                    30,
+                                    50
+                                ],
+                                "iscrowd": 0,
+                                "risk": "safe"
+                            }
+                        ],
+                        "required": [
+                            "id",
+                            "image_id",
+                            "category_id",
+                            "segmentation_method_id",
+                            "superpixel",
+                            "area",
+                            "bbox",
+                            "iscrowd",
+                            "risk"
+                        ],
+                        "properties": {
+                            "id": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/id",
+                                "type": "integer",
+                                "title": "고유 식별 번호",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    4242344
+                                ]
+                            },
+                            "image_id": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/image_id",
+                                "type": "integer",
+                                "title": "라벨링이 수행 된 소스 이미지 아이디",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    3231444
+                                ]
+                            },
+                            "category_id": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/category_id",
+                                "type": "integer",
+                                "title": "라벨링 값",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    3
+                                ]
+                            },
+                            "segmentation_method_id": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/segmentation_method_id",
+                                "type": "integer",
+                                "title": "사용한 세그멘테이션 알고리즘 정보",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    1
+                                ]
+                            },
+                            "superpixel": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/superpixel",
+                                "type": "array",
+                                "title": "해당 객체에 해당하는 superpixel index 목록",
+                                "description": "",
+                                "default": [],
+                                "examples": [
+                                    [
+                                        0,
+                                        15
+                                    ]
+                                ],
+                                "additionalItems": true,
+                                "items": {
+                                    "$id": "#/properties/segment_info/items/anyOf/0/properties/superpixel/items",
+                                    "anyOf": [
+                                        {
+                                            "$id": "#/properties/segment_info/items/anyOf/0/properties/superpixel/items/anyOf/0",
+                                            "type": "integer",
+                                            "title": "The first anyOf schema",
+                                            "description": "",
+                                            "default": 0
+                                        }
+                                    ]
+                                }
+                            },
+                            "area": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/area",
+                                "type": "integer",
+                                "title": "면적",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    1340
+                                ]
+                            },
+                            "bbox": {
+                                "$id": "#/properties/annotations/items/anyOf/0/properties/bbox",
+                                "type": "array",
+                                "title": "바운딩 박스",
+                                "description": "x and y coord of starting point, then width and height",
+                                "default": [],
+                                "examples": [
+                                    [
+                                      38.65,
+                                      28.67,
+                                      100,
+                                      100
+                                    ]
+                                ],
+                                "additionalItems": true
+                            },
+                            "iscrowd": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/iscrowd",
+                                "type": "integer",
+                                "enum": [0, 1],
+                                "title": "객체 중복 - 뭉쳐짐 여부",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    0
+                                ]
+                            },
+                            "risk": {
+                                "$id": "#/properties/segment_info/items/anyOf/0/properties/risk",
+                                "type": "string",
+                                "enum": ["danger", "caution", "safe"],
+                                "title": "위험 수준",
+                                "description": "",
+                                "default": "safe",
+                                "examples": [
+                                    "safe"
+                                ]
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
+            }
+        },
+        "segmentation_methods": {
+            "$id": "#/properties/segmentation_methods",
+            "type": "array",
+            "title": "세그멘테이션 알고리즘 목록",
+            "description": "",
+            "default": [],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/segmentation_methods/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/segmentation_methods/items/anyOf/0",
+                        "type": "object",
+                        "title": "세그멘테이션 알고리즘",
+                        "description": "",
+                        "default": {},
+                        "examples": [
+                            {
+                                "id": 1,
+                                "preprocessing": {
+                                    "downsampling": 2
+                                },
+                                "name": "SLIC",
+                                "implementation": "scikit-image v0.17.1",
+                                "parameters": {
+                                    "segment_number": 3000,
+                                    "compactness": 20,
+                                    "enforce_connectivity": true,
+                                    "sigma": 3
+                                }
+                            }
+                        ],
+                        "required": [
+                            "id",
+                            "preprocessing",
+                            "name",
+                            "implementation",
+                            "parameters"
+                        ],
+                        "properties": {
+                            "id": {
+                                "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/id",
+                                "type": "integer",
+                                "title": "고유 식별 번호",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    1
+                                ]
+                            },
+                            "preprocessing": {
+                                "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/preprocessing",
+                                "type": "object",
+                                "title": "전처리",
+                                "description": "",
+                                "default": {},
+                                "examples": [
+                                    {
+                                        "downsampling": 2
+                                    }
+                                ],
+                                "required": [],
+                                "properties": {
+                                    "downsampling": {
+                                        "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/preprocessing/properties/downsampling",
+                                        "type": "integer",
+                                        "title": "The downsampling schema",
+                                        "description": "",
+                                        "default": 0,
+                                        "examples": [
+                                            2
+                                        ]
+                                    }
+                                },
+                                "additionalProperties": true
+                            },
+                            "name": {
+                                "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/name",
+                                "type": "string",
+                                "title": "세그멘테이션 기법 이름",
+                                "description": "",
+                                "default": "",
+                                "examples": [
+                                    "SLIC"
+                                ]
+                            },
+                            "implementation": {
+                                "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/implementation",
+                                "type": "string",
+                                "title": "세그멘테이션에 사용된 플랫폼",
+                                "description": "",
+                                "default": "",
+                                "examples": [
+                                    "scikit-image v0.17.1"
+                                ]
+                            },
+                            "parameters": {
+                                "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/parameters",
+                                "type": "object",
+                                "title": "세그멘테이션 파라미터",
+                                "description": "",
+                                "default": {},
+                                "examples": [
+                                    {
+                                        "segment_number": 3000,
+                                        "compactness": 20,
+                                        "enforce_connectivity": true,
+                                        "sigma": 3
+                                    }
+                                ],
+                                "required": [],
+                                "properties": {
+                                    "segment_number": {
+                                        "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/parameters/properties/segment_number",
+                                        "type": "integer",
+                                        "title": "The segment_number schema",
+                                        "description": "",
+                                        "default": 0,
+                                        "examples": [
+                                            3000
+                                        ]
+                                    },
+                                    "compactness": {
+                                        "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/parameters/properties/compactness",
+                                        "type": "integer",
+                                        "title": "The compactness schema",
+                                        "description": "",
+                                        "default": 0,
+                                        "examples": [
+                                            20
+                                        ]
+                                    },
+                                    "enforce_connectivity": {
+                                        "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/parameters/properties/enforce_connectivity",
+                                        "type": "boolean",
+                                        "title": "The enforce_connectivity schema",
+                                        "description": "",
+                                        "default": false,
+                                        "examples": [
+                                            true
+                                        ]
+                                    },
+                                    "sigma": {
+                                        "$id": "#/properties/segmentation_methods/items/anyOf/0/properties/parameters/properties/sigma",
+                                        "type": "integer",
+                                        "title": "The sigma schema",
+                                        "description": "",
+                                        "default": 0,
+                                        "examples": [
+                                            3
+                                        ]
+                                    }
+                                },
+                                "additionalProperties": true
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
+            }
+        },
+        "categories": {
+            "$id": "#/properties/categories",
+            "type": "array",
+            "title": "사용된 객체 정보",
+            "description": "",
+            "default": [],
+            "examples": [
+                [
+                    {
+                        "supercategory": "environment",
+                        "id": 1,
+                        "category": "sky",
+                        "name": "sky"
+                    },
+                    {
+                        "supercategory": "object",
+                        "id": 2,
+                        "category": "vessel",
+                        "name": "fishing"
+                    }
+                ]
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/categories/items",
+                "anyOf": [
+                    {
+                        "$id": "#/properties/categories/items/anyOf/0",
+                        "type": "object",
+                        "title": "객체 정보",
+                        "description": "",
+                        "default": {},
+                        "examples": [
+                            {
+                                "supercategory": "environment",
+                                "id": 1,
+                                "category": "sky",
+                                "name": "sky"
+                            }
+                        ],
+                        "required": [
+                            "supercategory",
+                            "id",
+                            "category",
+                            "name"
+                        ],
+                        "properties": {
+                            "id": {
+                                "$id": "#/properties/categories/items/anyOf/0/properties/id",
+                                "type": "integer",
+                                "title": "고유 식별 번호",
+                                "description": "",
+                                "default": 0,
+                                "examples": [
+                                    1
+                                ]
+                            },
+                            "supercategory": {
+                                "$id": "#/properties/categories/items/anyOf/0/properties/supercategory",
+                                "type": "string",
+                                "title": "대분류",
+                                "enum": ["환경", "객체"],
+                                "description": "",
+                                "default": "",
+                                "examples": [
+                                    "환경"
+                                ]
+                            },
+                            "category": {
+                                "$id": "#/properties/categories/items/anyOf/0/properties/category",
+                                "type": "string",
+                                "title": "중분류",
+                                "enum": ["바다", "수평선", "섬", "하늘", "해안선", "구름", "방파제", "해상 풍력", "부두", "등대", "선박", "부표", "암초", "기타 부유물"],
+                                "description": "",
+                                "default": "",
+                                "examples": [
+                                    "하늘"
+                                ]
+                            },
+                            "name": {
+                                "$id": "#/properties/categories/items/anyOf/0/properties/name",
+                                "type": "string",
+                                "enum": ["바다", "수평선", "섬", "하늘", "해안선", "구름", "방파제", "해상 풍력", "부두", "등대", "액화물선", "건화물선", "여객선", "군함", "어선", "레저선", "예인선", "부선", "작업선", "관공선", "특수작업선", "측방표지", "방위표지", "안전수역표지", "지향등", "등대", "등표", "중요부표지", "암초", "기타 부유물"],
+                                "title": "소분류",
+                                "description": "",
+                                "default": "",
+                                "examples": [
+                                    "하늘"
+                                ]
+                            }
+                        },
+                        "additionalProperties": true
+                    }
+                ]
+            }
+        }
+    },
+    "additionalProperties": true
+}
