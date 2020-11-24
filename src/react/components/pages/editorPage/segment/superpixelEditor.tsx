@@ -69,8 +69,8 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> = ({id, canvasWidth, ca
     const [ segmentation, setSegmentation] = useState(segmentationData);
     const [ annotated, setAnnotated] = useState(annotatedData);
     const canvasRef = useRef<SVGSVGElement>(null);
-    if(annotatedData && !sameMembers(annotatedData, annotated)){
-        setAnnotated(annotatedData);
+    if(segmentationData && segmentationData!==segmentation){
+        setSegmentation(segmentationData);
     }
     useEffect(() => {
         var s = Snap("#" + id);
