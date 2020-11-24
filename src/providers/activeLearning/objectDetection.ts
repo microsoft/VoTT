@@ -53,7 +53,7 @@ export class ObjectDetection {
                 const response = await axios.get(modelFolderPath + "/classes.json");
                 this.jsonClasses = JSON.parse(JSON.stringify(response.data));
             } else {
-                const handler = new ElectronProxyHandler(modelFolderPath);
+                const handler = new ElectronProxyHandler(modelFolderPath, false);
                 this.model = await tf.loadGraphModel(handler);
                 this.jsonClasses = await handler.loadClasses();
             }

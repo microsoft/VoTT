@@ -1,7 +1,8 @@
 import fs from "fs";
-import path from "path";
+import path, { relative } from "path";
 import shortid from "shortid";
 import LocalFileSystem from "./localFileSystem";
+import mockFs from "mock-fs";
 
 jest.mock("electron", () => ({
     dialog: {
@@ -9,12 +10,34 @@ jest.mock("electron", () => ({
     },
 }));
 import { dialog } from "electron";
+import { AssetService } from "../../../services/assetService";
 
 describe("LocalFileSystem Storage Provider", () => {
     let localFileSystem: LocalFileSystem = null;
+    const sourcePath = path.join("path", "to", "my", "source");
 
     beforeEach(() => {
         localFileSystem = new LocalFileSystem(null);
+    });
+
+    beforeAll(() => {
+        mockFs({
+            path: {
+                to: {
+                    my: {
+                        source: {
+                            "file1.jpg": "contents",
+                            "file2.jpg": "contents",
+                            "file3.jpg": "contents",
+                        },
+                    },
+                },
+            },
+        });
+    });
+
+    afterAll(() => {
+        mockFs.restore();
     });
 
     it("writes, reads and deletes a file as text", async () => {
@@ -88,5 +111,36 @@ describe("LocalFileSystem Storage Provider", () => {
 
     it("deleting file that doesn't exist resolves successfully", async () => {
         await expect(localFileSystem.deleteFile("/path/to/fake/file.txt")).resolves.not.toBeNull();
+    });
+
+    it("getAssets uses an absolute path when relative not specified", async () => {
+        AssetService.createAssetFromFilePath = jest.fn(() => []);
+        await localFileSystem.getAssets(sourcePath);
+        const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
+        expect(calls).toHaveLength(3);
+        calls.forEach((call, index) => {
+            const absolutePath = path.join(sourcePath, `file${index + 1}.jpg`);
+            expect(call).toEqual([
+                absolutePath,
+                undefined,
+                absolutePath,
+            ]);
+        });
+    });
+
+    it("getAssets uses a path relative to the source connection when specified", async () => {
+        AssetService.createAssetFromFilePath = jest.fn(() => []);
+        await localFileSystem.getAssets(sourcePath, true);
+        const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
+        expect(calls).toHaveLength(3);
+        calls.forEach((call, index) => {
+            const relativePath = `file${index + 1}.jpg`;
+            const absolutePath = path.join(sourcePath, relativePath);
+            expect(call).toEqual([
+                absolutePath,
+                undefined,
+                relativePath,
+            ]);
+        });
     });
 });

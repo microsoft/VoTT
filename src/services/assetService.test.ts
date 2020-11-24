@@ -9,6 +9,7 @@ import HtmlFileReader from "../common/htmlFileReader";
 import { encodeFileURI } from "../common/utils";
 import _ from "lodash";
 import registerMixins from "../registerMixins";
+import MD5 from "md5.js";
 
 describe("Asset Service", () => {
     describe("Static Methods", () => {
@@ -22,6 +23,22 @@ describe("Asset Service", () => {
             expect(asset.type).toEqual(AssetType.Image);
             expect(asset.path).toEqual(encodeFileURI(path));
             expect(asset.format).toEqual("jpg");
+        });
+
+        it("creates an asset using file path as identifier", () => {
+            const path = "c:/dir1/dir2/asset1.jpg";
+            const asset = AssetService.createAssetFromFilePath(path);
+            const expectedIdenfifier = `file:${path}`;
+            const expectedId = new MD5().update(expectedIdenfifier).digest("hex");
+            expect(asset.id).toEqual(expectedId);
+        });
+
+        it("creates an asset using passed in identifier", () => {
+            const path = "C:\\dir1\\dir2\\asset1.jpg";
+            const identifier = "asset1.jpg";
+            const asset = AssetService.createAssetFromFilePath(path, undefined, identifier);
+            const expectedId = new MD5().update(identifier).digest("hex");
+            expect(asset.id).toEqual(expectedId);
         });
 
         it("creates an asset from an encoded file", () => {
