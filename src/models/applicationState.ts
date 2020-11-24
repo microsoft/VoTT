@@ -99,6 +99,7 @@ export interface IAppSettings {
  * @member description - User defined description
  * @member tags - User defined list of tags
  * @member sourceConnection - Full source connection details
+ * @member metadataConnection - Full source connection details
  * @member targetConnection - Full target connection details
  * @member exportFormat - Full export format definition
  * @member assets - Map of assets within a project
@@ -112,6 +113,7 @@ export interface IProject {
     description?: string;
     tags: ITag[];
     sourceConnection: IConnection;
+    metadataConnection: IConnection;
     targetConnection: IConnection;
     exportFormat: IExportFormat;
     videoSettings: IProjectVideoSettings;

@@ -30,6 +30,7 @@ describe("PascalVOC Json Export Provider", () => {
         "asset-3": MockFactory.createTestAsset("3", AssetState.Visited),
     };
     baseTestProject.sourceConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
+    baseTestProject.metadataConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
     baseTestProject.targetConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
 
     const tagLengthInPbtxt = 31;

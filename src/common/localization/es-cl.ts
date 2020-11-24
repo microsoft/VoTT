@@ -90,6 +90,10 @@ export const spanish: IAppStrings = {
             title: "Conexión de Origen",
             description: "De donde se gargan sus activos",
         },
+        metadataConnection: {
+            title: "Metadata Connection",
+            description: "Where to load metadata of assets from",
+        },
         targetConnection: {
             title: "Conexión de Destino",
             description: "Donde se guarda su proyecto y sus datos exportados",

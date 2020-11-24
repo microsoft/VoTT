@@ -42,6 +42,7 @@ export class MoadJsonExportProvider extends ExportProvider<IMoadJsonExportProvid
 
         // We don't need these fields in the export JSON
         delete exportObject.sourceConnection;
+        delete exportObject.metadataConnection;
         delete exportObject.targetConnection;
         delete exportObject.exportFormat;
 

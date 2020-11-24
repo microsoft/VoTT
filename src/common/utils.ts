@@ -80,12 +80,15 @@ export function encryptProject(project: IProject, securityToken: ISecurityToken)
     const encrypted: IProject = {
         ...project,
         sourceConnection: { ...project.sourceConnection },
+        metadataConnection: { ...project.metadataConnection },
         targetConnection: { ...project.targetConnection },
         exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
     };
 
     encrypted.sourceConnection.providerOptions =
         encryptProviderOptions(project.sourceConnection.providerOptions, securityToken.key);
+    encrypted.metadataConnection.providerOptions =
+        encryptProviderOptions(project.metadataConnection.providerOptions, securityToken.key);
     encrypted.targetConnection.providerOptions =
         encryptProviderOptions(project.targetConnection.providerOptions, securityToken.key);
 
@@ -106,12 +109,15 @@ export function decryptProject(project: IProject, securityToken: ISecurityToken)
     const decrypted: IProject = {
         ...project,
         sourceConnection: { ...project.sourceConnection },
+        metadataConnection: { ...project.metadataConnection },
         targetConnection: { ...project.targetConnection },
         exportFormat: project.exportFormat ? { ...project.exportFormat } : null,
     };
 
     decrypted.sourceConnection.providerOptions =
         decryptProviderOptions(decrypted.sourceConnection.providerOptions, securityToken.key);
+    decrypted.metadataConnection.providerOptions =
+        decryptProviderOptions(decrypted.metadataConnection.providerOptions, securityToken.key);
     decrypted.targetConnection.providerOptions =
         decryptProviderOptions(decrypted.targetConnection.providerOptions, securityToken.key);
 

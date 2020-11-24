@@ -58,10 +58,14 @@ describe("Project Service", () => {
         const encryptedProject: IProject = {
             ...testProject,
             sourceConnection: { ...testProject.sourceConnection },
+            metadataConnection: { ...testProject.metadataConnection },
             targetConnection: { ...testProject.targetConnection },
             exportFormat: { ...testProject.exportFormat },
         };
         encryptedProject.sourceConnection.providerOptions = {
+            encrypted: expect.any(String),
+        };
+        encryptedProject.metadataConnection.providerOptions = {
             encrypted: expect.any(String),
         };
         encryptedProject.targetConnection.providerOptions = {

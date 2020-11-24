@@ -91,6 +91,10 @@ export const chinese: IAppStrings = {
             title: "源连接", // Source Connection
             description: "从何处加载素材", // Where to load assets from
         },
+        metadataConnection: {
+            title: "Metadata Connection",
+            description: "Where to load metadata of assets from",
+        },
         targetConnection: {
             title: "目标连接", // Target Connection
             description: "在哪里保存项目和导出数据", // Where to save the project and exported data

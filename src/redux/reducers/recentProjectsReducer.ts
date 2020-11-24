@@ -33,6 +33,9 @@ export const reducer = (state: IProject[] = [], action: AnyAction): IProject[] =
                 if (project.sourceConnection.id === action.payload.id) {
                     updatedProject.sourceConnection = { ...action.payload };
                 }
+                if (project.metadataConnection.id === action.payload.id) {
+                    updatedProject.metadataConnection = { ...action.payload };
+                }
                 if (project.targetConnection.id === action.payload.id) {
                     updatedProject.targetConnection = { ...action.payload };
                 }

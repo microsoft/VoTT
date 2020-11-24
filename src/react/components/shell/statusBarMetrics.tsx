@@ -29,6 +29,10 @@ export class StatusBarMetrics extends React.Component<IStatusBarMetricsProps> {
                     <i className="fas fa-upload"></i>
                     <span className="metric-source-connection-name">{project.sourceConnection.name}</span>
                 </li>
+                <li title={strings.projectSettings.metadataConnection.title}>
+                    <i className="fas fa-upload"></i>
+                    <span className="metric-metadata-connection-name">{project.metadataConnection.name}</span>
+                </li>
                 <li title={strings.projectSettings.targetConnection.title}>
                     <i className="fas fa-download"></i>
                     <span className="metric-target-connection-name">{project.targetConnection.name}</span>

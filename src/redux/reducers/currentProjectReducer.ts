@@ -79,6 +79,9 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
                 sourceConnection: state.sourceConnection.id === action.payload.id
                     ? { ...action.payload }
                     : state.sourceConnection,
+                metadataConnection: state.metadataConnection.id === action.payload.id
+                    ? { ...action.payload }
+                    : state.metadataConnection,
                 targetConnection: state.targetConnection.id === action.payload.id
                     ? { ...action.payload }
                     : state.targetConnection,

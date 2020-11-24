@@ -16,6 +16,11 @@
             "description": "${strings.projectSettings.sourceConnection.description}",
             "type": "object"
         },
+        "metadataConnection": {
+            "title": "${strings.projectSettings.metadataConnection.title}",
+            "description": "${strings.projectSettings.metadataConnection.description}",
+            "type": "object"
+        },
         "targetConnection": {
             "title": "${strings.projectSettings.targetConnection.title}",
             "description": "${strings.projectSettings.targetConnection.description}",
@@ -49,6 +54,7 @@
     "required": [
         "name",
         "sourceConnection",
+        "metadataConnection",
         "targetConnection",
         "videoSettings"
     ]

@@ -91,6 +91,10 @@ export const japanese: IAppStrings = {
             title: "ソース接続", // Source Connection,
             description: "アセットのロード元", // Where to load assets fro"
         },
+        metadataConnection: {
+            title: "Metadata Connection",
+            description: "Where to load metadata of assets from",
+        },
         targetConnection: {
             title: "ターゲット接続", // Target Connection,
             description: "プロジェクトとエクスポートされたデータの保存場所",  // Where to save the project and exported dat"

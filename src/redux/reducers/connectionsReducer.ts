@@ -35,9 +35,11 @@ export const reducer = (state: IConnection[] = [], action: AnyAction): IConnecti
 
             return [
                 { ...action.payload.sourceConnection },
+                { ...action.payload.metadataConnection },
                 { ...action.payload.targetConnection },
                 ...state.filter((connection) => {
                     return connection.id !== action.payload.sourceConnection.id &&
+                        connection.id !== action.payload.metadataConnection.id &&
                         connection.id !== action.payload.targetConnection.id;
                 })];
         default:

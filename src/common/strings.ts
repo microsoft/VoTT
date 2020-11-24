@@ -95,6 +95,10 @@ export interface IAppStrings {
             title: string;
             description: string;
         },
+        metadataConnection: {
+            title: string;
+            description: string;
+        },
         targetConnection: {
             title: string;
             description: string;

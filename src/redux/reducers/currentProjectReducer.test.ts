@@ -63,6 +63,7 @@ describe("Current Project Reducer", () => {
         expect(result).toEqual({
             ...currentProject,
             sourceConnection: updatedConnection,
+            metadataConnection: updatedConnection,
             targetConnection: updatedConnection,
         });
     });

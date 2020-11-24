@@ -8,6 +8,9 @@
     "sourceConnection": {
         "ui:field": "sourceConnection"
     },
+    "metadataConnection": {
+        "ui:field": "metadataConnection"
+    },
     "targetConnection": {
         "ui:field": "targetConnection"
     },

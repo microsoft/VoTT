@@ -154,6 +154,7 @@ describe("Homepage Component", () => {
             description: "Converted V1 Project",
             tags: [],
             sourceConnection: testConnection,
+            metadataConnection: testConnection,
             targetConnection: testConnection,
             exportFormat: null,
             videoSettings: {

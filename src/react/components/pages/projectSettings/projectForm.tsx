@@ -142,6 +142,17 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
                     onChange: props.onChange,
                 };
             }),
+            metadataConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPickerWithRouter, (props) => {
+                const targetConnections = this.props.connections
+                    .filter((connection) => StorageProviderFactory.isRegistered(connection.providerType));
+
+                return {
+                    id: props.idSchema.$id,
+                    value: props.formData,
+                    connections: targetConnections,
+                    onChange: props.onChange,
+                };
+            }),
             targetConnection: CustomField<IConnectionProviderPickerProps>(ConnectionPickerWithRouter, (props) => {
                 const targetConnections = this.props.connections
                     .filter((connection) => StorageProviderFactory.isRegistered(connection.providerType));
@@ -177,6 +188,10 @@ export default class ProjectForm extends React.Component<IProjectFormProps, IPro
     private onFormValidate(project: IProject, errors: FormValidation) {
         if (Object.keys(project.sourceConnection).length === 0) {
             errors.sourceConnection.addError("is a required property");
+        }
+
+        if (Object.keys(project.metadataConnection).length === 0) {
+            errors.targetConnection.addError("is a required property");
         }
 
         if (Object.keys(project.targetConnection).length === 0) {

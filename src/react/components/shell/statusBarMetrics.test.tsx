@@ -27,6 +27,7 @@ describe("StatusBarMetrics Component", () => {
         });
 
         expect(wrapper.find(".metric-source-connection-name").text()).toEqual(testProject.sourceConnection.name);
+        expect(wrapper.find(".metric-source-connection-name").text()).toEqual(testProject.metadataConnection.name);
         expect(wrapper.find(".metric-target-connection-name").text()).toEqual(testProject.targetConnection.name);
         expect(wrapper.find(".metric-visited-asset-count").text()).toEqual("5");
         expect(wrapper.find(".metric-tagged-asset-count").text()).toEqual("3");

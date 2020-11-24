@@ -86,6 +86,7 @@ describe("Project settings page", () => {
                 name: project.name,
                 connections: {
                     source: project.sourceConnection,
+                    metadata: project.metadataConnection,
                     target: project.targetConnection,
                 },
             },
@@ -211,6 +212,7 @@ describe("Project settings page", () => {
             const emptyProject: IProject = {
                 ...{} as any,
                 sourceConnection: {},
+                metadataConnection: {},
                 targetConnection: {},
                 exportFormat: {},
             };

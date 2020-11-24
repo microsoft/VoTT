@@ -91,6 +91,10 @@ export const chinesetw: IAppStrings = {
             title: "來源連線", // Source Connection
             description: "從何處載入資料", // Where to load assets from
         },
+        metadataConnection: {
+            title: "Metadata Connection",
+            description: "Where to load metadata of assets from",
+        },
         targetConnection: {
             title: "目標連線", // Target Connection
             description: "在哪裡保存專案和匯出的資料", // Where to save the project and exported data

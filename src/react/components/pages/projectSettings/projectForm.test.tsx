@@ -58,6 +58,7 @@ describe("Project Form Component", () => {
             const formData = wrapper.state().formData;
             expect(formData.name).toEqual(project.name);
             expect(formData.sourceConnection).toEqual(project.sourceConnection);
+            expect(formData.metadataConnection).toEqual(project.metadataConnection);
             expect(formData.targetConnection).toEqual(project.targetConnection);
             expect(formData.videoSettings).toEqual(project.videoSettings);
             expect(formData.description).toEqual(project.description);
@@ -167,6 +168,7 @@ describe("Project Form Component", () => {
 
             wrapper.find("input#root_name").simulate("change", { target: { value: newName } });
             wrapper.find("select#root_sourceConnection").simulate("change", { target: { value: newConnection.id } });
+            wrapper.find("select#root_metadataConnection").simulate("change", { target: { value: newConnection.id } });
             wrapper.find("select#root_targetConnection").simulate("change", { target: { value: newConnection.id } });
             wrapper.find("textarea#root_description").simulate("change", { target: { value: newDescription } });
             wrapper.find("input.ReactTags__tagInputField").simulate("change", { target: { value: newTagName } });
@@ -179,6 +181,7 @@ describe("Project Form Component", () => {
                 expect.objectContaining({
                     name: newName,
                     sourceConnection: connections[1],
+                    metadataConnection: connections[1],
                     targetConnection: connections[1],
                     description: newDescription,
                     tags: expect.arrayContaining([
@@ -214,6 +217,10 @@ describe("Project Form Component", () => {
             expect(newWrapper.find("select#root_sourceConnection .connection-option")).toHaveLength(
                 newConnections.length,
             );
+            // Source Connection should have all connections
+            expect(newWrapper.find("select#root_metadataConnection .connection-option")).toHaveLength(
+                newConnections.length,
+            );
             // Target Connection should not have asset provider connections
             expect(newWrapper.find("select#root_targetConnection .connection-option")).toHaveLength(
                 newConnections.length - bingConnections.length,
@@ -237,6 +244,7 @@ describe("Project Form Component", () => {
             const defaultVideoSettings: IProjectVideoSettings = { frameExtractionRate: 15 };
             expect(formData.name).toBe(undefined);
             expect(formData.sourceConnection).toEqual({});
+            expect(formData.metadataConnection).toEqual({});
             expect(formData.targetConnection).toEqual({});
             expect(formData.videoSettings).toEqual(defaultVideoSettings);
             expect(formData.description).toBe(undefined);

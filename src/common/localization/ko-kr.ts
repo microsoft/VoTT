@@ -91,6 +91,10 @@ export const korean: IAppStrings = {
             title: "소스 연결", // Source Connection,
             description: "Asset 저장 경로", // Where to load assets from
         },
+        metadataConnection: {
+            title: "메타데이터 연결",
+            description: "Asset 메타데이터 경로",
+        },
         targetConnection: {
             title: "대상 연결", // Target Connection,
             description: "프로젝트 및 내 보낸 데이터를 저장할 위치",  // Where to save the project and exported data

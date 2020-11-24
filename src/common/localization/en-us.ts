@@ -89,6 +89,10 @@ export const english: IAppStrings = {
             title: "Source Connection",
             description: "Where to load assets from",
         },
+        metadataConnection: {
+            title: "Metadata Connection",
+            description: "Where to load metadata of assets from",
+        },
         targetConnection: {
             title: "Target Connection",
             description: "Where to save the project and exported data",

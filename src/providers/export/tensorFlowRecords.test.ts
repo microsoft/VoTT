@@ -31,6 +31,7 @@ describe("TFRecords Json Export Provider", () => {
         "asset-4": MockFactory.createTestAsset("4", AssetState.NotVisited),
     };
     baseTestProject.sourceConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
+    baseTestProject.metadataConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
     baseTestProject.targetConnection = MockFactory.createTestConnection("test", "localFileSystemProxy");
 
     const tagLengthInPbtxt = 31;

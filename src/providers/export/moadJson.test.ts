@@ -107,6 +107,7 @@ describe("MOAD Json Export Provider", () => {
 
             // Ensure provider information not included in export JSON
             expect(exportObject.sourceConnection).toBeUndefined();
+            expect(exportObject.metadataConnection).toBeUndefined();
             expect(exportObject.targetConnection).toBeUndefined();
             expect(exportObject.exportFormat).toBeUndefined();
 
@@ -137,6 +138,7 @@ describe("MOAD Json Export Provider", () => {
 
             // Ensure provider information not included in export JSON
             expect(exportObject.sourceConnection).toBeUndefined();
+            expect(exportObject.metadataConnection).toBeUndefined();
             expect(exportObject.targetConnection).toBeUndefined();
             expect(exportObject.exportFormat).toBeUndefined();
 
@@ -164,6 +166,7 @@ describe("MOAD Json Export Provider", () => {
 
             // Ensure provider information not included in export JSON
             expect(exportObject.sourceConnection).toBeUndefined();
+            expect(exportObject.metadataConnection).toBeUndefined();
             expect(exportObject.targetConnection).toBeUndefined();
             expect(exportObject.exportFormat).toBeUndefined();
 

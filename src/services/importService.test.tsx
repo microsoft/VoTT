@@ -31,6 +31,7 @@ describe("Import Service", () => {
         expect(result.description).toEqual("Converted V1 Project");
         expect(result.tags).toHaveLength(2);
         expect(result.sourceConnection.name).toEqual("TestV1Project Connection");
+        expect(result.metadataConnection.name).toEqual("TestV1Project Connection");
         expect(result.targetConnection.name).toEqual("TestV1Project Connection");
         expect(result.exportFormat).toBeNull();
         expect(result.videoSettings.frameExtractionRate).toBe(5);
@@ -52,6 +53,7 @@ describe("Import Service", () => {
         expect(result.description).toEqual("Converted V1 Project");
         expect(result.tags).toHaveLength(2);
         expect(result.sourceConnection.name).toEqual("TestV1VideoProject Connection");
+        expect(result.metadataConnection.name).toEqual("TestV1VideoProject Connection");
         expect(result.targetConnection.name).toEqual("TestV1VideoProject Connection");
         expect(result.exportFormat).toBeNull();
         expect(result.videoSettings.frameExtractionRate).toBe(1);
