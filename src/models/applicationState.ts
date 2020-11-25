@@ -1,4 +1,3 @@
-import { IMetadata } from "@azure/storage-blob/typings/lib/models";
 import { ExportAssetState } from "../providers/export/exportProvider";
 import { IAssetPreviewSettings } from "../react/components/common/assetPreview/assetPreview";
 
@@ -279,6 +278,23 @@ export interface IAsset {
 }
 
 /**
+ * @name - Metadata
+ * @description - Defines an asset within a VoTT project
+ * @member id - Unique identifier for asset
+ * @member type - Type of asset (Image, Video, etc)
+ * @member name - Generated name for asset
+ * @member path - Relative path to asset within the underlying data source
+ * @member size - Size / dimensions of asset
+ * @member format - The asset format (jpg, png, mp4, etc)
+ */
+export interface IMetadata {
+    id: string;
+    type: MetadataType;
+    name: string;
+    path: string;
+}
+
+/**
  * @name - Asset Metadata
  * @description - Format to store asset metadata for each asset within a project
  * @member asset - References an asset within the project
@@ -389,6 +405,18 @@ export enum AssetType {
     Video = 2,
     VideoFrame = 3,
     TFRecord = 4,
+}
+
+/**
+ * @name - Metadata Type
+ * @description - Defines the type of metadata within a project
+ * @member Segmentation - Specifies a segmentation metadata (json)
+ * @member ImageMetadata - Specifies a per-image metadata (json)
+ */
+export enum MetadataType {
+    Unknown = 0,
+    Segmentation = 1,
+    ImageMetadata = 2,
 }
 
 /**

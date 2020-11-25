@@ -1,12 +1,13 @@
 import Guard from "../../common/guard";
 import {
     IProject, IExportFormat, IAssetMetadata, IAsset,
-    AssetState, AssetType, IExportProviderOptions, EditorContext,
+    AssetState, AssetType, IExportProviderOptions, EditorContext, IMetadata,
 } from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
 import _ from "lodash";
 import { AssetService } from "../../services/assetService";
+import { IMetadataProvider, MetadataProviderFactory } from "../storage/metadataProviderFactory";
 
 /**
  * @name - TF Pascal VOC Records Export Asset State
@@ -58,6 +59,7 @@ export abstract class ExportProvider
     <TOptions extends IExportProviderOptions = IExportProviderOptions> implements IExportProvider {
     private storageProviderInstance: IStorageProvider;
     private assetProviderInstance: IAssetProvider;
+    private metadataProviderInstance: IMetadataProvider;
     private assetService: AssetService;
 
     constructor(public project: IProject, protected options?: TOptions) {
@@ -138,5 +140,21 @@ export abstract class ExportProvider
         );
 
         return this.assetProviderInstance;
+    }
+
+    /**
+     * Gets the asset provider for the current project
+     */
+    protected get metadataProvider(): IMetadataProvider {
+        if (this.metadataProviderInstance) {
+            return this.metadataProviderInstance;
+        }
+
+        this.metadataProviderInstance = MetadataProviderFactory.create(
+            this.project.metadataConnection.providerType,
+            this.project.metadataConnection.providerOptions,
+        );
+
+        return this.metadataProviderInstance;
     }
 }
