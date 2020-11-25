@@ -282,3 +282,15 @@ There are many ways to contribute to VoTT -- please review our [contribution gui
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see
 the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com)
 with any additional questions or comments.
+
+## Marine Object AI Data (MOAD) project specific tunes
+
+Segment-based annotation and per-image metadata editing were major added features in the context of the MOAD project.
+
+#### Development environment
+
+Following dependencies were updated to:
+
+ * node: v14.15.1
+ * react: 16.8.4
+ * node-sass: v4.14.1
