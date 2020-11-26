@@ -624,7 +624,7 @@ describe("Editor Page Component", () => {
 
             const firstTag = project.tags[0].name;
             expect(editorPage.state().selectedTag).toEqual(firstTag);
-            expect(editorPage.state().lockedTags).toEqual([firstTag]);
+            expect(editorPage.state().lockedTag).toEqual(firstTag);
         });
 
         it("does not set selected tag when invalid hot key is pressed", async () => {

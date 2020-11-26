@@ -21,7 +21,7 @@ export interface ICanvasProps extends React.Props<Canvas> {
     editorMode: EditorMode;
     selectionMode: SelectionMode;
     project: IProject;
-    lockedTags: string[];
+    lockedTag: string;
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
     onSelectedRegionsChanged?: (regions: IRegion[]) => void;
@@ -40,7 +40,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         editorMode: EditorMode.Select,
         selectedAsset: null,
         project: null,
-        lockedTags: [],
+        lockedTag: undefined,
     };
 
     public editor: Editor;
@@ -144,26 +144,15 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
      */
     public applyTag = (tag: string) => {
         const selectedRegions = this.getSelectedRegions();
-        const lockedTags = this.props.lockedTags;
-        const lockedTagsEmpty = !lockedTags || !lockedTags.length;
+        const lockedTag = this.props.lockedTag;
         const regionsEmpty = !selectedRegions || !selectedRegions.length;
-        if ((!tag && lockedTagsEmpty) || regionsEmpty) {
+        if (!tag || regionsEmpty) {
             return;
         }
-        let transformer: (tags: string[], tag: string) => string[];
-        if (lockedTagsEmpty) {
-            // Tag selected while region(s) selected
-            transformer = CanvasHelpers.toggleTag;
-        } else if (lockedTags.find((t) => t === tag)) {
-            // Tag added to locked tags while region(s) selected
-            transformer = CanvasHelpers.addIfMissing;
-        } else {
-            // Tag removed from locked tags while region(s) selected
-            transformer = CanvasHelpers.removeIfContained;
-        }
         for (const selectedRegion of selectedRegions) {
-            selectedRegion.tag = tag;
+            selectedRegion.tag = lockedTag ? lockedTag : tag;
         }
+        
         this.updateRegions(selectedRegions);
         if (this.props.onSelectedRegionsChanged) {
             this.props.onSelectedRegionsChanged(selectedRegions);
@@ -287,11 +276,11 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.state.currentAsset.asset.size.width,
             this.state.currentAsset.asset.size.height,
         );
-        const lockedTags = this.props.lockedTags;
+        const lockedTag = this.props.lockedTag;
         const newRegion = {
             id,
             type: this.editorModeToType(this.props.editorMode),
-            tag: lockedTags[lockedTags.length - 1],
+            tag: lockedTag,
             boundingBox: {
                 height: scaledRegionData.height,
                 width: scaledRegionData.width,
@@ -304,7 +293,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             istruncated: 0,
             risk: "safe",
         };
-        if (lockedTags && lockedTags.length) {
+        if (lockedTag) {
             this.editor.RM.updateTagsById(id, CanvasHelpers.getTagsDescriptor(this.props.project.tags, newRegion));
         }
         this.updateAssetRegions([...this.state.currentAsset.regions, newRegion]);
@@ -398,9 +387,9 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.template = new Rect(selectedRegionsData.width, selectedRegionsData.height);
         }
 
-        if (this.props.lockedTags && this.props.lockedTags.length) {
+        if (this.props.lockedTag){
             for (const selectedRegion of selectedRegions) {
-                selectedRegion.tag = this.props.lockedTags[0];
+                selectedRegion.tag = this.props.lockedTag;
             }
             this.updateRegions(selectedRegions);
         }

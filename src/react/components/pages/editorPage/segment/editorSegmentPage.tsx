@@ -11,15 +11,10 @@ import {
     AssetState,
     AssetType,
     EditorMode,
-    IApplicationState,
-    IAppSettings,
     IAsset,
     IAssetMetadata,
     IProject,
-    IRegion,
-    ISize,
     ITag,
-    IAdditionalPageSettings,
     AppError,
     ErrorCode,
     EditorContext
@@ -28,8 +23,6 @@ import {
     IToolbarItemRegistration,
     ToolbarItemFactory
 } from "../../../../../providers/toolbar/toolbarItemFactory";
-import IApplicationActions, * as applicationActions from "../../../../../redux/actions/applicationActions";
-import IProjectActions, * as projectActions from "../../../../../redux/actions/projectActions";
 import { ToolbarItemName } from "../../../../../registerToolbar";
 import { AssetService } from "../../../../../services/assetService";
 import { AssetPreview } from "../../../common/assetPreview/assetPreview";
@@ -77,7 +70,7 @@ export default class EditorSegmentPage extends React.Component<
 > {
     public state: IEditorPageState = {
         selectedTag: null,
-        lockedTags: [],
+        lockedTag: undefined,
         selectionMode: SelectionMode.NONE,
         segmentSelectionMode: SegmentSelectionMode.NONE,
         assets: [],
@@ -119,6 +112,8 @@ export default class EditorSegmentPage extends React.Component<
             );
             await this.props.actions.loadProject(project);
         }
+
+
 
         this.activeLearningService = new ActiveLearningService(
             this.props.project.activeLearningSettings
@@ -236,7 +231,7 @@ export default class EditorSegmentPage extends React.Component<
                                             this.state.segmentSelectionMode
                                         }
                                         project={this.props.project}
-                                        lockedTags={this.state.lockedTags}
+                                        lockedTag={this.state.lockedTag}
                                     >
                                         <AssetPreview
                                             additionalSettings={
@@ -262,10 +257,10 @@ export default class EditorSegmentPage extends React.Component<
                         <div className="editor-page-right-sidebar">
                             <TagInput
                                 tags={this.props.project.tags}
-                                lockedTags={this.state.lockedTags}
+                                lockedTag={this.state.lockedTag}
                                 selectedRegions={this.state.selectedRegions}
                                 onChange={this.onTagsChanged}
-                                onLockedTagsChange={this.onLockedTagsChanged}
+                                onLockedTagChange={this.onLockedTagChanged}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
                                 onTagRenamed={this.confirmTagRenamed}
@@ -336,7 +331,7 @@ export default class EditorSegmentPage extends React.Component<
             this.setState(
                 {
                     selectedTag: tag.name,
-                    lockedTags: []
+                    lockedTag: undefined,
                 },
                 () => this.canvas.current.applyTag(tag)
             );
@@ -401,11 +396,11 @@ export default class EditorSegmentPage extends React.Component<
     };
 
     private onCtrlTagClicked = (tag: ITag): void => {
-        const locked = this.state.lockedTags;
+        const locked = this.state.lockedTag;
         this.setState(
             {
                 selectedTag: tag.name,
-                lockedTags: CanvasHelpers.toggleTag(locked, tag.name)
+                lockedTag: locked,
             },
             () => this.canvas.current.applyTag(tag)
         );
@@ -611,8 +606,8 @@ export default class EditorSegmentPage extends React.Component<
         await this.props.actions.saveProject(project);
     };
 
-    private onLockedTagsChanged = (lockedTags: string[]) => {
-        this.setState({ lockedTags });
+    private onLockedTagChanged = (lockedTag: string) => {
+        this.setState({ lockedTag });
     };
 
     private onToolbarItemSelected = async (

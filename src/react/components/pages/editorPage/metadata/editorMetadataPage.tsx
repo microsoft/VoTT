@@ -58,7 +58,7 @@ const uiSchema = addLocValues(require("./imageAnnotationForm.ui.json"));
 export default class EditorMetadataPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         selectedTag: null,
-        lockedTags: [],
+        lockedTag: undefined,
         selectionMode: SelectionMode.NONE,
         segmentSelectionMode: SegmentSelectionMode.NONE,
         assets: [],

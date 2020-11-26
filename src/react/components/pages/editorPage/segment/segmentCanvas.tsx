@@ -20,7 +20,7 @@ export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     selectedAsset: IAssetMetadata;
     selectionMode: SegmentSelectionMode;
     project: IProject;
-    lockedTags: string[];
+    lockedTag: string;
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
     onCanvasRendered?: (canvas: HTMLCanvasElement) => void;
@@ -38,7 +38,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         selectionMode: SegmentSelectionMode.NONE,
         selectedAsset: null,
         project: null,
-        lockedTags: [],
+        lockedTag: undefined,
     };
 
     public state: ISegmentCanvasState = {

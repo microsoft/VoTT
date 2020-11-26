@@ -16,10 +16,10 @@ describe("Tag Input Component", () => {
     function createProps(tags?: ITag[], onChange?): ITagInputProps {
         return {
             tags: tags || MockFactory.createTestTags(),
-            lockedTags: [],
+            lockedTag: undefined,
             selectedRegions: [MockFactory.createTestRegion()],
             onChange: onChange || jest.fn(),
-            onLockedTagsChange: jest.fn(),
+            onLockedTagChange: jest.fn(),
             onTagClick: jest.fn(),
             onCtrlTagClick: jest.fn(),
             instantTagClick: false,
@@ -162,7 +162,7 @@ describe("Tag Input Component", () => {
             const wrapper = createComponent(props);
             wrapper.find("div.tag-name-container").first().simulate("click");
             wrapper.find("div.tag-input-toolbar-item.lock").simulate("click");
-            expect(props.onLockedTagsChange).toBeCalledWith([tags[0].name]);
+            expect(props.onLockedTagChange).toBeCalledWith(tags[0].name);
         });
 
         it("Tag name can be edited from toolbar", () => {

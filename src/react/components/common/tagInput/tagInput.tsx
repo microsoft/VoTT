@@ -20,10 +20,10 @@ export interface ITagInputProps {
     onChange: (tags: ITag[]) => void;
     /** Currently selected regions in canvas */
     selectedRegions?: IRegion[];
-    /** Tags that are currently locked for editing experience */
-    lockedTags?: string[];
-    /** Updates to locked tags */
-    onLockedTagsChange?: (locked: string[]) => void;
+    /** Tag that are currently locked for editing experience */
+    lockedTag?: string;
+    /** Updates to locked tag */
+    onLockedTagChange?: (locked: string) => void;
     /** Place holder for input text box */
     placeHolder?: string;
     /** Function to call on clicking individual tag */
@@ -180,13 +180,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
         if (!tag) {
             return;
         }
-        let lockedTags = [...this.props.lockedTags];
-        if (lockedTags.find((t) => t === tag.name)) {
-            lockedTags = lockedTags.filter((t) => t !== tag.name);
-        } else {
-            lockedTags.push(tag.name);
+        let lockedTag = this.props.lockedTag;
+        if (lockedTag !== tag.name) {
+            lockedTag = tag.name;
         }
-        this.props.onLockedTagsChange(lockedTags);
+
+        this.props.onLockedTagChange(lockedTag);
     }
 
     private onReOrder = (tag: ITag, displacement: number) => {
@@ -327,7 +326,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             {
                 tag,
                 index: tags.findIndex((t) => t.name === tag.name),
-                isLocked: this.props.lockedTags && this.props.lockedTags.findIndex((t) => t === tag.name) > -1,
+                isLocked: this.props.lockedTag !== null,
                 isBeingEdited: this.state.editingTag && this.state.editingTag.name === tag.name,
                 isSelected: this.state.selectedTag && this.state.selectedTag.name === tag.name,
                 appliedToSelectedRegions: selectedRegionTagSet.has(tag.name),
@@ -417,9 +416,9 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             selectedTag: this.getNewSelectedTag(tags, index),
         }, () => this.props.onChange(tags));
 
-        if (this.props.lockedTags.find((l) => l === tag.name)) {
-            this.props.onLockedTagsChange(
-                this.props.lockedTags.filter((lockedTag) => lockedTag !== tag.name),
+        if (this.props.lockedTag === tag.name) {
+            this.props.onLockedTagChange(
+                undefined,
             );
         }
     }

@@ -55,7 +55,7 @@ export interface IEditorPageState {
     /** Most recently selected tag */
     selectedTag: string;
     /** Tags locked for region labeling */
-    lockedTags: string[];
+    lockedTag: string;
     /** Size of the asset thumbnails to display in the side bar */
     thumbnailSize: ISize;
     /** Editing context */

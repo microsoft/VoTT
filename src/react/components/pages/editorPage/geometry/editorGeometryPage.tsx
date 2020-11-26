@@ -49,7 +49,7 @@ import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps
 export default class EditorGeometryPage extends React.Component<IEditorPageProps, IEditorPageState> {
     public state: IEditorPageState = {
         selectedTag: null,
-        lockedTags: [],
+        lockedTag: undefined,
         selectionMode: SelectionMode.NONE,
         segmentSelectionMode: SegmentSelectionMode.NONE,
         assets: [],
@@ -171,7 +171,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
                                         editorMode={this.state.editorMode}
                                         selectionMode={this.state.selectionMode}
                                         project={this.props.project}
-                                        lockedTags={this.state.lockedTags}>
+                                        lockedTag={this.state.lockedTag}>
                                         <AssetPreview
                                             additionalSettings={this.state.additionalSettings}
                                             autoPlay={true}
@@ -187,10 +187,10 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
                         <div className="editor-page-right-sidebar">
                             <TagInput
                                 tags={this.props.project.tags}
-                                lockedTags={this.state.lockedTags}
+                                lockedTag={this.state.lockedTag}
                                 selectedRegions={this.state.selectedRegions}
                                 onChange={this.onTagsChanged}
-                                onLockedTagsChange={this.onLockedTagsChanged}
+                                onLockedTagChange={this.onLockedTagChanged}
                                 onTagClick={this.onTagClicked}
                                 onCtrlTagClick={this.onCtrlTagClicked}
                                 onTagRenamed={this.confirmTagRenamed}
@@ -221,6 +221,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
     }
 
     private onPageClick = () => {
+        console.log("onPageClick");
         this.setState({
             selectedRegions: [],
         });
@@ -258,7 +259,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
     private onTagClicked = (tag: ITag): void => {
         this.setState({
             selectedTag: tag.name,
-            lockedTags: [],
+            lockedTag: undefined,
         }, () => this.canvas.current.applyTag(tag.name));
     }
 
@@ -306,10 +307,10 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
     }
 
     private onCtrlTagClicked = (tag: ITag): void => {
-        const locked = this.state.lockedTags;
+        const locked = this.state.lockedTag;
         this.setState({
             selectedTag: tag.name,
-            lockedTags: CanvasHelpers.toggleTag(locked, tag.name),
+            lockedTag: locked,
         }, () => this.canvas.current.applyTag(tag.name));
     }
 
@@ -464,8 +465,8 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
         await this.props.actions.saveProject(project);
     }
 
-    private onLockedTagsChanged = (lockedTags: string[]) => {
-        this.setState({ lockedTags });
+    private onLockedTagChanged = (lockedTag: string) => {
+        this.setState({ lockedTag });
     }
 
     private onToolbarItemSelected = async (toolbarItem: ToolbarItem): Promise<void> => {

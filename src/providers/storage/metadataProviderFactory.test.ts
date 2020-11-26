@@ -1,4 +1,4 @@
-import { MetadataProviderFactory, IMetadataProvider } from "./MetadataProviderFactory";
+import { MetadataProviderFactory, IMetadataProvider } from "./metadataProviderFactory";
 import { IMetadata } from "../../models/applicationState";
 
 describe("Metadata Provider Factory", () => {
