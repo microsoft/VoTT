@@ -59,7 +59,6 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public componentDidMount = () => {
         window.addEventListener("resize", this.onWindowResize);
-        this.setState({... this.state, annotatedData: this.decomposeSegment(this.state.currentAsset.segments)});
     }
 
     public componentWillUnmount() {
@@ -67,25 +66,25 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     public componentDidUpdate = async (prevProps: Readonly<ISegmentCanvasProps>, prevState: Readonly<ISegmentCanvasState>) => {
+        // Handles when the canvas is enabled & disabled
+        if (prevState.enabled !== this.state.enabled) {
+            // When the canvas is ready to display
+            if (this.state.enabled) {
+                //this.refreshCanvasToolsSegments();
+                //this.clearSegmentationData();
+                this.setSelectionMode(this.props.selectionMode);
+            } else { // When the canvas has been disabled
+                this.setSelectionMode(SegmentSelectionMode.NONE);
+            }
+        }
+
         // Handles asset changing
-        if (this.props.selectedAsset !== prevProps.selectedAsset) {
-            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments) });
-        }
-        
         if(this.props.selectedAsset.segmentation && this.state.segmentationData === null){
-            const path = this.props.selectedAsset.segmentation.path;
-            const response = await fetch(path
-                    ,{
-                    headers : { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                    }
-                    )
-            const segmentationData = await response.json();
-            this.setState({... this.state, segmentationData });
+            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments), segmentationData: await this.loadSegmentationData(this.props.selectedAsset.segmentation.path)});
         }
-        
+        else if (this.props.selectedAsset !== prevProps.selectedAsset) {
+            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments), segmentationData: await this.loadSegmentationData(this.props.selectedAsset.segmentation.path) });
+        }
 
         // Handle selection mode changes
         if (this.props.selectionMode !== prevProps.selectionMode) {
@@ -105,18 +104,6 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             this.updateCanvasToolsSegmentTags();
         }
 
-        // Handles when the canvas is enabled & disabled
-        if (prevState.enabled !== this.state.enabled) {
-            // When the canvas is ready to display
-            if (this.state.enabled) {
-                this.refreshCanvasToolsSegments();
-                this.setSelectionMode(this.props.selectionMode);
-            } else { // When the canvas has been disabled
-                this.setSelectionMode(SegmentSelectionMode.NONE);
-            }
-        }
-
-        //this.setState({... this.state, annotatedData: this.decomposeSegment(this.state.currentAsset.segments)});
     }
 
     ////////////////////////////////////////////////////////////////
@@ -195,6 +182,23 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         );
     }
 
+
+    private clearSegmentationData(){
+        this.setState( {... this.state, segmentationData: null});
+    }
+
+    private async loadSegmentationData(path: string){
+        const response = await fetch(path
+                ,{
+                headers : { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+                }
+                )
+        return await response.json();
+    }
+
     private decomposeSegment = (segments: ISegment[]): Annotation[] => {
         const annotation = [];
         for (const s of segments){
@@ -239,7 +243,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         }
         //this.removeAllSegments(false);
         */
-       this.setState({... this.state, annotatedData: this.decomposeSegment(this.state.currentAsset.segments)});
+       //this.setState({... this.state, annotatedData: this.decomposeSegment(this.state.currentAsset.segments), });
     }
 
     private getInitialSegment = (id: number, tag: string, superpixelId: number, area: number, bbox: IBoundingBox): ISegment => {
