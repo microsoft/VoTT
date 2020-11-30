@@ -28,6 +28,7 @@ export default interface IProjectActions {
     closeProject(): void;
     exportProject(project: IProject): Promise<void> | Promise<IExportResults>;
     loadAssets(project: IProject): Promise<IAsset[]>;
+    loadMetadata(project: IProject): Promise<IAsset[]>;
     loadAssetMetadata(project: IProject, asset: IAsset): Promise<IAssetMetadata>;
     saveAssetMetadata(project: IProject, assetMetadata: IAssetMetadata): Promise<IAssetMetadata>;
     updateProjectTag(project: IProject, oldTagName: string, newTagName: string): Promise<IAssetMetadata[]>;
@@ -133,7 +134,19 @@ export function loadAssets(project: IProject): (dispatch: Dispatch) => Promise<I
         const assetService = new AssetService(project);
         const assets = await assetService.getAssets();
         dispatch(loadProjectAssetsAction(assets));
+        return assets;
+    };
+}
 
+/**
+ * Gets metadata from project, dispatches load assets action and returns assets
+ * @param project - Project from which to load assets
+ */
+export function loadMetadata(project: IProject): (dispatch: Dispatch) => Promise<IAsset[]> {
+    return async (dispatch: Dispatch) => {
+        const assetService = new AssetService(project);
+        const assets = await assetService.getMetadata();
+        dispatch(loadMetadataAction(assets));
         return assets;
     };
 }
@@ -295,6 +308,13 @@ export interface ILoadProjectAssetsAction extends IPayloadAction<string, IAsset[
 }
 
 /**
+ * Load metadata action type
+ */
+export interface ILoadMetadataAction extends IPayloadAction<string, IAsset[]> {
+    type: ActionTypes.LOAD_METADATA_SUCCESS;
+}
+
+/**
  * Load asset metadata action type
  */
 export interface ILoadAssetMetadataAction extends IPayloadAction<string, IAssetMetadata> {
@@ -350,6 +370,11 @@ export const deleteProjectAction = createPayloadAction<IDeleteProjectAction>(Act
  */
 export const loadProjectAssetsAction =
     createPayloadAction<ILoadProjectAssetsAction>(ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS);
+/**
+ * Instance of Load Metadata action
+ */
+export const loadMetadataAction =
+    createPayloadAction<ILoadMetadataAction>(ActionTypes.LOAD_METADATA_SUCCESS);
 /**
  * Instance of Load Asset Metadata action
  */

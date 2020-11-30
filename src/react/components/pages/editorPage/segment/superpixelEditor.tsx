@@ -3,8 +3,8 @@ import { ISegmentOffset } from "../../../../../models/applicationState";
 
 export enum AnnotationTag{
     EMPTY = "empty",
-    DEANNOTATING = "deannotating"
-} 
+    DEANNOTATING = "deannotating",
+}
 
 const React = require("react");
 const { useState, useEffect } = require("react");
@@ -13,6 +13,8 @@ const Snap = require("snapsvg-cjs");
 const defaultOpacity = 0.1;
 const annotatedOpacity = 0.7;
 const annotatingOpacity = 0.9;
+const defaultLineWidth = 0.5;
+const highlightLineWidth = 1;
 
 export interface IPoint{
     x: number,
@@ -73,7 +75,7 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> = ({id, canvasWidth, ca
     }
     useEffect(() => {
         var s = Snap("#" + id);
-        if (s.selectAll("path").length > 0){
+        if (s.selectAll("path").length){
             s.clear();
         }
         // create superpixels
@@ -93,7 +95,7 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> = ({id, canvasWidth, ca
                     pixels,
                     canvasWidth,
                     canvasHeight));
-            superpixel.attr({ id: number2SPId(key), key, stroke: "white", strokeWidth: 0,
+            superpixel.attr({ id: number2SPId(key), key, stroke: "white", strokeWidth: defaultLineWidth,
             fill: annotation.color === AnnotationTag.EMPTY ? defaultcolor : annotation.color,
             opacity: annotation.tag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity,
             tag: annotation.tag,
@@ -108,7 +110,7 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> = ({id, canvasWidth, ca
                      updateSuperpixelSVG(superpixel,
                          annotatingTag === AnnotationTag.DEANNOTATING ? defaultcolor : fillColor,
                          annotatingOpacity,
-                         1);
+                         highlightLineWidth);
                 }
                })
                .mouseout( () => {
@@ -119,7 +121,7 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> = ({id, canvasWidth, ca
                     updateSuperpixelSVG(superpixel,
                          backupColor,
                          currentColor === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity,
-                         0);
+                         defaultLineWidth);
                 }
                })
                .mousemove( (event: MouseEvent) => {
@@ -246,7 +248,7 @@ const updateSuperpixelSVG = (component: Snap.Element, fill: string, opacity: num
     }
     else{
         component.attr({...component.attr, fill, opacity, strokeWidth, });
-    }    
+    }
 }
 
 const paintAndUpdateState = (event, superpixel, defaultcolor, onSegmentUpdated) => {
@@ -282,7 +284,8 @@ export const paintSuperpixel =
     }
     if (snapElement){
         const coloringTag = tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : tag;
-        updateSuperpixelSVG(snapElement, color, coloringTag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity, 0, coloringTag, tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : color);
+        updateSuperpixelSVG(snapElement, color, coloringTag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity,
+            defaultLineWidth, coloringTag, tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : color);
         onSegmentUpdated({tag, area, superpixelId: SPId2number(snapElement.attr("id")) });
     }
     else{

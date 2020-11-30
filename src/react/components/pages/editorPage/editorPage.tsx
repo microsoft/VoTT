@@ -67,6 +67,8 @@ export interface IEditorPageState {
     isValid: boolean;
     /** Whether the show invalid region warning alert should display */
     showInvalidRegionWarning: boolean;
+    /** Segmentation data for grid */
+    segmentationAssets?: IAsset[];
 }
 
 export function mapStateToProps(state: IApplicationState) {

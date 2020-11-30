@@ -119,6 +119,7 @@ export interface IProject {
     activeLearningSettings: IActiveLearningSettings;
     autoSave: boolean;
     assets?: { [index: string]: IAsset };
+    segmentationAssets?: { [index: string]: IAsset };
     lastVisitedAssetId?: string;
 }
 
@@ -278,26 +279,10 @@ export interface IAsset {
 }
 
 /**
- * @name - Metadata
- * @description - Defines an asset within a VoTT project
- * @member id - Unique identifier for asset
- * @member type - Type of asset (Image, Video, etc)
- * @member name - Generated name for asset
- * @member path - Relative path to asset within the underlying data source
- * @member size - Size / dimensions of asset
- * @member format - The asset format (jpg, png, mp4, etc)
- */
-export interface IMetadata {
-    id: string;
-    type: MetadataType;
-    name: string;
-    path: string;
-}
-
-/**
  * @name - Asset Metadata
  * @description - Format to store asset metadata for each asset within a project
  * @member asset - References an asset within the project
+ * @member segmentation - Segmentation asset to be imported
  * @member regions - The list of regions drawn on the asset
  * @member segments - The list of segments constituting the asset
  */
@@ -307,6 +292,7 @@ export interface IAssetMetadata {
     segments: ISegment[];
     metadata: IImageMetadata;
     version: string;
+    segmentation: IAsset;
 }
 
 /**
@@ -398,6 +384,8 @@ export interface IPoint {
  * @description - Defines the type of asset within a project
  * @member Image - Specifies an asset as an image
  * @member Video - Specifies an asset as a video
+ * @member SegmentationData - Specifies a json-ized segmentation labeling result
+ * @member ImageMetadata - Specifies an asset as a metadata for an image
  */
 export enum AssetType {
     Unknown = 0,
@@ -405,6 +393,8 @@ export enum AssetType {
     Video = 2,
     VideoFrame = 3,
     TFRecord = 4,
+    SegmentationData = 5,
+    ImageMetadata = 6,
 }
 
 /**

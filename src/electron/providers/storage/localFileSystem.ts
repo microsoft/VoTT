@@ -146,15 +146,6 @@ export default class LocalFileSystem implements IStorageProvider {
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
 
-    public async getMetadata(metadataConnectionFolderPath?: string, relativePath: boolean = false): Promise<IAsset[]> {
-        return (await this.listFiles(path.normalize(metadataConnectionFolderPath)))
-            .map((filePath) => AssetService.createAssetFromFilePath(
-                filePath,
-                undefined,
-                relativePath ? path.relative(metadataConnectionFolderPath, filePath) : filePath))
-            .filter((asset) => asset.type !== AssetType.Unknown);
-    }
-
     /**
      * Gets a list of file system items matching the specified predicate within the folderPath
      * @param  {string} folderPath

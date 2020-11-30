@@ -11,7 +11,6 @@ import Confirm from "../../../common/confirm/confirm";
 import { createContentBoundingBox } from "../../../../../common/layout";
 import { SegmentSelectionMode } from "../editorPage";
 import { Annotation, AnnotationTag } from "./superpixelEditor";
-import data from "./test.jpg.json";
 import { ITag } from "vott-react";
 import { strings } from "../../../../../common/strings";
 import { SuperpixelEditor } from "./superpixelEditor";
@@ -31,6 +30,7 @@ export interface ISegmentCanvasState {
     contentSource: ContentSource;
     enabled: boolean;
     annotatedData: Annotation[];
+    segmentationData: any; // json object
 }
 
 export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, ISegmentCanvasState> {
@@ -46,6 +46,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         contentSource: null,
         enabled: true,
         annotatedData: null,
+        segmentationData: null,
     };
 
     public defaultColor = "black";
@@ -70,6 +71,21 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         if (this.props.selectedAsset !== prevProps.selectedAsset) {
             this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments) });
         }
+        
+        if(this.props.selectedAsset.segmentation && this.state.segmentationData === null){
+            const path = this.props.selectedAsset.segmentation.path;
+            const response = await fetch(path
+                    ,{
+                    headers : { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                    }
+                    )
+            const segmentationData = await response.json();
+            this.setState({... this.state, segmentationData });
+        }
+        
 
         // Handle selection mode changes
         if (this.props.selectionMode !== prevProps.selectionMode) {
@@ -167,7 +183,10 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 <div id="ct-zone" ref={this.canvasZone} className={className} onClick={(e) => e.stopPropagation()}>
                     <div id="selection-zone">
         <div id="editor-zone" className="full-size">
-            <SuperpixelEditor id={"mainCanvas"} canvasWidth={1024} canvasHeight={768} segmentationData={data} annotatedData={this.decomposeSegment(this.state.currentAsset.segments)} defaultcolor={this.defaultColor} annotating={this.currentAnnotating} onSegmentUpdated={this.onSegmentUpdated} />
+            { this.state.segmentationData ? 
+            <SuperpixelEditor id={"mainCanvas"} canvasWidth={1024} canvasHeight={768} segmentationData={this.state.segmentationData} annotatedData={this.decomposeSegment(this.state.currentAsset.segments)} defaultcolor={this.defaultColor} annotating={this.currentAnnotating} onSegmentUpdated={this.onSegmentUpdated} />
+            : <div> </div> }
+            
         </div>
                     </div>
                 </div>

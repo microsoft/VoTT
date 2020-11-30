@@ -17,11 +17,11 @@ import {
     ITag,
     AppError,
     ErrorCode,
-    EditorContext
+    EditorContext,
 } from "../../../../../models/applicationState";
 import {
     IToolbarItemRegistration,
-    ToolbarItemFactory
+    ToolbarItemFactory,
 } from "../../../../../providers/toolbar/toolbarItemFactory";
 import { ToolbarItemName } from "../../../../../registerToolbar";
 import { AssetService } from "../../../../../services/assetService";
@@ -43,7 +43,7 @@ import {
     IEditorPageState,
     mapStateToProps,
     mapDispatchToProps,
-    SegmentSelectionMode
+    SegmentSelectionMode,
 } from "../editorPage";
 import SegmentCanvas from "./segmentCanvas";
 import { AnnotationTag } from "./superpixelEditor";
@@ -62,7 +62,7 @@ import { AnnotationTag } from "./superpixelEditor";
  */
 @connect(
     mapStateToProps,
-    mapDispatchToProps
+    mapDispatchToProps,
 )
 export default class EditorSegmentPage extends React.Component<
     IEditorPageProps,
@@ -82,21 +82,21 @@ export default class EditorSegmentPage extends React.Component<
                 : null,
             activeLearningSettings: this.props.project
                 ? this.props.project.activeLearningSettings
-                : null
+                : null,
         },
         thumbnailSize: this.props.appSettings.thumbnailSize || {
             width: 175,
-            height: 155
+            height: 155,
         },
         isValid: true,
         showInvalidRegionWarning: false,
-        context: EditorContext.Segmentation
+        context: EditorContext.Segmentation,
     };
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(
-        EditorContext.Segmentation
+        EditorContext.Segmentation,
     );
     private canvas: RefObject<SegmentCanvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
@@ -108,15 +108,13 @@ export default class EditorSegmentPage extends React.Component<
             await this.loadProjectAssets();
         } else if (projectId) {
             const project = this.props.recentProjects.find(
-                project => project.id === projectId
+                (project) => project.id === projectId,
             );
             await this.props.actions.loadProject(project);
         }
 
-
-
         this.activeLearningService = new ActiveLearningService(
-            this.props.project.activeLearningSettings
+            this.props.project.activeLearningSettings,
         );
     }
 
@@ -136,8 +134,8 @@ export default class EditorSegmentPage extends React.Component<
                         : null,
                     activeLearningSettings: this.props.project
                         ? this.props.project.activeLearningSettings
-                        : null
-                }
+                        : null,
+                },
             });
         }
 
@@ -153,7 +151,7 @@ export default class EditorSegmentPage extends React.Component<
     public render() {
         const { project } = this.props;
         const { assets, selectedAsset } = this.state;
-        const rootAssets = assets.filter(asset => !asset.parent);
+        const rootAssets = assets.filter((asset) => !asset.parent);
 
         if (!project) {
             return <div>Loading...</div>;
@@ -161,7 +159,7 @@ export default class EditorSegmentPage extends React.Component<
 
         return (
             <div className="editor-page">
-                {[...Array(10).keys()].map(index => {
+                {[...Array(10).keys()].map((index) => {
                     return (
                         <KeyboardBinding
                             displayName={strings.editorPage.tags.hotKey.apply}
@@ -173,7 +171,7 @@ export default class EditorSegmentPage extends React.Component<
                         />
                     );
                 })}
-                {[...Array(10).keys()].map(index => {
+                {[...Array(10).keys()].map((index) => {
                     return (
                         <KeyboardBinding
                             displayName={strings.editorPage.tags.hotKey.lock}
@@ -301,12 +299,12 @@ export default class EditorSegmentPage extends React.Component<
             {
                 thumbnailSize: {
                     width: newWidth,
-                    height: newWidth / (4 / 3)
-                }
+                    height: newWidth / (4 / 3),
+                },
             },
-            () => this.canvas.current.forceResize()
+            () => this.canvas.current.forceResize(),
         );
-    };
+    }
 
     /**
      * Called when the asset sidebar has been completed
@@ -314,11 +312,11 @@ export default class EditorSegmentPage extends React.Component<
     private onSideBarResizeComplete = () => {
         const appSettings = {
             ...this.props.appSettings,
-            thumbnailSize: this.state.thumbnailSize
+            thumbnailSize: this.state.thumbnailSize,
         };
 
         this.props.applicationActions.saveAppSettings(appSettings);
-    };
+    }
 
     /**
      * Called when a tag from footer is clicked
@@ -336,14 +334,14 @@ export default class EditorSegmentPage extends React.Component<
                 () => this.canvas.current.applyTag(tag)
             );
         }
-    };
+    }
 
     /**
      * Open confirm dialog for tag renaming
      */
     private confirmTagRenamed = (tagName: string, newTagName: string): void => {
         this.renameTagConfirm.current.open(tagName, newTagName);
-    };
+    }
 
     /**
      * Renames tag in assets and project, and saves files
@@ -352,15 +350,15 @@ export default class EditorSegmentPage extends React.Component<
      */
     private onTagRenamed = async (
         tagName: string,
-        newTagName: string
+        newTagName: string,
     ): Promise<void> => {
         const assetUpdates = await this.props.actions.updateProjectTag(
             this.props.project,
             tagName,
-            newTagName
+            newTagName,
         );
         const selectedAsset = assetUpdates.find(
-            am => am.asset.id === this.state.selectedAsset.asset.id
+            (am) => am.asset.id === this.state.selectedAsset.asset.id,
         );
 
         if (selectedAsset) {
@@ -368,14 +366,14 @@ export default class EditorSegmentPage extends React.Component<
                 this.setState({ selectedAsset });
             }
         }
-    };
+    }
 
     /**
      * Open Confirm dialog for tag deletion
      */
     private confirmTagDeleted = (tagName: string): void => {
         this.deleteTagConfirm.current.open(tagName);
-    };
+    }
 
     /**
      * Removes tag from assets and projects and saves files
@@ -384,16 +382,16 @@ export default class EditorSegmentPage extends React.Component<
     private onTagDeleted = async (tagName: string): Promise<void> => {
         const assetUpdates = await this.props.actions.deleteProjectTag(
             this.props.project,
-            tagName
+            tagName,
         );
         const selectedAsset = assetUpdates.find(
-            am => am.asset.id === this.state.selectedAsset.asset.id
+            (am) => am.asset.id === this.state.selectedAsset.asset.id,
         );
 
         if (selectedAsset) {
             this.setState({ selectedAsset });
         }
-    };
+    }
 
     private onCtrlTagClicked = (tag: ITag): void => {
         const locked = this.state.lockedTag;
@@ -404,7 +402,7 @@ export default class EditorSegmentPage extends React.Component<
             },
             () => this.canvas.current.applyTag(tag)
         );
-    };
+    }
 
     private getTagFromKeyboardEvent = (event: KeyboardEvent): ITag => {
         let key = parseInt(event.key, 10);
@@ -426,7 +424,7 @@ export default class EditorSegmentPage extends React.Component<
             return tags[index];
         }
         return null;
-    };
+    }
 
     /**
      * Listens for {number key} and calls `onTagClicked` with tag corresponding to that number
@@ -437,14 +435,14 @@ export default class EditorSegmentPage extends React.Component<
         if (tag) {
             this.onTagClicked(tag);
         }
-    };
+    }
 
     private handleCtrlTagHotKey = (event: KeyboardEvent): void => {
         const tag = this.getTagFromKeyboardEvent(event);
         if (tag) {
             this.onCtrlTagClicked(tag);
         }
-    };
+    }
 
     /**
      * Raised when a child asset is selected on the Asset Preview
@@ -457,7 +455,7 @@ export default class EditorSegmentPage extends React.Component<
         ) {
             await this.selectAsset(childAsset);
         }
-    };
+    }
 
     /**
      * Returns a value indicating whether the current asset is taggable
@@ -466,22 +464,22 @@ export default class EditorSegmentPage extends React.Component<
         return (
             asset.type !== AssetType.Unknown && asset.type !== AssetType.Video
         );
-    };
+    }
 
     /**
      * Raised when the selected asset has been changed.
      * This can either be a parent or child asset
      */
     private onAssetMetadataChanged = async (
-        assetMetadata: IAssetMetadata
+        assetMetadata: IAssetMetadata,
     ): Promise<void> => {
         // If the asset contains any segments without tags, don't proceed.
         if (assetMetadata.segments) {
             const segmentsWithoutTags = assetMetadata.segments.filter(
-                segment => segment.tag === AnnotationTag.EMPTY
+                (segment) => segment.tag === AnnotationTag.EMPTY,
             );
 
-            if (segmentsWithoutTags.length > 0) {
+            if (segmentsWithoutTags.length) {
                 this.setState({ isValid: false });
                 return;
             }
@@ -500,7 +498,7 @@ export default class EditorSegmentPage extends React.Component<
                     [this.state.context]:
                         assetMetadata.segments.length > 0
                             ? AssetState.Tagged
-                            : AssetState.Visited
+                            : AssetState.Visited,
                 };
             } else if (
                 assetMetadata.asset.state[this.state.context] ===
@@ -508,7 +506,7 @@ export default class EditorSegmentPage extends React.Component<
             ) {
                 assetMetadata.asset.state = {
                     ...assetMetadata.asset.state,
-                    [this.state.context]: AssetState.Visited
+                    [this.state.context]: AssetState.Visited,
                 };
             }
 
@@ -523,7 +521,7 @@ export default class EditorSegmentPage extends React.Component<
             } else {
                 const rootAssetMetadata = await this.props.actions.loadAssetMetadata(
                     this.props.project,
-                    rootAsset
+                    rootAsset,
                 );
 
                 if (
@@ -534,11 +532,11 @@ export default class EditorSegmentPage extends React.Component<
                         assetMetadata.asset.state[this.state.context];
                     rootAssetMetadata.asset.state = {
                         ...rootAssetMetadata.asset.state,
-                        assetMetadataObject
+                        assetMetadataObject,
                     };
                     await this.props.actions.saveAssetMetadata(
                         this.props.project,
-                        rootAssetMetadata
+                        rootAssetMetadata,
                     );
                 }
 
@@ -546,7 +544,7 @@ export default class EditorSegmentPage extends React.Component<
                     rootAssetMetadata.asset.state[this.state.context];
                 rootAsset.state = {
                     ...rootAsset.state,
-                    rootAssetMetadataObject
+                    rootAssetMetadataObject,
                 };
             }
 
@@ -558,7 +556,7 @@ export default class EditorSegmentPage extends React.Component<
             ) {
                 await this.props.actions.saveAssetMetadata(
                     this.props.project,
-                    assetMetadata
+                    assetMetadata,
                 );
             }
 
@@ -572,17 +570,17 @@ export default class EditorSegmentPage extends React.Component<
             // accurately show their correct state (not-visited, visited or tagged)
             const assets = [...this.state.assets];
             const assetIndex = assets.findIndex(
-                asset => asset.id === rootAsset.id
+                (asset) => asset.id === rootAsset.id,
             );
             if (assetIndex > -1) {
                 assets[assetIndex] = {
-                    ...rootAsset
+                    ...rootAsset,
                 };
             }
 
             this.setState({ childAssets, assets, isValid: true });
         }
-    };
+    }
 
     /**
      * Raised when the asset binary has been painted onto the canvas tools rendering canvas
@@ -595,43 +593,43 @@ export default class EditorSegmentPage extends React.Component<
             await this.predictRegions(canvas);
         }
         */
-    };
+    }
 
-    private onTagsChanged = async tags => {
+    private onTagsChanged = async (tags) => {
         const project = {
             ...this.props.project,
-            tags
+            tags,
         };
 
         await this.props.actions.saveProject(project);
-    };
+    }
 
     private onLockedTagChanged = (lockedTag: string) => {
         this.setState({ lockedTag });
-    };
+    }
 
     private onToolbarItemSelected = async (
-        toolbarItem: ToolbarItem
+        toolbarItem: ToolbarItem,
     ): Promise<void> => {
         switch (toolbarItem.props.name) {
             case ToolbarItemName.AnnotateSegments:
                 this.setState({
-                    segmentSelectionMode: SegmentSelectionMode.ANNOTATING
+                    segmentSelectionMode: SegmentSelectionMode.ANNOTATING,
                 });
                 break;
             case ToolbarItemName.SelectCanvas:
                 this.setState({
-                    segmentSelectionMode: SegmentSelectionMode.NONE
+                    segmentSelectionMode: SegmentSelectionMode.NONE,
                 });
                 break;
             case ToolbarItemName.RemoveAnnotation:
                 this.setState({
-                    segmentSelectionMode: SegmentSelectionMode.DEANNOTATING
+                    segmentSelectionMode: SegmentSelectionMode.DEANNOTATING,
                 });
                 break;
             case ToolbarItemName.ShowSegBoundary:
                 this.setState({
-                    segmentSelectionMode: SegmentSelectionMode.NONE
+                    segmentSelectionMode: SegmentSelectionMode.NONE,
                 });
                 break;
             case ToolbarItemName.PreviousAsset:
@@ -647,7 +645,7 @@ export default class EditorSegmentPage extends React.Component<
                 await this.predictSegments();
                 break;
         }
-    };
+    }
 
     private predictSegments = async (canvas?: HTMLCanvasElement) => {
         canvas = canvas || document.querySelector("canvas");
@@ -687,7 +685,7 @@ export default class EditorSegmentPage extends React.Component<
                 "Error predicting regions"
             );
         }
-    };
+    }
 
     /**
      * Navigates to the previous / next root asset on the sidebar
@@ -698,7 +696,7 @@ export default class EditorSegmentPage extends React.Component<
             this.state.selectedAsset.asset.parent ||
             this.state.selectedAsset.asset;
         const currentIndex = this.state.assets.findIndex(
-            asset => asset.id === selectedRootAsset.id
+            (asset) => asset.id === selectedRootAsset.id,
         );
 
         if (direction > 0) {
@@ -712,7 +710,7 @@ export default class EditorSegmentPage extends React.Component<
                 this.state.assets[Math.max(0, currentIndex - 1)]
             );
         }
-    };
+    }
 
     private onBeforeAssetSelected = (): boolean => {
         if (!this.state.isValid) {
@@ -720,7 +718,7 @@ export default class EditorSegmentPage extends React.Component<
         }
 
         return this.state.isValid;
-    };
+    }
 
     private selectAsset = async (asset: IAsset): Promise<void> => {
         // Nothing to do if we are already on the same asset.
@@ -738,32 +736,43 @@ export default class EditorSegmentPage extends React.Component<
 
         const assetMetadata = await this.props.actions.loadAssetMetadata(
             this.props.project,
-            asset
+            asset,
         );
+
+        // update asset
+        try {
+            if (this.state.segmentationAssets){
+                assetMetadata.segmentation = this.loadSegmentationData(asset, this.state.segmentationAssets);
+            }
+        } catch (err) {
+            console.warn("Error in loading segmentation data file");
+        }
 
         try {
             if (!assetMetadata.asset.size) {
                 const assetProps = await HtmlFileReader.readAssetAttributes(
-                    asset
+                    asset,
                 );
                 assetMetadata.asset.size = {
                     width: assetProps.width,
-                    height: assetProps.height
+                    height: assetProps.height,
                 };
             }
         } catch (err) {
             console.warn("Error computing asset size");
         }
 
+
+
         this.setState(
             {
-                selectedAsset: assetMetadata
+                selectedAsset: assetMetadata,
             },
             async () => {
                 await this.onAssetMetadataChanged(assetMetadata);
-            }
+            },
         );
-    };
+    }
 
     private loadProjectAssets = async (): Promise<void> => {
         if (this.loadingProjectAssets || this.state.assets.length > 0) {
@@ -774,45 +783,72 @@ export default class EditorSegmentPage extends React.Component<
 
         // Get all root project assets
         const rootProjectAssets = _.values(this.props.project.assets).filter(
-            asset => !asset.parent
+            (asset) => !asset.parent,
         );
 
         // Get all root assets from source asset provider
         const sourceAssets = await this.props.actions.loadAssets(
-            this.props.project
+            this.props.project,
         );
 
         // Merge and uniquify
         const rootAssets = _(rootProjectAssets)
             .concat(sourceAssets)
-            .uniqBy(asset => asset.id)
+            .uniqBy((asset) => asset.id)
             .value();
 
         const lastVisited = rootAssets.find(
-            asset => asset.id === this.props.project.lastVisitedAssetId
+            (asset) => asset.id === this.props.project.lastVisitedAssetId,
         );
 
+        // load segmentations
+
+        // Get all root project assets
+        const rootProjectSegAssets = _.values(this.props.project.segmentationAssets).filter(
+            (asset) => !asset.parent,
+        );
+
+        // Get all root assets from source asset provider
+        const sourceSegAssets = await this.props.actions.loadMetadata(
+            this.props.project,
+        );
+
+        // Merge and uniquify
+        const rootSegAssets = _(rootProjectSegAssets)
+            .concat(sourceSegAssets)
+            .uniqBy((asset) => asset.id)
+            .value();
+        
         this.setState(
             {
-                assets: rootAssets
+                assets: rootAssets,
+                segmentationAssets: rootSegAssets,
             },
             async () => {
                 if (rootAssets.length > 0) {
                     await this.selectAsset(
-                        lastVisited ? lastVisited : rootAssets[0]
+                        lastVisited ? lastVisited : rootAssets[0],
                     );
                 }
                 this.loadingProjectAssets = false;
-            }
+            },
         );
-    };
+
+    }
+
+    private loadSegmentationData(asset: IAsset, metadataAssets: IAsset[]): IAsset{
+        const segmentationDataAsset = metadataAssets.filter((e) => e.name.includes(asset.name));
+        if (segmentationDataAsset && segmentationDataAsset.length) {
+            return segmentationDataAsset[0];
+        }
+    }
 
     /**
      * Updates the root asset list from the project assets
      */
     private updateRootAssets = () => {
         const updatedAssets = [...this.state.assets];
-        updatedAssets.forEach(asset => {
+        updatedAssets.forEach((asset) => {
             const projectAsset = this.props.project.assets[asset.id];
             if (projectAsset) {
                 asset.state = projectAsset.state;
@@ -820,5 +856,5 @@ export default class EditorSegmentPage extends React.Component<
         });
 
         this.setState({ assets: updatedAssets });
-    };
+    }
 }

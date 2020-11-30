@@ -1,13 +1,12 @@
 import Guard from "../../common/guard";
 import {
     IProject, IExportFormat, IAssetMetadata, IAsset,
-    AssetState, AssetType, IExportProviderOptions, EditorContext, IMetadata,
+    AssetState, AssetType, IExportProviderOptions, EditorContext,
 } from "../../models/applicationState";
 import { IStorageProvider, StorageProviderFactory } from "../storage/storageProviderFactory";
 import { IAssetProvider, AssetProviderFactory } from "../storage/assetProviderFactory";
 import _ from "lodash";
 import { AssetService } from "../../services/assetService";
-import { IMetadataProvider, MetadataProviderFactory } from "../storage/metadataProviderFactory";
 
 /**
  * @name - TF Pascal VOC Records Export Asset State
@@ -59,7 +58,7 @@ export abstract class ExportProvider
     <TOptions extends IExportProviderOptions = IExportProviderOptions> implements IExportProvider {
     private storageProviderInstance: IStorageProvider;
     private assetProviderInstance: IAssetProvider;
-    private metadataProviderInstance: IMetadataProvider;
+    private metadataProviderInstance: IAssetProvider;
     private assetService: AssetService;
 
     constructor(public project: IProject, protected options?: TOptions) {
@@ -68,7 +67,6 @@ export abstract class ExportProvider
     }
 
     public abstract export(): Promise<void> | Promise<IExportResults>;
-
 
     /**
      * Gets the assets that are configured to be exported based on the configured asset state
@@ -145,12 +143,12 @@ export abstract class ExportProvider
     /**
      * Gets the asset provider for the current project
      */
-    protected get metadataProvider(): IMetadataProvider {
+    protected get metadataProvider(): IAssetProvider {
         if (this.metadataProviderInstance) {
             return this.metadataProviderInstance;
         }
 
-        this.metadataProviderInstance = MetadataProviderFactory.create(
+        this.metadataProviderInstance = AssetProviderFactory.create(
             this.project.metadataConnection.providerType,
             this.project.metadataConnection.providerOptions,
         );

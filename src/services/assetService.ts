@@ -33,37 +33,36 @@ export class AssetService {
     Guard.empty(assetFilePath);
     const normalizedPath = assetFilePath.toLowerCase();
 
-        // If the path is not already prefixed with a protocol
-        // then assume it comes from the local file system
-        if (!normalizedPath.startsWith("http://") &&
-            !normalizedPath.startsWith("https://") &&
-            !normalizedPath.startsWith("file:")) {
-            // First replace \ character with / the do the standard url encoding then encode unsupported characters
-            assetFilePath = encodeFileURI(assetFilePath, true);
-        }
+    // If the path is not already prefixed with a protocol
+    // then assume it comes from the local file system
+    if (!normalizedPath.startsWith("http://") &&
+        !normalizedPath.startsWith("https://") &&
+        !normalizedPath.startsWith("file:")) {
+        // First replace \ character with / the do the standard url encoding then encode unsupported characters
+        assetFilePath = encodeFileURI(assetFilePath, true);
+    }
 
-        const md5Hash = new MD5().update(assetIdentifier).digest("hex");
-        const pathParts = assetFilePath.split(/[\\\/]/);
-        // Example filename: video.mp4#t=5
-        // fileNameParts[0] = "video"
-        // fileNameParts[1] = "mp4"
-        // fileNameParts[2] = "t=5"
-        assetFileName = assetFileName || pathParts[pathParts.length - 1];
-        const fileNameParts = assetFileName.split(".");
-        const extensionParts = fileNameParts[fileNameParts.length - 1].split(/[\?#]/);
-        const assetFormat = extensionParts[0];
+    const md5Hash = new MD5().update(assetIdentifier).digest("hex");
+    const pathParts = assetFilePath.split(/[\\\/]/);
+    // Example filename: video.mp4#t=5
+    // fileNameParts[0] = "video"
+    // fileNameParts[1] = "mp4"
+    // fileNameParts[2] = "t=5"
+    assetFileName = assetFileName || pathParts[pathParts.length - 1];
+    const fileNameParts = assetFileName.split(".");
+    const extensionParts = fileNameParts[fileNameParts.length - 1].split(/[\?#]/);
+    const assetFormat = extensionParts[0];
 
-        const assetType = this.getAssetType(assetFormat);
-
-        return {
-            id: md5Hash,
-            format: assetFormat,
-            state: { [EditorContext.Geometry]: AssetState.NotVisited, [EditorContext.Segmentation]: AssetState.NotVisited, [EditorContext.Metadata]: AssetState.NotVisited, },
-            type: assetType,
-            name: assetFileName,
-            path: assetFilePath,
-            size: null,
-        };
+    const assetType = this.getAssetType(assetFormat);
+    return {
+        id: md5Hash,
+        format: assetFormat,
+        state: { [EditorContext.Geometry]: AssetState.NotVisited, [EditorContext.Segmentation]: AssetState.NotVisited, [EditorContext.Metadata]: AssetState.NotVisited, },
+        type: assetType,
+        name: assetFileName,
+        path: assetFilePath,
+        size: null,
+    };
     }
 
     /**
@@ -89,12 +88,17 @@ export class AssetService {
                 return AssetType.Video;
             case "tfrecord":
                 return AssetType.TFRecord;
+            case "seg":
+                return AssetType.SegmentationData;
+            case "json":
+                return AssetType.ImageMetadata;
             default:
                 return AssetType.Unknown;
         }
     }
 
     private assetProviderInstance: IAssetProvider;
+    private metadataProviderInstance: IAssetProvider;
     private storageProviderInstance: IStorageProvider;
 
     constructor(private project: IProject) {
@@ -116,6 +120,19 @@ export class AssetService {
     }
 
     /**
+     * Get Asset Provider from project's source connction
+     */
+    protected get metadataProvider(): IAssetProvider {
+        if (!this.metadataProviderInstance) {
+            this.metadataProviderInstance = AssetProviderFactory.create(
+                this.project.metadataConnection.providerType,
+                this.project.metadataConnection.providerOptions,
+            );
+
+            return this.metadataProviderInstance;
+        }
+    }
+    /**
      * Get Storage Provider from project's target connection
      */
     protected get storageProvider(): IStorageProvider {
@@ -134,6 +151,13 @@ export class AssetService {
      */
     public async getAssets(): Promise<IAsset[]> {
         return await this.assetProvider.getAssets();
+    }
+
+    /**
+     * Get metadata from provider
+     */
+    public async getMetadata(): Promise<IAsset[]> {
+        return await this.metadataProvider.getAssets();
     }
 
     /**
@@ -198,6 +222,7 @@ export class AssetService {
                     regions: await this.getRegionsFromTFRecord(asset),
                     segments: await this.getSegmentsFromTFRecord(asset),
                     metadata: { fileName: "" },
+                    segmentation: undefined,
                     version: appInfo.version,
                 };
             } else {
@@ -206,6 +231,7 @@ export class AssetService {
                     regions: [],
                     segments: [],
                     metadata: { fileName: "" },
+                    segmentation: undefined,
                     version: appInfo.version,
                 };
             }

@@ -381,13 +381,12 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
             });
 
             // If instant tag click is required
-            if (this.props.instantTagClick === true){
+            if (this.props.instantTagClick === true) {
                 if (this.props.onTagClick &&
                     !inEditMode) {
                     this.props.onTagClick(tag);
                 }
-            }
-            else{
+            } else {
                 // Only fire click event if a region is selected
                 if (this.props.selectedRegions &&
                     this.props.selectedRegions.length > 0 &&
@@ -395,7 +394,7 @@ export class TagInput extends React.Component<ITagInputProps, ITagInputState> {
                     !inEditMode) {
                     this.props.onTagClick(tag);
                 }
-            }            
+            }
         }
     }
 

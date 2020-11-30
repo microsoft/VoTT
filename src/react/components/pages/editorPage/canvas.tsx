@@ -152,7 +152,6 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         for (const selectedRegion of selectedRegions) {
             selectedRegion.tag = lockedTag ? lockedTag : tag;
         }
-        
         this.updateRegions(selectedRegions);
         if (this.props.onSelectedRegionsChanged) {
             this.props.onSelectedRegionsChanged(selectedRegions);
@@ -387,7 +386,7 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
             this.template = new Rect(selectedRegionsData.width, selectedRegionsData.height);
         }
 
-        if (this.props.lockedTag){
+        if (this.props.lockedTag) {
             for (const selectedRegion of selectedRegions) {
                 selectedRegion.tag = this.props.lockedTag;
             }

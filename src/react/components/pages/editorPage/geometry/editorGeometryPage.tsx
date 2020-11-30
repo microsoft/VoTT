@@ -221,7 +221,6 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
     }
 
     private onPageClick = () => {
-        console.log("onPageClick");
         this.setState({
             selectedRegions: [],
         });
