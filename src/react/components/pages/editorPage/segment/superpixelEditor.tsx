@@ -150,6 +150,17 @@ const getAnnotationData = (
     return defaultAnnotating;
 };
 
+export const getBoundingBox = (ids: number[]) => {
+    let pathString = "";
+    ids.map( (id) => {const s = document.getElementById("sp"+id); pathString += (s.getAttribute("d") + " ") });
+    const s = Snap("#mainCanvas");
+    const path = s.path(pathString);
+    //path.attr( {visibility: "hidden"} );
+    const bbox = path.getBBox();
+    path.remove();
+    return { left: bbox.x, top: bbox.y, width: bbox.width, height: bbox.height };
+}
+
 function getPathFromPoints(points: any, canvasWidth: number, canvasHeight :number){
     const gridWidth = canvasWidth + 1;
     const gridHeight = canvasHeight + 1;

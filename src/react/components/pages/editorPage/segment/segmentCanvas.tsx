@@ -11,7 +11,7 @@ import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetP
 import Confirm from "../../../common/confirm/confirm";
 import { createContentBoundingBox } from "../../../../../common/layout";
 import { SegmentSelectionMode } from "../editorPage";
-import { Annotation, AnnotationTag } from "./superpixelEditor";
+import { Annotation, AnnotationTag, getBoundingBox } from "./superpixelEditor";
 import { ITag } from "vott-react";
 import { strings } from "../../../../../common/strings";
 import { SuperpixelEditor } from "./superpixelEditor";
@@ -251,6 +251,18 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         return { id: id.toString(), tag, superpixel: [superpixelId], area, boundingBox: bbox, iscrowd: 0, risk: "safe" };
     }
 
+    private integrateOffset(segment: ISegment, offset: ISegmentOffset, toBeAdded: boolean = true){
+        if (!toBeAdded && segment.area - offset.area <= 0){
+            return undefined;
+        }
+        const newSuperpixel = toBeAdded ? [...segment.superpixel, offset.superpixelId]
+        : segment.superpixel.filter((element) => element !== offset.superpixelId);
+        return {... segment, area: toBeAdded ? segment.area + offset.area : segment.area - offset.area,
+            superpixel: newSuperpixel,
+            boundingBox: getBoundingBox(newSuperpixel),
+        };
+    }
+
     private projectSegmentOffset = (segments: ISegment[], offset: ISegmentOffset, addition: boolean): ISegment[] => {
         if (addition){
             if (segments.filter((e) => e.tag === offset.tag && e.superpixel.includes(offset.superpixelId)).length > 0){ // already contains
@@ -260,14 +272,9 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             const processedSegments = segments.map((element): ISegment => {
                 if (element.tag === offset.tag){
                     founded = 1;
-                    return {... element, area: element.area + offset.area,
-                        superpixel: [...element.superpixel, offset.superpixelId],
-                        boundingBox: { left: 0, top: 0, width: 0, height: 0 },
-                        iscrowd: 0,
-                        risk: "safe",
-                    };
+                    return this.integrateOffset(element, offset, addition);
                 }
-                else{
+                else {
                     return element;
                 }
             });
@@ -281,12 +288,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                     if (element.area - offset.area === 0 || (element.superpixel.length===1 && element.superpixel.includes(offset.superpixelId))){
                         emptyId = element.id;
                     }
-                    return {... element, area: element.area - offset.area,
-                        superpixel: element.superpixel.filter((element) => element !== offset.superpixelId),
-                        boundingBox: { left: 0, top: 0, width: 0, height: 0 },
-                        iscrowd: 0,
-                        risk: "safe",
-                    };
+                    return this.integrateOffset(element, offset, addition);
                 }
                 else {
                     return element;
