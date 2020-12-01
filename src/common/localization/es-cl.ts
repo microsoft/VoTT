@@ -323,6 +323,14 @@ export const spanish: IAppStrings = {
                         title: "Incluir imágenes",
                         description: "Si desea o no incluir activos de imagen binaria en la conexión de destino",
                     },
+                    includeLabelImages: {
+                        title: "Include Label Images",
+                        description: "Whether or not to include label image assets for training",
+                    },
+                    exportIndividuals: {
+                        title: "Export individual files",
+                        description: "Export seperate files",
+                    },
                 },
             },
             vottJson: {

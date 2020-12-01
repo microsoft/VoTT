@@ -90,13 +90,13 @@ export default class EditorSegmentPage extends React.Component<
         },
         isValid: true,
         showInvalidRegionWarning: false,
-        context: EditorContext.Segmentation,
+        context: EditorContext.Segment,
     };
 
     private activeLearningService: ActiveLearningService = null;
     private loadingProjectAssets: boolean = false;
     private toolbarItems: IToolbarItemRegistration[] = ToolbarItemFactory.getToolbarItems(
-        EditorContext.Segmentation,
+        EditorContext.Segment,
     );
     private canvas: RefObject<SegmentCanvas> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();

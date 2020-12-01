@@ -321,6 +321,14 @@ export interface IAppStrings {
                         title: string,
                         description: string,
                     },
+                    includeLabelImages: {
+                        title: string,
+                        description: string,
+                    },
+                    exportIndividuals: {
+                        title: string,
+                        description: string,
+                    },
                 },
             },
             vottJson: {

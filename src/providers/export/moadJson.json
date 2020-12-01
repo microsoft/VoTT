@@ -18,11 +18,17 @@
                 "${strings.export.providers.common.properties.assetState.options.tagged}"
             ]
         },
-        "includeImages": {
+        "includeLabelImages": {
+            "type": "boolean",
+            "default": false,
+            "title": "${strings.export.providers.common.properties.includeLabelImages.title}",
+            "description": "${strings.export.providers.common.properties.includeLabelImages.description}"
+        },
+        "exportIndividuals": {
             "type": "boolean",
             "default": true,
-            "title": "${strings.export.providers.common.properties.includeImages.title}",
-            "description": "${strings.export.providers.common.properties.includeImages.description}"
+            "title": "${strings.export.providers.common.properties.exportIndividuals.title}",
+            "description": "${strings.export.providers.common.properties.exportIndividuals.description}"
         }
     }
 }

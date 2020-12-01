@@ -71,7 +71,20 @@ export abstract class ExportProvider
     /**
      * Gets the assets that are configured to be exported based on the configured asset state
      */
-    public async getAssetsForExport(): Promise<IAssetMetadata[]> {
+    public async getAssetsForExport(context?: EditorContext): Promise<IAssetMetadata[]> {
+        
+        const getAssetsTouched = (asset, assetStates: AssetState[]) => {
+            const predicates = [];
+            if (context === null || context === undefined){
+                assetStates.map( (assetState) => predicates.push(asset.state[EditorContext.Geometry] === assetState));
+                assetStates.map( (assetState) => predicates.push(asset.state[EditorContext.Segment] === assetState));
+                assetStates.map( (assetState) => predicates.push(asset.state[EditorContext.Metadata] === assetState));
+            } else {
+                assetStates.map( (assetState) => predicates.push(asset.state[context] === assetState));
+            }
+            return assetStates.filter( (e) => e ).length > 0;
+        }
+
         let predicate: (asset: IAsset) => boolean = null;
 
         const getProjectAssets = () => Promise.resolve(_.values(this.project.assets));
@@ -90,10 +103,10 @@ export abstract class ExportProvider
         // WARNING: should be updated
         switch (this.options.assetState) {
             case ExportAssetState.Visited:
-                predicate = (asset) => asset.state[EditorContext.Geometry] === AssetState.Visited || asset.state[EditorContext.Geometry] === AssetState.Tagged;
+                predicate = (asset) => getAssetsTouched(asset, [AssetState.Visited, AssetState.Tagged]);
                 break;
             case ExportAssetState.Tagged:
-                predicate = (asset) => asset.state[EditorContext.Geometry] === AssetState.Tagged;
+                predicate = (asset) => getAssetsTouched(asset, [AssetState.Tagged]);
                 break;
             case ExportAssetState.All:
             default:

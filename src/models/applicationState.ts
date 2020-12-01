@@ -468,6 +468,6 @@ export interface ITFRecordMetadata {
 
 export enum EditorContext {
     Geometry = "geometry",
-    Segmentation = "segmentation",
+    Segment = "segment",
     Metadata = "metadata",
 }

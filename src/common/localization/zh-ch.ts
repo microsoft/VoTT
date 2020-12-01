@@ -330,6 +330,14 @@ export const chinese: IAppStrings = {
                         description: "是否在目标连接中包括二值化图像素材",
                         // Whether or not to include binary image assets in target connection
                     },
+                    includeLabelImages: {
+                        title: "Include Label Images",
+                        description: "Whether or not to include label image assets for training",
+                    },
+                    exportIndividuals: {
+                        title: "Export individual files",
+                        description: "Export seperate files",
+                    },
                 },
             },
             vottJson: {

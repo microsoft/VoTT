@@ -330,6 +330,14 @@ export const japanese: IAppStrings = {
                         description: "ターゲット接続にバイナリ画像アセットを含めるかどうか",
                         // Whether or not to include binary image assets in target connection"
                     },
+                    includeLabelImages: {
+                        title: "Include Label Images",
+                        description: "Whether or not to include label image assets for training",
+                    },
+                    exportIndividuals: {
+                        title: "Export individual files",
+                        description: "Export seperate files",
+                    },
                 },
             },
             vottJson: {

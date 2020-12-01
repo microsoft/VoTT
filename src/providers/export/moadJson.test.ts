@@ -62,7 +62,8 @@ describe("MOAD Json Export Provider", () => {
     it("Can be instantiated through the factory", () => {
         const options: IMoadJsonExportProviderOptions = {
             assetState: ExportAssetState.All,
-            includeImages: true,
+            includeLabelImages: false,
+            exportIndividuals: false,
         };
         const exportProvider = ExportProviderFactory.create("moadJson", testProject, options);
         expect(exportProvider).not.toBeNull();
@@ -93,7 +94,8 @@ describe("MOAD Json Export Provider", () => {
         it("Exports all assets", async () => {
             const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.All,
-                includeImages: true,
+                includeLabelImages: false,
+                exportIndividuals: false,
             };
 
             const exportProvider = new MoadJsonExportProvider(testProject, options);
@@ -120,7 +122,8 @@ describe("MOAD Json Export Provider", () => {
         it("Exports only visited assets (includes tagged)", async () => {
             const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.Visited,
-                includeImages: true,
+                includeLabelImages: false,
+                exportIndividuals: false,
             };
 
             const exportProvider = new MoadJsonExportProvider(testProject, options);
@@ -151,7 +154,8 @@ describe("MOAD Json Export Provider", () => {
         it("Exports only tagged assets", async () => {
             const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.Tagged,
-                includeImages: true,
+                includeLabelImages: false,
+                exportIndividuals: false,
             };
 
             const exportProvider = new MoadJsonExportProvider(testProject, options);
@@ -179,7 +183,8 @@ describe("MOAD Json Export Provider", () => {
         it("Includes images in export when option is selected", async () => {
             const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.All,
-                includeImages: true,
+                includeLabelImages: false,
+                exportIndividuals: false,
             };
 
             const exportProvider = new MoadJsonExportProvider(testProject, options);
@@ -192,7 +197,8 @@ describe("MOAD Json Export Provider", () => {
         it("Does not include images in export when option is not selected", async () => {
             const options: IMoadJsonExportProviderOptions = {
                 assetState: ExportAssetState.All,
-                includeImages: false,
+                includeLabelImages: false,
+                exportIndividuals: false,
             };
 
             const exportProvider = new MoadJsonExportProvider(testProject, options);

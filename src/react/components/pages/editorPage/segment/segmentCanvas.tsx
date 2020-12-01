@@ -6,6 +6,7 @@ import {
     ISegment,
     ISegmentOffset,
 } from "../../../../../models/applicationState";
+import * as shortid from "shortid";
 import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetPreview";
 import Confirm from "../../../common/confirm/confirm";
 import { createContentBoundingBox } from "../../../../../common/layout";
@@ -271,7 +272,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 }
             });
             return founded === 1 ? processedSegments : [...segments,
-                this.getInitialSegment(segments.length, offset.tag, offset.superpixelId, offset.area, { left:0, top: 0, width:0, height: 0 })];
+                this.getInitialSegment(shortid.generate(), offset.tag, offset.superpixelId, offset.area, { left:0, top: 0, width:0, height: 0 })];
         }
         else{ // subtraction
             let emptyId = "";

@@ -331,6 +331,14 @@ export const korean: IAppStrings = {
                         description: "대상 연결에 이진 이미지 Asset을 포함할지 여부",
                         // Whether or not to include binary image assets in target connection"
                     },
+                    includeLabelImages: {
+                        title: "레이블 이미지 포함",
+                        description: "학습을 위한 레이블 이미지 포함할지 여부",
+                    },
+                    exportIndividuals: {
+                        title: "개별 파일로 산출",
+                        description: "이미지 당 어노테이션 결과를 산출",
+                    },
                 },
             },
             vottJson: {

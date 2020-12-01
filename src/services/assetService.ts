@@ -57,7 +57,7 @@ export class AssetService {
     return {
         id: md5Hash,
         format: assetFormat,
-        state: { [EditorContext.Geometry]: AssetState.NotVisited, [EditorContext.Segmentation]: AssetState.NotVisited, [EditorContext.Metadata]: AssetState.NotVisited, },
+        state: { [EditorContext.Geometry]: AssetState.NotVisited, [EditorContext.Segment]: AssetState.NotVisited, [EditorContext.Metadata]: AssetState.NotVisited, },
         type: assetType,
         name: assetFileName,
         path: assetFilePath,

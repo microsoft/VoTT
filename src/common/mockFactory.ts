@@ -226,7 +226,7 @@ export default class MockFactory {
             format: "seg",
             name: `segmentationasset-${name}.seg`,
             path: encodeFileURI(`C:\\Desktop\\segmentationasset${name}.seg`),
-            state: { [EditorContext.Segmentation]: assetState },
+            state: { [EditorContext.Segment]: assetState },
             type: AssetType.SegmentationData,
             size: {
                 width: 800,
