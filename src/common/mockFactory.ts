@@ -315,14 +315,14 @@ export default class MockFactory {
      * @param asset Test asset
      */
     public static createTestAssetMetadata(
-        asset?: IAsset, regions?: IRegion[], segments?: ISegment[], metadata?: IImageMetadata, segmentation?: IAsset): IAssetMetadata {
+        asset?: IAsset, regions?: IRegion[], segments?: ISegment[], metadata?: IImageMetadata, segmentationData?: IAsset): IAssetMetadata {
         return {
             asset: asset || MockFactory.createTestAsset(),
             regions: regions || [],
             segments: segments || [],
             metadata: metadata || {fileName: ""},
             version: appInfo.version,
-            segmentation: segmentation || MockFactory.createTestAsset("string-seg",AssetState.NotVisited, "", AssetType.SegmentationData),
+            segmentationData: segmentationData || MockFactory.createTestAsset("string-seg",AssetState.NotVisited, "", AssetType.SegmentationData),
         };
     }
 

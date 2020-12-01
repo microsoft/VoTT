@@ -378,7 +378,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
         // If the asset contains any regions without tags, don't proceed.
         const regionsWithoutTags = assetMetadata.regions.filter((region) => region.tag === undefined);
 
-        if (regionsWithoutTags.length > 0) {
+        if (regionsWithoutTags.length) {
             this.setState({ isValid: false });
             return;
         }
@@ -391,7 +391,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
 
         if (this.isTaggableAssetType(assetMetadata.asset)) {
             assetMetadata.asset.state = {... assetMetadata.asset.state,
-                [this.state.context] : assetMetadata.regions.length > 0 ? AssetState.Tagged : AssetState.Visited };
+                [this.state.context] : assetMetadata.regions.length ? AssetState.Tagged : AssetState.Visited };
         } else if (assetMetadata.asset.state[this.state.context] === AssetState.NotVisited) {
             assetMetadata.asset.state = {... assetMetadata.asset.state, [this.state.context]: AssetState.Visited };
         }
@@ -401,19 +401,16 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
         // We want to ensure that in this case the root video asset state is accurately
         // updated to match that state of the asset.
         if (rootAsset.id === assetMetadata.asset.id) {
-            const assetMetadataObject = assetMetadata.asset.state[this.state.context];
-            rootAsset.state = { ... rootAsset.state, assetMetadataObject};
+            rootAsset.state = assetMetadata.asset.state;
         } else {
             const rootAssetMetadata = await this.props.actions.loadAssetMetadata(this.props.project, rootAsset);
 
             if (rootAssetMetadata.asset.state[this.state.context] !== AssetState.Tagged) {
-                const assetMetadataObject = assetMetadata.asset.state[this.state.context];
-                rootAssetMetadata.asset.state = { ... rootAssetMetadata.asset.state, assetMetadataObject};
+                rootAssetMetadata.asset.state = assetMetadata.asset.state;
                 await this.props.actions.saveAssetMetadata(this.props.project, rootAssetMetadata);
             }
 
-            const rootAssetMetadataObject = rootAssetMetadata.asset.state[this.state.context];
-            rootAsset.state = { ... rootAsset.state, rootAssetMetadataObject};
+            rootAsset.state = rootAssetMetadata.asset.state;
         }
 
         // Only update asset metadata if state changes or is different

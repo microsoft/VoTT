@@ -495,10 +495,9 @@ export default class EditorSegmentPage extends React.Component<
             if (this.isTaggableAssetType(assetMetadata.asset)) {
                 assetMetadata.asset.state = {
                     ...assetMetadata.asset.state,
-                    [this.state.context]:
-                        assetMetadata.segments.length > 0
-                            ? AssetState.Tagged
-                            : AssetState.Visited,
+                    [this.state.context]: assetMetadata.segments.length
+                    ? AssetState.Tagged
+                    : AssetState.Visited,
                 };
             } else if (
                 assetMetadata.asset.state[this.state.context] ===
@@ -515,37 +514,25 @@ export default class EditorSegmentPage extends React.Component<
             // We want to ensure that in this case the root video asset state is accurately
             // updated to match that state of the asset.
             if (rootAsset.id === assetMetadata.asset.id) {
-                const assetMetadataObject =
-                    assetMetadata.asset.state[this.state.context];
-                rootAsset.state = { ...rootAsset.state, assetMetadataObject };
+                rootAsset.state = assetMetadata.asset.state;
             } else {
                 const rootAssetMetadata = await this.props.actions.loadAssetMetadata(
                     this.props.project,
                     rootAsset,
                 );
-
+                
                 if (
                     rootAssetMetadata.asset.state[this.state.context] !==
                     AssetState.Tagged
                 ) {
-                    const assetMetadataObject =
-                        assetMetadata.asset.state[this.state.context];
-                    rootAssetMetadata.asset.state = {
-                        ...rootAssetMetadata.asset.state,
-                        assetMetadataObject,
-                    };
+                    rootAssetMetadata.asset.state = assetMetadata.asset.state;
                     await this.props.actions.saveAssetMetadata(
                         this.props.project,
                         rootAssetMetadata,
                     );
                 }
 
-                const rootAssetMetadataObject =
-                    rootAssetMetadata.asset.state[this.state.context];
-                rootAsset.state = {
-                    ...rootAsset.state,
-                    rootAssetMetadataObject,
-                };
+                rootAsset.state = rootAssetMetadata.asset.state;
             }
 
             // Only update asset metadata if state changes or is different
@@ -742,7 +729,7 @@ export default class EditorSegmentPage extends React.Component<
         // update asset
         try {
             if (this.state.segmentationAssets){
-                assetMetadata.segmentation = this.loadSegmentationData(asset, this.state.segmentationAssets);
+                assetMetadata.segmentationData = this.loadSegmentationData(asset, this.state.segmentationAssets);
             }
         } catch (err) {
             console.warn("Error in loading segmentation data file");
@@ -761,8 +748,6 @@ export default class EditorSegmentPage extends React.Component<
         } catch (err) {
             console.warn("Error computing asset size");
         }
-
-
 
         this.setState(
             {

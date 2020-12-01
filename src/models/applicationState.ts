@@ -292,7 +292,7 @@ export interface IAssetMetadata {
     segments: ISegment[];
     metadata: IImageMetadata;
     version: string;
-    segmentation?: IAsset;
+    segmentationData?: IAsset;
 }
 
 /**

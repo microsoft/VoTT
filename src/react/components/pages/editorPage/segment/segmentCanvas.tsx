@@ -66,24 +66,13 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     public componentDidUpdate = async (prevProps: Readonly<ISegmentCanvasProps>, prevState: Readonly<ISegmentCanvasState>) => {
-        // Handles when the canvas is enabled & disabled
-        if (prevState.enabled !== this.state.enabled) {
-            // When the canvas is ready to display
-            if (this.state.enabled) {
-                //this.refreshCanvasToolsSegments();
-                //this.clearSegmentationData();
-                this.setSelectionMode(this.props.selectionMode);
-            } else { // When the canvas has been disabled
-                this.setSelectionMode(SegmentSelectionMode.NONE);
-            }
-        }
 
         // Handles asset changing
-        if(this.props.selectedAsset.segmentation && this.state.segmentationData === null){
-            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments), segmentationData: await this.loadSegmentationData(this.props.selectedAsset.segmentation.path)});
+        if(this.props.selectedAsset.segmentationData && this.state.segmentationData === null){
+            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments), segmentationData: await this.loadSegmentationData(this.props.selectedAsset.segmentationData.path)});
         }
         else if (this.props.selectedAsset !== prevProps.selectedAsset) {
-            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments), segmentationData: await this.loadSegmentationData(this.props.selectedAsset.segmentation.path) });
+            this.setState({ currentAsset: this.props.selectedAsset, annotatedData: this.decomposeSegment(this.props.selectedAsset.segments), segmentationData: await this.loadSegmentationData(this.props.selectedAsset.segmentationData.path) });
         }
 
         // Handle selection mode changes
@@ -104,6 +93,17 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             this.updateCanvasToolsSegmentTags();
         }
 
+        // Handles when the canvas is enabled & disabled
+        if (prevState.enabled !== this.state.enabled) {
+            // When the canvas is ready to display
+            if (this.state.enabled) {
+                //this.refreshCanvasToolsSegments();
+                //this.clearSegmentationData();
+                this.setSelectionMode(this.props.selectionMode);
+            } else { // When the canvas has been disabled
+                this.setSelectionMode(SegmentSelectionMode.NONE);
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////
