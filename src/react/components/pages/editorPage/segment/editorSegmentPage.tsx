@@ -225,7 +225,7 @@ export default class EditorSegmentPage extends React.Component<
                                             this.onAssetMetadataChanged
                                         }
                                         onCanvasRendered={this.onCanvasRendered}
-                                        onSelectedSegmentChanged={this.onSelectedSegmentChanged}
+                                        onSelectedTagForPropertyChanged={this.onSelectedTagForPropertyChanged}
                                         selectionMode={
                                             this.state.segmentSelectionMode
                                         }
@@ -254,7 +254,7 @@ export default class EditorSegmentPage extends React.Component<
                             </div>
                         </div>
                         <div className="editor-page-right-sidebar" style={{width: "150%", height: "100%"}}>
-                            <SplitPane split="horizontal" className="editor-page-right-sidebar" minSize={100}>
+                            <SplitPane split="horizontal" className="editor-page-right-sidebar" minSize={500}>
                                 <TagInput
                                     tags={this.props.project.tags}
                                     lockedTag={this.state.lockedTag}
@@ -269,9 +269,10 @@ export default class EditorSegmentPage extends React.Component<
                                 />
                                 <div style={{height:100, width:100}}>
                                     <PropertyForm
+                                        assetMetadata={this.state.selectedAsset}
+                                        selectedTag={this.state.selectedTagForProperty}
                                         editorContext={this.state.context}
-                                        selectedRegions={this.state.selectedRegions}
-                                        selectedSegment={this.state.selectedSegment}
+                                        onAssetMetadataChanged={this.onAssetMetadataChanged}
                                         />
                                 </div> 
                             </SplitPane>
@@ -580,10 +581,10 @@ export default class EditorSegmentPage extends React.Component<
         }
     }
 
-    private onSelectedSegmentChanged = async (
-        selectedSegment: ISegment,
+    private onSelectedTagForPropertyChanged = async (
+        selectedTagForProperty: string,
     ): Promise<void> => {
-        this.setState({ selectedSegment });
+        this.setState({ selectedTagForProperty }, () => console.log(this.state.selectedTagForProperty));
     }
 
     /**

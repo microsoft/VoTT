@@ -70,7 +70,7 @@ export interface IEditorPageState {
     /** Segmentation data for grid */
     segmentationAssets?: IAsset[];
     /** Currently selected segment on current asset */
-    selectedSegment?: ISegment;
+    selectedTagForProperty?: string;
 }
 
 export function mapStateToProps(state: IApplicationState) {

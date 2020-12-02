@@ -23,7 +23,7 @@ export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     lockedTag: string;
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
-    onSelectedSegmentChanged?: (segment: ISegment) => void;
+    onSelectedTagForPropertyChanged?: (selectedTagForProperty: string) => void;
     onCanvasRendered?: (canvas: HTMLCanvasElement) => void;
 }
 
@@ -105,8 +105,8 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 //this.clearSegmentationData();
                 this.setSelectionMode(this.props.selectionMode);
 
-                if (this.props.onSelectedSegmentChanged) {
-                    this.props.onSelectedSegmentChanged(this.getSelectedSegment(this.state.lastSelectedTag));
+                if (this.props.onSelectedTagForPropertyChanged) {
+                    this.props.onSelectedTagForPropertyChanged(this.state.lastSelectedTag);
                 }
             } else { // When the canvas has been disabled
                 this.setSelectionMode(SegmentSelectionMode.NONE);
@@ -206,14 +206,11 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     private onSelectedTagUpdated = async (
-        tag: string,
+        selectedTagForProperty: string,
     ): Promise<void> => {
-        if (tag) {
-            const selectedSegment = this.getSelectedSegment(tag);
-            if (this.props.onSelectedSegmentChanged && this.state.lastSelectedTag !== tag) {
-                this.props.onSelectedSegmentChanged(selectedSegment);
-            }
-            this.setState( {... this.state, lastSelectedTag: tag} );
+        this.setState( { ... this.state, lastSelectedTag: selectedTagForProperty});
+        if (this.props.onSelectedTagForPropertyChanged){
+            this.props.onSelectedTagForPropertyChanged(selectedTagForProperty);
         }
     }
 
