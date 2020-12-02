@@ -23,6 +23,7 @@ export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     lockedTag: string;
     children?: ReactElement<AssetPreview>;
     onAssetMetadataChanged?: (assetMetadata: IAssetMetadata) => void;
+    onSelectedSegmentChanged?: (segment: ISegment) => void;
     onCanvasRendered?: (canvas: HTMLCanvasElement) => void;
 }
 
@@ -32,6 +33,7 @@ export interface ISegmentCanvasState {
     enabled: boolean;
     annotatedData: Annotation[];
     segmentationData: any; // json object
+    lastSelectedTag: string;
 }
 
 export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, ISegmentCanvasState> {
@@ -48,6 +50,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         enabled: true,
         annotatedData: null,
         segmentationData: null,
+        lastSelectedTag: AnnotationTag.EMPTY,
     };
 
     public defaultColor = "black";
@@ -101,6 +104,10 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 //this.refreshCanvasToolsSegments();
                 //this.clearSegmentationData();
                 this.setSelectionMode(this.props.selectionMode);
+
+                if (this.props.onSelectedSegmentChanged) {
+                    this.props.onSelectedSegmentChanged(this.getSelectedSegment(this.state.lastSelectedTag));
+                }
             } else { // When the canvas has been disabled
                 this.setSelectionMode(SegmentSelectionMode.NONE);
             }
@@ -144,6 +151,15 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         }
     }
 
+    public getSelectedSegment = (tag: string): ISegment => {
+        if (tag){
+            const selectedSegments = this.state.currentAsset.segments.filter( (s) => s.tag === tag );
+            if (selectedSegments && selectedSegments.length) {
+                return selectedSegments[0];
+            }
+        }
+    }
+
     public confirmRemoveAllSegments = () => {
         this.clearConfirm.current.open();
     }
@@ -172,8 +188,14 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                     <div id="selection-zone">
         <div id="editor-zone" className="full-size">
             { this.state.segmentationData ? 
-            <SuperpixelEditor id={"mainCanvas"} canvasWidth={1024} canvasHeight={768} segmentationData={this.state.segmentationData} annotatedData={this.decomposeSegment(this.state.currentAsset.segments)} defaultcolor={this.defaultColor} annotating={this.currentAnnotating} onSegmentUpdated={this.onSegmentUpdated} />
-            : <div> </div> }
+            <SuperpixelEditor id={"mainCanvas"}
+                canvasWidth={1024} canvasHeight={768}
+                segmentationData={this.state.segmentationData}
+                annotatedData={this.decomposeSegment(this.state.currentAsset.segments)}
+                defaultcolor={this.defaultColor} annotating={this.currentAnnotating}
+                onSegmentUpdated={this.onSegmentUpdated}
+                onSelectedTagUpdated={this.onSelectedTagUpdated} />
+            : <div> segmentation is loading... </div> }
             
         </div>
                     </div>
@@ -183,6 +205,17 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         );
     }
 
+    private onSelectedTagUpdated = async (
+        tag: string,
+    ): Promise<void> => {
+        if (tag) {
+            const selectedSegment = this.getSelectedSegment(tag);
+            if (this.props.onSelectedSegmentChanged && this.state.lastSelectedTag !== tag) {
+                this.props.onSelectedSegmentChanged(selectedSegment);
+            }
+            this.setState( {... this.state, lastSelectedTag: tag} );
+        }
+    }
 
     private clearSegmentationData(){
         this.setState( {... this.state, segmentationData: null});

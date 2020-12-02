@@ -5,7 +5,7 @@ import { SelectionMode } from "vott-ct/lib/js/CanvasTools/Interface/ISelectorSet
 import {
     EditorMode, IApplicationState,
     IAppSettings, IAsset, IAssetMetadata, IProject, IRegion,
-    ISize, IAdditionalPageSettings, EditorContext,
+    ISize, IAdditionalPageSettings, EditorContext, ISegment,
 } from "../../../../models/applicationState";
 import IApplicationActions, * as applicationActions from "../../../../redux/actions/applicationActions";
 import IProjectActions, * as projectActions from "../../../../redux/actions/projectActions";
@@ -69,6 +69,8 @@ export interface IEditorPageState {
     showInvalidRegionWarning: boolean;
     /** Segmentation data for grid */
     segmentationAssets?: IAsset[];
+    /** Currently selected segment on current asset */
+    selectedSegment?: ISegment;
 }
 
 export function mapStateToProps(state: IApplicationState) {

@@ -63,10 +63,14 @@ const sameMembers = (arr1, arr2) =>
 const defaultAnnotation = (id: number) => new Annotation(AnnotationTag.EMPTY, AnnotationTag.EMPTY, id);
 
 interface SuperpixelProps {
-    id: string, canvasWidth: number, canvasHeight: number, segmentationData: any, annotatedData: Annotation[], defaultcolor: string, annotating: Annotation, onSegmentUpdated: (...params: any[]) => void;
+    id: string, canvasWidth: number, canvasHeight: number, segmentationData: any,
+     annotatedData: Annotation[], defaultcolor: string, annotating: Annotation,
+      onSegmentUpdated: (...params: any[]) => void, onSelectedTagUpdated: (...params: any[]) => void;
 }
 
-export const SuperpixelEditor: React.FC<SuperpixelProps> = ({id, canvasWidth, canvasHeight, segmentationData, annotatedData, defaultcolor, annotating, onSegmentUpdated}) => {
+export const SuperpixelEditor: React.FC<SuperpixelProps> = 
+({id, canvasWidth, canvasHeight, segmentationData, annotatedData, defaultcolor,
+     annotating, onSegmentUpdated, onSelectedTagUpdated}) => {
     const [ segmentation, setSegmentation] = useState(segmentationData);
     const [ annotated, setAnnotated] = useState(annotatedData);
     const canvasRef = useRef<SVGSVGElement>(null);
@@ -111,25 +115,29 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> = ({id, canvasWidth, ca
                          annotatingTag === AnnotationTag.DEANNOTATING ? defaultcolor : fillColor,
                          annotatingOpacity,
                          highlightLineWidth);
-                }
-               })
-               .mouseout( () => {
-                const annotatingTag = canvasRef.current.getAttribute("color-profile");
-                const currentColor = superpixel.attr().name;
-                if(annotatingTag !== AnnotationTag.EMPTY){
-                    const backupColor = canvasRef.current.getAttribute("content-script-type");
-                    updateSuperpixelSVG(superpixel,
-                         backupColor,
-                         currentColor === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity,
-                         defaultLineWidth);
-                }
-               })
-               .mousemove( (event: MouseEvent) => {
-                 paintAndUpdateState(event, superpixel, defaultcolor, onSegmentUpdated);
-               })
-               .mousedown( (event: MouseEvent) => {
-                 paintAndUpdateState(event, superpixel, defaultcolor, onSegmentUpdated);
-               });
+                    }
+                })
+                .mouseout( () => {
+                    const annotatingTag = canvasRef.current.getAttribute("color-profile");
+                    const currentColor = superpixel.attr().name;
+                    if(annotatingTag !== AnnotationTag.EMPTY){
+                        const backupColor = canvasRef.current.getAttribute("content-script-type");
+                        updateSuperpixelSVG(superpixel,
+                            backupColor,
+                            currentColor === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity,
+                            defaultLineWidth);
+                        }
+                })
+                .mousemove( (event: MouseEvent) => {
+                    paintAndUpdateState(event, superpixel, defaultcolor, onSegmentUpdated);
+                })
+                .mousedown( (event: MouseEvent) => {
+                    paintAndUpdateState(event, superpixel, defaultcolor, onSegmentUpdated);
+                })
+                .mouseup( (event: MouseEvent) => {
+                    const tag: string = superpixel.attr()["tag"];
+                    onSelectedTagUpdated(tag);
+                });
             return superpixel;
         });
     }, [segmentation, annotated]);
@@ -269,21 +277,10 @@ const paintAndUpdateState = (event, superpixel, defaultcolor, onSegmentUpdated) 
         paintSuperpixel(superpixel, annotatingTag, fillColor, parseInt(superpixel.attr()["area"]), onSegmentUpdated);
         superpixel.parent().attr({...superpixel.parent().attr(), "content-script-type": fillColor}); // storing color
     }
-    else if(event.buttons === 1){ // removing
+    else if(event.buttons === 1 && annotatingTag !== AnnotationTag.EMPTY){ // removing
         deleteSuperpixelAnnotation(superpixel, defaultcolor, parseInt(superpixel.attr()["area"]), onSegmentUpdated); // area should be updated
         superpixel.parent().attr({...superpixel.parent().attr(), "content-script-type": defaultcolor}); // storing color
     }
-    /*
-    if(event.buttons === 1 && superpixelDOM.getAttribute("tag") && annotatingTag !== AnnotationTag.EMPTY){
-        const annotatingTag: string = canvasDOM.getAttribute("tag")!;
-        const fillColor: string = canvasDOM.getAttribute("name")!;
-        paintSuperpixel(idKey, superpixel, annotatingTag, fillColor, onSegmentUpdated);
-        canvasDOM.setAttribute("content-script-type", fillColor); // storing color
-    }
-    else if(event.buttons === 2 && superpixelDOM.getAttribute("tag")){ // removing
-        deleteSuperpixelAnnotation(idKey, superpixel, defaultcolor, onSegmentUpdated); // area should be updated
-        canvasDOM.setAttribute("content-script-type", defaultcolor); // storing color
-    }*/
 };
 
 type ISegmentStateCallback = (segment: ISegmentOffset) => void;

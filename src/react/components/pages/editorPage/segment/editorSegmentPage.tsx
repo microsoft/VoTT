@@ -13,11 +13,11 @@ import {
     EditorMode,
     IAsset,
     IAssetMetadata,
-    IProject,
     ITag,
     AppError,
     ErrorCode,
     EditorContext,
+    ISegment,
 } from "../../../../../models/applicationState";
 import {
     IToolbarItemRegistration,
@@ -30,7 +30,6 @@ import { KeyboardBinding } from "../../../common/keyboardBinding/keyboardBinding
 import { KeyEventType } from "../../../common/keyboardManager/keyboardManager";
 import { TagInput } from "../../../common/tagInput/tagInput";
 import { ToolbarItem } from "../../../toolbar/toolbarItem";
-import CanvasHelpers from "../canvasHelpers";
 import "../editorPage.scss";
 import EditorSideBar from "../editorSideBar";
 import Alert from "../../../common/alert/alert";
@@ -47,6 +46,7 @@ import {
 } from "../editorPage";
 import SegmentCanvas from "./segmentCanvas";
 import { AnnotationTag } from "./superpixelEditor";
+import PropertyForm from "../../../common/propertyForm/propertyForm";
 
 /**
  * Properties for Editor Page
@@ -225,6 +225,7 @@ export default class EditorSegmentPage extends React.Component<
                                             this.onAssetMetadataChanged
                                         }
                                         onCanvasRendered={this.onCanvasRendered}
+                                        onSelectedSegmentChanged={this.onSelectedSegmentChanged}
                                         selectionMode={
                                             this.state.segmentSelectionMode
                                         }
@@ -252,20 +253,30 @@ export default class EditorSegmentPage extends React.Component<
                                 )}
                             </div>
                         </div>
-                        <div className="editor-page-right-sidebar">
-                            <TagInput
-                                tags={this.props.project.tags}
-                                lockedTag={this.state.lockedTag}
-                                selectedRegions={this.state.selectedRegions}
-                                onChange={this.onTagsChanged}
-                                onLockedTagChange={this.onLockedTagChanged}
-                                onTagClick={this.onTagClicked}
-                                onCtrlTagClick={this.onCtrlTagClicked}
-                                onTagRenamed={this.confirmTagRenamed}
-                                onTagDeleted={this.confirmTagDeleted}
-                                instantTagClick={true}
-                            />
+                        <div className="editor-page-right-sidebar" style={{width: "150%", height: "100%"}}>
+                            <SplitPane split="horizontal" className="editor-page-right-sidebar" minSize={100}>
+                                <TagInput
+                                    tags={this.props.project.tags}
+                                    lockedTag={this.state.lockedTag}
+                                    selectedRegions={this.state.selectedRegions}
+                                    onChange={this.onTagsChanged}
+                                    onLockedTagChange={this.onLockedTagChanged}
+                                    onTagClick={this.onTagClicked}
+                                    onCtrlTagClick={this.onCtrlTagClicked}
+                                    onTagRenamed={this.confirmTagRenamed}
+                                    onTagDeleted={this.confirmTagDeleted}
+                                    instantTagClick={true}
+                                />
+                                <div style={{height:100, width:100}}>
+                                    <PropertyForm
+                                        editorContext={this.state.context}
+                                        selectedRegions={this.state.selectedRegions}
+                                        selectedSegment={this.state.selectedSegment}
+                                        />
+                                </div> 
+                            </SplitPane>
                         </div>
+                       
                         <Confirm
                             title={strings.editorPage.tags.rename.title}
                             ref={this.renameTagConfirm}
@@ -567,6 +578,12 @@ export default class EditorSegmentPage extends React.Component<
 
             this.setState({ childAssets, assets, isValid: true });
         }
+    }
+
+    private onSelectedSegmentChanged = async (
+        selectedSegment: ISegment,
+    ): Promise<void> => {
+        this.setState({ selectedSegment });
     }
 
     /**
