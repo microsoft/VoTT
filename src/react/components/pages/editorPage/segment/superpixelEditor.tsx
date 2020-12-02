@@ -13,8 +13,8 @@ const Snap = require("snapsvg-cjs");
 const defaultOpacity = 0.1;
 const annotatedOpacity = 0.7;
 const annotatingOpacity = 0.9;
-const defaultLineWidth = 0.5;
-const highlightLineWidth = 1;
+const defaultLineWidth = 1;
+const highlightLineWidth = 2;
 
 export interface IPoint{
     x: number,

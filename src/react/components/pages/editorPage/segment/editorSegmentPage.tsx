@@ -116,6 +116,9 @@ export default class EditorSegmentPage extends React.Component<
         this.activeLearningService = new ActiveLearningService(
             this.props.project.activeLearningSettings,
         );
+
+        this.onPropertyFormUpdated = this.onPropertyFormUpdated.bind(this);
+        this.onSelectedSegmentChanged = this.onSelectedSegmentChanged.bind(this);
     }
 
     public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
@@ -225,7 +228,7 @@ export default class EditorSegmentPage extends React.Component<
                                             this.onAssetMetadataChanged
                                         }
                                         onCanvasRendered={this.onCanvasRendered}
-                                        onSelectedTagForPropertyChanged={this.onSelectedTagForPropertyChanged}
+                                        onSelectedSegmentChanged={this.onSelectedSegmentChanged}
                                         selectionMode={
                                             this.state.segmentSelectionMode
                                         }
@@ -269,10 +272,10 @@ export default class EditorSegmentPage extends React.Component<
                                 />
                                 <div style={{height:100, width:100}}>
                                     <PropertyForm
-                                        assetMetadata={this.state.selectedAsset}
-                                        selectedTag={this.state.selectedTagForProperty}
                                         editorContext={this.state.context}
-                                        onAssetMetadataChanged={this.onAssetMetadataChanged}
+                                        selectedRegions={this.state.selectedRegions}
+                                        selectedSegment={this.state.selectedSegment}
+                                        onIsCrowdChange={this.onPropertyFormUpdated}
                                         />
                                 </div> 
                             </SplitPane>
@@ -316,6 +319,17 @@ export default class EditorSegmentPage extends React.Component<
             },
             () => this.canvas.current.forceResize(),
         );
+    }
+
+    private onPropertyFormUpdated = async (value: number) => {
+        const updatedAssetMetadata: IAssetMetadata = { ... this.state.selectedAsset, segments:
+            this.state.selectedAsset.segments.map( (s: ISegment) => { return s.id === this.state.selectedSegment.id ? {... s, iscrowd: value } : s })
+            };
+        console.log("onPropertyFormUpdated");
+        console.log({ ... this.state.selectedSegment, iscrowd: value});
+        // update selectedSegment
+        await this.onSelectedSegmentChanged({ ... this.state.selectedSegment, iscrowd: value});
+        await this.onAssetMetadataChanged(updatedAssetMetadata);
     }
 
     /**
@@ -581,10 +595,10 @@ export default class EditorSegmentPage extends React.Component<
         }
     }
 
-    private onSelectedTagForPropertyChanged = async (
-        selectedTagForProperty: string,
+    private onSelectedSegmentChanged = async (
+        selectedSegment: ISegment,
     ): Promise<void> => {
-        this.setState({ selectedTagForProperty }, () => console.log(this.state.selectedTagForProperty));
+        this.setState({ selectedSegment });
     }
 
     /**
