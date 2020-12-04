@@ -77,9 +77,7 @@ export default class EditorSegmentPage extends React.Component<
         childAssets: [],
         editorMode: EditorMode.Select,
         additionalSettings: {
-            videoSettings: this.props.project
-                ? this.props.project.videoSettings
-                : null,
+            videoSettings: null,
             activeLearningSettings: this.props.project
                 ? this.props.project.activeLearningSettings
                 : null,
@@ -277,10 +275,9 @@ export default class EditorSegmentPage extends React.Component<
                                         selectedSegment={this.state.selectedSegment}
                                         onIsCrowdChange={this.onPropertyFormUpdated}
                                         />
-                                </div> 
+                                </div>
                             </SplitPane>
                         </div>
-                       
                         <Confirm
                             title={strings.editorPage.tags.rename.title}
                             ref={this.renameTagConfirm}
@@ -500,99 +497,97 @@ export default class EditorSegmentPage extends React.Component<
         assetMetadata: IAssetMetadata,
     ): Promise<void> => {
         // If the asset contains any segments without tags, don't proceed.
-        if (assetMetadata.segments) {
-            const segmentsWithoutTags = assetMetadata.segments.filter(
-                (segment) => segment.tag === AnnotationTag.EMPTY,
-            );
+        const segmentsWithoutTags = assetMetadata.segments.filter(
+            (segment) => segment.tag === AnnotationTag.EMPTY,
+        );
 
-            if (segmentsWithoutTags.length) {
-                this.setState({ isValid: false });
-                return;
-            }
+        if (segmentsWithoutTags.length) {
+            this.setState({ isValid: false });
+            return;
+        }
 
-            const initialState = assetMetadata.asset.state[this.state.context];
+        const initialState = assetMetadata.asset.state[this.state.context];
 
-            // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
-            // asset selected from the side bar (image/video).
-            const rootAsset = {
-                ...(assetMetadata.asset.parent || assetMetadata.asset)
+        // The root asset can either be the actual asset being edited (ex: VideoFrame) or the top level / root
+        // asset selected from the side bar (image/video).
+        const rootAsset = {
+            ...(assetMetadata.asset.parent || assetMetadata.asset)
+        };
+
+        if (this.isTaggableAssetType(assetMetadata.asset)) {
+            assetMetadata.asset.state = {
+                ...assetMetadata.asset.state,
+                [this.state.context]: assetMetadata.segments.length
+                ? AssetState.Tagged
+                : AssetState.Visited,
             };
+        } else if (
+            assetMetadata.asset.state[this.state.context] ===
+            AssetState.NotVisited
+        ) {
+            assetMetadata.asset.state = {
+                ...assetMetadata.asset.state,
+                [this.state.context]: AssetState.Visited,
+            };
+        }
 
-            if (this.isTaggableAssetType(assetMetadata.asset)) {
-                assetMetadata.asset.state = {
-                    ...assetMetadata.asset.state,
-                    [this.state.context]: assetMetadata.segments.length
-                    ? AssetState.Tagged
-                    : AssetState.Visited,
-                };
-            } else if (
-                assetMetadata.asset.state[this.state.context] ===
-                AssetState.NotVisited
-            ) {
-                assetMetadata.asset.state = {
-                    ...assetMetadata.asset.state,
-                    [this.state.context]: AssetState.Visited,
-                };
-            }
-
-            // Update root asset if not already in the "Tagged" state
-            // This is primarily used in the case where a Video Frame is being edited.
-            // We want to ensure that in this case the root video asset state is accurately
-            // updated to match that state of the asset.
-            if (rootAsset.id === assetMetadata.asset.id) {
-                rootAsset.state = assetMetadata.asset.state;
-            } else {
-                const rootAssetMetadata = await this.props.actions.loadAssetMetadata(
-                    this.props.project,
-                    rootAsset,
-                );
-                
-                if (
-                    rootAssetMetadata.asset.state[this.state.context] !==
-                    AssetState.Tagged
-                ) {
-                    rootAssetMetadata.asset.state = assetMetadata.asset.state;
-                    await this.props.actions.saveAssetMetadata(
-                        this.props.project,
-                        rootAssetMetadata,
-                    );
-                }
-
-                rootAsset.state = rootAssetMetadata.asset.state;
-            }
-
-            // Only update asset metadata if state changes or is different
+        // Update root asset if not already in the "Tagged" state
+        // This is primarily used in the case where a Video Frame is being edited.
+        // We want to ensure that in this case the root video asset state is accurately
+        // updated to match that state of the asset.
+        if (rootAsset.id === assetMetadata.asset.id) {
+            rootAsset.state = assetMetadata.asset.state;
+        } else {
+            const rootAssetMetadata = await this.props.actions.loadAssetMetadata(
+                this.props.project,
+                rootAsset,
+            );
+            
             if (
-                initialState !==
-                    assetMetadata.asset.state[this.state.context] ||
-                this.state.selectedAsset !== assetMetadata
+                rootAssetMetadata.asset.state[this.state.context] !==
+                AssetState.Tagged
             ) {
+                rootAssetMetadata.asset.state = assetMetadata.asset.state;
                 await this.props.actions.saveAssetMetadata(
                     this.props.project,
-                    assetMetadata,
+                    rootAssetMetadata,
                 );
             }
 
-            await this.props.actions.saveProject(this.props.project);
-
-            const assetService = new AssetService(this.props.project);
-            const childAssets = assetService.getChildAssets(rootAsset);
-
-            // Find and update the root asset in the internal state
-            // This forces the root assets that are displayed in the sidebar to
-            // accurately show their correct state (not-visited, visited or tagged)
-            const assets = [...this.state.assets];
-            const assetIndex = assets.findIndex(
-                (asset) => asset.id === rootAsset.id,
-            );
-            if (assetIndex > -1) {
-                assets[assetIndex] = {
-                    ...rootAsset,
-                };
-            }
-
-            this.setState({ childAssets, assets, isValid: true });
+            rootAsset.state = rootAssetMetadata.asset.state;
         }
+
+        // Only update asset metadata if state changes or is different
+        if (
+            initialState !==
+                assetMetadata.asset.state[this.state.context] ||
+            this.state.selectedAsset !== assetMetadata
+        ) {
+            await this.props.actions.saveAssetMetadata(
+                this.props.project,
+                assetMetadata,
+            );
+        }
+
+        await this.props.actions.saveProject(this.props.project);
+
+        const assetService = new AssetService(this.props.project);
+        const childAssets = assetService.getChildAssets(rootAsset);
+
+        // Find and update the root asset in the internal state
+        // This forces the root assets that are displayed in the sidebar to
+        // accurately show their correct state (not-visited, visited or tagged)
+        const assets = [...this.state.assets];
+        const assetIndex = assets.findIndex(
+            (asset) => asset.id === rootAsset.id,
+        );
+        if (assetIndex > -1) {
+            assets[assetIndex] = {
+                ...rootAsset,
+            };
+        }
+
+        this.setState({ childAssets, assets, isValid: true });
     }
 
     private onSelectedSegmentChanged = async (
