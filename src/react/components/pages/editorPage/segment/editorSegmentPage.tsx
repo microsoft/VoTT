@@ -257,7 +257,7 @@ export default class EditorSegmentPage extends React.Component<
                             </div>
                         </div>
                         <div className="editor-page-right-sidebar" style={{width: "150%", height: "100%"}}>
-                            <SplitPane split="horizontal" className="editor-page-right-sidebar" minSize={500}>
+                            <SplitPane split="horizontal" className="editor-page-right-sidebar" defaultSize={500} minSize={100}>
                                 <TagInput
                                     tags={this.props.project.tags}
                                     lockedTag={this.state.lockedTag}

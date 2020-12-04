@@ -54,27 +54,21 @@ export const SPId2number = (spId: string): number => {
     return spId.startsWith("sp") ? parseInt(spId.substr(2)) : -1;
 }
 
-const containsAll = (arr1, arr2) => 
-                arr2.every(arr2Item => arr1.includes(arr2Item))
-
-const sameMembers = (arr1, arr2) => 
-                        containsAll(arr1, arr2) && containsAll(arr2, arr1);
-
 const defaultAnnotation = (id: number) => new Annotation(AnnotationTag.EMPTY, AnnotationTag.EMPTY, id);
 
 interface SuperpixelProps {
     id: string, canvasWidth: number, canvasHeight: number, segmentationData: any,
      annotatedData: Annotation[], defaultcolor: string, annotating: Annotation,
-      onSegmentUpdated: (...params: any[]) => void, onSelectedTagUpdated: (...params: any[]) => void;
+     onSegmentsUpdated: (...params: any[]) => void, onSelectedTagUpdated: (...params: any[]) => void;
 }
 
 export const SuperpixelEditor: React.FC<SuperpixelProps> = 
 ({id, canvasWidth, canvasHeight, segmentationData, annotatedData, defaultcolor,
-     annotating, onSegmentUpdated, onSelectedTagUpdated}) => {
+     annotating, onSegmentsUpdated, onSelectedTagUpdated}) => {
     const [ segmentation, setSegmentation] = useState(segmentationData);
     const [ annotated, setAnnotated] = useState(annotatedData);
     const canvasRef = useRef<SVGSVGElement>(null);
-    if(segmentationData && segmentationData!==segmentation){
+    if(segmentationData && segmentationData !== segmentation){
         setSegmentation(segmentationData);
     }
     useEffect(() => {
@@ -111,7 +105,7 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> =
                 const fillColor = canvasRef.current.getAttribute("name")!;
                 if( annotatingTag !== AnnotationTag.EMPTY ){
                     canvasRef.current.setAttribute("content-script-type", currentColor); // storing color
-                     updateSuperpixelSVG(superpixel,
+                    updateSuperpixelSVG(superpixel,
                          annotatingTag === AnnotationTag.DEANNOTATING ? defaultcolor : fillColor,
                          annotatingOpacity,
                          highlightLineWidth);
@@ -129,10 +123,10 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> =
                         }
                 })
                 .mousemove( (event: MouseEvent) => {
-                    paintAndUpdateState(event, superpixel, defaultcolor, onSegmentUpdated);
+                    paintAndUpdateState(event, superpixel, defaultcolor, onSegmentsUpdated);
                 })
                 .mousedown( (event: MouseEvent) => {
-                    paintAndUpdateState(event, superpixel, defaultcolor, onSegmentUpdated);
+                    paintAndUpdateState(event, superpixel, defaultcolor, onSegmentsUpdated);
                 })
                 .mouseup( (event: MouseEvent) => {
                     const tag: string = superpixel.attr()["tag"];
@@ -144,7 +138,7 @@ export const SuperpixelEditor: React.FC<SuperpixelProps> =
     const viewBoxString = [0, 0, canvasWidth, canvasHeight].join(
         " "
     );
-    return (<svg key="mainCanvas" ref={canvasRef} id="mainCanvas" colorProfile={annotating.tag} name={annotating.color} viewBox={viewBoxString}></svg>);
+    return (<svg key={id} ref={canvasRef} id={id} colorProfile={annotating.tag} name={annotating.color} viewBox={viewBoxString}></svg>);
 }
 
 const getAnnotationData = (
@@ -158,10 +152,10 @@ const getAnnotationData = (
     return defaultAnnotating;
 };
 
-export const getBoundingBox = (ids: number[]) => {
+export const getBoundingBox = (canvasId: string, ids: number[]) => {
     let pathString = "";
     ids.map( (id) => {const s = document.getElementById("sp"+id); pathString += (s.getAttribute("d") + " ") });
-    const s = Snap("#mainCanvas");
+    const s = Snap("#"+canvasId);
     const path = s.path(pathString);
     //path.attr( {visibility: "hidden"} );
     const bbox = path.getBBox();
@@ -270,23 +264,23 @@ const updateSuperpixelSVG = (component: Snap.Element, fill: string, opacity: num
     }
 }
 
-const paintAndUpdateState = (event, superpixel, defaultcolor, onSegmentUpdated) => {
+const paintAndUpdateState = (event, superpixel, defaultcolor, onSegmentsUpdated) => {
     const annotatingTag = superpixel.parent().attr()["color-profile"];
     if(event.buttons === 2 && annotatingTag !== AnnotationTag.EMPTY){
         const fillColor: string = superpixel.parent().attr()["name"];
-        paintSuperpixel(superpixel, annotatingTag, fillColor, parseInt(superpixel.attr()["area"]), onSegmentUpdated);
+        paintSuperpixel(superpixel, annotatingTag, fillColor, parseInt(superpixel.attr()["area"]), onSegmentsUpdated);
         superpixel.parent().attr({...superpixel.parent().attr(), "content-script-type": fillColor}); // storing color
     }
     else if(event.buttons === 1 && annotatingTag !== AnnotationTag.EMPTY){ // removing
-        deleteSuperpixelAnnotation(superpixel, defaultcolor, parseInt(superpixel.attr()["area"]), onSegmentUpdated); // area should be updated
+        clearSuperpixel(superpixel, defaultcolor, parseInt(superpixel.attr()["area"]), onSegmentsUpdated); // area should be updated
         superpixel.parent().attr({...superpixel.parent().attr(), "content-script-type": defaultcolor}); // storing color
     }
 };
 
-type ISegmentStateCallback = (segment: ISegmentOffset) => void;
+type ISegmentsCallback = (segments: ISegmentOffset[]) => void;
 
 export const paintSuperpixel =
-        (snapElement: Snap.Paper, tag: string, color: string, area: number, onSegmentUpdated: ISegmentStateCallback) => {
+        (snapElement: Snap.Paper, tag: string, color: string, area: number, onSegmentsUpdated: ISegmentsCallback) => {
     if (tag === AnnotationTag.EMPTY || color === AnnotationTag.EMPTY) {
         return ;
     }
@@ -294,13 +288,22 @@ export const paintSuperpixel =
         const coloringTag = tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : tag;
         updateSuperpixelSVG(snapElement, color, coloringTag === AnnotationTag.EMPTY ? defaultOpacity : annotatedOpacity,
             defaultLineWidth, coloringTag, tag === AnnotationTag.DEANNOTATING ? AnnotationTag.EMPTY : color);
-        onSegmentUpdated({tag, area, superpixelId: SPId2number(snapElement.attr("id")) });
+            onSegmentsUpdated([{tag, area, superpixelId: SPId2number(snapElement.attr("id")) }]);
     }
     else{
         console.log("ERROR: a superpixel was not able to find!");
     }
 }
 
-export const deleteSuperpixelAnnotation = (snapElement: Snap.Paper, defaultcolor: string, area: number, onSegmentUpdated: ISegmentStateCallback) => {
-    paintSuperpixel(snapElement, AnnotationTag.DEANNOTATING, defaultcolor, area, onSegmentUpdated);
+export const clearEditor = (canvasId: string, defaultcolor: string) => {
+    const s = Snap("#"+canvasId);
+    const paths = s.selectAll('path');
+    paths.forEach(function(element){
+        const e = element.attr();
+        element.attr({... e, name: AnnotationTag.EMPTY, tag: AnnotationTag.EMPTY, fill: defaultcolor, style: "stroke-width: 1; opacity: 0.1;", });
+    }, this);
+}
+
+const clearSuperpixel = (snapElement: Snap.Paper, defaultcolor: string, area: number, onSegmentsUpdated: ISegmentsCallback) => {
+    paintSuperpixel(snapElement, AnnotationTag.DEANNOTATING, defaultcolor, area, onSegmentsUpdated);
 }

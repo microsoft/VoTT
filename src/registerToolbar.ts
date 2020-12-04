@@ -72,7 +72,7 @@ export default function registerToolbar() {
         name: ToolbarItemName.DrawPolyline,
         context: [EditorContext.Geometry],
         tooltip: strings.editorPage.toolbar.drawPolyline,
-        icon: "fa-draw-polygon",
+        icon: "fa-grip-lines",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["L", "l"],
@@ -132,7 +132,7 @@ export default function registerToolbar() {
         name: ToolbarItemName.AnnotateSegments,
         context: [EditorContext.Segment],
         tooltip: strings.editorPage.toolbar.nextAsset,
-        icon: "fa-paste",
+        icon: "fa-paint-roller",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["A", "a"],
@@ -142,7 +142,7 @@ export default function registerToolbar() {
         name: ToolbarItemName.RemoveAnnotation,
         context: [EditorContext.Segment],
         tooltip: strings.editorPage.toolbar.removeAllRegions,
-        icon: "fa-ban",
+        icon: "fa-eraser",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["Z", "z"],
@@ -152,20 +152,10 @@ export default function registerToolbar() {
         name: ToolbarItemName.ShowSegBoundary,
         context: [EditorContext.Segment],
         tooltip: strings.editorPage.toolbar.copy,
-        icon: "fa-copy",
+        icon: "fa-eye",
         group: ToolbarItemGroup.Canvas,
         type: ToolbarItemType.State,
         accelerators: ["B", "b"],
-    });
-
-    ToolbarItemFactory.register({
-        name: ToolbarItemName.ExecuteSegmentation,
-        context: [EditorContext.Segment],
-        tooltip: strings.editorPage.toolbar.nextAsset,
-        icon: "fa-mouse-pointer",
-        group: ToolbarItemGroup.Canvas,
-        type: ToolbarItemType.State,
-        accelerators: ["E", "e"],
     });
 
     ToolbarItemFactory.register({

@@ -1,8 +1,28 @@
 import React from "react";
 import Form, { FormValidation, ISubmitEvent, IChangeEvent, Widget } from "react-jsonschema-form";
 import { EditorContext, IAssetMetadata, IProject, IRegion, ISegment } from "../../../../models/applicationState";
+import { JSONSchema6 } from "json-schema";
 import SegmentCanvas from "../../pages/editorPage/segment/segmentCanvas";
 
+const formSchemaForSegment = {
+    "title": "My title",
+    "description": "My description",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "age": {
+        "type": "boolean"
+      }
+    }
+}
+
+const uiSchema =  {
+    age: {
+      "ui:widget": "radio" // could also be "select"
+    }
+};
 
 export interface IPropertyFormProps extends React.Props<PropertyForm> {
     editorContext: EditorContext;
@@ -13,6 +33,7 @@ export interface IPropertyFormProps extends React.Props<PropertyForm> {
 
 export interface IPropertyFormState {
     iscrowd: boolean;
+    formSchema: object;
 }
 
 /**
@@ -29,6 +50,7 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
 
     public state: IPropertyFormState = {
         iscrowd: false,
+        formSchema: undefined,
     }
 
     constructor(props){
@@ -42,11 +64,19 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
                 this.updateSegmentProperty(this.props.selectedSegment.iscrowd);
             }
         }
+
+        if (this.props.editorContext === EditorContext.Segment){
+        }
     }
 
     public render() {
         return (
-            <div>{this.showProperties(this.props.selectedSegment)}</div>
+            <Form
+                className={"testtest"}
+                schema={ formSchemaForSegment as JSONSchema6}
+                uiSchema={uiSchema}
+                />
+            //<div>{this.showProperties(this.props.selectedSegment)}</div>
         );
     }
 

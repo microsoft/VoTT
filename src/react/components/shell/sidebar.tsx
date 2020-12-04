@@ -25,21 +25,21 @@ export default function Sidebar({ project }) {
                     <ConditionalNavLink disabled={!projectId}
                         title={strings.tags.editor}
                         to={`/projects/${projectId}/edit`}>
-                        <i className="fas fa-bookmark"></i>
+                        <i className="fas fa-draw-polygon"></i>
                     </ConditionalNavLink>
                 </li>
                 <li>
                     <ConditionalNavLink disabled={!projectId}
                                         title={strings.tags.editorSuperpixel}
                                         to={`/projects/${projectId}/editSeg`}>
-                        <i className="fas fa-bookmark"></i>
+                        <i className="fas fa-paint-roller"></i>
                     </ConditionalNavLink>
                 </li>
                 <li>
                     <ConditionalNavLink disabled={!projectId}
                                         title={strings.tags.editorMetadata}
                                         to={`/projects/${projectId}/editMetadata`}>
-                        <i className="fas fa-bookmark"></i>
+                        <i className="fas fa-sticky-note"></i>
                     </ConditionalNavLink>
                 </li>
                 <li>

@@ -11,7 +11,7 @@ import { AssetPreview, ContentSource } from "../../../common/assetPreview/assetP
 import Confirm from "../../../common/confirm/confirm";
 import { createContentBoundingBox } from "../../../../../common/layout";
 import { SegmentSelectionMode } from "../editorPage";
-import { Annotation, AnnotationTag, getBoundingBox } from "./superpixelEditor";
+import { Annotation, AnnotationTag, clearEditor, getBoundingBox } from "./superpixelEditor";
 import { ITag } from "vott-react";
 import { strings } from "../../../../../common/strings";
 import { SuperpixelEditor } from "./superpixelEditor";
@@ -26,6 +26,8 @@ export interface ISegmentCanvasProps extends React.Props<SegmentCanvas> {
     onSelectedSegmentChanged?: (segment: ISegment) => void;
     onCanvasRendered?: (canvas: HTMLCanvasElement) => void;
 }
+
+const superpixelEditorId = "superpixel-editor-main-canvas";
 
 export interface ISegmentCanvasState {
     currentAsset: IAssetMetadata;
@@ -141,7 +143,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     public updateAnnotating(tag: string, color: string){
-        const svg = document.getElementById("mainCanvas");
+        const svg = document.getElementById(superpixelEditorId);
         if(svg){
             svg.setAttribute("color-profile", tag);
             svg.setAttribute("name", color);
@@ -188,12 +190,12 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                     <div id="selection-zone">
         <div id="editor-zone" className="full-size">
             { this.state.segmentationData ? 
-            <SuperpixelEditor id={"mainCanvas"}
+            <SuperpixelEditor id={superpixelEditorId}
                 canvasWidth={1024} canvasHeight={768}
                 segmentationData={this.state.segmentationData}
                 annotatedData={this.decomposeSegment(this.state.currentAsset.segments)}
                 defaultcolor={this.defaultColor} annotating={this.currentAnnotating}
-                onSegmentUpdated={this.onSegmentUpdated}
+                onSegmentsUpdated={this.onSegmentsUpdated}
                 onSelectedTagUpdated={this.onSelectedTagUpdated} />
             : <div> segmentation is loading... </div> }
             
@@ -247,15 +249,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
     }
 
     private removeAllSegments = (removeState: boolean = true) => {
-        /*
-        this.state.currentAsset.segments.map((s) => {
-            console.log(s.superpixel);
-            for (const superpixelId of s.superpixel){
-                console.log(superpixelId);
-                //this.editor.deleteSegmentById(superpixelId);
-            }
-        });
-        */
+        clearEditor(superpixelEditorId, this.defaultColor);
         if (removeState) {
             this.deleteSegmentsFromAsset(this.state.currentAsset.segments);
         }
@@ -292,7 +286,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         : segment.superpixel.filter((element) => element !== offset.superpixelId);
         return {... segment, area: toBeAdded ? segment.area + offset.area : segment.area - offset.area,
             superpixel: newSuperpixel,
-            boundingBox: getBoundingBox(newSuperpixel),
+            boundingBox: getBoundingBox(superpixelEditorId, newSuperpixel),
         };
     }
 
@@ -331,9 +325,11 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         }
     }
 
-    private onSegmentUpdated = (segment: ISegmentOffset) => {
-        const currentSegments = this.projectSegmentOffset(this.state.currentAsset.segments, segment, segment.tag !== AnnotationTag.DEANNOTATING);
-        this.updateAssetSegments(currentSegments);
+    private onSegmentsUpdated = (segments: ISegmentOffset[]) => {
+        for (const segment of segments){
+            const currentSegments = this.projectSegmentOffset(this.state.currentAsset.segments, segment, segment.tag !== AnnotationTag.DEANNOTATING);
+            this.updateAssetSegments(currentSegments);
+        }
     }
 
     /**
