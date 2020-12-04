@@ -97,6 +97,7 @@ export default class EditorSegmentPage extends React.Component<
         EditorContext.Segment,
     );
     private canvas: RefObject<SegmentCanvas> = React.createRef();
+    private propertyForm: RefObject<PropertyForm> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -130,9 +131,7 @@ export default class EditorSegmentPage extends React.Component<
         if (this.props.project && !prevProps.project) {
             this.setState({
                 additionalSettings: {
-                    videoSettings: this.props.project
-                        ? this.props.project.videoSettings
-                        : null,
+                    videoSettings: null,
                     activeLearningSettings: this.props.project
                         ? this.props.project.activeLearningSettings
                         : null,
@@ -158,6 +157,8 @@ export default class EditorSegmentPage extends React.Component<
             return <div>Loading...</div>;
         }
 
+        console.log("render");
+        console.log(this.state.selectedSegment);
         return (
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
@@ -270,6 +271,8 @@ export default class EditorSegmentPage extends React.Component<
                                 />
                                 <div style={{height:100, width:100}}>
                                     <PropertyForm
+                                        ref={this.propertyForm}
+                                        selectedAssetName={this.state.selectedAsset ? this.state.selectedAsset.asset.name : "" }
                                         editorContext={this.state.context}
                                         selectedRegions={this.state.selectedRegions}
                                         selectedSegment={this.state.selectedSegment}
@@ -319,6 +322,7 @@ export default class EditorSegmentPage extends React.Component<
     }
 
     private onPropertyFormUpdated = async (value: number) => {
+        /*
         const updatedAssetMetadata: IAssetMetadata = { ... this.state.selectedAsset, segments:
             this.state.selectedAsset.segments.map( (s: ISegment) => { return s.id === this.state.selectedSegment.id ? {... s, iscrowd: value } : s })
             };
@@ -327,6 +331,7 @@ export default class EditorSegmentPage extends React.Component<
         // update selectedSegment
         await this.onSelectedSegmentChanged({ ... this.state.selectedSegment, iscrowd: value});
         await this.onAssetMetadataChanged(updatedAssetMetadata);
+        */
     }
 
     /**
@@ -776,11 +781,14 @@ export default class EditorSegmentPage extends React.Component<
             console.warn("Error computing asset size");
         }
 
+        this.onSelectedSegmentChanged(undefined);
+
         this.setState(
             {
                 selectedAsset: assetMetadata,
             },
             async () => {
+                console.log("selectedSegment updated!");
                 await this.onAssetMetadataChanged(assetMetadata);
             },
         );
