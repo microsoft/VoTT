@@ -115,8 +115,6 @@ export default class EditorSegmentPage extends React.Component<
         this.activeLearningService = new ActiveLearningService(
             this.props.project.activeLearningSettings,
         );
-
-        this.onPropertyFormUpdated = this.onPropertyFormUpdated.bind(this);
         this.onSelectedSegmentChanged = this.onSelectedSegmentChanged.bind(this);
     }
 
@@ -275,7 +273,7 @@ export default class EditorSegmentPage extends React.Component<
                                         selectedRegions={this.state.selectedRegions}
                                         selectedSegment={this.state.selectedSegment}
                                         onSegmentsUpdated={this.canvas && this.canvas.current ? this.canvas.current.onSegmentsUpdated : undefined}
-                                        onIsCrowdChange={this.onPropertyFormUpdated}
+                                        onSelectedSegmentChanged={this.onSelectedSegmentChanged}
                                         />
                                 </div>
                             </SplitPane>
@@ -318,19 +316,6 @@ export default class EditorSegmentPage extends React.Component<
             },
             () => this.canvas.current.forceResize(),
         );
-    }
-
-    private onPropertyFormUpdated = async (value: number) => {
-        /*
-        const updatedAssetMetadata: IAssetMetadata = { ... this.state.selectedAsset, segments:
-            this.state.selectedAsset.segments.map( (s: ISegment) => { return s.id === this.state.selectedSegment.id ? {... s, iscrowd: value } : s })
-            };
-        console.log("onPropertyFormUpdated");
-        console.log({ ... this.state.selectedSegment, iscrowd: value});
-        // update selectedSegment
-        await this.onSelectedSegmentChanged({ ... this.state.selectedSegment, iscrowd: value});
-        await this.onAssetMetadataChanged(updatedAssetMetadata);
-        */
     }
 
     /**

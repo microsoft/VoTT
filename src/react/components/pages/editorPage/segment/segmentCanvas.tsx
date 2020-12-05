@@ -65,6 +65,8 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
 
     public componentDidMount = () => {
         window.addEventListener("resize", this.onWindowResize);
+
+        this.onSegmentsUpdated = this.onSegmentsUpdated.bind(this);
     }
 
     public componentWillUnmount() {
@@ -227,14 +229,11 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
             segments = segments.map( (element) => {
                 for (const segment of segmentsOriginal){
                     if (segment.id === element.id){
-                        console.log(segment);
                         return segment;
                     }
                 }
                 return element;
             });
-            console.log("needToIntegrate");
-            console.log(segments);
         }
         const currentAsset: IAssetMetadata = {
             ...this.state.currentAsset,

@@ -29,8 +29,8 @@ export interface IPropertyFormProps extends React.Props<PropertyForm> {
     editorContext: EditorContext;
     selectedRegions: IRegion[];
     selectedSegment: ISegment;
-    onIsCrowdChange: (value: number) => void;
     onSegmentsUpdated: (segments: ISegment[], needToIntegrate: boolean) => void;
+    onSelectedSegmentChanged: (segment: ISegment) => void;
 }
 
 export interface IPropertyFormState {
@@ -49,8 +49,8 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
         editorContext: EditorContext.Geometry,
         selectedRegions: [],
         selectedSegment: undefined,
-        onIsCrowdChange: undefined,
         onSegmentsUpdated: undefined,
+        onSelectedSegmentChanged: undefined,
     }
 
     public state: IPropertyFormState = {
@@ -132,7 +132,7 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
         return projected;
     }
 
-    private projectFormDataIntoSegment = (formData: object, segment: ISegment): ISegment[] => {
+    private projectFormDataIntoSegment = (formData: object, segment: ISegment): ISegment => {
         const segmentAttributes = Object.getOwnPropertyNames(segment);
         let projected = {... segment};
         for (const attr in formData){
@@ -144,14 +144,14 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
                 }
             }
         }
-        return [projected];
+        return projected;
     }
 
     private onFormChange = (changeEvent: IChangeEvent<IPropertyFormProps>) => {
         const updated = this.projectFormDataIntoSegment(changeEvent.formData, this.props.selectedSegment);
-        console.log(updated);
-        if (this.props.onSegmentsUpdated && updated) {
-            this.props.onSegmentsUpdated(updated, true);
+        if (this.props.onSegmentsUpdated && updated && this.props.onSelectedSegmentChanged) {
+            this.props.onSegmentsUpdated([updated], true);
+            this.props.onSelectedSegmentChanged(updated);
         }
     }
 }
