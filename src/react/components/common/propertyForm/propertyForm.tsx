@@ -30,7 +30,7 @@ export interface IPropertyFormProps extends React.Props<PropertyForm> {
     selectedRegions: IRegion[];
     selectedSegment: ISegment;
     onIsCrowdChange: (value: number) => void;
-    onSegmentChange: (segment: ISegment) => void;
+    onSegmentsUpdated: (segments: ISegment[], needToIntegrate: boolean) => void;
 }
 
 export interface IPropertyFormState {
@@ -50,7 +50,7 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
         selectedRegions: [],
         selectedSegment: undefined,
         onIsCrowdChange: undefined,
-        onSegmentChange: undefined,
+        onSegmentsUpdated: undefined,
     }
 
     public state: IPropertyFormState = {
@@ -61,7 +61,6 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
 
     constructor(props){
         super(props);
-        this.handleInputChange = this.handleInputChange.bind(this);
         this.updateForm = this.updateForm.bind(this);
         this.clearForm = this.clearForm.bind(this);
     }
@@ -73,7 +72,6 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
             }
             else if (this.props.selectedSegment){
                 if (!this.state.formData){
-                    console.log(this.props.selectedSegment);
                     this.updateForm(this.props.selectedSegment, formSchemaForSegment);
                 }
                 if(this.props.selectedSegment !== prevProps.selectedSegment){
@@ -96,13 +94,10 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
     }
 
     public render() {
-        console.log(this.props.selectedAssetName);
-        console.log(this.props.selectedSegment);
-        console.log(this.state.formData);
         return (
             this.state.formData ?
             <Form
-                className={"testtest"}
+                className={"annotation-property-form"}
                 schema={ formSchemaForSegment as JSONSchema6}
                 uiSchema={uiSchema}
                 formData={this.state.formData}
@@ -137,35 +132,26 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
         return projected;
     }
 
+    private projectFormDataIntoSegment = (formData: object, segment: ISegment): ISegment[] => {
+        const segmentAttributes = Object.getOwnPropertyNames(segment);
+        let projected = {... segment};
+        for (const attr in formData){
+            if (segmentAttributes.includes(attr)){
+                if (typeof formData[attr] === "boolean"){
+                    projected = {...projected, [attr]: formData[attr] ? 1 : 0};
+                } else {
+                    projected = {...projected, [attr]: formData[attr]};
+                }
+            }
+        }
+        return [projected];
+    }
+
     private onFormChange = (changeEvent: IChangeEvent<IPropertyFormProps>) => {
-        if (this.props.onSegmentChange) {
-            console.log(changeEvent);
-            //this.props.onSegmentChange(changeEvent.formData);
-        }
-    }
-
-    private handleInputChange(event){
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        this.props.onIsCrowdChange(value ? 1 : 0);
-        this.updateSegmentProperty(value ? 1 : 0);
-    }
-
-    private showProperties(segment: ISegment){
-        if (this.props.editorContext === EditorContext.Segment && this.props.selectedSegment){
-            return <div><h2>{segment.tag}</h2>
-                <p>iscrowd : <input
-                name="iscrowd"
-                type="checkbox"
-                checked={this.state.iscrowd}
-                onChange={this.handleInputChange} />
-                </p></div>;
-        }
-        else if(this.props.editorContext === EditorContext.Geometry && this.props.selectedRegions){
-            return this.props.selectedRegions.length;
-        }
-        else {
-            return ;
+        const updated = this.projectFormDataIntoSegment(changeEvent.formData, this.props.selectedSegment);
+        console.log(updated);
+        if (this.props.onSegmentsUpdated && updated) {
+            this.props.onSegmentsUpdated(updated, true);
         }
     }
 }

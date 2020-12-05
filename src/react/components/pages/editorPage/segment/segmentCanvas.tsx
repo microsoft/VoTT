@@ -203,7 +203,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 segmentationData={this.state.segmentationData}
                 annotatedData={this.decomposeSegment(this.state.currentAsset.segments)}
                 defaultcolor={this.defaultColor} annotating={this.currentAnnotating}
-                onSegmentsUpdated={this.onSegmentsUpdated}
+                onSegmentsUpdated={this.onSegmentOffsetsUpdated}
                 onSelectedTagUpdated={this.onSelectedTagUpdated} />
             : <div> segmentation is loading... </div> }
             
@@ -213,6 +213,42 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
                 {this.renderChildren()}
             </Fragment>
         );
+    }
+
+    /**
+     * Update regions within the current asset
+     * @param segments
+     * @param selectedRegions
+     */
+    public onSegmentsUpdated = (segmentsOriginal: ISegment[], needToIntegrate: boolean = false) => {
+        let segments = segmentsOriginal;
+        if (needToIntegrate){
+            segments = this.state.currentAsset.segments;
+            segments = segments.map( (element) => {
+                for (const segment of segmentsOriginal){
+                    if (segment.id === element.id){
+                        console.log(segment);
+                        return segment;
+                    }
+                }
+                return element;
+            });
+            console.log("needToIntegrate");
+            console.log(segments);
+        }
+        const currentAsset: IAssetMetadata = {
+            ...this.state.currentAsset,
+            segments,
+        };
+        this.setState({
+            currentAsset,
+        }, () => {
+            this.props.onAssetMetadataChanged(currentAsset);
+        });
+    }
+
+    public forceResize = (): void => {
+        this.onWindowResize();
     }
 
     private onSelectedTagUpdated = async (
@@ -267,7 +303,7 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         const filteredSegments = this.state.currentAsset.segments.filter((assetSegment) => {
             return !segments.find((s) => s.id === assetSegment.id);
         });
-        this.updateAssetSegments(filteredSegments);
+        this.onSegmentsUpdated(filteredSegments);
     }
 
     private refreshCanvasToolsSegments = () => {
@@ -298,71 +334,49 @@ export default class SegmentCanvas extends React.Component<ISegmentCanvasProps, 
         };
     }
 
-    private projectSegmentOffset = (segments: ISegment[], offset: ISegmentOffset, addition: boolean): ISegment[] => {
-        if (addition){
-            if (segments.filter((e) => e.tag === offset.tag && e.superpixel.includes(offset.superpixelId)).length > 0){ // already contains
-                return segments;
-            }
-            let founded = 0;
-            const processedSegments = segments.map((element): ISegment => {
-                if (element.tag === offset.tag){
-                    founded = 1;
-                    return this.integrateOffset(element, offset, addition);
+    private projectSegmentOffsets = (segments: ISegment[], offsets: ISegmentOffset[]): ISegment[] => {
+        let processedSegments = segments;
+        for (const offset of offsets){
+            const addition = offset.tag !== AnnotationTag.DEANNOTATING;
+            if (addition){
+                if (segments.filter((e) => e.tag === offset.tag && e.superpixel.includes(offset.superpixelId)).length > 0){ // already contains
+                    return segments;
                 }
-                else {
-                    return element;
-                }
-            });
-            return founded === 1 ? processedSegments : [...segments,
-                this.getInitialSegment(shortid.generate(), offset.tag, offset.superpixelId, offset.area, { left:0, top: 0, width:0, height: 0 })];
-        }
-        else{ // subtraction
-            let emptyId = "";
-            const processedSegments = segments.map((element): ISegment => {
-                if (element.superpixel.includes(offset.superpixelId)){
-                    if (element.area - offset.area === 0 || (element.superpixel.length===1 && element.superpixel.includes(offset.superpixelId))){
-                        emptyId = element.id;
+                let founded = 0;
+                processedSegments = processedSegments.map((element): ISegment => {
+                    if (element.tag === offset.tag){
+                        founded = 1;
+                        return this.integrateOffset(element, offset, addition);
                     }
-                    return this.integrateOffset(element, offset, addition);
-                }
-                else {
-                    return element;
-                }
-            });
-            return emptyId === "" ? processedSegments : segments.filter((element) => (element.id !== emptyId));
+                    else {
+                        return element;
+                    }
+                });
+                return founded === 1 ? processedSegments : [...segments,
+                    this.getInitialSegment(shortid.generate(), offset.tag, offset.superpixelId, offset.area, { left:0, top: 0, width:0, height: 0 })];
+            }
+            else{ // subtraction
+                let emptyId = "";
+                processedSegments = processedSegments.map((element): ISegment => {
+                    if (element.superpixel.includes(offset.superpixelId)){
+                        if (element.area - offset.area === 0 || (element.superpixel.length===1 && element.superpixel.includes(offset.superpixelId))){
+                            emptyId = element.id;
+                        }
+                        return this.integrateOffset(element, offset, addition);
+                    }
+                    else {
+                        return element;
+                    }
+                });
+                return emptyId === "" ? processedSegments : segments.filter((element) => (element.id !== emptyId));
+            }
         }
+        return processedSegments;
     }
 
-    private onSegmentsUpdated = (segments: ISegmentOffset[]) => {
-        for (const segment of segments){
-            const currentSegments = this.projectSegmentOffset(this.state.currentAsset.segments, segment, segment.tag !== AnnotationTag.DEANNOTATING);
-            this.updateAssetSegments(currentSegments);
-        }
-    }
-
-    /**
-     * Update regions within the current asset
-     * @param segments
-     * @param selectedRegions
-     */
-    private updateAssetSegments = (segments: ISegment[]) => {
-        const currentAsset: IAssetMetadata = {
-            ...this.state.currentAsset,
-            segments,
-        };
-        this.setState({
-            currentAsset,
-        }, () => {
-            this.props.onAssetMetadataChanged(currentAsset);
-        });
-    }
-
-    public forceResize = (): void => {
-        this.onWindowResize();
-    }
-
-    public onAnnotationUpdate = (tag: number, color: string) => {
-
+    private onSegmentOffsetsUpdated = (offsets: ISegmentOffset[]) => {
+        const processedSegments = this.projectSegmentOffsets(this.state.currentAsset.segments, offsets);
+        this.onSegmentsUpdated(processedSegments);
     }
 
     private renderChildren = () => {

@@ -157,8 +157,6 @@ export default class EditorSegmentPage extends React.Component<
             return <div>Loading...</div>;
         }
 
-        console.log("render");
-        console.log(this.state.selectedSegment);
         return (
             <div className="editor-page">
                 {[...Array(10).keys()].map((index) => {
@@ -276,6 +274,7 @@ export default class EditorSegmentPage extends React.Component<
                                         editorContext={this.state.context}
                                         selectedRegions={this.state.selectedRegions}
                                         selectedSegment={this.state.selectedSegment}
+                                        onSegmentsUpdated={this.canvas && this.canvas.current ? this.canvas.current.onSegmentsUpdated : undefined}
                                         onIsCrowdChange={this.onPropertyFormUpdated}
                                         />
                                 </div>
@@ -395,7 +394,6 @@ export default class EditorSegmentPage extends React.Component<
             }
         }
     }
-
     /**
      * Open Confirm dialog for tag deletion
      */
@@ -788,7 +786,6 @@ export default class EditorSegmentPage extends React.Component<
                 selectedAsset: assetMetadata,
             },
             async () => {
-                console.log("selectedSegment updated!");
                 await this.onAssetMetadataChanged(assetMetadata);
             },
         );
