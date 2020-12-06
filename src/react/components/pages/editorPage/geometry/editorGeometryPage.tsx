@@ -32,6 +32,7 @@ import Confirm from "../../../common/confirm/confirm";
 import { ActiveLearningService } from "../../../../../services/activeLearningService";
 import { toast } from "react-toastify";
 import { IEditorPageProps, IEditorPageState, mapStateToProps, mapDispatchToProps, SegmentSelectionMode } from '../editorPage';
+import PropertyForm from "../../../common/propertyForm/propertyForm";
 
 /**
  * Properties for Editor Page
@@ -82,6 +83,7 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
         }
 
         this.activeLearningService = new ActiveLearningService(this.props.project.activeLearningSettings);
+        this.onSelectedRegionsChanged = this.onSelectedRegionsChanged.bind(this);
     }
 
     public async componentDidUpdate(prevProps: Readonly<IEditorPageProps>) {
@@ -196,6 +198,13 @@ export default class EditorGeometryPage extends React.Component<IEditorPageProps
                                 onTagRenamed={this.confirmTagRenamed}
                                 onTagDeleted={this.confirmTagDeleted}
                                 instantTagClick={false}
+                            />
+                            <PropertyForm
+                                selectedAssetName={this.state.selectedAsset ? this.state.selectedAsset.asset.name : "" }
+                                editorContext={this.state.context ? this.state.context : EditorContext.Geometry }
+                                selectedRegions={this.state.selectedRegions ? this.state.selectedRegions : []}
+                                onRegionsUpdated={this.canvas && this.canvas.current ? this.canvas.current.onRegionsUpdated : undefined}
+                                onSelectedRegionsChanged={this.onSelectedRegionsChanged}
                             />
                         </div>
                         <Confirm title={strings.editorPage.tags.rename.title}

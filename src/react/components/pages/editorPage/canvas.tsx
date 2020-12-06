@@ -202,6 +202,22 @@ export default class Canvas extends React.Component<ICanvasProps, ICanvasState> 
         this.onWindowResize();
     }
 
+    public onRegionsUpdated = (regionsOriginal: IRegion[], needToIntegrate: boolean = false) => {
+        let regions = regionsOriginal;
+        if (needToIntegrate){
+            regions = this.state.currentAsset.regions;
+            regions = regions.map( (element) => {
+                for (const region of regionsOriginal){
+                    if (region.id === element.id){
+                        return region;
+                    }
+                }
+                return element;
+            });
+        }
+        this.updateAssetRegions(regions);
+    }
+
     private removeAllRegions = () => {
         const ids = this.state.currentAsset.regions.map((r) => r.id);
         for (const id of ids) {

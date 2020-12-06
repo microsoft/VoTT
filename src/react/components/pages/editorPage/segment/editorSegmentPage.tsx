@@ -97,7 +97,6 @@ export default class EditorSegmentPage extends React.Component<
         EditorContext.Segment,
     );
     private canvas: RefObject<SegmentCanvas> = React.createRef();
-    private propertyForm: RefObject<PropertyForm> = React.createRef();
     private renameTagConfirm: React.RefObject<Confirm> = React.createRef();
     private deleteTagConfirm: React.RefObject<Confirm> = React.createRef();
 
@@ -265,11 +264,9 @@ export default class EditorSegmentPage extends React.Component<
                                 instantTagClick={true}
                             />
                             <PropertyForm
-                                ref={this.propertyForm}
                                 selectedAssetName={this.state.selectedAsset ? this.state.selectedAsset.asset.name : "" }
-                                editorContext={this.state.context}
-                                selectedRegions={this.state.selectedRegions}
-                                selectedSegment={this.state.selectedSegment}
+                                editorContext={this.state.context ? this.state.context : EditorContext.Segment }
+                                selectedSegment={this.state.selectedSegment ? this.state.selectedSegment : undefined}
                                 onSegmentsUpdated={this.canvas && this.canvas.current ? this.canvas.current.onSegmentsUpdated : undefined}
                                 onSelectedSegmentChanged={this.onSelectedSegmentChanged}
                                 />
