@@ -103,7 +103,7 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
                 formData={this.state.formData}
                 onChange={this.onFormChange}
                 />
-            : "Please choose region/segment to configure."
+            : ""
         );
     }
 
@@ -148,10 +148,12 @@ export default class PropertyForm extends React.Component<IPropertyFormProps, IP
     }
 
     private onFormChange = (changeEvent: IChangeEvent<IPropertyFormProps>) => {
-        const updated = this.projectFormDataIntoSegment(changeEvent.formData, this.props.selectedSegment);
-        if (this.props.onSegmentsUpdated && updated && this.props.onSelectedSegmentChanged) {
-            this.props.onSegmentsUpdated([updated], true);
-            this.props.onSelectedSegmentChanged(updated);
+        if (this.props.selectedSegment){
+            const updated = this.projectFormDataIntoSegment(changeEvent.formData, this.props.selectedSegment);
+            if (this.props.onSegmentsUpdated && updated && this.props.onSelectedSegmentChanged) {
+                this.props.onSegmentsUpdated([updated], true);
+                this.props.onSelectedSegmentChanged(updated);
+            }
         }
     }
 }

@@ -251,32 +251,28 @@ export default class EditorSegmentPage extends React.Component<
                                 )}
                             </div>
                         </div>
-                        <div className="editor-page-right-sidebar" style={{width: "150%", height: "100%"}}>
-                            <SplitPane split="horizontal" className="editor-page-right-sidebar" defaultSize={500} minSize={100}>
-                                <TagInput
-                                    tags={this.props.project.tags}
-                                    lockedTag={this.state.lockedTag}
-                                    selectedRegions={this.state.selectedRegions}
-                                    onChange={this.onTagsChanged}
-                                    onLockedTagChange={this.onLockedTagChanged}
-                                    onTagClick={this.onTagClicked}
-                                    onCtrlTagClick={this.onCtrlTagClicked}
-                                    onTagRenamed={this.confirmTagRenamed}
-                                    onTagDeleted={this.confirmTagDeleted}
-                                    instantTagClick={true}
+                        <div className="editor-page-right-sidebar"> 
+                            <TagInput
+                                tags={this.props.project.tags}
+                                lockedTag={this.state.lockedTag}
+                                selectedRegions={this.state.selectedRegions}
+                                onChange={this.onTagsChanged}
+                                onLockedTagChange={this.onLockedTagChanged}
+                                onTagClick={this.onTagClicked}
+                                onCtrlTagClick={this.onCtrlTagClicked}
+                                onTagRenamed={this.confirmTagRenamed}
+                                onTagDeleted={this.confirmTagDeleted}
+                                instantTagClick={true}
+                            />
+                            <PropertyForm
+                                ref={this.propertyForm}
+                                selectedAssetName={this.state.selectedAsset ? this.state.selectedAsset.asset.name : "" }
+                                editorContext={this.state.context}
+                                selectedRegions={this.state.selectedRegions}
+                                selectedSegment={this.state.selectedSegment}
+                                onSegmentsUpdated={this.canvas && this.canvas.current ? this.canvas.current.onSegmentsUpdated : undefined}
+                                onSelectedSegmentChanged={this.onSelectedSegmentChanged}
                                 />
-                                <div style={{height:100, width:100}}>
-                                    <PropertyForm
-                                        ref={this.propertyForm}
-                                        selectedAssetName={this.state.selectedAsset ? this.state.selectedAsset.asset.name : "" }
-                                        editorContext={this.state.context}
-                                        selectedRegions={this.state.selectedRegions}
-                                        selectedSegment={this.state.selectedSegment}
-                                        onSegmentsUpdated={this.canvas && this.canvas.current ? this.canvas.current.onSegmentsUpdated : undefined}
-                                        onSelectedSegmentChanged={this.onSelectedSegmentChanged}
-                                        />
-                                </div>
-                            </SplitPane>
                         </div>
                         <Confirm
                             title={strings.editorPage.tags.rename.title}
