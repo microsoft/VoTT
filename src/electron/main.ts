@@ -2,6 +2,7 @@ import {
     app, ipcMain, BrowserWindow, BrowserWindowConstructorOptions,
     Menu, MenuItemConstructorOptions,
 } from "electron";
+import registerMixins from "../registerMixins";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
 
@@ -123,6 +124,8 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
     const menu = Menu.buildFromTemplate(menuItems);
     Menu.setApplicationMenu(menu);
 }
+
+registerMixins();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

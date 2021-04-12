@@ -95,7 +95,6 @@ export default class LocalFileSystem implements IStorageProvider {
 
     public async listFiles(folderPath: string): Promise<string[]> {
         const normalizedPath = path.normalize(folderPath);
-        console.log(`Listing files from ${normalizedPath}`);
         const files = await this.listItems(normalizedPath, (stats) => !stats.isDirectory());
         const directories = await this.listItems(normalizedPath, (stats) => stats.isDirectory());
         await directories.forEachAsync(async (directory) => {
