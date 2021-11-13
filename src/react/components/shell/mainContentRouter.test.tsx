@@ -31,18 +31,18 @@ describe("Main Content Router", () => {
         return createComponent(context, route, store, props);
     }
 
-    // it("renders correct routes", () => {
-    //     const wrapper = shallow(<MainContentRouter />);
-    //     const pathMap = wrapper.find(Route).reduce((pathMap, route) => {
-    //         const routeProps = route.props();
-    //         pathMap[routeProps.path] = routeProps.component;
-    //         return pathMap;
-    //     }, {});
+    it("renders correct routes", () => {
+        const wrapper = shallow(<MainContentRouter />);
+        const pathMap = wrapper.find(Route).reduce((pathMap, route) => {
+            const routeProps = route.props() as any;
+            pathMap[routeProps.path] = routeProps.component;
+            return pathMap;
+        }, {});
 
-    //     expect(pathMap["/"]).toBe(HomePage);
-    //     expect(pathMap["/settings"]).toBe(SettingsPage);
-    //     expect(pathMap["/connections"]).toBe(ConnectionsPage);
-    // });
+        expect(pathMap["/"]).toBe(HomePage);
+        expect(pathMap["/settings"]).toBe(SettingsPage);
+        expect(pathMap["/connections"]).toBe(ConnectionsPage);
+    });
 
     it("renders a redirect when no route is matched", () => {
         const wrapper = createWrapper();

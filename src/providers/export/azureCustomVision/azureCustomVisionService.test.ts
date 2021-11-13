@@ -17,9 +17,7 @@ describe("Azure Custom Vision Service", () => {
             apiKey: "ABC123",
         };
         customVisionService = new AzureCustomVisionService(customVisionOptions);
-    });
 
-    beforeAll(() => {
         axios.get = jest.fn();
         axios.post = jest.fn();
         getMock = axios.get as jest.Mock;
@@ -70,13 +68,12 @@ describe("Azure Custom Vision Service", () => {
                 });
             });
 
+            await expect(customVisionService.create(testProject)).rejects.not.toBeNull();
             expect(axios.post).toBeCalledWith(
                 expect.stringContaining(`${customVisionOptions.baseUrl}/projects?`),
                 null,
                 expect.anything(),
             );
-
-            await expect(customVisionService.create(testProject)).rejects.not.toBeNull();
         });
     });
 

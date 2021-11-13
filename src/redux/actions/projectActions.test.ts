@@ -154,7 +154,7 @@ describe("Project Redux Actions", () => {
         const asset = MockFactory.createTestAsset("Asset1");
         const assetMetadata = MockFactory.createTestAssetMetadata(asset);
         const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
-        mockAssetService.prototype.getAssetMetadata = jest.fn(() => assetMetadata);
+        mockAssetService.prototype.getAssetMetadata = jest.fn(() => assetMetadata) as any;
 
         const project = MockFactory.createTestProject("TestProject");
         const result = await projectActions.loadAssetMetadata(project, asset)(store.dispatch);
@@ -174,7 +174,7 @@ describe("Project Redux Actions", () => {
         const asset = MockFactory.createTestAsset("Asset1");
         const assetMetadata = MockFactory.createTestAssetMetadata(asset);
         const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
-        mockAssetService.prototype.save = jest.fn(() => assetMetadata);
+        mockAssetService.prototype.save = jest.fn(() => assetMetadata) as any;
 
         const project = MockFactory.createTestProject("TestProject");
         const result = await projectActions.saveAssetMetadata(project, assetMetadata)(store.dispatch);
@@ -194,7 +194,7 @@ describe("Project Redux Actions", () => {
         const asset = MockFactory.createTestAsset("Asset1");
         const assetMetadata = MockFactory.createTestAssetMetadata(asset);
         const mockAssetService = AssetService as jest.Mocked<typeof AssetService>;
-        mockAssetService.prototype.save = jest.fn(() => assetMetadata);
+        mockAssetService.prototype.save = jest.fn(() => assetMetadata) as any;
 
         const project = MockFactory.createTestProject("TestProject");
         const result = await projectActions.saveAssetMetadata(project, assetMetadata)(store.dispatch);

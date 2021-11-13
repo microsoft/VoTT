@@ -8,7 +8,7 @@ import registerMixins from "../../../registerMixins";
 
 jest.mock("electron", () => ({
     dialog: {
-        showOpenDialog: jest.fn(),
+        showOpenDialogSync: jest.fn(),
     },
 }));
 import { dialog } from "electron";
@@ -119,7 +119,7 @@ describe("LocalFileSystem Storage Provider", () => {
 
     it("selectContainer opens a dialog and resolves with selected path", async () => {
         const expectedContainerPath = "/path/to/container";
-        const mockMethod = dialog.showOpenDialog as jest.Mock;
+        const mockMethod = dialog.showOpenDialogSync as jest.Mock;
         mockMethod.mockReturnValue([expectedContainerPath]);
 
         const result = await localFileSystem.selectContainer();
@@ -127,7 +127,7 @@ describe("LocalFileSystem Storage Provider", () => {
     });
 
     it("selectContainer rejects when a folder path is not returned", async () => {
-        const mockMethod = dialog.showOpenDialog as jest.Mock;
+        const mockMethod = dialog.showOpenDialogSync as jest.Mock;
         mockMethod.mockReturnValue([]);
 
         await expect(localFileSystem.selectContainer()).rejects.not.toBeNull();
@@ -139,7 +139,7 @@ describe("LocalFileSystem Storage Provider", () => {
 
     it("getAssets gets all files recursively using path relative to the source", async () => {
         AssetService.createAssetFromFilePath = jest.fn(() => []);
-        await localFileSystem.getAssets(sourcePath, true);
+        await localFileSystem.getAssets(sourcePath);
         const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
         expect(calls).toHaveLength(8);
         expect(calls).toEqual(sourceFilePaths.map((path) => [
@@ -149,7 +149,7 @@ describe("LocalFileSystem Storage Provider", () => {
 
     it("getAssets gets all files recursively using absolute path", async () => {
         AssetService.createAssetFromFilePath = jest.fn(() => []);
-        await localFileSystem.getAssets(sourcePath, false);
+        await localFileSystem.getAssets(sourcePath);
         const calls: any[] = (AssetService.createAssetFromFilePath as any).mock.calls;
         expect(calls).toHaveLength(8);
         expect(calls).toEqual(sourceFilePaths.map((path) => [path, undefined, path]));

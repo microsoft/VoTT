@@ -46,7 +46,7 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             const newTags: ITag[] = state.tags ? [...state.tags] : [];
             let updateTags = false;
 
-            assetTags.forEach((tag) => {
+            assetTags.forEach((tag: string) => {
                 if (!state.tags || state.tags.length === 0 ||
                     !state.tags.find((projectTag) => tag === projectTag.name)) {
                     newTags.push({

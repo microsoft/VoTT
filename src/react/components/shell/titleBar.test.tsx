@@ -98,7 +98,7 @@ describe("TileBar Component", () => {
 
     describe("Electron", () => {
         beforeAll(() => {
-            (window as any)["require"] = jest.fn(() => electronMock);
+            window["require"] = jest.fn(() => electronMock) as any;
         });
 
         describe("Windows", () => {

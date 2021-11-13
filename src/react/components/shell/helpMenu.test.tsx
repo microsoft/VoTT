@@ -2,8 +2,10 @@ import { mount } from "enzyme";
 import React from "react";
 import MockFactory from "../../../common/mockFactory";
 import { KeyboardManager } from "../common/keyboardManager/keyboardManager";
-import { IKeyboardRegistrations,
-    KeyboardRegistrationManager } from "../common/keyboardManager/keyboardRegistrationManager";
+import {
+    IKeyboardRegistrations,
+    KeyboardRegistrationManager
+} from "../common/keyboardManager/keyboardRegistrationManager";
 import { HelpMenu, IHelpMenuProps } from "./helpMenu";
 jest.mock("../common/keyboardManager/keyboardRegistrationManager");
 
@@ -11,16 +13,20 @@ describe("Help Menu", () => {
     function createComponent(props?: IHelpMenuProps) {
         return mount(
             <KeyboardManager>
-                <HelpMenu {...props}/>
+                <HelpMenu {...props} />
             </KeyboardManager>,
         );
     }
     const numberRegistrations = 5;
     const keyboardRegistrations: IKeyboardRegistrations = MockFactory.createKeyboardRegistrations(numberRegistrations);
-    const registrationMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+    let registrationMock = null;
 
-    registrationMock.prototype.getRegistrations = jest.fn(() => keyboardRegistrations);
-    registrationMock.prototype.registerBinding = jest.fn(() => jest.fn());
+    beforeEach(() => {
+        registrationMock = KeyboardRegistrationManager as jest.Mocked<typeof KeyboardRegistrationManager>;
+
+        registrationMock.prototype.getRegistrations = jest.fn(() => keyboardRegistrations);
+        registrationMock.prototype.registerBinding = jest.fn(() => jest.fn());
+    });
 
     it("Opens when button is clicked", () => {
         const wrapper = createComponent();
@@ -51,7 +57,7 @@ describe("Help Menu", () => {
 
     it("Calls onClose handler when closed", () => {
         const onClose = jest.fn();
-        const wrapper = createComponent({onClose});
+        const wrapper = createComponent({ onClose });
         wrapper.find("div.help-menu-button").simulate("click");
         expect(wrapper.exists("div.modal-content")).toBe(true);
         wrapper.find("button.close").simulate("click");

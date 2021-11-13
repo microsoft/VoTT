@@ -7,9 +7,9 @@ jobs:
     - template: git-pull-current-branch.yml
 
     - task: NodeTool@0
-      displayName: 'Use Node 10.x'
+      displayName: 'Use Node 12.x'
       inputs:
-        versionSpec: 10.x
+        versionSpec: 12.x
 
     - bash: |
         set -ex

@@ -84,7 +84,7 @@ describe("Export Page", () => {
             return {
                 export: jest.fn(() => Promise.resolve()),
             };
-        });
+        }) as any;
 
         projectServiceMock.prototype.save = jest.fn((project) => Promise.resolve(project));
 

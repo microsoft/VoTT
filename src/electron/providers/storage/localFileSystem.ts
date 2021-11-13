@@ -3,28 +3,29 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import { IStorageProvider } from "../../../providers/storage/storageProviderFactory";
-import { IAsset, AssetType, StorageType, IConnection } from "../../../models/applicationState";
+import { IAsset, AssetType, StorageType } from "../../../models/applicationState";
 import { AssetService } from "../../../services/assetService";
 import { strings } from "../../../common/strings";
-import { ILocalFileSystemProxyOptions } from "../../../providers/storage/localFileSystemProxy";
 
 export default class LocalFileSystem implements IStorageProvider {
     public storageType: StorageType.Local;
 
     constructor(private browserWindow: BrowserWindow) { }
 
-    public async selectContainer(): Promise<string> {
-        const filePaths = await dialog.showOpenDialog(this.browserWindow, {
-            title: strings.connections.providers.local.selectFolder,
-            buttonLabel: strings.connections.providers.local.chooseFolder,
-            properties: ["openDirectory", "createDirectory"],
+    public selectContainer(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            const filePaths = dialog.showOpenDialogSync(this.browserWindow, {
+                title: strings.connections.providers.local.selectFolder,
+                buttonLabel: strings.connections.providers.local.chooseFolder,
+                properties: ["openDirectory", "createDirectory"],
+            });
+
+            if (!filePaths || filePaths.length !== 1) {
+                return reject();
+            }
+
+            resolve(filePaths[0]);
         });
-
-        if (!filePaths || filePaths.filePaths.length !== 1) {
-            throw new Error();
-        }
-
-        return filePaths.filePaths[0];
     }
 
     public readText(filePath: string): Promise<string> {
@@ -91,15 +92,8 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public async listFiles(folderPath: string): Promise<string[]> {
-        const normalizedPath = path.normalize(folderPath);
-        const files = await this.listItems(normalizedPath, (stats) => !stats.isDirectory());
-        const directories = await this.listItems(normalizedPath, (stats) => stats.isDirectory());
-        await directories.forEachAsync(async (directory) => {
-            const directoryFiles = await this.listFiles(directory);
-            directoryFiles.forEach((file) => files.push(file));
-        });
-        return files;
+    public listFiles(folderPath: string): Promise<string[]> {
+        return this.listItems(path.normalize(folderPath), (stats) => !stats.isDirectory());
     }
 
     public listContainers(folderPath: string): Promise<string[]> {
@@ -142,12 +136,9 @@ export default class LocalFileSystem implements IStorageProvider {
         });
     }
 
-    public async getAssets(sourceConnectionFolderPath?: string, relativePath: boolean = false): Promise<IAsset[]> {
-        const files = await this.listFiles(path.normalize(sourceConnectionFolderPath));
-        return files.map((filePath) => AssetService.createAssetFromFilePath(
-                filePath,
-                undefined,
-                relativePath ? path.relative(sourceConnectionFolderPath, filePath) : filePath))
+    public async getAssets(folderPath?: string): Promise<IAsset[]> {
+        return (await this.listFiles(path.normalize(folderPath)))
+            .map((filePath) => AssetService.createAssetFromFilePath(filePath))
             .filter((asset) => asset.type !== AssetType.Unknown);
     }
 

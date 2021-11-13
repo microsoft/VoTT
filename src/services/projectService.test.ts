@@ -1,7 +1,7 @@
 import _ from "lodash";
 import ProjectService, { IProjectService } from "./projectService";
 import MockFactory from "../common/mockFactory";
-import { StorageProviderFactory } from "../providers/storage/storageProviderFactory";
+import { IStorageProvider, StorageProviderFactory } from "../providers/storage/storageProviderFactory";
 import {
     IProject, IExportFormat, ISecurityToken,
     AssetState, IActiveLearningSettings, ModelPathType,
@@ -9,8 +9,8 @@ import {
 import { constants } from "../common/constants";
 import { ExportProviderFactory } from "../providers/export/exportProviderFactory";
 import { generateKey } from "../common/crypto";
-import * as utils from "../common/utils";
-import { ExportAssetState } from "../providers/export/exportProvider";
+import { encryptProject, decryptProject } from "../common/utils";
+import { ExportAssetState, IExportProvider } from "../providers/export/exportProvider";
 import { IVottJsonExportProviderOptions } from "../providers/export/vottJson";
 import { IPascalVOCExportProviderOptions } from "../providers/export/pascalVOC";
 
@@ -20,23 +20,23 @@ describe("Project Service", () => {
     let projectList: IProject[] = null;
     let securityToken: ISecurityToken = null;
 
-    const storageProviderMock = {
-        writeText: jest.fn((project) => Promise.resolve(project)),
-        deleteFile: jest.fn(() => Promise.resolve()),
-    };
-
-    const exportProviderMock = {
-        export: jest.fn(() => Promise.resolve()),
-        save: jest.fn((exportFormat: IExportFormat) => Promise.resolve(exportFormat.providerOptions)),
-    };
-
-    StorageProviderFactory.create = jest.fn(() => storageProviderMock);
-    ExportProviderFactory.create = jest.fn(() => exportProviderMock);
-
-    const encryptSpy = jest.spyOn(utils, "encryptProject");
-    const decryptSpy = jest.spyOn(utils, "decryptProject");
+    let storageProviderMock: any;
+    let exportProviderMock: any;
 
     beforeEach(() => {
+        storageProviderMock = {
+            writeText: jest.fn((project) => Promise.resolve(project)),
+            deleteFile: jest.fn(() => Promise.resolve()),
+        } as any;
+
+        exportProviderMock = {
+            export: jest.fn(() => Promise.resolve()),
+            save: jest.fn((exportFormat: IExportFormat) => Promise.resolve(exportFormat.providerOptions)),
+        } as any;
+
+        StorageProviderFactory.create = jest.fn(() => storageProviderMock);
+        ExportProviderFactory.create = jest.fn(() => exportProviderMock);
+
         securityToken = {
             name: "TestToken",
             key: generateKey(),
@@ -46,24 +46,13 @@ describe("Project Service", () => {
 
         storageProviderMock.writeText.mockClear();
         storageProviderMock.deleteFile.mockClear();
-        encryptSpy.mockClear();
-        decryptSpy.mockClear();
     });
 
     it("Load decrypts any project settings using the specified key", async () => {
-        const encryptedProject = utils.encryptProject(testProject, securityToken);
+        const encryptedProject = encryptProject(testProject, securityToken);
         const decryptedProject = await projectService.load(encryptedProject, securityToken);
 
         expect(decryptedProject).toEqual(testProject);
-        expect(decryptSpy).toBeCalledWith(encryptedProject, securityToken);
-    });
-
-    it("Does not decrypt project when a security token is not in use", async () => {
-        const project: IProject = { ...testProject, useSecurityToken: false };
-
-        const loadedProject = await projectService.load(project);
-        expect(loadedProject).toEqual(project);
-        expect(decryptSpy).not.toBeCalled();
     });
 
     it("Saves calls project storage provider to write project", async () => {
@@ -86,7 +75,6 @@ describe("Project Service", () => {
         };
 
         expect(result).toEqual(encryptedProject);
-        expect(encryptSpy).toBeCalledWith(testProject, securityToken);
         expect(StorageProviderFactory.create).toBeCalledWith(
             testProject.targetConnection.providerType,
             testProject.targetConnection.providerOptions,
@@ -95,13 +83,6 @@ describe("Project Service", () => {
         expect(storageProviderMock.writeText).toBeCalledWith(
             `${testProject.name}${constants.projectFileExtension}`,
             expect.any(String));
-    });
-
-    it("Does not encrypt project during save when a security token is not in use", async () => {
-        const projectToSave: IProject = { ...testProject, useSecurityToken: false };
-        await projectService.save(projectToSave);
-
-        expect(encryptSpy).not.toBeCalled();
     });
 
     it("sets default export settings when not defined", async () => {
@@ -118,7 +99,7 @@ describe("Project Service", () => {
             providerOptions: vottJsonExportProviderOptions,
         };
 
-        const decryptedProject = utils.decryptProject(result, securityToken);
+        const decryptedProject = decryptProject(result, securityToken);
 
         expect(decryptedProject.exportFormat).toEqual(expectedExportFormat);
     });
@@ -237,7 +218,7 @@ describe("Project Service", () => {
             } as IPascalVOCExportProviderOptions,
         };
 
-        const encryptedProject = utils.encryptProject(testProject, securityToken);
+        const encryptedProject = encryptProject(testProject, securityToken);
         const decryptedProject = await projectService.load(encryptedProject, securityToken);
 
         expect(decryptedProject.exportFormat.providerType).toEqual("pascalVOC");

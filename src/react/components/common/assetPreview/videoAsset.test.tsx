@@ -17,25 +17,32 @@ describe("Video Asset Component", () => {
         seeking: false,
     };
     const videoPlayerMock = Player as jest.Mocked<typeof Player>;
-    const onLoadedHandler = jest.fn();
-    const onActivatedHandler = jest.fn();
-    const onDeactivatedHandler = jest.fn();
-    const onChildSelectedHandler = jest.fn();
-    const onBeforeAssetChangedHandler = jest.fn(() => true);
-    const defaultProps: IVideoAssetProps = {
-        asset: MockFactory.createVideoTestAsset("test-video"),
-        autoPlay: true,
-        controlsEnabled: true,
-        timestamp: 0,
-        onLoaded: onLoadedHandler,
-        onActivated: onActivatedHandler,
-        onDeactivated: onDeactivatedHandler,
-        onChildAssetSelected: onChildSelectedHandler,
-        onBeforeAssetChanged: onBeforeAssetChangedHandler,
-        additionalSettings: { videoSettings: { frameExtractionRate: 1 } },
-    };
+    let onLoadedHandler = null;
+    let onActivatedHandler = null;
+    let onDeactivatedHandler = null;
+    let onChildSelectedHandler = null;
+    let onBeforeAssetChangedHandler = null;
+    let defaultProps: IVideoAssetProps = null;
 
     beforeEach(() => {
+        onLoadedHandler = jest.fn();
+        onActivatedHandler = jest.fn();
+        onDeactivatedHandler = jest.fn();
+        onChildSelectedHandler = jest.fn();
+        onBeforeAssetChangedHandler = jest.fn(() => true);
+        defaultProps = {
+            asset: MockFactory.createVideoTestAsset("test-video"),
+            autoPlay: true,
+            controlsEnabled: true,
+            timestamp: 0,
+            onLoaded: onLoadedHandler,
+            onActivated: onActivatedHandler,
+            onDeactivated: onDeactivatedHandler,
+            onChildAssetSelected: onChildSelectedHandler,
+            onBeforeAssetChanged: onBeforeAssetChangedHandler,
+            additionalSettings: { videoSettings: { frameExtractionRate: 1 } },
+        };
+
         videoPlayerMock.prototype.getState = jest.fn(() => ({ player: videoPlayerState }));
         videoPlayerMock.prototype.subscribeToStateChange = jest.fn((handler) => onVideoStateChangeHandler = handler);
         videoPlayerMock.prototype.pause = jest.fn();

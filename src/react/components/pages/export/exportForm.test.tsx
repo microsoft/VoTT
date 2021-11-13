@@ -11,6 +11,7 @@ import { IVottJsonExportProviderOptions } from "../../../../providers/export/vot
 
 describe("Export Form Component", () => {
     const exportProviderRegistrations = MockFactory.createExportProviderRegistrations();
+    let onSubmitHandler = null;
 
     function createComponent(props: IExportFormProps) {
         return mount(
@@ -18,16 +19,18 @@ describe("Export Form Component", () => {
         );
     }
 
-    beforeAll(() => {
+    beforeEach(() => {
+        onSubmitHandler = jest.fn();
+
         Object.defineProperty(ExportProviderFactory, "providers", {
             get: jest.fn(() => exportProviderRegistrations),
+            configurable: true,
         });
         Object.defineProperty(ExportProviderFactory, "defaultProvider", {
             get: jest.fn(() => exportProviderRegistrations[0]),
+            configurable: true,
         });
     });
-
-    const onSubmitHandler = jest.fn();
 
     it("State is initialized without export settings", () => {
         const defaultExportType = "vottJson";

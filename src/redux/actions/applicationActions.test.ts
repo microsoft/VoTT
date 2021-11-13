@@ -13,7 +13,7 @@ describe("Application Redux Actions", () => {
     const appSettings = MockFactory.appSettings();
 
     beforeEach(() => {
-        IpcRendererProxy.send = jest.fn(() => Promise.resolve());
+        IpcRendererProxy.send = jest.fn(() => Promise.resolve()) as any;
         const middleware = [thunk];
         const mockState: IApplicationState = {
             ...initialState,

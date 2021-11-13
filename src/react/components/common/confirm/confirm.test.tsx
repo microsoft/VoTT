@@ -3,29 +3,35 @@ import { mount, ReactWrapper } from "enzyme";
 import Confirm, { IConfirmProps, IConfirmState } from "./confirm";
 
 describe("Confirm component", () => {
-    const modalConfirmHandler = jest.fn();
-    const modalCancelHandler = jest.fn();
-    const defaultProps: IConfirmProps = {
-        title: "Test Title",
-        message: "Test Message",
-        onConfirm: modalConfirmHandler,
-        onCancel: modalCancelHandler,
-    };
+    let modalConfirmHandler = null;
+    let modalCancelHandler = null;
+    let defaultProps: IConfirmProps = null;
 
     function createComponent(props: IConfirmProps): ReactWrapper<IConfirmProps, IConfirmState, Confirm> {
         return mount(<Confirm {...props}></Confirm>);
     }
 
+    beforeEach(() => {
+        modalConfirmHandler = jest.fn();
+        modalCancelHandler = jest.fn();
+        defaultProps = {
+            title: "Test Title",
+            message: "Test Message",
+            onConfirm: modalConfirmHandler,
+            onCancel: modalCancelHandler,
+        };
+    });
+
     it("Is defined", () => {
         expect(Confirm).toBeDefined();
     });
 
-    it("Renders nothing if not activiated", () => {
+    it("Renders nothing if not activated", () => {
         const wrapper = createComponent(defaultProps);
-        expect(wrapper.html()).toBeNull();
+        expect(wrapper.html()).toEqual("");
     });
 
-    it("Renders modal when activiated", () => {
+    it("Renders modal when activated", () => {
         const wrapper = createComponent(defaultProps);
 
         wrapper.instance().open();

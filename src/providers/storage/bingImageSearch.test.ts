@@ -25,12 +25,14 @@ describe("Bing Image Search", () => {
         { contentUrl: "http://images.com/image4.jpg" },
     ];
 
-    axios.get = jest.fn(() => {
-        return Promise.resolve({
-            data: {
-                value: assets,
-            },
-        });
+    beforeEach(() => {
+        axios.get = jest.fn(() => {
+            return Promise.resolve({
+                data: {
+                    value: assets,
+                },
+            });
+        }) as any;
     });
 
     it("calls the Bing image search API with default API url", async () => {

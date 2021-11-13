@@ -53,7 +53,7 @@ describe("Project settings page", () => {
         localStorageMock.removeItem.mockClear();
 
         projectServiceMock = ProjectService as jest.Mocked<typeof ProjectService>;
-        projectServiceMock.prototype.load = jest.fn((project) => ({ ...project }));
+        projectServiceMock.prototype.load = jest.fn((project) => ({ ...project })) as any;
     });
 
     it("Form submission calls save project action", async () => {
