@@ -15,4 +15,4 @@ export REACT_APP_COMMIT_SHA=${COMMIT_SHA}
 
 npx react-scripts build
 npx webpack -p --config ./config/webpack.prod.js
-npx electron-builder
+npm exec electron-builder
