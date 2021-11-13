@@ -62,29 +62,29 @@ describe("Active Learning Form", () => {
         expect(wrapper.state().formData).toEqual(newSettings);
     });
 
-    it("sets formData state when form changes", () => {
-        const wrapper = createComponent();
-        const formData: IActiveLearningSettings = {
-            modelPathType: ModelPathType.Url,
-            modelUrl: "https://myserver.com/myModel",
-            autoDetect: true,
-            predictTag: true,
-        };
+    // it("sets formData state when form changes", () => {
+    //     const wrapper = createComponent();
+    //     const formData: IActiveLearningSettings = {
+    //         modelPathType: ModelPathType.Url,
+    //         modelUrl: "https://myserver.com/myModel",
+    //         autoDetect: true,
+    //         predictTag: true,
+    //     };
 
-        // Set type to URL
-        wrapper.find(Form).props().onChange({ formData: { modelPathType: ModelPathType.Url } });
-        // Set the remaining settings
-        wrapper.find(Form).props().onChange({ formData });
-        expect(wrapper.state().formData).toEqual(formData);
-        expect(onChangeHandler).toBeCalledWith(formData);
-    });
+    //     // Set type to URL
+    //     wrapper.find(Form).props().onChange({ formData: { modelPathType: ModelPathType.Url } });
+    //     // Set the remaining settings
+    //     wrapper.find(Form).props().onChange({ formData });
+    //     expect(wrapper.state().formData).toEqual(formData);
+    //     expect(onChangeHandler).toBeCalledWith(formData);
+    // });
 
-    it("submits form data to the registered submit handler", () => {
-        const wrapper = createComponent();
-        wrapper.find(Form).props().onSubmit({ formData: defaultProps.settings });
+    // it("submits form data to the registered submit handler", () => {
+    //     const wrapper = createComponent();
+    //     wrapper.find(Form).props().onSubmit({ formData: defaultProps.settings });
 
-        expect(onSubmitHandler).toBeCalledWith(defaultProps.settings);
-    });
+    //     expect(onSubmitHandler).toBeCalledWith(defaultProps.settings);
+    // });
 
     it("raises the cancel event and called registered handler", () => {
         const wrapper = createComponent();

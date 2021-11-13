@@ -75,7 +75,7 @@ describe("Editor Page Component", () => {
 
     beforeAll(() => {
         registerToolbar();
-        window["require"] = jest.fn(() => electronMock);
+        (window as any)["require"] = jest.fn(() => electronMock);
 
         const editorMock = Editor as any;
         editorMock.prototype.addContentSource = jest.fn(() => Promise.resolve());

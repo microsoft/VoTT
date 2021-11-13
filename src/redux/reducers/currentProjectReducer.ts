@@ -40,7 +40,7 @@ export const reducer = (state: IProject = null, action: AnyAction): IProject => 
             const updatedAssets = { ...state.assets } || {};
             updatedAssets[action.payload.asset.id] = { ...action.payload.asset };
 
-            const assetTags = new Set();
+            const assetTags: Set<string> = new Set();
             action.payload.regions.forEach((region) => region.tags.forEach((tag) => assetTags.add(tag)));
 
             const newTags: ITag[] = state.tags ? [...state.tags] : [];

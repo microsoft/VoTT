@@ -27,7 +27,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         menu: null,
     };
 
-    private menu: Menu = React.createRef();
+    private menu: any = React.createRef();
     private remote: Electron.Remote;
     private currentWindow: Electron.BrowserWindow;
 
@@ -73,7 +73,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 }
                 {this.state.platform === PlatformType.Windows &&
                     <div className="title-bar-menu">
-                        <Menu ref={this.menu}
+                        <Menu ref={this.menu as any}
                             mode="horizontal"
                             selectable={false}
                             triggerSubMenuAction="click"
@@ -209,7 +209,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
         this.currentWindow.close();
     }
 
-    private onMenuItemSelected = (key: string, item: React.Component) => {
+    private onMenuItemSelected = () => {
         // Required to auto-close the menu after user selects an item.
         this.menu.current.store.setState({
             openKeys: [],
@@ -238,7 +238,7 @@ export class TitleBar extends React.Component<ITitleBarProps, ITitleBarState> {
                 return "CmdOrCtrl+C";
             case "paste":
                 return "CmdOrCtrl+V";
-            case "selectall":
+            case "selectAll":
                 return "CmdOrCtrl+A";
             case "minimize":
                 return "CmdOrCtrl+M";

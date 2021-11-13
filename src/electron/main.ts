@@ -73,7 +73,7 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
     const selectionMenu = Menu.buildFromTemplate([
         { role: "copy", accelerator: "CmdOrCtrl+C" },
         { type: "separator" },
-        { role: "selectall", accelerator: "CmdOrCtrl+A" },
+        { role: "selectAll", accelerator: "CmdOrCtrl+A" },
     ]);
 
     const inputMenu = Menu.buildFromTemplate([
@@ -84,7 +84,7 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
         { role: "copy", accelerator: "CmdOrCtrl+C" },
         { role: "paste", accelerator: "CmdOrCtrl+V" },
         { type: "separator" },
-        { role: "selectall", accelerator: "CmdOrCtrl+A" },
+        { role: "selectAll", accelerator: "CmdOrCtrl+A" },
     ]);
 
     browserWindow.webContents.on("context-menu", (e, props) => {
@@ -112,7 +112,7 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
                 { role: "reload" },
                 { type: "separator" },
                 { role: "toggleDevTools" },
-                { role: "toggleFullScreen" },
+                { role: "togglefullscreen" },
                 { type: "separator" },
                 { role: "resetZoom" },
                 { role: "zoomIn" },

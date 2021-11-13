@@ -23,7 +23,7 @@ describe("Active Learning Service", () => {
     };
 
     beforeAll(() => {
-        window["require"] = jest.fn(() => electronMock);
+        (window as any)["require"] = jest.fn(() => electronMock);
     });
 
     beforeEach(() => {
