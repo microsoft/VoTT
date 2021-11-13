@@ -1,3 +1,12 @@
+# Personal Notes
+
+1. Run `npm i --legacy-peer-deps`
+2. Run `npm run release-ci`
+
+Build wil be in `releases/` folder.
+
+---
+
 # VoTT (Visual Object Tagging Tool)
 
 [![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT/Microsoft.VoTT?branchName=master)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=25&branchName=master)
