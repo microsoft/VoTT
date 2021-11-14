@@ -86,6 +86,11 @@ export const japanese: IAppStrings = {
             title: "セキュリティ トークン",  // Security Token,
             description: "プロジェクト ファイル内の機密データを暗号化するために使用されます",  // Used to encrypt sensitive data within project file"
         },
+        useSecurityToken: {
+            title: "セキュリティ トークン", // Use Security Token
+            description: "有効にすると、プロバイダー構成内の機密データが暗号化されます。",
+            // When enabled will encrypt sensitive data within provider configuration
+        },
         save: "プロジェクトを保存", // Save Project,
         sourceConnection: {
             title: "ソース接続", // Source Connection,
@@ -200,15 +205,54 @@ export const japanese: IAppStrings = {
             },
             bing: {
                 title: "Bing 画像検索",  // Bing Image Search,
-                options: "Bing 画像検索のオプション",  // Bing Image Search Options,
-                apiKey: "APIキー", // API Key,
-                query: "クエリ",  // Query,
+                options: {
+                    title: "Bing 画像検索のオプション",
+                },  // Bing Image Search Options,
+                endpoint: {
+                    title: "エンドポイント", // Endpoint
+                    description: "Bing検索 Azure リソース内に一覧表示されるエンドポイント",
+                },
+                apiKey: {
+                    title: "APIキー", // API Key
+                    description: "Bing検索 Azure リソース内に表示される API キー",
+                },
+                query: {
+                    title: "クエリ", // Query
+                    description: "接続の設定に使用する検索クエリ",
+                },
                 aspectRatio: {
                     title: "アスペクト比", // Aspect Ratio,
-                    all: "すべて", // All,
-                    square: "正方形", // Square,
-                    wide: "横長", // Wide,
-                    tall: "縦長", // Tall"
+                    description: "指定した縦横比で結果をフィルター処理します。",
+                    options: {
+                        all: "すべて", // All,
+                        square: "正方形", // Square,
+                        wide: "横長", // Wide,
+                        tall: "縦長", // Tall"
+                    },
+                },
+                licenseType: {
+                    title: "ライセンスの種類",
+                    description: "指定したライセンスの種類で結果をフィルター処理します。",
+                    options: {
+                        all: "すべて (画像をフィルター処理しません)",
+                        any: "任意のライセンスタイプの画像",
+                        public: "パブリック ドメイン",
+                        share: "無料で共有・使用",
+                        shareCommercially: "無料で共有し、商業的に使用する",
+                        modify: "変更、共有、使用が無料",
+                        modifyCommercially: "無料で変更、共有、および商用で使用",
+                    },
+                },
+                size: {
+                    title: "サイズ",
+                    description: "結果を指定したサイズでフィルター処理します。",
+                    options: {
+                        all: "すべての",
+                        small: "小 (200x200 未満)",
+                        medium: "中 (500x500 未満)",
+                        large: "大 (500x500 より大きい)",
+                        wallpaper: "壁紙(特大画像)",
+                    },
                 },
             },
             local: {

@@ -1,7 +1,7 @@
 import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { IStorageProvider } from "./storageProviderFactory";
 import { IAssetProvider } from "./assetProviderFactory";
-import { IAsset, StorageType } from "../../models/applicationState";
+import { IAsset, IConnection, StorageType } from "../../models/applicationState";
 
 const PROXY_NAME = "LocalFileSystem";
 
@@ -11,6 +11,7 @@ const PROXY_NAME = "LocalFileSystem";
  */
 export interface ILocalFileSystemProxyOptions {
     folderPath: string;
+    relativePath: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
         if (!this.options) {
             this.options = {
                 folderPath: null,
+                relativePath: false,
             };
         }
     }
@@ -125,8 +127,26 @@ export class LocalFileSystemProxy implements IStorageProvider, IAssetProvider {
      * Retrieve assets from directory
      * @param folderName - Directory containing assets
      */
-    public getAssets(folderName?: string): Promise<IAsset[]> {
-        const folderPath = [this.options.folderPath, folderName].join("/");
-        return IpcRendererProxy.send(`${PROXY_NAME}:getAssets`, [folderPath]);
+    public getAssets(): Promise<IAsset[]> {
+        const { folderPath, relativePath } = this.options;
+        return IpcRendererProxy.send(`${PROXY_NAME}:getAssets`, [folderPath, relativePath]);
+    }
+
+    /**
+     * Adds default properties to new connections
+     *
+     * Currently adds `relativePath: true` to the providerOptions. Pre-existing connections
+     * will only use absolute path
+     *
+     * @param connection Connection
+     */
+    public addDefaultPropsToNewConnection(connection: IConnection): IConnection {
+        return connection.id ? connection : {
+            ...connection,
+            providerOptions: {
+                ...connection.providerOptions,
+                relativePath: true,
+            } as any,
+        };
     }
 }

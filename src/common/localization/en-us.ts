@@ -84,6 +84,10 @@ export const english: IAppStrings = {
             title: "Security Token",
             description: "Used to encrypt sensitive data within project files",
         },
+        useSecurityToken: {
+            title: "Use Security Token",
+            description: "When enabled will encrypt sensitive data within provider configuration",
+        },
         save: "Save Project",
         sourceConnection: {
             title: "Source Connection",
@@ -194,15 +198,54 @@ export const english: IAppStrings = {
             },
             bing: {
                 title: "Bing Image Search",
-                options: "Bing Image Search Options",
-                apiKey: "API Key",
-                query: "Query",
+                options: {
+                    title: "Bing Image Search Options",
+                },
+                endpoint: {
+                    title: "Endpoint",
+                    description: "The endpoint listed within the Bing Search Azure resource",
+                },
+                apiKey: {
+                    title: "API Key",
+                    description: "An API key listed within the Bing Search Azure resource",
+                },
+                query: {
+                    title: "Query",
+                    description: "The search query used to populate your connection",
+                },
                 aspectRatio: {
                     title: "Aspect Ratio",
-                    all: "All",
-                    square: "Square",
-                    wide: "Wide",
-                    tall: "Tall",
+                    description: "Filters the results by the specified aspect ratio",
+                    options: {
+                        all: "All",
+                        square: "Square",
+                        wide: "Wide",
+                        tall: "Tall",
+                    },
+                },
+                licenseType: {
+                    title: "License Type",
+                    description: "Filters the results by the specified license type",
+                    options: {
+                        all: "All (does not filter any images)",
+                        any: "Any images with any license type",
+                        public: "Public domain",
+                        share: "Free to share and use",
+                        shareCommercially: "Free to share and use commercially",
+                        modify: "Free to modify, share and use",
+                        modifyCommercially: "Free to modify, share and use commercially",
+                    },
+                },
+                size: {
+                    title: "Size",
+                    description: "Filters the results by the specified size",
+                    options: {
+                        all: "All",
+                        small: "Small (Less than 200x200)",
+                        medium: "Medium (Less than 500x500)",
+                        large: "Large (Greater than 500x500)",
+                        wallpaper: "Wallpaper (Extra large images)",
+                    },
                 },
             },
             local: {

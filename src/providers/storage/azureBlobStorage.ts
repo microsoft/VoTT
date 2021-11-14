@@ -5,7 +5,6 @@ import {
     TokenCredential, AnonymousCredential, ContainerURL,
     StorageURL, ServiceURL, Credential, Aborter, BlockBlobURL,
 } from "@azure/storage-blob";
-import { BlobDeleteResponse } from "@azure/storage-blob/typings/lib/generated/lib/models";
 
 /**
  * Options for Azure Cloud Storage
@@ -191,8 +190,8 @@ export class AzureBlobStorage implements IStorageProvider {
      * @param containerName - Container from which to retrieve assets. Defaults to
      * container specified in Azure Cloud Storage options
      */
-    public async getAssets(containerName?: string): Promise<IAsset[]> {
-        containerName = (containerName) ? containerName : this.options.containerName;
+    public async getAssets(): Promise<IAsset[]> {
+        const { containerName } = this.options;
         const files = await this.listFiles(containerName);
         const result: IAsset[] = [];
         for (const file of files) {

@@ -277,6 +277,7 @@ export default class MockFactory {
             id: `project-${name}`,
             name: `Project ${name}`,
             version: appInfo.version,
+            useSecurityToken: true,
             securityToken: `Security-Token-${name}`,
             assets: {},
             exportFormat: MockFactory.exportFormat(),
@@ -397,6 +398,7 @@ export default class MockFactory {
     public static createLocalFileSystemOptions(): ILocalFileSystemProxyOptions {
         return {
             folderPath: "C:\\projects\\vott\\project",
+            relativePath: false,
         };
     }
 

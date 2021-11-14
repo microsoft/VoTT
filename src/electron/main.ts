@@ -2,6 +2,7 @@ import {
     app, ipcMain, BrowserWindow, BrowserWindowConstructorOptions,
     Menu, MenuItemConstructorOptions,
 } from "electron";
+import registerMixins from "../registerMixins";
 import { IpcMainProxy } from "./common/ipcMainProxy";
 import LocalFileSystem from "./providers/storage/localFileSystem";
 
@@ -18,11 +19,17 @@ function createWindow() {
         titleBarStyle: "hidden",
         backgroundColor: "#272B30",
         show: false,
+        webPreferences: {
+            nodeIntegration: true,
+            enableRemoteModule: true,
+            contextIsolation: false,
+        },
     };
 
     const staticUrl = process.env.ELECTRON_START_URL || `file:///${__dirname}/index.html`;
     if (process.env.ELECTRON_START_URL) {
         windowOptions.webPreferences = {
+            ...windowOptions.webPreferences,
             webSecurity: false,
         };
     }
@@ -123,6 +130,8 @@ function registerContextMenu(browserWindow: BrowserWindow): void {
     const menu = Menu.buildFromTemplate(menuItems);
     Menu.setApplicationMenu(menu);
 }
+
+registerMixins();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

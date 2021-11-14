@@ -86,6 +86,11 @@ export const chinese: IAppStrings = {
             title: "安全令牌", // Security Token
             description: "用于加密项目文件中的敏感数据", // Used to encrypt sensitive data within project files
         },
+        useSecurityToken: {
+            title: "使用安全令牌", // Use Security Token
+            description: "启用后将在提供者配置内加密敏感数据",
+            // When enabled will encrypt sensitive data within provider configuration
+        },
         save: "保存项目", // Save Project
         sourceConnection: {
             title: "源连接", // Source Connection
@@ -200,15 +205,54 @@ export const chinese: IAppStrings = {
             },
             bing: {
                 title: "必应图片搜索", // Bing Image Search
-                options: "必应图像搜索选项", // Bing Image Search Options
-                apiKey: "API密钥", // API Key
-                query: "查询", // Query
+                options: {
+                    title: "必应图像搜索选项",
+                }, // Bing Image Search Options
+                endpoint: {
+                    title: "端点",
+                    description: "必应搜索 Azure 资源中列出的终结点",
+                },
+                apiKey: {
+                    title: "API密钥",
+                    description: "必应搜索 Azure 资源中列出的 API 密钥",
+                }, // API Key
+                query: {
+                    title: "查询",
+                    description: "用于填充连接的搜索查询",
+                }, // Query
                 aspectRatio: {
                     title: "长宽比", // Aspect Ratio
-                    all: "所有", // All
-                    square: "正方形", // Square
-                    wide: "宽", // Wide
-                    tall: "高", // Tall
+                    description: "按指定的纵横比筛选结果",
+                    options: {
+                        all: "所有", // All
+                        square: "正方形", // Square
+                        wide: "宽", // Wide
+                        tall: "高", // Tall
+                    },
+                },
+                licenseType: {
+                    title: "许可证类型",
+                    description: "按指定的许可证类型筛选结果",
+                    options: {
+                        all: "全部（不过滤任何图像）",
+                        any: "任何许可证类型的图像",
+                        public: "公有领域",
+                        share: "免费分享和使用",
+                        shareCommercially: "免费共享和使用商业",
+                        modify: "免费修改、共享和使用",
+                        modifyCommercially: "可自由修改、共享和在商业上使用",
+                    },
+                },
+                size: {
+                    title: "大小",
+                    description: "按指定大小筛选结果",
+                    options: {
+                        all: "所有",
+                        small: "小（小于200x200）",
+                        medium: "中等（小于 500x500）",
+                        large: "大（大于 500x500）",
+                        wallpaper: "壁纸（超大图像）",
+                    },
                 },
             },
             local: {

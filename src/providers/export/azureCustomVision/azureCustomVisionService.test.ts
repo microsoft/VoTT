@@ -13,7 +13,7 @@ describe("Azure Custom Vision Service", () => {
 
     beforeEach(() => {
         customVisionOptions = {
-            baseUrl: "https://southcentralus.api.cognitive.microsoft.com/customvision/v2.2/Training",
+            baseUrl: "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.3/Training",
             apiKey: "ABC123",
         };
         customVisionService = new AzureCustomVisionService(customVisionOptions);

@@ -2,6 +2,7 @@ import { IpcRendererProxy } from "../../common/ipcRendererProxy";
 import { LocalFileSystemProxy, ILocalFileSystemProxyOptions } from "./localFileSystemProxy";
 import { StorageProviderFactory } from "./storageProviderFactory";
 import registerProviders from "../../registerProviders";
+import MockFactory from "../../common/mockFactory";
 
 describe("LocalFileSystem Proxy Storage Provider", () => {
     it("Provider is registered with the StorageProviderFactory", () => {
@@ -19,6 +20,7 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
         let provider: LocalFileSystemProxy = null;
         const options: ILocalFileSystemProxyOptions = {
             folderPath: "/test",
+            relativePath: false,
         };
 
         beforeEach(() => {
@@ -121,6 +123,41 @@ describe("LocalFileSystem Proxy Storage Provider", () => {
 
             expect(IpcRendererProxy.send).toBeCalledWith("LocalFileSystem:listContainers", [expectedContainerPath]);
             expect(actualFolders).toEqual(expectedFolders);
+        });
+
+        it("sends relative path argument according to options", async () => {
+            const sendFunction = jest.fn();
+            IpcRendererProxy.send = sendFunction;
+            await provider.getAssets();
+            const { folderPath, relativePath } = options;
+            expect(IpcRendererProxy.send).toBeCalledWith("LocalFileSystem:getAssets", [folderPath, relativePath]);
+            sendFunction.mockReset();
+
+            const newFolderPath = "myFolder";
+            const newRelativePath = true;
+
+            const relativeProvider = new LocalFileSystemProxy({
+                folderPath: newFolderPath,
+                relativePath: newRelativePath,
+            });
+            await relativeProvider.getAssets();
+            expect(IpcRendererProxy.send).toBeCalledWith("LocalFileSystem:getAssets", [newFolderPath, newRelativePath]);
+        });
+
+        it("adds default props to a new connection", () => {
+            const connection = MockFactory.createTestConnection();
+            delete connection.providerOptions["relativePath"];
+            expect(connection).not.toHaveProperty("providerOptions.relativePath");
+            delete connection.id;
+            expect(provider.addDefaultPropsToNewConnection(connection))
+                .toHaveProperty("providerOptions.relativePath", true);
+        });
+
+        it("does not add default props to existing connection", () => {
+            const connection = MockFactory.createTestConnection();
+            delete connection.providerOptions["relativePath"];
+            expect(provider.addDefaultPropsToNewConnection(connection))
+                .not.toHaveProperty("providerOptions.relativePath");
         });
     });
 });

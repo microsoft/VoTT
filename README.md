@@ -268,6 +268,17 @@ When the video playback bar is present, it allows the following shortcuts to sel
 * Multi-select - Hold down Shift while selecting regions
 * Exclusive Tracking mode - Ctrl + N to block frame UI allowing a user to create a region on top of existing regions
 
+## Release Process
+
+![alt text](./docs/images/release-process.png "Create Release Process")
+
+For more details on github/web releases and versions -- please review our [release process document](./docs/RELEASE_GUIDE.md)
+
+To build VoTT executable using command:
+```
+npm run release
+```
+For details on packaging executable for the release -- please review our [PACKAGING.md](./docs/PACKAGING.md)
 
 ## Collaborators
 
