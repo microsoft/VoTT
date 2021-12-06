@@ -1,4 +1,4 @@
-# VoTT (Visual Object Tagging Tool)
+# VoTT is no longer being maintained!
 
 [![Build Status](https://dev.azure.com/msft-vott/VoTT/_apis/build/status/VoTT/Microsoft.VoTT?branchName=master)](https://dev.azure.com/msft-vott/VoTT/_build/latest?definitionId=25&branchName=master)
 [![Code Coverage](https://codecov.io/gh/Microsoft/VoTT/branch/master/graph/badge.svg)](https://codecov.io/gh/Microsoft/VoTT)
